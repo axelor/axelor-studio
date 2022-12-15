@@ -5,7 +5,7 @@
 
   <input file="wkf-dmn-model.xml" root="wkf-dmn-models">
 
-    <bind node="wkf-dmn-model" type="com.axelor.apps.bpm.db.WkfDmnModel"
+    <bind node="wkf-dmn-model" type="com.axelor.studio.db.WkfDmnModel"
       search="self.name = :name" update="true">
       <bind node="name" to="name"/>
       <bind node="description" to="description"/>

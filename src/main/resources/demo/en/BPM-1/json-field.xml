@@ -2336,7 +2336,7 @@
 
     <showIf></showIf>
 
-    <targetModel>com.axelor.apps.base.db.CompanyDepartment</targetModel>
+    <targetModel>com.axelor.studio.db.CompanyDepartment</targetModel>
 
     <widget></widget>
 
@@ -2752,7 +2752,7 @@
 
     <showIf></showIf>
 
-    <targetModel>com.axelor.apps.base.db.Partner</targetModel>
+    <targetModel>com.axelor.studio.db.Partner</targetModel>
 
     <widget></widget>
 
@@ -2835,7 +2835,7 @@
 
     <showIf></showIf>
 
-    <targetModel>com.axelor.apps.base.db.Product</targetModel>
+    <targetModel>com.axelor.studio.db.Product</targetModel>
 
     <widget></widget>
 

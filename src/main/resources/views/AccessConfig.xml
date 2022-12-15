@@ -4,12 +4,12 @@
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
   <grid name="access-config-grid" title="Access config"
-    model="com.axelor.apps.base.db.AccessConfig">
+    model="com.axelor.studio.db.AccessConfig">
     <field name="name"/>
   </grid>
 
   <form name="access-config-form" title="Access config"
-    model="com.axelor.apps.base.db.AccessConfig">
+    model="com.axelor.studio.db.AccessConfig">
     <panel name="mainPanel">
       <field name="name"/>
       <field name="roleSet" colSpan="12"/>

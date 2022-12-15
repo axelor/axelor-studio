@@ -5,7 +5,7 @@
 
   <input file="baml-model.xml" root="baml-models">
 
-    <bind node="baml-model" type="com.axelor.apps.bpm.db.BamlModel" search="self.name = :name"
+    <bind node="baml-model" type="com.axelor.studio.db.BamlModel" search="self.name = :name"
       update="true">
       <bind node="name" to="name"/>
       <bind node="bamlXml" to="bamlXml"/>

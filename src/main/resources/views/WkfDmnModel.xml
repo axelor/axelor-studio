@@ -3,13 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
-  <grid name="wkf-dmn-model-grid" title="DMN" model="com.axelor.apps.bpm.db.WkfDmnModel">
+  <grid name="wkf-dmn-model-grid" title="DMN" model="com.axelor.studio.db.WkfDmnModel">
     <button name="openEditorBtn" title="Open editor"
       onClick="action-wkf-dmn-view-open-editor" icon="fa-edit"/>
     <field name="name"/>
   </grid>
 
-  <form name="wkf-dmn-model-form" title="DMN" model="com.axelor.apps.bpm.db.WkfDmnModel"
+  <form name="wkf-dmn-model-form" title="DMN" model="com.axelor.studio.db.WkfDmnModel"
     width="large">
     <toolbar>
       <button name="exportBtn" title="Export"
@@ -40,15 +40,14 @@
     </panel>
   </form>
 
-  <form name="wkf-dmn-wizard-form" title="Select DMN"
-    model="com.axelor.apps.bpm.db.WkfDmnModel" width="large"
-    onNew="action-wkf-dmn-attrs-wizard-on-new">
+  <form name="wkf-dmn-wizard-form" title="Select DMN" model="com.axelor.studio.db.WkfDmnModel"
+    width="large" onNew="action-wkf-dmn-attrs-wizard-on-new">
     <panel name="mainPanel" colSpan="12">
       <field name="dmnTable" title="Decision" type="many-to-one"
-        target="com.axelor.apps.bpm.db.DmnTable"
+        target="com.axelor.studio.db.DmnTable"
         domain="self.wkfDmnModel.metaModel.fullName = :ctxModel OR self.wkfDmnModel.jsonModel.name = :ctxJsonModel"/>
       <button name="executeBtn" readonlyIf="dmnTable == null" title="Execute" colSpan="3"
-        onClick="com.axelor.apps.bpm.web.WkfDmnModelController:executeDmn"/>
+        onClick="com.axelor.studio.bpm.web.WkfDmnModelController:executeDmn"/>
       <field name="ctxModel" hidden="true"/>
       <field name="ctxRecordId" hidden="true" type="long"/>
       <field name="ctxJsonModel" hidden="true"/>
@@ -57,7 +56,7 @@
   </form>
 
   <form name="wkf-dmn-table-import-form" title="import.name"
-    model="com.axelor.apps.bpm.db.WkfDmnModel">
+    model="com.axelor.studio.db.WkfDmnModel">
     <panel name="mainPanel">
       <field name="dataFile" type="many-to-one" target="com.axelor.meta.db.MetaFile"
         widget="binary-link" title="Data file"/>
@@ -77,7 +76,7 @@
   </action-view>
 
   <action-view name="action-wkf-dmn-view-wizard" title="Select DMN"
-    model="com.axelor.apps.bpm.db.WkfDmnModel">
+    model="com.axelor.studio.db.WkfDmnModel">
     <view type="form" name="wkf-dmn-wizard-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="show-toolbar" value="false"/>
@@ -89,7 +88,7 @@
   </action-view>
 
   <action-view name="action-wkf-dmn-view-import-dmn-table-form" title="import.name"
-    model="com.axelor.apps.bpm.db.WkfDmnModel">
+    model="com.axelor.studio.db.WkfDmnModel">
     <view type="form" name="wkf-dmn-table-import-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="popup-save" value="false"/>
@@ -99,20 +98,20 @@
   </action-view>
 
   <action-method name="action-wkf-dmn-model-method-deploy">
-    <call class="com.axelor.apps.bpm.web.WkfDmnModelController" method="deploy"/>
+    <call class="com.axelor.studio.bpm.web.WkfDmnModelController" method="deploy"/>
   </action-method>
 
   <action-method name="action-wkf-dmn-model-method-create-output-to-field-script">
-    <call class="com.axelor.apps.bpm.web.WkfDmnModelController"
+    <call class="com.axelor.studio.bpm.web.WkfDmnModelController"
       method="createOutputToFieldScript"/>
   </action-method>
 
   <action-method name="action-dmn-model-method-export-dmn-table">
-    <call class="com.axelor.apps.bpm.web.WkfDmnModelController" method="exportDmnTable"/>
+    <call class="com.axelor.studio.bpm.web.WkfDmnModelController" method="exportDmnTable"/>
   </action-method>
 
   <action-method name="action-dmn-model-method-import-dmn-table">
-    <call class="com.axelor.apps.bpm.web.WkfDmnModelController" method="importDmnTable"/>
+    <call class="com.axelor.studio.bpm.web.WkfDmnModelController" method="importDmnTable"/>
   </action-method>
 
 </object-views>

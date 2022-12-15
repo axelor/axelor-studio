@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.web;
 
-import com.axelor.apps.utils.StringTool;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.inject.Beans;
@@ -29,6 +28,7 @@ import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.service.ws.WsConnectorService;
+import com.axelor.utils.StringTool;
 import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;

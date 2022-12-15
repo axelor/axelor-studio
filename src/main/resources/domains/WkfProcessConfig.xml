@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_6.0.xsd">
 
-  <module name="studio" package="com.axelor.apps.bpm.db"/>
+  <module name="studio" package="com.axelor.studio.db"/>
 
   <entity name="WkfProcessConfig" cacheable="true">
 
@@ -18,7 +18,7 @@
     <string name="model" title="Model" index="true"/>
     <string name="userDefaultPath" title="User default path"/>
     <boolean name="isDirectCreation" title="Direct creation" default="true"/>
-    <entity-listener class="com.axelor.apps.bpm.listener.WkfProcessConfigListener"/>
+    <entity-listener class="com.axelor.studio.bpm.listener.WkfProcessConfigListener"/>
 
   </entity>
 

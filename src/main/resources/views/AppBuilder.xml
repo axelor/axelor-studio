@@ -118,7 +118,7 @@
   </action-export>
 
   <action-view name="bpm-action-view-app-builder-bpm" title="BPM"
-    model="com.axelor.apps.bpm.db.WkfModel">
+    model="com.axelor.studio.db.WkfModel">
     <view type="grid" name="wkf-model-grid"/>
     <view type="form" name="wkf-model-form"/>
     <domain>self.appBuilder.id = :appBuilderId</domain>
@@ -126,7 +126,7 @@
   </action-view>
 
   <action-view name="bpm-action-view-app-builder-dmn" title="DMN"
-    model="com.axelor.apps.bpm.db.WkfDmnModel">
+    model="com.axelor.studio.db.WkfDmnModel">
     <view type="grid" name="wkf-dmn-model-grid"/>
     <view type="form" name="wkf-dmn-model-form"/>
     <domain>self.appBuilder.id = :appBuilderId</domain>
@@ -134,7 +134,7 @@
   </action-view>
 
   <action-view name="bpm-action-view-app-builder-baml" title="BAML"
-    model="com.axelor.apps.bpm.db.BamlModel">
+    model="com.axelor.studio.db.BamlModel">
     <view type="grid" name="baml-model-grid"/>
     <view type="form" name="baml-model-form"/>
     <domain>self.appBuilder.id = :appBuilderId</domain>

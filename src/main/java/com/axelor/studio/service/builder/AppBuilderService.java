@@ -17,10 +17,10 @@
  */
 package com.axelor.studio.service.builder;
 
-import com.axelor.apps.base.db.App;
-import com.axelor.apps.base.db.repo.AppRepository;
 import com.axelor.i18n.I18n;
+import com.axelor.studio.db.App;
 import com.axelor.studio.db.AppBuilder;
+import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;

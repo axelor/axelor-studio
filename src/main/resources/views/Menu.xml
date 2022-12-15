@@ -4,8 +4,7 @@
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
   <menuitem name="app-builder-root" title="App builder" order="-70"
-    icon="fa-pencil-square-o" icon-background="purple"
-    if="__config__.app.isApp('bpm') || __config__.app.isApp('studio')"/>
+    icon="fa-pencil-square-o" icon-background="purple" if="__config__.app.isApp('studio')"/>
 
   <menuitem name="app-builder-studio" title="Studio" parent="app-builder-root"
     action="action.studio.view" order="10" if="__config__.app.isApp('studio')"/>
@@ -163,7 +162,7 @@
     title="Apps management" action="admin.root.app.management"/>
 
   <action-view name="admin.root.app.management" title="Apps management"
-    model="com.axelor.apps.base.db.App">
+    model="com.axelor.studio.db.App">
     <view type="cards" name="app-cards"/>
     <view type="grid" name="app-grid"/>
     <view type="form" name="app-form"/>
@@ -171,13 +170,15 @@
       self.isInAppView = true)</domain>
   </action-view>
 
+  <!-- BPM menu -->
+
   <menuitem title="BPM Studio" name="menu-wkf-bpm-studio" parent="app-builder-root"
     action="action-wkf-view-open-editor" order="19" if="__config__.app.isApp('bpm')"/>
 
   <menuitem title="BPM Manager" name="menu-wkf-bpm-manager" parent="app-builder-root"
     action="action.wkf.bpm.manager" order="20" if="__config__.app.isApp('bpm')"/>
   <action-view name="action.wkf.bpm.manager" title="BPM Manager"
-    model="com.axelor.apps.base.db.Wizard">
+    model="com.axelor.message.db.Wizard">
     <view type="form" name="bpm-manager-dashboard-form"/>
     <context name="_user_id" expr="eval:__user__.id"/>
   </action-view>
@@ -189,7 +190,7 @@
     action="wkf.model.all" order="5"/>
 
   <action-view name="wkf.model.all" title="BPM Model"
-    model="com.axelor.apps.bpm.db.WkfModel">
+    model="com.axelor.studio.db.WkfModel">
     <view type="grid" name="wkf-model-grid"/>
     <view type="form" name="wkf-model-form"/>
     <domain>self.isActive is true</domain>
@@ -200,7 +201,7 @@
     action="wkf.instance.all" order="10"/>
 
   <action-view name="wkf.instance.all" title="BPM Instance"
-    model="com.axelor.apps.bpm.db.WkfInstance">
+    model="com.axelor.studio.db.WkfInstance">
     <view type="grid" name="wkf-instance-grid"/>
     <view type="form" name="wkf-instance-form"/>
   </action-view>
@@ -209,7 +210,7 @@
     action="wkf.dmn.model.all" order="15" if="__config__.app.isApp('bpm')"/>
 
   <action-view name="wkf.dmn.model.all" title="DMN Models"
-    model="com.axelor.apps.bpm.db.WkfDmnModel">
+    model="com.axelor.studio.db.WkfDmnModel">
     <view type="grid" name="wkf-dmn-model-grid"/>
     <view type="form" name="wkf-dmn-model-form"/>
   </action-view>
@@ -218,7 +219,7 @@
     action="baml.model.all" order="20" if="__config__.app.isApp('bpm')"/>
 
   <action-view name="baml.model.all" title="BAML Models"
-    model="com.axelor.apps.bpm.db.BamlModel">
+    model="com.axelor.studio.db.BamlModel">
     <view type="grid" name="baml-model-grid"/>
     <view type="form" name="baml-model-form"/>
   </action-view>

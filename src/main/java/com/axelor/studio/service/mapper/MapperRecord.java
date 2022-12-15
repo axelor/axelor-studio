@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.service.mapper;
 
-import com.axelor.apps.utils.StringTool;
+import com.axelor.utils.StringTool;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
 import java.util.ArrayList;

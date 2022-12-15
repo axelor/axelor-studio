@@ -17,8 +17,6 @@
  */
 package com.axelor.studio.service.loader;
 
-import com.axelor.apps.utils.context.FullContext;
-import com.axelor.apps.utils.context.FullContextHelper;
 import com.axelor.common.Inflector;
 import com.axelor.common.ResourceUtils;
 import com.axelor.data.XStreamUtils;
@@ -40,6 +38,8 @@ import com.axelor.studio.db.AppDataLoader;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.text.GroovyTemplates;
+import com.axelor.utils.context.FullContext;
+import com.axelor.utils.context.FullContextHelper;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.google.inject.Inject;

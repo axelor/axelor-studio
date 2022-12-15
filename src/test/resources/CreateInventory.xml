@@ -19,7 +19,7 @@
         targetType="zdatetime"/>
       <assign target="inventory.integer1" expression="1"/>
     </assignation>
-    <query returnType="MULTIPLE" model="com.axelor.apps.base.db.Product" isJson="false"
+    <query returnType="MULTIPLE" model="com.axelor.studio.db.Product" isJson="false"
       target="products" expression="self.productFamily.name = :family" id="">
       <parameter target="family" expression="'Composants'"/>
     </query>

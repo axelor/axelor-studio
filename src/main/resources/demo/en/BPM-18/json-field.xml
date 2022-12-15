@@ -31,7 +31,7 @@
 
     <minSize>0</minSize>
 
-    <model>com.axelor.apps.base.db.ProductFamily</model>
+    <model>com.axelor.studio.db.ProductFamily</model>
 
     <modelField>attrs</modelField>
 
@@ -114,7 +114,7 @@
 
     <minSize>0</minSize>
 
-    <model>com.axelor.apps.base.db.ProductFamily</model>
+    <model>com.axelor.studio.db.ProductFamily</model>
 
     <modelField>attrs</modelField>
 

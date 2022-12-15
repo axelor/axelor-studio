@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
   <grid name="wkf-task-config-grid" title="Wkf task config"
-    model="com.axelor.apps.bpm.db.WkfTaskConfig" editable="true">
+    model="com.axelor.studio.db.WkfTaskConfig" editable="true">
     <field name="name"/>
     <field name="description"/>
     <field name="expression"/>
@@ -13,7 +13,7 @@
   </grid>
 
   <form name="wkf-task-config-form" title="Wkf task config"
-    model="com.axelor.apps.bpm.db.WkfTaskConfig" width="large">
+    model="com.axelor.studio.db.WkfTaskConfig" width="large">
     <panel name="mainPanel" colSpan="12">
       <field name="name"/>
       <field name="description"/>
