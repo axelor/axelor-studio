@@ -100,4 +100,13 @@ public interface ITranslation {
       "Please enter form name and title"; /*)*/
   public static final String EDITOR_FIELD_NAME_ALERT = /*$$(*/ "Field name should be unique"; /*)*/
   public static final String EDITOR_MODEL_NAME_ALERT = /*$$(*/ "Model name should be unique"; /*)*/
+
+  /** BPM */
+  public static final String INVALID_WKF_MODEL_XML = /*$$(*/ "Data file format is invalid"; /*)*/
+
+  public static final String INVALID_BAML_XML = /*$$(*/
+      "Invalid BAML xml. Please contact admin for further info"; /*)*/
+
+  public static final String INFINITE_EXECUTION = /*$$(*/
+      "Infinite loop execution suspsected"; /*)*/
 }

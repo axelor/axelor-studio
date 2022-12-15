@@ -106,7 +106,7 @@
       <bpmn2:outgoing>Flow_18vntbh</bpmn2:outgoing>
       <bpmn2:outgoing>Flow_18708gc</bpmn2:outgoing>
     </bpmn2:parallelGateway>
-    <bpmn2:sendTask id="Activity_0o5bdd2" name="Send Cancel Msg" messageRef="Message_1s0hwcl" camunda:class="com.axelor.apps.bpm.listener.SendTaskExecution" camunda:messageName="cancel-${jobPosition.id}">
+    <bpmn2:sendTask id="Activity_0o5bdd2" name="Send Cancel Msg" messageRef="Message_1s0hwcl" camunda:class="com.axelor.studio.bpm.listener.SendTaskExecution" camunda:messageName="cancel-${jobPosition.id}">
       <bpmn2:incoming>Flow_0vg7u6p</bpmn2:incoming>
       <bpmn2:incoming>Flow_1fqkxyd</bpmn2:incoming>
       <bpmn2:incoming>Flow_1k0y9u6</bpmn2:incoming>

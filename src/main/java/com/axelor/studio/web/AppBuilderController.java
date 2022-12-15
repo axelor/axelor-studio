@@ -17,11 +17,11 @@
  */
 package com.axelor.studio.web;
 
-import com.axelor.apps.base.db.App;
-import com.axelor.apps.base.service.app.AppService;
 import com.axelor.inject.Beans;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
+import com.axelor.studio.app.service.AppService;
+import com.axelor.studio.db.App;
 import com.axelor.studio.db.AppBuilder;
 import com.axelor.studio.db.repo.AppBuilderRepository;
 import java.io.IOException;

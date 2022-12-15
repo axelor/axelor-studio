@@ -3,16 +3,15 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
-  <grid name="wkf-instance-grid" title="BPM instance"
-    model="com.axelor.apps.bpm.db.WkfInstance" canNew="false" canEdit="false">
+  <grid name="wkf-instance-grid" title="BPM instance" model="com.axelor.studio.db.WkfInstance"
+    canNew="false" canEdit="false">
     <field name="name"/>
     <field name="instanceId"/>
     <field name="wkfProcess.wkfModel"/>
   </grid>
 
-  <form name="wkf-instance-form" title="BPM instance"
-    model="com.axelor.apps.bpm.db.WkfInstance" width="large"
-    onLoad="action-wkf-attrs-refresh-instance-state" canNew="false">
+  <form name="wkf-instance-form" title="BPM instance" model="com.axelor.studio.db.WkfInstance"
+    width="large" onLoad="action-wkf-attrs-refresh-instance-state" canNew="false">
     <panel name="mainPanel" colSpan="12">
       <field name="name" readonly="true"/>
       <field name="instanceId" colSpan="3" readonly="true"/>
@@ -32,11 +31,11 @@
 
   <action-attrs name="action-wkf-attrs-refresh-instance-state">
     <attribute name="value" for="$imageUrl"
-      expr="call:com.axelor.apps.bpm.service.WkfDisplayService:getInstanceUrl(__self__)"/>
+      expr="call:com.axelor.studio.bpm.service.WkfDisplayService:getInstanceUrl(__self__)"/>
   </action-attrs>
 
   <action-view name="wkf-instance-view-from-record" title="BPM Instance"
-    model="com.axelor.apps.bpm.db.WkfInstance">
+    model="com.axelor.studio.db.WkfInstance">
     <view type="grid" name="wkf-instance-grid"/>
     <view type="form" name="wkf-instance-form"/>
     <domain>self.instanceId = :processInstanceId</domain>
@@ -47,19 +46,19 @@
   <action-view name="action-wkf-instance-view-dashboard" title="Workflow dashboard">
     <view type="dashboard" name="dasbhoard-wkf-instance"/>
     <context name="_wkfInstanceId" expr="eval:id"
-      if="_model == 'com.axelor.apps.bpm.db.WkfInstance'"/>
+      if="_model == 'com.axelor.studio.db.WkfInstance'"/>
   </action-view>
 
   <action-method name="action-wkf-instance-method-get-instance-xml">
-    <call class="com.axelor.apps.bpm.web.WkfModelController" method="getInstanceXml"/>
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="getInstanceXml"/>
   </action-method>
 
   <action-method name="action-wkf-instance-method-restart-instance">
-    <call class="com.axelor.apps.bpm.web.WkfModelController" method="restart"/>
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="restart"/>
   </action-method>
 
   <action-method name="action-wkf-instance-method-cancel-node">
-    <call class="com.axelor.apps.bpm.web.WkfModelController" method="cancelNode"/>
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="cancelNode"/>
   </action-method>
 
 </object-views>

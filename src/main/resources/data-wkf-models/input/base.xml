@@ -16,7 +16,7 @@
   <bpmn2:process id="DatabackupProcess" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="DataBackup" isStartModel="true" model="com.axelor.apps.base.db.DataBackup" />
+        <camunda:processConfigurationParameter metaModel="DataBackup" isStartModel="true" model="com.axelor.studio.db.DataBackup" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="DBStart">
@@ -141,7 +141,7 @@
   <bpmn2:process id="YearProcess" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="Year" isStartModel="true" model="com.axelor.apps.base.db.Year" />
+        <camunda:processConfigurationParameter metaModel="Year" isStartModel="true" model="com.axelor.studio.db.Year" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="YearStart">
@@ -222,7 +222,7 @@
   <bpmn2:process id="ABCAnalysisProcess" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="ABCAnalysis" isStartModel="true" model="com.axelor.apps.base.db.ABCAnalysis" />
+        <camunda:processConfigurationParameter metaModel="ABCAnalysis" isStartModel="true" model="com.axelor.studio.db.ABCAnalysis" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="AAStart">
@@ -297,7 +297,7 @@
   <bpmn2:process id="AdvancedImportProcess" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="AdvancedImport" isStartModel="true" model="com.axelor.apps.base.db.AdvancedImport" />
+        <camunda:processConfigurationParameter metaModel="AdvancedImport" isStartModel="true" model="com.axelor.studio.db.AdvancedImport" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="AIStart">
@@ -360,7 +360,7 @@
   <bpmn2:process id="PeriodProcess" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="Period" isStartModel="true" model="com.axelor.apps.base.db.Period" />
+        <camunda:processConfigurationParameter metaModel="Period" isStartModel="true" model="com.axelor.studio.db.Period" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="PeriodStart">
@@ -432,7 +432,7 @@
   <bpmn2:process id="MessageProcess" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="Message" isStartModel="true" model="com.axelor.apps.message.db.Message" />
+        <camunda:processConfigurationParameter metaModel="Message" isStartModel="true" model="com.axelor.message.db.Message" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="MessageStart">

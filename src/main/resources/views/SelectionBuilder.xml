@@ -11,14 +11,14 @@
       if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
   </grid>
 
-  <grid name="selection-option-grid" title="Selection" model="com.axelor.apps.base.db.Wizard">
+  <grid name="selection-option-grid" title="Selection" model="com.axelor.message.db.Wizard">
     <field name="title" title="Title"/>
     <field name="value" title="Value" required="true"/>
     <field name="color" title="Color" selection="color.name.selection" widget="SingleSelect"/>
     <field name="icon" title="Icon" selection="studio.menu.builder.icon.select"/>
   </grid>
 
-  <form name="selection-option-form" title="Selection" model="com.axelor.apps.base.db.Wizard">
+  <form name="selection-option-form" title="Selection" model="com.axelor.message.db.Wizard">
     <panel name="mainPanel">
       <field name="title" title="Title"/>
       <field name="value" title="Value" required="true"/>
@@ -41,7 +41,7 @@
         readonlyIf="metaSelect != null"/>
       <field name="selectionText" colSpan="12" hidden="true"/>
       <panel-related field="$selectOptionList" title="Selection" type="one-to-many"
-        target="com.axelor.apps.base.db.Wizard" colSpan="12" grid-view="selection-option-grid"
+        target="com.axelor.message.db.Wizard" colSpan="12" grid-view="selection-option-grid"
         form-view="selection-option-form" editable="true" canMove="true"/>
     </panel>
   </form>

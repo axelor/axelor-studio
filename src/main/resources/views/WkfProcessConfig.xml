@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
   <grid name="wkf-process-config-grid" title="Wkf process config"
-    model="com.axelor.apps.bpm.db.WkfProcessConfig" editable="true">
+    model="com.axelor.studio.db.WkfProcessConfig" editable="true">
     <field name="title"/>
     <field name="metaModel" requiredIf="metaJsonModel == null"
       onChange="action-wkf-process-config-attrs-set-model"/>
@@ -19,7 +19,7 @@
   </grid>
 
   <form name="wkf-process-config-form" title="Wkf process config"
-    model="com.axelor.apps.bpm.db.WkfProcessConfig" width="large">
+    model="com.axelor.studio.db.WkfProcessConfig" width="large">
     <panel name="mainPanel" colSpan="12">
       <field name="title"/>
       <field name="metaModel" requiredIf="metaJsonModel == null"

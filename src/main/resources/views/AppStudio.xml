@@ -3,9 +3,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
-  <form name="app-studio-config-form" title="App Studio"
-    model="com.axelor.apps.base.db.AppStudio" width="large" canDelete="false" canNew="false"
-    canCopy="false">
+  <form name="app-studio-config-form" title="App Studio" model="com.axelor.studio.db.AppStudio"
+    width="large" canDelete="false" canNew="false" canCopy="false">
 
     <panel name="mainPanel">
       <field name="enableAppBuilder" widget="Boolean-switch"/>

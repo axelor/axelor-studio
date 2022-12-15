@@ -17,13 +17,13 @@
  */
 package com.axelor.studio.service.builder;
 
-import com.axelor.apps.message.db.Message;
-import com.axelor.apps.message.db.Template;
-import com.axelor.apps.message.db.repo.TemplateRepository;
-import com.axelor.apps.message.exception.MessageExceptionMessage;
-import com.axelor.apps.message.service.MessageService;
-import com.axelor.apps.message.service.TemplateMessageService;
 import com.axelor.i18n.I18n;
+import com.axelor.message.db.Message;
+import com.axelor.message.db.Template;
+import com.axelor.message.db.repo.TemplateRepository;
+import com.axelor.message.exception.MessageExceptionMessage;
+import com.axelor.message.service.MessageService;
+import com.axelor.message.service.TemplateMessageService;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaAction;
 import com.axelor.meta.db.MetaJsonModel;

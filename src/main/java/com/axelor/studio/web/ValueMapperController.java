@@ -17,8 +17,6 @@
  */
 package com.axelor.studio.web;
 
-import com.axelor.apps.utils.context.FullContext;
-import com.axelor.apps.utils.context.FullContextHelper;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
@@ -30,6 +28,8 @@ import com.axelor.rpc.Context;
 import com.axelor.studio.db.ValueMapper;
 import com.axelor.studio.db.repo.ValueMapperRepository;
 import com.axelor.studio.service.mapper.ValueMapperService;
+import com.axelor.utils.context.FullContext;
+import com.axelor.utils.context.FullContextHelper;
 import java.util.Map;
 
 public class ValueMapperController {

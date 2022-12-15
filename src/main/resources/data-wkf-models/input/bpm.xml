@@ -16,7 +16,7 @@
   <bpmn2:process id="Process_1" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="WkfModel" isStartModel="true" model="com.axelor.apps.bpm.db.WkfModel" />
+        <camunda:processConfigurationParameter metaModel="WkfModel" isStartModel="true" model="com.axelor.studio.db.WkfModel" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="StartEvent_1">

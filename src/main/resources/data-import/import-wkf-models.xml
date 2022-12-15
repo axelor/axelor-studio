@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://axelor.com/xml/ns/data-import http://axelor.com/xml/ns/data-import/data-import_6.0.xsd">
 
   <input file="wkfModels.xml" root="bpm">
-    <bind node="wkfModels/wkfModel" type="com.axelor.apps.bpm.db.WkfModel"
+    <bind node="wkfModels/wkfModel" type="com.axelor.studio.db.WkfModel"
       search="self.code = :code" update="true">
       <bind node="code" to="code"/>
       <bind node="name" to="name"/>
