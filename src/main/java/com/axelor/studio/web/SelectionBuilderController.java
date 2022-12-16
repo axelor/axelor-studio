@@ -24,30 +24,34 @@ import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.SelectionBuilder;
 import com.axelor.studio.db.repo.SelectionBuilderRepository;
 import com.axelor.studio.service.builder.SelectionBuilderService;
+import com.axelor.utils.ExceptionTool;
 import java.util.List;
 import java.util.Map;
 
 public class SelectionBuilderController {
 
   public void fillSelectionText(ActionRequest request, ActionResponse response) {
+    try {
+      MetaSelect metaSelect = (MetaSelect) request.getContext().get("metaSelect");
 
-    MetaSelect metaSelect = (MetaSelect) request.getContext().get("metaSelect");
+      if (metaSelect != null) {
+        String name = metaSelect.getName();
+        List<Map<String, String>> selectOptions =
+            Beans.get(SelectionBuilderService.class).createSelectionText(name);
 
-    if (metaSelect != null) {
-      String name = metaSelect.getName();
-      List<Map<String, String>> selectOptions =
-          Beans.get(SelectionBuilderService.class).createSelectionText(name);
+        String selectionText =
+            Beans.get(SelectionBuilderService.class).generateSelectionText(selectOptions);
 
-      String selectionText =
-          Beans.get(SelectionBuilderService.class).generateSelectionText(selectOptions);
-
-      response.setValue("selectionText", selectionText);
-      response.setValue("$selectOptionList", selectOptions);
-      response.setValue("name", name);
-    } else {
-      response.setValue("$selectOptionList", null);
-      response.setValue("selectionText", null);
-      response.setValue("name", null);
+        response.setValue("selectionText", selectionText);
+        response.setValue("$selectOptionList", selectOptions);
+        response.setValue("name", name);
+      } else {
+        response.setValue("$selectOptionList", null);
+        response.setValue("selectionText", null);
+        response.setValue("name", null);
+      }
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -63,7 +67,7 @@ public class SelectionBuilderController {
       response.setValue("selectionText", selectionText);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -82,7 +86,7 @@ public class SelectionBuilderController {
       response.setValue("$selectOptionList", selectOptions);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 }

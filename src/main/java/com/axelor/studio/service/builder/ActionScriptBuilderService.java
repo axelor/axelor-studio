@@ -28,6 +28,7 @@ import com.axelor.studio.db.repo.ActionBuilderLineRepository;
 import com.axelor.studio.db.repo.ActionBuilderRepository;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.filter.FilterSqlService;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
@@ -378,7 +379,7 @@ public class ActionScriptBuilderService {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     if (sourceModel == null && line.getValue() != null && line.getValue().equals("$")) {

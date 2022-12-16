@@ -75,31 +75,24 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
   }
 
   @Override
-  public MetaFile generateTemplate() {
+  public MetaFile generateTemplate() throws IOException {
+    menuApp = new HashMap<>();
+    objMenu = new HashMap<>();
+    configMenus = new ArrayList<>();
+    appMenus = new ArrayList<>();
+    defaultApp = null;
 
-    try {
-
-      menuApp = new HashMap<>();
-      objMenu = new HashMap<>();
-      configMenus = new ArrayList<>();
-      appMenus = new ArrayList<>();
-      defaultApp = null;
-
-      App app = Beans.get(AppRepository.class).findByCode("base");
-      if (app == null) {
-        return null;
-      }
-      defaultApp = app.getCode();
-
-      getMenusPerApp();
-
-      updateNoMenuObjects();
-
-      return createExcel();
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e.getMessage());
+    App app = Beans.get(AppRepository.class).findByCode("base");
+    if (app == null) {
+      return null;
     }
+    defaultApp = app.getCode();
+
+    getMenusPerApp();
+
+    updateNoMenuObjects();
+
+    return createExcel();
   }
 
   private void getMenusPerApp() {

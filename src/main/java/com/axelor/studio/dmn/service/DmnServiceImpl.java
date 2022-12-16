@@ -33,6 +33,7 @@ import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.db.DmnField;
 import com.axelor.studio.db.DmnTable;
 import com.axelor.studio.db.repo.DmnTableRepository;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.context.FullContextHelper;
 import com.google.inject.persist.Transactional;
@@ -189,6 +190,7 @@ public class DmnServiceImpl implements DmnService {
     return findResult(value, subField, targetModel, isCollection, isSet);
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   private Object findResult(
       Object value, String subField, String targetModel, boolean isCollection, boolean isSet) {
 
@@ -279,7 +281,7 @@ public class DmnServiceImpl implements DmnService {
               mapToMetaCustomModelFields(fields, modelName, searchOperator, multiple, resultVar);
         }
       } catch (ClassNotFoundException e) {
-        e.printStackTrace();
+        ExceptionTool.trace(e);
       }
     }
 

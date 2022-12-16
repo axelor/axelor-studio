@@ -34,6 +34,7 @@ import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
+import com.axelor.utils.ExceptionTool;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.persist.Transactional;
@@ -72,7 +73,7 @@ public class WkfRequestListener {
           log.trace("Eval workflow from updated model: {}, id: {}", modelName, model.getId());
           Beans.get(WkfInstanceService.class).evalInstance(model, null);
         } catch (Exception e) {
-          e.printStackTrace();
+          ExceptionTool.trace(e);
         }
       }
     }
@@ -82,6 +83,7 @@ public class WkfRequestListener {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void onRequest(@Observes PostAction postAction) {
 
     Context context = postAction.getContext();
@@ -130,7 +132,7 @@ public class WkfRequestListener {
             ((ActionResponse) res).setAlert(helpText);
           }
         } catch (Exception e) {
-          e.printStackTrace();
+          ExceptionTool.trace(e);
         }
       }
     }

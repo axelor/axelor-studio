@@ -32,6 +32,7 @@ import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.context.FullContextHelper;
 import com.google.common.base.Strings;
@@ -351,7 +352,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       try {
         Beans.get(WkfEmailService.class).sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
-        e.printStackTrace();
+        ExceptionTool.trace(e);
       }
     }
 
@@ -412,7 +413,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         try {
           return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
-          e.printStackTrace();
+          ExceptionTool.trace(e);
         }
       }
     }
@@ -544,6 +545,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   private void addChildProcessInstanceId(
       String processInstanceId, FullContext modelCtx, Map<String, Object> ctxMap) {
 

@@ -74,7 +74,6 @@ public class MenuBuilderRepo extends MenuBuilderRepository {
       try {
         actionBuilderRepo.remove(actionBuilder);
       } catch (RuntimeException e) {
-        e.printStackTrace();
         throw e;
       }
     }

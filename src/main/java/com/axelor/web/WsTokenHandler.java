@@ -22,6 +22,7 @@ import com.axelor.inject.Beans;
 import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.service.ws.WsAuthenticatorService;
+import com.axelor.utils.ExceptionTool;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.persist.Transactional;
@@ -63,7 +64,7 @@ public class WsTokenHandler {
       authenticator = wsAuthenticatorRepository.save(authenticator);
       Beans.get(WsAuthenticatorService.class).authenticate(authenticator);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     return Response.temporaryRedirect(new URI(AppSettings.get().getBaseURL())).build();

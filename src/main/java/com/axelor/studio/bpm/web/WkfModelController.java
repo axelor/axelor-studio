@@ -42,6 +42,7 @@ import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessConfigRepository;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -59,30 +60,36 @@ public class WkfModelController {
 
   @SuppressWarnings("unchecked")
   public void deploy(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
 
-    Context context = request.getContext();
+      WkfModel wkfModel = context.asType(WkfModel.class);
 
-    WkfModel wkfModel = context.asType(WkfModel.class);
+      Map<String, Map<String, String>> migrationMap =
+          (Map<String, Map<String, String>>) context.get("wkfMigrationMap");
 
-    Map<String, Map<String, String>> migrationMap =
-        (Map<String, Map<String, String>>) context.get("wkfMigrationMap");
+      Boolean isMigrateOld = (Boolean) context.get("isMigrateOld");
 
-    Boolean isMigrateOld = (Boolean) context.get("isMigrateOld");
+      if (isMigrateOld != null && !isMigrateOld) {
+        migrationMap = null;
+      }
 
-    if (isMigrateOld != null && !isMigrateOld) {
-      migrationMap = null;
+      wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+
+      Beans.get(BpmDeploymentService.class).deploy(wkfModel, migrationMap);
+
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
-
-    Beans.get(BpmDeploymentService.class).deploy(wkfModel, migrationMap);
-
-    response.setReload(true);
   }
 
   public void terminateAll(ActionRequest request, ActionResponse response) {
-
-    Beans.get(WkfInstanceService.class).terminateAll();
+    try {
+      Beans.get(WkfInstanceService.class).terminateAll();
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void refreshRecord(ActionRequest request, ActionResponse response) {
@@ -91,141 +98,171 @@ public class WkfModelController {
   }
 
   public void start(ActionRequest request, ActionResponse response) {
+    try {
+      WkfModel wkfModel = request.getContext().asType(WkfModel.class);
 
-    WkfModel wkfModel = request.getContext().asType(WkfModel.class);
+      wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-    wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+      Beans.get(WkfModelService.class).start(wkfModel);
 
-    Beans.get(WkfModelService.class).start(wkfModel);
-
-    response.setReload(true);
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void terminate(ActionRequest request, ActionResponse response) {
+    try {
+      WkfModel wkfModel = request.getContext().asType(WkfModel.class);
 
-    WkfModel wkfModel = request.getContext().asType(WkfModel.class);
+      wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-    wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+      Beans.get(WkfModelService.class).terminate(wkfModel);
 
-    Beans.get(WkfModelService.class).terminate(wkfModel);
-
-    response.setReload(true);
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void backToDraft(ActionRequest request, ActionResponse response) {
+    try {
+      WkfModel wkfModel = request.getContext().asType(WkfModel.class);
 
-    WkfModel wkfModel = request.getContext().asType(WkfModel.class);
+      wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-    wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+      Beans.get(WkfModelService.class).backToDraft(wkfModel);
 
-    Beans.get(WkfModelService.class).backToDraft(wkfModel);
-
-    response.setReload(true);
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void createNewVersion(ActionRequest request, ActionResponse response) {
+    try {
+      WkfModel wkfModel = request.getContext().asType(WkfModel.class);
 
-    WkfModel wkfModel = request.getContext().asType(WkfModel.class);
+      wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-    wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+      wkfModel = Beans.get(WkfModelService.class).createNewVersion(wkfModel);
 
-    wkfModel = Beans.get(WkfModelService.class).createNewVersion(wkfModel);
-
-    response.setValue("newVersionId", wkfModel.getId());
+      response.setValue("newVersionId", wkfModel.getId());
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void showVersions(ActionRequest request, ActionResponse response) {
+    try {
+      WkfModel wkfModel = request.getContext().asType(WkfModel.class);
 
-    WkfModel wkfModel = request.getContext().asType(WkfModel.class);
+      List<Long> versionIds = new ArrayList<Long>();
 
-    List<Long> versionIds = new ArrayList<Long>();
+      if (wkfModel.getId() != null) {
+        wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+        versionIds = Beans.get(WkfModelService.class).findVersions(wkfModel);
+      }
 
-    if (wkfModel.getId() != null) {
-      wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
-      versionIds = Beans.get(WkfModelService.class).findVersions(wkfModel);
+      versionIds.add(0l);
+
+      response.setView(
+          ActionView.define(I18n.get("Previous Versions"))
+              .model(WkfModel.class.getName())
+              .add("grid", "wkf-model-grid")
+              .add("form", "wkf-model-form")
+              .domain("self.id in :versionIds")
+              .context("versionIds", versionIds)
+              .map());
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    versionIds.add(0l);
-
-    response.setView(
-        ActionView.define(I18n.get("Previous Versions"))
-            .model(WkfModel.class.getName())
-            .add("grid", "wkf-model-grid")
-            .add("form", "wkf-model-form")
-            .domain("self.id in :versionIds")
-            .context("versionIds", versionIds)
-            .map());
   }
 
   public void getInstanceXml(ActionRequest request, ActionResponse response) {
+    try {
+      String instanceId = (String) request.getContext().get("instanceId");
 
-    String instanceId = (String) request.getContext().get("instanceId");
+      String xml = Beans.get(WkfInstanceService.class).getInstanceXml(instanceId);
 
-    String xml = Beans.get(WkfInstanceService.class).getInstanceXml(instanceId);
-
-    response.setValue("xml", xml);
+      response.setValue("xml", xml);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   @SuppressWarnings("unchecked")
   @Transactional
   public void importWkfModels(ActionRequest request, ActionResponse response) {
+    try {
+      boolean isTranslate =
+          request.getContext().get("isTranslate") == null
+              ? false
+              : (boolean) request.getContext().get("isTranslate");
 
-    boolean isTranslate =
-        request.getContext().get("isTranslate") == null
-            ? false
-            : (boolean) request.getContext().get("isTranslate");
+      String sourceLanguage = (String) request.getContext().get("sourceLanguageSelect");
+      String targetLanguage = (String) request.getContext().get("targetLanguageSelect");
 
-    String sourceLanguage = (String) request.getContext().get("sourceLanguageSelect");
-    String targetLanguage = (String) request.getContext().get("targetLanguageSelect");
+      String metaFileId =
+          ((Map<String, Object>) request.getContext().get("dataFile")).get("id").toString();
 
-    String metaFileId =
-        ((Map<String, Object>) request.getContext().get("dataFile")).get("id").toString();
+      MetaFile metaFile = Beans.get(MetaFileRepository.class).find(Long.parseLong(metaFileId));
 
-    MetaFile metaFile = Beans.get(MetaFileRepository.class).find(Long.parseLong(metaFileId));
-
-    String logText =
-        Beans.get(WkfModelService.class)
-            .importWkfModels(metaFile, isTranslate, sourceLanguage, targetLanguage);
-    if (Strings.isNullOrEmpty(logText)) {
-      response.setCanClose(true);
-    } else {
-      response.setValue("importLog", logText);
+      String logText =
+          Beans.get(WkfModelService.class)
+              .importWkfModels(metaFile, isTranslate, sourceLanguage, targetLanguage);
+      if (Strings.isNullOrEmpty(logText)) {
+        response.setCanClose(true);
+      } else {
+        response.setValue("importLog", logText);
+      }
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
   }
 
   public void importStandardBPM(ActionRequest request, ActionResponse response) {
+    try {
+      Beans.get(WkfModelService.class).importStandardBPM();
 
-    Beans.get(WkfModelService.class).importStandardBPM();
-
-    response.setReload(true);
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void restart(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
 
-    Context context = request.getContext();
+      String processInstanceId = (String) context.get("processInstanceId");
+      String activityId = (String) context.get("activityId");
 
-    String processInstanceId = (String) context.get("processInstanceId");
-    String activityId = (String) context.get("activityId");
+      if (processInstanceId != null && activityId != null) {
+        Beans.get(WkfInstanceService.class).restart(processInstanceId, activityId);
+      }
 
-    if (processInstanceId != null && activityId != null) {
-      Beans.get(WkfInstanceService.class).restart(processInstanceId, activityId);
+      response.setInfo(I18n.get("Instance Restarted"));
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    response.setInfo(I18n.get("Instance Restarted"));
   }
 
   public void cancelNode(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
 
-    Context context = request.getContext();
+      String processInstanceId = (String) context.get("processInstanceId");
+      String activityId = (String) context.get("activityId");
 
-    String processInstanceId = (String) context.get("processInstanceId");
-    String activityId = (String) context.get("activityId");
+      if (processInstanceId != null && activityId != null) {
+        Beans.get(WkfInstanceService.class).cancelNode(processInstanceId, activityId);
+      }
 
-    if (processInstanceId != null && activityId != null) {
-      Beans.get(WkfInstanceService.class).cancelNode(processInstanceId, activityId);
+      response.setInfo(I18n.get("Node cancelled"));
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    response.setInfo(I18n.get("Node cancelled"));
   }
 
   public void getProcessPerStatus(ActionRequest request, ActionResponse response) {
@@ -234,7 +271,7 @@ public class WkfModelController {
       response.setData(dataList);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -244,7 +281,7 @@ public class WkfModelController {
       response.setData(dataList);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -274,7 +311,6 @@ public class WkfModelController {
       String statusKey,
       String modelKey,
       String recordkey) {
-
     LinkedHashMap<String, Object> _map =
         (LinkedHashMap<String, Object>) request.getData().get("context");
 
@@ -298,7 +334,7 @@ public class WkfModelController {
       this.openRecordView(request, response, "title", "modelName", "statusRecordIds");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -307,7 +343,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "recordIdsPerModel");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -323,7 +359,7 @@ public class WkfModelController {
       response.setView(actionViewBuilder.map());
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -345,7 +381,7 @@ public class WkfModelController {
       response.setView(actionViewBuilder.map());
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -405,7 +441,7 @@ public class WkfModelController {
       response.setAttr("myProcessPanel", "hidden", true);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -414,7 +450,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "taskTodayIds");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -423,7 +459,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "taskNextIds");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -432,7 +468,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "lateTaskIds");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 }

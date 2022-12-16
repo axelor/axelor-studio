@@ -30,6 +30,7 @@ import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessConfigRepository;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.StringTool;
 import com.axelor.utils.context.FullContext;
 import com.google.common.base.Strings;
@@ -236,6 +237,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
     return object;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Model addProperties(
       Map<String, String> propertyMap, Model model, ModelElementInstance element) {
@@ -258,7 +260,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
                   .filter("self.name = ?1", value)
                   .fetchOne();
         } catch (Exception e) {
-          e.printStackTrace();
+          ExceptionTool.trace(e);
         }
       }
       mapper.set(model, property, value);

@@ -38,6 +38,7 @@ import com.axelor.studio.db.AppDataLoader;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.text.GroovyTemplates;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.context.FullContextHelper;
 import com.google.common.base.Strings;
@@ -141,7 +142,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       appLoaderRepository.save(appLoader);
 
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
   }
 
@@ -289,6 +290,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return xmlInput;
   }
 
+  @SuppressWarnings("unchecked")
   protected void addJsonModelData(AppDataLoader dataLoader, File parentDir) {
 
     try {
@@ -336,10 +338,11 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       fileWriter.close();
 
     } catch (IOException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void fixTargetName(Map<String, Object> jsonFieldMap) {
 
     // NOTE: Issue in AOP, it always return name as targetname for custom model.
@@ -372,6 +375,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return fileWriter;
   }
 
+  @SuppressWarnings("rawtypes")
   protected void addMetaModelData(AppDataLoader dataLoader, File parentDir) {
 
     try {
@@ -417,10 +421,11 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       fileWriter.close();
 
     } catch (IOException | ClassNotFoundException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
   }
 
+  @SuppressWarnings("unchecked")
   protected Object extractJsonFieldValue(FullContext record, Map<String, Object> fieldAttrs) {
 
     Object value = record.get(fieldAttrs.get("jsonPath"));
@@ -466,6 +471,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return targetName;
   }
 
+  @SuppressWarnings("unchecked")
   protected Object extractMetaFieldValue(FullContext fullContext, Property property) {
 
     Object value = fullContext.get(property.getName());
@@ -544,6 +550,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     }
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   protected boolean allowRead(Class klass, Long... ids) {
 
     return jpaSecurity.isPermitted(JpaSecurity.CAN_READ, klass, ids);
@@ -628,6 +635,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     fieldBind.setCreate(false);
   }
 
+  @SuppressWarnings("unchecked")
   protected String getJsonSearchFields(
       AppDataLoader appDataLoader, Map<String, Object> jsonFieldMap) {
 
@@ -661,6 +669,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return fields.toString();
   }
 
+  @SuppressWarnings("unchecked")
   protected List<XMLBind> geJsonFieldBinding(
       Map<String, Object> jsonFieldMap, AppDataLoader dataLoader, boolean relationalInput) {
 

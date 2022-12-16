@@ -25,25 +25,29 @@ import com.axelor.studio.db.MenuBuilder;
 import com.axelor.studio.db.repo.MenuBuilderRepo;
 import com.axelor.studio.db.repo.MenuBuilderRepository;
 import com.axelor.studio.db.repo.MetaJsonModelRepo;
+import com.axelor.utils.ExceptionTool;
 import com.google.inject.persist.Transactional;
 
 public class MetaJsonModelController {
 
   @Transactional
   public void removeMenuBuilder(ActionRequest request, ActionResponse response) {
+    try {
+      MetaJsonModel metaJsonModel = request.getContext().asType(MetaJsonModel.class);
+      if (metaJsonModel.getMenuBuilder() != null
+          && metaJsonModel.getMenuBuilder().getId() != null
+          && metaJsonModel.getMenuBuilder().getMetaMenu() != null) {
+        MenuBuilder menuBuilder =
+            Beans.get(MenuBuilderRepository.class).find(metaJsonModel.getMenuBuilder().getId());
 
-    MetaJsonModel metaJsonModel = request.getContext().asType(MetaJsonModel.class);
-    if (metaJsonModel.getMenuBuilder() != null
-        && metaJsonModel.getMenuBuilder().getId() != null
-        && metaJsonModel.getMenuBuilder().getMetaMenu() != null) {
-      MenuBuilder menuBuilder =
-          Beans.get(MenuBuilderRepository.class).find(metaJsonModel.getMenuBuilder().getId());
-
-      metaJsonModel = Beans.get(MetaJsonModelRepo.class).find(metaJsonModel.getId());
-      metaJsonModel.setMenuBuilder(null);
-      Beans.get(MetaJsonModelRepo.class).save(metaJsonModel);
-      Beans.get(MenuBuilderRepo.class).remove(menuBuilder);
-      response.setReload(true);
+        metaJsonModel = Beans.get(MetaJsonModelRepo.class).find(metaJsonModel.getId());
+        metaJsonModel.setMenuBuilder(null);
+        Beans.get(MetaJsonModelRepo.class).save(metaJsonModel);
+        Beans.get(MenuBuilderRepo.class).remove(menuBuilder);
+        response.setReload(true);
+      }
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
   }
 }

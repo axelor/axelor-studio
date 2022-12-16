@@ -32,71 +32,79 @@ import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.BamlModel;
 import com.axelor.studio.db.repo.BamlModelRepository;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import java.util.Map;
 
 public class BamlModelController {
 
   public void generateCode(ActionRequest request, ActionResponse response) {
+    try {
+      BamlModel model = request.getContext().asType(BamlModel.class);
 
-    BamlModel model = request.getContext().asType(BamlModel.class);
-
-    String xml = Beans.get(BamlService.class).extractBamlXml(model.getBamlXml());
-    if (xml != null) {
-      String resultScript = Beans.get(BamlService.class).generateGroovyCode(xml);
-      response.setValue("resultScript", resultScript);
+      String xml = Beans.get(BamlService.class).extractBamlXml(model.getBamlXml());
+      if (xml != null) {
+        String resultScript = Beans.get(BamlService.class).generateGroovyCode(xml);
+        response.setValue("resultScript", resultScript);
+      }
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void execute(ActionRequest request, ActionResponse response) {
-
-    Context context = request.getContext();
-    String model = (String) context.get("modelName");
-    Model entity = null;
-    if (context.get("recordId") != null && model != null) {
-      Long recordId = Long.parseLong(context.get("recordId").toString());
-      entity = WkfContextHelper.getRepository(model).find(recordId);
-    }
-
-    Map<String, Object> bamlModelMap = (Map<String, Object>) context.get("bamlModel");
-    BamlModel bamlModel =
-        Beans.get(BamlModelRepository.class)
-            .find(Long.parseLong(bamlModelMap.get("id").toString()));
-
-    Model object = Beans.get(BamlService.class).execute(bamlModel, entity);
-
-    String modelName = object.getClass().getSimpleName();
-    String dasherizeModel = Inflector.getInstance().dasherize(modelName);
-
-    String title = object.getClass().getSimpleName();
-    String formView = dasherizeModel + "-form";
-    String gridView = dasherizeModel + "-grid";
-
-    String jsonModel = null;
-    if (object instanceof MetaJsonRecord) {
-      jsonModel = ((MetaJsonRecord) object).getJsonModel();
-      title = Beans.get(MetaJsonModelRepository.class).findByName(jsonModel).getTitle();
-      if (Strings.isNullOrEmpty(title)) {
-        title = jsonModel;
+    try {
+      Context context = request.getContext();
+      String model = (String) context.get("modelName");
+      Model entity = null;
+      if (context.get("recordId") != null && model != null) {
+        Long recordId = Long.parseLong(context.get("recordId").toString());
+        entity = WkfContextHelper.getRepository(model).find(recordId);
       }
-      formView = "custom-model-" + jsonModel + "-form";
-      gridView = "custom-model-" + jsonModel + "-grid";
+
+      Map<String, Object> bamlModelMap = (Map<String, Object>) context.get("bamlModel");
+      BamlModel bamlModel =
+          Beans.get(BamlModelRepository.class)
+              .find(Long.parseLong(bamlModelMap.get("id").toString()));
+
+      Model object = Beans.get(BamlService.class).execute(bamlModel, entity);
+
+      String modelName = object.getClass().getSimpleName();
+      String dasherizeModel = Inflector.getInstance().dasherize(modelName);
+
+      String title = object.getClass().getSimpleName();
+      String formView = dasherizeModel + "-form";
+      String gridView = dasherizeModel + "-grid";
+
+      String jsonModel = null;
+      if (object instanceof MetaJsonRecord) {
+        jsonModel = ((MetaJsonRecord) object).getJsonModel();
+        title = Beans.get(MetaJsonModelRepository.class).findByName(jsonModel).getTitle();
+        if (Strings.isNullOrEmpty(title)) {
+          title = jsonModel;
+        }
+        formView = "custom-model-" + jsonModel + "-form";
+        gridView = "custom-model-" + jsonModel + "-grid";
+      }
+
+      response.setCanClose(true);
+
+      ActionViewBuilder builder =
+          ActionView.define(I18n.get(title))
+              .model(object.getClass().getName())
+              .add("form", formView)
+              .add("grid", gridView)
+              .context("_showRecord", object.getId());
+
+      if (jsonModel != null) {
+        builder.context("jsonModel", jsonModel);
+        builder.domain("self.jsonModel = :jsonModel");
+      }
+
+      response.setView(builder.map());
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    response.setCanClose(true);
-
-    ActionViewBuilder builder =
-        ActionView.define(I18n.get(title))
-            .model(object.getClass().getName())
-            .add("form", formView)
-            .add("grid", gridView)
-            .context("_showRecord", object.getId());
-
-    if (jsonModel != null) {
-      builder.context("jsonModel", jsonModel);
-      builder.domain("self.jsonModel = :jsonModel");
-    }
-
-    response.setView(builder.map());
   }
 }

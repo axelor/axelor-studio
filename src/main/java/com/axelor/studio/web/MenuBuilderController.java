@@ -33,6 +33,7 @@ import com.axelor.rpc.Context;
 import com.axelor.studio.db.ActionBuilder;
 import com.axelor.studio.db.MenuBuilder;
 import com.axelor.studio.service.builder.MenuBuilderService;
+import com.axelor.utils.ExceptionTool;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -41,19 +42,22 @@ public class MenuBuilderController {
 
   @SuppressWarnings("unchecked")
   public void fetchMenu(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
 
-    Context context = request.getContext();
+      Map<String, Object> values = null;
+      Map<String, Object> existingMenu = (Map<String, Object>) context.get("existingMenu");
+      if (existingMenu == null) {
+        values = getEmptyMenu();
+      } else {
+        Long menuId = Long.parseLong(existingMenu.get("id").toString());
+        values = getMenu(Beans.get(MetaMenuRepository.class).find(menuId));
+      }
 
-    Map<String, Object> values = null;
-    Map<String, Object> existingMenu = (Map<String, Object>) context.get("existingMenu");
-    if (existingMenu == null) {
-      values = getEmptyMenu();
-    } else {
-      Long menuId = Long.parseLong(existingMenu.get("id").toString());
-      values = getMenu(Beans.get(MetaMenuRepository.class).find(menuId));
+      response.setValues(values);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    response.setValues(values);
   }
 
   private Map<String, Object> getMenu(MetaMenu menu) {
@@ -121,13 +125,12 @@ public class MenuBuilderController {
   }
 
   public void showMenuBuilderRecords(ActionRequest request, ActionResponse response) {
-
-    MenuBuilder menuBuilder = request.getContext().asType(MenuBuilder.class);
-    if (menuBuilder.getMetaMenu() == null || menuBuilder.getMetaMenu().getAction() == null) {
-      return;
-    }
-
     try {
+      MenuBuilder menuBuilder = request.getContext().asType(MenuBuilder.class);
+      if (menuBuilder.getMetaMenu() == null || menuBuilder.getMetaMenu().getAction() == null) {
+        return;
+      }
+
       MetaAction metaAction = menuBuilder.getMetaMenu().getAction();
       ObjectViews objectViews = XMLViews.fromXML(metaAction.getXml());
       ActionView actionView = (ActionView) objectViews.getActions().get(0);
@@ -146,6 +149,7 @@ public class MenuBuilderController {
 
       response.setView(actionViewBuilder.map());
     } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
   }
 }

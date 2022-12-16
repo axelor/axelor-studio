@@ -27,6 +27,7 @@ import com.axelor.studio.db.ActionBuilder;
 import com.axelor.studio.db.ActionBuilderView;
 import com.axelor.studio.db.repo.ActionBuilderRepository;
 import com.axelor.studio.service.mapper.MapperScriptGeneratorService;
+import com.axelor.utils.ExceptionTool;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,25 +37,28 @@ public class ActionBuilderController {
   private Inflector inflector;
 
   public void setViews(ActionRequest request, ActionResponse response) {
+    try {
+      inflector = Inflector.getInstance();
 
-    inflector = Inflector.getInstance();
+      ActionBuilder builder = request.getContext().asType(ActionBuilder.class);
+      String model = builder.getModel();
 
-    ActionBuilder builder = request.getContext().asType(ActionBuilder.class);
-    String model = builder.getModel();
-
-    boolean isJson = false;
-    if (builder.getIsJson() != null) {
-      isJson = builder.getIsJson();
-    }
-    if (builder.getTypeSelect() == ActionBuilderRepository.TYPE_SELECT_VIEW && model != null) {
-      if (!isJson) {
-        model = model.substring(model.lastIndexOf('.') + 1);
-        model = inflector.dasherize(model);
+      boolean isJson = false;
+      if (builder.getIsJson() != null) {
+        isJson = builder.getIsJson();
       }
-      List<ActionBuilderView> views = new ArrayList<>();
-      addActionBuilderView(views, model, "grid", isJson, 0);
-      addActionBuilderView(views, model, "form", isJson, 1);
-      response.setValue("actionBuilderViews", views);
+      if (builder.getTypeSelect() == ActionBuilderRepository.TYPE_SELECT_VIEW && model != null) {
+        if (!isJson) {
+          model = model.substring(model.lastIndexOf('.') + 1);
+          model = inflector.dasherize(model);
+        }
+        List<ActionBuilderView> views = new ArrayList<>();
+        addActionBuilderView(views, model, "grid", isJson, 0);
+        addActionBuilderView(views, model, "form", isJson, 1);
+        response.setValue("actionBuilderViews", views);
+      }
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -79,14 +83,18 @@ public class ActionBuilderController {
     views.add(builderView);
   }
 
+  @SuppressWarnings("unchecked")
   public void createMapperScript(ActionRequest request, ActionResponse response) {
+    try {
+      Map<String, Object> ctx = (Map<String, Object>) request.getData().get("context");
+      String jsonString = (String) ctx.get("_jsonString");
 
-    Map<String, Object> ctx = (Map<String, Object>) request.getData().get("context");
-    String jsonString = (String) ctx.get("_jsonString");
-
-    if (jsonString != null) {
-      String scriptString = Beans.get(MapperScriptGeneratorService.class).generate(jsonString);
-      response.setValue("_scriptString", scriptString);
+      if (jsonString != null) {
+        String scriptString = Beans.get(MapperScriptGeneratorService.class).generate(jsonString);
+        response.setValue("_scriptString", scriptString);
+      }
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
   }
 }

@@ -36,6 +36,7 @@ import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
+import com.axelor.utils.ExceptionTool;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class WkfDashboardController {
                 .map());
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -129,7 +130,7 @@ public class WkfDashboardController {
               : "self.id IN (0)");
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -168,7 +169,7 @@ public class WkfDashboardController {
       response.setCanClose(true);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 

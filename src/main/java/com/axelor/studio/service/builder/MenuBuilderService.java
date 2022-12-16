@@ -36,6 +36,7 @@ import com.axelor.studio.db.MenuBuilder;
 import com.axelor.studio.db.repo.ActionBuilderRepository;
 import com.axelor.studio.db.repo.MenuBuilderRepo;
 import com.axelor.studio.service.StudioMetaService;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -121,7 +122,7 @@ public class MenuBuilderService {
         return Optional.of(actionBuilder);
       }
     } catch (JAXBException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
     return Optional.empty();
   }

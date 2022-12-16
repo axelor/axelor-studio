@@ -40,6 +40,7 @@ import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.time.LocalDate;
@@ -407,7 +408,7 @@ public class WkfDashboardCommonService {
     try {
       klass = (Class<Model>) Class.forName(model);
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     if (user != null && assignedType != null) {

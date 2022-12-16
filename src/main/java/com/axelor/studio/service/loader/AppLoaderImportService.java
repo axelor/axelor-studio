@@ -25,7 +25,7 @@ import java.util.List;
 
 public interface AppLoaderImportService {
 
-  public void importApps(AppLoader appLoader);
+  public void importApps(AppLoader appLoader) throws FileNotFoundException, IOException;
 
   public List<File> getAppImportConfigFiles(File dataDir) throws FileNotFoundException, IOException;
 }

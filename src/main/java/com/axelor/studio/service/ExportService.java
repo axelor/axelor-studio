@@ -23,6 +23,7 @@ import com.axelor.studio.db.ActionBuilder;
 import com.axelor.studio.db.ActionBuilderLine;
 import com.axelor.studio.db.WsKeyValue;
 import com.axelor.studio.db.repo.ActionBuilderRepository;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,7 +48,7 @@ public class ExportService {
           byte[] img = IOUtils.toByteArray(new FileInputStream(file));
           return Base64.getEncoder().encodeToString(img);
         } catch (IOException e) {
-          e.printStackTrace();
+          ExceptionTool.trace(e);
         }
       }
     }

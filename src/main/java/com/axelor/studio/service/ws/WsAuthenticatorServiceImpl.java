@@ -24,6 +24,7 @@ import com.axelor.studio.db.WsKeyValue;
 import com.axelor.studio.db.WsRequest;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.text.GroovyTemplates;
+import com.axelor.utils.ExceptionTool;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -89,7 +90,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       uriBuilder.addParameter("redirect_uri", getRedirectUrl());
       url = uriBuilder.toString();
     } catch (URISyntaxException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     return url;

@@ -18,8 +18,9 @@
 package com.axelor.studio.app.service;
 
 import com.axelor.meta.db.MetaFile;
+import java.io.IOException;
 
 public interface AccessTemplateService {
 
-  public MetaFile generateTemplate();
+  public MetaFile generateTemplate() throws IOException;
 }

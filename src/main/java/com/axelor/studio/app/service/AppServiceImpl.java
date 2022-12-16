@@ -38,6 +38,7 @@ import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -138,7 +139,7 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private void importPerConfig(String appCode, File dataDir) {
+  private void importPerConfig(String appCode, File dataDir) throws FileNotFoundException {
 
     try {
       File[] configs =
@@ -200,7 +201,7 @@ public class AppServiceImpl implements AppService {
     return app;
   }
 
-  private void runImport(File config, File data) {
+  private void runImport(File config, File data) throws FileNotFoundException {
 
     log.debug(
         "Running import with config path: {}, data path: {}",
@@ -224,9 +225,6 @@ public class AppServiceImpl implements AppService {
       if (importer != null) {
         importer.run();
       }
-
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     }
   }
 
@@ -261,7 +259,7 @@ public class AppServiceImpl implements AppService {
       try {
         copy(file.openStream(), tmp, name);
       } catch (IOException e) {
-        log.error(e.getMessage(), e);
+        ExceptionTool.trace(e);
       }
     }
 

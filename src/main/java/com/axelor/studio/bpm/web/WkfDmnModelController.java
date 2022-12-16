@@ -34,6 +34,7 @@ import com.axelor.studio.dmn.service.DmnDeploymentService;
 import com.axelor.studio.dmn.service.DmnExportService;
 import com.axelor.studio.dmn.service.DmnImportService;
 import com.axelor.studio.dmn.service.DmnService;
+import com.axelor.utils.ExceptionTool;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Map;
@@ -41,55 +42,66 @@ import java.util.Map;
 public class WkfDmnModelController {
 
   public void deploy(ActionRequest request, ActionResponse response) {
+    try {
+      WkfDmnModel dmnModel = request.getContext().asType(WkfDmnModel.class);
 
-    WkfDmnModel dmnModel = request.getContext().asType(WkfDmnModel.class);
+      dmnModel = Beans.get(WkfDmnModelRepository.class).find(dmnModel.getId());
+      Beans.get(DmnDeploymentService.class).deploy(dmnModel);
 
-    dmnModel = Beans.get(WkfDmnModelRepository.class).find(dmnModel.getId());
-    Beans.get(DmnDeploymentService.class).deploy(dmnModel);
-
-    response.setReload(true);
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
+  @SuppressWarnings("unchecked")
   public void executeDmn(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
 
-    Context context = request.getContext();
+      String decisionId =
+          (String) ((Map<String, Object>) context.get("dmnTable")).get("decisionId");
 
-    String decisionId = (String) ((Map<String, Object>) context.get("dmnTable")).get("decisionId");
+      String ctxModel = (String) context.get("ctxModel");
+      Long ctxRecordId = Long.parseLong(context.get("ctxRecordId").toString());
 
-    String ctxModel = (String) context.get("ctxModel");
-    Long ctxRecordId = Long.parseLong(context.get("ctxRecordId").toString());
+      if (ctxRecordId == null || ctxModel == null) {
+        return;
+      }
 
-    if (ctxRecordId == null || ctxModel == null) {
-      return;
+      Model model = WkfContextHelper.getRepository(ctxModel).find(ctxRecordId);
+
+      Beans.get(DmnService.class).executeDmn(decisionId, model);
+
+      response.setCanClose(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    Model model = WkfContextHelper.getRepository(ctxModel).find(ctxRecordId);
-
-    Beans.get(DmnService.class).executeDmn(decisionId, model);
-
-    response.setCanClose(true);
   }
 
   public void createOutputToFieldScript(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
 
-    Context context = request.getContext();
+      String decisionId = (String) context.get("decisionId");
 
-    String decisionId = (String) context.get("decisionId");
+      String ctxModel = (String) context.get("ctxModel");
 
-    String ctxModel = (String) context.get("ctxModel");
+      String searchWith = (String) context.get("searchWith");
 
-    String searchWith = (String) context.get("searchWith");
+      String ifMultiple = (String) context.get("ifMultiple");
 
-    String ifMultiple = (String) context.get("ifMultiple");
+      String resultVariable = (String) context.get("resultVariable");
 
-    String resultVariable = (String) context.get("resultVariable");
+      String script =
+          Beans.get(DmnService.class)
+              .createOutputToFieldScript(
+                  decisionId, ctxModel, searchWith, ifMultiple, resultVariable);
 
-    String script =
-        Beans.get(DmnService.class)
-            .createOutputToFieldScript(
-                decisionId, ctxModel, searchWith, ifMultiple, resultVariable);
-
-    response.setValue("script", script);
+      response.setValue("script", script);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void exportDmnTable(ActionRequest request, ActionResponse response) {
@@ -120,7 +132,7 @@ public class WkfDmnModelController {
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 
@@ -141,7 +153,7 @@ public class WkfDmnModelController {
       response.setCanClose(true);
 
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 }

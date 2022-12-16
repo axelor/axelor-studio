@@ -29,6 +29,7 @@ import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardUserService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.repo.WkfModelRepository;
+import com.axelor.utils.ExceptionTool;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,11 @@ public class BpmManagerDashboardController {
   }
 
   private void showProcess(int offset, ActionResponse response) {
-    response.setValues(Beans.get(BpmManagerDashboardService.class).showProcess(offset));
+    try {
+      response.setValues(Beans.get(BpmManagerDashboardService.class).showProcess(offset));
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void showPreviousProcess(ActionRequest request, ActionResponse response) {
@@ -73,18 +78,23 @@ public class BpmManagerDashboardController {
   }
 
   private void getChartData(ActionRequest request, ActionResponse response, String type) {
-    Context context = request.getContext();
-    WkfModel wkfModel = this.getWkfModel(context);
+    try {
+      Context context = request.getContext();
+      WkfModel wkfModel = this.getWkfModel(context);
 
-    String taskByProcessType = "";
-    if (context.get("typeSelect") != null) {
-      taskByProcessType = context.get("typeSelect").toString();
+      String taskByProcessType = "";
+      if (context.get("typeSelect") != null) {
+        taskByProcessType = context.get("typeSelect").toString();
+      }
+
+      List<Map<String, Object>> dataMapList =
+          Beans.get(BpmManagerDashboardService.class)
+              .getChartData(wkfModel, type, taskByProcessType);
+
+      response.setData(dataMapList);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-
-    List<Map<String, Object>> dataMapList =
-        Beans.get(BpmManagerDashboardService.class).getChartData(wkfModel, type, taskByProcessType);
-
-    response.setData(dataMapList);
   }
 
   @SuppressWarnings("rawtypes")
@@ -94,45 +104,61 @@ public class BpmManagerDashboardController {
   }
 
   public void getAvgTimePerUser(ActionRequest request, ActionResponse response) {
-    Context context = request.getContext();
-    WkfModel wkfModel = this.getWkfModel(context);
+    try {
+      Context context = request.getContext();
+      WkfModel wkfModel = this.getWkfModel(context);
 
-    String unit = (String) context.get("unit");
+      String unit = (String) context.get("unit");
 
-    List<Map<String, Object>> dataMapList =
-        Beans.get(BpmManagerDashboardUserService.class).getAvgTimePerUserData(wkfModel, unit);
+      List<Map<String, Object>> dataMapList =
+          Beans.get(BpmManagerDashboardUserService.class).getAvgTimePerUserData(wkfModel, unit);
 
-    response.setData(dataMapList);
+      response.setData(dataMapList);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void getTaskDoneTodayPerUser(ActionRequest request, ActionResponse response) {
-    Context context = request.getContext();
-    WkfModel wkfModel = this.getWkfModel(context);
+    try {
+      Context context = request.getContext();
+      WkfModel wkfModel = this.getWkfModel(context);
 
-    List<Map<String, Object>> dataMapList =
-        Beans.get(BpmManagerDashboardUserService.class).getTaskDoneTodayPerUser(wkfModel);
+      List<Map<String, Object>> dataMapList =
+          Beans.get(BpmManagerDashboardUserService.class).getTaskDoneTodayPerUser(wkfModel);
 
-    response.setData(dataMapList);
+      response.setData(dataMapList);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void getTaskToDoPerUser(ActionRequest request, ActionResponse response) {
-    Context context = request.getContext();
-    WkfModel wkfModel = this.getWkfModel(context);
+    try {
+      Context context = request.getContext();
+      WkfModel wkfModel = this.getWkfModel(context);
 
-    List<Map<String, Object>> dataMapList =
-        Beans.get(BpmManagerDashboardUserService.class).getTaskToDoPerUser(wkfModel);
+      List<Map<String, Object>> dataMapList =
+          Beans.get(BpmManagerDashboardUserService.class).getTaskToDoPerUser(wkfModel);
 
-    response.setData(dataMapList);
+      response.setData(dataMapList);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void getTaskCompletionByDays(ActionRequest request, ActionResponse response) {
-    LocalDate fromDate = LocalDate.parse(request.getContext().get("fromDate").toString());
-    LocalDate toDate = LocalDate.parse(request.getContext().get("toDate").toString());
+    try {
+      LocalDate fromDate = LocalDate.parse(request.getContext().get("fromDate").toString());
+      LocalDate toDate = LocalDate.parse(request.getContext().get("toDate").toString());
 
-    List<Map<String, Object>> dataMapList =
-        Beans.get(BpmManagerDashboardTaskService.class).getTaskCompletionByDays(fromDate, toDate);
+      List<Map<String, Object>> dataMapList =
+          Beans.get(BpmManagerDashboardTaskService.class).getTaskCompletionByDays(fromDate, toDate);
 
-    response.setData(dataMapList);
+      response.setData(dataMapList);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void showAssignedToMeTask(ActionRequest request, ActionResponse response) {
@@ -145,63 +171,74 @@ public class BpmManagerDashboardController {
 
   @SuppressWarnings({"unchecked"})
   private void showAssignedRecords(ActionRequest request, ActionResponse response, String type) {
-    Map<String, Object> context = request.getRawContext();
-    WkfModel wkfModel = this.getWkfModel(context);
+    try {
+      Map<String, Object> context = request.getRawContext();
+      WkfModel wkfModel = this.getWkfModel(context);
 
-    String status = "";
-    if (context.get("status") != null) {
-      status = context.get("status").toString();
+      String status = "";
+      if (context.get("status") != null) {
+        status = context.get("status").toString();
+      }
+      status = StringUtils.substringBefore(status, "(").trim();
+
+      Map<String, Object> dataMap =
+          Beans.get(BpmManagerDashboardUserService.class).getStatusRecords(wkfModel, status, type);
+
+      if (dataMap.isEmpty()) {
+        return;
+      }
+
+      String modelName = dataMap.get("modelName").toString();
+      boolean isMetaModel = (boolean) dataMap.get("isMetaModel");
+      List<Long> recordIds = (List<Long>) dataMap.get("recordIds");
+
+      ActionViewBuilder actionViewBuilder =
+          Beans.get(WkfDashboardCommonService.class)
+              .computeActionView(status, modelName, isMetaModel);
+
+      response.setView(
+          actionViewBuilder.context("ids", !recordIds.isEmpty() ? recordIds : 0).map());
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-    status = StringUtils.substringBefore(status, "(").trim();
-
-    Map<String, Object> dataMap =
-        Beans.get(BpmManagerDashboardUserService.class).getStatusRecords(wkfModel, status, type);
-
-    if (dataMap.isEmpty()) {
-      return;
-    }
-
-    String modelName = dataMap.get("modelName").toString();
-    boolean isMetaModel = (boolean) dataMap.get("isMetaModel");
-    List<Long> recordIds = (List<Long>) dataMap.get("recordIds");
-
-    ActionViewBuilder actionViewBuilder =
-        Beans.get(WkfDashboardCommonService.class)
-            .computeActionView(status, modelName, isMetaModel);
-
-    response.setView(actionViewBuilder.context("ids", !recordIds.isEmpty() ? recordIds : 0).map());
   }
 
   @SuppressWarnings({"unchecked"})
   public void showTaskByProcess(ActionRequest request, ActionResponse response) {
-    Map<String, Object> context = request.getRawContext();
-    WkfModel wkfModel = this.getWkfModel(context);
+    try {
+      Map<String, Object> context = request.getRawContext();
+      WkfModel wkfModel = this.getWkfModel(context);
 
-    String process = "";
-    if (context.get("process") != null) {
-      process = context.get("process").toString();
+      String process = "";
+      if (context.get("process") != null) {
+        process = context.get("process").toString();
+      }
+      String model = "";
+      if (context.get("model") != null) {
+        model = context.get("model").toString();
+      }
+      String typeSelect = context.get("typeSelect").toString();
+
+      Map<String, Object> dataMap =
+          Beans.get(BpmManagerDashboardTaskService.class)
+              .getTaskByProcessRecords(wkfModel, process, model, typeSelect);
+
+      if (dataMap.isEmpty()) {
+        return;
+      }
+
+      String modelName = dataMap.get("modelName").toString();
+      boolean isMetaModel = (boolean) dataMap.get("isMetaModel");
+      List<Long> recordIds = (List<Long>) dataMap.get("recordIds");
+
+      ActionViewBuilder actionViewBuilder =
+          Beans.get(WkfDashboardCommonService.class)
+              .computeActionView(null, modelName, isMetaModel);
+
+      response.setView(
+          actionViewBuilder.context("ids", !recordIds.isEmpty() ? recordIds : 0).map());
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
     }
-    String model = "";
-    if (context.get("model") != null) {
-      model = context.get("model").toString();
-    }
-    String typeSelect = context.get("typeSelect").toString();
-
-    Map<String, Object> dataMap =
-        Beans.get(BpmManagerDashboardTaskService.class)
-            .getTaskByProcessRecords(wkfModel, process, model, typeSelect);
-
-    if (dataMap.isEmpty()) {
-      return;
-    }
-
-    String modelName = dataMap.get("modelName").toString();
-    boolean isMetaModel = (boolean) dataMap.get("isMetaModel");
-    List<Long> recordIds = (List<Long>) dataMap.get("recordIds");
-
-    ActionViewBuilder actionViewBuilder =
-        Beans.get(WkfDashboardCommonService.class).computeActionView(null, modelName, isMetaModel);
-
-    response.setView(actionViewBuilder.context("ids", !recordIds.isEmpty() ? recordIds : 0).map());
   }
 }

@@ -72,31 +72,25 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
 
   @Override
   @Transactional
-  public void importApps(AppLoader appLoader) {
+  public void importApps(AppLoader appLoader) throws FileNotFoundException, IOException {
 
     if (appLoader.getImportMetaFile() == null) {
       return;
     }
 
-    try {
+    File dataDir = Files.createTempDir();
+    extractImportZip(appLoader, dataDir);
 
-      File dataDir = Files.createTempDir();
-      extractImportZip(appLoader, dataDir);
+    File logFile = importApp(appLoader, dataDir);
 
-      File logFile = importApp(appLoader, dataDir);
-
-      appLoader = appLoaderRepository.find(appLoader.getId());
-      if (appLoader.getImportLog() == null) {
-        appLoader.setImportLog(metaFiles.upload(logFile));
-      }
-      appLoader.setImportedOn(LocalDateTime.now());
-      appLoaderRepository.save(appLoader);
-
-      FileUtils.deleteDirectory(dataDir);
-
-    } catch (IOException e) {
-      e.printStackTrace();
+    appLoader = appLoaderRepository.find(appLoader.getId());
+    if (appLoader.getImportLog() == null) {
+      appLoader.setImportLog(metaFiles.upload(logFile));
     }
+    appLoader.setImportedOn(LocalDateTime.now());
+    appLoaderRepository.save(appLoader);
+
+    FileUtils.deleteDirectory(dataDir);
   }
 
   protected void extractImportZip(AppLoader appLoader, File dataDir)

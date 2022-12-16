@@ -26,6 +26,7 @@ import com.axelor.studio.db.WsKeyValue;
 import com.axelor.studio.db.WsRequest;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.text.Templates;
+import com.axelor.utils.ExceptionTool;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
@@ -148,7 +149,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         try {
           ctx.put("_" + count, (new ObjectMapper()).readValue(responseBytes, Map.class));
         } catch (Exception e) {
-          e.printStackTrace();
+          ExceptionTool.trace(e);
           ctx.put("_" + count, responseBytes);
         }
       } else {
@@ -246,7 +247,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
         url = uriBuilder.toString();
       } catch (URISyntaxException e) {
-        e.printStackTrace();
+        ExceptionTool.trace(e);
       }
     } else {
       entity = createEntity(wsRequest, templates, ctx);

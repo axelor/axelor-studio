@@ -28,6 +28,7 @@ import com.axelor.studio.baml.xml.ProcessActionRootNode;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.BamlModel;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.StringTool;
 import com.axelor.utils.xml.XPathParse;
 import com.google.common.base.Strings;
@@ -216,7 +217,7 @@ public class BamlServiceImpl implements BamlService {
       return xml;
 
     } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     return xml;

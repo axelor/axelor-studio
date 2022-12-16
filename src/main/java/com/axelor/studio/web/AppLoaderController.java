@@ -23,6 +23,7 @@ import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportService;
+import com.axelor.utils.ExceptionTool;
 import com.google.inject.Inject;
 
 public class AppLoaderController {
@@ -34,18 +35,24 @@ public class AppLoaderController {
   @Inject protected AppLoaderRepository appLoaderRepository;
 
   public void exportApps(ActionRequest request, ActionResponse response) {
-
-    AppLoader appLoader = request.getContext().asType(AppLoader.class);
-    appLoader = appLoaderRepository.find(appLoader.getId());
-    appLoaderExportService.exportApps(appLoader);
-    response.setReload(true);
+    try {
+      AppLoader appLoader = request.getContext().asType(AppLoader.class);
+      appLoader = appLoaderRepository.find(appLoader.getId());
+      appLoaderExportService.exportApps(appLoader);
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void importApps(ActionRequest request, ActionResponse response) {
-
-    AppLoader appLoader = request.getContext().asType(AppLoader.class);
-    appLoader = appLoaderRepository.find(appLoader.getId());
-    appLoaderImportService.importApps(appLoader);
-    response.setReload(true);
+    try {
+      AppLoader appLoader = request.getContext().asType(AppLoader.class);
+      appLoader = appLoaderRepository.find(appLoader.getId());
+      appLoaderImportService.importApps(appLoader);
+      response.setReload(true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 }

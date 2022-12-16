@@ -46,6 +46,7 @@ import com.axelor.studio.db.repo.SelectionBuilderRepository;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.db.repo.WsRequestRepository;
+import com.axelor.utils.ExceptionTool;
 import com.google.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -192,7 +193,7 @@ public class ImportService {
         return metaFiles.upload(inImg, name);
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     return null;
@@ -290,7 +291,7 @@ public class ImportService {
 
       return zipFile;
     } catch (IOException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     return null;

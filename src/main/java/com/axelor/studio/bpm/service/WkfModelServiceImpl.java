@@ -36,6 +36,7 @@ import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.translation.ITranslation;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.service.TranslationService;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
@@ -158,7 +159,7 @@ public class WkfModelServiceImpl implements WkfModelService {
       InputStream inputStream = this.getClass().getResourceAsStream(configFileName);
       IOUtil.copyCompletely(inputStream, fout);
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     if (configFile == null) {
@@ -184,7 +185,7 @@ public class WkfModelServiceImpl implements WkfModelService {
         importer.run();
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
   }
 

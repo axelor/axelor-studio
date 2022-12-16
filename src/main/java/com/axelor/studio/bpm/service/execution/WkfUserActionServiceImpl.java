@@ -32,6 +32,7 @@ import com.axelor.studio.db.repo.WkfProcessConfigRepository;
 import com.axelor.team.db.Team;
 import com.axelor.team.db.TeamTask;
 import com.axelor.team.db.repo.TeamTaskRepository;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -100,7 +101,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       teamTaskRepository.save(teamTask);
 
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
   }
 
@@ -121,6 +122,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     return title;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
       throws ClassNotFoundException {

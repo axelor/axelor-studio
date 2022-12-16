@@ -24,29 +24,36 @@ import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.AppBuilder;
 import com.axelor.studio.db.repo.AppBuilderRepository;
+import com.axelor.utils.ExceptionTool;
 import java.io.IOException;
 
 public class AppBuilderController {
 
   public void installApp(ActionRequest request, ActionResponse response) throws IOException {
+    try {
+      AppBuilder appBuilder = request.getContext().asType(AppBuilder.class);
+      appBuilder = Beans.get(AppBuilderRepository.class).find(appBuilder.getId());
 
-    AppBuilder appBuilder = request.getContext().asType(AppBuilder.class);
-    appBuilder = Beans.get(AppBuilderRepository.class).find(appBuilder.getId());
+      App app = appBuilder.getGeneratedApp();
+      Beans.get(AppService.class).installApp(app, null);
 
-    App app = appBuilder.getGeneratedApp();
-    Beans.get(AppService.class).installApp(app, null);
-
-    response.setSignal("refresh-app", true);
+      response.setSignal("refresh-app", true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void uninstallApp(ActionRequest request, ActionResponse response) {
+    try {
+      AppBuilder appBuilder = request.getContext().asType(AppBuilder.class);
+      appBuilder = Beans.get(AppBuilderRepository.class).find(appBuilder.getId());
 
-    AppBuilder appBuilder = request.getContext().asType(AppBuilder.class);
-    appBuilder = Beans.get(AppBuilderRepository.class).find(appBuilder.getId());
+      App app = appBuilder.getGeneratedApp();
+      Beans.get(AppService.class).unInstallApp(app);
 
-    App app = appBuilder.getGeneratedApp();
-    Beans.get(AppService.class).unInstallApp(app);
-
-    response.setSignal("refresh-app", true);
+      response.setSignal("refresh-app", true);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 }

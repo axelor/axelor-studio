@@ -64,19 +64,14 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
   }
 
   @Override
-  public void importAccessConfig(MetaFile metaFile) {
+  public void importAccessConfig(MetaFile metaFile) throws InvalidFormatException, IOException {
 
     if (metaFile == null) {
       return;
     }
-    try {
-      OPCPackage pkg = OPCPackage.open(MetaFiles.getPath(metaFile).toString());
-      XSSFWorkbook workBook = new XSSFWorkbook(pkg);
-      processWorkbook(workBook);
-    } catch (InvalidFormatException | IOException e) {
-      e.printStackTrace();
-      throw new IllegalStateException(e.getMessage());
-    }
+    OPCPackage pkg = OPCPackage.open(MetaFiles.getPath(metaFile).toString());
+    XSSFWorkbook workBook = new XSSFWorkbook(pkg);
+    processWorkbook(workBook);
   }
 
   private void processWorkbook(XSSFWorkbook workBook) {

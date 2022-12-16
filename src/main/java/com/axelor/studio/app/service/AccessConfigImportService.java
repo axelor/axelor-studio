@@ -18,8 +18,10 @@
 package com.axelor.studio.app.service;
 
 import com.axelor.meta.db.MetaFile;
+import java.io.IOException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 public interface AccessConfigImportService {
 
-  public void importAccessConfig(MetaFile metaFile);
+  public void importAccessConfig(MetaFile metaFile) throws InvalidFormatException, IOException;
 }

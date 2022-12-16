@@ -21,6 +21,7 @@ import com.axelor.inject.Beans;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.service.ChartRecordViewService;
+import com.axelor.utils.ExceptionTool;
 import com.google.inject.Singleton;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class ChartBuilderController {
           Beans.get(ChartRecordViewService.class).getActionView(chartName, context);
       response.setView(actionView);
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 }

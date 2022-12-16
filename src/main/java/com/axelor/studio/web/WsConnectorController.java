@@ -28,6 +28,7 @@ import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.service.ws.WsConnectorService;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.StringTool;
 import com.google.inject.Inject;
 import java.util.HashMap;
@@ -37,25 +38,25 @@ public class WsConnectorController {
 
   @Inject protected WsConnectorService wsConnectorService;
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public void callConnector(ActionRequest request, ActionResponse response) {
-
-    Context context = request.getContext();
-
-    Object recordId = context.get("_recordId");
-    Object recordModel = context.get("_recordModel");
-    if (recordId == null || recordModel == null) {
-      return;
-    }
-
-    Long connectorId = Long.parseLong(((Map) context.get("connector")).get("id").toString());
-    WsConnector wsConnector = Beans.get(WsConnectorRepository.class).find(connectorId);
-
-    Long authenticatorId =
-        Long.parseLong(((Map) context.get("authenticator")).get("id").toString());
-    WsAuthenticator authenticator =
-        Beans.get(WsAuthenticatorRepository.class).find(authenticatorId);
-
     try {
+      Context context = request.getContext();
+
+      Object recordId = context.get("_recordId");
+      Object recordModel = context.get("_recordModel");
+      if (recordId == null || recordModel == null) {
+        return;
+      }
+
+      Long connectorId = Long.parseLong(((Map) context.get("connector")).get("id").toString());
+      WsConnector wsConnector = Beans.get(WsConnectorRepository.class).find(connectorId);
+
+      Long authenticatorId =
+          Long.parseLong(((Map) context.get("authenticator")).get("id").toString());
+      WsAuthenticator authenticator =
+          Beans.get(WsAuthenticatorRepository.class).find(authenticatorId);
+
       Map<String, Object> ctx = new HashMap<>();
       Class<? extends Model> recordClass =
           (Class<? extends Model>) Class.forName(recordModel.toString());
@@ -71,7 +72,7 @@ public class WsConnectorController {
       }
       response.setValue("$result", result.toString());
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(response, e);
     }
   }
 }

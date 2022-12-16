@@ -29,6 +29,7 @@ import com.axelor.meta.db.repo.MetaMenuRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -244,7 +245,7 @@ public class WkfMenuService {
         try {
           property = Mapper.of(Class.forName(model)).getProperty(path.split("\\.")[0]);
         } catch (ClassNotFoundException e) {
-          e.printStackTrace();
+          ExceptionTool.trace(e);
         }
       }
 

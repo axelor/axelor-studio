@@ -29,6 +29,7 @@ import com.axelor.meta.db.repo.MetaFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.db.Filter;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
@@ -147,7 +148,7 @@ public class FilterSqlService {
                 .getProperty(metaField.getName())
                 .getSelection();
       } catch (ClassNotFoundException e) {
-        e.printStackTrace();
+        ExceptionTool.trace(e);
       }
     } else {
       MetaJsonField metaJsonField = (MetaJsonField) target;
@@ -237,7 +238,7 @@ public class FilterSqlService {
         };
       }
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     for (MetaField field : targetModel.getMetaFields()) {

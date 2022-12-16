@@ -19,6 +19,7 @@ package com.axelor.studio.dmn.service;
 
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.db.WkfDmnModel;
+import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -55,7 +56,7 @@ public class DmnExportServiceImpl implements DmnExportService {
     try {
       exportFile = File.createTempFile(wkfDmnModel.getName(), ".xlsx");
     } catch (IOException e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
 
     DmnModelInstance dmnModelInstance =
@@ -70,7 +71,7 @@ public class DmnExportServiceImpl implements DmnExportService {
       workbook.write(fout);
       fout.close();
     } catch (Exception e) {
-      e.printStackTrace();
+      ExceptionTool.trace(e);
     }
     return exportFile;
   }
