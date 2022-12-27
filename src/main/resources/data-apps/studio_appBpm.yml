@@ -1,0 +1,12 @@
+---
+importId: 51
+name: BPM
+code: bpm
+installOrder: 35
+description: |
+   Business Process Modeling
+modules: 
+   axelor-studio
+dependsOn: 
+   - studio
+sequence: 105

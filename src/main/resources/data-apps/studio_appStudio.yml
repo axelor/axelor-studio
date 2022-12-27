@@ -1,0 +1,11 @@
+---
+importId: 50
+name: Studio
+code: studio
+installOrder: 28
+description: |
+    App Builder Management
+image: app-bpm.png
+modules: 
+    axelor-studio
+sequence: 29

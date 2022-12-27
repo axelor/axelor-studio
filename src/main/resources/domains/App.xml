@@ -24,8 +24,6 @@
       title="Access config" mappedBy="app"/>
     <boolean name="isCustom" title="Custom"/>
 
-    <one-to-one ref="com.axelor.studio.db.AppBpm" name="appBpm" mappedBy="app"/>
-
     <one-to-one ref="com.axelor.studio.db.AppStudio" name="appStudio" mappedBy="app"/>
 
     <boolean name="isInAppView" title="Add the application to the App Management"/>

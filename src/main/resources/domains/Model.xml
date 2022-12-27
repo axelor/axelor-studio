@@ -6,6 +6,10 @@
   <module name="core" package="com.axelor.db"/>
 
   <entity name="Model">
+    <string name="importId" copy="false" equalsInclude="false" readonly="true"
+      title="Import ID" unique="true"/>
+    <string name="importOrigin" copy="false" equalsInclude="false" readonly="true"
+      title="Imported from"/>
     <string name="processInstanceId" copy="false"/>
   </entity>
 
