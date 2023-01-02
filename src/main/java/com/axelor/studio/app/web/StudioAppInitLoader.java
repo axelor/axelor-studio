@@ -59,6 +59,7 @@ public class StudioAppInitLoader implements MethodInterceptor {
 
   private static final String DATA_DIR_NAME = "apps";
 
+  private static final String APP_CODE = "code";
   private static final String APP_IMAGE = "image";
   private static final String APP_MODULES = "modules";
   private static final String APP_DEPENDS_ON = "dependsOn";
@@ -120,12 +121,20 @@ public class StudioAppInitLoader implements MethodInterceptor {
 
   private void importApp(File dataFile, Map<App, Object> appDependsOnMap) throws IOException {
 
-    log.debug("Running import app with data path: {}", dataFile.getAbsolutePath());
+    log.debug("Running import/update app with data path: {}", dataFile.getAbsolutePath());
 
     Map<String, Object> appDataMap = YamlUtils.loadYaml(dataFile);
+    if (!appDataMap.containsKey(APP_CODE)
+        || (appDataMap.containsKey(APP_CODE) && appDataMap.get(APP_CODE) == null)) {
+      return;
+    }
 
     Mapper mapper = Mapper.of(App.class);
-    App app = new App();
+    String appCode = appDataMap.get(APP_CODE).toString();
+    App app = appRepo.findByCode(appCode);
+    if (app == null) {
+      app = new App();
+    }
 
     for (Entry<String, Object> entry : appDataMap.entrySet()) {
       Property property = mapper.getProperty(entry.getKey());
