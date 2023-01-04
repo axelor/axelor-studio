@@ -254,7 +254,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
                 + "EXTRACT(EPOCH FROM task.end_time_ - task.start_time_) / "
                 + unit
                 + " END AS time "
-                + "FROM bpm_wkf_task_config config "
+                + "FROM studio_wkf_task_config config "
                 + "LEFT JOIN act_hi_taskinst task ON task.proc_def_id_ = config.process_id "
                 + "WHERE "
                 + "task.proc_def_id_ = :processInstanceId AND config.description = :desc "
@@ -363,7 +363,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
 
         String qry =
             "SELECT COUNT(task.id_) AS total "
-                + "FROM bpm_wkf_task_config config "
+                + "FROM studio_wkf_task_config config "
                 + "LEFT JOIN act_hi_taskinst task ON task.proc_def_id_ = config.process_id "
                 + "WHERE "
                 + "task.proc_def_id_ = :processInstanceId AND config.description = :desc "
