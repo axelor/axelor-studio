@@ -45,6 +45,7 @@ public class AppBuilderService {
     }
 
     app.setIsCustom(true);
+    app.setTypeSelect(AppRepository.TYPE_CUSTOM);
     app.setIsInAppView(appBuilder.getIsInAppView());
     app.setImage(appBuilder.getImage());
     app.setDescription(appBuilder.getDescription());
