@@ -71,12 +71,13 @@ public class AppServiceImpl implements AppService {
 
   private final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
 
-  private static final String DIR_DEMO = "demo";
+  private static final String DIR_APPS = "apps";
 
-  private static final String DIR_INIT =
-      "apps" + File.separator + "init-data" + File.separator + "app";
+  private static final String DIR_APPS_DEMO = "apps" + File.separator + "demo-data";
 
-  private static final String DIR_ROLES = "roles";
+  private static final String DIR_APPS_INIT = "apps" + File.separator + "init-data";
+
+  private static final String DIR_APPS_ROLES = "apps" + File.separator + "roles";
 
   private static final String CONFIG_PATTERN = "-config.xml";
 
@@ -87,8 +88,6 @@ public class AppServiceImpl implements AppService {
   private static Pattern patCsv = Pattern.compile("^\\<\\s*csv-inputs");
 
   private static Pattern patXml = Pattern.compile("^\\<\\s*xml-inputs");
-
-  public static final String DIR_APP_INIT = "apps";
 
   private static final String APP_CODE = "code";
   private static final String APP_IMAGE = "image";
@@ -114,7 +113,7 @@ public class AppServiceImpl implements AppService {
       throw new IllegalStateException(I18n.get(StudioExceptionMessage.NO_LANGUAGE_SELECTED));
     }
 
-    importData(app, DIR_DEMO, true);
+    importData(app, DIR_APPS_DEMO, true);
 
     app = appRepo.find(app.getId());
 
@@ -202,7 +201,7 @@ public class AppServiceImpl implements AppService {
       return app;
     }
 
-    importData(app, DIR_INIT, true);
+    importData(app, DIR_APPS_INIT, true);
 
     app = appRepo.find(app.getId());
 
@@ -444,13 +443,13 @@ public class AppServiceImpl implements AppService {
 
     for (MetaModule module : modules) {
 
-      File tmp = extract(module.getName(), DIR_APP_INIT, null, null);
+      File tmp = extract(module.getName(), DIR_APPS, null, null);
       if (tmp == null) {
         continue;
       }
 
       try {
-        File dataDir = new File(tmp, DIR_APP_INIT);
+        File dataDir = new File(tmp, DIR_APPS);
 
         File[] dataFiles =
             dataDir.listFiles((dir, name) -> name.endsWith(".yml") || name.endsWith(".yaml"));
@@ -600,7 +599,7 @@ public class AppServiceImpl implements AppService {
 
     importParentRoles(app);
 
-    importData(app, DIR_ROLES, false);
+    importData(app, DIR_APPS_ROLES, false);
 
     app = appRepo.find(app.getId());
 
