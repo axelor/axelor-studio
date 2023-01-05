@@ -80,8 +80,6 @@
     <toolbar>
       <button name="bulkInstallBtn" title="Bulk install"
         onClick="action-app-open-bulk-install-selector"/>
-      <button name="refreshAppBtn" title="Refresh Apps"
-        onClick="action-app-method-refresh-app"/>
       <button name="importRolesBtn" title="Import roles"
         onClick="action-app-method-import-all-roles"/>
     </toolbar>
@@ -129,10 +127,6 @@
 
   <action-method name="action-app-method-bulk-install">
     <call class="com.axelor.studio.app.web.AppController" method="bulkInstall"/>
-  </action-method>
-
-  <action-method name="action-app-method-refresh-app">
-    <call class="com.axelor.studio.app.web.AppController" method="refreshApp"/>
   </action-method>
 
   <action-method name="action-app-method-import-roles">

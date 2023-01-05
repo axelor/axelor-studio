@@ -38,7 +38,7 @@ public interface AppService {
 
   public App unInstallApp(App app);
 
-  public void refreshApp() throws IOException, ClassNotFoundException;
+  public void initApps() throws IOException;
 
   public void bulkInstall(Collection<App> apps, Boolean importDeomo, String language)
       throws IOException;

@@ -155,16 +155,6 @@ public class AppController {
     }
   }
 
-  public void refreshApp(ActionRequest request, ActionResponse response) {
-    try {
-      Beans.get(AppService.class).refreshApp();
-      response.setNotify(I18n.get(StudioExceptionMessage.REFRESH_APP_SUCCESS));
-      response.setReload(true);
-    } catch (Exception e) {
-      ExceptionTool.trace(response, I18n.get(StudioExceptionMessage.REFRESH_APP_ERROR));
-    }
-  }
-
   public void generateAccessTemplate(ActionRequest request, ActionResponse response) {
     try {
       MetaFile accesssFile = Beans.get(AccessTemplateService.class).generateTemplate();

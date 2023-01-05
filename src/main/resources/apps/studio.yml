@@ -5,7 +5,7 @@ code: studio
 installOrder: 28
 description: |
     App Builder Management
-image: app-bpm.png
+image: app-studio.png
 modules: 
     axelor-studio
 sequence: 29

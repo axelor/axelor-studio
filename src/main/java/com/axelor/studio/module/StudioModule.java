@@ -18,17 +18,15 @@
 package com.axelor.studio.module;
 
 import com.axelor.app.AxelorModule;
-import com.axelor.db.ParallelTransactionExecutor;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
-import com.axelor.meta.loader.I18nLoader;
+import com.axelor.studio.app.listener.AppServerStartListener;
 import com.axelor.studio.app.service.AccessConfigImportService;
 import com.axelor.studio.app.service.AccessConfigImportServiceImpl;
 import com.axelor.studio.app.service.AccessTemplateService;
 import com.axelor.studio.app.service.AccessTemplateServiceImpl;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.app.service.AppServiceImpl;
-import com.axelor.studio.app.web.StudioAppInitLoader;
 import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.baml.service.BamlServiceImpl;
 import com.axelor.studio.bpm.listener.ServerStartListener;
@@ -105,13 +103,8 @@ import com.axelor.studio.service.ws.WsAuthenticatorService;
 import com.axelor.studio.service.ws.WsAuthenticatorServiceImpl;
 import com.axelor.studio.service.ws.WsConnectoServiceImpl;
 import com.axelor.studio.service.ws.WsConnectorService;
-import com.google.inject.matcher.AbstractMatcher;
-import com.google.inject.matcher.Matchers;
-import java.lang.reflect.Method;
 
 public class StudioModule extends AxelorModule {
-
-  private static final String I18N_LOADER_METHOD_NAME = "feedTransactionExecutor";
 
   @Override
   protected void configure() {
@@ -137,21 +130,7 @@ public class StudioModule extends AxelorModule {
     bind(AppService.class).to(AppServiceImpl.class);
     bind(AccessTemplateService.class).to(AccessTemplateServiceImpl.class);
     bind(AccessConfigImportService.class).to(AccessConfigImportServiceImpl.class);
-    bindInterceptor(
-        Matchers.subclassesOf(I18nLoader.class),
-        new AbstractMatcher<Method>() {
-          @Override
-          public boolean matches(Method t) {
-            for (Class<?> c : t.getParameterTypes()) {
-              if (ParallelTransactionExecutor.class.isAssignableFrom(c)
-                  && t.getName().equals(I18N_LOADER_METHOD_NAME)) {
-                return true;
-              }
-            }
-            return false;
-          }
-        },
-        new StudioAppInitLoader());
+    bind(AppServerStartListener.class);
 
     // BPM
     bind(WkfRequestListener.class);

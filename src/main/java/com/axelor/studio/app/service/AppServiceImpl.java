@@ -20,21 +20,20 @@ package com.axelor.studio.app.service;
 import com.axelor.app.AppSettings;
 import com.axelor.common.FileUtils;
 import com.axelor.common.Inflector;
+import com.axelor.common.YamlUtils;
 import com.axelor.data.Importer;
-import com.axelor.data.csv.CSVBind;
-import com.axelor.data.csv.CSVConfig;
 import com.axelor.data.csv.CSVImporter;
-import com.axelor.data.csv.CSVInput;
 import com.axelor.data.xml.XMLImporter;
-import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
-import com.axelor.db.mapper.PropertyType;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
+import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaScanner;
-import com.axelor.meta.db.MetaModel;
-import com.axelor.meta.db.repo.MetaModelRepository;
+import com.axelor.meta.db.MetaFile;
+import com.axelor.meta.db.MetaModule;
+import com.axelor.meta.db.repo.MetaModuleRepository;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
@@ -50,15 +49,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.persistence.Query;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +73,8 @@ public class AppServiceImpl implements AppService {
 
   private static final String DIR_DEMO = "demo";
 
-  private static final String DIR_INIT = "data-init" + File.separator + "app";
+  private static final String DIR_INIT =
+      "apps" + File.separator + "init-data" + File.separator + "app";
 
   private static final String DIR_ROLES = "roles";
 
@@ -83,11 +88,16 @@ public class AppServiceImpl implements AppService {
 
   private static Pattern patXml = Pattern.compile("^\\<\\s*xml-inputs");
 
-  private Inflector inflector = Inflector.getInstance();
+  public static final String DIR_APP_INIT = "apps";
+
+  private static final String APP_CODE = "code";
+  private static final String APP_IMAGE = "image";
+  private static final String APP_MODULES = "modules";
+  private static final String APP_DEPENDS_ON = "dependsOn";
 
   @Inject private AppRepository appRepo;
 
-  @Inject private MetaModelRepository metaModelRepo;
+  @Inject private MetaFiles metaFiles;
 
   @Override
   public App importDataDemo(App app) throws IOException {
@@ -231,12 +241,22 @@ public class AppServiceImpl implements AppService {
   private File extract(String module, String dirName, String lang, String code) throws IOException {
     String dirNamePattern = dirName.replaceAll("/|\\\\", "(/|\\\\\\\\)");
     List<URL> files = new ArrayList<>();
-    files.addAll(MetaScanner.findAll(module, dirNamePattern, code + "(-+.*)?" + CONFIG_PATTERN));
+
+    if (code == null) {
+      files.addAll(MetaScanner.findAll(module, dirNamePattern, "(.+?)\\.yml|yaml"));
+      if (files.size() > 0) {
+        files.addAll(MetaScanner.findAll(module, dirNamePattern, "(img)"));
+      }
+    } else {
+      files.addAll(MetaScanner.findAll(module, dirNamePattern, code + "(-+.*)?" + CONFIG_PATTERN));
+    }
     if (files.isEmpty()) {
       return null;
     }
-    if (lang.isEmpty()) {
-      files.addAll(MetaScanner.findAll(module, dirNamePattern, code + "*"));
+    if (StringUtils.isEmpty(lang)) {
+      if (code != null) {
+        files.addAll(MetaScanner.findAll(module, dirNamePattern, code + "*"));
+      }
     } else {
       String dirPath = dirName + "/";
       files.addAll(fetchUrls(module, dirPath + IMG_DIR));
@@ -250,7 +270,7 @@ public class AppServiceImpl implements AppService {
     for (URL file : files) {
       String name = file.toString();
       name = name.substring(name.lastIndexOf(dir));
-      if (!lang.isEmpty()) {
+      if (!StringUtils.isEmpty(lang)) {
         name = name.replace(dir + "/" + lang, dir);
       }
       if (File.separatorChar == '\\') {
@@ -419,95 +439,126 @@ public class AppServiceImpl implements AppService {
   }
 
   @Override
-  public void refreshApp() throws IOException {
+  public void initApps() throws IOException {
+    final List<MetaModule> modules = Beans.get(MetaModuleRepository.class).all().fetch();
 
-    File dataDir = Files.createTempDirectory(null).toFile();
-    File imgDir = new File(dataDir, "img");
-    imgDir.mkdir();
+    for (MetaModule module : modules) {
 
-    CSVConfig csvConfig = new CSVConfig();
-    csvConfig.setInputs(new ArrayList<>());
-
-    List<MetaModel> metaModels =
-        metaModelRepo
-            .all()
-            .filter(
-                "self.name != 'App' and self.name like 'App%' and self.packageName =  ?1",
-                App.class.getPackage().getName())
-            .fetch();
-
-    final List<String> appFieldTargetList =
-        Stream.of(JPA.fields(App.class))
-            .filter(p -> p.getType() == PropertyType.ONE_TO_ONE)
-            .filter(p -> p.getName().startsWith("app"))
-            .map(Property::getTarget)
-            .map(Class::getName)
-            .collect(Collectors.toList());
-
-    log.debug("Total app models: {}", metaModels.size());
-    for (MetaModel metaModel : metaModels) {
-      if (!appFieldTargetList.contains(metaModel.getFullName())) {
-        log.debug("Not a App class : {}", metaModel.getName());
+      File tmp = extract(module.getName(), DIR_APP_INIT, null, null);
+      if (tmp == null) {
         continue;
       }
-      Class<?> klass;
+
       try {
-        klass = Class.forName(metaModel.getFullName());
-      } catch (ClassNotFoundException e) {
-        continue;
+        File dataDir = new File(tmp, DIR_APP_INIT);
+
+        File[] dataFiles =
+            dataDir.listFiles((dir, name) -> name.endsWith(".yml") || name.endsWith(".yaml"));
+
+        if (dataFiles.length == 0) {
+          continue;
+        }
+
+        Map<App, Object> appDependsOnMap = new HashMap<>();
+
+        for (File dataFile : dataFiles) {
+          importApp(dataFile, appDependsOnMap);
+        }
+
+        setAppDependsOn(appDependsOnMap);
+
+      } catch (Exception e) {
+        ExceptionTool.trace(e);
+      } finally {
+        clean(tmp);
       }
-      Object obj = null;
-      Query query = JPA.em().createQuery("SELECT id FROM " + metaModel.getName());
-      try {
-        obj = query.setMaxResults(1).getSingleResult();
-      } catch (Exception ex) {
-      }
-      if (obj != null) {
-        continue;
-      }
-      log.debug("App without app record: {}", metaModel.getName());
-      String csvName = "studio_" + inflector.camelize(klass.getSimpleName(), true) + ".csv";
-      String pngName = inflector.dasherize(klass.getSimpleName()) + ".png";
-
-      CSVInput input = new CSVInput();
-      input.setFileName(csvName);
-      input.setTypeName(App.class.getName());
-      input.setCallable("com.axelor.csv.script.ImportApp:importApp");
-      input.setSearch("self.code =:code");
-      input.setSeparator(';');
-      csvConfig.getInputs().add(input);
-
-      CSVInput appInput = new CSVInput();
-      appInput.setFileName(csvName);
-      appInput.setTypeName(klass.getName());
-      appInput.setSearch("self.app.code =:code");
-      appInput.setSeparator(';');
-
-      CSVBind appBind = new CSVBind();
-      appBind.setColumn("code");
-      appBind.setField("app");
-      appBind.setSearch("self.code = :code");
-      appInput.getBindings().add(appBind);
-
-      csvConfig.getInputs().add(appInput);
-
-      InputStream stream = klass.getResourceAsStream("/data-init/input/" + csvName);
-      copyStream(stream, new File(dataDir, csvName));
-      stream = klass.getResourceAsStream("/data-init/input/img/" + pngName);
-      copyStream(stream, new File(imgDir, pngName));
-    }
-
-    if (!csvConfig.getInputs().isEmpty()) {
-      CSVImporter importer = new CSVImporter(csvConfig, dataDir.getAbsolutePath());
-      importer.run();
     }
   }
 
-  private void copyStream(InputStream stream, File file) throws IOException {
-    if (stream != null) {
-      try (FileOutputStream out = new FileOutputStream(file)) {
-        ByteStreams.copy(stream, out);
+  private void importApp(File dataFile, Map<App, Object> appDependsOnMap) throws IOException {
+
+    log.debug("Running import/update app with data path: {}", dataFile.getAbsolutePath());
+
+    Map<String, Object> appDataMap = YamlUtils.loadYaml(dataFile);
+    if (!appDataMap.containsKey(APP_CODE)
+        || (appDataMap.containsKey(APP_CODE) && appDataMap.get(APP_CODE) == null)) {
+      return;
+    }
+
+    Mapper mapper = Mapper.of(App.class);
+    String appCode = appDataMap.get(APP_CODE).toString();
+    App app = appRepo.findByCode(appCode);
+    if (app == null) {
+      app = new App();
+    }
+
+    for (Entry<String, Object> entry : appDataMap.entrySet()) {
+      Property property = mapper.getProperty(entry.getKey());
+      if (property == null) {
+        continue;
       }
+
+      if (property.getName().equals(APP_IMAGE) && entry.getValue() != null) {
+        String image = entry.getValue().toString();
+        importAppImage(app, mapper, property, image, dataFile);
+        continue;
+      }
+
+      if (property.getName().equals(APP_MODULES) && entry.getValue() != null) {
+        String modules = entry.getValue().toString().replace(" ", ",");
+        mapper.set(app, property.getName(), modules);
+        continue;
+      }
+
+      mapper.set(app, property.getName(), entry.getValue() != null ? entry.getValue() : null);
+    }
+
+    if (app.getLanguageSelect() == null) {
+      String language = AppSettings.get().get("application.locale");
+      app.setLanguageSelect(language);
+    }
+
+    saveApp(app);
+
+    if (appDataMap.containsKey(APP_DEPENDS_ON) && appDataMap.get(APP_DEPENDS_ON) != null) {
+      appDependsOnMap.put(app, appDataMap.get(APP_DEPENDS_ON));
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void setAppDependsOn(Map<App, Object> appDepednsOnMap) {
+
+    for (Entry<App, Object> appEntry : appDepednsOnMap.entrySet()) {
+
+      Set<App> dependsOnSet = new HashSet<>();
+      App app = appEntry.getKey();
+      List<String> dependsOnList = (List<String>) appEntry.getValue();
+
+      for (String appCode : dependsOnList) {
+        App dependsOnApp = appRepo.findByCode(appCode);
+        if (dependsOnApp == null) {
+          continue;
+        }
+        dependsOnSet.add(dependsOnApp);
+      }
+      app.setDependsOnSet(dependsOnSet);
+
+      saveApp(app);
+    }
+  }
+
+  private void importAppImage(
+      App app, Mapper mapper, Property property, String image, File dataFile) {
+
+    final Path path = Paths.get(dataFile.getParent());
+    try {
+      final File imageFile = path.resolve("img" + File.separator + image).toFile();
+      if (imageFile.exists()) {
+        final MetaFile metaFile = metaFiles.upload(imageFile);
+        mapper.set(app, property.getName(), metaFile);
+      }
+    } catch (Exception e) {
+      log.warn("Can't load image {} for app {}", image, app.getName());
     }
   }
 
