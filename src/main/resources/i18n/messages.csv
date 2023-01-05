@@ -311,11 +311,9 @@
 "Name (unique)",,,
 "Name column",,,
 "Name field",,,
-<<<<<<< HEAD
 "No application language set. Please set 'application.locale' property.",,,
 "No chart builder found with given chart name",,,
 "No configuration required",,,
-=======
 "New",,,
 "New instance",,,
 "New menu",,,

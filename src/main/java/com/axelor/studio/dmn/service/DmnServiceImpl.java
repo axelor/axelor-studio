@@ -17,6 +17,13 @@
  */
 package com.axelor.studio.dmn.service;
 
+import static com.axelor.utils.MetaJsonFieldType.JSON_MANY_TO_MANY;
+import static com.axelor.utils.MetaJsonFieldType.JSON_MANY_TO_ONE;
+import static com.axelor.utils.MetaJsonFieldType.JSON_ONE_TO_MANY;
+import static com.axelor.utils.MetaJsonFieldType.MANY_TO_MANY;
+import static com.axelor.utils.MetaJsonFieldType.MANY_TO_ONE;
+import static com.axelor.utils.MetaJsonFieldType.ONE_TO_MANY;
+
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
@@ -184,7 +191,7 @@ public class DmnServiceImpl implements DmnService {
       targetModel = jsonField.getTargetModel();
     }
 
-    boolean isSet = type.contains("many-to-many");
+    boolean isSet = type.contains(MANY_TO_MANY);
     boolean isCollection = isSet || type.contains("-to-many");
 
     return findResult(value, subField, targetModel, isCollection, isSet);
@@ -443,9 +450,9 @@ public class DmnServiceImpl implements DmnService {
     String targetField = varName + "." + field.getName();
     String type = field.getType();
     switch (type) {
-      case ("many-to-one"):
-      case ("one-to-many"):
-      case ("many-to-many"):
+      case MANY_TO_ONE:
+      case ONE_TO_MANY:
+      case MANY_TO_MANY:
         Class<?> klass = Class.forName(field.getTargetModel());
         Mapper mapper = Mapper.of(EntityHelper.getEntityClass(klass));
         addRelationalField(
@@ -457,9 +464,9 @@ public class DmnServiceImpl implements DmnService {
             klass.getSimpleName(),
             mapper.getNameField().getName());
         break;
-      case ("json-many-to-one"):
-      case ("json-many-to-many"):
-      case ("json-one-to-many"):
+      case JSON_MANY_TO_ONE:
+      case JSON_MANY_TO_MANY:
+      case JSON_ONE_TO_MANY:
         MetaJsonModel targetModel = field.getTargetJsonModel();
         String nameField = targetModel.getNameField() != null ? targetModel.getNameField() : "id";
         String targetName =

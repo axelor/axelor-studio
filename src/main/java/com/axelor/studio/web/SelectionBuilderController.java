@@ -30,6 +30,9 @@ import java.util.Map;
 
 public class SelectionBuilderController {
 
+  private static final String SELECTION_TEXT = "selectionText";
+  private static final String SELECTION_OPTION_LIST = "$selectOptionList";
+
   public void fillSelectionText(ActionRequest request, ActionResponse response) {
     try {
       MetaSelect metaSelect = (MetaSelect) request.getContext().get("metaSelect");
@@ -42,12 +45,12 @@ public class SelectionBuilderController {
         String selectionText =
             Beans.get(SelectionBuilderService.class).generateSelectionText(selectOptions);
 
-        response.setValue("selectionText", selectionText);
-        response.setValue("$selectOptionList", selectOptions);
+        response.setValue(SELECTION_TEXT, selectionText);
+        response.setValue(SELECTION_OPTION_LIST, selectOptions);
         response.setValue("name", name);
       } else {
-        response.setValue("$selectOptionList", null);
-        response.setValue("selectionText", null);
+        response.setValue(SELECTION_OPTION_LIST, null);
+        response.setValue(SELECTION_TEXT, null);
         response.setValue("name", null);
       }
     } catch (Exception e) {
@@ -59,12 +62,12 @@ public class SelectionBuilderController {
   public void generateSelectionText(ActionRequest request, ActionResponse response) {
     try {
       List<Map<String, String>> selectOptions =
-          (List<Map<String, String>>) request.getContext().get("selectOptionList");
+          (List<Map<String, String>>) request.getContext().get(SELECTION_OPTION_LIST);
 
       String selectionText =
           Beans.get(SelectionBuilderService.class).generateSelectionText(selectOptions);
 
-      response.setValue("selectionText", selectionText);
+      response.setValue(SELECTION_TEXT, selectionText);
 
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
@@ -83,7 +86,7 @@ public class SelectionBuilderController {
           Beans.get(SelectionBuilderService.class)
               .getSelectOptions(selectionBuilder.getSelectionText());
 
-      response.setValue("$selectOptionList", selectOptions);
+      response.setValue(SELECTION_OPTION_LIST, selectOptions);
 
     } catch (Exception e) {
       ExceptionTool.trace(response, e);

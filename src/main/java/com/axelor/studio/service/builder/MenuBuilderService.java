@@ -18,6 +18,7 @@
 package com.axelor.studio.service.builder;
 
 import com.axelor.common.Inflector;
+import com.axelor.db.mapper.Mapper;
 import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaStore;
@@ -40,10 +41,12 @@ import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.bind.JAXBException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class MenuBuilderService {
@@ -104,8 +107,18 @@ public class MenuBuilderService {
             actionBuilder.addViewParam(paramLine);
           }
         }
-        if (action.getContext() != null) {
-          for (ActionView.Context ctx : (List<ActionView.Context>) action.getContext()) {
+        List<ActionView.Context> contextList = null;
+        try {
+          Mapper mapper = Mapper.of(ActionView.class);
+          Field field = mapper.getBeanClass().getDeclaredField("contexts");
+          field.setAccessible(true);
+          if (field.get(action) != null) contextList = (List<ActionView.Context>) field.get(action);
+        } catch (Exception e) {
+          ExceptionTool.trace(e);
+        }
+
+        if (!CollectionUtils.isEmpty(contextList)) {
+          for (ActionView.Context ctx : contextList) {
             ActionBuilderLine ctxLine = new ActionBuilderLine();
             ctxLine.setName(ctx.getName());
             if (ctx.getName().contentEquals("jsonModel")
