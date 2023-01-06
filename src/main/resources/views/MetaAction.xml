@@ -4,13 +4,13 @@
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
   <grid model="com.axelor.meta.db.MetaAction" title="All Action" name="studio-meta-action-grid"
-    groupBy="appBuilder">
+    groupBy="studioApp">
     <field name="name"/>
     <field name="type"/>
     <field name="model"/>
     <field name="module"/>
     <field name="priority"/>
-    <field name="appBuilder" hidden="true"/>
+    <field name="studioApp" hidden="true"/>
   </grid>
 
   <grid model="com.axelor.meta.db.MetaAction" title="All Action"
@@ -27,9 +27,9 @@
 
     <extend target="//panel[@title='Overview']">
       <insert position="before">
-        <panel name="actionAppBuilderPanel">
-          <field name="appBuilder" grid-view="app-builder-grid" form-view="app-builder-form"
-            if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
+        <panel name="actionStudioAppPanel">
+          <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+            if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
           <field name="isCustom" hidden="true"/>
         </panel>
       </insert>
@@ -44,7 +44,7 @@
   </form>
 
   <action-attrs name="action-studio-meta-action-attrs-onnew-onload">
-    <attribute name="hidden" for="actionAppBuilderPanel" expr="eval: !_fromStudio"/>
+    <attribute name="hidden" for="actionStudioAppPanel" expr="eval: !_fromStudio"/>
   </action-attrs>
 
   <action-record name="action-studio-meta-action-record-onnew"

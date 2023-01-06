@@ -15,8 +15,7 @@
       title="Custom model"/>
     <one-to-many name="dmnTableList" ref="DmnTable" title="Decision tables"
       mappedBy="wkfDmnModel"/>
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
 
   </entity>
 

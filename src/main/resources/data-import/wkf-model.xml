@@ -16,7 +16,7 @@
       <bind node="previousVersion" to="previousVersion" search="self.code = :previousVersion"
         create="false"/>
       <bind node="description" to="description"/>
-      <bind node="appBuilder" to="appBuilder" search="self.code = :appBuilder" create="false"/>
+      <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
     </bind>
 
   </input>

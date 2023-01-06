@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<%		
+	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.StudioDashboardRepository' as Class).all()
+		
+	if(__ids__ != null) {
+		query = query.filter('self.studioApp.id in ?1',__ids__)
+	}
+	
+	studioDashboards = ""
+	query.fetch().each({
+		dashboard -> 
+				studioDashboards += """\n\t\t<studio-dashboard>
+				\n\t\t\t<name>${dashboard.name}</name>
+				\n\t\t\t<title>${dashboard.title}</title>
+				\n\t\t\t<model>${dashboard.model}</model>
+				\n\t\t\t<studioApp>${dashboard.studioApp?.code}</studioApp>
+				\n\t\t</studio-dashboard>""" 
+				
+	})
+	
+	if (!studioDashboards.isEmpty()) {
+		studioDashboards = """<studio-dashboards>\n""" +  studioDashboards + """\n</studio-dashboards>"""
+	}
+
+	out << """$studioDashboards"""
+%>

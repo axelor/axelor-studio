@@ -28,7 +28,7 @@ public class AppLoaderExportBpmServiceImpl extends AppLoaderExportServiceImpl {
       new String[] {"baml-model", "wkf-model", "wkf-dmn-model"};
 
   @Override
-  protected Map<String, InputStream> getExportTemplateResources() {
+  public Map<String, InputStream> getExportTemplateResources() {
 
     Map<String, InputStream> templateMap = super.getExportTemplateResources();
 

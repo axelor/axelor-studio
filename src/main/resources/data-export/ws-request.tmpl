@@ -3,7 +3,7 @@
 	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsRequestRepository' as Class).all()
 
 	if(__ids__ != null) {
-		query = query.filter('self.appBuilder.id in ?1',__ids__)
+		query = query.filter('self.studioApp.id in ?1',__ids__)
 	} 
 	
 	wsRequests = ""
@@ -26,7 +26,7 @@
 				\n\t\t\t<payloads>$payloads
 				\n\t\t\t</payloads>
 				\n\t\t\t<wsConnector>${request.wsConnector?.name}</wsConnector>
-				\n\t\t\t<appBuilder>${request.appBuilder?.code}</appBuilder>
+				\n\t\t\t<studioApp>${request.studioApp?.code}</studioApp>
 				\n\t\t</ws-request>"""
 	})
 	

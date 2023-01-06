@@ -10,8 +10,7 @@
     <string name="name" title="Name" required="true"/>
     <string name="bamlXml" title="Input xml" large="true"/>
     <string name="resultScript" title="Result script" large="true"/>
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
 
   </entity>
 

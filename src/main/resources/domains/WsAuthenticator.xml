@@ -18,8 +18,7 @@
     <many-to-one name="refreshTokenWsRequest" title="Refresh token request"
       ref="WsRequest"/>
     <string name="refreshTokenResponse" title="Refresh token response" large="true"/>
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
   </entity>
 
 </domain-models>

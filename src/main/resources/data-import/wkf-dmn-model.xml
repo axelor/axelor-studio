@@ -12,7 +12,7 @@
       <bind node="diagramXml" to="diagramXml"/>
       <bind node="metaModel" to="metaModel" search="self.name = :metaModel" create="false"/>
       <bind node="jsonModel" to="jsonModel" search="self.name = :jsonModel" create="false"/>
-      <bind node="appBuilder" to="appBuilder" search="self.code = :appBuilder" create="false"/>
+      <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
     </bind>
 
   </input>

@@ -7,7 +7,7 @@
     width="large" canDelete="false" canNew="false" canCopy="false">
 
     <panel name="mainPanel">
-      <field name="enableAppBuilder" widget="Boolean-switch"/>
+      <field name="enableStudioApp" widget="Boolean-switch"/>
     </panel>
 
     <panel-mail name="mailPanel">

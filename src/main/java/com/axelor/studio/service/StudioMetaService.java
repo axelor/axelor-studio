@@ -42,8 +42,8 @@ import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.meta.loader.XMLViews;
 import com.axelor.meta.schema.views.AbstractView;
-import com.axelor.studio.db.MenuBuilder;
-import com.axelor.studio.db.repo.MenuBuilderRepository;
+import com.axelor.studio.db.StudioMenu;
+import com.axelor.studio.db.repo.StudioMenuRepository;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -68,7 +68,7 @@ public class StudioMetaService {
 
   @Inject private MetaMenuRepository metaMenuRepo;
 
-  @Inject private MenuBuilderRepository menuBuilderRepo;
+  @Inject private StudioMenuRepository studioMenuRepo;
 
   @Inject private MetaModelRepository metaModelRepo;
 
@@ -198,10 +198,10 @@ public class StudioMetaService {
     return oldAction;
   }
 
-  public MetaMenu createMenu(MenuBuilder builder) {
-    //    String xmlId = XML_ID_PREFIX + builder.getName();
-    String xmlId = builder.getXmlId();
-    MetaMenu menu = builder.getMetaMenu();
+  public MetaMenu createMenu(StudioMenu studioMenu) {
+    //    String xmlId = XML_ID_PREFIX + studioMenu.getName();
+    String xmlId = studioMenu.getXmlId();
+    MetaMenu menu = studioMenu.getMetaMenu();
 
     if (menu == null) {
       menu = metaMenuRepo.findByID(xmlId);
@@ -210,60 +210,60 @@ public class StudioMetaService {
     }
 
     if (menu == null) {
-      menu = new MetaMenu(builder.getName());
+      menu = new MetaMenu(studioMenu.getName());
       menu.setXmlId(xmlId);
       Integer priority = getPriority(MetaMenu.class.getSimpleName(), menu.getName());
       menu.setPriority(priority);
-      menu.setTitle(builder.getTitle());
+      menu.setTitle(studioMenu.getTitle());
       menu = metaMenuRepo.save(menu);
     }
 
-    menu.setTitle(builder.getTitle());
-    menu.setIcon(builder.getIcon());
-    menu.setIconBackground(builder.getIconBackground());
-    menu.setOrder(builder.getOrder());
-    menu.setParent(builder.getParentMenu());
+    menu.setTitle(studioMenu.getTitle());
+    menu.setIcon(studioMenu.getIcon());
+    menu.setIconBackground(studioMenu.getIconBackground());
+    menu.setOrder(studioMenu.getOrder());
+    menu.setParent(studioMenu.getParentMenu());
 
-    if (builder.getGroups() != null) {
+    if (studioMenu.getGroups() != null) {
       Set<Group> groups = new HashSet<>();
-      groups.addAll(builder.getGroups());
+      groups.addAll(studioMenu.getGroups());
       menu.setGroups(groups);
     }
 
-    if (builder.getRoles() != null) {
+    if (studioMenu.getRoles() != null) {
       Set<Role> roles = new HashSet<>();
-      roles.addAll(builder.getRoles());
+      roles.addAll(studioMenu.getRoles());
       menu.setRoles(roles);
     }
 
-    String condition = builder.getConditionToCheck();
-    if (builder.getAppBuilder() != null) {
+    String condition = studioMenu.getConditionToCheck();
+    if (studioMenu.getStudioApp() != null) {
       if (condition != null) {
         condition =
             "__config__.app.isApp('"
-                + builder.getAppBuilder().getCode()
+                + studioMenu.getStudioApp().getCode()
                 + "') && ("
                 + condition
                 + ")";
       } else {
-        condition = "__config__.app.isApp('" + builder.getAppBuilder().getCode() + "')";
+        condition = "__config__.app.isApp('" + studioMenu.getStudioApp().getCode() + "')";
       }
     }
     menu.setConditionToCheck(condition);
-    menu.setModuleToCheck(builder.getModuleToCheck());
-    menu.setLeft(builder.getLeft());
-    menu.setTop(builder.getTop());
-    menu.setHidden(builder.getHidden());
-    menu.setMobile(builder.getMobile());
+    menu.setModuleToCheck(studioMenu.getModuleToCheck());
+    menu.setLeft(studioMenu.getLeft());
+    menu.setTop(studioMenu.getTop());
+    menu.setHidden(studioMenu.getHidden());
+    menu.setMobile(studioMenu.getMobile());
 
-    menu.setTag(builder.getTag());
-    menu.setTagCount(builder.getTagCount());
-    menu.setTagGet(builder.getTagGet());
-    menu.setTagStyle(builder.getTagStyle());
+    menu.setTag(studioMenu.getTag());
+    menu.setTagCount(studioMenu.getTagCount());
+    menu.setTagGet(studioMenu.getTagGet());
+    menu.setTagStyle(studioMenu.getTagStyle());
 
-    menu.setLink(builder.getLink());
-    if (builder.getMetaModule() != null) {
-      menu.setModule(builder.getMetaModule().getName());
+    menu.setLink(studioMenu.getLink());
+    if (studioMenu.getMetaModule() != null) {
+      menu.setModule(studioMenu.getMetaModule().getName());
     }
 
     return menu;
@@ -277,11 +277,11 @@ public class StudioMetaService {
     for (MetaMenu subMenu : subMenus) {
       subMenu.setParent(null);
     }
-    List<MenuBuilder> subBuilders =
-        menuBuilderRepo.all().filter("self.parentMenu = ?1", metaMenu).fetch();
-    for (MenuBuilder subBuilder : subBuilders) {
-      subBuilder.setParentMenu(null);
-      menuBuilderRepo.save(subBuilder);
+    List<StudioMenu> subStudioMenus =
+        studioMenuRepo.all().filter("self.parentMenu = ?1", metaMenu).fetch();
+    for (StudioMenu subStudioMenu : subStudioMenus) {
+      subStudioMenu.setParentMenu(null);
+      studioMenuRepo.save(subStudioMenu);
     }
 
     metaMenuRepo.remove(metaMenu);

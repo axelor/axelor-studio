@@ -5,7 +5,7 @@ code: studio
 typeSelect: standard
 installOrder: 28
 description: |
-    App Builder Management
+    App Management
 image: app-studio.png
 modules: 
     axelor-studio

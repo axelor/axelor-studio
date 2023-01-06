@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<%	
+		
+	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.StudioDashletRepository' as Class).all()
+		
+	if(__ids__ != null) {
+				
+		query = query.filter('self.studioApp.id in ?1 or (self.studioApp is null and self.studioDashboard.studioApp.id in ?1)',__ids__)
+		
+	} 
+	
+	studioDashlets = ""
+	query.fetch().each({
+		dashlet -> 
+				studioDashlets += """\n\t\t<studio-dashlet>
+				\n\t\t\t<name>${dashlet.name}</name>
+				\n\t\t\t<metaView>${dashlet.metaView?.name}</metaView>
+				\n\t\t\t<action>${dashlet.action?.name}</action>
+				\n\t\t\t<studioDashboard>${dashlet.studioDashboard?.name}</studioDashboard>
+				\n\t\t\t<sequence>${dashlet.sequence}</sequence>
+				\n\t\t\t<viewType>${dashlet.viewType}</viewType>
+				\n\t\t\t<colspan>${dashlet.colspan}</colspan>
+				\n\t\t\t<paginationLimit>${dashlet.paginationLimit}</paginationLimit>
+				\n\t\t\t<studioApp>${dashlet.studioApp?.code}</studioApp>
+				\n\t\t\t<parentStudioApp>${dashlet.studioDashboard.studioApp?.code}</parentStudioApp>
+				\n\t\t</studio-dashlet>""" 
+				
+	})
+	
+	if (!studioDashlets.isEmpty()) {
+		studioDashlets = """<studio-dashlets>\n""" +  studioDashlets + """\n</studio-dashlets>"""
+	}
+	
+	out << """$studioDashlets"""
+%>

@@ -6,8 +6,7 @@
   <module name="meta" package="com.axelor.meta.db"/>
 
   <entity name="MetaSelect" table="META_SELECT" cacheable="true">
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
     <boolean name="isCustom" title="Custom"/>
   </entity>
 

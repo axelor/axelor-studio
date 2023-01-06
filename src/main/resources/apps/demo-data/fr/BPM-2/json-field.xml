@@ -76,9 +76,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -160,9 +160,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -243,9 +243,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -327,9 +327,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -410,9 +410,9 @@
 
     <targetJsonModel>Pizza</targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -493,9 +493,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -576,9 +576,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -659,9 +659,9 @@
 
     <targetJsonModel>PizzaOrder</targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -743,9 +743,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -831,9 +831,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -914,9 +914,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -997,9 +997,9 @@
 
     <targetJsonModel>HungryPizza</targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1081,9 +1081,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1170,9 +1170,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1253,9 +1253,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1336,9 +1336,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1419,9 +1419,9 @@
 
     <targetJsonModel>PizzaOrder</targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1502,9 +1502,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1585,9 +1585,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1668,9 +1668,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1751,9 +1751,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1834,9 +1834,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -1917,9 +1917,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -2000,9 +2000,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -2083,9 +2083,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -2166,9 +2166,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -2249,9 +2249,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder></appBuilder>
+    <studioApp></studioApp>
 
-    <modelAppBuilder>BPM-2</modelAppBuilder>
+    <modelStudioApp>BPM-2</modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 

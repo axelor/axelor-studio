@@ -21,9 +21,9 @@ import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
-import com.axelor.studio.db.AppBuilder;
-import com.axelor.studio.db.MenuBuilder;
-import com.axelor.studio.service.builder.MenuBuilderService;
+import com.axelor.studio.db.StudioApp;
+import com.axelor.studio.db.StudioMenu;
+import com.axelor.studio.service.builder.StudioMenuService;
 
 public class MetaJsonModelRepo extends MetaJsonModelRepository {
 
@@ -32,26 +32,26 @@ public class MetaJsonModelRepo extends MetaJsonModelRepository {
     jsonModel = super.save(jsonModel);
 
     if (jsonModel.getMenu() != null) {
-      AppBuilder appBuilder = jsonModel.getAppBuilder();
-      if (appBuilder != null) {
+      StudioApp studioApp = jsonModel.getStudioApp();
+      if (studioApp != null) {
         jsonModel
             .getMenu()
-            .setConditionToCheck("__config__.app.isApp('" + appBuilder.getCode() + "')");
+            .setConditionToCheck("__config__.app.isApp('" + studioApp.getCode() + "')");
       } else {
         jsonModel.getMenu().setConditionToCheck(null);
       }
     }
 
     if (jsonModel.getIsGenerateMenu()) {
-      MenuBuilder menuBuilder = jsonModel.getMenuBuilder();
-      if (menuBuilder != null) {
-        menuBuilder =
-            Beans.get(MenuBuilderService.class)
-                .updateMenuBuilder(
-                    menuBuilder,
+      StudioMenu studioMenu = jsonModel.getStudioMenu();
+      if (studioMenu != null) {
+        studioMenu =
+            Beans.get(StudioMenuService.class)
+                .updateStudioMenu(
+                    studioMenu,
                     jsonModel.getName(),
                     jsonModel.getName().toLowerCase(),
-                    jsonModel.getAppBuilder(),
+                    jsonModel.getStudioApp(),
                     MetaJsonRecord.class.getName(),
                     true,
                     null);
@@ -63,8 +63,8 @@ public class MetaJsonModelRepo extends MetaJsonModelRepository {
   @Override
   public void remove(MetaJsonModel jsonModel) {
 
-    if (jsonModel.getMenuBuilder() != null && jsonModel.getMenuBuilder().getMetaMenu() != null) {
-      Beans.get(MenuBuilderRepo.class).remove(jsonModel.getMenuBuilder());
+    if (jsonModel.getStudioMenu() != null && jsonModel.getStudioMenu().getMetaMenu() != null) {
+      Beans.get(StudioMenuRepo.class).remove(jsonModel.getStudioMenu());
     }
     super.remove(jsonModel);
   }

@@ -115,7 +115,7 @@ return inventory.getTarget()
 return _execute(productFamily)
 ]]></resultScript>
 
-    <appBuilder>BPM-18</appBuilder>
+    <studioApp>BPM-18</studioApp>
 
   </baml-model>
   <baml-model>
@@ -293,7 +293,7 @@ return invoice.getTarget()
 return _execute(saleOrder)
 ]]></resultScript>
 
-    <appBuilder>BPM-18</appBuilder>
+    <studioApp>BPM-18</studioApp>
 
   </baml-model>
 </baml-models>

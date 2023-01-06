@@ -74,15 +74,15 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
   private static final String[] EXPORT_TEMPLATES =
       new String[] {
-        "app-builder",
+        "studio-app",
         "json-model",
         "json-field",
-        "menu-builder",
-        "action-builder",
-        "dashboard-builder",
-        "dashlet-builder",
-        "chart-builder",
-        "selection-builder",
+        "studio-menu",
+        "studio-action",
+        "studio-dashboard",
+        "studio-dashlet",
+        "studio-chart",
+        "studio-selection",
         "ws-connector",
         "ws-request",
         "ws-authenticator"
@@ -107,14 +107,12 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   @Transactional
   public void exportApps(AppLoader appLoader) {
 
-    if (CollectionUtils.isEmpty(appLoader.getExportedAppBuilderSet())) {
+    if (CollectionUtils.isEmpty(appLoader.getExportedStudioAppSet())) {
       return;
     }
 
     try {
-
-      File exportDir = Files.createTempDir();
-
+      File exportDir = java.nio.file.Files.createTempDirectory("").toFile();
       addAppDataFile(appLoader, exportDir);
 
       if (CollectionUtils.isNotEmpty(appLoader.getAppDataLoaderList())) {
@@ -147,10 +145,10 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     }
   }
 
-  public Map<String, Object> getExportContext(AppLoader appLoader) {
+  protected Map<String, Object> getExportContext(AppLoader appLoader) {
 
     List<Long> ids =
-        appLoader.getExportedAppBuilderSet().stream()
+        appLoader.getExportedStudioAppSet().stream()
             .map(it -> it.getId())
             .collect(Collectors.toList());
 
@@ -160,7 +158,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return ctx;
   }
 
-  protected Map<String, InputStream> getExportTemplateResources() {
+  @Override
+  public Map<String, InputStream> getExportTemplateResources() {
 
     Map<String, InputStream> templateMap = new HashMap<String, InputStream>();
 
@@ -344,7 +343,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   }
 
   @SuppressWarnings("unchecked")
-  private void fixTargetName(Map<String, Object> jsonFieldMap) {
+  @Override
+  public void fixTargetName(Map<String, Object> jsonFieldMap) {
 
     // NOTE: Issue in AOP, it always return name as targetname for custom model.
     for (String field : jsonFieldMap.keySet()) {
@@ -363,7 +363,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     }
   }
 
-  protected FileWriter createHeader(String dasherizeModel, File dataFile) throws IOException {
+  @Override
+  public FileWriter createHeader(String dasherizeModel, File dataFile) throws IOException {
 
     FileWriter fileWriter = null;
     try (FileWriter fileWriterObject = new FileWriter(dataFile)) {
@@ -430,7 +431,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   }
 
   @SuppressWarnings("unchecked")
-  protected Object extractJsonFieldValue(FullContext record, Map<String, Object> fieldAttrs) {
+  @Override
+  public Object extractJsonFieldValue(FullContext record, Map<String, Object> fieldAttrs) {
 
     Object value = record.get(fieldAttrs.get("jsonPath"));
 
@@ -516,7 +518,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return value;
   }
 
-  protected File createExportZip(File exportDir) throws IOException, FileNotFoundException {
+  @Override
+  public File createExportZip(File exportDir) throws IOException, FileNotFoundException {
 
     File zipFile = MetaFiles.createTempFile("app-", ".zip").toFile();
 
@@ -709,7 +712,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return fieldBindings;
   }
 
-  private void addRelationaJsonFieldBind(
+  @Override
+  public void addRelationaJsonFieldBind(
       MetaJsonField jsonField, Map<String, Object> fieldAttrs, XMLBind xmlBind) {
 
     String jsonFunction = "json_extract_text";

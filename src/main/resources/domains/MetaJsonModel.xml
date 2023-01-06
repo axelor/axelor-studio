@@ -6,12 +6,10 @@
   <module name="meta" package="com.axelor.meta.db"/>
 
   <entity name="MetaJsonModel" table="META_JSON_MODEL">
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
     <boolean name="showProcessTracking" title="Show process tracking"/>
     <boolean name="isGenerateMenu" title="Generate menu"/>
-    <many-to-one name="menuBuilder" ref="com.axelor.studio.db.MenuBuilder"
-      title="Menu builder"/>
+    <many-to-one name="studioMenu" ref="com.axelor.studio.db.StudioMenu" title="Menu"/>
   </entity>
 
 </domain-models>

@@ -3,13 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
-  <form name="studio-meta-json-field-form" title="Custom field"
+  <form name="studio-meta-json-field-form" title="Fields"
     model="com.axelor.meta.db.MetaJsonField">
     <panel name="overviewPanel" title="Overview">
-      <field name="appBuilder" grid-view="app-builder-grid" form-view="app-builder-form"
-        if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
-      <spacer name="appBuilderSpacer"
-        if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
+      <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      <spacer name="studioAppSpacer"
+        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
       <field name="name"
         onChange="action-studio-meta-json-model-name-onchange-record,action-studio-meta-json-field-record-name"/>
       <field name="title"/>
@@ -24,7 +24,7 @@
     <panel-include view="json-field-form-base"/>
   </form>
 
-  <form name="json-field-form" title="Custom field" model="com.axelor.meta.db.MetaJsonField"
+  <form name="json-field-form" title="Field" model="com.axelor.meta.db.MetaJsonField"
     id="studio-json-field-form" extension="true">
     <extend target="//field[@name='name']">
       <replace>
@@ -34,10 +34,10 @@
     </extend>
     <extend target="//field[@name='modelField']">
       <insert position="after">
-        <field name="appBuilder" grid-view="app-builder-grid" form-view="app-builder-form"
-          if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
-        <spacer name="appBuilderSpacer"
-          if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
+        <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+          if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+        <spacer name="studioAppSpacer"
+          if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
       </insert>
     </extend>
     <extend target="panel-include[last()]">
@@ -52,7 +52,7 @@
     </extend>
   </form>
 
-  <form id="studio-json-field-form-2" name="json-field-form-2" title="Custom field"
+  <form id="studio-json-field-form-2" name="json-field-form-2" title="Field"
     model="com.axelor.meta.db.MetaJsonField" extension="true">
     <extend target="//field[@name='type']">
       <attribute name="onChange" value="action-json-field-record-set-visible-in-grid"/>
@@ -66,7 +66,7 @@
     </extend>
   </form>
 
-  <form id="studio-json-field-form-base" name="json-field-form-base" title="Custom field"
+  <form id="studio-json-field-form-base" name="json-field-form-base" title="Field"
     model="com.axelor.meta.db.MetaJsonField" extension="true">
     <extend target="//field[@name='targetModel']">
       <attribute name="onChange" value="action-json-field-record-set-default-views"/>
@@ -106,19 +106,22 @@
       expr="eval: __repo__(MetaView).all().filter('self.type = ?1 AND self.model = ?2', 'form', targetModel).fetchOne()?.getName()"/>
   </action-record>
 
-  <grid name="studio-meta-json-field-grid" title="Custom fields"
+  <grid name="studio-meta-json-field-grid" title="Fields"
     model="com.axelor.meta.db.MetaJsonField" edit-icon="true">
     <field name="name"/>
     <field name="title"/>
     <field name="type"/>
-    <field name="appBuilder" grid-view="app-builder-grid" form-view="app-builder-form"
-      if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
+    <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+      if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
   </grid>
 
-  <grid id="studio-json-field-grid" name="json-field-grid" title="Custom fields"
+  <grid id="studio-json-field-grid" name="json-field-grid" title="Fields"
     model="com.axelor.meta.db.MetaJsonField" extension="true">
     <extend target="/">
       <attribute name="orderBy" value="model,sequence"/>
+    </extend>
+    <extend target="/">
+      <attribute name="title" value="Fields"/>
     </extend>
     <extend target="//field[@name='name']">
       <insert position="before">
@@ -127,7 +130,7 @@
     </extend>
     <extend target="//field[@name='modelField']">
       <insert position="after">
-        <field name="appBuilder" if="__config__.app.getApp('studio')?.getEnableAppBuilder()"/>
+        <field name="studioApp" if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
       </insert>
     </extend>
   </grid>

@@ -21,12 +21,12 @@ package com.axelor.studio.exception;
 @Deprecated
 public interface IExceptionMessage {
 
-  /** Check if app builder code is not conflicting with existing app. */
-  static final String APP_BUILDER_1 = /*$$(*/
+  /** Check if studio app code is not conflicting with existing app. */
+  static final String STUDIO_APP_1 = /*$$(*/
       "Please provide unique code. The code '%s' is already used" /*)*/;
 
   /** Check if chart name doesn't contains any space. */
-  static final String CHART_BUILDER_1 = /*$$(*/ "The name must not contain spaces" /*)*/;
+  static final String STUDIO_CHART_1 = /*$$(*/ "The name must not contain spaces" /*)*/;
 
   static final String CANNOT_ALTER_NODES = /*$$(*/
       "Can't alter nodes for real existing selection field" /*)*/;

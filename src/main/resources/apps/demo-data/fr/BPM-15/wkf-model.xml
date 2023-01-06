@@ -11,7 +11,7 @@
     <isActive>true</isActive>
 
     <diagramXml><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" camunda:code="BPM-15" camunda:diagramName="Multi instance signal" camunda:appBuilder="BPM-15">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" camunda:code="BPM-15" camunda:diagramName="Multi instance signal" camunda:studioApp="BPM-15">
   <bpmn2:collaboration id="Collaboration_069052m">
     <bpmn2:participant id="Participant_1xtx1xq" name="Bill subscription" processRef="MultiInstnaceSignalProcess" />
     <bpmn2:participant id="Participant_0sne38g" name="Credit card bill subscription" processRef="Process_0d0lw7z" />
@@ -473,7 +473,7 @@
 
     <description></description>
 
-    <appBuilder>BPM-15</appBuilder>
+    <studioApp>BPM-15</studioApp>
 
   </wkf-model>
 

@@ -15,7 +15,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-pizza' title='Pizza' xmlId='studio-pizza'/>
+    <studioMenu name='studio-pizza' title='Pizza' xmlId='studio-pizza'/>
 
     <menuTitle></menuTitle>
 
@@ -29,7 +29,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-2</appBuilder>
+    <studioApp>BPM-2</studioApp>
 
   </json-model>
   <json-model>
@@ -46,8 +46,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-pizza-order' title='Pizza order'
-      xmlId='studio-pizza-order'/>
+    <studioMenu name='studio-pizza-order' title='Pizza order' xmlId='studio-pizza-order'/>
 
     <menuTitle></menuTitle>
 
@@ -61,7 +60,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-2</appBuilder>
+    <studioApp>BPM-2</studioApp>
 
   </json-model>
   <json-model>
@@ -78,7 +77,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-hungry-pizza' title='Hungry Pizza'
+    <studioMenu name='studio-hungry-pizza' title='Hungry Pizza'
       xmlId='studio-hungry-pizza'/>
 
     <menuTitle></menuTitle>
@@ -93,7 +92,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-2</appBuilder>
+    <studioApp>BPM-2</studioApp>
 
   </json-model>
   <json-model>
@@ -110,7 +109,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-pizza-calm-customer' title='Calm customer'
+    <studioMenu name='studio-pizza-calm-customer' title='Calm customer'
       xmlId='studio-pizza-calm-customer'/>
 
     <menuTitle></menuTitle>
@@ -125,7 +124,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-2</appBuilder>
+    <studioApp>BPM-2</studioApp>
 
   </json-model>
   <json-model>
@@ -142,7 +141,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-ask-pizza' title='Ask Pizza' xmlId='studio-ask-pizza'/>
+    <studioMenu name='studio-ask-pizza' title='Ask Pizza' xmlId='studio-ask-pizza'/>
 
     <menuTitle></menuTitle>
 
@@ -156,7 +155,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-2</appBuilder>
+    <studioApp>BPM-2</studioApp>
 
   </json-model>
 </json-models>

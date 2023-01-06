@@ -13,8 +13,7 @@
     <string name="authCallToken" title="Auth call token"/>
     <many-to-one name="defaultWsAuthenticator" title="Default authenticator"
       ref="WsAuthenticator"/>
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
   </entity>
 
 </domain-models>

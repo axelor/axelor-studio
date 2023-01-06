@@ -16,7 +16,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-menu-billsubscription' title='Bill subscription'
+    <studioMenu name='studio-menu-billsubscription' title='Bill subscription'
       xmlId='studio-menu-billsubscription'/>
 
     <menuTitle></menuTitle>
@@ -31,7 +31,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-15</appBuilder>
+    <studioApp>BPM-15</studioApp>
 
   </json-model>
   <json-model>
@@ -48,8 +48,8 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-menu-creditcardbillsubcription'
-      title='CC bill subscription' xmlId='studio-menu-creditcardbillsubcription'/>
+    <studioMenu name='studio-menu-creditcardbillsubcription' title='CC bill subscription'
+      xmlId='studio-menu-creditcardbillsubcription'/>
 
     <menuTitle></menuTitle>
 
@@ -63,7 +63,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-15</appBuilder>
+    <studioApp>BPM-15</studioApp>
 
   </json-model>
   <json-model>
@@ -80,7 +80,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-menu-electricitybillsubscription'
+    <studioMenu name='studio-menu-electricitybillsubscription'
       title='Electricity bill subcription' xmlId='studio-menu-electricitybillsubscription'/>
 
     <menuTitle></menuTitle>
@@ -95,7 +95,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-15</appBuilder>
+    <studioApp>BPM-15</studioApp>
 
   </json-model>
 

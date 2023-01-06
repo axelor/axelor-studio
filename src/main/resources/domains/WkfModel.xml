@@ -26,8 +26,7 @@
     <boolean name="isActive" default="true"/>
     <boolean name="generatedFromCallActivity" title="Generated from call activity"/>
     <string name="wkfStatusColor" title="Wkf status color" selection="color.name.selection"/>
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
 
     <many-to-many name="adminUserSet" title="Users" ref="com.axelor.auth.db.User"/>
     <many-to-many name="adminRoleSet" title="Roles" ref="com.axelor.auth.db.Role"/>

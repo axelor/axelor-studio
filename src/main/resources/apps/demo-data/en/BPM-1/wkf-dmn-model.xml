@@ -361,7 +361,7 @@
 
     <jsonModel></jsonModel>
 
-    <appBuilder>BPM-1</appBuilder>
+    <studioApp>BPM-1</studioApp>
 
   </wkf-dmn-model>
 </wkf-dmn-models>

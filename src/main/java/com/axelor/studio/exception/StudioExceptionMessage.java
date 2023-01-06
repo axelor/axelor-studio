@@ -21,12 +21,12 @@ public final class StudioExceptionMessage {
 
   private StudioExceptionMessage() {}
 
-  /** Check if app builder code is not conflicting with existing app. */
-  public static final String APP_BUILDER_1 = /*$$(*/
+  /** Check if studio app code is not conflicting with existing app. */
+  public static final String STUDIO_APP_1 = /*$$(*/
       "Please provide unique code. The code '%s' is already used" /*)*/;
 
   /** Check if chart name doesn't contains any space. */
-  public static final String CHART_BUILDER_1 = /*$$(*/ "The name must not contain spaces" /*)*/;
+  public static final String STUDIO_CHART_1 = /*$$(*/ "The name must not contain spaces" /*)*/;
 
   public static final String CANNOT_ALTER_NODES = /*$$(*/
       "Can't alter nodes for real existing selection field" /*)*/;
@@ -56,4 +56,9 @@ public final class StudioExceptionMessage {
       "This app is used by %s. Please deactivate them before continue." /*)*/;
 
   public static final String DATA_EXPORT_DIR_ERROR = /*$$(*/ "Export path not configured" /*)*/;
+
+  public static final String SELECT_STUDIO_APP_EXPORT = /*$$(*/
+      "Please select the App(s) to export" /*)*/;
+
+  public static final String SUCCESS_STUDIO_APP_IMPORT = /*$$(*/ "Apps imported successfully" /*)*/;
 }

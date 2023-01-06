@@ -3,7 +3,7 @@
 	query = com.axelor.inject.Beans.get('com.axelor.meta.db.repo.MetaJsonFieldRepository' as Class).all()
 	
 	if(__ids__ != null) {
-		query = query.filter('self.appBuilder.id in ?1 OR (self.appBuilder is null and self.jsonModel.appBuilder.id in ?1)',__ids__)
+		query = query.filter('self.studioApp.id in ?1 OR (self.studioApp is null and self.jsonModel.studioApp.id in ?1)',__ids__)
 	}
 	
 	jsonFields = ""
@@ -54,8 +54,8 @@
 				\n\t\t\t<valueExpr>""" + valueExpr + """</valueExpr>
 				\n\t\t\t<jsonModel>${field.jsonModel?.name}</jsonModel>
 				\n\t\t\t<targetJsonModel>${field.targetJsonModel?.name}</targetJsonModel>
-				\n\t\t\t<appBuilder>${field.appBuilder?.code}</appBuilder>
-				\n\t\t\t<modelAppBuilder>${field.jsonModel?.appBuilder?.code}</modelAppBuilder>
+				\n\t\t\t<studioApp>${field.studioApp?.code}</studioApp>
+				\n\t\t\t<modelStudioApp>${field.jsonModel?.studioApp?.code}</modelStudioApp>
 				\n\t\t\t<isSelectionField>${field.isSelectionField}</isSelectionField>
 				\n\t\t\t<selectionText>${field.selectionText}</selectionText>
 				\n\t\t</json-field>"""

@@ -26,23 +26,23 @@ import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
-import com.axelor.studio.db.ActionBuilder;
-import com.axelor.studio.db.AppBuilder;
 import com.axelor.studio.db.AppLoader;
-import com.axelor.studio.db.ChartBuilder;
-import com.axelor.studio.db.DashboardBuilder;
-import com.axelor.studio.db.MenuBuilder;
-import com.axelor.studio.db.SelectionBuilder;
+import com.axelor.studio.db.StudioAction;
+import com.axelor.studio.db.StudioApp;
+import com.axelor.studio.db.StudioChart;
+import com.axelor.studio.db.StudioDashboard;
+import com.axelor.studio.db.StudioMenu;
+import com.axelor.studio.db.StudioSelection;
 import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.WsRequest;
-import com.axelor.studio.db.repo.ActionBuilderRepository;
-import com.axelor.studio.db.repo.AppBuilderRepository;
 import com.axelor.studio.db.repo.AppLoaderRepository;
-import com.axelor.studio.db.repo.ChartBuilderRepository;
-import com.axelor.studio.db.repo.DashboardBuilderRepository;
-import com.axelor.studio.db.repo.MenuBuilderRepository;
-import com.axelor.studio.db.repo.SelectionBuilderRepository;
+import com.axelor.studio.db.repo.StudioActionRepository;
+import com.axelor.studio.db.repo.StudioAppRepository;
+import com.axelor.studio.db.repo.StudioChartRepository;
+import com.axelor.studio.db.repo.StudioDashboardRepository;
+import com.axelor.studio.db.repo.StudioMenuRepository;
+import com.axelor.studio.db.repo.StudioSelectionRepository;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.db.repo.WsRequestRepository;
@@ -62,21 +62,21 @@ import org.apache.commons.io.IOUtils;
 
 public class ImportService {
 
-  @Inject private ChartBuilderRepository chartBuilderRepo;
+  @Inject private StudioChartRepository studioChartRepo;
 
   @Inject private MetaJsonModelRepository metaJsonModelRepo;
 
   @Inject private MetaJsonFieldRepository metaJsonFieldRepo;
 
-  @Inject private SelectionBuilderRepository selectionBuilderRepo;
+  @Inject private StudioSelectionRepository studioSelectionRepo;
 
-  @Inject private DashboardBuilderRepository dashboardBuilderRepo;
+  @Inject private StudioDashboardRepository studioDashboardRepo;
 
-  @Inject private MenuBuilderRepository menuBuilderRepo;
+  @Inject private StudioMenuRepository studioMenuRepo;
 
-  @Inject private ActionBuilderRepository actionBuilderRepo;
+  @Inject private StudioActionRepository studioActionRepo;
 
-  @Inject private AppBuilderRepository appBuilderRepo;
+  @Inject private StudioAppRepository studioAppRepo;
 
   @Inject private MetaFiles metaFiles;
 
@@ -104,76 +104,76 @@ public class ImportService {
     return metaJsonFieldRepo.save((MetaJsonField) bean);
   }
 
-  public Object importSelectionBuilder(Object bean, Map<String, Object> values) {
+  public Object importStudioSelection(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof SelectionBuilder;
+    assert bean instanceof StudioSelection;
 
-    return selectionBuilderRepo.save((SelectionBuilder) bean);
+    return studioSelectionRepo.save((StudioSelection) bean);
   }
 
-  public Object importChartBuilder(Object bean, Map<String, Object> values) {
+  public Object importStudioChart(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof ChartBuilder;
+    assert bean instanceof StudioChart;
 
-    return chartBuilderRepo.save((ChartBuilder) bean);
+    return studioChartRepo.save((StudioChart) bean);
   }
 
-  public Object importDashboardBuilder(Object bean, Map<String, Object> values) {
+  public Object importStudioDashboard(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof DashboardBuilder;
+    assert bean instanceof StudioDashboard;
 
-    return dashboardBuilderRepo.save((DashboardBuilder) bean);
+    return studioDashboardRepo.save((StudioDashboard) bean);
   }
 
-  public Object importMenuBuilder(Object bean, Map<String, Object> values) {
+  public Object importStudioMenu(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof MenuBuilder;
+    assert bean instanceof StudioMenu;
 
-    return menuBuilderRepo.save((MenuBuilder) bean);
+    return studioMenuRepo.save((StudioMenu) bean);
   }
 
-  public Object importActionBuilder(Object bean, Map<String, Object> values) {
+  public Object importStudioAction(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof ActionBuilder;
+    assert bean instanceof StudioAction;
 
-    return actionBuilderRepo.save((ActionBuilder) bean);
+    return studioActionRepo.save((StudioAction) bean);
   }
 
-  public Object importAppBuilderImg(Object bean, Map<String, Object> values) {
+  public Object importStudioAppImg(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof AppBuilder;
+    assert bean instanceof StudioApp;
 
-    AppBuilder appBuilder = (AppBuilder) bean;
+    StudioApp studioApp = (StudioApp) bean;
     String fileName = (String) values.get("fileName");
     String imageData = (String) values.get("imageData");
 
     if (fileName != null && imageData != null) {
-      appBuilder.setImage(importImg(fileName, imageData));
+      studioApp.setImage(importImg(fileName, imageData));
     }
 
-    appBuilder = appBuilderRepo.save(appBuilder);
+    studioApp = studioAppRepo.save(studioApp);
 
-    return appBuilder;
+    return studioApp;
   }
 
-  public Object importAppBuilder(Object bean, Map<String, Object> values) {
+  public Object importStudioApp(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof AppBuilder;
+    assert bean instanceof StudioApp;
 
-    AppBuilder appBuilder = (AppBuilder) bean;
+    StudioApp studioApp = (StudioApp) bean;
 
-    appBuilder = appBuilderRepo.save(appBuilder);
+    studioApp = studioAppRepo.save(studioApp);
 
     Long appLoaderId = (Long) values.get("appLoaderId");
 
     if (appLoaderId != null) {
-      appLoaderRepository.find(appLoaderId).addImportedAppBuilderSetItem(appBuilder);
+      appLoaderRepository.find(appLoaderId).addImportedStudioAppSetItem(studioApp);
     }
 
-    return appBuilder;
+    return studioApp;
   }
 
-  // Import methods specific for import from AppBuilder
+  // Import methods specific for import from StudioApp
   private MetaFile importImg(String name, String data) {
 
     if (data == null) {
@@ -238,17 +238,17 @@ public class ImportService {
     return metaJsonModelRepo.save(model);
   }
 
-  public Object importAppDashboardBuilder(Object bean, Map<String, Object> values) {
+  public Object importAppStudioDashboard(Object bean, Map<String, Object> values) {
 
-    assert bean instanceof DashboardBuilder;
+    assert bean instanceof StudioDashboard;
 
-    DashboardBuilder dashboard = (DashboardBuilder) bean;
+    StudioDashboard dashboard = (StudioDashboard) bean;
 
     JPA.flush();
 
     JPA.refresh(dashboard);
 
-    return dashboardBuilderRepo.save(dashboard);
+    return studioDashboardRepo.save(dashboard);
   }
 
   public Object importAppLoader(Object bean, Map<String, Object> values) throws IOException {

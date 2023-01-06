@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xml-inputs xmlns="http://axelor.com/xml/ns/data-import"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/data-import http://axelor.com/xml/ns/data-import/data-import_6.0.xsd">
+
+  <input file="studio-selection.xml" root="studio-selections">
+
+    <bind node="studio-selection" type="com.axelor.studio.db.StudioSelection"
+      search="self.name = :name" update="true"
+      call="com.axelor.studio.service.ImportService:importStudioSelection">
+      <bind node="metaSelect" to="metaSelect" search="self.name = :metaSelect" create="false"/>
+      <bind node="name" to="name"/>
+      <bind node="selectionText" to="selectionText"/>
+      <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
+    </bind>
+
+  </input>
+
+</xml-inputs>

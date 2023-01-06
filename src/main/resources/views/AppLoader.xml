@@ -18,12 +18,12 @@
         <spacer name="spacerImportBtn" colSpan="9"/>
         <button name="btnImportApps" title="import.verb"
           onClick="save,action-app-loader-method-import-apps" colSpan="2"/>
-        <field name="importedAppBuilderSet" widget="TagSelect" readonly="true" colSpan="12"/>
+        <field name="importedStudioAppSet" widget="TagSelect" readonly="true" colSpan="12"/>
         <field name="importLog" widget="BinaryLink" readonly="true" colSpan="3"/>
         <field name="importedOn" colSpan="3" readonly="true"/>
       </panel>
       <panel name="exportPanel" title="Export" colSpan="12">
-        <field name="exportedAppBuilderSet" widget="TagSelect" colSpan="12"/>
+        <field name="exportedStudioAppSet" widget="TagSelect" colSpan="12"/>
         <button name="btnExportApps" title="Export"
           onClick="save,action-app-loader-method-export-apps" colSpan="2"/>
         <spacer name="spacerExportBtn" colSpan="10"/>

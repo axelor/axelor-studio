@@ -11,13 +11,13 @@
      A sql or groovy condition will be created by using this.
     ]]>
     <string name="moduleName" title="Module"/>
-    <many-to-one name="chartBuilder" ref="com.axelor.studio.db.ChartBuilder"/>
+    <many-to-one name="studioChart" ref="com.axelor.studio.db.StudioChart"/>
     <many-to-one name="metaField" title="Field" ref="com.axelor.meta.db.MetaField"/>
     <many-to-one name="metaJsonField" title="Json Field"
       ref="com.axelor.meta.db.MetaJsonField"/>
     <string name="operator" title="Operator" selection="studio.filter.operator"
       required="true"/>
-    <many-to-one name="actionBuilder" ref="com.axelor.studio.db.ActionBuilder"/>
+    <many-to-one name="studioAction" ref="com.axelor.studio.db.StudioAction"/>
     <string name="targetField" title="Target field"/>
     <string name="targetType" title="Target type"/>
     <string name="value" title="Value"/>

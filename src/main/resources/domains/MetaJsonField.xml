@@ -6,8 +6,7 @@
   <module name="meta" package="com.axelor.meta.db"/>
 
   <entity name="MetaJsonField" table="META_JSON_FIELD">
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
     <many-to-one name="metaSelect" ref="com.axelor.meta.db.MetaSelect"
       title="Existing select"/>
     <string name="selectionText" title="Selection" large="true"/>
