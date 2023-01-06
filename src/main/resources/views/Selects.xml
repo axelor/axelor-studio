@@ -20,4 +20,12 @@
     <option value="days">Days</option>
   </selection>
 
+  <selection name="studio.app.type.select">
+    <option value="standard">Standard</option>
+    <option value="addons">Addons</option>
+    <option value="enterprise">Enterprise</option>
+    <option value="custom">Custom</option>
+    <option value="others">Others</option>
+  </selection>
+
 </object-views>
