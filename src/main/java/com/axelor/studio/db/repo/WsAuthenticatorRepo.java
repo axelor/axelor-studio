@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.db.repo;
 
-import com.axelor.studio.db.AppBuilder;
+import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.WsRequest;
 
@@ -27,21 +27,21 @@ public class WsAuthenticatorRepo extends WsAuthenticatorRepository {
   public WsAuthenticator save(WsAuthenticator authenticator) {
     authenticator = super.save(authenticator);
 
-    AppBuilder appBuilder = authenticator.getAppBuilder();
+    StudioApp studioApp = authenticator.getStudioApp();
 
     WsRequest authReq = authenticator.getAuthWsRequest();
     if (authReq != null) {
-      authReq.setAppBuilder(appBuilder);
+      authReq.setStudioApp(studioApp);
     }
 
     WsRequest tokenReq = authenticator.getTokenWsRequest();
     if (tokenReq != null) {
-      tokenReq.setAppBuilder(appBuilder);
+      tokenReq.setStudioApp(studioApp);
     }
 
     WsRequest refreshTokenReq = authenticator.getRefreshTokenWsRequest();
     if (refreshTokenReq != null) {
-      refreshTokenReq.setAppBuilder(appBuilder);
+      refreshTokenReq.setStudioApp(studioApp);
     }
 
     return authenticator;

@@ -15,7 +15,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-menu-purchase-req-file' title='Dossier'
+    <studioMenu name='studio-menu-purchase-req-file' title='Dossier'
       xmlId='studio-menu-purchase-req-file'/>
 
     <menuTitle></menuTitle>
@@ -30,7 +30,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-1</appBuilder>
+    <studioApp>BPM-1</studioApp>
 
   </json-model>
   <json-model>
@@ -47,7 +47,7 @@
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <menuBuilder name='studio-menu-purchasereq' title='Demande d&apos;achat'
+    <studioMenu name='studio-menu-purchasereq' title='Demande d&apos;achat'
       xmlId='studio-menu-purchasereq'/>
 
     <menuTitle></menuTitle>
@@ -62,7 +62,7 @@
 
     <menuParent></menuParent>
 
-    <appBuilder>BPM-1</appBuilder>
+    <studioApp>BPM-1</studioApp>
 
   </json-model>
 </json-models>

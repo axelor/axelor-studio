@@ -42,9 +42,9 @@ import com.axelor.meta.schema.views.ChartView;
 import com.axelor.meta.schema.views.ChartView.ChartSeries;
 import com.axelor.meta.schema.views.Selection.Option;
 import com.axelor.script.ScriptBindings;
-import com.axelor.studio.db.ChartBuilder;
 import com.axelor.studio.db.Filter;
-import com.axelor.studio.db.repo.ChartBuilderRepository;
+import com.axelor.studio.db.StudioChart;
+import com.axelor.studio.db.repo.StudioChartRepository;
 import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
@@ -75,7 +75,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
       Arrays.asList("bar", "hbar", "scatter");
   protected static final List<String> TARGET_DATE_TYPES =
       Arrays.asList("DATE", "DATETIME", "LOCALDATE", "LOCALDATETIME", "ZONNEDDATETIME");
-  protected ChartBuilderRepository chartBuilderRepository;
+  protected StudioChartRepository studioChartRepository;
   protected MetaJsonModelRepository metaJsonModelRepository;
   protected MetaModelRepository metaModelRepository;
   protected MetaViewRepository metaViewRepository;
@@ -83,12 +83,12 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
 
   @Inject
   public ChartRecordViewServiceImpl(
-      ChartBuilderRepository chartBuilderRepository,
+      StudioChartRepository studioChartRepository,
       MetaJsonModelRepository metaJsonModelRepository,
       MetaModelRepository metaModelRepository,
       MetaViewRepository metaViewRepository,
       FilterSqlService filterSqlService) {
-    this.chartBuilderRepository = chartBuilderRepository;
+    this.studioChartRepository = studioChartRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;
     this.metaModelRepository = metaModelRepository;
     this.metaViewRepository = metaViewRepository;
@@ -97,25 +97,25 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
 
   @Override
   public Map<String, Object> getActionView(String chartName, Map<String, Object> context) {
-    ChartBuilder chartBuilder = chartBuilderRepository.findByName(chartName);
+    StudioChart studioChart = studioChartRepository.findByName(chartName);
 
-    if (ObjectUtils.isEmpty(chartBuilder)) {
-      throw new IllegalStateException(I18n.get("No chart builder found with given chart name"));
+    if (ObjectUtils.isEmpty(studioChart)) {
+      throw new IllegalStateException(I18n.get("No chart found with given chart name"));
     }
 
-    if (chartBuilder.getIsJson()) {
-      return getJsonModelActionView(chartBuilder, context);
+    if (studioChart.getIsJson()) {
+      return getJsonModelActionView(studioChart, context);
     }
 
-    return getMetaModelActionView(chartBuilder, context);
+    return getMetaModelActionView(studioChart, context);
   }
 
   protected Map<String, Object> getJsonModelActionView(
-      ChartBuilder chartBuilder, Map<String, Object> context) {
-    MetaJsonModel jsonModel = metaJsonModelRepository.findByName(chartBuilder.getModel());
+      StudioChart studioChart, Map<String, Object> context) {
+    MetaJsonModel jsonModel = metaJsonModelRepository.findByName(studioChart.getModel());
     String title = jsonModel.getTitle();
     if (Strings.isNullOrEmpty(title)) {
-      title = chartBuilder.getModel();
+      title = studioChart.getModel();
     }
     String formView = "custom-model-" + jsonModel.getName() + "-form";
     String gridView = "custom-model-" + jsonModel.getName() + "-grid";
@@ -128,21 +128,21 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
 
     String filter = "self.jsonModel = :jsonModel";
     builder.context("jsonModel", jsonModel.getName());
-    filter += " AND " + getDomainFilter(chartBuilder, context);
+    filter += " AND " + getDomainFilter(studioChart, context);
     builder.domain(filter);
 
     return builder.map();
   }
 
   protected Map<String, Object> getMetaModelActionView(
-      ChartBuilder chartBuilder, Map<String, Object> context) {
-    String domain = getDomainFilter(chartBuilder, context);
-    String simpleName = getModelClass(chartBuilder).getSimpleName();
+      StudioChart studioChart, Map<String, Object> context) {
+    String domain = getDomainFilter(studioChart, context);
+    String simpleName = getModelClass(studioChart).getSimpleName();
     Inflector instance = Inflector.getInstance();
     String dasherizeModel = instance.dasherize(simpleName);
     return ActionView.define(
-            I18n.get(instance.humanize(getModelClass(chartBuilder).getSimpleName())))
-        .model(chartBuilder.getModel())
+            I18n.get(instance.humanize(getModelClass(studioChart).getSimpleName())))
+        .model(studioChart.getModel())
         .domain(domain)
         .add("grid", dasherizeModel + "-grid")
         .add("form", dasherizeModel + "-form")
@@ -150,10 +150,10 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
   }
 
   @SuppressWarnings("unchecked")
-  protected String getDomainFilter(ChartBuilder chartBuilder, Map<String, Object> context) {
-    ChartView chart = (ChartView) XMLViews.findView(chartBuilder.getName(), "chart");
+  protected String getDomainFilter(StudioChart studioChart, Map<String, Object> context) {
+    ChartView chart = (ChartView) XMLViews.findView(studioChart.getName(), "chart");
     Map<String, Object> params = getQueryParams(context, chart);
-    String queryString = prepareQuery(chartBuilder, params);
+    String queryString = prepareQuery(studioChart, params);
     Query query = JPA.em().createNativeQuery(queryString);
     params.forEach(query::setParameter);
 
@@ -198,17 +198,17 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     return params;
   }
 
-  protected String prepareQuery(ChartBuilder chartBuilder, Map<String, Object> params) {
+  protected String prepareQuery(StudioChart studioChart, Map<String, Object> params) {
     ArrayList<String> joins = new ArrayList<>();
-    List<Filter> filterList = chartBuilder.getFilterList();
+    List<Filter> filterList = studioChart.getFilterList();
 
-    List<Filter> filterForGroups = getFilters(chartBuilder, params, true);
+    List<Filter> filterForGroups = getFilters(studioChart, params, true);
     filterList.addAll(filterForGroups);
 
-    List<Filter> filterForAggregations = getFilters(chartBuilder, params, false);
+    List<Filter> filterForAggregations = getFilters(studioChart, params, false);
     filterList.addAll(filterForAggregations);
 
-    final String tableName = getTableName(chartBuilder);
+    final String tableName = getTableName(studioChart);
     String sqlFilters = filterSqlService.getSqlFilters(filterList, joins, true);
     if (sqlFilters != null) {
       return String.format(
@@ -219,26 +219,26 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
   }
 
   protected List<Filter> getFilters(
-      ChartBuilder chartBuilder, Map<String, Object> params, boolean isForGroup) {
+      StudioChart studioChart, Map<String, Object> params, boolean isForGroup) {
 
     String paramKey = isForGroup ? PARAM_GROUP : PARAM_AGG;
 
-    if (!isForGroup && isAggregationAllowed(chartBuilder)) {
+    if (!isForGroup && isAggregationAllowed(studioChart)) {
       params.remove(paramKey);
       return new ArrayList<>();
     }
 
     String targetType =
-        isForGroup ? chartBuilder.getGroupOnTargetType() : chartBuilder.getAggregateOnTargetType();
+        isForGroup ? studioChart.getGroupOnTargetType() : studioChart.getAggregateOnTargetType();
     Object paramObj = params.get(paramKey);
     boolean isNull = ObjectUtils.isEmpty(paramObj);
-    Filter filter = createFilter(chartBuilder, isNull, isForGroup);
+    Filter filter = createFilter(studioChart, isNull, isForGroup);
 
     if (!TARGET_DATE_TYPES.contains(targetType.toUpperCase()) || isNull) {
       if (isNull) {
         params.remove(paramKey);
       } else {
-        Object value = getSelectionFieldValue(chartBuilder, paramObj, isForGroup);
+        Object value = getSelectionFieldValue(studioChart, paramObj, isForGroup);
         if (value != null) {
           params.put(paramKey, value);
         }
@@ -246,25 +246,25 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
       return Arrays.asList(filter);
     }
 
-    List<Filter> dateFilters = getFiltersForDateType(chartBuilder, params, filter, isForGroup);
+    List<Filter> dateFilters = getFiltersForDateType(studioChart, params, filter, isForGroup);
     return dateFilters;
   }
 
-  protected boolean isAggregationAllowed(ChartBuilder chartBuilder) {
-    return !AGGR_SUPPORTED_CHARTS.contains(chartBuilder.getChartType())
-        || (chartBuilder.getAggregateOn() == null && chartBuilder.getAggregateOnJson() == null);
+  protected boolean isAggregationAllowed(StudioChart studioChart) {
+    return !AGGR_SUPPORTED_CHARTS.contains(studioChart.getChartType())
+        || (studioChart.getAggregateOn() == null && studioChart.getAggregateOnJson() == null);
   }
 
   protected List<Filter> getFiltersForDateType(
-      ChartBuilder chartBuilder, Map<String, Object> params, Filter filter, Boolean isForGroup) {
+      StudioChart studioChart, Map<String, Object> params, Filter filter, Boolean isForGroup) {
     String paramKey = PARAM_GROUP;
-    String dateType = chartBuilder.getGroupDateType();
-    String targetType = chartBuilder.getGroupOnTargetType();
+    String dateType = studioChart.getGroupDateType();
+    String targetType = studioChart.getGroupOnTargetType();
 
     if (!isForGroup) {
       paramKey = PARAM_AGG;
-      targetType = chartBuilder.getAggregateOnTargetType();
-      dateType = chartBuilder.getAggregateDateType();
+      targetType = studioChart.getAggregateOnTargetType();
+      dateType = studioChart.getAggregateDateType();
     }
 
     String paramValue = (String) params.get(paramKey);
@@ -342,48 +342,48 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     return filter;
   }
 
-  protected Filter createFilter(ChartBuilder chartBuilder, boolean isNull, Boolean isForGroup) {
-    Boolean isJson = chartBuilder.getIsJson();
+  protected Filter createFilter(StudioChart studioChart, boolean isNull, Boolean isForGroup) {
+    Boolean isJson = studioChart.getIsJson();
     Filter filter =
         isForGroup
             ? createFilter(
                 0l,
                 isJson,
-                chartBuilder.getIsJsonGroupOn(),
-                chartBuilder.getGroupOnJson(),
-                chartBuilder.getGroupOn(),
-                chartBuilder.getGroupOnTarget(),
-                chartBuilder.getGroupOnTargetType(),
+                studioChart.getIsJsonGroupOn(),
+                studioChart.getGroupOnJson(),
+                studioChart.getGroupOn(),
+                studioChart.getGroupOnTarget(),
+                studioChart.getGroupOnTargetType(),
                 isNull,
                 "=")
             : createFilter(
                 Long.MAX_VALUE,
                 isJson,
-                chartBuilder.getIsJsonAggregateOn(),
-                chartBuilder.getAggregateOnJson(),
-                chartBuilder.getAggregateOn(),
-                chartBuilder.getAggregateOnTarget(),
-                chartBuilder.getAggregateOnTargetType(),
+                studioChart.getIsJsonAggregateOn(),
+                studioChart.getAggregateOnJson(),
+                studioChart.getAggregateOn(),
+                studioChart.getAggregateOnTarget(),
+                studioChart.getAggregateOnTargetType(),
                 isNull,
                 "=");
     return filter;
   }
 
   protected Object getSelectionFieldValue(
-      ChartBuilder chartBuilder, Object titleParam, Boolean isForGroup) {
+      StudioChart studioChart, Object titleParam, Boolean isForGroup) {
     Object value = null;
     String selection = null;
     Class<?> targetType = String.class;
 
     Boolean isJson =
-        chartBuilder.getIsJson()
-            || (isForGroup ? chartBuilder.getIsJsonGroupOn() : chartBuilder.getIsJsonAggregateOn());
-    MetaField target = chartBuilder.getGroupOn();
-    MetaJsonField jsonField = chartBuilder.getGroupOnJson();
+        studioChart.getIsJson()
+            || (isForGroup ? studioChart.getIsJsonGroupOn() : studioChart.getIsJsonAggregateOn());
+    MetaField target = studioChart.getGroupOn();
+    MetaJsonField jsonField = studioChart.getGroupOnJson();
 
     if (!isForGroup) {
-      target = chartBuilder.getAggregateOn();
-      jsonField = chartBuilder.getAggregateOnJson();
+      target = studioChart.getAggregateOn();
+      jsonField = studioChart.getAggregateOnJson();
     }
 
     if (isJson
@@ -396,7 +396,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
       }
     } else if (!isJson) {
       try {
-        Mapper mapper = Mapper.of(Class.forName(chartBuilder.getModel()));
+        Mapper mapper = Mapper.of(Class.forName(studioChart.getModel()));
         Property p = mapper.getProperty(target.getName());
         if (ObjectUtils.notEmpty(p.getSelection())) {
           selection = p.getSelection();
@@ -419,20 +419,20 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     return value;
   }
 
-  protected String getTableName(ChartBuilder chartBuilder) {
-    Class<?> modelClass = getModelClass(chartBuilder);
+  protected String getTableName(StudioChart studioChart) {
+    Class<?> modelClass = getModelClass(studioChart);
     MetaModel metaModel = metaModelRepository.findByName(modelClass.getSimpleName());
     return metaModel.getTableName();
   }
 
-  protected Class<?> getModelClass(ChartBuilder chartBuilder) {
+  protected Class<?> getModelClass(StudioChart studioChart) {
     Class<?> modelClass;
 
-    if (chartBuilder.getIsJson()) {
+    if (studioChart.getIsJson()) {
       modelClass = MetaJsonRecord.class;
     } else {
       try {
-        modelClass = Class.forName(chartBuilder.getModel());
+        modelClass = Class.forName(studioChart.getModel());
       } catch (ClassNotFoundException e) {
         throw new IllegalStateException(e);
       }

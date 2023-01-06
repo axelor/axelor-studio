@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <grid name="studio-app-grid" title="Apps" model="com.axelor.studio.db.StudioApp">
+    <toolbar>
+      <button name="importBtn" title="Import" onClick="action-studio-view-studio-app-import"/>
+      <button name="exportBtn" title="Export" onClick="action-studio-view-studio-app-export"/>
+    </toolbar>
+    <field name="name"/>
+    <field name="code"/>
+    <field name="generatedApp.active"/>
+  </grid>
+
+  <form name="studio-app-form" title="App" model="com.axelor.studio.db.StudioApp" width="large">
+    <toolbar>
+      <button name="exportBtn" title="Export" onClick="action-studio-view-studio-app-export"/>
+    </toolbar>
+    <panel name="mainPanel">
+      <field name="image" widget="Image" colSpan="2"/>
+      <panel name="detailPanel" colSpan="10">
+        <field name="code" colSpan="3"/>
+        <field name="name" colSpan="8"/>
+        <field name="dependsOnSet" colSpan="12" widget="TagSelect" canNew="false"
+          canEdit="false"/>
+        <field name="modules"/>
+        <field name="sequence"/>
+        <field name="generatedApp.active" hidden="true"/>
+      </panel>
+      <field name="isInAppView"/>
+      <field name="description" widget="html" colSpan="12"/>
+    </panel>
+    <panel-tabs name="mainPanelTab">
+      <panel-dashlet action="action-studio-view-studio-app-custom-model"
+        title="Models"/>
+      <panel-dashlet action="action-studio-view-studio-app-custom-field"
+        title="Fields"/>
+      <panel-dashlet action="action-studio-view-studio-app-menu" title="Menus"/>
+      <panel-dashlet action="action-studio-view-studio-app-action" title="Actions"/>
+      <panel name="chartPanel" title="Charts">
+        <panel-dashlet action="action-studio-view-studio-app-dashboard"
+          title="Dashboards" colSpan="12"/>
+        <panel-dashlet action="action-studio-view-studio-app-chart" title="Charts"
+          colSpan="12"/>
+      </panel>
+    </panel-tabs>
+    <panel-dashlet action="bpm-action-view-studio-app-bpm" title="BPM"/>
+    <panel-dashlet action="bpm-action-view-studio-app-dmn" title="DMN"/>
+    <panel-dashlet action="bpm-action-view-studio-app-baml" title="BAML"/>
+    <panel name="actionPanel" sidebar="true">
+      <button onClick="action-studio-method-studio-app-install-app" name="installBtn"
+        title="Install" showIf="id &amp;&amp; !generatedApp.active"/>
+      <button onClick="action-studio-method-studio-app-uninstall-app" name="uninstallBtn"
+        title="Uninstall" showIf="id &amp;&amp; generatedApp.active"/>
+    </panel>
+  </form>
+
+  <cards name="studio-app-cards" model="com.axelor.studio.db.StudioApp" title="App"
+    css="rect-image" orderBy="sequence" width="25%:200">
+    <toolbar>
+      <button name="importBtn" title="Import" onClick="action-studio-view-studio-app-import"/>
+    </toolbar>
+    <field name="name"/>
+    <field name="code" x-bind="{{code|unaccent|uppercase}}"/>
+    <field name="image"/>
+    <field name="description"/>
+    <field name="generatedApp.active"/>
+    <field name="sequence"/>
+    <template><![CDATA[
+			<div class="app-cards__container">
+			  <div class="app-cards__image">
+			    <img ng-src="{{$image('image', 'content')}}" />
+			  </div>
+			  <div class="app-cards__name">
+				 <strong x-translate>{{$fmt('name')}}</strong>
+			  </div>
+			  <div class="app-cards__buttons">
+				<a class="btn btn-small btn-info pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-install-app" x-translate>Install</a>
+				<a class="btn btn-small btn-success pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-method-studio-app-export" x-translate>Export</a>
+				<a class="btn btn-small btn-success pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-delete-app" x-translate>Delete</a>
+				<a class="btn btn-small btn-danger pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-method-studio-app-uninstall-app" x-translate>Uninstall</a>
+			  </div>
+			</div>
+		]]>
+    </template>
+  </cards>
+
+  <form name="studio-app-import-app-form" model="com.axelor.studio.db.StudioApp"
+    title="Import app">
+    <panel name="mainPanel">
+      <field name="$dataFile" type="many-to-one" target="com.axelor.meta.db.MetaFile"
+        widget="binary-link" title="Data file" required="true"/>
+      <button name="importBtn" title="Import"
+        onClick="action-studio-method-studio-app-import"/>
+    </panel>
+  </form>
+
+  <form name="studio-app-export-app-form" title="Export app"
+    model="com.axelor.message.db.Wizard" onLoad="action-studio-method-studio-app-export-onload">
+    <panel name="mainPanel">
+      <field name="$isExportData" type="boolean" title="Export data"/>
+      <button name="exportBtn" title="Export"
+        onClick="action-studio-method-studio-app-export"/>
+    </panel>
+    <panel hidden="true">
+      <field name="$ids"/>
+    </panel>
+  </form>
+
+  <action-view name="action-studio-view-studio-app-import" title="Import app"
+    model="com.axelor.message.db.Wizard">
+    <view type="form" name="studio-app-import-app-form"/>
+    <view-param name="popup" value="reload"/>
+    <view-param name="forceEdit" value="true"/>
+    <view-param name="show-toolbar" value="false"/>
+    <view-param name="show-confirm" value="false"/>
+    <view-param name="popup-save" value="false"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-export" title="Export app"
+    model="com.axelor.message.db.Wizard">
+    <view type="form" name="studio-app-export-app-form"/>
+    <view-param name="popup" value="reload"/>
+    <view-param name="forceEdit" value="true"/>
+    <view-param name="show-toolbar" value="false"/>
+    <view-param name="show-confirm" value="false"/>
+    <view-param name="popup-save" value="false"/>
+    <context name="ids" expr="eval: id" if="id"/>
+    <context name="ids" expr="eval: _ids" if="_ids"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-custom-model" title="Models"
+    model="com.axelor.meta.db.MetaJsonModel">
+    <view type="grid" name="json-model-grid"/>
+    <view type="form" name="json-model-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-custom-field" title="Fields"
+    model="com.axelor.meta.db.MetaJsonField">
+    <view type="grid" name="json-field-grid"/>
+    <view type="form" name="json-field-form"/>
+    <domain>self.studioApp.id = :studioAppId AND self.jsonModel IS NULL</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-menu" title="Menus"
+    model="com.axelor.studio.db.StudioMenu">
+    <view type="grid" name="studio-menu-grid"/>
+    <view type="form" name="studio-menu-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-action" title="Actions"
+    model="com.axelor.studio.db.StudioAction">
+    <view type="grid" name="studio-action-grid"/>
+    <view type="form" name="studio-action-form"/>
+    <domain>self.studioApp.id = :studioAppId AND self.menuAction = false</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-dashboard" title="Dashboards"
+    model="com.axelor.studio.db.StudioDashboard">
+    <view type="grid" name="studio-dashboard-grid"/>
+    <view type="form" name="studio-dashboard-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-chart" title="Charts"
+    model="com.axelor.studio.db.StudioChart">
+    <view type="grid" name="studio-chart-grid"/>
+    <view type="form" name="studio-chart-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-method name="action-studio-app-method-import-bpm">
+    <call class="com.axelor.studio.web.StudioAppController" method="importBpm"/>
+  </action-method>
+
+  <action-method name="action-studio-method-studio-app-install-app">
+    <call class="com.axelor.studio.web.StudioAppController" method="installApp"/>
+  </action-method>
+
+  <action-method name="action-studio-method-studio-app-uninstall-app">
+    <call class="com.axelor.studio.web.StudioAppController" method="uninstallApp"/>
+  </action-method>
+
+  <action-method name="action-studio-method-studio-app-delete-app">
+    <call class="com.axelor.studio.web.StudioAppController" method="deleteApp"/>
+  </action-method>
+
+  <action-method name="action-studio-method-studio-app-import">
+    <call class="com.axelor.studio.web.StudioAppController" method="importApp"/>
+  </action-method>
+
+  <action-method name="action-studio-method-studio-app-export">
+    <call class="com.axelor.studio.web.StudioAppController" method="exportApp"/>
+  </action-method>
+
+  <action-attrs name="action-studio-method-studio-app-export-onload">
+    <attribute name="value" for="ids" expr="eval: ids"/>
+    <attribute name="value" for="isExportData" expr="eval: true"/>
+  </action-attrs>
+
+  <action-export id="bpm-action-export-studio-apps" name="action-export-studio-apps"
+    output="${date}${time}" download="true">
+    <export
+      name="BPM-${__datetime__.format(java.time.format.DateTimeFormatter.ofPattern('ddMMyyyyHHmmSS'))}.xml"
+      template="data-export/export-app-bpm.tmpl" engine="groovy"/>
+  </action-export>
+
+  <action-view name="bpm-action-view-studio-app-bpm" title="BPM"
+    model="com.axelor.studio.db.WkfModel">
+    <view type="grid" name="wkf-model-grid"/>
+    <view type="form" name="wkf-model-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="bpm-action-view-studio-app-dmn" title="DMN"
+    model="com.axelor.studio.db.WkfDmnModel">
+    <view type="grid" name="wkf-dmn-model-grid"/>
+    <view type="form" name="wkf-dmn-model-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="bpm-action-view-studio-app-baml" title="BAML"
+    model="com.axelor.studio.db.BamlModel">
+    <view type="grid" name="baml-model-grid"/>
+    <view type="form" name="baml-model-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+
+</object-views>

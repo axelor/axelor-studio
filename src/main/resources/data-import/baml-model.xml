@@ -10,7 +10,7 @@
       <bind node="name" to="name"/>
       <bind node="bamlXml" to="bamlXml"/>
       <bind node="resultScript" to="resultScript"/>
-      <bind node="appBuilder" to="appBuilder" search="self.code = :appBuilder" create="false"/>
+      <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
     </bind>
 
   </input>

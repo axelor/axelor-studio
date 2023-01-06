@@ -19,10 +19,10 @@ package com.axelor.studio.service;
 
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaFile;
-import com.axelor.studio.db.ActionBuilder;
-import com.axelor.studio.db.ActionBuilderLine;
+import com.axelor.studio.db.StudioAction;
+import com.axelor.studio.db.StudioActionLine;
 import com.axelor.studio.db.WsKeyValue;
-import com.axelor.studio.db.repo.ActionBuilderRepository;
+import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import java.io.File;
@@ -57,28 +57,28 @@ public class ExportService {
   }
 
   @SuppressWarnings("deprecation")
-  public static String exportActionBuilderLines(List<ActionBuilderLine> lines, int count) {
+  public static String exportStudioActionLines(List<StudioActionLine> lines, int count) {
 
     String xml = "";
 
     String indent = "\n" + Strings.repeat("\t", count);
     String indentPlus = "\n" + Strings.repeat("\t", count + 1);
-    for (ActionBuilderLine line : lines) {
+    for (StudioActionLine line : lines) {
 
       String source = "";
       String target = "";
 
       if (line.getParent() == null) {
-        ActionBuilder builder = line.getActionBuilder();
-        if (builder != null) {
-          target = builder.getTargetModel();
-          source = builder.getModel();
-          if (builder.getTypeSelect() == ActionBuilderRepository.TYPE_SELECT_UPDATE) {
-            target = builder.getModel();
+        StudioAction studioAction = line.getStudioAction();
+        if (studioAction != null) {
+          target = studioAction.getTargetModel();
+          source = studioAction.getModel();
+          if (studioAction.getTypeSelect() == StudioActionRepository.TYPE_SELECT_UPDATE) {
+            target = studioAction.getModel();
           }
         }
       } else {
-        ActionBuilderLine parent = line.getParent();
+        StudioActionLine parent = line.getParent();
         if (parent.getMetaField() != null) target = parent.getMetaField().getTypeName();
         if (parent.getMetaJsonField() != null && parent.getMetaJsonField().getTargetModel() != null)
           target = parent.getMetaJsonField().getTargetModel();
@@ -153,7 +153,7 @@ public class ExportService {
               + "</dummy>"
               + indentPlus
               + "<subLines>"
-              + exportActionBuilderLines(line.getSubLines(), count + 2)
+              + exportStudioActionLines(line.getSubLines(), count + 2)
               + indentPlus
               + "</subLines>"
               + indent

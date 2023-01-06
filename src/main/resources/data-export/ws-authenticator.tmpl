@@ -3,7 +3,7 @@
 	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsAuthenticatorRepository' as Class).all()
 
 	if(__ids__ != null) {
-		query = query.filter('self.appBuilder.id in ?1',__ids__)
+		query = query.filter('self.studioApp.id in ?1',__ids__)
 	} 
 	
 	wsAuthenticators = ""
@@ -19,7 +19,7 @@
 				\n\t\t\t<authResponse>${wsAuthenticator.authResponse}</authResponse>
 				\n\t\t\t<tokenResponse>${wsAuthenticator.tokenResponse}</tokenResponse>
 				\n\t\t\t<refreshTokenResponse>${wsAuthenticator.refreshTokenResponse}</refreshTokenResponse>
-				\n\t\t\t<appBuilder>${wsAuthenticator.appBuilder?.code}</appBuilder>
+				\n\t\t\t<studioApp>${wsAuthenticator.studioApp?.code}</studioApp>
 				\n\t\t</ws-authenticator>"""
 	})
 	

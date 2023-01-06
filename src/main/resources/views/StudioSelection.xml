@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <grid name="studio-selection-grid" title="Selections"
+    model="com.axelor.studio.db.StudioSelection">
+    <field name="name"
+      onChange="action-studio-meta-json-model-name-onchange-record,action-studio-menu-attrs-check-generate-name"/>
+    <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+      if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+  </grid>
+
+  <grid name="selection-option-grid" title="Selection" model="com.axelor.message.db.Wizard">
+    <field name="title" title="Title"/>
+    <field name="value" title="Value" required="true"/>
+    <field name="color" title="Color" selection="color.name.selection" widget="SingleSelect"/>
+    <field name="icon" title="Icon" selection="studio.menu.icon.select"/>
+  </grid>
+
+  <form name="selection-option-form" title="Selection" model="com.axelor.message.db.Wizard">
+    <panel name="mainPanel">
+      <field name="title" title="Title"/>
+      <field name="value" title="Value" required="true"/>
+      <field name="color" title="Color" selection="color.name.selection" widget="SingleSelect"/>
+      <field name="icon" title="Icon" selection="studio.menu.icon.select"/>
+    </panel>
+  </form>
+
+  <form name="studio-selection-form" title="Selection"
+    model="com.axelor.studio.db.StudioSelection" width="large"
+    onLoad="action-studio-selection-method-onload" onSave="action-studio-selection-method-onsave">
+    <panel name="mainPanel">
+      <field name="metaSelect"
+        domain="self.isCustom = false and self.priority = (select min(ms.priority) from MetaSelect ms where ms.name = self.name)"
+        onChange="action-studio-selection-method-fill-selection-text"/>
+      <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      <field name="name"
+        onChange="action-studio-meta-json-model-name-onchange-record,action-studio-menu-attrs-check-generate-name"
+        readonlyIf="metaSelect != null"/>
+      <field name="selectionText" colSpan="12" hidden="true"/>
+      <panel-related field="$selectOptionList" title="Selection" type="one-to-many"
+        target="com.axelor.message.db.Wizard" colSpan="12" grid-view="selection-option-grid"
+        form-view="selection-option-form" editable="true" canMove="true"/>
+    </panel>
+  </form>
+
+  <action-method name="action-studio-selection-method-fill-selection-text">
+    <call class="com.axelor.studio.web.StudioSelectionController" method="fillSelectionText"/>
+  </action-method>
+
+  <action-method name="action-studio-selection-method-onsave">
+    <call class="com.axelor.studio.web.StudioSelectionController"
+      method="generateSelectionText"/>
+  </action-method>
+
+  <action-method name="action-studio-selection-method-onload">
+    <call class="com.axelor.studio.web.StudioSelectionController" method="fillSelectOption"/>
+  </action-method>
+
+</object-views>

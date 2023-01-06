@@ -19,7 +19,7 @@ package com.axelor.studio.service;
 
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonField;
-import com.axelor.studio.service.builder.SelectionBuilderService;
+import com.axelor.studio.service.builder.StudioSelectionService;
 import com.axelor.utils.ModelTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
@@ -29,7 +29,7 @@ public class JsonFieldService {
 
   public static final String SELECTION_PREFIX = "custom-json-select-";
 
-  @Inject private SelectionBuilderService selectionBuilderService;
+  @Inject private StudioSelectionService studioSelectionService;
 
   @Transactional
   public void updateSelection(MetaJsonField metaJsonField) {
@@ -39,7 +39,7 @@ public class JsonFieldService {
     String name = getSelectionName(metaJsonField);
 
     if (Strings.isNullOrEmpty(selectionText)) {
-      selectionBuilderService.removeSelectionBuilder(name);
+      studioSelectionService.removeStudioSelection(name);
 
       if (metaJsonField.getSelection() != null && metaJsonField.getSelection().equals(name)) {
         metaJsonField.setSelection(null);
@@ -48,8 +48,8 @@ public class JsonFieldService {
     }
 
     metaJsonField.setSelection(
-        selectionBuilderService
-            .createSelectionBuilder(selectionText, name, metaJsonField.getAppBuilder())
+        studioSelectionService
+            .createStudioSelection(selectionText, name, metaJsonField.getStudioApp())
             .getName());
   }
 
@@ -59,7 +59,7 @@ public class JsonFieldService {
     String name = getSelectionName(metaJsonField);
 
     if (metaJsonField.getSelection() != null && metaJsonField.getSelection().equals(name)) {
-      selectionBuilderService.removeSelectionBuilder(name);
+      studioSelectionService.removeStudioSelection(name);
     }
   }
 

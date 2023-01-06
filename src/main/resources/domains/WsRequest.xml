@@ -19,8 +19,7 @@
     <many-to-one name="wsConnector" ref="WsConnector" title="Connector"/>
     <string name="repeatIf" title="Repeat if"/>
     <string name="callIf" title="Call if"/>
-    <many-to-one name="appBuilder" ref="com.axelor.studio.db.AppBuilder"
-      title="App builder"/>
+    <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
   </entity>
 
 </domain-models>

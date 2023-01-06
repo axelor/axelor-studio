@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <grid name="studio-dashboard-grid" title="Dashboards"
+    model="com.axelor.studio.db.StudioDashboard">
+    <field name="name"
+      onChange="action-studio-meta-json-model-name-onchange-record,action-studio-menu-attrs-check-generate-name"/>
+    <field name="title"/>
+    <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+      if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+  </grid>
+
+  <form name="studio-dashboard-form" title="Dashboard"
+    model="com.axelor.studio.db.StudioDashboard" width="large">
+    <panel name="mainPanel">
+      <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      <spacer name="studioAppSpacer"
+        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      <field name="name"
+        onChange="action-studio-meta-json-model-name-onchange-record,action-studio-menu-attrs-check-generate-name"/>
+      <field name="title"/>
+      <field name="viewType" hidden="true"/>
+      <field name="edited" hidden="true"/>
+      <panel-related name="studioDashletListPanel" field="studioDashletList"
+        colSpan="12"/>
+    </panel>
+  </form>
+
+</object-views>
+
+

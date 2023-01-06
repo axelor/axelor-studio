@@ -19,7 +19,7 @@
       <bind node="authResponse" to="authResponse"/>
       <bind node="tokenResponse" to="tokenResponse"/>
       <bind node="refreshTokenResponse" to="refreshTokenResponse"/>
-      <bind node="appBuilder" to="appBuilder" search="self.code = :appBuilder" create="false"/>
+      <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
     </bind>
   </input>
 

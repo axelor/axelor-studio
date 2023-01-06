@@ -3,24 +3,24 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
-  <grid id="studio-json-model-grid" name="json-model-grid" title="Custom models"
-    model="com.axelor.meta.db.MetaJsonModel" groupBy="appBuilder">
+  <grid id="studio-json-model-grid" name="json-model-grid" title="Models"
+    model="com.axelor.meta.db.MetaJsonModel" groupBy="studioApp">
     <field name="title"/>
     <field name="name"/>
-    <field name="appBuilder" hidden="true"/>
+    <field name="studioApp" hidden="true"/>
   </grid>
 
-  <grid name="json-model-disable-appbuilder-grid" title="Custom models"
+  <grid name="json-model-disable-studio-app-grid" title="Models"
     model="com.axelor.meta.db.MetaJsonModel">
     <field name="title"/>
     <field name="name"/>
   </grid>
 
-  <form id="studio-json-model-form" name="json-model-form" title="Custom model"
+  <form id="studio-json-model-form" name="json-model-form" title="Model"
     model="com.axelor.meta.db.MetaJsonModel">
     <!-- Studio changes -->
-    <panel name="appBuilderPanel" if="__config__.app.getApp('studio')?.getEnableAppBuilder()">
-      <field name="appBuilder" grid-view="app-builder-grid" form-view="app-builder-form"/>
+    <panel name="studioAppPanel" if="__config__.app.getApp('studio')?.getEnableStudioApp()">
+      <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"/>
     </panel>
     <!-- /Studio changes -->
 
@@ -36,7 +36,7 @@
     <panel name="menuPanel">
       <field name="isGenerateMenu"
         onChange="action-studio-json-model-group-isgeneratemenu-onchange"/>
-      <field name="menuBuilder" showIf="isGenerateMenu" colSpan="12" showTitle="false"
+      <field name="studioMenu" showIf="isGenerateMenu" colSpan="12" showTitle="false"
         requiredIf="isGenerateMenu">
         <editor>
           <field name="title" title="Menu title"/>
@@ -67,12 +67,12 @@
   </form>
 
   <action-method name="action-studio-json-model-method-isgeneratemenu-onchange">
-    <call class="com.axelor.studio.web.MetaJsonModelController" method="removeMenuBuilder"/>
+    <call class="com.axelor.studio.web.MetaJsonModelController" method="removeStudioMenu"/>
   </action-method>
 
   <action-group name="action-studio-json-model-group-isgeneratemenu-onchange">
     <action if="id != null &amp;&amp; !isGenerateMenu" name="save"/>
-    <action if="id != null &amp;&amp; menuBuilder != null"
+    <action if="id != null &amp;&amp; studioMenu != null"
       name="action-studio-json-model-method-isgeneratemenu-onchange"/>
   </action-group>
 

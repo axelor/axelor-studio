@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <grid name="studio-dashlet-grid" title="Dashlets" model="com.axelor.studio.db.StudioDashlet"
+    canMove="true" orderBy="sequence">
+    <field name="viewType"/>
+    <field name="name"
+      onChange="action-studio-meta-json-model-name-onchange-record,action-studio-menu-attrs-check-generate-name"/>
+    <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+      if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+  </grid>
+
+  <form name="studio-dashlet-form" title="Dashlet" model="com.axelor.studio.db.StudioDashlet">
+    <panel name="mainPanel">
+      <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      <spacer name="studioAppSpacer"
+        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      <field name="viewType" selection-in="['chart','grid', 'custom']"/>
+      <field name="name"
+        onChange="action-studio-meta-json-model-name-onchange-record,action-studio-menu-attrs-check-generate-name"/>
+      <field name="metaView" requiredIf="action == null" domain="self.type = :viewType"
+        showIf="action == null"/>
+      <field name="action" requiredIf="metaView == null" domain="self.type = 'action-view'"
+        showIf="metaView == null"/>
+      <field name="colspan"/>
+      <field name="canSearch" showIf="viewType == 'grid'"/>
+      <field name="height"/>
+      <field name="paginationLimit" showIf="viewType == 'grid'"/>
+    </panel>
+  </form>
+
+</object-views>
+
+

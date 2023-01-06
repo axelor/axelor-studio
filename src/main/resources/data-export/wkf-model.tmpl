@@ -3,7 +3,7 @@
 	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WkfModelRepository' as Class).all()
 	
 	if(__ids__ != null) {
-  		query = query.filter('self.appBuilder.id in ?1',__ids__)
+  		query = query.filter('self.studioApp.id in ?1',__ids__)
 	}
 	
 	wkfModels = ""
@@ -16,7 +16,7 @@
 							\n\t\t\t<versionTag>${wkfModel.versionTag}</versionTag>
 							\n\t\t\t<previousVersion>${wkfModel.previousVersion?.code}</previousVersion>
 							\n\t\t\t<description>${wkfModel.description}</description>
-							\n\t\t\t<appBuilder>${wkfModel.appBuilder?.code}</appBuilder>
+							\n\t\t\t<studioApp>${wkfModel.studioApp?.code}</studioApp>
 							\n\t\t</wkf-model>"""
 	})
 	

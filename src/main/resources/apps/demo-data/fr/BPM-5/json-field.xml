@@ -77,9 +77,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder>BPM-5</appBuilder>
+    <studioApp>BPM-5</studioApp>
 
-    <modelAppBuilder></modelAppBuilder>
+    <modelStudioApp></modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 
@@ -160,9 +160,9 @@
 
     <targetJsonModel></targetJsonModel>
 
-    <appBuilder>BPM-5</appBuilder>
+    <studioApp>BPM-5</studioApp>
 
-    <modelAppBuilder></modelAppBuilder>
+    <modelStudioApp></modelStudioApp>
 
     <isSelectionField>false</isSelectionField>
 

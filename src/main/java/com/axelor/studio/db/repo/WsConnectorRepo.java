@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.db.repo;
 
-import com.axelor.studio.db.AppBuilder;
+import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.WsRequest;
 import java.util.List;
@@ -34,10 +34,10 @@ public class WsConnectorRepo extends WsConnectorRepository {
       return connector;
     }
 
-    final AppBuilder appBuilder = connector.getAppBuilder();
+    final StudioApp studioApp = connector.getStudioApp();
     requests.forEach(
         req -> {
-          req.setAppBuilder(appBuilder);
+          req.setStudioApp(studioApp);
         });
 
     return connector;

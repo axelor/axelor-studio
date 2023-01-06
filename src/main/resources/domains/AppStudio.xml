@@ -9,7 +9,7 @@
 
     <one-to-one ref="com.axelor.studio.db.App" name="app"/>
 
-    <boolean name="enableAppBuilder" title="Enable app builder" default="true"/>
+    <boolean name="enableStudioApp" title="Enable app" default="true"/>
   </entity>
 
 </domain-models>

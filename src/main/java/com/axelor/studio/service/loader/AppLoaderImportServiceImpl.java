@@ -26,7 +26,6 @@ import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.File;
@@ -36,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,17 +48,17 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
 
   private static final String[] IMPORT_FILES =
       new String[] {
-        "app-builder.xml",
-        "selection-builder.xml",
+        "studio-app.xml",
+        "studio-selection.xml",
         "json-model.xml",
         "json-field.xml",
         "json-model-call.xml",
-        "chart-builder.xml",
-        "dashboard-builder.xml",
-        "dashlet-builder.xml",
-        "dashboard-builder-call.xml",
-        "action-builder.xml",
-        "menu-builder.xml",
+        "studio-chart.xml",
+        "studio-dashboard.xml",
+        "studio-dashlet.xml",
+        "studio-dashboard-call.xml",
+        "studio-action.xml",
+        "studio-menu.xml",
         "ws-request.xml",
         "ws-authenticator.xml",
         "ws-connector.xml"
@@ -78,7 +78,7 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
       return;
     }
 
-    File dataDir = Files.createTempDir();
+    File dataDir = Files.createTempDirectory("").toFile();
     extractImportZip(appLoader, dataDir);
 
     File logFile = importApp(appLoader, dataDir);
@@ -119,11 +119,9 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
             : MetaFiles.createTempFile("import-", "log").toFile();
 
     try (PrintWriter pw = new PrintWriter(logFile)) {
-
-      for (File confiFile : getAppImportConfigFiles(dataDir)) {
-
+      for (File configFile : getAppImportConfigFiles(dataDir)) {
         XMLImporter xmlImporter =
-            new XMLImporter(confiFile.getAbsolutePath(), dataDir.getAbsolutePath());
+            new XMLImporter(configFile.getAbsolutePath(), dataDir.getAbsolutePath());
         xmlImporter.setContext(getImportContext(appLoader));
 
         xmlImporter.addListener(

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <grid name="studio-action-view-grid" title="Views"
+    model="com.axelor.studio.db.StudioActionView" editable="true" orderBy="sequence" canMove="true">
+    <field name="viewType"/>
+    <field name="viewName" widget="ref-text" x-target="com.axelor.meta.db.MetaView"
+      x-target-name="name" onSelect="action-studio-action-view-name-domain"/>
+    <field name="viewConditionToCheck"/>
+  </grid>
+
+  <form name="studio-action-view-form" title="View"
+    model="com.axelor.studio.db.StudioActionView">
+    <panel name="mainPanel">
+      <field name="viewType" colSpan="4"/>
+      <field name="viewName" colSpan="8" widget="ref-text"
+        x-target="com.axelor.meta.db.MetaView" x-target-name="name"
+        onSelect="action-studio-action-view-name-domain"/>
+      <field name="viewConditionToCheck"/>
+    </panel>
+  </form>
+
+</object-views>

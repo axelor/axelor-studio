@@ -5,13 +5,13 @@
 
   <grid name="ws-connector-grid" model="com.axelor.studio.db.WsConnector" title="Ws Connector">
     <field name="name"/>
-    <field name="appBuilder"/>
+    <field name="studioApp"/>
   </grid>
 
   <form name="ws-connector-form" model="com.axelor.studio.db.WsConnector" title="Ws Connector"
     width="large">
     <panel name="mainPanel">
-      <field name="appBuilder"/>
+      <field name="studioApp"/>
       <spacer/>
       <field name="name"/>
       <field name="defaultWsAuthenticator"/>

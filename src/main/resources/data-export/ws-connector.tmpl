@@ -3,7 +3,7 @@
 	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsConnectorRepository' as Class).all()
 
 	if(__ids__ != null) {
-		query = query.filter('self.appBuilder.id in ?1',__ids__)
+		query = query.filter('self.studioApp.id in ?1',__ids__)
 	} 
 	
 	wsConnectors = ""
@@ -13,7 +13,7 @@
 				\n\t\t\t<name>${wsConnector.name}</name>
 				\n\t\t\t<defaultWsAuthenticator>${wsConnector.defaultWsAuthenticator?.name}</defaultWsAuthenticator>
 				\n\t\t\t<baseUrl>${wsConnector.baseUrl}</baseUrl>
-				\n\t\t\t<appBuilder>${wsConnector.appBuilder?.code}</appBuilder>
+				\n\t\t\t<studioApp>${wsConnector.studioApp?.code}</studioApp>
 				\n\t\t</ws-connector>"""
 	})
 	

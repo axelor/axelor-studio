@@ -17,14 +17,34 @@
  */
 package com.axelor.studio.service.loader;
 
+import com.axelor.data.xml.XMLBind;
 import com.axelor.data.xml.XMLConfig;
+import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.db.AppLoader;
+import com.axelor.utils.context.FullContext;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 public interface AppLoaderExportService {
 
   public void exportApps(AppLoader appLoader);
 
   public void writeXmlConfig(File configFile, XMLConfig xmlConfig) throws IOException;
+
+  public Map<String, InputStream> getExportTemplateResources();
+
+  public void fixTargetName(Map<String, Object> jsonFieldMap);
+
+  public File createExportZip(File exportDir) throws IOException, FileNotFoundException;
+
+  public void addRelationaJsonFieldBind(
+      MetaJsonField jsonField, Map<String, Object> fieldAttrs, XMLBind xmlBind);
+
+  public FileWriter createHeader(String dasherizeModel, File dataFile) throws IOException;
+
+  public Object extractJsonFieldValue(FullContext record, Map<String, Object> fieldAttrs);
 }

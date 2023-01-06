@@ -22,7 +22,7 @@ import com.axelor.meta.db.MetaJsonField;
 import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
-import com.axelor.studio.db.AppBuilder;
+import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.service.JsonFieldService;
 import com.axelor.studio.service.StudioMetaService;
 import com.google.inject.Inject;
@@ -34,9 +34,9 @@ public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
   @Override
   public MetaJsonField save(MetaJsonField metaJsonField) {
 
-    AppBuilder appBuilder = metaJsonField.getAppBuilder();
-    if (appBuilder != null) {
-      metaJsonField.setIncludeIf("__config__.app.isApp('" + appBuilder.getCode() + "')");
+    StudioApp studioApp = metaJsonField.getStudioApp();
+    if (studioApp != null) {
+      metaJsonField.setIncludeIf("__config__.app.isApp('" + studioApp.getCode() + "')");
     }
 
     Beans.get(JsonFieldService.class).updateSelection(metaJsonField);

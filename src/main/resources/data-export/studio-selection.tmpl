@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<%	
+	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.StudioSelectionRepository' as Class).all()
+
+	if(__ids__ != null) {
+		query = query.filter('self.studioApp.id in ?1 OR self.studioApp is null',__ids__)
+	} 
+	
+	studioSelections = ""
+	query.fetch().each({
+		studioSelection -> 
+				studioSelections += """\n\t\t<studio-selection>
+				\n\t\t\t<metaSelect>${studioSelection.metaSelect?.name}</metaSelect>
+				\n\t\t\t<name>${studioSelection.name}</name>
+				\n\t\t\t<selectionText>${studioSelection.selectionText}</selectionText>
+				\n\t\t\t<studioApp>${studioSelection.studioApp?.code}</studioApp>
+				\n\t\t</studio-selection>"""
+	})
+	
+	if (!studioSelections.isEmpty()) {
+		studioSelections = """<studio-selections>\n""" +  studioSelections + """\n</studio-selections>"""
+	}
+	
+	out << """$studioSelections"""
+%>
