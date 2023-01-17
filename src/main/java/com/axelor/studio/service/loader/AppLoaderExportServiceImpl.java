@@ -85,7 +85,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
         "studio-selection",
         "ws-connector",
         "ws-request",
-        "ws-authenticator"
+        "ws-authenticator",
+        "meta-view"
       };
 
   private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

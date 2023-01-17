@@ -23,9 +23,12 @@ import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.meta.db.MetaJsonModel;
+import com.axelor.meta.db.MetaView;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
+import com.axelor.meta.db.repo.MetaViewRepository;
+import com.axelor.meta.loader.ViewGenerator;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioApp;
@@ -54,6 +57,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -89,6 +93,10 @@ public class ImportService {
   @Inject private WsAuthenticatorRepository wsAuthenticatorRepo;
 
   @Inject private WsConnectorRepository wsConnectorRepo;
+
+  @Inject private ViewGenerator viewGenerator;
+
+  @Inject private MetaViewRepository metaViewRepo;
 
   public Object importMetaJsonModel(Object bean, Map<String, Object> values) {
 
@@ -320,5 +328,18 @@ public class ImportService {
     assert bean instanceof WsConnector;
 
     return wsConnectorRepo.save((WsConnector) bean);
+  }
+
+  public Object importComputedView(Object bean, Map<String, Object> values) {
+
+    assert bean instanceof MetaView;
+
+    MetaView metaView = (MetaView) bean;
+
+    if (metaView != null && metaView.getExtension()) {
+      viewGenerator.process(Collections.singletonList(metaView.getName()), true);
+    }
+
+    return metaViewRepo.find(metaView.getId());
   }
 }

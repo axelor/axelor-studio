@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views https://axelor.com/xml/ns/object-views/object-views_6.1.xsd">
+
+  <form name="meta-view-form" title="View" model="com.axelor.meta.db.MetaView" extension="true"
+    id="studio-meta-view-form">
+    <extend target="//field[@name='module']">
+      <insert position="after">
+        <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
+          if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      </insert>
+    </extend>
+  </form>
+
+</object-views>

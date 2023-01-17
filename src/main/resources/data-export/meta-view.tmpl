@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<%	
+	query = com.axelor.inject.Beans.get('com.axelor.meta.db.repo.MetaViewRepository' as Class).all()
+	
+	if(__ids__ != null) {
+		query = query.filter('self.studioApp.id in ?1',__ids__)
+	}
+	
+	metaViews = ""
+	query.fetch().each({
+		metaView -> metaViews += """\n\t\t<meta-view>
+							\n\t\t\t<name>${metaView.name}</name>
+							\n\t\t\t<title>${metaView.title}</title>
+							\n\t\t\t<type>${metaView.type}</type>
+							\n\t\t\t<model>${metaView.model}</model>
+							\n\t\t\t<module>${metaView.module}</module>
+							\n\t\t\t<computed>${metaView.computed}</computed>
+							\n\t\t\t<extension>${metaView.extension}</extension>
+							\n\t\t\t<xml>${metaView.xml}</xml>
+							\n\t\t\t<xmlId>${metaView.xmlId}</xmlId>
+							\n\t\t\t<studioApp>${metaView.studioApp?.code}</studioApp>
+							\n\t\t</meta-view>"""
+	})
+	
+	if (!metaViews.isEmpty()) {
+		metaViews = """<meta-views>\n""" +  metaViews + """\n</meta-views>"""
+	}
+	
+	out << """$metaViews"""
+%>
