@@ -61,7 +61,8 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
         "studio-menu.xml",
         "ws-request.xml",
         "ws-authenticator.xml",
-        "ws-connector.xml"
+        "ws-connector.xml",
+        "meta-view.xml"
       };
 
   @Inject protected AppLoaderRepository appLoaderRepository;
@@ -71,7 +72,6 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
   @Inject protected AppLoaderExportService appLoaderExportService;
 
   @Override
-  @Transactional
   public void importApps(AppLoader appLoader) throws FileNotFoundException, IOException {
 
     if (appLoader.getImportMetaFile() == null) {
@@ -83,14 +83,21 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
 
     File logFile = importApp(appLoader, dataDir);
 
+    addLogFile(appLoader, logFile);
+
+    FileUtils.deleteDirectory(dataDir);
+  }
+
+  @Transactional
+  protected void addLogFile(AppLoader appLoader, File logFile) throws IOException {
+
     appLoader = appLoaderRepository.find(appLoader.getId());
     if (appLoader.getImportLog() == null) {
       appLoader.setImportLog(metaFiles.upload(logFile));
     }
+
     appLoader.setImportedOn(LocalDateTime.now());
     appLoaderRepository.save(appLoader);
-
-    FileUtils.deleteDirectory(dataDir);
   }
 
   protected void extractImportZip(AppLoader appLoader, File dataDir)
