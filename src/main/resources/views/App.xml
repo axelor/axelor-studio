@@ -8,30 +8,39 @@
     <field name="name"/>
     <field name="active"/>
     <field name="demoDataLoaded"/>
+    <field name="typeSelect"/>
+    <field name="appVersion"/>
   </grid>
 
   <form name="app-form" title="App" model="com.axelor.studio.db.App" canDelete="false"
     canNew="false" width="large">
     <panel name="mainPanel">
-      <field name="image" widget="Image" colSpan="2"/>
+      <panel name="imagePanel" colSpan="2">
+        <field name="image" widget="Image" colSpan="12"/>
+      </panel>
       <panel colSpan="6" name="infoPanel">
-        <field name="typeSelect" showTitle="false" readonly="true">
-          <viewer>
-      		<![CDATA[
-      		  <h4>
-			  	<span class="label" style="background-color: #2AA0D5;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
-			  	<span class="label" style="background-color: #F69609;" ng-show="record.typeSelect == 'addons'" x-translate>Addons</span>
-			  	<span class="label" style="background-color: #7539C6;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
-			  	<span class="label" style="background-color: #94846B;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
-			  	<span class="label" style="background-color: #6F908C;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
-			  </h4>
-      		]]>
-          </viewer>
-        </field>
+        <spacer colSpan="12"/>
         <field name="name" readonly="true" colSpan="12"/>
         <field name="languageSelect" selection-in="['en','fr']"/>
         <field name="demoDataLoaded" readonly="true"
           if="com.axelor.app.AppSettings.get().get('application.mode') != 'prod'"/>
+      </panel>
+      <panel name="tagsPanel" colSpan="4">
+        <field name="$tagFields" showTitle="false" readonly="true" colSpan="12">
+          <viewer depends="typeSelect,appVersion">
+	        	<![CDATA[
+	        	  <h4 class="text-right">
+				  	<span class="label" style="background-color: #2AA0D5; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
+				  	<span class="label" style="background-color: #F69609; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'addons'" x-translate>Addons</span>
+				  	<span class="label" style="background-color: #7539C6; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
+				  	<span class="label" style="background-color: #94846B; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
+				  	<span class="label" style="background-color: #6F908C; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
+
+				  	<span class="label" style="background-color: slategrey; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.appVersion">{{record.appVersion}}</span>
+				  </h4>
+	        	]]>
+          </viewer>
+        </field>
       </panel>
       <field name="description" colSpan="12" readonly="true"/>
       <field name="initDataLoaded" hidden="true"/>
@@ -58,6 +67,8 @@
       canSelect="false" canView="false">
       <field name="name"/>
       <field name="active"/>
+      <field name="typeSelect"/>
+      <field name="appVersion"/>
     </panel-related>
   </form>
 
@@ -103,21 +114,30 @@
     <field name="active"/>
     <field name="sequence"/>
     <field name="typeSelect"/>
+    <field name="appVersion"/>
     <template><![CDATA[
 			<div class="app-cards__container">
 			  <div class="app-cards__image">
 			    <img ng-src="{{$image('image', 'content')}}" />
 			  </div>
-			  <div class="app-cards__name">
-				 <strong x-translate>{{$fmt('name')}}</strong>
+			  <div class="app-cards__name" style="overflow:hidden" >
+			  <div style="display:flex;flex-wrap:nowrap;">
+			 	<div style="font-weight: 600;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;flex:1;" x-translate>
+			 		{{$fmt('name')}}
+			 	</div>
+			   <div ng-show="record.appVersion" class="app-cards__version" style="font-size: 14px;margin-top:-1px;min-width:36px;margin-left:5px">
+	 	  			<span class="label" style="background-color: slategrey;">{{record.appVersion}}</span>
+		  		</div>
 			  </div>
-			  <h4 style="position: absolute; right: 20px">
-			  	<span class="label" style="background-color: #2AA0D5;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
-			  	<span class="label" style="background-color: #F69609;" ng-show="record.typeSelect == 'addons'" x-translate>Addons</span>
-			  	<span class="label" style="background-color: #7539C6;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
-			  	<span class="label" style="background-color: #94846B;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
-			  	<span class="label" style="background-color: #6F908C;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
-			  </h4>
+				 <div style="font-size: 14px">
+				  	<span style="color: #2AA0D5; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
+				  	<span style="color: #F69609; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'addons'" x-translate>Addons</span>
+				  	<span style="color: #7539C6; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
+				  	<span style="color: #94846B; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
+				  	<span style="color: #6F908C; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
+				  </div>
+			  </div>
+
 			  <div class="app-cards__buttons">
 				<a class="btn btn-small btn-info pull-right" href="" ng-show="!active" ui-action-click="action-app-alert-install,action-app-method-install-app" x-translate>Install</a>
 				<a class="btn btn-small btn-success pull-right" href="" ng-show="active" ui-action-click="com.axelor.studio.app.web.AppController:configure" x-translate>Configure</a>
