@@ -93,10 +93,13 @@ public class AppServiceImpl implements AppService {
   private static final String APP_IMAGE = "image";
   private static final String APP_MODULES = "modules";
   private static final String APP_DEPENDS_ON = "dependsOn";
+  private static final String APP_VERSION = "appVersion";
 
   @Inject private AppRepository appRepo;
 
   @Inject private MetaFiles metaFiles;
+
+  @Inject private AppVersionService appVersionService;
 
   @Override
   public App importDataDemo(App app) throws IOException {
@@ -515,6 +518,11 @@ public class AppServiceImpl implements AppService {
     if (app.getLanguageSelect() == null) {
       String language = AppSettings.get().get("application.locale");
       app.setLanguageSelect(language);
+    }
+
+    if (!appDataMap.containsKey(APP_VERSION) || appDataMap.get(APP_VERSION) == null) {
+      String appVersion = appVersionService.getAppVersion(app);
+      app.setAppVersion(appVersion);
     }
 
     saveApp(app);

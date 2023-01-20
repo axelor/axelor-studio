@@ -27,6 +27,8 @@ import com.axelor.studio.app.service.AccessTemplateService;
 import com.axelor.studio.app.service.AccessTemplateServiceImpl;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.app.service.AppServiceImpl;
+import com.axelor.studio.app.service.AppVersionService;
+import com.axelor.studio.app.service.AppVersionServiceImpl;
 import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.baml.service.BamlServiceImpl;
 import com.axelor.studio.bpm.listener.ServerStartListener;
@@ -131,6 +133,7 @@ public class StudioModule extends AxelorModule {
     bind(AccessTemplateService.class).to(AccessTemplateServiceImpl.class);
     bind(AccessConfigImportService.class).to(AccessConfigImportServiceImpl.class);
     bind(AppServerStartListener.class);
+    bind(AppVersionService.class).to(AppVersionServiceImpl.class);
 
     // BPM
     bind(WkfRequestListener.class);
