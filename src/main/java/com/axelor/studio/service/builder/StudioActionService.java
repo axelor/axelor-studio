@@ -81,6 +81,10 @@ public class StudioActionService {
       metaAction.setModule(studioAction.getMetaModule().getName());
     }
 
+    if (studioAction.getMenuAction()) {
+      metaAction.setArchived(studioAction.getArchived());
+    }
+
     MetaStore.clear();
 
     return metaAction;
