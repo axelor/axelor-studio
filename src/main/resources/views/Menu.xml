@@ -169,10 +169,10 @@
     <view type="form" name="ws-authenticator-form"/>
   </action-view>
 
-  <menuitem name="admin-root-app-management" parent="admin-root" order="5"
-    title="Apps management" action="admin.root.app.management"/>
+  <menuitem name="menu-admin-app-management" parent="menu-admin" order="-99"
+    title="Apps management" action="menu.admin.app.management"/>
 
-  <action-view name="admin.root.app.management" title="Apps management"
+  <action-view name="menu.admin.app.management" title="Apps management"
     model="com.axelor.studio.db.App">
     <view type="cards" name="app-cards"/>
     <view type="grid" name="app-grid"/>
