@@ -1,4 +1,4 @@
-/*
+/**
  * Axelor Business Solutions
  *
  * Copyright (C) 2022 Axelor (<http://axelor.com>).
@@ -15,21 +15,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.web;
-
-import com.axelor.web.StaticResourceProvider;
-import java.util.List;
-
-public class StudioStaticResources implements StaticResourceProvider {
-
-  @Override
-  public void register(List<String> resources) {
-    resources.add("admin/css/custom-width.css");
-    resources.add("admin/css/app-cards.css");
-    resources.add("lib/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css");
-    resources.add("lib/bpmn-js/assets/diagram-js.css");
-    resources.add("css/bpmn.css");
-    resources.add("lib/bpmn-js/bpmn-modeler.js");
-    resources.add("js/form/form.bpmn.js");
-  }
+.user-preferences .form-view.bar-layout.mini-form {
+    max-width: 720px;
 }
