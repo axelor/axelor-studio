@@ -3,7 +3,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
-  <grid name="studio-menu-grid" title="Menus" model="com.axelor.studio.db.StudioMenu">
+  <grid name="studio-menu-grid" title="StudioMenu.menus"
+    model="com.axelor.studio.db.StudioMenu">
     <field name="parentMenu"/>
     <field name="title"/>
     <field name="studioAction.model" title="Model"/>
@@ -14,7 +15,7 @@
       icon="fa-list" title="Show records"/>
   </grid>
 
-  <form name="studio-menu-form" title="Menu" model="com.axelor.studio.db.StudioMenu"
+  <form name="studio-menu-form" title="StudioMenu.menu" model="com.axelor.studio.db.StudioMenu"
     width="large">
     <panel name="mainPanel">
       <field name="$existingMenu" title="Existing menu" type="many-to-one"
