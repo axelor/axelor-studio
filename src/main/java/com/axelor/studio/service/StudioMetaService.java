@@ -223,6 +223,7 @@ public class StudioMetaService {
     menu.setIconBackground(studioMenu.getIconBackground());
     menu.setOrder(studioMenu.getOrder());
     menu.setParent(studioMenu.getParentMenu());
+    menu.setArchived(studioMenu.getArchived());
 
     if (studioMenu.getGroups() != null) {
       Set<Group> groups = new HashSet<>();

@@ -64,6 +64,7 @@ public class StudioMenuService {
       if (studioAction.getName() == null) {
         studioAction.setName(menu.getName());
       }
+      studioAction.setArchived(studioMenu.getArchived());
       studioAction.setXmlId(studioMenu.getXmlId());
       studioAction.setTitle(menu.getTitle());
       studioAction.setStudioApp(studioMenu.getStudioApp());
