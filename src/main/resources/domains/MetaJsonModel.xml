@@ -9,7 +9,8 @@
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
     <boolean name="showProcessTracking" title="Show process tracking"/>
     <boolean name="isGenerateMenu" title="Generate menu"/>
-    <many-to-one name="studioMenu" ref="com.axelor.studio.db.StudioMenu" title="Menu"/>
+    <many-to-one name="studioMenu" ref="com.axelor.studio.db.StudioMenu"
+      title="StudioMenu.menu"/>
   </entity>
 
 </domain-models>

@@ -36,7 +36,8 @@
         title="Models"/>
       <panel-dashlet action="action-studio-view-studio-app-custom-field"
         title="Fields"/>
-      <panel-dashlet action="action-studio-view-studio-app-menu" title="Menus"/>
+      <panel-dashlet action="action-studio-view-studio-app-menu"
+        title="StudioMenu.menus"/>
       <panel-dashlet action="action-studio-view-studio-app-action" title="Actions"/>
       <panel name="chartPanel" title="Charts">
         <panel-dashlet action="action-studio-view-studio-app-dashboard"
@@ -146,7 +147,7 @@
     <context name="studioAppId" expr="eval: id"/>
   </action-view>
 
-  <action-view name="action-studio-view-studio-app-menu" title="Menus"
+  <action-view name="action-studio-view-studio-app-menu" title="StudioMenu.menus"
     model="com.axelor.studio.db.StudioMenu">
     <view type="grid" name="studio-menu-grid"/>
     <view type="form" name="studio-menu-form"/>
