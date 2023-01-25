@@ -13,7 +13,7 @@
     </bind>
   </input>
   <input file="Sequence.xml" root="sequences">
-    <bind node="sequence" type="com.axelor.studio.db.Sequence"
+    <bind node="sequence" type="com.axelor.apps.base.db.Sequence"
       search="self.codeSelect =  :_codeSelect" update="true">
       <bind node="codeSelect" to="_codeSelect"/>
       <bind node="codeSelect" to="codeSelect"/>
@@ -29,7 +29,7 @@
     </bind>
   </input>
   <input file="Sequence.xml" root="sequences">
-    <bind node="sequence" type="com.axelor.studio.db.Sequence"
+    <bind node="sequence" type="com.axelor.apps.base.db.Sequence"
       search="self.codeSelect =  :_codeSelect" update="true" create="false">
       <bind node="codeSelect" to="_codeSelect"/>
       <bind node="company" to="_company"/>
