@@ -20,7 +20,7 @@
   </dashboard>
 
   <form name="bpm-manager-dashboard-form" model="com.axelor.message.db.Wizard"
-    title="BPM Manager" width="large" onNew="action-bpm-manage-attrs-set-process" canSave="false"
+    title="BPM Dashboard" width="large" onNew="action-bpm-manage-attrs-set-process" canSave="false"
     canNew="false">
     <panel name="actionPanel" colSpan="12">
       <button name="$showProcessBtn" colSpan="3" widget="info-button" title="Show Processes"
