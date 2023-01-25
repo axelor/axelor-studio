@@ -119,8 +119,8 @@
     <context name="_fromStudio" expr="eval:true"/>
   </action-view>
 
-  <menuitem title="Mappers" name="studio-app-config-mappers" parent="studio-app-config"
-    action="action.studio.mapper.view" order="50"/>
+  <menuitem title="Mappers" name="studio-app-config-mappers"
+    parent="bpm-app-bpm-components" action="action.studio.mapper.view" order="52"/>
 
   <action-view name="action.studio.mapper.view" title="Mappers"
     model="com.axelor.studio.db.ValueMapper">
@@ -128,8 +128,8 @@
     <view type="form" name="value-mapper-form"/>
   </action-view>
 
-  <menuitem name="studio-app-app-loaders" title="App Loaders" parent="studio-app-config"
-    order="55" action="action.app.loaders.view"
+  <menuitem name="studio-app-app-loaders" title="App Loaders"
+    parent="bpm-app-bpm-components" order="54" action="action.app.loaders.view"
     if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
 
   <action-view name="action.app.loaders.view" title="App Loaders"
@@ -188,18 +188,25 @@
   <menuitem title="BPM Studio" name="menu-wkf-bpm-studio" parent="studio-app-root"
     action="action-wkf-view-open-editor" order="19" if="__config__.app.isApp('bpm')"/>
 
-  <menuitem title="BPM Manager" name="menu-wkf-bpm-manager" parent="studio-app-root"
-    action="action.wkf.bpm.manager" order="20" if="__config__.app.isApp('bpm')"/>
-  <action-view name="action.wkf.bpm.manager" title="BPM Manager"
+  <menuitem name="bpm-app-bpm-components" title="BPM components" order="20"
+    parent="studio-app-root"/>
+
+  <menuitem title="BPM Dashboard" name="menu-wkf-bpm-manager"
+    parent="bpm-app-bpm-components" action="action.wkf.bpm.manager" order="55"
+    if="__config__.app.isApp('bpm')"/>
+  <action-view name="action.wkf.bpm.manager" title="BPM Dashboard"
     model="com.axelor.message.db.Wizard">
     <view type="form" name="bpm-manager-dashboard-form"/>
     <context name="_user_id" expr="eval:__user__.id"/>
   </action-view>
 
-  <menuitem title="BPM Model" name="menu-wkf-model" parent="studio-app-config"
-    action="wkf.model.all" order="60" if="__config__.app.isApp('bpm')"/>
+  <menuitem name="bpm-app-technical-monitoring" title="Technical monitoring" order="56"
+    parent="bpm-app-bpm-components"/>
 
-  <action-view name="wkf.model.all" title="BPM Model"
+  <menuitem title="BPM Models" name="menu-wkf-model" parent="bpm-app-technical-monitoring"
+    action="wkf.model.all" order="66" if="__config__.app.isApp('bpm')"/>
+
+  <action-view name="wkf.model.all" title="BPM Models"
     model="com.axelor.studio.db.WkfModel">
     <view type="grid" name="wkf-model-grid"/>
     <view type="form" name="wkf-model-form"/>
@@ -207,28 +214,29 @@
     <context name="__check_version" expr="eval: true"/>
   </action-view>
 
-  <menuitem title="BPM Instance" name="menu-wkf-instance" parent="studio-app-config"
-    action="wkf.instance.all" order="65" if="__config__.app.isApp('bpm')"/>
+  <menuitem title="Process Instances" name="menu-wkf-instance"
+    parent="bpm-app-technical-monitoring" action="wkf.instance.all" order="65"
+    if="__config__.app.isApp('bpm')"/>
 
-  <action-view name="wkf.instance.all" title="BPM Instance"
+  <action-view name="wkf.instance.all" title="Process Instances"
     model="com.axelor.studio.db.WkfInstance">
     <view type="grid" name="wkf-instance-grid"/>
     <view type="form" name="wkf-instance-form"/>
   </action-view>
 
-  <menuitem title="DMN Models" name="menu-wkf-dmn-model" parent="studio-app-config"
-    action="wkf.dmn.model.all" order="70" if="__config__.app.isApp('bpm')"/>
+  <menuitem title="DMNs" name="menu-wkf-dmn-model" parent="bpm-app-bpm-components"
+    action="wkf.dmn.model.all" order="51" if="__config__.app.isApp('bpm')"/>
 
-  <action-view name="wkf.dmn.model.all" title="DMN Models"
+  <action-view name="wkf.dmn.model.all" title="DMNs"
     model="com.axelor.studio.db.WkfDmnModel">
     <view type="grid" name="wkf-dmn-model-grid"/>
     <view type="form" name="wkf-dmn-model-form"/>
   </action-view>
 
-  <menuitem title="BAML Models" name="menu-baml-model" parent="studio-app-config"
-    action="baml.model.all" order="75" if="__config__.app.isApp('bpm')"/>
+  <menuitem title="BAMLs" name="menu-baml-model" parent="bpm-app-bpm-components"
+    action="baml.model.all" order="53" if="__config__.app.isApp('bpm')"/>
 
-  <action-view name="baml.model.all" title="BAML Models"
+  <action-view name="baml.model.all" title="BAMLs"
     model="com.axelor.studio.db.BamlModel">
     <view type="grid" name="baml-model-grid"/>
     <view type="form" name="baml-model-form"/>
