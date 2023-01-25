@@ -44,10 +44,10 @@
         <panel-dashlet action="action-studio-view-studio-app-chart" title="Charts"
           colSpan="12"/>
       </panel>
+      <panel-dashlet action="bpm-action-view-studio-app-bpm" title="BPM"/>
+      <panel-dashlet action="bpm-action-view-studio-app-dmn" title="DMN"/>
+      <panel-dashlet action="bpm-action-view-studio-app-baml" title="BAML"/>
     </panel-tabs>
-    <panel-dashlet action="bpm-action-view-studio-app-bpm" title="BPM"/>
-    <panel-dashlet action="bpm-action-view-studio-app-dmn" title="DMN"/>
-    <panel-dashlet action="bpm-action-view-studio-app-baml" title="BAML"/>
     <panel name="actionPanel" sidebar="true">
       <button onClick="action-studio-method-studio-app-install-app" name="installBtn"
         title="Install" showIf="id &amp;&amp; !generatedApp.active"/>
