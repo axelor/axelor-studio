@@ -1,4 +1,4 @@
-/*
+/**
  * Axelor Business Solutions
  *
  * Copyright (C) 2022 Axelor (<http://axelor.com>).
@@ -15,21 +15,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.web;
+.app-cards__container {
+    display: grid;
+    grid-template:
+                "image name name"         2fr
+                "buttons buttons buttons" 1fr
+                / 60px auto;
+    grid-column-gap: 6px;
+}
 
-import com.axelor.web.StaticResourceProvider;
-import java.util.List;
+.app-cards__image {
+    grid-area: image;
+}
 
-public class StudioStaticResources implements StaticResourceProvider {
+.app-cards__image > img {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
 
-  @Override
-  public void register(List<String> resources) {
-    resources.add("admin/css/custom-width.css");
-    resources.add("admin/css/app-cards.css");
-    resources.add("lib/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css");
-    resources.add("lib/bpmn-js/assets/diagram-js.css");
-    resources.add("css/bpmn.css");
-    resources.add("lib/bpmn-js/bpmn-modeler.js");
-    resources.add("js/form/form.bpmn.js");
-  }
+.app-cards__name {
+    grid-area: name;
+}
+
+.app-cards__buttons {
+    grid-area: buttons;
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 8px;
+}
+
+.app-cards__buttons > a + a {
+    margin-left: 6px;
 }
