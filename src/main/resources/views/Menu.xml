@@ -172,7 +172,7 @@
   <!-- Apps management -->
 
   <menuitem name="menu-admin-app-management" order="-99" title="Apps management"
-    action="menu.admin.app.management"/>
+    action="menu.admin.app.management" parent="menu-admin"/>
 
   <action-view name="menu.admin.app.management" title="Apps management"
     model="com.axelor.studio.db.App">
