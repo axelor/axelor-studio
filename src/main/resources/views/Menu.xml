@@ -247,7 +247,7 @@
 
   <action-view name="studio.web.service.ws.webService" title="Webs service"
     model="com.axelor.studio.db.WebService">
-    <view type="html" name="web"/>
+    <view type="html" name="ws-builder"/>
   </action-view>
 
 </object-views>
