@@ -20,6 +20,7 @@ package com.axelor.studio.db.repo;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.WsRequest;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -29,7 +30,7 @@ public class WsConnectorRepo extends WsConnectorRepository {
   public WsConnector save(WsConnector connector) {
     connector = super.save(connector);
 
-    List<WsRequest> requests = connector.getWsRequestList();
+    List<WsRequest> requests = new ArrayList<>(connector.getWsRequestList());
     if (CollectionUtils.isEmpty(requests)) {
       return connector;
     }

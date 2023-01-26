@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -97,13 +99,18 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     String lastRepeatIf = null;
     int repeatRequestCount = 0;
     int count = 1;
+    int repeatIndex = 0;
 
     while (count < wsConnector.getWsRequestList().size() + 1) {
 
+      ctx.put("_repeatIndex", repeatIndex);
+
       if (lastRepeatIf != null
           && !Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
-        lastRepeatIf = null;
+        lastRepeatIf =
+            null; // here is a problem here , will skip the next request if the repeat  is false
         count++;
+        repeatIndex = 0;
         continue;
       }
 
@@ -111,7 +118,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         ctx.put("_" + count, null);
       }
 
-      WsRequest wsRequest = wsConnector.getWsRequestList().get(count - 1);
+      WsRequest wsRequest = (new ArrayList<>(wsConnector.getWsRequestList())).get(count - 1);
       String repeatIf = wsRequest.getRepeatIf();
 
       String callIf = wsRequest.getCallIf();
@@ -161,6 +168,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           && (repeatIf != null && !lastRepeatIf.equals(repeatIf) || repeatIf == null)) {
         if (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
           count = repeatRequestCount;
+          repeatIndex++;
         }
       }
       if (lastRepeatIf == null) {
@@ -173,6 +181,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       if (count == (wsConnector.getWsRequestList().size() + 1) && lastRepeatIf != null) {
         if (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
           count = repeatRequestCount;
+          repeatIndex++;
         }
       }
     }
@@ -223,7 +232,11 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       try {
         URIBuilder uriBuilder = new URIBuilder(url);
 
-        for (WsKeyValue wsKeyValue : wsRequest.getPayLoadWsKeyValueList()) {
+        for (WsKeyValue wsKeyValue :
+            Stream.concat(
+                    wsRequest.getPayLoadWsKeyValueList().stream(),
+                    wsRequest.getParameterWsKeyValueList().stream())
+                .collect(Collectors.toList())) {
           String value = wsKeyValue.getWsValue();
           if (value != null) {
             if (value.startsWith("_encode:")) {
@@ -377,9 +390,30 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       if (wsKeyValue.getIsList()) {
         List<Object> subPayLoad = new ArrayList<>();
         for (WsKeyValue subKeyValue : wsKeyValue.getSubWsKeyValueList()) {
-          Map<String, Object> subMap = new HashMap<>();
-          subMap.put(subKeyValue.getWsKey(), createJson(templates, ctx, subKeyValue));
-          subPayLoad.add(subMap);
+          if (subKeyValue.getWsKey() == null && subKeyValue.getWsValue() == null) {
+            subPayLoad.add(createJson(templates, ctx, subKeyValue));
+          } else if (subKeyValue.getWsKey() == null) {
+
+            Object jsonSubVal = templates.fromText(subKeyValue.getWsValue()).make(ctx).render();
+
+            if (jsonSubVal != null && jsonSubVal.equals("null")) {
+              jsonSubVal = null;
+            }
+            if (jsonSubVal != null) {
+              String val = (String) jsonSubVal;
+              if (val.startsWith("[") && val.endsWith("]")) {
+                String[] strArray = val.substring(1, val.length() - 1).trim().split("\\s*,\\s*");
+                jsonSubVal = strArray;
+              } else if (NumberUtils.isCreatable(val)) {
+                jsonSubVal = NumberUtils.createNumber(val);
+              }
+            }
+            subPayLoad.add(jsonSubVal);
+          } else {
+            Map<String, Object> subMap = new HashMap<>();
+            subMap.put(subKeyValue.getWsKey(), createJson(templates, ctx, subKeyValue));
+            subPayLoad.add(subMap);
+          }
         }
         jsonVal = subPayLoad;
       } else {
