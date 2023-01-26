@@ -242,4 +242,12 @@
     <view type="form" name="baml-model-form"/>
   </action-view>
 
+  <menuitem name="studio-web-service-ws-web-service" title="Web service Builder" order="15"
+    parent="studio-web-service" action="studio.web.service.ws.webService"/>
+
+  <action-view name="studio.web.service.ws.webService" title="Webs service"
+    model="com.axelor.studio.db.WebService">
+    <view type="html" name="web"/>
+  </action-view>
+
 </object-views>
