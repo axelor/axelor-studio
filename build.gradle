@@ -1,6 +1,31 @@
-plugins {
-	id 'com.axelor.app'
+buildscript {
+	ext.repos = {
+		mavenCentral() {
+			content { excludeGroupByRegex "com\\.axelor.*" }
+		}
+		maven {
+			url 'https://plugins.gradle.org/m2/'
+			content { excludeGroupByRegex "com\\.axelor.*" }
+		}
+		maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
+	}
+	ext.aopVersion = '6.1.0'
+	repositories repos
+	dependencies {
+		classpath "com.axelor:axelor-gradle:${aopVersion}"
+	}
 }
+
+repositories repos
+
+apply from: "version.gradle"
+apply plugin: "com.axelor.app"
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+group = "com.axelor.addons"
+description "Axelor Studio Module"
 
 axelor {
 	title "Axelor Studio"
@@ -12,18 +37,45 @@ test {
 }
 
 dependencies {
-	api project(":modules:axelor-message")
+	api "com.axelor.addons:axelor-message:1.0.0-SNAPSHOT"
 
-	api ("org.camunda.bpm:camunda-engine:7.17.0")
-	api ("org.camunda.bpm:camunda-engine-plugin-spin:7.17.0")
-	api ("org.camunda.spin:camunda-spin-dataformat-json-jackson:1.17.0")
+	api "org.camunda.bpm:camunda-engine:7.17.0"
+	api "org.camunda.bpm:camunda-engine-plugin-spin:7.17.0"
+	api "org.camunda.spin:camunda-spin-dataformat-json-jackson:1.17.0"
 
-	api ("org.apache.commons:commons-lang3:3.2")
-	api ("com.opencsv:opencsv:4.6")
+	api "org.apache.commons:commons-lang3:3.2"
+	api "com.opencsv:opencsv:4.6"
 
 	implementation "org.codehaus.groovy:groovy-all:3.0.9"
 	implementation "org.eclipse.birt.runtime.3_7_1:Tidy:1"
 	implementation "org.apache.commons:commons-exec:1.2"
 	implementation "org.apache.commons:commons-text:1.9"	
 	
+}
+
+//
+// Publish
+//
+
+apply plugin: 'maven-publish'
+
+ext {
+	mavenUsername = project.findProperty("addonsMavenUsername")
+	mavenPassword = project.findProperty("addonsMavenPassword")
+}
+
+publishing {
+	repositories {
+		maven {
+			def repoPath = project.hasProperty("finalRelease")
+					? "maven-releases"
+					: "maven-snapshots"
+			name = "maven"
+			url = "https://repository.axelor.com/nexus/repository/" + repoPath
+			credentials {
+				username = project.mavenUsername
+				password = project.mavenPassword
+			}
+		}
+	}
 }

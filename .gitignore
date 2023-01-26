@@ -16,6 +16,7 @@ out
 *.ipr
 *.iws
 atlassian-ide-plugin.xml
+*.jar
 
 # NetBeans
 .nbattrs

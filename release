@@ -1,0 +1,206 @@
+#!/bin/bash
+#
+# Script to release app : `./release --help`
+# Pierre Belloy - 06/10/2020
+#
+
+set -e
+
+git_path=$(which git)
+GREEN="\033[0;32m"
+CYAN="\033[0;36m"
+NOCOLOR="\033[0m"
+
+target_branch="main"
+
+usage() {
+  printf "Usage : ./release [OPTION] TAG\n\n"
+  printf "This script does following steps :\n"
+  printf "   * Update CHANGELOG.md\n"
+  printf "   * Create commit release and tag\n"
+  printf "   * Merge into stable (x.y-stable) branch\n\n"
+  printf "Options :\n"
+  printf "\t-b <branch> : Default branch to work on (default to 'main').\n"
+  printf "\t-h          : Display this help.\n"
+}
+
+print_step() {
+  echo -e "${GREEN}$1${NOCOLOR}"
+}
+
+print_sub_step() {
+  echo -e "${CYAN}$1${NOCOLOR}"
+}
+
+while getopts ":hb:" opt; do
+  case ${opt} in
+  h)
+    usage
+    exit 1
+    ;;
+  b) target_branch=$OPTARG ;;
+  \?)
+    echo "Invalid option: -$OPTARG" 1>&2
+    exit 1
+    ;;
+  :)
+    echo "Option -$OPTARG requires an argument." >&2
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+cd "$(dirname "$0")"
+
+tag=$(cat version.txt)
+
+echo "You are going to release version $tag."
+read -r -p "Are you sure? [y/N] " response
+if [[ ! "$response" =~ ^([yY])$ ]]
+then
+  echo "Exit..."
+  exit 0
+fi
+
+stable_branch=$(echo "$tag" | sed -Ene's#(0|[1-9][0-9]*)\.(0|[1-9][0-9]*).*#\1.\2-stable#p')
+repo_url=$(echo "$($git_path remote -v | grep -m1 '^origin')" | sed -Ene's#.*(git@[^[:space:]]*).*#\1#p' | sed -Ene's#git@(.*):(.*).git#https://\1/\2#p')
+
+ensure_on_target_branch() {
+  if [ "$($git_path symbolic-ref --short HEAD)" != "$target_branch" ]; then
+    echo "You are not on $target_branch branch"
+    exit 1
+  fi
+}
+
+# https://github.com/git/git/blob/master/git-sh-setup.sh
+require_clean_work_tree() {
+  $git_path rev-parse --verify HEAD >/dev/null || exit 1
+  $git_path update-index -q --ignore-submodules --refresh
+  err=0
+
+  if ! $git_path diff-files --quiet --ignore-submodules; then
+    echo >&2 "You have unstaged changes."
+    err=1
+  fi
+
+  if ! $git_path diff-index --cached --quiet --ignore-submodules HEAD --; then
+    echo >&2 "Your index contains uncommitted changes."
+    err=1
+  fi
+
+  if [ -n "$($git_path status --porcelain)" ]; then
+    echo >&2 "You have untracked files."
+    err=1
+  fi
+
+  if test $err = 1; then
+    test -n "$2" && echo "$2" >&2
+    exit 1
+  fi
+}
+
+ensure_tag_dont_exist() {
+  local remote=$($git_path ls-remote --tags origin $tag)
+  local local=$($git_path tag -l $tag)
+  if [ ! -z "$remote" ] || [ ! -z "$local" ]; then
+    echo "Tag '$tag' exist on remote or on local"
+    exit 1
+  fi
+}
+
+# https://gist.github.com/rverst/1f0b97da3cbeb7d93f4986df6e8e5695
+function check_version() {
+  if [[ $1 =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$ ]]; then
+    echo "$1"
+  else
+    echo ""
+  fi
+}
+
+ensure_tag_format() {
+  if ! $git_path check-ref-format "tags/$tag"; then
+    echo "Tag '$tag' is not a valid name"
+    exit 1
+  fi
+
+  semver=$(check_version "$tag")
+  if [[ ! "$semver" ]]; then
+    echo "Tag '$tag' doesn't follow semantic version (https://semver.org/)"
+    exit 1
+  fi
+}
+
+check_prerequisites() {
+  ensure_tag_format
+  ensure_tag_dont_exist
+  ensure_on_target_branch
+  require_clean_work_tree
+}
+
+prepare() {
+  print_step "Preparing sources for $tag..."
+
+  if [[ -f "CHANGELOG.md" ]]; then
+      print_sub_step "  * Update CHANGELOG.md"
+
+      sed -i "1 s/^## Current .*$/## $tag/" CHANGELOG.md
+      sed -i '1s/^/## Current \(unreleased\)\n\n/' CHANGELOG.md
+  fi
+}
+
+
+release_source() {
+  print_step "Pushing release $tag..."
+
+  $git_path add --all . >/dev/null
+
+  print_sub_step "  * Create release commit"
+  $git_path commit --quiet --allow-empty --signoff --message="Release $tag"
+
+  print_sub_step "  * Create tag"
+  $git_path tag --annotate $tag --message="Release $tag"
+
+  print_sub_step "  * Push release commit and tag"
+  $git_path push --quiet origin $target_branch
+  $git_path push --quiet origin $tag
+}
+
+merge_in_stable() {
+  if [[ "${stable_branch}" == "${target_branch}" ]]; then
+    return;
+  fi
+
+  print_step "Merging into stable branch $stable_branch..."
+
+  local existed_in_local=$($git_path branch --list $stable_branch)
+
+  if [[ -z ${existed_in_local} ]]; then
+    print_sub_step "  * Creating stable branch"
+    $git_path checkout --quiet -b $stable_branch
+  else
+    print_sub_step "  * Checkout stable branch and reset from remote"
+    $git_path checkout --quiet $stable_branch
+    $git_path reset --quiet --hard origin/$stable_branch
+  fi
+
+  print_sub_step "  * Merge release on stable branch"
+  $git_path merge --quiet --no-edit $target_branch
+
+  print_sub_step "  * Push stable branch"
+  $git_path push --quiet origin $stable_branch
+
+  $git_path checkout --quiet $target_branch
+}
+
+check_prerequisites
+prepare
+release_source
+merge_in_stable
+
+echo "-------------------"
+echo -e "Release '$tag' pushed on remote :"
+echo -e "   \033[4m$repo_url/-/tags/$tag\033[0m"
+echo -e "-> Add any necessary release notes"
+echo -e "-> Creating artifacts : follow CI pipeline"
+echo "-------------------"
