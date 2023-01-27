@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <form title="Parameter" name="parameter-form" model="com.axelor.studio.db.Parameter">
+    <panel title="Parameter">
+      <field name="name" onChange="action-transformation-method-validate-new-parameter"/>
+      <field name="type"/>
+      <field name="isOptional" widget="boolean"/>
+      <field name="defaultValue" hideIf="!isOptional" requiredIf="isOptional"/>
+    </panel>
+    <panel>
+      <field name="description" widget="Text" colSpan="12"/>
+    </panel>
+  </form>
+
+  <grid title="Parameters" name="parameter-grid" model="com.axelor.studio.db.Parameter">
+    <field name="name"/>
+    <field name="type"/>
+    <field name="description"/>
+  </grid>
+
+  <action-method name="action-transformation-method-validate-new-parameter">
+    <call class="com.axelor.studio.web.TransformationsLibrariesController"
+      method="validateNewParameter"/>
+  </action-method>
+
+</object-views>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <form title="Library" name="library-form" model="com.axelor.studio.db.Library">
+    <panel title="Information">
+      <field name="name"/>
+      <field name="description" widget="Text"/>
+    </panel>
+    <panel-related field="transformations" canEdit="false" canRemove="false"
+      canNew="false">
+      <field name="name"/>
+      <field name="groovyTemplate"/>
+      <field name="description"/>
+    </panel-related>
+  </form>
+
+  <action-export name="action-export-studio-transformations-libraries"
+    output="${date}${time}" download="true">
+    <export name="transformations-libraries.xml"
+      template="data-export/transformations-libraries.tmpl" engine="groovy"/>
+  </action-export>
+
+  <grid title="Libraries" name="library-grid" model="com.axelor.studio.db.Library">
+    <toolbar>
+      <button name="exportLibraries" title="Export libraries"
+        onClick="action-export-studio-transformations-libraries"/>
+    </toolbar>
+    <field name="name"/>
+    <field name="description"/>
+  </grid>
+
+
+</object-views>
