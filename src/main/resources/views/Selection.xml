@@ -910,4 +910,11 @@
     <option value="oauth2">OAuth 2</option>
   </selection>
 
+  <selection name="studio.parameter.type.select">
+    <option value="String">String</option>
+    <option value="Decimal">Decimal</option>
+    <option value="Integer">Integer</option>
+    <option value="Boolean">Boolean</option>
+  </selection>
+
 </object-views>
