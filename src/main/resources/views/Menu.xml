@@ -16,6 +16,62 @@
   <menuitem name="studio-app-studio-components" title="Studio components" order="25"
     parent="studio-app-root"/>
 
+  <!-- web service menu -->
+  <menuitem name="ws-app-studio-component" title="WS studio components" order="26"
+    parent="studio-app-root" action="studio.web.service.ws.webService"/>
+  <menuitem name="ws-app-studio" title="WS Studio" parent="studio-app-root"
+    action="studio.web.service.ws.webService" order="20" if="__config__.app.isApp('studio')"/>
+  <action-view name="studio.web.service.ws.webService" title="WS studio"
+    model="com.axelor.studio.db.WebService">
+    <view type="html" name="ws-builder"/>
+  </action-view>
+  <menuitem name="studio-web-service-ws-request" title="Request" order="5"
+    parent="ws-app-studio-component" action="studio.web.service.ws.request"/>
+  <action-view name="studio.web.service.ws.request" title="Request"
+    model="com.axelor.studio.db.WsRequest">
+    <view type="grid" name="ws-request-grid"/>
+    <view type="form" name="ws-request-form"/>
+  </action-view>
+
+  <menuitem name="studio-web-service-ws-connector" title="Connector" order="10"
+    parent="ws-app-studio-component" action="studio.web.service.ws.connector"/>
+
+  <action-view name="studio.web.service.ws.connector" title="Connector"
+    model="com.axelor.studio.db.WsConnector">
+    <view type="grid" name="ws-connector-grid"/>
+    <view type="form" name="ws-connector-form"/>
+  </action-view>
+
+  <menuitem name="studio-web-service-ws-authenticator" title="Authenticator" order="15"
+    parent="ws-app-studio-component" action="studio.web.service.ws.authenticator"/>
+
+  <action-view name="studio.web.service.ws.authenticator" title="Authenticator"
+    model="com.axelor.studio.db.WsAuthenticator">
+    <view type="grid" name="ws-authenticator-grid"/>
+    <view type="form" name="ws-authenticator-form"/>
+  </action-view>
+  <menuitem name="studio-apps-transformation-transformation" title="Transformation"
+    order="5" parent="ws-app-studio-component" action="studio.web.service.transformation"/>
+  <action-view name="studio.web.service.transformation" title="Request"
+    model="com.axelor.studio.db.Transformation">
+    <view type="grid" name="transformation-grid"/>
+    <view type="form" name="transformation-form"/>
+  </action-view>
+  <menuitem name="studio-apps-transformation-library" title="Transformation library"
+    order="5" parent="ws-app-studio-component" action="studio.web.service.library"/>
+  <action-view name="studio.web.service.library" title="Library"
+    model="com.axelor.studio.db.Library">
+    <view type="grid" name="library-grid"/>
+    <view type="form" name="library-form"/>
+  </action-view>
+  <menuitem name="studio-web-service-ws-request" title="Request" order="5"
+    parent="ws-app-studio-component" action="studio.web.service.ws.request"/>
+  <action-view name="studio.web.service.ws.request" title="Request"
+    model="com.axelor.studio.db.WsRequest">
+    <view type="grid" name="ws-request-grid"/>
+    <view type="form" name="ws-request-form"/>
+  </action-view>
+
   <!-- Reporting menu -->
 
   <menuitem name="studio-app-reporting" title="Reporting" parent="studio-app-root"
@@ -139,36 +195,6 @@
     <view-param name="details-view" value="true"/>
   </action-view>
 
-  <menuitem name="studio-web-service" title="Web service" parent="studio-app-root"
-    order="90" if="__config__.app.isApp('studio')"/>
-
-  <menuitem name="studio-web-service-ws-request" title="Request" order="5"
-    parent="studio-web-service" action="studio.web.service.ws.request"/>
-
-  <action-view name="studio.web.service.ws.request" title="Request"
-    model="com.axelor.studio.db.WsRequest">
-    <view type="grid" name="ws-request-grid"/>
-    <view type="form" name="ws-request-form"/>
-  </action-view>
-
-  <menuitem name="studio-web-service-ws-connector" title="Connector" order="10"
-    parent="studio-web-service" action="studio.web.service.ws.connector"/>
-
-  <action-view name="studio.web.service.ws.connector" title="Connector"
-    model="com.axelor.studio.db.WsConnector">
-    <view type="grid" name="ws-connector-grid"/>
-    <view type="form" name="ws-connector-form"/>
-  </action-view>
-
-  <menuitem name="studio-web-service-ws-authenticator" title="Authenticator" order="15"
-    parent="studio-web-service" action="studio.web.service.ws.authenticator"/>
-
-  <action-view name="studio.web.service.ws.authenticator" title="Authenticator"
-    model="com.axelor.studio.db.WsAuthenticator">
-    <view type="grid" name="ws-authenticator-grid"/>
-    <view type="form" name="ws-authenticator-form"/>
-  </action-view>
-
   <!-- Apps management -->
 
   <menuitem name="menu-admin-app-management" order="-99" title="Apps management"
@@ -188,7 +214,7 @@
   <menuitem title="BPM Studio" name="menu-wkf-bpm-studio" parent="studio-app-root"
     action="action-wkf-view-open-editor" order="19" if="__config__.app.isApp('bpm')"/>
 
-  <menuitem name="bpm-app-bpm-components" title="BPM components" order="20"
+  <menuitem name="bpm-app-bpm-components" title="BPM components" order="21"
     parent="studio-app-root"/>
 
   <menuitem title="BPM Dashboard" name="menu-wkf-bpm-manager"
@@ -241,5 +267,6 @@
     <view type="grid" name="baml-model-grid"/>
     <view type="form" name="baml-model-form"/>
   </action-view>
+
 
 </object-views>

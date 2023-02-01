@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_6.0.xsd">
+
+  <module name="base" package="com.axelor.studio.db"/>
+
+  <entity name="Parameter">
+    <string name="name" title="Name" required="true"/>
+    <string name="description" title="Description"/>
+    <string name="type" title="Type" required="true" selection="studio.parameter.type.select"/>
+    <string name="defaultValue" title="Default value"/>
+    <boolean name="isOptional" default="false"/>
+    <many-to-one name="transformation" ref="com.axelor.studio.db.Transformation"/>
+  </entity>
+
+</domain-models>

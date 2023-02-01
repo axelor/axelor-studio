@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <form name="transformation-form" title="Transformation"
+    model="com.axelor.studio.db.Transformation"
+    onSave="action-transformation-method-validate-on-save">
+    <panel title="Information">
+      <field name="library"/>
+      <field name="name"/>
+      <field name="groovyTemplate" widget="Text" height="5"/>
+      <field name="description" widget="Text" height="5"/>
+    </panel>
+    <panel-related field="parameters" colspan="12"/>
+    <panel>
+      <field name="multiArg" widget="boolean"/>
+      <field name="multiArgType" hideIf="!multiArg" requiredIf="multiArg"/>
+    </panel>
+  </form>
+
+  <grid title="Transformations" name="transformation-grid"
+    model="com.axelor.studio.db.Transformation">
+    <toolbar>
+      <button name="exportTransformation" onClick="action-transformation-export-action"/>
+    </toolbar>
+    <field name="library"/>
+    <field name="name"/>
+    <field name="description"/>
+    <field name="groovyTemplate"/>
+    <button name="test" onClick="transformation-test-btn"/>
+  </grid>
+
+  <action-export name="action-transformation-export-action">
+    <export name="transformation.xml" template="data-export/transformations-libraries.tmpl"
+      engine="groovy"/>
+  </action-export>
+
+  <action-method name="action-transformation-method-validate-on-save">
+    <call class="com.axelor.studio.web.TransformationsLibrariesController"
+      method="validateTransformationOnSave"/>
+  </action-method>
+  <action-method name="transformation-test-btn">
+    <call class="com.axelor.studio.web.TransformationsLibrariesController" method=""/>
+  </action-method>
+
+</object-views>

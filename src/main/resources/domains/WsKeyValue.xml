@@ -10,6 +10,7 @@
     <string name="wsValue" title="Value"/>
     <many-to-one name="wsRequest" title="Request" ref="WsRequest"/>
     <many-to-one name="wsHeader" title="Header" ref="WsRequest"/>
+    <many-to-one name="wsParameter" title="Parameter" ref="WsRequest"/>
     <many-to-one name="parentWsKeyValue" title="Parent" ref="WsKeyValue"/>
     <one-to-many name="subWsKeyValueList" title="Sub key values" ref="WsKeyValue"
       mappedBy="parentWsKeyValue"/>

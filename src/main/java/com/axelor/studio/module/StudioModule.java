@@ -101,6 +101,8 @@ import com.axelor.studio.service.loader.AppLoaderImportService;
 import com.axelor.studio.service.loader.AppLoaderImportServiceImpl;
 import com.axelor.studio.service.mapper.MapperScriptGeneratorService;
 import com.axelor.studio.service.mapper.MapperScriptGeneratorServiceImpl;
+import com.axelor.studio.service.transformation.TransformationService;
+import com.axelor.studio.service.transformation.TransformationServiceImpl;
 import com.axelor.studio.service.ws.WsAuthenticatorService;
 import com.axelor.studio.service.ws.WsAuthenticatorServiceImpl;
 import com.axelor.studio.service.ws.WsConnectoServiceImpl;
@@ -127,6 +129,7 @@ public class StudioModule extends AxelorModule {
     bind(WsAuthenticatorService.class).to(WsAuthenticatorServiceImpl.class);
     bind(WsConnectorRepository.class).to(WsConnectorRepo.class);
     bind(WsAuthenticatorRepository.class).to(WsAuthenticatorRepo.class);
+    bind(TransformationService.class).to(TransformationServiceImpl.class);
 
     // App
     bind(AppService.class).to(AppServiceImpl.class);
