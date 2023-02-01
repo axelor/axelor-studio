@@ -348,7 +348,9 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       return;
     }
 
-    if (wkfTaskConfig.getNotificationEmail()) {
+    if (wkfTaskConfig.getNotificationEmail()
+        && wkfTaskConfig.getEmailEvent() != null
+        && wkfTaskConfig.getEmailEvent().equals("start")) {
       try {
         Beans.get(WkfEmailService.class).sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
@@ -358,6 +360,24 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     if (wkfTaskConfig.getCreateTask()) {
       Beans.get(WkfUserActionService.class).createUserAction(wkfTaskConfig, execution);
+    }
+  }
+
+  @Override
+  public void onNodeDeactivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution) {
+
+    if (wkfTaskConfig == null || execution == null) {
+      return;
+    }
+
+    if (wkfTaskConfig.getNotificationEmail()
+        && wkfTaskConfig.getEmailEvent() != null
+        && wkfTaskConfig.getEmailEvent().equals("end")) {
+      try {
+        Beans.get(WkfEmailService.class).sendEmail(wkfTaskConfig, execution);
+      } catch (Exception e) {
+        ExceptionTool.trace(e);
+      }
     }
   }
 

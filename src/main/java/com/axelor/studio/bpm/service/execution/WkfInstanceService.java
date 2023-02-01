@@ -48,6 +48,8 @@ public interface WkfInstanceService {
 
   public void onNodeActivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
 
+  public void onNodeDeactivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
+
   public void terminateAll();
 
   public String getInstanceXml(String instanceId);

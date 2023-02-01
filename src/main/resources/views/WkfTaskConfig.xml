@@ -26,6 +26,7 @@
         <field name="userPath"/>
         <field name="deadlineFieldPath"/>
         <field name="notificationEmail"/>
+        <field name="emailEvent"/>
         <field name="newMenu"/>
         <field name="menuName"/>
         <field name="parentMenuName"/>

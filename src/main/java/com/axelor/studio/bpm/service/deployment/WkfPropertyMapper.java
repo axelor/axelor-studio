@@ -30,6 +30,7 @@ public class WkfPropertyMapper {
     FIELD_MAP.put("userPath", "userFieldPath");
     FIELD_MAP.put("deadlineFieldPath", "deadlineFieldPath");
     FIELD_MAP.put("notificationEmail", "emailNotification");
+    FIELD_MAP.put("emailEvent", "emailEvent");
     FIELD_MAP.put("newMenu", "newMenu");
     FIELD_MAP.put("menuName", "menuName");
     FIELD_MAP.put("parentMenuName", "menuParent");
