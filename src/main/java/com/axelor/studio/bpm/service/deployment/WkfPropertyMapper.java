@@ -26,6 +26,7 @@ public class WkfPropertyMapper {
 
   static {
     FIELD_MAP.put("createTask", "createUserAction");
+    FIELD_MAP.put("roleName", "role");
     FIELD_MAP.put("taskEmailTitle", "actionEmailTitle");
     FIELD_MAP.put("userPath", "userFieldPath");
     FIELD_MAP.put("deadlineFieldPath", "deadlineFieldPath");
