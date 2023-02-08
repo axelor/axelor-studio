@@ -34,7 +34,6 @@ import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.model.bpmn.impl.BpmnModelConstants;
-import org.camunda.bpm.model.bpmn.instance.BpmnModelElementInstance;
 import org.camunda.bpm.model.bpmn.instance.FlowElement;
 import org.camunda.bpm.model.bpmn.instance.MessageEventDefinition;
 import org.slf4j.Logger;
@@ -58,14 +57,7 @@ public class WkfExecutionListener implements ExecutionListener {
       }
 
     } else if (eventName.equals(EVENTNAME_END)) {
-
-      BpmnModelElementInstance modelElementInstance = execution.getBpmnModelElementInstance();
-      if (modelElementInstance != null) {
-        String typeName = modelElementInstance.getElementType().getTypeName();
-        if (typeName.equals(BpmnModelConstants.BPMN_ELEMENT_BUSINESS_RULE_TASK)) {
-          checkDMNValue(execution);
-        }
-      }
+      processNodeEnd(execution);
     }
   }
 
@@ -110,20 +102,38 @@ public class WkfExecutionListener implements ExecutionListener {
     if (flowElement == null) {
       return;
     }
+
     String type = flowElement.getElementType().getTypeName();
-    switch (type) {
-      case (BpmnModelConstants.BPMN_ELEMENT_END_EVENT):
+
+    if (type.equals(BpmnModelConstants.BPMN_ELEMENT_INTERMEDIATE_THROW_EVENT)) {
+      sendMessage(flowElement, execution);
+
+    } else if (blockingNode(type)) {
+      if (type.equals(BpmnModelConstants.BPMN_ELEMENT_END_EVENT)) {
         sendMessage(flowElement, execution);
-        onNodeActivation(execution);
-        break;
-      case (BpmnModelConstants.BPMN_ELEMENT_INTERMEDIATE_THROW_EVENT):
-        sendMessage(flowElement, execution);
-        break;
-      default:
-        if (blockingNode(type)) {
-          onNodeActivation(execution);
-        }
-        break;
+      }
+
+      WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
+      Beans.get(WkfInstanceService.class).onNodeActivation(wkfTaskConfig, execution);
+    }
+  }
+
+  private void processNodeEnd(DelegateExecution execution) {
+
+    FlowElement flowElement = execution.getBpmnModelElementInstance();
+    if (flowElement == null) {
+      return;
+    }
+
+    String type = flowElement.getElementType().getTypeName();
+
+    if (type.equals(BpmnModelConstants.BPMN_ELEMENT_BUSINESS_RULE_TASK)) {
+      checkDMNValue(execution);
+
+    } else if (blockingNode(type)) {
+
+      WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
+      Beans.get(WkfInstanceService.class).onNodeDeactivation(wkfTaskConfig, execution);
     }
   }
 
@@ -195,8 +205,7 @@ public class WkfExecutionListener implements ExecutionListener {
     instanceRepo.save(wkfInstance);
   }
 
-  private void onNodeActivation(DelegateExecution execution) {
-
+  private WkfTaskConfig getWkfTaskConfig(DelegateExecution execution) {
     WkfTaskConfig wkfTaskConfig =
         Beans.get(WkfTaskConfigRepository.class)
             .all()
@@ -205,14 +214,14 @@ public class WkfExecutionListener implements ExecutionListener {
                 execution.getCurrentActivityId(),
                 execution.getProcessDefinitionId())
             .fetchOne();
+
     log.debug(
         "Task config searched with taskId: {}, processInstanceId: {}, found:{}",
         execution.getCurrentActivityId(),
         execution.getProcessInstanceId(),
         wkfTaskConfig);
-    if (wkfTaskConfig != null) {
-      Beans.get(WkfInstanceService.class).onNodeActivation(wkfTaskConfig, execution);
-    }
+
+    return wkfTaskConfig;
   }
 
   private boolean blockingNode(String type) {
@@ -222,6 +231,7 @@ public class WkfExecutionListener implements ExecutionListener {
       case (BpmnModelConstants.BPMN_ELEMENT_USER_TASK):
       case (BpmnModelConstants.BPMN_ELEMENT_CATCH_EVENT):
       case (BpmnModelConstants.BPMN_ELEMENT_CALL_ACTIVITY):
+      case (BpmnModelConstants.BPMN_ELEMENT_END_EVENT):
         blockinNode = true;
         break;
     }
