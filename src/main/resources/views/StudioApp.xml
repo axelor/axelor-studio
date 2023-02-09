@@ -48,7 +48,11 @@
       <panel-dashlet action="bpm-action-view-studio-app-bpm" title="BPM"/>
       <panel-dashlet action="bpm-action-view-studio-app-dmn" title="DMN"/>
       <panel-dashlet action="bpm-action-view-studio-app-baml" title="BAML"/>
-      <panel-dashlet action="bpm-action-view-studio-app-ws" title="WS Builder"/>
+      <panel-dashlet action="bpm-action-view-studio-app-ws-connector"
+        title="WS Connector"/>
+      <panel-dashlet action="bpm-action-view-studio-app-ws-request" title="WS Request"/>
+      <panel-dashlet action="bpm-action-view-studio-app-ws-authentication"
+        title="WS Authentication"/>
     </panel-tabs>
     <panel name="actionPanel" sidebar="true">
       <button onClick="action-studio-method-studio-app-install-app" name="installBtn"
@@ -240,7 +244,21 @@
     <context name="studioAppId" expr="eval: id"/>
   </action-view>
 
-  <action-view name="bpm-action-view-studio-app-ws" title="WS Builder"
+  <action-view name="bpm-action-view-studio-app-ws-request" title="WS Request"
+    model="com.axelor.studio.db.WsRequest">
+    <view type="grid" name="ws-request-grid"/>
+    <view type="form" name="ws-request-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+  <action-view name="bpm-action-view-studio-app-ws-authentication"
+    title="WS Authenticator" model="com.axelor.studio.db.WsAuthenticator">
+    <view type="grid" name="ws-authenticator-grid"/>
+    <view type="form" name="ws-authenticator-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+  <action-view name="bpm-action-view-studio-app-ws-connector" title="WS Connector"
     model="com.axelor.studio.db.WsConnector">
     <view type="grid" name="ws-connector-grid"/>
     <view type="form" name="ws-connector-form"/>

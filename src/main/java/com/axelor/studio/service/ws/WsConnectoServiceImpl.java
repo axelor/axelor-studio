@@ -218,7 +218,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
               && wsKeyValue.getWsKey().equals("Authorization")) {
             headers.add(
                 wsKeyValue.getWsKey(),
-                "Basic " + new String(Base64.encodeBase64(value.getBytes())));
+                "Basic " + new String(Base64.encodeBase64(value.substring(6).getBytes())));
           } else {
             headers.add(wsKeyValue.getWsKey(), value);
           }
