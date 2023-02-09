@@ -18,7 +18,7 @@
     <one-to-many name="payLoadWsKeyValueList" title="Payload" ref="WsKeyValue"
       mappedBy="wsRequest"/>
     <integer name="sequence" title="Sequence"/>
-    <many-to-many name="wsConnector" ref="WsConnector" title="Connector"/>
+    <many-to-many name="wsConnector" ref="WsConnector" title="Connector" mappedBy="wsRequestList"/>
     <string name="repeatIf" title="Repeat if"/>
     <string name="callIf" title="Call if"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>

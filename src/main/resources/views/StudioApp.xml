@@ -48,6 +48,7 @@
       <panel-dashlet action="bpm-action-view-studio-app-bpm" title="BPM"/>
       <panel-dashlet action="bpm-action-view-studio-app-dmn" title="DMN"/>
       <panel-dashlet action="bpm-action-view-studio-app-baml" title="BAML"/>
+      <panel-dashlet action="bpm-action-view-studio-app-ws" title="WS Builder"/>
     </panel-tabs>
     <panel name="actionPanel" sidebar="true">
       <button onClick="action-studio-method-studio-app-install-app" name="installBtn"
@@ -235,6 +236,14 @@
     model="com.axelor.studio.db.BamlModel">
     <view type="grid" name="baml-model-grid"/>
     <view type="form" name="baml-model-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="bpm-action-view-studio-app-ws" title="WS Builder"
+    model="com.axelor.studio.db.WsConnector">
+    <view type="grid" name="ws-connector-grid"/>
+    <view type="form" name="ws-connector-form"/>
     <domain>self.studioApp.id = :studioAppId</domain>
     <context name="studioAppId" expr="eval: id"/>
   </action-view>

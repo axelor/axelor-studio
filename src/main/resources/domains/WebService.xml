@@ -6,7 +6,6 @@
   <module name="studio" package="com.axelor.studio.db"/>
 
   <entity name="WebService">
-    <string name="test"/>
   </entity>
 
 </domain-models>
