@@ -62,6 +62,7 @@ import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,9 +86,9 @@ public class AppServiceImpl implements AppService {
 
   private static final String EXT_DIR = "extra";
 
-  private static Pattern patCsv = Pattern.compile("^\\<\\s*csv-inputs");
+  private static final Pattern patCsv = Pattern.compile("^<\\s*csv-inputs");
 
-  private static Pattern patXml = Pattern.compile("^\\<\\s*xml-inputs");
+  private static final Pattern patXml = Pattern.compile("^<\\s*xml-inputs");
 
   private static final String APP_CODE = "code";
   private static final String APP_IMAGE = "image";
@@ -95,16 +96,22 @@ public class AppServiceImpl implements AppService {
   private static final String APP_DEPENDS_ON = "dependsOn";
   private static final String APP_VERSION = "appVersion";
 
-  @Inject private AppRepository appRepo;
+  protected final AppRepository appRepo;
+  protected final MetaFiles metaFiles;
+  protected final AppVersionService appVersionService;
 
-  @Inject private MetaFiles metaFiles;
-
-  @Inject private AppVersionService appVersionService;
+  @Inject
+  public AppServiceImpl(
+      AppRepository appRepo, MetaFiles metaFiles, AppVersionService appVersionService) {
+    this.appRepo = appRepo;
+    this.metaFiles = metaFiles;
+    this.appVersionService = appVersionService;
+  }
 
   @Override
   public App importDataDemo(App app) throws IOException {
 
-    if (app.getDemoDataLoaded()) {
+    if (Boolean.TRUE.equals(app.getDemoDataLoaded())) {
       return app;
     }
 
@@ -151,14 +158,14 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private void importPerConfig(String appCode, File dataDir) throws FileNotFoundException {
+  private void importPerConfig(String appCode, File dataDir) throws IOException {
 
     try {
       File[] configs =
           dataDir.listFiles(
               (dir, name) -> name.startsWith(appCode + "-") && name.endsWith(CONFIG_PATTERN));
 
-      if (configs.length == 0) {
+      if (configs == null || configs.length == 0) {
         log.debug("No config file found for the app: {}", appCode);
         return;
       }
@@ -191,7 +198,7 @@ public class AppServiceImpl implements AppService {
 
     for (App parent : depends) {
       parent = appRepo.find(parent.getId());
-      if (!parent.getDemoDataLoaded()) {
+      if (!Boolean.TRUE.equals(parent.getDemoDataLoaded())) {
         importDataDemo(parent);
       }
     }
@@ -226,10 +233,10 @@ public class AppServiceImpl implements AppService {
         String str = scanner.nextLine();
         if (patCsv.matcher(str).find()) {
           importer = new CSVImporter(config.getAbsolutePath(), data.getAbsolutePath(), null);
-          break;
-        }
-        if (patXml.matcher(str).find()) {
+        } else if (patXml.matcher(str).find()) {
           importer = new XMLImporter(config.getAbsolutePath(), data.getAbsolutePath());
+        }
+        if (importer != null) {
           break;
         }
       }
@@ -241,12 +248,12 @@ public class AppServiceImpl implements AppService {
   }
 
   private File extract(String module, String dirName, String lang, String code) throws IOException {
-    String dirNamePattern = dirName.replaceAll("/|\\\\", "(/|\\\\\\\\)");
+    String dirNamePattern = dirName.replaceAll("[/\\\\]", "(/|\\\\\\\\)");
     List<URL> files = new ArrayList<>();
 
     if (code == null) {
-      files.addAll(MetaScanner.findAll(module, dirNamePattern, "(.+?)\\.yml|yaml"));
-      if (files.size() > 0) {
+      files.addAll(MetaScanner.findAll(module, dirNamePattern, "(.+?)\\.(yml|yaml)"));
+      if (CollectionUtils.isNotEmpty(files)) {
         files.addAll(MetaScanner.findAll(module, dirNamePattern, "(img)"));
       }
     } else {
@@ -255,28 +262,25 @@ public class AppServiceImpl implements AppService {
     if (files.isEmpty()) {
       return null;
     }
+
     if (StringUtils.isEmpty(lang)) {
       if (code != null) {
         files.addAll(MetaScanner.findAll(module, dirNamePattern, code + "*"));
       }
     } else {
-      String dirPath = dirName + "/";
+      String dirPath = dirName + File.separator;
       files.addAll(fetchUrls(module, dirPath + IMG_DIR));
       files.addAll(fetchUrls(module, dirPath + EXT_DIR));
       files.addAll(fetchUrls(module, dirPath + lang));
     }
 
     final File tmp = Files.createTempDirectory(null).toFile();
-    final String dir = dirName.replace("\\", "/");
 
     for (URL file : files) {
       String name = file.toString();
-      name = name.substring(name.lastIndexOf(dir));
+      name = name.substring(name.lastIndexOf(dirName));
       if (!StringUtils.isEmpty(lang)) {
-        name = name.replace(dir + "/" + lang, dir);
-      }
-      if (File.separatorChar == '\\') {
-        name = name.replace("/", "\\");
+        name = name.replace(dirName + File.separator + lang, dirName);
       }
       try {
         copy(file.openStream(), tmp, name);
@@ -289,29 +293,30 @@ public class AppServiceImpl implements AppService {
   }
 
   private List<URL> fetchUrls(String module, String fileName) {
-    final String fileNamePattern = fileName.replaceAll("/|\\\\", "(/|\\\\\\\\)");
+    final String fileNamePattern = fileName.replaceAll("[/\\\\]", "(/|\\\\\\\\)");
     return MetaScanner.findAll(module, fileNamePattern, "(.+?)");
   }
 
   private void copy(InputStream in, File toDir, String name) throws IOException {
     File dst = FileUtils.getFile(toDir, name);
     com.google.common.io.Files.createParentDirs(dst);
-    FileOutputStream out = new FileOutputStream(dst);
-    try {
+    try (FileOutputStream out = new FileOutputStream(dst)) {
       ByteStreams.copy(in, out);
-    } finally {
-      out.close();
     }
   }
 
-  private void clean(File file) {
+  private void clean(File file) throws IOException {
+    File[] files = file == null ? null : file.listFiles();
+    if (files == null) {
+      return;
+    }
     if (file.isDirectory()) {
-      for (File child : file.listFiles()) {
+      for (File child : files) {
         clean(child);
       }
-      file.delete();
+      FileUtils.deleteDirectory(file.toPath());
     } else if (file.exists()) {
-      file.delete();
+      Files.delete(file.toPath());
     }
   }
 
@@ -363,15 +368,13 @@ public class AppServiceImpl implements AppService {
     return names;
   }
 
-  private List<App> getChildren(App app, Boolean active) {
+  private List<App> getChildren(App app) {
 
     String code = app.getCode();
 
     String query = "self.dependsOnSet.code = ?1";
 
-    if (active != null) {
-      query = "(" + query + ") AND self.active = " + active;
-    }
+    query = "(" + query + ") AND self.active = " + true;
     List<App> apps = appRepo.all().filter(query, code).fetch();
 
     log.debug("Parent app: {}, Total children: {}", app.getName(), apps.size());
@@ -384,7 +387,7 @@ public class AppServiceImpl implements AppService {
 
     app = appRepo.find(app.getId());
 
-    if (app.getActive()) {
+    if (Boolean.TRUE.equals(app.getActive())) {
       return app;
     }
 
@@ -401,7 +404,7 @@ public class AppServiceImpl implements AppService {
     }
 
     log.debug("Init data loaded: {}, for app: {}", app.getInitDataLoaded(), app.getCode());
-    if (!app.getInitDataLoaded()) {
+    if (!Boolean.TRUE.equals(app.getInitDataLoaded())) {
       app = importDataInit(app);
     }
 
@@ -414,9 +417,7 @@ public class AppServiceImpl implements AppService {
 
   private List<App> sortApps(Collection<App> apps) {
 
-    List<App> appsList = new ArrayList<>();
-
-    appsList.addAll(apps);
+    List<App> appsList = new ArrayList<>(apps);
 
     appsList.sort(this::compare);
 
@@ -428,16 +429,7 @@ public class AppServiceImpl implements AppService {
   private int compare(App app1, App app2) {
     Integer order1 = app1.getInstallOrder();
     Integer order2 = app2.getInstallOrder();
-
-    if (order1 < order2) {
-      return -1;
-    }
-
-    if (order1 > order2) {
-      return 1;
-    }
-
-    return 0;
+    return order1.compareTo(order2);
   }
 
   @Override
@@ -447,17 +439,16 @@ public class AppServiceImpl implements AppService {
     for (MetaModule module : modules) {
 
       File tmp = extract(module.getName(), DIR_APPS, null, null);
-      if (tmp == null) {
-        continue;
-      }
 
       try {
-        File dataDir = new File(tmp, DIR_APPS);
+        File dataDir = tmp == null ? null : new File(tmp, DIR_APPS);
 
         File[] dataFiles =
-            dataDir.listFiles((dir, name) -> name.endsWith(".yml") || name.endsWith(".yaml"));
+            dataDir == null
+                ? null
+                : dataDir.listFiles((dir, name) -> name.endsWith(".yml") || name.endsWith(".yaml"));
 
-        if (dataFiles.length == 0) {
+        if (dataFiles == null || dataFiles.length == 0) {
           continue;
         }
 
@@ -499,20 +490,15 @@ public class AppServiceImpl implements AppService {
       if (property == null) {
         continue;
       }
-
       if (property.getName().equals(APP_IMAGE) && entry.getValue() != null) {
         String image = entry.getValue().toString();
         importAppImage(app, mapper, property, image, dataFile);
-        continue;
-      }
-
-      if (property.getName().equals(APP_MODULES) && entry.getValue() != null) {
+      } else if (property.getName().equals(APP_MODULES) && entry.getValue() != null) {
         String modules = entry.getValue().toString().replace(" ", ",");
         mapper.set(app, property.getName(), modules);
-        continue;
+      } else {
+        mapper.set(app, property.getName(), entry.getValue() != null ? entry.getValue() : null);
       }
-
-      mapper.set(app, property.getName(), entry.getValue() != null ? entry.getValue() : null);
     }
 
     if (app.getLanguageSelect() == null) {
@@ -572,7 +558,7 @@ public class AppServiceImpl implements AppService {
   @Override
   public App unInstallApp(App app) {
 
-    List<App> children = getChildren(app, true);
+    List<App> children = getChildren(app);
     if (!children.isEmpty()) {
       List<String> childrenNames = getNames(children);
       throw new IllegalStateException(
@@ -601,7 +587,7 @@ public class AppServiceImpl implements AppService {
   @Override
   public App importRoles(App app) throws IOException {
 
-    if (app.getIsRolesImported()) {
+    if (Boolean.TRUE.equals(app.getIsRolesImported())) {
       return app;
     }
 
@@ -622,7 +608,7 @@ public class AppServiceImpl implements AppService {
 
     for (App parent : depends) {
       parent = appRepo.find(parent.getId());
-      if (!parent.getIsRolesImported()) {
+      if (!Boolean.TRUE.equals(parent.getIsRolesImported())) {
         importRoles(parent);
       }
     }
