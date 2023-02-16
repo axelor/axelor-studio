@@ -3,7 +3,7 @@ importId: 51
 name: BPM
 code: bpm
 typeSelect: standard
-installOrder: 35
+installOrder: 1020
 description: |
    Business Process Modeling
 modules: 
