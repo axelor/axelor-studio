@@ -64,13 +64,6 @@
     <view type="grid" name="library-grid"/>
     <view type="form" name="library-form"/>
   </action-view>
-  <menuitem name="studio-web-service-ws-request" title="Request" order="5"
-    parent="ws-app-studio-component" action="studio.web.service.ws.request"/>
-  <action-view name="studio.web.service.ws.request" title="Request"
-    model="com.axelor.studio.db.WsRequest">
-    <view type="grid" name="ws-request-grid"/>
-    <view type="form" name="ws-request-form"/>
-  </action-view>
 
   <!-- Reporting menu -->
 
