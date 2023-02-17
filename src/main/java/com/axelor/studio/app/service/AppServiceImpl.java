@@ -348,6 +348,10 @@ public class AppServiceImpl implements AppService {
     List<App> apps = new ArrayList<>();
     app = appRepo.find(app.getId());
 
+    if (CollectionUtils.isEmpty(app.getDependsOnSet())) {
+      return apps;
+    }
+
     for (App depend : app.getDependsOnSet()) {
       if (depend.getActive().equals(active)) {
         apps.add(depend);
