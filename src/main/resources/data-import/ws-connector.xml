@@ -11,7 +11,8 @@
       <bind node="defaultWsAuthenticator" to="defaultWsAuthenticator"
         search="self.name = :defaultWsAuthenticator" create="false"/>
       <bind node="baseUrl" to="baseUrl"/>
-      <bind node="requests/request" to="wsRequestList" search="self.name = :_name" create="false" update="true">
+      <bind node="requests/request" to="wsRequestList" search="self.name = :_name"
+        create="false" update="true">
         <bind node="name" to="name" alias="_name"/>
       </bind>
       <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>

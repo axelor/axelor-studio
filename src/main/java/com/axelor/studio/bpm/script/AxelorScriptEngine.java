@@ -22,6 +22,7 @@ import com.axelor.inject.Beans;
 import com.axelor.meta.db.repo.MetaJsonRecordRepository;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
 import com.axelor.utils.context.FullContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,6 +51,7 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
     bindings.put("__user__", new FullContext(AuthUtils.getUser()));
     bindings.put("__date__", LocalDate.now());
     bindings.put("__datetime__", LocalDateTime.now());
+    bindings.put("$transform", WkfTransformationHelper.class);
     return new GroovyScriptHelper(bindings).eval(script);
   }
 

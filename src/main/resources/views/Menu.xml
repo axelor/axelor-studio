@@ -17,7 +17,7 @@
     parent="studio-app-root"/>
 
   <!-- web service menu -->
-  <menuitem name="ws-app-studio-component" title="WS  Studio" order="26"
+  <menuitem name="ws-app-studio-component" title="WS Component" order="26"
     parent="studio-app-root"/>
   <menuitem name="ws-app-studio" title="WS Studio" parent="studio-app-root"
     action="studio.web.service.ws.webService" order="20" if="__config__.app.isApp('studio')"/>
