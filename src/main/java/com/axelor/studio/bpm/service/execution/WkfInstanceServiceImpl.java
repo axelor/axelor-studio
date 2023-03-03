@@ -18,6 +18,7 @@
 package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.db.EntityHelper;
+import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
@@ -281,6 +282,18 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Override
+  public boolean isActiveModelTask(Model model, String taskId) {
+
+    if (model == null || taskId == null) {
+      return false;
+    }
+
+    Model savedModel = JPA.find(EntityHelper.getEntityClass(model), model.getId());
+
+    return isActiveTask(savedModel.getProcessInstanceId(), taskId);
+  }
+
+  @Override
   public boolean isActivatedTask(String processInstanceId, String taskId) {
 
     if (processInstanceId == null || taskId == null) {
@@ -297,6 +310,18 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
             .count();
 
     return tasks > 0;
+  }
+
+  @Override
+  public boolean isActivatedModelTask(Model model, String taskId) {
+
+    if (model == null || taskId == null) {
+      return false;
+    }
+
+    Model savedModel = JPA.find(EntityHelper.getEntityClass(model), model.getId());
+
+    return isActivatedTask(savedModel.getProcessInstanceId(), taskId);
   }
 
   @Override
