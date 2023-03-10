@@ -24,6 +24,7 @@ import com.axelor.common.YamlUtils;
 import com.axelor.data.Importer;
 import com.axelor.data.csv.CSVImporter;
 import com.axelor.data.xml.XMLImporter;
+import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
@@ -32,7 +33,9 @@ import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
+import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.MetaModule;
+import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.db.repo.MetaModuleRepository;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
@@ -99,13 +102,18 @@ public class AppServiceImpl implements AppService {
   protected final AppRepository appRepo;
   protected final MetaFiles metaFiles;
   protected final AppVersionService appVersionService;
+  protected final MetaModelRepository metaModelRepo;
 
   @Inject
   public AppServiceImpl(
-      AppRepository appRepo, MetaFiles metaFiles, AppVersionService appVersionService) {
+      AppRepository appRepo,
+      MetaFiles metaFiles,
+      AppVersionService appVersionService,
+      MetaModelRepository metaModelRepo) {
     this.appRepo = appRepo;
     this.metaFiles = metaFiles;
     this.appVersionService = appVersionService;
+    this.metaModelRepo = metaModelRepo;
   }
 
   @Override
@@ -472,7 +480,8 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private void importApp(File dataFile, Map<App, Object> appDependsOnMap) throws IOException {
+  private void importApp(File dataFile, Map<App, Object> appDependsOnMap)
+      throws IOException, ClassNotFoundException {
 
     log.debug("Running import/update app with data path: {}", dataFile.getAbsolutePath());
 
@@ -520,6 +529,42 @@ public class AppServiceImpl implements AppService {
     if (appDataMap.containsKey(APP_DEPENDS_ON) && appDataMap.get(APP_DEPENDS_ON) != null) {
       appDependsOnMap.put(app, appDataMap.get(APP_DEPENDS_ON));
     }
+
+    importAppConfig(app);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Transactional(rollbackOn = {Exception.class})
+  public void importAppConfig(App app) throws ClassNotFoundException {
+
+    String code = app.getCode();
+    String modelName = "App" + Inflector.getInstance().camelize(code);
+
+    MetaModel model = metaModelRepo.findByName(modelName);
+    if (model == null) {
+      return;
+    }
+
+    Class<Model> klass = (Class<Model>) Class.forName(model.getFullName());
+
+    JpaRepository<Model> repo = JpaRepository.of(klass);
+    long cnt = repo.all().count();
+    if (cnt > 0) {
+      return;
+    }
+
+    Mapper mapper = Mapper.of(klass);
+    List<Property> properties = Arrays.asList(mapper.getProperties());
+    boolean isRequiredProp = properties.stream().anyMatch(prop -> prop.isRequired());
+    if (isRequiredProp) {
+      return;
+    }
+
+    Map<String, Object> _map = new HashMap<>();
+    _map.put("app", app);
+
+    Model bean = repo.create(_map);
+    repo.save(bean);
   }
 
   @SuppressWarnings("unchecked")
