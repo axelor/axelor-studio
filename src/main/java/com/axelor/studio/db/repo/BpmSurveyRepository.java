@@ -74,7 +74,8 @@ public class BpmSurveyRepository extends SurveyRepository {
     super.remove(survey);
 
     if (CollectionUtils.isNotEmpty(survey.getSurveyLineList())) {
-      survey.getSurveyLineList()
+      survey
+          .getSurveyLineList()
           .forEach(it -> metaJsonModelRepository.remove(it.getMetaJsonModel()));
     }
   }

@@ -19,7 +19,7 @@
       title="Node activation time" height="350" colSpan="12"/>
   </dashboard>
 
-  <form name="bpm-manager-dashboard-form" model="com.axelor.message.db.Wizard"
+  <form name="bpm-manager-dashboard-form" model="com.axelor.utils.db.Wizard"
     title="BPM Dashboard" width="large" onNew="action-bpm-manage-attrs-set-process" canSave="false"
     canNew="false">
     <panel name="actionPanel" colSpan="12">
@@ -44,9 +44,9 @@
     </panel>
   </form>
 
-  <form name="bpm-manager-processes-form" title="Processes"
-    model="com.axelor.message.db.Wizard" onNew="action-wkf-bpm-manager-dashboard-method-on-new"
-    width="large" canSave="false" canNew="false">
+  <form name="bpm-manager-processes-form" title="Processes" model="com.axelor.utils.db.Wizard"
+    onNew="action-wkf-bpm-manager-dashboard-method-on-new" width="large" canSave="false"
+    canNew="false">
     <panel name="wkfModelPanel">
       <label name="$noData" title="No data to display" showIf="$totalRecord == 0"/>
       <field name="$models" colSpan="12" showTitle="false" readonly="true">
@@ -123,12 +123,12 @@
   </action-method>
 
   <action-view name="action.bpm.manager.show.processes" title="Processes"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <view type="form" name="bpm-manager-processes-form"/>
   </action-view>
 
   <action-record name="action-bpm-manage-attrs-set-process"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <field name="$showProcessBtn"
       expr="eval: __repo__(WkfModel).all().filter('size(self.wkfProcessList) > 0').count()"/>
   </action-record>

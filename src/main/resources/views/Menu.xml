@@ -214,7 +214,7 @@
     parent="bpm-app-bpm-components" action="action.wkf.bpm.manager" order="55"
     if="__config__.app.isApp('bpm')"/>
   <action-view name="action.wkf.bpm.manager" title="BPM Dashboard"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <view type="form" name="bpm-manager-dashboard-form"/>
     <context name="_user_id" expr="eval:__user__.id"/>
   </action-view>

@@ -121,7 +121,7 @@
   </form>
 
   <form name="wfk-model-select-process-wizard-form" title="Select process"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <panel>
       <field name="process" onSelect="action-select-process-wizard-attrs-set-process-domain"
         title="Process" type="string" widget="ref-text" x-target="com.axelor.studio.db.WkfProcess"
