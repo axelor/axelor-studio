@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
+
+  <grid name="survey-campaign-grid" title="Survey campaign"
+    model="com.axelor.studio.db.SurveyCampaign">
+    <field name="name"/>
+    <field name="statusSelect"/>
+  </grid>
+
+  <form name="survey-campaign-form" title="Survey campaign"
+    model="com.axelor.studio.db.SurveyCampaign" width="large"
+    onLoad="action-survey-campaign-method-set-survey-form-list">
+    <panel>
+      <field name="statusSelect" widget="navSelect" colSpan="12"/>
+      <field name="survey"
+        onChange="action-survey-campaign-attrs-set-survey-name,action-survey-campaign-method-set-survey-form-list"
+        colSpan="4" required="true"/>
+      <field name="name" colSpan="6"/>
+      <field name="isPublicSurvey" colSpan="2" widget="boolean-switch"/>
+    </panel>
+    <panel colSpan="12" itemSpan="12" sidebar="true">
+      <button name="startBtn"
+        onClick="save,action-survey-campaign-method-validate-user,action-survey-campaign-view-select-send-to-email-address,save"
+        title="Start" hidden="true" readonlyIf="survey == null" showIf="statusSelect == 1"/>
+      <button name="closeBtn"
+        onClick="save,action-survey-campaign-method-close-campaign,save" title="Close" hidden="true"
+        showIf="statusSelect == 2"/>
+    </panel>
+    <panel colSpan="12" title="Total Responses" readonly="true" itemSpan="12" sidebar="true">
+      <field name="$totalSent" title="Sent" type="integer"/>
+      <field name="$totalCompleted" title="Completed" type="integer"/>
+      <field name="$totalPartiallyCompleted" title="Partially Completed" type="integer"/>
+      <field name="$totalNotCompleted" title="Not Completed" type="integer"/>
+    </panel>
+    <panel-tabs>
+      <panel title="Forms">
+        <field name="$surveyFormList" target="com.axelor.meta.db.MetaJsonRecord"
+          type="one-to-many" form-view="json-record-survey-form" showIf="survey" showTitle="false"
+          hidden="true" colSpan="12" canNew="false" canRemove="false">
+          <editor x-viewer="true">
+            <panel colSpan="12">
+              <button name="openForm" title="" icon="fa-file-text-o"
+                onClick="action-survey-campaign-method-open-form" colSpan="1"/>
+              <field name="jsonModel" colSpan="5" readonly="true" showTitle="false"/>
+              <panel colSpan="6" readonly="true">
+                <field name="totalCompleted" title="Completed" type="integer" colSpan="4"/>
+                <field name="totalPartiallyCompleted" title="Partially Completed"
+                  type="integer" colSpan="4"/>
+                <field name="totalNotCompleted" title="Not Completed" type="integer"
+                  colSpan="4"/>
+              </panel>
+            </panel>
+          </editor>
+        </field>
+      </panel>
+      <panel-related title="Sent To" field="sendToEmailAddressSet" colSpan="12"
+        showIf="statusSelect != 1" hidden="true">
+        <field name="address"/>
+      </panel-related>
+      <panel-dashlet title="Responses" showIf="statusSelect != 1" hidden="true"
+        action="action-survey-campaign-view-responses"/>
+    </panel-tabs>
+  </form>
+
+
+  <form name="survey-campaign-invite-form" title="Invite"
+    model="com.axelor.studio.db.SurveyCampaign">
+    <panel>
+      <panel-related title="Emails" field="sendToEmailAddressSet" colSpan="12">
+        <field name="address"/>
+      </panel-related>
+      <button name="sendBtn" title="Send"
+        onClick="save,action-survey-campaign-method-start-campaign"/>
+    </panel>
+  </form>
+
+  <action-view name="action-survey-campaign-view-select-send-to-email-address"
+    title="Send to" model="com.axelor.studio.db.SurveyCampaign">
+    <view type="form" name="survey-campaign-invite-form"/>
+    <view-param name="show-toolbar" value="false"/>
+    <view-param name="popup" value="reload"/>
+    <view-param name="forceEdit" value="true"/>
+    <context name="_showRecord" expr="eval:id"/>
+  </action-view>
+
+  <action-view name="action-survey-campaign-view-responses" title="Responses"
+    model="com.axelor.studio.db.SurveyResponse">
+    <view type="cards" name="survey-response-cards"/>
+    <view type="form" name="survey-response-check-form"/>
+    <domain>self.surveyCampaign.id = :id</domain>
+  </action-view>
+
+
+  <action-method name="action-survey-campaign-method-start-campaign">
+    <call class="com.axelor.studio.bpm.web.SurveyCampaignController" method="startCampaign"/>
+  </action-method>
+
+  <action-method name="action-survey-campaign-method-close-campaign">
+    <call class="com.axelor.studio.bpm.web.SurveyCampaignController" method="closeCampaign"/>
+  </action-method>
+
+  <action-method name="action-survey-campaign-method-set-survey-form-list">
+    <call class="com.axelor.studio.bpm.web.SurveyCampaignController"
+      method="setCampaignSurveyFormList"/>
+  </action-method>
+
+  <action-method name="action-survey-campaign-method-open-form">
+    <call class="com.axelor.studio.bpm.web.SurveyCampaignController" method="openForm"/>
+  </action-method>
+
+  <action-attrs name="action-survey-campaign-attrs-set-survey-name">
+    <attribute name="value" for="name" expr="eval:survey?.name"/>
+  </action-attrs>
+
+  <action-method name="action-survey-campaign-method-validate-user">
+    <call class="com.axelor.studio.bpm.web.SurveyCampaignController"
+      method="validateSurveyUser" if="isPublicSurvey"/>
+  </action-method>
+
+</object-views>

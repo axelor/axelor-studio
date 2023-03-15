@@ -7,7 +7,8 @@
     width="large" canDelete="false" canNew="false" canCopy="false">
 
     <panel name="mainPanel">
-      <field name="enableStudioApp" widget="Boolean-switch"/>
+      <field name="enableAppBuilder" widget="Boolean-switch"/>
+      <field name="surveyEmailTemplate"/>
     </panel>
 
     <panel-mail name="mailPanel">
