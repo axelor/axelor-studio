@@ -135,6 +135,28 @@
     </extend>
   </grid>
 
+  <grid name="meta-json-field-survey-grid" title="Fields"
+    model="com.axelor.meta.db.MetaJsonField" editable="true" canMove="true" orderBy="sequence"
+    onNew="action-meta-json-field-record-survey-default">
+    <field name="name"/>
+    <field name="type"/>
+    <field name="title"/>
+    <field name="targetModel" readonlyIf="!(type.match('^(one|many)-to-'))" widget="ref-text"
+      x-target-name="fullName" x-target="com.axelor.meta.db.MetaModel"/>
+    <field name="targetJsonModel" readonlyIf="!(type.match('^json-'))"/>
+    <field name="widget" widget="widget-select"/>
+    <field name="required"/>
+    <field name="help"/>
+    <field name="model" hidden="true"/>
+    <field name="modelField" hidden="true"/>
+  </grid>
+
+  <action-record name="action-meta-json-field-record-survey-default"
+    model="com.axelor.meta.db.MetaJsonField">
+    <field name="model" expr="'com.axelor.meta.db.MetaJsonRecord'"/>
+    <field name="modelField" expr="'attrs'"/>
+  </action-record>
+
   <action-record name="action-studio-meta-json-field-record-name"
     model="com.axelor.meta.db.MetaJsonField">
     <field name="name"
