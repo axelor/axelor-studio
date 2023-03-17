@@ -116,7 +116,6 @@ import com.axelor.studio.service.ws.WsAuthenticatorService;
 import com.axelor.studio.service.ws.WsAuthenticatorServiceImpl;
 import com.axelor.studio.service.ws.WsConnectoServiceImpl;
 import com.axelor.studio.service.ws.WsConnectorService;
-import com.axelor.utils.service.AppSettingsServiceImpl;
 
 public class StudioModule extends AxelorModule {
 

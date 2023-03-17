@@ -35,7 +35,7 @@ public class TransformationsLibrariesController {
           && alreadyDefinedParameter.getName().equals(parameter.getName())) {
         actionResponse.setValue("name", null);
         actionResponse.setAlert(
-            String.format(I18n.get("Parameter %s has Already been defined!"), parameter.getName()));
+            String.format(I18n.get("Parameter %s has already been defined!"), parameter.getName()));
       }
     }
   }
@@ -49,7 +49,7 @@ public class TransformationsLibrariesController {
         && !transformationService.validateUniqueNameInLibrary(transformation)) {
       actionResponse.setAlert(
           String.format(
-              I18n.get("Transformation %s has Already been defined in the library %s !"),
+              I18n.get("Transformation %s has already been defined in the library %s !"),
               transformation.getName(),
               transformation.getLibrary().getName()));
       return;

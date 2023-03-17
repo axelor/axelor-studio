@@ -4,22 +4,13 @@
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
 
   <grid name="survey-line-grid" title="Forms" model="com.axelor.studio.db.SurveyLine"
-    canMove="true" orderBy="sequence">
+    canMove="true" orderBy="sequence" editable="true" x-selector="checkbox">
     <field name="metaJsonModel"/>
   </grid>
 
   <form name="survey-line-form" title="Form" model="com.axelor.studio.db.SurveyLine">
     <panel>
-      <field name="metaJsonModel" colSpan="12" x-show-icons="false">
-        <editor x-viewer="true">
-          <panel colSpan="12">
-            <field name="name"/>
-            <field name="title"/>
-          </panel>
-          <field name="fields" showTitle="false" grid-view="meta-json-field-survey-grid"
-            orderBy="sequence" colSpan="12"/>
-        </editor>
-      </field>
+      <field name="metaJsonModel" colSpan="12"/>
     </panel>
   </form>
 

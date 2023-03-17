@@ -3,13 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
 
-  <grid name="survey-response-grid" title="Survey Response"
+  <grid name="survey-response-grid" title="Survey response"
     model="com.axelor.studio.db.SurveyResponse">
     <field name="email"/>
     <field name="isCompleted"/>
   </grid>
 
-  <form name="survey-response-form" title="Survey Response"
+  <form name="survey-response-form" title="Survey response"
     model="com.axelor.studio.db.SurveyResponse" width="large"
     onLoad="action-survey-response-method-open-survey-form" canEdit="false" canDelete="false"
     canNew="false">
@@ -18,7 +18,7 @@
     </panel>
   </form>
 
-  <form name="survey-response-check-form" title="Survey Response"
+  <form name="survey-response-check-form" title="Survey response"
     model="com.axelor.studio.db.SurveyResponse" width="large" canEdit="false" canDelete="false"
     canNew="false">
     <panel>
@@ -26,14 +26,15 @@
       <field name="isCompleted"/>
       <field name="metaJsonRecordList" colSpan="12" showTitle="false">
         <editor x-viewer="true">
-          <field name="jsonModel" showTitle="false" colSpan="4"/>
-          <field name="attrs" colSpan="8" showTitle="false"/>
+          <button name="openForm" title="" icon="fa-file-text-o"
+            onClick="action-survey-campaign-method-open-form" colSpan="1"/>
+          <field name="jsonModel" showTitle="false"/>
         </editor>
       </field>
     </panel>
   </form>
 
-  <cards name="survey-response-cards" title="Survey Response"
+  <cards name="survey-response-cards" title="Survey response"
     model="com.axelor.studio.db.SurveyResponse" width="25%" orderBy="-updatedOn" canEdit="false">
     <field name="email"/>
     <field name="isCompleted"/>
@@ -42,7 +43,7 @@
 		    	<strong><span x-translate>Email:</span></strong> {{ email }}
 		    	<div>
 		    	<span class="label label-success"  ng-show="record.isCompleted == true"  x-translate>Completed</span>
-		    	<span class="label label-important"  ng-show="record.isCompleted == false"  x-translate>Not Completed</span>
+		    	<span class="label label-important"  ng-show="record.isCompleted == false"  x-translate>Not completed</span>
 		    	</div>
 	    	</div>
 	    ]]>
@@ -58,7 +59,7 @@
     <view type="form" name="survey-response-form"/>
   </action-view>
 
-  <action-method name="action-survey-response-method-submit-survey-form">
+  <action-method name="action-submit-survey-response">
     <call class="com.axelor.studio.bpm.web.SurveyResponseController" method="submitSurveyForm"/>
   </action-method>
 

@@ -115,6 +115,7 @@ public class SurveyCampaignController {
               .param("popup-save", "false")
               .param("show-confirm", "false")
               .context("jsonModel", jsonModel)
+              .context("_showRecord", metaJsonRecord.getId())
               .map());
     } catch (Exception e) {
       ExceptionTool.trace(response, e);

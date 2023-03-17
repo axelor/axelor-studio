@@ -7,7 +7,7 @@
 
   <entity name="SurveyCampaign">
     <string name="name" title="Name" required="true"/>
-    <integer name="statusSelect" title="Status"
+    <integer name="statusSelect" title="Status" readonly="true" copy="false"
       selection="bpm.survey.campaign.status.select" default="1"/>
     <boolean name="isPublicSurvey" title="Public Survey" default="false"/>
     <many-to-one name="survey" title="Survey" ref="Survey"/>

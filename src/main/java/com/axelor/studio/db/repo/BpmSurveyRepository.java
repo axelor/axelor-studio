@@ -17,12 +17,17 @@
  */
 package com.axelor.studio.db.repo;
 
-import com.axelor.meta.db.MetaView;
+import com.axelor.i18n.I18n;
+import com.axelor.meta.db.MetaJsonField;
+import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.db.repo.MetaViewRepository;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.db.Survey;
 import com.axelor.studio.db.SurveyLine;
+import com.axelor.utils.WrapUtils;
 import com.google.inject.Inject;
+import java.util.Objects;
 import org.apache.commons.collections.CollectionUtils;
 
 public class BpmSurveyRepository extends SurveyRepository {
@@ -46,22 +51,12 @@ public class BpmSurveyRepository extends SurveyRepository {
 
     for (SurveyLine surveyLine : survey.getSurveyLineList()) {
       if (surveyLine.getMetaJsonModel() != null) {
-        surveyLine.getMetaJsonModel().setFormWidth("large");
-        metaJsonModelRepository.save(surveyLine.getMetaJsonModel());
-        MetaView metaView =
-            metaViewRepository.findByName(
-                "custom-model-" + surveyLine.getMetaJsonModel().getName() + "-form");
-        if (metaView != null) {
-          String xml = metaView.getXml();
-
-          if (!xml.contains("<button name=\"_submit\"")) {
-            xml =
-                xml.replace(
-                    "</panel>",
-                    "<button name=\"_submit\" title=\"Submit\" onClick=\"save,action-survey-response-method-submit-survey-form\" colSpan=\"3\" hideIf=\"$popup()\" /></panel>");
-            metaView.setXml(xml);
-            metaViewRepository.save(metaView);
-          }
+        MetaJsonModel metaJsonModel = surveyLine.getMetaJsonModel();
+        if (WrapUtils.wrap(metaJsonModel.getFields()).stream()
+            .map(MetaJsonField::getOnClick)
+            .filter(Objects::nonNull)
+            .noneMatch(it -> it.contains("action-submit-survey-response"))) {
+          throw new IllegalStateException(I18n.get(BpmExceptionMessage.NO_SUBMIT_BTN_FOUND));
         }
       }
     }

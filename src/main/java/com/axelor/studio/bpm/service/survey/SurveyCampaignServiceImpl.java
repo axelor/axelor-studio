@@ -147,7 +147,7 @@ public class SurveyCampaignServiceImpl implements SurveyCampaignService {
             + token;
     String content =
         message.getContent() != null
-            ? message.getContent().replace("{_surveyLink}", surveyLink)
+            ? message.getContent().replace("{__survey.url__}", surveyLink)
             : message.getContent();
     message.setContent(content);
     messageService.sendByEmail(message);

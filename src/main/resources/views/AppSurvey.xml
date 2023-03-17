@@ -7,7 +7,7 @@
     width="large" canDelete="false" canNew="false" canCopy="false">
 
     <panel name="mainPanel">
-      <field name="surveyEmailTemplate"/>
+      <field name="surveyEmailTemplate" canNew="true"/>
     </panel>
 
   </form>

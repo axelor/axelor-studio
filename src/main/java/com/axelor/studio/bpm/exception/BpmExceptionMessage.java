@@ -31,4 +31,6 @@ public final class BpmExceptionMessage {
 
   public static final String EMPTY_OUTPUT_COLUMN = /*$$(*/
       "Output columns can't be empty in import file" /*)*/;
+  public static final String NO_SUBMIT_BTN_FOUND = /*$$(*/
+      "No submit button found on the survey form. You must add a button with the 'action-submit-survey-response' action on click." /*)*/;
 }

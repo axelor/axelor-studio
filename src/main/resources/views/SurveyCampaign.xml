@@ -28,11 +28,11 @@
         onClick="save,action-survey-campaign-method-close-campaign,save" title="Close" hidden="true"
         showIf="statusSelect == 2"/>
     </panel>
-    <panel colSpan="12" title="Total Responses" readonly="true" itemSpan="12" sidebar="true">
+    <panel colSpan="12" title="Total responses" readonly="true" itemSpan="12" sidebar="true">
       <field name="$totalSent" title="Sent" type="integer"/>
       <field name="$totalCompleted" title="Completed" type="integer"/>
-      <field name="$totalPartiallyCompleted" title="Partially Completed" type="integer"/>
-      <field name="$totalNotCompleted" title="Not Completed" type="integer"/>
+      <field name="$totalPartiallyCompleted" title="Partially completed" type="integer"/>
+      <field name="$totalNotCompleted" title="Not completed" type="integer"/>
     </panel>
     <panel-tabs>
       <panel title="Forms">
@@ -46,16 +46,16 @@
               <field name="jsonModel" colSpan="5" readonly="true" showTitle="false"/>
               <panel colSpan="6" readonly="true">
                 <field name="totalCompleted" title="Completed" type="integer" colSpan="4"/>
-                <field name="totalPartiallyCompleted" title="Partially Completed"
+                <field name="totalPartiallyCompleted" title="Partially completed"
                   type="integer" colSpan="4"/>
-                <field name="totalNotCompleted" title="Not Completed" type="integer"
+                <field name="totalNotCompleted" title="Not completed" type="integer"
                   colSpan="4"/>
               </panel>
             </panel>
           </editor>
         </field>
       </panel>
-      <panel-related title="Sent To" field="sendToEmailAddressSet" colSpan="12"
+      <panel-related title="Sent to" field="sendToEmailAddressSet" colSpan="12"
         showIf="statusSelect != 1" hidden="true">
         <field name="address"/>
       </panel-related>
