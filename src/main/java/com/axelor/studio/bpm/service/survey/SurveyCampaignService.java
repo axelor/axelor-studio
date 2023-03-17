@@ -24,9 +24,6 @@ import javax.mail.MessagingException;
 
 public interface SurveyCampaignService {
 
-  String SURVEY_USER_PROP = "survey.public.user";
-  String SURVEY_PASSWORD_PROP = "survey.public.password";
-
   void startCampaign(SurveyCampaign surveyCampaign)
       throws ClassNotFoundException, MessagingException;
 

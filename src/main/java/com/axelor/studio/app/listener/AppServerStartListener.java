@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.app.listener;
 
-import com.axelor.app.AppSettings;
 import com.axelor.common.StringUtils;
 import com.axelor.event.Observes;
 import com.axelor.events.StartupEvent;
@@ -25,6 +24,7 @@ import com.axelor.inject.Beans;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.ExceptionTool;
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoper;
@@ -36,14 +36,18 @@ import javax.annotation.Priority;
 
 public class AppServerStartListener {
 
-  protected AppService appService;
-  protected AppRepository appRepository;
-  protected static String DEFAULT_LOCALE = "en";
+  protected final AppService appService;
+  protected final AppRepository appRepository;
+  protected final AppSettingsStudioService appSettingsService;
 
   @Inject
-  public AppServerStartListener(AppService appService, AppRepository appRepository) {
+  public AppServerStartListener(
+      AppService appService,
+      AppRepository appRepository,
+      AppSettingsStudioService appSettingsService) {
     this.appService = appService;
     this.appRepository = appRepository;
+    this.appSettingsService = appSettingsService;
   }
 
   public void onStartUp(@Observes @Priority(value = -1) StartupEvent event) {
@@ -60,9 +64,7 @@ public class AppServerStartListener {
 
     try (RequestScoper.CloseableScope ignored = scope.open()) {
 
-      AppSettings appSettings = AppSettings.get();
-
-      String apps = appSettings.get("aos.apps.install-apps");
+      String apps = appSettingsService.appsToInstall();
       if (StringUtils.isBlank(apps)) {
         return;
       }
@@ -81,14 +83,12 @@ public class AppServerStartListener {
         }
       }
 
-      if (appList.size() == 0) {
+      if (appList.isEmpty()) {
         return;
       }
 
       appService.bulkInstall(
-          appList,
-          appSettings.getBoolean("data.import.demo-data", false),
-          appSettings.get("application.locale", DEFAULT_LOCALE));
+          appList, appSettingsService.importDemoData(), appSettingsService.applicationLocale());
 
     } catch (Exception e) {
       ExceptionTool.trace(e);

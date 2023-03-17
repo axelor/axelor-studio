@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.bpm.service.survey;
 
-import com.axelor.app.AppSettings;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.message.db.EmailAddress;
@@ -37,6 +36,7 @@ import com.axelor.studio.db.repo.SurveyResponseRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessConfigRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.WrapUtils;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -61,19 +61,23 @@ public class SurveyCampaignServiceImpl implements SurveyCampaignService {
 
   protected MetaJsonRecordRepository metaJsonRecordRepository;
 
+  protected final AppSettingsStudioService appSettingsStudioService;
+
   @Inject
   public SurveyCampaignServiceImpl(
       SurveyCampaignRepository surveyCampaignRepository,
       SurveyResponseRepository surveyResponseRepository,
       TemplateMessageService templateMessageService,
       MessageService messageService,
-      MetaJsonRecordRepository metaJsonRecordRepository) {
+      MetaJsonRecordRepository metaJsonRecordRepository,
+      AppSettingsStudioService appSettingsStudioService) {
 
     this.surveyCampaignRepository = surveyCampaignRepository;
     this.surveyResponseRepository = surveyResponseRepository;
     this.templateMessageService = templateMessageService;
     this.messageService = messageService;
     this.metaJsonRecordRepository = metaJsonRecordRepository;
+    this.appSettingsStudioService = appSettingsStudioService;
   }
 
   @Override
@@ -135,7 +139,7 @@ public class SurveyCampaignServiceImpl implements SurveyCampaignService {
     Set<EmailAddress> toEmailIds = new HashSet<>();
     toEmailIds.add(emailAddress);
     message.setToEmailAddressSet(toEmailIds);
-    String surveyLink = AppSettings.get().getBaseURL();
+    String surveyLink = appSettingsStudioService.baseUrl();
     surveyLink +=
         (Boolean.TRUE.equals(surveyCampaign.getIsPublicSurvey())
                 ? "/ws/public/survey/"

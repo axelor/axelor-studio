@@ -17,12 +17,12 @@
  */
 package com.axelor.studio.service.ws;
 
-import com.axelor.app.AppSettings;
 import com.axelor.inject.Beans;
 import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.WsKeyValue;
 import com.axelor.studio.db.WsRequest;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.utils.ExceptionTool;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,6 +43,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
   @Inject protected WsConnectorService wsConnectorService;
 
   @Inject protected WsAuthenticatorRepository wsAuthenticatorRepository;
+  @Inject protected AppSettingsStudioService appSettingsStudioService;
 
   @Override
   @Transactional
@@ -98,7 +99,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
   private String getRedirectUrl() {
 
-    String redirectUrl = AppSettings.get().getBaseURL();
+    String redirectUrl = appSettingsStudioService.baseUrl();
 
     redirectUrl += "/ws/ws-auth/token";
 

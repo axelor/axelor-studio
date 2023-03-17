@@ -18,6 +18,7 @@
 package com.axelor.studio.module;
 
 import com.axelor.app.AxelorModule;
+import com.axelor.message.service.AppSettingsMessageServiceImpl;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.app.listener.AppServerStartListener;
@@ -99,6 +100,8 @@ import com.axelor.studio.dmn.service.DmnImportService;
 import com.axelor.studio.dmn.service.DmnImportServiceImpl;
 import com.axelor.studio.dmn.service.DmnService;
 import com.axelor.studio.dmn.service.DmnServiceImpl;
+import com.axelor.studio.service.AppSettingsStudioService;
+import com.axelor.studio.service.AppSettingsStudioServiceImpl;
 import com.axelor.studio.service.ChartRecordViewService;
 import com.axelor.studio.service.ChartRecordViewServiceImpl;
 import com.axelor.studio.service.loader.AppLoaderExportService;
@@ -113,6 +116,7 @@ import com.axelor.studio.service.ws.WsAuthenticatorService;
 import com.axelor.studio.service.ws.WsAuthenticatorServiceImpl;
 import com.axelor.studio.service.ws.WsConnectoServiceImpl;
 import com.axelor.studio.service.ws.WsConnectorService;
+import com.axelor.utils.service.AppSettingsServiceImpl;
 
 public class StudioModule extends AxelorModule {
 
@@ -130,6 +134,8 @@ public class StudioModule extends AxelorModule {
     bind(AppLoaderImportService.class).to(AppLoaderImportServiceImpl.class);
     bind(AppLoaderExportService.class).to(AppLoaderExportServiceImpl.class);
     bind(ChartRecordViewService.class).to(ChartRecordViewServiceImpl.class);
+    bind(AppSettingsStudioService.class).to(AppSettingsStudioServiceImpl.class);
+    bind(AppSettingsMessageServiceImpl.class).to(AppSettingsStudioServiceImpl.class);
 
     bind(WsConnectorService.class).to(WsConnectoServiceImpl.class);
     bind(WsAuthenticatorService.class).to(WsAuthenticatorServiceImpl.class);
