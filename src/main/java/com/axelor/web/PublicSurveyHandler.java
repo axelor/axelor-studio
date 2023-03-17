@@ -17,14 +17,13 @@
  */
 package com.axelor.web;
 
-import com.axelor.app.AppSettings;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
-import com.axelor.studio.bpm.service.survey.SurveyCampaignService;
 import com.axelor.studio.db.SurveyResponse;
 import com.axelor.studio.db.repo.SurveyCampaignRepository;
 import com.axelor.studio.db.repo.SurveyResponseRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.ExceptionTool;
 import java.net.URI;
 import java.util.ArrayList;
@@ -52,20 +51,20 @@ public class PublicSurveyHandler {
   public Response openSurvey(@PathParam("token") String token) {
 
     try {
-      AppSettings appSettings = AppSettings.get();
+      AppSettingsStudioService appSettingsStudioService = Beans.get(AppSettingsStudioService.class);
 
-      String redirectUrl = appSettings.getBaseURL();
+      String redirectUrl = appSettingsStudioService.baseUrl();
 
-      if (appSettings.get(SurveyCampaignService.SURVEY_USER_PROP) == null
-          || appSettings.get(SurveyCampaignService.SURVEY_PASSWORD_PROP) == null) {
+      if (appSettingsStudioService.surveyPublicUser() == null
+          || appSettingsStudioService.surveyPublicPassword() == null) {
         return Response.serverError()
             .entity(I18n.get(StudioExceptionMessage.SURVEY_CONFIG_USER))
             .build();
       }
 
       Map<String, String> json = new HashMap<>();
-      json.put("username", appSettings.get(SurveyCampaignService.SURVEY_USER_PROP));
-      json.put("password", appSettings.get(SurveyCampaignService.SURVEY_PASSWORD_PROP));
+      json.put("username", appSettingsStudioService.surveyPublicUser());
+      json.put("password", appSettingsStudioService.surveyPublicPassword());
 
       try (Response response =
           ClientBuilder.newClient()

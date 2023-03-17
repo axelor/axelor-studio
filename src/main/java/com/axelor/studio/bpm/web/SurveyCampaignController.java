@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.bpm.web;
 
-import com.axelor.app.AppSettings;
 import com.axelor.auth.db.repo.UserRepository;
 import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonRecord;
@@ -30,10 +29,19 @@ import com.axelor.studio.db.SurveyCampaign;
 import com.axelor.studio.db.repo.SurveyCampaignRepository;
 import com.axelor.studio.db.repo.SurveyRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.ExceptionTool;
+import com.google.inject.Inject;
 import java.util.List;
 
 public class SurveyCampaignController {
+
+  protected final AppSettingsStudioService appSettingsStudioService;
+
+  @Inject
+  public SurveyCampaignController(AppSettingsStudioService appSettingsStudioService) {
+    this.appSettingsStudioService = appSettingsStudioService;
+  }
 
   public void startCampaign(ActionRequest request, ActionResponse response) {
 
@@ -114,14 +122,10 @@ public class SurveyCampaignController {
   }
 
   public void validateSurveyUser(ActionRequest request, ActionResponse response) {
-
     try {
-
-      AppSettings appSettings = AppSettings.get();
-      if (appSettings.get(SurveyCampaignService.SURVEY_USER_PROP) == null
-          || appSettings.get(SurveyCampaignService.SURVEY_PASSWORD_PROP) == null
-          || Beans.get(UserRepository.class)
-                  .findByCode(appSettings.get(SurveyCampaignService.SURVEY_USER_PROP))
+      if (appSettingsStudioService.surveyPublicUser() == null
+          || appSettingsStudioService.surveyPublicPassword() == null
+          || Beans.get(UserRepository.class).findByCode(appSettingsStudioService.surveyPublicUser())
               == null) {
         response.setAlert(StudioExceptionMessage.SURVEY_PUBLIC_USER_NOT_EXIST);
       }

@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.app.service;
 
-import com.axelor.app.AppSettings;
 import com.axelor.common.FileUtils;
 import com.axelor.common.Inflector;
 import com.axelor.common.YamlUtils;
@@ -40,6 +39,7 @@ import com.axelor.meta.db.repo.MetaModuleRepository;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
@@ -103,17 +103,20 @@ public class AppServiceImpl implements AppService {
   protected final MetaFiles metaFiles;
   protected final AppVersionService appVersionService;
   protected final MetaModelRepository metaModelRepo;
+  protected final AppSettingsStudioService appSettingsService;
 
   @Inject
   public AppServiceImpl(
       AppRepository appRepo,
       MetaFiles metaFiles,
       AppVersionService appVersionService,
-      MetaModelRepository metaModelRepo) {
+      MetaModelRepository metaModelRepo,
+      AppSettingsStudioService appSettingsService) {
     this.appRepo = appRepo;
     this.metaFiles = metaFiles;
     this.appVersionService = appVersionService;
     this.metaModelRepo = metaModelRepo;
+    this.appSettingsService = appSettingsService;
   }
 
   @Override
@@ -194,7 +197,7 @@ public class AppServiceImpl implements AppService {
     String lang = app.getLanguageSelect();
 
     if (app.getLanguageSelect() == null) {
-      lang = AppSettings.get().get("application.locale");
+      lang = appSettingsService.applicationLocale();
     }
 
     return lang;
@@ -515,7 +518,7 @@ public class AppServiceImpl implements AppService {
     }
 
     if (app.getLanguageSelect() == null) {
-      String language = AppSettings.get().get("application.locale");
+      String language = appSettingsService.applicationLocale();
       app.setLanguageSelect(language);
     }
 
@@ -676,12 +679,12 @@ public class AppServiceImpl implements AppService {
 
   @Override
   public String getDataExportDir() {
-    String appSettingsPath = AppSettings.get().get("data.export.dir");
-    if (appSettingsPath == null || appSettingsPath.isEmpty()) {
+    String dataExportDirPath = appSettingsService.dataExportDir();
+    if (dataExportDirPath == null || dataExportDirPath.isEmpty()) {
       throw new IllegalStateException(I18n.get(StudioExceptionMessage.DATA_EXPORT_DIR_ERROR));
     }
-    return !appSettingsPath.endsWith(File.separator)
-        ? appSettingsPath + File.separator
-        : appSettingsPath;
+    return !dataExportDirPath.endsWith(File.separator)
+        ? dataExportDirPath + File.separator
+        : dataExportDirPath;
   }
 }

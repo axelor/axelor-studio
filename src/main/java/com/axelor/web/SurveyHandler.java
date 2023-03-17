@@ -17,13 +17,13 @@
  */
 package com.axelor.web;
 
-import com.axelor.app.AppSettings;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.studio.db.SurveyResponse;
 import com.axelor.studio.db.repo.SurveyCampaignRepository;
 import com.axelor.studio.db.repo.SurveyResponseRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.ExceptionTool;
 import java.net.URI;
 import javax.ws.rs.GET;
@@ -39,7 +39,9 @@ public class SurveyHandler {
   public Response openSurvey(@PathParam("token") String token) {
 
     try {
-      String redirectUrl = AppSettings.get().getBaseURL();
+      AppSettingsStudioService appSettingsStudioService = Beans.get(AppSettingsStudioService.class);
+
+      String redirectUrl = appSettingsStudioService.baseUrl();
 
       if (token != null) {
 

@@ -17,12 +17,12 @@
  */
 package com.axelor.studio.bpm.service.init;
 
-import com.axelor.app.AppSettings;
 import com.axelor.db.tenants.TenantConfig;
 import com.axelor.db.tenants.TenantConfigProvider;
 import com.axelor.inject.Beans;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Map;
@@ -40,8 +40,11 @@ public class ProcessEngineService {
   private static final Map<String, ProcessEngine> engineMap =
       new ConcurrentHashMap<String, ProcessEngine>();
 
+  protected final AppSettingsStudioService appSettingsStudioService;
+
   @Inject
-  public ProcessEngineService() {
+  public ProcessEngineService(AppSettingsStudioService appSettingsStudioService) {
+    this.appSettingsStudioService = appSettingsStudioService;
 
     addEngine(BpmTools.getCurentTenant());
 
@@ -57,7 +60,7 @@ public class ProcessEngineService {
       return;
     }
 
-    boolean multiTeant = AppSettings.get().getBoolean("application.multi_tenancy", false);
+    boolean multiTeant = appSettingsStudioService.multiTenancy();
 
     ProcessEngineConfigurationImpl configImpl = Beans.get(WkfProcessEngineConfigurationImpl.class);
 
