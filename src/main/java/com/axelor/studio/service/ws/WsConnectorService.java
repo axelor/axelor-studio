@@ -31,6 +31,8 @@ public interface WsConnectorService {
   public Map<String, Object> callConnector(
       WsConnector wsConnector, WsAuthenticator authenticator, Map<String, Object> ctx);
 
+  Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator);
+
   public Entity<?> createEntity(WsRequest wsRequest, Templates templates, Map<String, Object> ctx);
 
   public Response callRequest(

@@ -14,6 +14,8 @@
     <many-to-one name="defaultWsAuthenticator" title="Default authenticator"
       ref="WsAuthenticator"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
+    <one-to-many name="contextWsKeyValueList" title="Context" ref="WsKeyValueContext"
+      mappedBy="wsConnector"/>
   </entity>
 
 </domain-models>

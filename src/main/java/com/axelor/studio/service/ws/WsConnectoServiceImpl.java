@@ -20,10 +20,7 @@ package com.axelor.studio.service.ws;
 import com.axelor.common.StringUtils;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
-import com.axelor.studio.db.WsAuthenticator;
-import com.axelor.studio.db.WsConnector;
-import com.axelor.studio.db.WsKeyValue;
-import com.axelor.studio.db.WsRequest;
+import com.axelor.studio.db.*;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.text.Templates;
 import com.axelor.utils.ExceptionTool;
@@ -86,6 +83,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
     Templates templates = Beans.get(GroovyTemplates.class);
     ctx.putAll(createContext(wsConnector, authenticator));
+    ctx.putAll(createContext(wsConnector));
 
     if (authenticator != null && authenticator.getAuthTypeSelect().equals("basic")) {
       WsRequest wsRequest = authenticator.getAuthWsRequest();
@@ -275,8 +273,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     return wsResponse;
   }
 
-  protected Map<String, Object> createContext(
-      WsConnector wsConnector, WsAuthenticator authenticator) {
+  @Override
+  public Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator) {
 
     Map<String, Object> ctx = new HashMap<>();
 
@@ -306,6 +304,16 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                             : it.getValue().asText())));
       } catch (IOException e) {
       }
+    }
+
+    return ctx;
+  }
+
+  public Map<String, Object> createContext(WsConnector wsConnector) {
+
+    Map<String, Object> ctx = new HashMap<>();
+    for (WsKeyValueContext keyValue : wsConnector.getContextWsKeyValueList()) {
+      ctx.put(keyValue.getWsKey(), keyValue.getWsValue());
     }
 
     return ctx;
