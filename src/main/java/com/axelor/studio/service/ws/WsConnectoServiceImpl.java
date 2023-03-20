@@ -87,14 +87,16 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     ctx.putAll(createContext(wsConnector, authenticator));
     ctx.putAll(createContext(wsConnector));
 
-    if (authenticator != null && authenticator.getAuthTypeSelect().equals("basic")) {
+    if (authenticator.getAuthTypeSelect().equals("basic")) {
       WsRequest wsRequest = authenticator.getAuthWsRequest();
+      ctx.put("username", authenticator.getUsername());
+      ctx.put("password", authenticator.getPassword());
       Response wsResponse = callRequest(wsRequest, wsRequest.getWsUrl(), client, templates, ctx);
       if (wsResponse.getStatus() == 401) {
         throw new IllegalArgumentException(I18n.get("Error in authorization"));
       } else {
         this.sessionType = this.sessionTypeFactory.get(authenticator.getResponseType());
-        this.sessionType.extractSessionData(wsResponse,authenticator);
+        this.sessionType.extractSessionData(wsResponse, authenticator);
       }
       wsResponse.close();
     }
@@ -127,7 +129,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       String callIf = wsRequest.getCallIf();
       if (callIf != null) {
         callIf = templates.fromText(callIf).make(ctx).render();
-        if (callIf == null || !Boolean.parseBoolean(callIf)) {
+        if (!Boolean.parseBoolean(callIf)) {
           count++;
           continue;
         }
@@ -139,8 +141,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
       if (wsResponse.getStatus() == 401) {
 
-        if (authenticator != null && authenticator.getAuthTypeSelect().equals("oauth2")) {
-          Beans.get(WsAuthenticatorService.class).refereshToken(authenticator);
+        if (authenticator.getAuthTypeSelect().equals("oauth2")) {
+          Beans.get(WsAuthenticatorService.class).refereshToken(authenticator).close();
           ctx.putAll(createContext(wsConnector, authenticator));
           wsResponse.close();
           wsResponse = callRequest(wsRequest, url, client, templates, ctx);
@@ -168,7 +170,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       log.debug("Request{}: {} ", count, ctx.get("_" + count));
 
       if (lastRepeatIf != null
-          && (repeatIf != null && !lastRepeatIf.equals(repeatIf) || repeatIf == null)) {
+          && (!lastRepeatIf.equals(repeatIf))) {
         if (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
           count = repeatRequestCount;
           repeatIndex++;
@@ -230,7 +232,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     }
 
     String requestType = wsRequest.getRequestTypeSelect();
-    Entity entity = null;
+    Entity<?> entity = null;
     if (requestType.equals("GET") || requestType.equals("DELETE")) {
       try {
         URIBuilder uriBuilder = new URIBuilder(url);
@@ -273,9 +275,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
     Builder request = client.target(url).request().headers(headers);
     if (sessionType != null) sessionType.injectSessionData(request);
-    Response wsResponse = request.method(wsRequest.getRequestTypeSelect(), entity);
 
-    return wsResponse;
+    return request.method(wsRequest.getRequestTypeSelect(), entity);
   }
 
   @Override
@@ -308,6 +309,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                             ? it.getValue().get(0).asText()
                             : it.getValue().asText())));
       } catch (IOException e) {
+        log.error(e.getMessage(), e);
       }
     }
 
@@ -356,28 +358,30 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         break;
       case "file":
         try {
-          entity = Entity.entity(new FileInputStream(text), "application/octet-stream");
+          entity = text == null ? null : Entity.entity(new FileInputStream(text), "application/octet-stream");
         } catch (FileNotFoundException e) {
+          log.error(e.getMessage(), e);
         }
         break;
       case "file-link":
         try {
-          entity = Entity.entity(new URL(text).openStream(), "application/octet-stream");
+          entity = text == null ? null : Entity.entity(new URL(text).openStream(), "application/octet-stream");
         } catch (IOException e) {
+          log.error(e.getMessage(), e);
         }
         break;
       case "file-text":
-        boolean isBase64 = Base64.isBase64(text.getBytes());
-        byte[] bytes = null;
+        boolean isBase64 = text != null && Base64.isBase64(text.getBytes());
+        byte[] bytes;
         if (isBase64) {
           bytes = Base64.decodeBase64(text.getBytes());
         } else {
-          bytes = text.getBytes();
+          bytes = text == null ? null : text.getBytes();
         }
-        entity = Entity.entity(new ByteArrayInputStream(bytes), "application/octet-stream");
+        entity = bytes == null ? null : Entity.entity(new ByteArrayInputStream(bytes), "application/octet-stream");
         break;
       case "stream":
-        entity = Entity.entity(new ByteArrayInputStream((byte[]) obj), "application/octet-stream");
+        entity = obj == null ? null : Entity.entity(new ByteArrayInputStream((byte[]) obj), "application/octet-stream");
         break;
     }
 
@@ -415,8 +419,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             if (jsonSubVal != null) {
               String val = (String) jsonSubVal;
               if (val.startsWith("[") && val.endsWith("]")) {
-                String[] strArray = val.substring(1, val.length() - 1).trim().split("\\s*,\\s*");
-                jsonSubVal = strArray;
+                jsonSubVal = val.substring(1, val.length() - 1).trim().split("\\s*,\\s*");
               } else if (NumberUtils.isCreatable(val)) {
                 jsonSubVal = NumberUtils.createNumber(val);
               }
@@ -446,8 +449,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       if (jsonVal != null) {
         String val = (String) jsonVal;
         if (val.startsWith("[") && val.endsWith("]")) {
-          String[] strArray = val.substring(1, val.length() - 1).trim().split("\\s*,\\s*");
-          jsonVal = strArray;
+          jsonVal = val.substring(1, val.length() - 1).trim().split("\\s*,\\s*");
         } else if (NumberUtils.isCreatable(val)) {
           jsonVal = NumberUtils.createNumber(val);
         }
