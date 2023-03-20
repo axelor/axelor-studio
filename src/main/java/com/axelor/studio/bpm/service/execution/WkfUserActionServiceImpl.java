@@ -19,6 +19,7 @@ package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.auth.AuthUtils;
 import com.axelor.auth.db.User;
+import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.auth.db.repo.UserRepository;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
@@ -39,6 +40,7 @@ import com.google.inject.persist.Transactional;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public class WkfUserActionServiceImpl implements WkfUserActionService {
@@ -53,6 +55,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   @Inject private WkfProcessConfigRepository wkfProcessConfigRepository;
 
   @Inject private TeamTaskRepository teamTaskRepository;
+
+  @Inject private RoleRepository roleRepo;
 
   protected static final Pattern FIELD_PATTERN = Pattern.compile("(\\$\\{[^\\}]+\\})");
 
@@ -74,6 +78,9 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
       TeamTask teamTask = new TeamTask(title);
       teamTask.setStatus("new");
+      if (!StringUtils.isEmpty(wkfTaskConfig.getRoleName())) {
+        teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
+      }
       if (wkfTaskConfig.getDeadlineFieldPath() != null) {
         teamTask.setTaskDate(getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
       }

@@ -372,7 +372,7 @@
     <config name="xFormat" value="DD/MM/YYYY"/>
   </chart>
 
-  <form model="com.axelor.message.db.Wizard" title="Select model"
+  <form model="com.axelor.utils.db.Wizard" title="Select model"
     name="chart-wkf-select-model-form" onNew="action-chart-wkf-wizard-method-onnew">
     <panel>
       <field name="metaModel" type="many-to-one" target="com.axelor.meta.db.MetaModel"
@@ -385,7 +385,7 @@
   </form>
 
   <action-view name="action-chart-wkf-view-open-wizard" title="Select model"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <view type="form" name="chart-wkf-select-model-form"/>
     <view-param name="popup" value="true"/>
     <view-param name="popup-save" value="false"/>

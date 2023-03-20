@@ -18,6 +18,7 @@
 package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.db.EntityHelper;
+import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
@@ -281,6 +282,18 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Override
+  public boolean isActiveModelTask(Model model, String taskId) {
+
+    if (model == null || taskId == null) {
+      return false;
+    }
+
+    Model savedModel = JPA.find(EntityHelper.getEntityClass(model), model.getId());
+
+    return isActiveTask(savedModel.getProcessInstanceId(), taskId);
+  }
+
+  @Override
   public boolean isActivatedTask(String processInstanceId, String taskId) {
 
     if (processInstanceId == null || taskId == null) {
@@ -297,6 +310,18 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
             .count();
 
     return tasks > 0;
+  }
+
+  @Override
+  public boolean isActivatedModelTask(Model model, String taskId) {
+
+    if (model == null || taskId == null) {
+      return false;
+    }
+
+    Model savedModel = JPA.find(EntityHelper.getEntityClass(model), model.getId());
+
+    return isActivatedTask(savedModel.getProcessInstanceId(), taskId);
   }
 
   @Override
@@ -348,7 +373,9 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       return;
     }
 
-    if (wkfTaskConfig.getNotificationEmail()) {
+    if (wkfTaskConfig.getNotificationEmail()
+        && wkfTaskConfig.getEmailEvent() != null
+        && wkfTaskConfig.getEmailEvent().equals("start")) {
       try {
         Beans.get(WkfEmailService.class).sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
@@ -358,6 +385,24 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     if (wkfTaskConfig.getCreateTask()) {
       Beans.get(WkfUserActionService.class).createUserAction(wkfTaskConfig, execution);
+    }
+  }
+
+  @Override
+  public void onNodeDeactivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution) {
+
+    if (wkfTaskConfig == null || execution == null) {
+      return;
+    }
+
+    if (wkfTaskConfig.getNotificationEmail()
+        && wkfTaskConfig.getEmailEvent() != null
+        && wkfTaskConfig.getEmailEvent().equals("end")) {
+      try {
+        Beans.get(WkfEmailService.class).sendEmail(wkfTaskConfig, execution);
+      } catch (Exception e) {
+        ExceptionTool.trace(e);
+      }
     }
   }
 

@@ -17,10 +17,10 @@
  */
 package com.axelor.web;
 
-import com.axelor.app.AppSettings;
 import com.axelor.inject.Beans;
 import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.studio.service.ws.WsAuthenticatorService;
 import com.axelor.utils.ExceptionTool;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +29,6 @@ import com.google.inject.persist.Transactional;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
@@ -39,7 +38,6 @@ import javax.ws.rs.core.UriInfo;
 @Path("/ws-auth")
 public class WsTokenHandler {
 
-  @POST
   @GET
   @Path("/token")
   @Transactional
@@ -50,8 +48,11 @@ public class WsTokenHandler {
 
     String state = paramMap.getFirst("state");
 
+    AppSettingsStudioService appSettingsStudioService = Beans.get(AppSettingsStudioService.class);
+    String baseUrl = appSettingsStudioService.baseUrl();
+
     if (state == null) {
-      return Response.temporaryRedirect(new URI(AppSettings.get().getBaseURL())).build();
+      return Response.temporaryRedirect(new URI(baseUrl)).build();
     }
 
     WsAuthenticatorRepository wsAuthenticatorRepository =
@@ -67,6 +68,6 @@ public class WsTokenHandler {
       ExceptionTool.trace(e);
     }
 
-    return Response.temporaryRedirect(new URI(AppSettings.get().getBaseURL())).build();
+    return Response.temporaryRedirect(new URI(baseUrl)).build();
   }
 }

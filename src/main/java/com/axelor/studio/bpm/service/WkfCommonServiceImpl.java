@@ -26,6 +26,7 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.rpc.Context;
 import com.axelor.script.GroovyScriptHelper;
+import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
@@ -59,6 +60,8 @@ public class WkfCommonServiceImpl implements WkfCommonService {
   @Inject protected MetaJsonFieldRepository metaJsonFieldRepository;
 
   @Inject protected WkfModelRepository wkfModelRepository;
+
+  @Inject protected AppService appService;
 
   @Override
   public WkfProcessConfig findCurrentProcessConfig(Model model) {
@@ -205,7 +208,8 @@ public class WkfCommonServiceImpl implements WkfCommonService {
 
   private String getModelName(Model model) {
 
-    if (model instanceof MetaJsonRecord) {
+    if (model instanceof MetaJsonRecord
+        && (!appService.isApp("survey") || ((MetaJsonRecord) model).getSurveyResponse() == null)) {
       return ((MetaJsonRecord) model).getJsonModel();
     }
 

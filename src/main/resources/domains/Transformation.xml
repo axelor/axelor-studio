@@ -14,7 +14,7 @@
       mappedBy="transformation"/>
 
     <boolean name="multiArg" title="Add multiple arguments" default="false"/>
-    <string name="multiArgType" title="Type of multiple Arguments"
+    <string name="multiArgType" title="Type of multiple arguments"
       selection="studio.parameter.type.select"/>
   </entity>
 

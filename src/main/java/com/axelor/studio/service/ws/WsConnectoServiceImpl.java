@@ -214,7 +214,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         if (!Strings.isNullOrEmpty(value)) {
           value = templates.fromText(wsKeyValue.getWsValue()).make(ctx).render();
           if (!StringUtils.isBlank(value)
-              && value.startsWith("Basic")
+              && value.startsWith("Basic ")
               && wsKeyValue.getWsKey().equals("Authorization")) {
             headers.add(
                 wsKeyValue.getWsKey(),

@@ -22,12 +22,12 @@ cache:
 build:
   stage: build
   script:
-    - ./gradlew -xtest clean build
+    - ./gradlew -xtest clean build --refresh-dependencies
 
 .publish_template: &publish_configuration
   stage: publish
   script:
-    - ./gradlew clean publish -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew clean publish --refresh-dependencies -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration

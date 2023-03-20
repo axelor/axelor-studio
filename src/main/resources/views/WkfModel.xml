@@ -26,7 +26,7 @@
   </grid>
 
   <form name="wkf-model-form" title="BPM Model" model="com.axelor.studio.db.WkfModel"
-    width="large" onLoad="action-wlf-model-method-onload">
+    width="large" onLoad="action-wkf-model-method-onload">
     <panel name="mainPanel" colSpan="12">
       <field name="statusSelect" widget="NavSelect" colSpan="12" readonly="true"/>
       <field name="code" x-bind="{{code|unaccent|uppercase}}"
@@ -36,6 +36,9 @@
         if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
       <field name="versionTag"/>
       <field name="wkfStatusColor" widget="SingleSelect"/>
+      <field name="isSurvey" if="__config__.app.isApp('survey')"/>
+      <field name="survey" showIf="isSurvey" if="__config__.app.isApp('survey')"
+        requiredIf="isSurvey" hidden="true"/>
     </panel>
     <panel-tabs>
       <panel name="allProcessPanel" title="All Processes">
@@ -118,7 +121,7 @@
   </form>
 
   <form name="wfk-model-select-process-wizard-form" title="Select process"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <panel>
       <field name="process" onSelect="action-select-process-wizard-attrs-set-process-domain"
         title="Process" type="string" widget="ref-text" x-target="com.axelor.studio.db.WkfProcess"
@@ -251,7 +254,7 @@
       expr="eval: wkfProcessList?.collect{it.id}?.size() &gt; 0 ? __repo__(WkfInstance).all().filter('self.wkfProcess.id IN ?', wkfProcessList.collect{it.id}?.flatten()).fetch()?.collect{it.id}?.flatten() : 0"/>
   </action-view>
 
-  <action-method name="action-wlf-model-method-onload">
+  <action-method name="action-wkf-model-method-onload">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="changeAttrs"/>
   </action-method>
 

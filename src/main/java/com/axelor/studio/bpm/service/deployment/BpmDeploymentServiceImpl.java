@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.bpm.service.deployment;
 
-import com.axelor.inject.Beans;
+import com.axelor.common.StringUtils;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
@@ -26,11 +26,16 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
+import com.axelor.studio.db.Survey;
+import com.axelor.studio.db.SurveyLine;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
+import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.studio.db.repo.SurveyRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessRepository;
+import com.axelor.utils.WrapUtils;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
@@ -39,6 +44,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.migration.MigrationPlan;
@@ -66,12 +73,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected Logger log = LoggerFactory.getLogger(BpmDeploymentServiceImpl.class);
 
   @Inject protected WkfProcessRepository wkfProcessRepository;
-
   @Inject protected MetaJsonModelRepository metaJsonModelRepository;
-
   @Inject protected MetaAttrsService metaAttrsService;
-
   @Inject protected WkfCommonService wkfService;
+  @Inject protected SurveyRepository surveyRepository;
+  @Inject protected MetaFileRepository metaFileRepo;
+  @Inject protected WkfProcessApplication wkfProcessApplication;
+  @Inject protected WkfNodeService wkfNodeService;
+  @Inject protected WkfModelRepository wkfModelRepository;
+  @Inject protected ProcessEngineService processEngineService;
 
   protected WkfModel wkfModel;
 
@@ -88,7 +98,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.wkfModel = wkfModel;
     this.migrationMap = migrationMap;
 
-    ProcessEngine engine = Beans.get(ProcessEngineService.class).getEngine();
+    ProcessEngine engine = processEngineService.getEngine();
 
     String key = wkfModel.getId() + ".bpmn";
     BpmnModelInstance bpmInstance =
@@ -108,12 +118,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     Map<String, String> processMap = deployProcess(engine, deploymentBuilder, bpmInstance);
 
-    List<MetaAttrs> metaAttrsList =
-        Beans.get(WkfNodeService.class).extractNodes(wkfModel, bpmInstance, processMap);
+    List<MetaAttrs> metaAttrsList = wkfNodeService.extractNodes(wkfModel, bpmInstance, processMap);
 
-    Beans.get(WkfModelRepository.class).save(wkfModel);
+    wkfModelRepository.save(wkfModel);
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, wkfModel.getId());
+
+    if (Boolean.TRUE.equals(wkfModel.getIsSurvey())) {
+      addSurveyLines();
+    }
   }
 
   protected Map<String, String> deployProcess(
@@ -121,7 +134,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     Deployment deployment = deploymentBuilder.deploy();
 
-    Map<String, String> processMap = new HashMap<String, String>();
+    Map<String, String> processMap = new HashMap<>();
 
     List<ProcessDefinition> definitions =
         engine
@@ -167,8 +180,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     engine
         .getManagementService()
-        .registerProcessApplication(
-            deployment.getId(), Beans.get(WkfProcessApplication.class).getReference());
+        .registerProcessApplication(deployment.getId(), wkfProcessApplication.getReference());
 
     return processMap;
   }
@@ -183,7 +195,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .deploymentId(oldDeploymentId)
             .list();
 
-    log.debug("Old definition size " + oldDefinitions.size());
+    log.debug("Old definition size {}", oldDefinitions.size());
     for (ProcessDefinition oldDefinition : oldDefinitions) {
       for (ProcessDefinition newDefinition : definitions) {
         if (oldDefinition.getKey().equals(newDefinition.getKey())) {
@@ -232,13 +244,13 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     ModelInstance modelInstance =
         engine.getRepositoryService().getBpmnModelInstance(oldDefinition.getId());
 
-    for (String key : processMap.keySet()) {
+    for (Map.Entry<String, String> entry : processMap.entrySet()) {
       long count =
           engine
               .getHistoryService()
               .createHistoricActivityInstanceQuery()
               .processDefinitionId(oldDefinition.getId())
-              .activityId(key)
+              .activityId(entry.getKey())
               .unfinished()
               .count();
 
@@ -246,17 +258,16 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
         continue;
       }
 
-      ModelElementInstance instance = modelInstance.getModelElementById(key);
+      ModelElementInstance instance = modelInstance.getModelElementById(entry.getKey());
 
-      String value = processMap.get(key);
-      if (value != null) {
+      if (entry.getValue() != null) {
         if (instance
             .getElementType()
             .getTypeName()
             .equals(BpmnModelConstants.BPMN_ELEMENT_INTERMEDIATE_CATCH_EVENT)) {
-          planBuilder.mapActivities(key, value).updateEventTrigger();
+          planBuilder.mapActivities(entry.getKey(), entry.getValue()).updateEventTrigger();
         } else {
-          planBuilder.mapActivities(key, value);
+          planBuilder.mapActivities(entry.getKey(), entry.getValue());
         }
       }
 
@@ -264,7 +275,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
           instance.getChildElementsByType(MultiInstanceLoopCharacteristics.class);
 
       if (childInstaces != null && !childInstaces.isEmpty()) {
-        planBuilder.mapActivities(key + "#multiInstanceBody", value + "#multiInstanceBody");
+        planBuilder.mapActivities(
+            entry.getKey() + "#multiInstanceBody", entry.getValue() + "#multiInstanceBody");
       }
     }
 
@@ -274,8 +286,6 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   protected void addDmn(DeploymentBuilder deploymentBuilder, Set<MetaFile> dmnFiles) {
-
-    MetaFileRepository metaFileRepo = Beans.get(MetaFileRepository.class);
     for (MetaFile dmnFile : dmnFiles) {
       dmnFile = metaFileRepo.find(dmnFile.getId());
       deploymentBuilder.addModelInstance(
@@ -307,7 +317,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             "processConfiguration", BpmnParser.CAMUNDA_BPMN_EXTENSIONS_NS);
     List<ModelElementInstance> processConfigElements =
         extensionElements.getElementsQuery().filterByType(processConfigType).list();
-    if (processConfigElements == null || processConfigElements.size() == 0) {
+    if (CollectionUtils.isEmpty(processConfigElements)) {
       return;
     }
 
@@ -333,7 +343,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   private Map<String, WkfProcessConfig> createConfigMap(WkfProcess process) {
 
-    Map<String, WkfProcessConfig> configMap = new HashMap<String, WkfProcessConfig>();
+    Map<String, WkfProcessConfig> configMap = new HashMap<>();
 
     if (process.getWkfProcessConfigList() != null) {
       for (WkfProcessConfig config : process.getWkfProcessConfigList()) {
@@ -365,5 +375,40 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
 
     return new WkfProcessConfig();
+  }
+
+  protected void addSurveyLines() {
+
+    Survey survey = wkfModel.getSurvey();
+
+    if (survey == null) {
+      return;
+    }
+
+    Map<String, SurveyLine> surveyLineMap =
+        WrapUtils.wrap(survey.getSurveyLineList()).stream()
+            .collect(Collectors.toMap(it -> it.getMetaJsonModel().getName(), it -> it));
+
+    for (WkfTaskConfig wkfTaskConfig : WrapUtils.wrap(wkfModel.getWkfTaskConfigList())) {
+
+      String defaultForm = wkfTaskConfig.getDefaultForm();
+
+      if (StringUtils.notBlank(defaultForm)) {
+        String modelName = defaultForm.split("-")[2];
+        surveyLineMap.computeIfAbsent(
+            modelName,
+            it -> {
+              SurveyLine surveyLine = new SurveyLine();
+              surveyLine.setSurvey(survey);
+              surveyLine.setMetaJsonModel(metaJsonModelRepository.findByName(modelName));
+              return surveyLine;
+            });
+      }
+    }
+
+    survey.clearSurveyLineList();
+    survey.getSurveyLineList().addAll(surveyLineMap.values());
+
+    surveyRepository.save(survey);
   }
 }

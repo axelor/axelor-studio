@@ -22,10 +22,12 @@
       <field name="messages"/>
       <panel title="Task/Email" colSpan="12">
         <field name="createTask"/>
+        <field name="role"/>
         <field name="taskEmailTitle"/>
         <field name="userPath"/>
         <field name="deadlineFieldPath"/>
         <field name="notificationEmail"/>
+        <field name="emailEvent"/>
         <field name="newMenu"/>
         <field name="menuName"/>
         <field name="parentMenuName"/>

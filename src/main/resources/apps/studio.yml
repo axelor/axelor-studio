@@ -3,7 +3,7 @@ importId: 50
 name: Studio
 code: studio
 typeSelect: standard
-installOrder: 28
+installOrder: 1010
 description: |
     App Management
 image: app-studio.png

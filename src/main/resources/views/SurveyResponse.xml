@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
+
+  <grid name="survey-response-grid" title="Survey response"
+    model="com.axelor.studio.db.SurveyResponse">
+    <field name="email"/>
+    <field name="isCompleted"/>
+  </grid>
+
+  <form name="survey-response-form" title="Survey response"
+    model="com.axelor.studio.db.SurveyResponse" width="large"
+    onLoad="action-survey-response-method-open-survey-form" canEdit="false" canDelete="false"
+    canNew="false">
+    <panel>
+      <field name="$name" title="Name"/>
+    </panel>
+  </form>
+
+  <form name="survey-response-check-form" title="Survey response"
+    model="com.axelor.studio.db.SurveyResponse" width="large" canEdit="false" canDelete="false"
+    canNew="false">
+    <panel>
+      <field name="email"/>
+      <field name="isCompleted"/>
+      <field name="metaJsonRecordList" colSpan="12" showTitle="false">
+        <editor x-viewer="true">
+          <button name="openForm" title="" icon="fa-file-text-o"
+            onClick="action-survey-campaign-method-open-form" colSpan="1"/>
+          <field name="jsonModel" showTitle="false"/>
+        </editor>
+      </field>
+    </panel>
+  </form>
+
+  <cards name="survey-response-cards" title="Survey response"
+    model="com.axelor.studio.db.SurveyResponse" width="25%" orderBy="-updatedOn" canEdit="false">
+    <field name="email"/>
+    <field name="isCompleted"/>
+    <template><![CDATA[
+		    <div class="span12">
+		    	<strong><span x-translate>Email:</span></strong> {{ email }}
+		    	<div>
+		    	<span class="label label-success"  ng-show="record.isCompleted == true"  x-translate>Completed</span>
+		    	<span class="label label-important"  ng-show="record.isCompleted == false"  x-translate>Not completed</span>
+		    	</div>
+	    	</div>
+	    ]]>
+    </template>
+  </cards>
+
+  <action-method name="action-survey-response-method-open-survey-form">
+    <call class="com.axelor.studio.bpm.web.SurveyResponseController" method="openSurveyForm"/>
+  </action-method>
+
+  <action-view name="survey.response.all" title="Survey response"
+    model="com.axelor.studio.db.SurveyResponse">
+    <view type="form" name="survey-response-form"/>
+  </action-view>
+
+  <action-method name="action-submit-survey-response">
+    <call class="com.axelor.studio.bpm.web.SurveyResponseController" method="submitSurveyForm"/>
+  </action-method>
+
+</object-views>

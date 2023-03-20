@@ -43,16 +43,23 @@ public interface WkfInstanceService {
   public boolean isActiveTask(String processInstanceId, String taskId);
 
   @CallMethod
+  public boolean isActiveModelTask(Model model, String taskId);
+
+  @CallMethod
   public List<String> findProcessInstanceByNode(
       String nodeKey, String processId, String type, boolean permanent);
 
   public void onNodeActivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
+
+  public void onNodeDeactivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
 
   public void terminateAll();
 
   public String getInstanceXml(String instanceId);
 
   public boolean isActivatedTask(String processInstanceId, String taskId);
+
+  public boolean isActivatedModelTask(Model model, String taskId);
 
   public void restart(String processInstanceId, String activityId);
 

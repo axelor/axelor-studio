@@ -19,7 +19,6 @@ package com.axelor.studio.bpm.web;
 
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
-import com.axelor.message.db.Wizard;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.MetaModel;
@@ -37,6 +36,7 @@ import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.db.Wizard;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

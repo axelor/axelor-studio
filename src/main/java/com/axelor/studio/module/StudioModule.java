@@ -18,6 +18,7 @@
 package com.axelor.studio.module;
 
 import com.axelor.app.AxelorModule;
+import com.axelor.message.service.AppSettingsMessageServiceImpl;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.app.listener.AppServerStartListener;
@@ -63,6 +64,11 @@ import com.axelor.studio.bpm.service.execution.WkfTaskServiceImpl;
 import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.execution.WkfUserActionServiceImpl;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
+import com.axelor.studio.bpm.service.survey.SurveyCampaignService;
+import com.axelor.studio.bpm.service.survey.SurveyCampaignServiceImpl;
+import com.axelor.studio.bpm.service.survey.SurveyResponseService;
+import com.axelor.studio.bpm.service.survey.SurveyResponseServiceImpl;
+import com.axelor.studio.db.repo.BpmSurveyRepository;
 import com.axelor.studio.db.repo.BpmWkfInstanceRepository;
 import com.axelor.studio.db.repo.BpmWkfModelRepository;
 import com.axelor.studio.db.repo.MetaJsonFieldRepo;
@@ -79,6 +85,7 @@ import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.db.repo.StudioMenuRepository;
 import com.axelor.studio.db.repo.StudioSelectionRepo;
 import com.axelor.studio.db.repo.StudioSelectionRepository;
+import com.axelor.studio.db.repo.SurveyRepository;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WsAuthenticatorRepo;
@@ -93,6 +100,8 @@ import com.axelor.studio.dmn.service.DmnImportService;
 import com.axelor.studio.dmn.service.DmnImportServiceImpl;
 import com.axelor.studio.dmn.service.DmnService;
 import com.axelor.studio.dmn.service.DmnServiceImpl;
+import com.axelor.studio.service.AppSettingsStudioService;
+import com.axelor.studio.service.AppSettingsStudioServiceImpl;
 import com.axelor.studio.service.ChartRecordViewService;
 import com.axelor.studio.service.ChartRecordViewServiceImpl;
 import com.axelor.studio.service.loader.AppLoaderExportService;
@@ -124,6 +133,8 @@ public class StudioModule extends AxelorModule {
     bind(AppLoaderImportService.class).to(AppLoaderImportServiceImpl.class);
     bind(AppLoaderExportService.class).to(AppLoaderExportServiceImpl.class);
     bind(ChartRecordViewService.class).to(ChartRecordViewServiceImpl.class);
+    bind(AppSettingsStudioService.class).to(AppSettingsStudioServiceImpl.class);
+    bind(AppSettingsMessageServiceImpl.class).to(AppSettingsStudioServiceImpl.class);
 
     bind(WsConnectorService.class).to(WsConnectoServiceImpl.class);
     bind(WsAuthenticatorService.class).to(WsAuthenticatorServiceImpl.class);
@@ -166,5 +177,8 @@ public class StudioModule extends AxelorModule {
     bind(BpmManagerDashboardTaskService.class).to(BpmManagerDashboardTaskServiceImpl.class);
     bind(AppLoaderImportServiceImpl.class).to(AppLoaderImportBpmServiceImpl.class);
     bind(ServerStartListener.class);
+    bind(SurveyRepository.class).to(BpmSurveyRepository.class);
+    bind(SurveyCampaignService.class).to(SurveyCampaignServiceImpl.class);
+    bind(SurveyResponseService.class).to(SurveyResponseServiceImpl.class);
   }
 }

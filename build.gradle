@@ -37,7 +37,12 @@ test {
 }
 
 dependencies {
-	api "com.axelor.addons:axelor-message:1.0.0-SNAPSHOT"
+	if (file("../axelor-message").exists()) {
+		api project(":modules:axelor-message")
+	}
+	else {
+		api "com.axelor.addons:axelor-message:1.0.0-SNAPSHOT"
+	}
 
 	api "org.camunda.bpm:camunda-engine:7.17.0"
 	api "org.camunda.bpm:camunda-engine-plugin-spin:7.17.0"

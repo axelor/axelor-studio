@@ -14,10 +14,12 @@
     <string name="messages" title="Send messages"/>
     <many-to-one name="wkfModel" ref="WkfModel"/>
     <boolean name="createTask" title="Create user action"/>
+    <string name="roleName" title="Role"/>
     <string name="taskEmailTitle" title="Action/Email Title"/>
     <string name="userPath" title="User field path"/>
     <string name="deadlineFieldPath" title="Deadline field path"/>
     <boolean name="notificationEmail" title="Email notification"/>
+    <string name="emailEvent" title="Email event"/>
     <boolean name="newMenu" title="New menu"/>
     <string name="menuName" title="Menu name"/>
     <string name="parentMenuName" title="Menu parent"/>

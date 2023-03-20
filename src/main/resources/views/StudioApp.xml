@@ -102,8 +102,8 @@
     </panel>
   </form>
 
-  <form name="studio-app-export-app-form" title="Export app"
-    model="com.axelor.message.db.Wizard" onLoad="action-studio-method-studio-app-export-onload">
+  <form name="studio-app-export-app-form" title="Export app" model="com.axelor.utils.db.Wizard"
+    onLoad="action-studio-method-studio-app-export-onload">
     <panel name="mainPanel">
       <field name="$isExportData" type="boolean" title="Export data"/>
       <button name="exportBtn" title="Export"
@@ -115,7 +115,7 @@
   </form>
 
   <action-view name="action-studio-view-studio-app-import" title="Import app"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <view type="form" name="studio-app-import-app-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="forceEdit" value="true"/>
@@ -125,7 +125,7 @@
   </action-view>
 
   <action-view name="action-studio-view-studio-app-export" title="Export app"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <view type="form" name="studio-app-export-app-form"/>
     <view-param name="popup" value="reload"/>
     <view-param name="forceEdit" value="true"/>

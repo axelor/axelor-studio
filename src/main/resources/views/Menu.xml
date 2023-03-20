@@ -64,13 +64,6 @@
     <view type="grid" name="library-grid"/>
     <view type="form" name="library-form"/>
   </action-view>
-  <menuitem name="studio-web-service-ws-request" title="Request" order="5"
-    parent="ws-app-studio-component" action="studio.web.service.ws.request"/>
-  <action-view name="studio.web.service.ws.request" title="Request"
-    model="com.axelor.studio.db.WsRequest">
-    <view type="grid" name="ws-request-grid"/>
-    <view type="form" name="ws-request-form"/>
-  </action-view>
 
   <!-- Reporting menu -->
 
@@ -221,7 +214,7 @@
     parent="bpm-app-bpm-components" action="action.wkf.bpm.manager" order="55"
     if="__config__.app.isApp('bpm')"/>
   <action-view name="action.wkf.bpm.manager" title="BPM Dashboard"
-    model="com.axelor.message.db.Wizard">
+    model="com.axelor.utils.db.Wizard">
     <view type="form" name="bpm-manager-dashboard-form"/>
     <context name="_user_id" expr="eval:__user__.id"/>
   </action-view>
@@ -236,8 +229,10 @@
     model="com.axelor.studio.db.WkfModel">
     <view type="grid" name="wkf-model-grid"/>
     <view type="form" name="wkf-model-form"/>
-    <domain>self.isActive is true</domain>
+    <domain>self.isActive is true AND (:isSurveyApp is true OR (:isSurveyApp is false AND
+      self.isSurvey is false))</domain>
     <context name="__check_version" expr="eval: true"/>
+    <context name="isSurveyApp" expr="eval:__config__.app.isApp('survey')"/>
   </action-view>
 
   <menuitem title="Process Instances" name="menu-wkf-instance"
@@ -268,5 +263,26 @@
     <view type="form" name="baml-model-form"/>
   </action-view>
 
+  <menuitem title="Survey" name="menu-survey-root" parent="studio-app-root" order="22"
+    if="__config__.app.isApp('survey')"/>
+
+  <menuitem title="Survey models" name="menu-survey-model-all" action="survey.model.all"
+    order="5" parent="menu-survey-root" if="__config__.app.isApp('survey')"/>
+
+  <action-view name="survey.model.all" title="Survey models"
+    model="com.axelor.studio.db.Survey">
+    <view type="grid" name="survey-grid"/>
+    <view type="form" name="survey-form"/>
+  </action-view>
+
+  <menuitem title="Survey campaigns" name="menu-survey-campaign-all"
+    action="survey.campaign.all" order="10" parent="menu-survey-root"
+    if="__config__.app.isApp('survey')"/>
+
+  <action-view name="survey.campaign.all" title="Survey campaigns"
+    model="com.axelor.studio.db.SurveyCampaign">
+    <view type="grid" name="survey-campaign-grid"/>
+    <view type="form" name="survey-campaign-form"/>
+  </action-view>
 
 </object-views>

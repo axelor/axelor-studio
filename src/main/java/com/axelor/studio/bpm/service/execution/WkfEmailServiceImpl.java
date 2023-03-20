@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.bpm.service.execution;
 
-import com.axelor.app.AppSettings;
 import com.axelor.auth.db.User;
 import com.axelor.common.Inflector;
 import com.axelor.db.EntityHelper;
@@ -35,6 +34,7 @@ import com.axelor.meta.db.MetaAction;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaActionRepository;
 import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.context.FullContext;
 import com.google.inject.Inject;
 import java.util.ArrayList;
@@ -49,6 +49,7 @@ public class WkfEmailServiceImpl implements WkfEmailService {
   @Inject protected WkfUserActionService wkfUserActionService;
 
   @Inject protected MetaActionRepository metaActionRepository;
+  @Inject protected AppSettingsStudioService appSettingsStudioService;
 
   protected Inflector inflector = Inflector.getInstance();
 
@@ -144,7 +145,7 @@ public class WkfEmailServiceImpl implements WkfEmailService {
       return "";
     }
 
-    String url = AppSettings.get().getBaseURL();
+    String url = appSettingsStudioService.baseUrl();
 
     Model model = (Model) EntityHelper.getEntity(wkfContext.getTarget());
 

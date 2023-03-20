@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_5.4.xsd">
+
+  <module name="studio" package="com.axelor.studio.db"/>
+
+  <entity name="SurveyCampaign">
+    <string name="name" title="Name" required="true"/>
+    <integer name="statusSelect" title="Status" readonly="true" copy="false"
+      selection="bpm.survey.campaign.status.select" default="1"/>
+    <boolean name="isPublicSurvey" title="Public Survey" default="false"/>
+    <many-to-one name="survey" title="Survey" ref="Survey"/>
+    <one-to-many name="surveyResponseList" title="Survey responses" ref="SurveyResponse"
+      mappedBy="surveyCampaign"/>
+    <many-to-many name="sendToEmailAddressSet" title="Send to"
+      ref="com.axelor.message.db.EmailAddress"/>
+
+    <extra-code><![CDATA[
+		public static final int STATUS_NOT_STARTED = 1;
+		public static final int STATUS_RUNNING = 2;
+		public static final int STATUS_CLOSED = 3;
+        ]]></extra-code>
+
+  </entity>
+
+</domain-models>
