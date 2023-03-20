@@ -14,7 +14,7 @@ public class SessionTypeToken implements SessionType {
   public void extractSessionData(Response response, WsAuthenticator wsAuthenticator) {
     String responseBody = response.readEntity(String.class);
     ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode jsonNode = null;
+    JsonNode jsonNode;
     try {
       jsonNode = objectMapper.readTree(responseBody);
       this.token = jsonNode.get(wsAuthenticator.getTokenName()).asText();

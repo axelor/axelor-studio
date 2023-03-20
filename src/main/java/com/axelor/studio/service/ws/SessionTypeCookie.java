@@ -1,17 +1,14 @@
 package com.axelor.studio.service.ws;
 
 import com.axelor.studio.db.WsAuthenticator;
+import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 public class SessionTypeCookie implements SessionType {
-  private Map<String, NewCookie> cookies;
-
-  public SessionTypeCookie() {
-    this.cookies = null;
-  }
+  private Map<String, NewCookie> cookies = new HashMap<>();
 
   @Override
   public void extractSessionData(Response response, WsAuthenticator wsAuthenticator) {
