@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.net.UrlEscapers;
+import com.google.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,9 +58,14 @@ import org.slf4j.LoggerFactory;
 
 public class WsConnectoServiceImpl implements WsConnectorService {
 
-  private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private SessionTypeFactory sessionTypeFactory = Beans.get(SessionTypeFactory.class);
-  private SessionType sessionType = null;
+  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected final SessionTypeFactory sessionTypeFactory;
+  protected SessionType sessionType = null;
+
+  @Inject
+  public WsConnectoServiceImpl(SessionTypeFactory sessionTypeFactory) {
+    this.sessionTypeFactory = sessionTypeFactory;
+  }
 
   @Override
   public Map<String, Object> callConnector(
@@ -96,7 +102,9 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         throw new IllegalArgumentException(I18n.get("Error in authorization"));
       } else {
         this.sessionType = this.sessionTypeFactory.get(authenticator.getResponseType());
-        this.sessionType.extractSessionData(wsResponse, authenticator);
+        if (this.sessionType != null) {
+          this.sessionType.extractSessionData(wsResponse, authenticator);
+        }
       }
       wsResponse.close();
     }
@@ -274,7 +282,9 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     log.debug("URL: {}", url);
 
     Builder request = client.target(url).request().headers(headers);
-    if (sessionType != null) sessionType.injectSessionData(request);
+    if (this.sessionType != null) {
+      this.sessionType.injectSessionData(request);
+    }
 
     return request.method(wsRequest.getRequestTypeSelect(), entity);
   }
