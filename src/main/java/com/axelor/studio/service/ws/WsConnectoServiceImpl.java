@@ -58,6 +58,8 @@ import org.slf4j.LoggerFactory;
 public class WsConnectoServiceImpl implements WsConnectorService {
 
   private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private SessionTypeFactory sessionTypeFactory = Beans.get(SessionTypeFactory.class);
+  private SessionType sessionType = null;
 
   @Override
   public Map<String, Object> callConnector(
@@ -90,6 +92,9 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       Response wsResponse = callRequest(wsRequest, wsRequest.getWsUrl(), client, templates, ctx);
       if (wsResponse.getStatus() == 401) {
         throw new IllegalArgumentException(I18n.get("Error in authorization"));
+      } else {
+        this.sessionType = this.sessionTypeFactory.get(authenticator.getResponseType());
+        this.sessionType.extractSessionData(wsResponse,authenticator);
       }
       wsResponse.close();
     }
@@ -267,7 +272,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     log.debug("URL: {}", url);
 
     Builder request = client.target(url).request().headers(headers);
-
+    if (sessionType != null) sessionType.injectSessionData(request);
     Response wsResponse = request.method(wsRequest.getRequestTypeSelect(), entity);
 
     return wsResponse;

@@ -10,6 +10,9 @@
     <boolean name="isAuthenticated" title="Authenticated" copy="false"/>
     <string name="authTypeSelect" title="Auth type"
       selection="studio.ws.authenticator.auth.type" required="true"/>
+    <string name="responseType" title="Response type"
+      selection="studio.ws.authenticator.response.type"/>
+    <string name="tokenName" title="Token field name"/>
     <many-to-one name="authWsRequest" title="Auth request" ref="WsRequest"
       required="true"/>
     <string name="username" title="username"/>
