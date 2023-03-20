@@ -7,11 +7,13 @@
 
   <entity name="WsAuthenticator" cacheable="true">
     <string name="name" title="Name"/>
-    <boolean name="isAuthenticated" title="Authenticated"/>
+    <boolean name="isAuthenticated" title="Authenticated" copy="false"/>
     <string name="authTypeSelect" title="Auth type"
       selection="studio.ws.authenticator.auth.type" required="true"/>
     <many-to-one name="authWsRequest" title="Auth request" ref="WsRequest"
       required="true"/>
+    <string name="username" title="username"/>
+    <string name="password" title="password" encrypted="true" copy="false"/>
     <string name="authResponse" title="Auth response" large="true"/>
     <many-to-one name="tokenWsRequest" title="Token request" ref="WsRequest"/>
     <string name="tokenResponse" title="Token response" large="true"/>

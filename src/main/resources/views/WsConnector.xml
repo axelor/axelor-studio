@@ -23,6 +23,10 @@
         <field name="requestTypeSelect"/>
         <field name="sequence" hidden="true"/>
       </panel-related>
+      <panel-related field="contextWsKeyValueList" colSpan="12" canMove="true">
+        <field name="wsKey"/>
+        <field name="wsValue"/>
+      </panel-related>
     </panel>
   </form>
 
