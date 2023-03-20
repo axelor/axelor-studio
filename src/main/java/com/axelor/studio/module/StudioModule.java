@@ -112,10 +112,7 @@ import com.axelor.studio.service.mapper.MapperScriptGeneratorService;
 import com.axelor.studio.service.mapper.MapperScriptGeneratorServiceImpl;
 import com.axelor.studio.service.transformation.TransformationService;
 import com.axelor.studio.service.transformation.TransformationServiceImpl;
-import com.axelor.studio.service.ws.WsAuthenticatorService;
-import com.axelor.studio.service.ws.WsAuthenticatorServiceImpl;
-import com.axelor.studio.service.ws.WsConnectoServiceImpl;
-import com.axelor.studio.service.ws.WsConnectorService;
+import com.axelor.studio.service.ws.*;
 
 public class StudioModule extends AxelorModule {
 
