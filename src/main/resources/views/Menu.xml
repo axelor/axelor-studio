@@ -17,8 +17,8 @@
     parent="studio-app-root"/>
 
   <!-- web service menu -->
-  <menuitem name="ws-app-studio-component" title="WS studio components" order="26"
-    parent="studio-app-root" action="studio.web.service.ws.webService"/>
+  <menuitem name="ws-app-studio-component" title="WS Component" order="26"
+    parent="studio-app-root"/>
   <menuitem name="ws-app-studio" title="WS Studio" parent="studio-app-root"
     action="studio.web.service.ws.webService" order="20" if="__config__.app.isApp('studio')"/>
   <action-view name="studio.web.service.ws.webService" title="WS studio"
@@ -51,14 +51,14 @@
     <view type="form" name="ws-authenticator-form"/>
   </action-view>
   <menuitem name="studio-apps-transformation-transformation" title="Transformation"
-    order="5" parent="ws-app-studio-component" action="studio.web.service.transformation"/>
+    order="50" parent="ws-app-studio-component" action="studio.web.service.transformation"/>
   <action-view name="studio.web.service.transformation" title="Request"
     model="com.axelor.studio.db.Transformation">
     <view type="grid" name="transformation-grid"/>
     <view type="form" name="transformation-form"/>
   </action-view>
   <menuitem name="studio-apps-transformation-library" title="Transformation library"
-    order="5" parent="ws-app-studio-component" action="studio.web.service.library"/>
+    order="60" parent="ws-app-studio-component" action="studio.web.service.library"/>
   <action-view name="studio.web.service.library" title="Library"
     model="com.axelor.studio.db.Library">
     <view type="grid" name="library-grid"/>

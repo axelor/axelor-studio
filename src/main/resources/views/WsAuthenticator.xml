@@ -23,6 +23,13 @@
       <field name="isAuthenticated" colSpan="3"/>
       <field name="authWsRequest" canEdit="true" canNew="true"/>
       <field name="authTypeSelect"/>
+      <field name="username" showIf="authTypeSelect == 'basic'"
+        requiredIf="authTypeSelect == 'basic'"/>
+      <field name="password" showIf="authTypeSelect == 'basic'"
+        requiredIf="authTypeSelect == 'basic'" widget="password"/>
+      <field name="responseType" title="Response type" showIf="authTypeSelect == 'basic'"/>
+      <field name="tokenName" title="Token field name"
+        showIf="authTypeSelect == 'basic' &amp;&amp;  responseType == 'token' "/>
       <field name="tokenWsRequest" canEdit="true" canNew="true" hidden="true"
         showIf="authTypeSelect == 'oauth2'" requiredIf="authTypeSelect == 'oauth2'"/>
       <field name="refreshTokenWsRequest" canEdit="true" canNew="true" hidden="true"

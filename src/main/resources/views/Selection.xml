@@ -910,6 +910,11 @@
     <option value="oauth2">OAuth 2</option>
   </selection>
 
+  <selection name="studio.ws.authenticator.response.type">
+    <option value="cookie">Cookie</option>
+    <option value="token">Token</option>
+  </selection>
+
   <selection name="studio.parameter.type.select">
     <option value="String">String</option>
     <option value="Decimal">Decimal</option>

@@ -8,12 +8,14 @@
   <entity name="WsConnector" cacheable="true">
     <string name="name" title="Name"/>
     <string name="baseUrl" title="Base URL"/>
-    <many-to-many name="wsRequestList" title="Requests" ref="WsRequest"
-      orderBy="sequence" mappedBy="wsConnector"/>
+    <many-to-many name="wsRequestList" ref="WsRequest" title="Requests"
+      mappedBy="wsConnector"/>
     <string name="authCallToken" title="Auth call token"/>
     <many-to-one name="defaultWsAuthenticator" title="Default authenticator"
       ref="WsAuthenticator"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
+    <one-to-many name="contextWsKeyValueList" title="Context" ref="WsKeyValueContext"
+      mappedBy="wsConnector"/>
   </entity>
 
 </domain-models>

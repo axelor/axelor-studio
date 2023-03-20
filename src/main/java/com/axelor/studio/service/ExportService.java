@@ -19,9 +19,7 @@ package com.axelor.studio.service;
 
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaFile;
-import com.axelor.studio.db.StudioAction;
-import com.axelor.studio.db.StudioActionLine;
-import com.axelor.studio.db.WsKeyValue;
+import com.axelor.studio.db.*;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
@@ -30,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -192,6 +191,56 @@ public class ExportService {
               + exportWsKeyValueLines(wsKeyValue.getSubWsKeyValueList(), count + 2, type)
               + indentPlus
               + "</subWsKeyValues>"
+              + indent
+              + "</"
+              + type
+              + ">";
+    }
+
+    return StringEscapeUtils.unescapeXml(xml);
+  }
+
+  public static String exportRequests(Set<WsRequest> wsRequests, int count, String type) {
+    String xml = "";
+
+    String indent = "\n" + Strings.repeat("\t", count);
+    String indentPlus = "\n" + Strings.repeat("\t", count + 1);
+
+    for (WsRequest wsRequest : wsRequests) {
+      xml +=
+          indent
+              + "<"
+              + type
+              + ">"
+              + indentPlus
+              + "<name>"
+              + wsRequest.getName()
+              + "</name>"
+              + indent
+              + "</"
+              + type
+              + ">";
+    }
+
+    return StringEscapeUtils.unescapeXml(xml);
+  }
+
+  public static String exportConnectors(Set<WsConnector> wsConnectors, int count, String type) {
+    String xml = "";
+
+    String indent = "\n" + Strings.repeat("\t", count);
+    String indentPlus = "\n" + Strings.repeat("\t", count + 1);
+
+    for (WsConnector wsConnector : wsConnectors) {
+      xml +=
+          indent
+              + "<"
+              + type
+              + ">"
+              + indentPlus
+              + "<name>"
+              + wsConnector.getName()
+              + "</name>"
               + indent
               + "</"
               + type

@@ -56,6 +56,8 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
     Response response;
     if (authType.equals("basic")) {
+       ctx.put("username", wsAuthenticator.getUsername());
+       ctx.put("password", wsAuthenticator.getPassword());
       response =
           wsConnectorService.callRequest(
               wsAuthenticator.getAuthWsRequest(),

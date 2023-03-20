@@ -20,10 +20,7 @@ package com.axelor.studio.service.ws;
 import com.axelor.common.StringUtils;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
-import com.axelor.studio.db.WsAuthenticator;
-import com.axelor.studio.db.WsConnector;
-import com.axelor.studio.db.WsKeyValue;
-import com.axelor.studio.db.WsRequest;
+import com.axelor.studio.db.*;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.text.Templates;
 import com.axelor.utils.ExceptionTool;
@@ -61,6 +58,8 @@ import org.slf4j.LoggerFactory;
 public class WsConnectoServiceImpl implements WsConnectorService {
 
   private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private SessionTypeFactory sessionTypeFactory = Beans.get(SessionTypeFactory.class);
+  private SessionType sessionType = null;
 
   @Override
   public Map<String, Object> callConnector(
@@ -86,12 +85,16 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
     Templates templates = Beans.get(GroovyTemplates.class);
     ctx.putAll(createContext(wsConnector, authenticator));
+    ctx.putAll(createContext(wsConnector));
 
     if (authenticator != null && authenticator.getAuthTypeSelect().equals("basic")) {
       WsRequest wsRequest = authenticator.getAuthWsRequest();
       Response wsResponse = callRequest(wsRequest, wsRequest.getWsUrl(), client, templates, ctx);
       if (wsResponse.getStatus() == 401) {
         throw new IllegalArgumentException(I18n.get("Error in authorization"));
+      } else {
+        this.sessionType = this.sessionTypeFactory.get(authenticator.getResponseType());
+        this.sessionType.extractSessionData(wsResponse,authenticator);
       }
       wsResponse.close();
     }
@@ -269,14 +272,14 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     log.debug("URL: {}", url);
 
     Builder request = client.target(url).request().headers(headers);
-
+    if (sessionType != null) sessionType.injectSessionData(request);
     Response wsResponse = request.method(wsRequest.getRequestTypeSelect(), entity);
 
     return wsResponse;
   }
 
-  protected Map<String, Object> createContext(
-      WsConnector wsConnector, WsAuthenticator authenticator) {
+  @Override
+  public Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator) {
 
     Map<String, Object> ctx = new HashMap<>();
 
@@ -306,6 +309,16 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                             : it.getValue().asText())));
       } catch (IOException e) {
       }
+    }
+
+    return ctx;
+  }
+
+  public Map<String, Object> createContext(WsConnector wsConnector) {
+
+    Map<String, Object> ctx = new HashMap<>();
+    for (WsKeyValueContext keyValue : wsConnector.getContextWsKeyValueList()) {
+      ctx.put(keyValue.getWsKey(), keyValue.getWsValue());
     }
 
     return ctx;
