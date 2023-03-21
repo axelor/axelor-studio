@@ -177,8 +177,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       }
       log.debug("Request{}: {} ", count, ctx.get("_" + count));
 
-      if (lastRepeatIf != null
-          && (!lastRepeatIf.equals(repeatIf))) {
+      if (lastRepeatIf != null && (!lastRepeatIf.equals(repeatIf))) {
         if (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
           count = repeatRequestCount;
           repeatIndex++;
@@ -368,14 +367,20 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         break;
       case "file":
         try {
-          entity = text == null ? null : Entity.entity(new FileInputStream(text), "application/octet-stream");
+          entity =
+              text == null
+                  ? null
+                  : Entity.entity(new FileInputStream(text), "application/octet-stream");
         } catch (FileNotFoundException e) {
           log.error(e.getMessage(), e);
         }
         break;
       case "file-link":
         try {
-          entity = text == null ? null : Entity.entity(new URL(text).openStream(), "application/octet-stream");
+          entity =
+              text == null
+                  ? null
+                  : Entity.entity(new URL(text).openStream(), "application/octet-stream");
         } catch (IOException e) {
           log.error(e.getMessage(), e);
         }
@@ -388,10 +393,16 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         } else {
           bytes = text == null ? null : text.getBytes();
         }
-        entity = bytes == null ? null : Entity.entity(new ByteArrayInputStream(bytes), "application/octet-stream");
+        entity =
+            bytes == null
+                ? null
+                : Entity.entity(new ByteArrayInputStream(bytes), "application/octet-stream");
         break;
       case "stream":
-        entity = obj == null ? null : Entity.entity(new ByteArrayInputStream((byte[]) obj), "application/octet-stream");
+        entity =
+            obj == null
+                ? null
+                : Entity.entity(new ByteArrayInputStream((byte[]) obj), "application/octet-stream");
         break;
     }
 
