@@ -176,7 +176,7 @@ public class WkfMenuService {
             + permanent
             + ")\" />\n"
             + (userMenu
-                ? "<context name=\"currentUserId\" expr=\"eval:__user__.id\" />\n<context name=\"teamIds\" expr=\"eval:__user__.teamSet.collect{it->it.id}\" />\n"
+                ? "<context name=\"currentUserId\" expr=\"eval:__user__.id\" />\n<context name=\"teamIds\" expr=\"eval:__repo__(Team).all().filter('? MEMBER OF self.members', __user__).fetch().collect{it->it.id}\" />\n"
                 : "")
             + (isJson
                 ? "<context name=\"jsonModel\" expr=\""
