@@ -18,6 +18,7 @@
 package com.axelor.studio.dmn.service;
 
 import com.axelor.db.Model;
+import com.axelor.studio.db.WkfDmnModel;
 
 public interface DmnService {
 
@@ -29,4 +30,6 @@ public interface DmnService {
       String searchOperator,
       String ifMultiple,
       String resultVar);
+
+  public void renameDiagramIds(WkfDmnModel wkfDmnModel);
 }

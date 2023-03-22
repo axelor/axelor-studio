@@ -24,6 +24,7 @@ import static com.axelor.utils.MetaJsonFieldType.MANY_TO_MANY;
 import static com.axelor.utils.MetaJsonFieldType.MANY_TO_ONE;
 import static com.axelor.utils.MetaJsonFieldType.ONE_TO_MANY;
 
+import com.axelor.common.StringUtils;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
@@ -39,6 +40,7 @@ import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.db.DmnField;
 import com.axelor.studio.db.DmnTable;
+import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.db.repo.DmnTableRepository;
 import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
@@ -52,6 +54,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
@@ -491,5 +496,58 @@ public class DmnServiceImpl implements DmnService {
         scriptBuilder.append(targetField + " = " + resultField);
         break;
     }
+  }
+
+  @Override
+  public void renameDiagramIds(WkfDmnModel wkfDmnModel) {
+
+    if (wkfDmnModel == null || StringUtils.isBlank(wkfDmnModel.getDiagramXml())) {
+      return;
+    }
+
+    String diagramXml = wkfDmnModel.getDiagramXml().replaceAll("\n", "#NEWLINE#");
+    diagramXml = renameDefinationId(diagramXml);
+    diagramXml = renameDesicionIds(diagramXml);
+    wkfDmnModel.setDiagramXml(diagramXml.replaceAll("#NEWLINE#", "\n"));
+  }
+
+  protected String renameDefinationId(String diagramXml) {
+
+    String definationIdPatternStr =
+        ".*?(<definitions .* id=\"Definitions_)([a-zA-Z0-9_]*)(\".*?>).*?";
+    String definationId = "Definitions_%s";
+    Pattern definationIdPattern = Pattern.compile(definationIdPatternStr, Pattern.MULTILINE);
+
+    return replaceXml(diagramXml, definationId, definationIdPattern);
+  }
+
+  protected String renameDesicionIds(String diagramXml) {
+
+    String desicionIdPatternStr = ".*?(<decision id=\"Decision_)([a-zA-Z0-9_]*)(\".*?>).*?";
+    String decisionId = "Decision_%s";
+    Pattern desicionIdPattern = Pattern.compile(desicionIdPatternStr, Pattern.MULTILINE);
+
+    return replaceXml(diagramXml, decisionId, desicionIdPattern);
+  }
+
+  protected String replaceXml(String diagramXml, String id, Pattern pattern) {
+
+    try {
+      Matcher matcher = pattern.matcher(diagramXml);
+      while (matcher.find()) {
+        String randomStr = RandomStringUtils.randomAlphanumeric(7);
+        String oldStr =
+            String.format("%s%s%s", matcher.group(1), matcher.group(2), matcher.group(3));
+        String newStr = String.format("%s%s%s", matcher.group(1), randomStr, matcher.group(3));
+        diagramXml =
+            diagramXml
+                .replaceAll(oldStr, newStr)
+                .replaceAll(String.format(id, matcher.group(2)), String.format(id, randomStr));
+      }
+    } catch (Exception e) {
+      ExceptionTool.trace(e);
+    }
+
+    return diagramXml;
   }
 }
