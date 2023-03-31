@@ -161,9 +161,9 @@
 					self.act_name_
 			END as node,
 			CASE
-			    WHEN (self.assignee_ IS NOT NULL AND usr.full_name IS NOT null) THEN
-			      usr.full_name
-			    WHEN (self.assignee_ IS NOT NULL and usr.full_name IS null) THEN
+			    WHEN (self.assignee_ IS NOT NULL AND usr.name IS NOT null) THEN
+			      usr.name
+			    WHEN (self.assignee_ IS NOT NULL and usr.name IS null) THEN
 			      'System'
             END AS completed_by,
 			TO_CHAR(self.start_time_, 'dd/MM/yyyy hh:mm:ss') as date_time,
