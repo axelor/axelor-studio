@@ -23,6 +23,7 @@ build:
   stage: build
   script:
     - ./gradlew -xtest clean build --refresh-dependencies
+  interruptible: true
 
 .publish_template: &publish_configuration
   stage: publish
