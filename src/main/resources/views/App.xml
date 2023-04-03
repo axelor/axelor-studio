@@ -21,20 +21,24 @@
       <panel colSpan="6" name="infoPanel">
         <spacer colSpan="12"/>
         <field name="name" readonly="true" colSpan="12"/>
-        <field name="languageSelect" selection-in="['en','fr']"/>
+        <field name="languageSelect" selection-in="['en','fr']" colSpan="5"/>
         <field name="demoDataLoaded" readonly="true"
-          if="com.axelor.app.AppSettings.get().get('application.mode') != 'prod'"/>
+          if="com.axelor.app.AppSettings.get().get('application.mode') != 'prod'" colSpan="4"/>
+        <field name="isExperimental" colSpan="3" hideIf="$readonly()"/>
       </panel>
       <panel name="tagsPanel" colSpan="4">
         <field name="$tagFields" showTitle="false" readonly="true" colSpan="12">
-          <viewer depends="typeSelect,appVersion">
+          <viewer depends="typeSelect,appVersion,isExperimental">
 	        	<![CDATA[
 	        	  <h4 class="text-right">
-				  	<span class="label" style="background-color: #2AA0D5; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
+	        	    <span class="label" style="background-color: #ffb000; margin: 5px 0 !important; line-height: initial;" ng-show="record.isExperimental"><i class="fa fa-flask"/> <span x-translate>Experimental</span></span>
+
+	        	  	<span class="label" style="background-color: #2AA0D5; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
 				  	<span class="label" style="background-color: #F69609; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'addons'" x-translate>Addons</span>
 				  	<span class="label" style="background-color: #7539C6; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
 				  	<span class="label" style="background-color: #94846B; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
 				  	<span class="label" style="background-color: #6F908C; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
+				  	<span class="label" style="background-color: #ff3400; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'pro'" x-translate>Pro</span>
 
 				  	<span class="label" style="background-color: slategrey; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.appVersion">{{record.appVersion}}</span>
 				  </h4>
@@ -114,6 +118,7 @@
     <field name="active"/>
     <field name="sequence"/>
     <field name="typeSelect"/>
+    <field name="isExperimental"/>
     <field name="appVersion"/>
     <template><![CDATA[
 			<div class="app-cards__container">
@@ -135,6 +140,9 @@
 				  	<span style="color: #7539C6; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
 				  	<span style="color: #94846B; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
 				  	<span style="color: #6F908C; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
+				  	<span style="color: #ff3400; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'pro'" x-translate>Pro</span>
+				  	</br>
+				  	<span style="color: #ffb000; font-size: 13px; font-weight: bolder;" ng-show="record.isExperimental"><i class="fa fa-flask"/> <span x-translate>Experimental</span></span>
 				  </div>
 			  </div>
 

@@ -26,6 +26,7 @@
     <one-to-many name="accessConfigList" ref="com.axelor.studio.db.AccessConfig"
       title="Access config" mappedBy="app"/>
     <boolean name="isCustom" title="Custom"/>
+    <boolean name="isExperimental" title="Experimental"/>
 
     <one-to-one ref="com.axelor.studio.db.AppStudio" name="appStudio" mappedBy="app"/>
 
