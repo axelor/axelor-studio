@@ -26,6 +26,7 @@ import com.axelor.events.PostRequest;
 import com.axelor.events.RequestEvent;
 import com.axelor.events.internal.BeforeTransactionComplete;
 import com.axelor.inject.Beans;
+import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
 import com.axelor.studio.baml.tools.BpmTools;
@@ -68,6 +69,10 @@ public class WkfRequestListener {
 
     for (Model model : updated) {
       String modelName = EntityHelper.getEntityClass(model).getName();
+      if (model instanceof MetaJsonRecord) {
+        modelName = ((MetaJsonRecord) model).getJsonModel();
+      }
+
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
         try {
           log.trace("Eval workflow from updated model: {}, id: {}", modelName, model.getId());
@@ -114,7 +119,13 @@ public class WkfRequestListener {
 
     Class<? extends Model> model = (Class<? extends Model>) context.getContextClass();
 
-    if (modelMap != null && modelMap.containsValue(model.getName())) {
+    String modelName = model.getName();
+
+    if (model.equals(MetaJsonRecord.class)) {
+      modelName = (String) context.get("jsonModel");
+    }
+
+    if (modelMap != null && modelMap.containsValue(modelName)) {
       Long id = (Long) context.get("id");
       if (!WkfCache.WKF_BUTTON_CACHE.containsKey(tenantId)) {
         WkfCache.initWkfButttonCache();
@@ -169,6 +180,10 @@ public class WkfRequestListener {
 
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();
+      if (model instanceof MetaJsonRecord) {
+        modelName = ((MetaJsonRecord) model).getJsonModel();
+      }
+
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
         try {
           log.trace("Remove wkf instance of deleted model: {}, id: {}", modelName, model.getId());
