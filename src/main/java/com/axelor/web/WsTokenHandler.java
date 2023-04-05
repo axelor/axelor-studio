@@ -40,9 +40,8 @@ public class WsTokenHandler {
 
   @GET
   @Path("/token")
-  @Transactional
+  @Transactional(rollbackOn = {Exception.class})
   public Response read(@Context UriInfo uri) throws URISyntaxException {
-    // TODO: Fix error when GlobalAuditInterceptor enabled
 
     MultivaluedMap<String, String> paramMap = uri.getQueryParameters();
 
