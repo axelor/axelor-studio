@@ -64,11 +64,6 @@ import com.axelor.studio.bpm.service.execution.WkfTaskServiceImpl;
 import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.execution.WkfUserActionServiceImpl;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
-import com.axelor.studio.bpm.service.survey.SurveyCampaignService;
-import com.axelor.studio.bpm.service.survey.SurveyCampaignServiceImpl;
-import com.axelor.studio.bpm.service.survey.SurveyResponseService;
-import com.axelor.studio.bpm.service.survey.SurveyResponseServiceImpl;
-import com.axelor.studio.db.repo.BpmSurveyRepository;
 import com.axelor.studio.db.repo.BpmWkfDmnModelRepository;
 import com.axelor.studio.db.repo.BpmWkfInstanceRepository;
 import com.axelor.studio.db.repo.BpmWkfModelRepository;
@@ -86,7 +81,6 @@ import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.db.repo.StudioMenuRepository;
 import com.axelor.studio.db.repo.StudioSelectionRepo;
 import com.axelor.studio.db.repo.StudioSelectionRepository;
-import com.axelor.studio.db.repo.SurveyRepository;
 import com.axelor.studio.db.repo.WkfDmnModelRepository;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
@@ -177,8 +171,5 @@ public class StudioModule extends AxelorModule {
     bind(BpmManagerDashboardTaskService.class).to(BpmManagerDashboardTaskServiceImpl.class);
     bind(AppLoaderImportServiceImpl.class).to(AppLoaderImportBpmServiceImpl.class);
     bind(ServerStartListener.class);
-    bind(SurveyRepository.class).to(BpmSurveyRepository.class);
-    bind(SurveyCampaignService.class).to(SurveyCampaignServiceImpl.class);
-    bind(SurveyResponseService.class).to(SurveyResponseServiceImpl.class);
   }
 }

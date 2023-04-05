@@ -36,9 +36,6 @@
         if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
       <field name="versionTag"/>
       <field name="wkfStatusColor" widget="SingleSelect"/>
-      <field name="isSurvey" if="__config__.app.isApp('survey')"/>
-      <field name="survey" showIf="isSurvey" if="__config__.app.isApp('survey')"
-        requiredIf="isSurvey" hidden="true"/>
     </panel>
     <panel-tabs>
       <panel name="allProcessPanel" title="All Processes">

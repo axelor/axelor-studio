@@ -37,9 +37,6 @@
     <many-to-many name="userSet" title="Users" ref="com.axelor.auth.db.User"/>
     <many-to-many name="roleSet" title="Roles" ref="com.axelor.auth.db.Role"/>
 
-    <boolean name="isSurvey"/>
-    <many-to-one name="survey" title="Survey" ref="Survey"/>
-
     <extra-code><![CDATA[
 		public static final int STATUS_NEW = 1;
 		public static final int STATUS_ON_GOING = 2;
