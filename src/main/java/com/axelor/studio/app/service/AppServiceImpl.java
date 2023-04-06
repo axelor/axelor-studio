@@ -77,11 +77,11 @@ public class AppServiceImpl implements AppService {
 
   private static final String DIR_APPS = "apps";
 
-  private static final String DIR_APPS_DEMO = "apps" + File.separator + "demo-data";
+  private static final String DIR_APPS_DEMO = Paths.get("apps", "demo-data").toString();
 
-  private static final String DIR_APPS_INIT = "apps" + File.separator + "init-data";
+  private static final String DIR_APPS_INIT = Paths.get("apps", "init-data").toString();
 
-  private static final String DIR_APPS_ROLES = "apps" + File.separator + "roles";
+  private static final String DIR_APPS_ROLES = Paths.get("apps", "roles").toString();
 
   private static final String CONFIG_PATTERN = "-config.xml";
 
@@ -279,22 +279,21 @@ public class AppServiceImpl implements AppService {
         files.addAll(MetaScanner.findAll(module, dirNamePattern, code + "*"));
       }
     } else {
-      String dirPath = dirName + File.separator;
-      files.addAll(fetchUrls(module, dirPath + IMG_DIR));
-      files.addAll(fetchUrls(module, dirPath + EXT_DIR));
-      files.addAll(fetchUrls(module, dirPath + lang));
+      files.addAll(fetchUrls(module, Paths.get(dirName, IMG_DIR).toString()));
+      files.addAll(fetchUrls(module, Paths.get(dirName, EXT_DIR).toString()));
+      files.addAll(fetchUrls(module, Paths.get(dirName, lang).toString()));
     }
 
     final File tmp = Files.createTempDirectory(null).toFile();
 
-    for (URL file : files) {
-      String name = file.toString();
-      name = name.substring(name.lastIndexOf(dirName));
+    for (URL url : files) {
+      String name = url.getFile();
+      name = Paths.get(name.replaceAll("file:.+!/", "")).toString();
       if (!StringUtils.isEmpty(lang)) {
-        name = name.replace(dirName + File.separator + lang, dirName);
+        name = name.replace(Paths.get(dirName, lang).toString(), dirName);
       }
       try {
-        copy(file.openStream(), tmp, name);
+        copy(url.openStream(), tmp, name);
       } catch (IOException e) {
         ExceptionTool.trace(e);
       }
@@ -597,7 +596,7 @@ public class AppServiceImpl implements AppService {
 
     final Path path = Paths.get(dataFile.getParent());
     try {
-      final File imageFile = path.resolve("img" + File.separator + image).toFile();
+      final File imageFile = path.resolve(Paths.get("img", image)).toFile();
       if (imageFile.exists()) {
         final MetaFile metaFile = metaFiles.upload(imageFile);
         mapper.set(app, property.getName(), metaFile);
