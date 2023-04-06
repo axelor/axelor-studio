@@ -26,10 +26,5 @@ public class StudioStaticResources implements StaticResourceProvider {
   public void register(List<String> resources) {
     resources.add("admin/css/custom-width.css");
     resources.add("admin/css/app-cards.css");
-    resources.add("lib/bpmn-js/assets/bpmn-font/css/bpmn-embedded.css");
-    resources.add("lib/bpmn-js/assets/diagram-js.css");
-    resources.add("css/bpmn.css");
-    resources.add("lib/bpmn-js/bpmn-modeler.js");
-    resources.add("js/form/form.bpmn.js");
   }
 }
