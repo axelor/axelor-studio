@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<%	
+<%
 	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsAuthenticatorRepository' as Class).all()
 
 	if(__ids__ != null) {
 		query = query.filter('self.studioApp.id in ?1',__ids__)
-	} 
-	
+	}
+
 	wsAuthenticators = ""
 	query.fetch().each({
-		wsAuthenticator -> 
+		wsAuthenticator ->
 				wsAuthenticators += """\n\t\t<ws-authenticator>
 				\n\t\t\t<name>${wsAuthenticator.name}</name>
 				\n\t\t\t<Authenticated>${wsAuthenticator.isAuthenticated}</Authenticated>
 				\n\t\t\t<authWsRequest>${wsAuthenticator.authWsRequest?.name}</authWsRequest>
 				\n\t\t\t<authTypeSelect>${wsAuthenticator.authTypeSelect}</authTypeSelect>
+				\n\t\t\t<username>${wsAuthenticator.username}</username>
+				\n\t\t\t<password>${wsAuthenticator.password}</password>
+				\n\t\t\t<tokenName>${wsAuthenticator.tokenName}</tokenName>
+                \n\t\t\t<basicType>${wsAuthenticator.basicType}</basicType>
+                \n\t\t\t<responseType>${wsAuthenticator.responseType}</responseType>
 				\n\t\t\t<tokenWsRequest>${wsAuthenticator.tokenWsRequest?.name}</tokenWsRequest>
 				\n\t\t\t<refreshTokenWsRequest>${wsAuthenticator.refreshTokenWsRequest?.name}</refreshTokenWsRequest>
 				\n\t\t\t<authResponse>${wsAuthenticator.authResponse}</authResponse>
@@ -22,10 +27,10 @@
 				\n\t\t\t<studioApp>${wsAuthenticator.studioApp?.code}</studioApp>
 				\n\t\t</ws-authenticator>"""
 	})
-	
+
 	if (!wsAuthenticators.isEmpty()) {
 		wsAuthenticators = """<ws-authenticators>\n""" +  wsAuthenticators + """\n</ws-authenticators>"""
 	}
-	
+
 	out << """$wsAuthenticators"""
 %>
