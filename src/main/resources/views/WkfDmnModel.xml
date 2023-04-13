@@ -26,8 +26,8 @@
       <field name="description" colSpan="12"/>
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
         if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
-      <field name="metaModel"/>
-      <field name="jsonModel"/>
+      <field name="metaModelSet" widget="TagSelect"/>
+      <field name="jsonModelSet" widget="TagSelect"/>
       <field name="dmnTableList" colSpan="12" canNew="false">
         <editor>
           <field name="name"/>
@@ -45,7 +45,7 @@
     <panel name="mainPanel" colSpan="12">
       <field name="dmnTable" title="Decision" type="many-to-one"
         target="com.axelor.studio.db.DmnTable"
-        domain="self.wkfDmnModel.metaModel.fullName = :ctxModel OR self.wkfDmnModel.jsonModel.name = :ctxJsonModel"/>
+        onSelect="action-wkf-dmn-wizard-attrs-dmn-table-domain"/>
       <button name="executeBtn" readonlyIf="dmnTable == null" title="Execute" colSpan="3"
         onClick="com.axelor.studio.bpm.web.WkfDmnModelController:executeDmn"/>
       <field name="ctxModel" hidden="true"/>
@@ -69,6 +69,11 @@
     <attribute name="value" for="ctxModel" expr="eval:ctxModel"/>
     <attribute name="value" for="ctxRecordId" expr="eval:ctxRecordId"/>
     <attribute name="value" for="ctxJsonModel" expr="eval:ctxJsonModel"/>
+  </action-attrs>
+
+  <action-attrs name="action-wkf-dmn-wizard-attrs-dmn-table-domain">
+    <attribute name="domain" for="dmnTable"
+      expr="eval: &quot; (SELECT mm FROM MetaModel mm WHERE mm.fullName = :ctxModel) MEMBER OF self.wkfDmnModel.metaModelSet OR (SELECT jm FROM MetaJsonModel jm WHERE jm.name = :ctxJsonModel) MEMBER OF self.wkfDmnModel.jsonModelSet &quot;"/>
   </action-attrs>
 
   <action-view name="action-wkf-dmn-view-open-editor" title="DMN Editor">

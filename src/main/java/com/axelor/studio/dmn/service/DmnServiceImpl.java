@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.camunda.bpm.dmn.engine.DmnDecisionTableResult;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -92,7 +93,7 @@ public class DmnServiceImpl implements DmnService {
             .filter("self.decisionId = ?1", decisionDefinitionId)
             .fetchOne();
 
-    if (dmnTable != null) {
+    if (dmnTable != null && !CollectionUtils.isEmpty(result)) {
       Map<String, Object> res = result.get(0);
       for (DmnField dmnField : dmnTable.getOutputDmnFieldList()) {
         if (dmnField.getField() != null) {
