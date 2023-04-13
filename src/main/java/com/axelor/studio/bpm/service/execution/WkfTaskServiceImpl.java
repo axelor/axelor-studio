@@ -24,7 +24,6 @@ import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.db.MetaJsonRecord;
-import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
@@ -69,8 +68,6 @@ public class WkfTaskServiceImpl implements WkfTaskService {
   @Inject protected WkfProcessRepository wkfProcessRepository;
 
   @Inject protected WkfCommonService wkfService;
-
-  @Inject protected AppService appService;
 
   protected int recursiveTaskExecutionCount = 0;
 
@@ -185,8 +182,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
     }
     if (taskExecuted
         && wkfInstanceService.isActiveProcessInstance(
-            processInstance.getId(), engine.getRuntimeService())
-        && (!appService.isApp("survey") || !instance.getWkfProcess().getWkfModel().getIsSurvey())) {
+            processInstance.getId(), engine.getRuntimeService())) {
       log.debug("Check tasks again");
       runTasks(engine, instance, processInstance, signal);
     }
@@ -207,14 +203,17 @@ public class WkfTaskServiceImpl implements WkfTaskService {
     return new ArrayList<String>();
   }
 
-  @Override
-  public List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
-    return engine
-        .getTaskService()
-        .createTaskQuery()
-        .active()
-        .processInstanceId(processInstanceId)
-        .list();
+  protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
+
+    List<Task> tasks =
+        engine
+            .getTaskService()
+            .createTaskQuery()
+            .active()
+            .processInstanceId(processInstanceId)
+            .list();
+
+    return tasks;
   }
 
   protected Map<String, Object> getContext(WkfInstance instance) throws ClassNotFoundException {

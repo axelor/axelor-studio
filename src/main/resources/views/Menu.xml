@@ -229,10 +229,8 @@
     model="com.axelor.studio.db.WkfModel">
     <view type="grid" name="wkf-model-grid"/>
     <view type="form" name="wkf-model-form"/>
-    <domain>self.isActive is true AND (:isSurveyApp is true OR (:isSurveyApp is false AND
-      self.isSurvey is false))</domain>
+    <domain>self.isActive is true</domain>
     <context name="__check_version" expr="eval: true"/>
-    <context name="isSurveyApp" expr="eval:__config__.app.isApp('survey')"/>
   </action-view>
 
   <menuitem title="Process Instances" name="menu-wkf-instance"
@@ -263,26 +261,5 @@
     <view type="form" name="baml-model-form"/>
   </action-view>
 
-  <menuitem title="Survey" name="menu-survey-root" parent="studio-app-root" order="22"
-    if="__config__.app.isApp('survey')"/>
-
-  <menuitem title="Survey models" name="menu-survey-model-all" action="survey.model.all"
-    order="5" parent="menu-survey-root" if="__config__.app.isApp('survey')"/>
-
-  <action-view name="survey.model.all" title="Survey models"
-    model="com.axelor.studio.db.Survey">
-    <view type="grid" name="survey-grid"/>
-    <view type="form" name="survey-form"/>
-  </action-view>
-
-  <menuitem title="Survey campaigns" name="menu-survey-campaign-all"
-    action="survey.campaign.all" order="10" parent="menu-survey-root"
-    if="__config__.app.isApp('survey')"/>
-
-  <action-view name="survey.campaign.all" title="Survey campaigns"
-    model="com.axelor.studio.db.SurveyCampaign">
-    <view type="grid" name="survey-campaign-grid"/>
-    <view type="form" name="survey-campaign-form"/>
-  </action-view>
 
 </object-views>

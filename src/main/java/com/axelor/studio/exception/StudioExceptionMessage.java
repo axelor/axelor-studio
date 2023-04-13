@@ -61,21 +61,4 @@ public final class StudioExceptionMessage {
       "Please select the App(s) to export" /*)*/;
 
   public static final String SUCCESS_STUDIO_APP_IMPORT = /*$$(*/ "Apps imported successfully" /*)*/;
-
-  public static final String NO_SURVEY_EMAIL_TEMPLATE = /*$$(*/
-      "Please configure survey email template on Studio app" /*)*/;
-
-  public static final String SURVEY_RESPONSE_COMPLETED = /*$$(*/
-      "Thank you. Your response is completed" /*)*/;
-
-  public static final String SURVEY_CAMPAIGN_CLOSED = /*$$(*/
-      "Sorry the survey campaign is closed" /*)*/;
-
-  public static final String SURVEY_PUBLIC_USER_NOT_EXIST = /*$$(*/
-      "No public user configured for survey campaign or user does not exist" /*)*/;
-
-  public static final String SURVEY_CONFIG_USER = /*$$(*/ "Please configure survey user" /*)*/;
-
-  public static final String SURVEY_WRONG_AUTHENTICATION_PROPERTIES = /*$$(*/
-      "Wrong user or password configured for the survey" /*)*/;
 }

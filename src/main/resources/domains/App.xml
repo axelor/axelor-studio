@@ -30,8 +30,6 @@
 
     <one-to-one ref="com.axelor.studio.db.AppStudio" name="appStudio" mappedBy="app"/>
 
-    <one-to-one ref="com.axelor.studio.db.AppSurvey" name="appSurvey" mappedBy="app"/>
-
     <boolean name="isInAppView" title="Add the application to the App Management"/>
 
     <finder-method name="findByCode" using="code" cacheable="true"/>
