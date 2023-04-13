@@ -9,12 +9,12 @@
 	wsRequests = ""
 	query.fetch().each({
 		request ->
-println(request)
-println(request.payLoadWsKeyValueList)
-println(request.wsConnector)
+
 				headers = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.headerWsKeyValueList, 4, 'header')
 
 				payloads = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.payLoadWsKeyValueList, 4, 'payload')
+
+				parameters = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.parameterWsKeyValueList, 4, 'parameter')
 
 				connectors = com.axelor.studio.service.ExportService.exportConnectors(request.wsConnector, 4, 'connector')
 
@@ -25,6 +25,8 @@ println(request.wsConnector)
 				\n\t\t\t<payLoadTypeSelect>${request.payLoadTypeSelect}</payLoadTypeSelect>
 				\n\t\t\t<callIf>${request.callIf}</callIf>
 				\n\t\t\t<repeatIf>${request.repeatIf}</repeatIf>
+				\n\t\t\t<parameters>$parameters
+                \n\t\t\t</parameters>
 				\n\t\t\t<headers>$headers
 				\n\t\t\t</headers>
 				\n\t\t\t<payloads>$payloads

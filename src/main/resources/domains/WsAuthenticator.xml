@@ -10,11 +10,12 @@
     <boolean name="isAuthenticated" title="Authenticated" copy="false"/>
     <string name="authTypeSelect" title="Auth type"
       selection="studio.ws.authenticator.auth.type" required="true"/>
+    <string name="basicType" title="Basic Type"
+      selection="studio.ws.authenticator.basic.type"/>
     <string name="responseType" title="Response type"
       selection="studio.ws.authenticator.response.type"/>
     <string name="tokenName" title="Token field name"/>
-    <many-to-one name="authWsRequest" title="Auth request" ref="WsRequest"
-      required="true"/>
+    <many-to-one name="authWsRequest" title="Auth request" ref="WsRequest"/>
     <string name="username" title="username"/>
     <string name="password" title="password" encrypted="true" copy="false"/>
     <string name="authResponse" title="Auth response" large="true"/>

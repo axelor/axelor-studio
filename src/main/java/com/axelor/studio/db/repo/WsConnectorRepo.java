@@ -30,7 +30,10 @@ public class WsConnectorRepo extends WsConnectorRepository {
   public WsConnector save(WsConnector connector) {
     connector = super.save(connector);
 
-    List<WsRequest> requests = new ArrayList<>(connector.getWsRequestList());
+    List<WsRequest> requests =
+        connector.getWsRequestList() != null
+            ? new ArrayList<>(connector.getWsRequestList())
+            : new ArrayList<>();
     if (CollectionUtils.isEmpty(requests)) {
       return connector;
     }

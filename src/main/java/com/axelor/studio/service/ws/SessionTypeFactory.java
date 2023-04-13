@@ -10,6 +10,8 @@ public class SessionTypeFactory {
         return new SessionTypeCookie();
       case "token":
         return new SessionTypeToken();
+      case "Standard":
+        return new SessionTypeBasic();
       default:
         return null;
     }
