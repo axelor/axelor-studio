@@ -10,7 +10,7 @@
     <isActive>true</isActive>
 
     <diagramXml><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" camunda:code="BPM-2" camunda:diagramName="PizzaDelivery" camunda:studioApp="BPM-2" camunda:wkfStatusColor="green">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" camunda:code="BPM-2" camunda:diagramName="PizzaDelivery" camunda:studioApp="BPM-2" camunda:wkfStatusColor="green" camunda:isSurvey="false">
   <bpmn2:collaboration id="Collaboration_0pb74ca">
     <bpmn2:participant id="Pizza_Customer" name="Pizza Customer" processRef="Pizza_Main" />
     <bpmn2:participant id="Pizza_Vendor" name="Pizza Vendor" processRef="Process_0aaosdm" />
@@ -114,7 +114,7 @@ return $ctx.save(rec)</camunda:script>
     <bpmn2:sequenceFlow id="Flow_1ui47s7" sourceRef="Activity_0fv5yrm" targetRef="Event_1ovay39" />
     <bpmn2:sequenceFlow id="Flow_1jts3fz" sourceRef="Gateway_1bmyxkp" targetRef="Event_0gl3isu" />
     <bpmn2:sequenceFlow id="Flow_1itcwjv" sourceRef="Event_1ovay39" targetRef="Event_0gl3isu" />
-    <bpmn2:intermediateCatchEvent id="Event_0gl3isu" name="60m" camunda:displayStatus="true">
+    <bpmn2:intermediateCatchEvent id="Event_0gl3isu" name="60m" camunda:displayStatus="true" camunda:isFromBuilder="true">
       <bpmn2:incoming>Flow_1jts3fz</bpmn2:incoming>
       <bpmn2:incoming>Flow_1itcwjv</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1si7i0z</bpmn2:outgoing>
@@ -380,19 +380,19 @@ $ctx.createVariable($ctx.save(rec), execution)</camunda:script>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
         <dc:Bounds x="172" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="158" y="145" width="85" height="14" />
+        <bpmndi:BPMNLabel color:color="#ccecc6">
+          <dc:Bounds x="159" y="145" width="84" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_10f1z3c_di" bpmnElement="Event_065fzu0" bioc:stroke="#ff9800" bioc:fill="#ffe0b3" color:background-color="#ffe0b3" color:border-color="#ff9800">
         <dc:Bounds x="842" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffe0b3">
           <dc:Bounds x="825" y="72" width="72" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_10938k7_di" bpmnElement="Event_1jq51i4" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="1212" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="1211" y="145" width="41" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -407,7 +407,7 @@ $ctx.createVariable($ctx.save(rec), execution)</camunda:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1gxlgam_di" bpmnElement="Event_0gl3isu" bioc:stroke="#ff9800" bioc:fill="#ffe0b3" color:background-color="#ffe0b3" color:border-color="#ff9800">
         <dc:Bounds x="652" y="192" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffe0b3">
           <dc:Bounds x="620" y="203" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -419,7 +419,7 @@ $ctx.createVariable($ctx.save(rec), execution)</camunda:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1gpzfmz_di" bpmnElement="Event_0ub5fcs" bioc:stroke="#ff9800" bioc:fill="#ffe0b3" color:background-color="#ffe0b3" color:border-color="#ff9800">
         <dc:Bounds x="562" y="102" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffe0b3">
           <dc:Bounds x="547" y="83" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -489,7 +489,7 @@ $ctx.createVariable($ctx.save(rec), execution)</camunda:script>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0zcbl0t_di" bpmnElement="Event_0b4b5yw" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="1132" y="662" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="1109" y="705" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -510,7 +510,7 @@ $ctx.createVariable($ctx.save(rec), execution)</camunda:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0v4ht4q_di" bpmnElement="Event_1bklifl" bioc:stroke="#ff9800" bioc:fill="#ffe0b3" color:background-color="#ffe0b3" color:border-color="#ff9800">
         <dc:Bounds x="392" y="402" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffe0b3">
           <dc:Bounds x="378" y="445" width="64" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -555,7 +555,7 @@ $ctx.createVariable($ctx.save(rec), execution)</camunda:script>
         <di:waypoint x="860" y="432" />
         <di:waypoint x="860" y="138" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="867" y="293" width="27" height="14" />
+          <dc:Bounds x="868" y="293" width="26" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

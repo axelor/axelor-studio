@@ -18,6 +18,10 @@
 package com.axelor.studio.dmn.service;
 
 import com.axelor.inject.Beans;
+import com.axelor.meta.db.MetaJsonModel;
+import com.axelor.meta.db.MetaModel;
+import com.axelor.meta.db.repo.MetaJsonModelRepository;
+import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.db.DmnField;
 import com.axelor.studio.db.DmnTable;
@@ -25,15 +29,20 @@ import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.db.repo.WkfDmnModelRepository;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.camunda.bpm.model.dmn.instance.DecisionTable;
+import org.camunda.bpm.model.dmn.instance.Definitions;
 import org.camunda.bpm.model.dmn.instance.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,9 +70,50 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
 
     deploymentBuilder.deploy();
 
+    setModels(wkfDmnModel, dmnModelInstance);
     setDecisionTables(wkfDmnModel, dmnModelInstance);
 
     Beans.get(WkfDmnModelRepository.class).save(wkfDmnModel);
+  }
+
+  private void setModels(WkfDmnModel wkfDmnModel, DmnModelInstance dmnModelInstance) {
+
+    Definitions definitions = dmnModelInstance.getDefinitions();
+
+    String metaModels = definitions.getAttributeValueNs(definitions.getNamespace(), "metaModels");
+    String jsonModels =
+        definitions.getAttributeValueNs(definitions.getNamespace(), "metaJsonModels");
+
+    if (metaModels != null) {
+      Set<MetaModel> metaModelSet = new HashSet<>();
+      MetaModelRepository metaModelRepo = Beans.get(MetaModelRepository.class);
+
+      List<String> models = Arrays.asList(metaModels.split(","));
+      for (String modelName : models) {
+        MetaModel metaModel = metaModelRepo.findByName(modelName);
+        if (metaModel != null) {
+          metaModelSet.add(metaModel);
+        }
+      }
+      wkfDmnModel.setMetaModelSet(metaModelSet);
+
+    } else if (jsonModels != null) {
+      Set<MetaJsonModel> jsonModelSet = new HashSet<>();
+      MetaJsonModelRepository jsonModelRepo = Beans.get(MetaJsonModelRepository.class);
+
+      List<String> models = Arrays.asList(jsonModels.split(","));
+      for (String modelName : models) {
+        MetaJsonModel jsonModel = jsonModelRepo.findByName(modelName);
+        if (jsonModel != null) {
+          jsonModelSet.add(jsonModel);
+        }
+      }
+      wkfDmnModel.setJsonModelSet(jsonModelSet);
+
+    } else {
+      wkfDmnModel.setMetaModelSet(null);
+      wkfDmnModel.setJsonModelSet(null);
+    }
   }
 
   private void setDecisionTables(WkfDmnModel wkfDmnModel, DmnModelInstance dmnModelInstance) {
@@ -110,10 +160,10 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
       DmnField field = outputFieldMap.get(output.getName());
       log.debug("Find output for name: {}, found: {}", output.getName(), field);
       if (field == null) {
-        field = new DmnField(output.getName());
+        field = new DmnField();
         field.setOutputDmnTable(dmnTable);
-      } else {
         field.setName(output.getName());
+        field.setField(output.getName());
       }
       field.setFieldType(output.getTypeRef());
       dmnTable.addOutputDmnFieldListItem(field);
