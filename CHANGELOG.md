@@ -2,8 +2,9 @@
 
 ## 1.0.0
 
-* Initial AOP Addons version
+* Feature #49090: Web service
 * Anomaly #53787: Fix Payloads Editing when adding new elements
+* Feature #53844: Add Username / Password Tasks when click on authentification option instaed of the table
 * Feature #55755: add List option to The payload builder
 * Feature #55144: Add a time builder for timer events
 * Feature #55354: Connector Part : execute of call connector action
@@ -19,21 +20,34 @@
 * Anomaly #57973: [DMN] wrong evaluation in case of date
 * Feature #59199: Support roles in task assignation
 * Anomaly #59299: DMN : Fix record change in table mode, hide model option on input expression
+* Feature #59634: [Studio] Support only if
+* Anomaly #59722: AxelorMessageException : Keep exception class to avoid blocking
 * Feature #59768: [SCRIPT] code highlighting
 * Anomaly #60099: [STUDIO WS] Problem in API CALL
+* Anomaly #60316: [Action Builder] Error in the generated script action
 * Feature #60389: [STUDIO WS] Exportation of ws Studio with custom applications
+* Anomaly #60513: [DMN] Duplicated id for decisions
 * Anomaly #60571: [STUDIO WS] Exportation of ws Studio with custom applications : the connectors can't load the requests
 * Anomaly #60577: AOP problem : the authentification with axelor instances dosn't work with the ws builder in AOP
+* Anomaly #60678: Studio Addons : initApps issue
 * Anomaly #60715: Error in view studio-team-task-form
+* Anomaly #60716: Error in view studio-web-service-ws-request
+* Anomaly #60735: BPM: Impossible to download BPMN
+* Anomaly #60779: Auto install apps : aos.apps.install-apps in properties
+* Feature #60780: Move auto installer apps from Base to Studio
 * Feature #60896: Axelor-config : properties choices between AOS and AOP
 * Anomaly #61460: Typo in action-wlf-model-method-onload
+* Anomaly #61563: BPM modeler: selection of another model
 * Feature #61778: Add a global simple context map
 * Anomaly #62103: Multiple error for task assignation
 * Feature #62104: Imporovement Token Mode
 * Anomaly #62105: View attributes doesn’t work for a sub-process.
 * Anomaly #62158: [STUDIO] Missing "show processus instance"
 * Anomaly #62171: Authentication's Requests disapear when navigate from the connector
+* Anomaly #62216: Null Java Pointer : when save a Connector without a request
 * Anomaly #62270: Fix timer event execution
+* Anomaly #62327: Expression builder: resize dy default
+* Anomaly #62329: Expression builder: don't allow to change width
 * Anomaly #62336: BPM : crash when click on multiselect property of nodes
 * Anomaly #62418: Studio : Theme not apply
 * Anomaly #62575: WsTokenHandler: Missing rollback on transactional
@@ -45,4 +59,3 @@
 * Feature #62628: Apps type and tag
 * Anomaly #62789: Revert Survey feature
 * Anomaly #62850: AppServiceImpl : exception on Windows when we try to install an app
-
