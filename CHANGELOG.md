@@ -3,5 +3,46 @@
 ## 1.0.0
 
 * Initial AOP Addons version
-
+* Anomaly #53787: Fix Payloads Editing when adding new elements
+* Feature #55755: add List option to The payload builder
+* Feature #55144: Add a time builder for timer events
+* Feature #55354: Connector Part : execute of call connector action
+* Anomaly #55389: Error when modification of a proprity of the request after switching from model to another
+* Feature #55429: context Builder : Build the context to be chosen when we want to test the connector
+* Feature #55441: Run test Button
+* Feature #55644: Add and Edit Request from Authentication part or connector part
+* Feature #55929: Create Groovy Script for the embedded payload ( conception + realisation )
+* Anomaly #57099: Save only one model payload with the request
+* Anomaly #57100: the call of an update request doesn't work
+* Feature #57145: Fields Validation
+* Feature #57268: Add option of multiple object inside a list in the json payload of the request ( Payload Builder - Parameter Builder )
+* Anomaly #57973: [DMN] wrong evaluation in case of date
+* Feature #59199: Support roles in task assignation
+* Anomaly #59299: DMN : Fix record change in table mode, hide model option on input expression
+* Feature #59768: [SCRIPT] code highlighting
+* Anomaly #60099: [STUDIO WS] Problem in API CALL
+* Feature #60389: [STUDIO WS] Exportation of ws Studio with custom applications
+* Anomaly #60571: [STUDIO WS] Exportation of ws Studio with custom applications : the connectors can't load the requests
+* Anomaly #60577: AOP problem : the authentification with axelor instances dosn't work with the ws builder in AOP
+* Anomaly #60715: Error in view studio-team-task-form
+* Feature #60896: Axelor-config : properties choices between AOS and AOP
+* Anomaly #61460: Typo in action-wlf-model-method-onload
+* Feature #61778: Add a global simple context map
+* Anomaly #62103: Multiple error for task assignation
+* Feature #62104: Imporovement Token Mode
+* Anomaly #62105: View attributes doesn’t work for a sub-process.
+* Anomaly #62158: [STUDIO] Missing "show processus instance"
+* Anomaly #62171: Authentication's Requests disapear when navigate from the connector
+* Anomaly #62270: Fix timer event execution
+* Anomaly #62336: BPM : crash when click on multiselect property of nodes
+* Anomaly #62418: Studio : Theme not apply
+* Anomaly #62575: WsTokenHandler: Missing rollback on transactional
+* Anomaly #62582: Errors while loading the bpm modeler page
+* Anomaly #62584: Dashboard on process model is not working
+* Anomaly #62586: Unable to get user full name in nodes
+* Anomaly #62588: Builder error
+* Feature #62626: Export/Import the new fields in wsAuthetication and parameters in wsRequest
+* Feature #62628: Apps type and tag
+* Anomaly #62789: Revert Survey feature
+* Anomaly #62850: AppServiceImpl : exception on Windows when we try to install an app
 
