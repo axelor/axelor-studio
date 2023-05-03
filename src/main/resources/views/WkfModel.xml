@@ -326,6 +326,10 @@
   <action-export name="action-wkf-model-export-wkf-models" output="${date}${time}"
     download="true">
     <export
+      name="${__repo__(WkfModel).find(_ids.get(0))?.name}${__repo__(WkfModel).find(_ids.get(0))?.versionTag ? '-'.concat(__repo__(WkfModel).find(_ids.get(0))?.versionTag) : ''}.xml"
+      template="data-export/export-wkf-models.tmpl" engine="groovy"
+      if="_ids != null &amp;&amp; _ids.size() == 1"/>
+    <export
       name="WkfModels-${__datetime__.format(java.time.format.DateTimeFormatter.ofPattern('ddMMyyyyHHmmSS'))}.xml"
       template="data-export/export-wkf-models.tmpl" engine="groovy"/>
   </action-export>
