@@ -49,6 +49,8 @@ import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardTaskService;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardTaskServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardUserService;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardUserServiceImpl;
+import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
+import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardServiceImpl;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
@@ -166,6 +168,7 @@ public class StudioModule extends AxelorModule {
     bind(MapperScriptGeneratorServiceImpl.class).to(BpmMapperScriptGeneratorServiceImpl.class);
     bind(AppLoaderExportServiceImpl.class).to(AppLoaderExportBpmServiceImpl.class);
     bind(WkfDashboardService.class).to(WkfDashboardServiceImpl.class);
+    bind(WkfDashboardCommonService.class).to(WkfDashboardCommonServiceImpl.class);
     bind(BpmManagerDashboardService.class).to(BpmManagerDashboardServiceImpl.class);
     bind(BpmManagerDashboardUserService.class).to(BpmManagerDashboardUserServiceImpl.class);
     bind(BpmManagerDashboardTaskService.class).to(BpmManagerDashboardTaskServiceImpl.class);
