@@ -82,7 +82,7 @@ public class ExportService {
         if (parent.getMetaJsonField() != null && parent.getMetaJsonField().getTargetModel() != null)
           target = parent.getMetaJsonField().getTargetModel();
         if (parent.getMetaJsonField() != null
-                && parent.getMetaJsonField().getTargetJsonModel() != null)
+            && parent.getMetaJsonField().getTargetJsonModel() != null)
           target = parent.getMetaJsonField().getTargetJsonModel().getName();
         if (parent.getValueField() != null)
           source = parent.getValueField().getMetaModel().getFullName();
@@ -93,70 +93,70 @@ public class ExportService {
       }
 
       xml +=
-              indent
-                      + "<line>"
-                      + indentPlus
-                      + "<target>"
-                      + target
-                      + "</target>"
-                      + indentPlus
-                      + "<source>"
-                      + source
-                      + "</source>"
-                      + indentPlus
-                      + "<metaJsonField>"
-                      + (line.getMetaJsonField() != null ? line.getMetaJsonField().getName() : "")
-                      + "</metaJsonField>"
-                      + indentPlus
-                      + "<metaField>"
-                      + (line.getMetaField() != null ? line.getMetaField().getName() : "")
-                      + "</metaField>"
-                      + indentPlus
-                      + "<valueJson>"
-                      + (line.getValueJson() != null ? line.getValueJson().getName() : "")
-                      + "</valueJson>"
-                      + indentPlus
-                      + "<valueField>"
-                      + (line.getValueField() != null ? line.getValueField().getName() : "")
-                      + "</valueField>"
-                      + indentPlus
-                      + "<value>"
-                      + (line.getValue() != null ? line.getValue() : "")
-                      + "</value>"
-                      + indentPlus
-                      + "<conditionText>"
-                      + (line.getConditionText() != null
-                      ? StringEscapeUtils.escapeXml(
+          indent
+              + "<line>"
+              + indentPlus
+              + "<target>"
+              + target
+              + "</target>"
+              + indentPlus
+              + "<source>"
+              + source
+              + "</source>"
+              + indentPlus
+              + "<metaJsonField>"
+              + (line.getMetaJsonField() != null ? line.getMetaJsonField().getName() : "")
+              + "</metaJsonField>"
+              + indentPlus
+              + "<metaField>"
+              + (line.getMetaField() != null ? line.getMetaField().getName() : "")
+              + "</metaField>"
+              + indentPlus
+              + "<valueJson>"
+              + (line.getValueJson() != null ? line.getValueJson().getName() : "")
+              + "</valueJson>"
+              + indentPlus
+              + "<valueField>"
+              + (line.getValueField() != null ? line.getValueField().getName() : "")
+              + "</valueField>"
+              + indentPlus
+              + "<value>"
+              + (line.getValue() != null ? line.getValue() : "")
+              + "</value>"
+              + indentPlus
+              + "<conditionText>"
+              + (line.getConditionText() != null
+                  ? StringEscapeUtils.escapeXml(
                       StringEscapeUtils.escapeXml(line.getConditionText()))
-                      : "")
-                      + "</conditionText>"
-                      + indentPlus
-                      + "<filter>"
-                      + (line.getFilter() != null ? line.getFilter() : "")
-                      + "</filter>"
-                      + indentPlus
-                      + "<validationTypeSelect>"
-                      + (line.getValidationTypeSelect() != null ? line.getValidationTypeSelect() : "")
-                      + "</validationTypeSelect>"
-                      + indentPlus
-                      + "<validationMsg>"
-                      + (line.getValidationMsg() != null ? line.getValidationMsg() : "")
-                      + "</validationMsg>"
-                      + indentPlus
-                      + "<name>"
-                      + (line.getName() != null ? line.getName() : "")
-                      + "</name>"
-                      + indentPlus
-                      + "<dummy>"
-                      + (line.getDummy() != null ? line.getDummy() : "")
-                      + "</dummy>"
-                      + indentPlus
-                      + "<subLines>"
-                      + exportStudioActionLines(line.getSubLines(), count + 2)
-                      + indentPlus
-                      + "</subLines>"
-                      + indent
-                      + "</line>";
+                  : "")
+              + "</conditionText>"
+              + indentPlus
+              + "<filter>"
+              + (line.getFilter() != null ? line.getFilter() : "")
+              + "</filter>"
+              + indentPlus
+              + "<validationTypeSelect>"
+              + (line.getValidationTypeSelect() != null ? line.getValidationTypeSelect() : "")
+              + "</validationTypeSelect>"
+              + indentPlus
+              + "<validationMsg>"
+              + (line.getValidationMsg() != null ? line.getValidationMsg() : "")
+              + "</validationMsg>"
+              + indentPlus
+              + "<name>"
+              + (line.getName() != null ? line.getName() : "")
+              + "</name>"
+              + indentPlus
+              + "<dummy>"
+              + (line.getDummy() != null ? line.getDummy() : "")
+              + "</dummy>"
+              + indentPlus
+              + "<subLines>"
+              + exportStudioActionLines(line.getSubLines(), count + 2)
+              + indentPlus
+              + "</subLines>"
+              + indent
+              + "</line>";
     }
 
     return StringEscapeUtils.unescapeXml(xml);
@@ -170,31 +170,31 @@ public class ExportService {
 
     for (WsKeyValue wsKeyValue : wsKeyValues) {
       xml +=
-              indent
-                      + "<"
-                      + type
-                      + ">"
-                      + indentPlus
-                      + "<key>"
-                      + (wsKeyValue.getWsKey() != null ? wsKeyValue.getWsKey() : "")
-                      + "</key>"
-                      + indentPlus
-                      + "<value>"
-                      + (wsKeyValue.getWsValue() != null ? wsKeyValue.getWsValue() : "")
-                      + "</value>"
-                      + indentPlus
-                      + "<isList>"
-                      + wsKeyValue.getIsList()
-                      + "</isList>"
-                      + indentPlus
-                      + "<subWsKeyValues>"
-                      + exportWsKeyValueLines(wsKeyValue.getSubWsKeyValueList(), count + 2, type)
-                      + indentPlus
-                      + "</subWsKeyValues>"
-                      + indent
-                      + "</"
-                      + type
-                      + ">";
+          indent
+              + "<"
+              + type
+              + ">"
+              + indentPlus
+              + "<key>"
+              + (wsKeyValue.getWsKey() != null ? wsKeyValue.getWsKey() : "")
+              + "</key>"
+              + indentPlus
+              + "<value>"
+              + (wsKeyValue.getWsValue() != null ? wsKeyValue.getWsValue() : "")
+              + "</value>"
+              + indentPlus
+              + "<isList>"
+              + wsKeyValue.getIsList()
+              + "</isList>"
+              + indentPlus
+              + "<subWsKeyValues>"
+              + exportWsKeyValueLines(wsKeyValue.getSubWsKeyValueList(), count + 2, type)
+              + indentPlus
+              + "</subWsKeyValues>"
+              + indent
+              + "</"
+              + type
+              + ">";
     }
 
     return StringEscapeUtils.unescapeXml(xml);
@@ -208,18 +208,18 @@ public class ExportService {
 
     for (WsRequest wsRequest : wsRequests) {
       xml +=
-              indent
-                      + "<"
-                      + type
-                      + ">"
-                      + indentPlus
-                      + "<name>"
-                      + wsRequest.getName()
-                      + "</name>"
-                      + indent
-                      + "</"
-                      + type
-                      + ">";
+          indent
+              + "<"
+              + type
+              + ">"
+              + indentPlus
+              + "<name>"
+              + wsRequest.getName()
+              + "</name>"
+              + indent
+              + "</"
+              + type
+              + ">";
     }
 
     return StringEscapeUtils.unescapeXml(xml);
@@ -233,18 +233,18 @@ public class ExportService {
 
     for (WsConnector wsConnector : wsConnectors) {
       xml +=
-              indent
-                      + "<"
-                      + type
-                      + ">"
-                      + indentPlus
-                      + "<name>"
-                      + wsConnector.getName()
-                      + "</name>"
-                      + indent
-                      + "</"
-                      + type
-                      + ">";
+          indent
+              + "<"
+              + type
+              + ">"
+              + indentPlus
+              + "<name>"
+              + wsConnector.getName()
+              + "</name>"
+              + indent
+              + "</"
+              + type
+              + ">";
     }
 
     return StringEscapeUtils.unescapeXml(xml);
