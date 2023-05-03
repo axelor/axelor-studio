@@ -6,13 +6,14 @@
   <grid name="wkf-model-grid" title="BPM Model" model="com.axelor.studio.db.WkfModel"
     orderBy="code" edit-icon="false">
     <toolbar>
-      <button name="btnTerminateAll" title="Terminate all process"
-        prompt="Are you sure wants to terminate all process ?"
-        onClick="com.axelor.studio.bpm.web.WkfModelController:terminateAll"/>
-      <button name="exportBtn" title="Export" onClick="action-wkf-model-export-wkf-models"/>
-      <button name="importBtn" title="import.verb"
+      <button name="terminateAllProcessesBtn" title="Terminate all the processes"
+        icon="fa-stop" prompt="Are you sure you want to terminate all the processes?"
+        onClick="action-wkf-model-method-terminate-all-processes"/>
+      <button name="exportBtn" title="Export" onClick="action-wkf-model-export-wkf-models"
+        icon="fa-download"/>
+      <button name="importBtn" title="import.verb" icon="fa-upload"
         onClick="action-wkf-model-view-import-wkf-model-form"/>
-      <button name="importStandardBpmBtn" title="Import standard BPM"
+      <button name="importStandardWkfModelsBtn" title="Import standard models"
         onClick="action-wkf-model-method-import-standard-wkf-model"/>
     </toolbar>
     <button name="openEditorBtn" title="wkf.open.editor"
@@ -96,26 +97,27 @@
     </panel>
   </form>
 
-  <form name="import-wkf-model-form" title="Import wkf model"
+  <form name="import-wkf-model-form" title="Import workflow models"
     model="com.axelor.studio.db.WkfModel">
     <panel name="mainPanel">
       <field name="dataFile" type="many-to-one" target="com.axelor.meta.db.MetaFile"
-        widget="binary-link" title="Data file" colSpan="5"/>
-      <field name="isTranslate" title="Translate" type="boolean"
+        widget="binary-link" title="Data file"/>
+      <field name="translate" title="Translate" type="boolean"
         onChange="action-wkf-model-record-set-source-language"/>
       <field name="sourceLanguageSelect" type="string" selection="select.language"
-        title="Source language" selection-in="['en','fr']" requiredIf="isTranslate"
-        showIf="isTranslate"/>
+        title="Source language" selection-in="['en','fr']" requiredIf="translate" showIf="translate"/>
       <field name="targetLanguageSelect" type="string" selection="select.language"
-        title="Target language" selection-in="['en','fr']" requiredIf="isTranslate"
-        showIf="isTranslate"/>
+        title="Target language" selection-in="['en','fr']" requiredIf="translate" showIf="translate"/>
       <button name="importUsersBtn" title="import.verb"
         onClick="action-wkf-model-method-import-wkf-model"
-        showIf="(dataFile != null &amp;&amp; !isTranslate) || (dataFile != null &amp;&amp; isTranslate &amp;&amp; sourceLanguageSelect != null &amp;&amp; targetLanguageSelect != null)"
-        colSpan="4"/>
+        showIf="dataFile != null &amp;&amp; (!translate || (translate &amp;&amp; sourceLanguageSelect != null &amp;&amp; targetLanguageSelect != null))"/>
       <field name="importLog" type="text" colSpan="12" readonly="true" title="Import log"/>
     </panel>
   </form>
+
+  <action-method name="action-wkf-model-method-terminate-all-processes">
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="terminateAllProcesses"/>
+  </action-method>
 
   <form name="wfk-model-select-process-wizard-form" title="Select process"
     model="com.axelor.utils.db.Wizard">
@@ -228,9 +230,9 @@
   </action-view>
 
   <action-view name="action-wkf-model-view-import-wkf-model-form"
-    title="Import wkf model" model="com.axelor.studio.db.WkfModel">
+    title="Import workflow models" model="com.axelor.studio.db.WkfModel">
     <view type="form" name="import-wkf-model-form"/>
-    <view-param name="popup" value="true"/>
+    <view-param name="popup" value="reload"/>
     <view-param name="popup-save" value="false"/>
     <view-param name="show-confirm" value="false"/>
     <view-param name="show-toolbar" value="false"/>
@@ -288,7 +290,7 @@
   </action-method>
 
   <action-method name="action-wkf-model-method-import-standard-wkf-model">
-    <call class="com.axelor.studio.bpm.web.WkfModelController" method="importStandardBPM"/>
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="importStandardWkfModels"/>
   </action-method>
 
   <action-method name="action-wkf-model-method-show-dashboard">
@@ -304,11 +306,11 @@
   </action-method>
 
   <action-method name="action-wkf-model-method-open-new-record">
-    <call class="com.axelor.studio.bpm.web.WkfModelController" method="newRecord"/>
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="openNewRecord"/>
   </action-method>
 
   <action-method name="action-wkf-model-method-open-new-instance">
-    <call class="com.axelor.studio.bpm.web.WkfModelController" method="newInstance"/>
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="openNewInstance"/>
   </action-method>
 
   <action-method name="action-wkf-model-method-open-task-today">
