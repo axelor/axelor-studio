@@ -41,7 +41,7 @@ dependencies {
 		api project(":modules:axelor-message")
 	}
 	else {
-		api "com.axelor.addons:axelor-message:1.0.0"
+		api "com.axelor.addons:axelor-message:1.0.1"
 	}
 
 	api "org.camunda.bpm:camunda-engine:7.17.0"

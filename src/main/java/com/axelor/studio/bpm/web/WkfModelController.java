@@ -20,13 +20,13 @@ package com.axelor.studio.bpm.web;
 import com.axelor.auth.AuthUtils;
 import com.axelor.auth.db.User;
 import com.axelor.common.Inflector;
+import com.axelor.common.StringUtils;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.MetaModel;
-import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.schema.actions.ActionView;
@@ -34,6 +34,7 @@ import com.axelor.meta.schema.actions.ActionView.ActionViewBuilder;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
@@ -41,19 +42,15 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
-import com.axelor.studio.db.repo.WkfProcessConfigRepository;
 import com.axelor.utils.ExceptionTool;
-import com.google.common.base.Strings;
-import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
+import com.axelor.utils.MapTools;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class WkfModelController {
-
-  @Inject private WkfDashboardCommonService wkfDashboardCommonService;
 
   private static final String PROCESS_PER_STATUS = "processPerStatus";
   private static final String PROCESS_PER_USER = "processPerUser";
@@ -84,7 +81,7 @@ public class WkfModelController {
     }
   }
 
-  public void terminateAll(ActionRequest request, ActionResponse response) {
+  public void terminateAllProcesses(ActionRequest request, ActionResponse response) {
     try {
       Beans.get(WkfInstanceService.class).terminateAll();
     } catch (Exception e) {
@@ -157,7 +154,7 @@ public class WkfModelController {
     try {
       WkfModel wkfModel = request.getContext().asType(WkfModel.class);
 
-      List<Long> versionIds = new ArrayList<Long>();
+      List<Long> versionIds = new ArrayList<>();
 
       if (wkfModel.getId() != null) {
         wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
@@ -191,39 +188,35 @@ public class WkfModelController {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Transactional
   public void importWkfModels(ActionRequest request, ActionResponse response) {
     try {
-      boolean isTranslate =
-          request.getContext().get("isTranslate") == null
-              ? false
-              : (boolean) request.getContext().get("isTranslate");
+      Context ctx = request.getContext();
+      boolean translate =
+          Optional.ofNullable(ctx.get("translate")).map(i -> (boolean) i).orElse(false);
 
-      String sourceLanguage = (String) request.getContext().get("sourceLanguageSelect");
-      String targetLanguage = (String) request.getContext().get("targetLanguageSelect");
+      String sourceLanguage = (String) ctx.get("sourceLanguageSelect");
+      String targetLanguage = (String) ctx.get("targetLanguageSelect");
 
-      String metaFileId =
-          ((Map<String, Object>) request.getContext().get("dataFile")).get("id").toString();
-
-      MetaFile metaFile = Beans.get(MetaFileRepository.class).find(Long.parseLong(metaFileId));
+      MetaFile metaFile = MapTools.get(ctx, MetaFile.class, "dataFile");
 
       String logText =
           Beans.get(WkfModelService.class)
-              .importWkfModels(metaFile, isTranslate, sourceLanguage, targetLanguage);
-      if (Strings.isNullOrEmpty(logText)) {
-        response.setCanClose(true);
+              .importWkfModels(metaFile, translate, sourceLanguage, targetLanguage);
+
+      if (StringUtils.isEmpty(logText)) {
+        response.setInfo(I18n.get(BpmExceptionMessage.NO_WKF_MODEL_IMPORTED));
       } else {
         response.setValue("importLog", logText);
       }
+
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
     }
   }
 
-  public void importStandardBPM(ActionRequest request, ActionResponse response) {
+  public void importStandardWkfModels(ActionRequest request, ActionResponse response) {
     try {
-      Beans.get(WkfModelService.class).importStandardBPM();
+      Beans.get(WkfModelService.class).importStandardWkfModels();
 
       response.setReload(true);
     } catch (Exception e) {
@@ -286,11 +279,11 @@ public class WkfModelController {
   }
 
   private List<Map<String, Object>> getDataList(ActionRequest request, String type) {
-    if (request.getData().get("id") == null) {
-      return new ArrayList<>();
+    Object id = request.getData().get("id");
+    if (id == null) {
+      return Collections.emptyList();
     }
-    Long wkfModelId = Long.valueOf(request.getData().get("id").toString());
-    WkfModel wkfModel = Beans.get(WkfModelRepository.class).find(wkfModelId);
+    WkfModel wkfModel = Beans.get(WkfModelRepository.class).find(Long.valueOf(id.toString()));
 
     switch (type) {
       case PROCESS_PER_STATUS:
@@ -300,33 +293,33 @@ public class WkfModelController {
         return Beans.get(WkfModelService.class).getProcessPerUser(wkfModel);
 
       default:
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void openRecordView(
       ActionRequest request,
       ActionResponse response,
       String statusKey,
       String modelKey,
-      String recordkey) {
-    LinkedHashMap<String, Object> _map =
-        (LinkedHashMap<String, Object>) request.getData().get("context");
+      String recordKey) {
 
-    String status = "";
-    if (statusKey != null) {
-      status = _map.get("title").toString();
-    }
-    String modelName = _map.get(modelKey).toString();
-    boolean isMetaModel = (boolean) _map.get("isMetaModel");
-    List<Long> recordIds = (List<Long>) _map.get(recordkey);
+    Map<String, Object> ctx = getDataCtx(request);
+
+    String status = statusKey != null ? MapTools.get(ctx, String.class, "title") : "";
+    String modelName = MapTools.get(ctx, String.class, modelKey);
+    boolean isMetaModel = MapTools.get(ctx, Boolean.class, "isMetaModel");
+    List<Long> recordIds = MapTools.getCollection(ctx, Long.class, recordKey);
 
     ActionViewBuilder actionViewBuilder =
         Beans.get(WkfDashboardCommonService.class)
             .computeActionView(status, modelName, isMetaModel);
 
-    response.setView(actionViewBuilder.context("ids", !recordIds.isEmpty() ? recordIds : 0).map());
+    response.setView(actionViewBuilder.context("ids", recordIds.isEmpty() ? 0 : recordIds).map());
+  }
+
+  private Map<String, Object> getDataCtx(ActionRequest request) {
+    return (Map<String, Object>) request.getData().get("context");
   }
 
   public void getStatusPerView(ActionRequest request, ActionResponse response) {
@@ -347,13 +340,11 @@ public class WkfModelController {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public void newRecord(ActionRequest request, ActionResponse response) {
+  public void openNewRecord(ActionRequest request, ActionResponse response) {
     try {
-      LinkedHashMap<String, Object> _map =
-          (LinkedHashMap<String, Object>) request.getData().get("context");
-      String modelName = _map.get("modelName").toString();
-      boolean isMetaModel = (boolean) _map.get("isMetaModel");
+      Map<String, Object> ctx = getDataCtx(request);
+      String modelName = MapTools.get(ctx, String.class, "modelName");
+      boolean isMetaModel = MapTools.get(ctx, Boolean.class, "isMetaModel");
 
       ActionViewBuilder actionViewBuilder = this.viewNewRecord(modelName, isMetaModel);
       response.setView(actionViewBuilder.map());
@@ -363,15 +354,10 @@ public class WkfModelController {
     }
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public void newInstance(ActionRequest request, ActionResponse response) {
+  public void openNewInstance(ActionRequest request, ActionResponse response) {
     try {
-      LinkedHashMap<String, Object> _map =
-          (LinkedHashMap<String, Object>) request.getData().get("context");
-
-      WkfProcessConfig config =
-          Beans.get(WkfProcessConfigRepository.class)
-              .find(Long.valueOf(((Map) _map.get("processConfig")).get("id").toString()));
+      Map<String, Object> ctx = getDataCtx(request);
+      WkfProcessConfig config = MapTools.get(ctx, WkfProcessConfig.class, "processConfig");
 
       boolean isMetaModel = config.getMetaModel() != null;
       String modelName =
@@ -418,6 +404,9 @@ public class WkfModelController {
       if (superUser) {
         return;
       }
+
+      WkfDashboardCommonService wkfDashboardCommonService =
+          Beans.get(WkfDashboardCommonService.class);
 
       if (wkfDashboardCommonService.isAdmin(wkfModel, user)) {
         return;
