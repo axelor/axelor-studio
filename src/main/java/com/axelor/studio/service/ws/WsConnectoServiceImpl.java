@@ -362,6 +362,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                   text == null
                           ? null
                           : Entity.entity(new FileInputStream(text), "application/octet-stream");
+
         } catch (FileNotFoundException e) {
           log.error(e.getMessage(), e);
         }
