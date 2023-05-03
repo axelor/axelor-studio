@@ -1,5 +1,17 @@
 ## Current (unreleased)
 
+* Anomaly #62216: Null Java Pointer : when save a Connector without a request
+* Anomaly #62285: Error when loading transformation.csv
+* Anomaly #62413: Fix workflow import and related code
+* Anomaly #62621: Refactor WkfDashboardCommonService
+* Anomaly #62661: MetaJsonModel can't be chosen on the context and parameter / payload builder
+* Feature #62863: Readable file name for BPM export
+* Anomaly #63014: BPM Studio: unable to save script on listener
+* Anomaly #63064: Unique process id generation
+* Anomaly #63142: [DMN]: Expression property
+* Anomaly #63226: BPM : Issue on delete process
+* Anomaly #63263: Expression builder: unable to validate expression on buttons
+
 ## 1.0.0
 
 * Feature #49090: Web service
