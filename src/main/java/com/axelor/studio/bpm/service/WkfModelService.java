@@ -19,30 +19,30 @@ package com.axelor.studio.bpm.service;
 
 import com.axelor.meta.db.MetaFile;
 import com.axelor.studio.db.WkfModel;
-import com.google.inject.persist.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import org.xml.sax.SAXException;
 
 public interface WkfModelService {
 
-  @Transactional
   public WkfModel createNewVersion(WkfModel wkfModel);
 
-  @Transactional
   public WkfModel start(WkfModel wkfModel);
 
-  @Transactional
   public WkfModel terminate(WkfModel wkfModel);
 
-  @Transactional
   public WkfModel backToDraft(WkfModel wkfModel);
 
   public List<Long> findVersions(WkfModel wkfModel);
 
-  public void importStandardBPM();
+  public void importStandardWkfModels() throws IOException;
 
   public String importWkfModels(
-      MetaFile metaFile, boolean isTranslate, String sourceLanguage, String targetLanguage);
+      MetaFile metaFile, boolean translate, String sourceLanguage, String targetLanguage)
+      throws IOException, ParserConfigurationException, SAXException, TransformerException;
 
   public List<Map<String, Object>> getProcessPerStatus(WkfModel wkfModel);
 

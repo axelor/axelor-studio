@@ -19,6 +19,8 @@ package com.axelor.studio.bpm.service;
 
 import com.axelor.auth.AuthUtils;
 import com.axelor.auth.db.User;
+import com.axelor.common.ObjectUtils;
+import com.axelor.common.StringUtils;
 import com.axelor.data.Listener;
 import com.axelor.data.xml.XMLImporter;
 import com.axelor.db.Model;
@@ -36,50 +38,55 @@ import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.translation.ITranslation;
-import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.service.TranslationService;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlbeans.impl.common.IOUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class WkfModelServiceImpl implements WkfModelService {
 
-  private static final String IMPORT_CONFIG_PATH = "/data-import/import-wkf-models.xml";
+  protected static final String IMPORT_CONFIG_PATH = "/data-import/import-wkf-models.xml";
 
-  @Inject protected WkfModelRepository wkfModelRepository;
+  protected WkfModelRepository wkfModelRepository;
+  protected WkfDashboardCommonService wkfDashboardCommonService;
+  protected TranslationService translationService;
 
-  @Inject private WkfDashboardCommonService wkfDashboardCommonService;
-
-  @Inject private TranslationService translationService;
+  @Inject
+  public WkfModelServiceImpl(
+      WkfModelRepository wkfModelRepository,
+      WkfDashboardCommonService wkfDashboardCommonService,
+      TranslationService translationService) {
+    this.wkfModelRepository = wkfModelRepository;
+    this.wkfDashboardCommonService = wkfDashboardCommonService;
+    this.translationService = translationService;
+  }
 
   @Override
   @Transactional
   public WkfModel createNewVersion(WkfModel wkfModel) {
-
-    if (wkfModel == null) {
-      return null;
-    }
-
     WkfModel newVersion =
         wkfModelRepository
             .all()
@@ -130,7 +137,7 @@ public class WkfModelServiceImpl implements WkfModelService {
   @Override
   public List<Long> findVersions(WkfModel wkfModel) {
 
-    List<Long> wkfModelIds = new ArrayList<Long>();
+    List<Long> wkfModelIds = new ArrayList<>();
 
     WkfModel previousModel = wkfModel.getPreviousVersion();
 
@@ -143,61 +150,56 @@ public class WkfModelServiceImpl implements WkfModelService {
   }
 
   @Override
-  public void importStandardBPM() {
+  public void importStandardWkfModels() throws IOException {
 
     List<App> appList = Beans.get(AppRepository.class).all().filter("self.active = true").fetch();
 
-    if (CollectionUtils.isEmpty(appList)) {
+    if (ObjectUtils.isEmpty(appList)) {
       return;
     }
 
-    String configFileName = "/data-import/import-wkf-models.xml";
-    File configFile = null;
-    try {
-      configFile = File.createTempFile("config", ".xml");
-      FileOutputStream fout = new FileOutputStream(configFile);
-      InputStream inputStream = this.getClass().getResourceAsStream(configFileName);
+    File configFile = File.createTempFile("config", ".xml");
+    try (FileOutputStream fout = new FileOutputStream(configFile)) {
+      InputStream inputStream = this.getClass().getResourceAsStream(IMPORT_CONFIG_PATH);
       IOUtil.copyCompletely(inputStream, fout);
-    } catch (Exception e) {
-      ExceptionTool.trace(e);
     }
 
     if (configFile == null) {
       return;
     }
 
-    try {
-      String dataFileName = "/data-wkf-models/input/";
-      File tempDir = Files.createTempDir();
-      File dataFile = new File(tempDir, "wkfModels.xml");
+    String dataFileName = "/data-wkf-models/input/";
+    File tempDir = java.nio.file.Files.createTempDirectory(null).toFile();
+    File dataFile = new File(tempDir, "wkfModels.xml");
 
-      XMLImporter importer = getXMLImpoter(configFile.getAbsolutePath(), tempDir.getAbsolutePath());
+    XMLImporter importer = getXMLImporter(configFile.getAbsolutePath(), tempDir.getAbsolutePath());
 
-      for (App app : appList) {
-        String fileName = dataFileName + app.getCode() + ".xml";
-        InputStream dataInputStream = this.getClass().getResourceAsStream(fileName);
-        if (dataInputStream == null) {
-          continue;
-        }
-
-        FileOutputStream fout = new FileOutputStream(dataFile);
-        IOUtil.copyCompletely(dataInputStream, fout);
-        importer.run();
+    for (App app : appList) {
+      String fileName = dataFileName + app.getCode() + ".xml";
+      InputStream dataInputStream = this.getClass().getResourceAsStream(fileName);
+      if (dataInputStream == null) {
+        continue;
       }
-    } catch (Exception e) {
-      ExceptionTool.trace(e);
+
+      try (FileOutputStream fout = new FileOutputStream(dataFile)) {
+        IOUtil.copyCompletely(dataInputStream, fout);
+      }
+
+      importer.run();
     }
   }
 
-  protected XMLImporter getXMLImpoter(String configFile, String dataFile) {
+  protected XMLImporter getXMLImporter(String configFile, String dataFile) {
 
     XMLImporter importer = new XMLImporter(configFile, dataFile);
     final StringBuilder log = new StringBuilder();
-    Listener listner =
+    Listener listener =
         new Listener() {
 
           @Override
-          public void imported(Integer imported, Integer total) {}
+          public void imported(Integer imported, Integer total) {
+            // do nothing
+          }
 
           @Override
           public void imported(Model arg0) {
@@ -208,17 +210,20 @@ public class WkfModelServiceImpl implements WkfModelService {
 
           @Override
           public void handle(Model arg0, Exception err) {
-            log.append("Error in import: " + err.getStackTrace().toString());
+            log.append("Error in import: ");
+            log.append(Arrays.toString(err.getStackTrace()));
           }
         };
-    importer.addListener(listner);
+    importer.addListener(listener);
 
     return importer;
   }
 
   @Override
+  @Transactional(rollbackOn = Exception.class)
   public String importWkfModels(
-      MetaFile metaFile, boolean isTranslate, String sourceLanguage, String targetLanguage) {
+      MetaFile metaFile, boolean translate, String sourceLanguage, String targetLanguage)
+      throws IOException, ParserConfigurationException, SAXException, TransformerException {
 
     if (metaFile == null) {
       return null;
@@ -228,61 +233,64 @@ public class WkfModelServiceImpl implements WkfModelService {
     if (extension == null || !extension.equals("xml")) {
       throw new IllegalStateException(I18n.get(ITranslation.INVALID_WKF_MODEL_XML));
     }
-    try {
-      InputStream inputStream = getClass().getResourceAsStream(IMPORT_CONFIG_PATH);
-      File configFile = File.createTempFile("config", ".xml");
-      FileOutputStream fout = new FileOutputStream(configFile);
-      IOUtil.copyCompletely(inputStream, fout);
 
-      File xmlFile = MetaFiles.getPath(metaFile).toFile();
-      File tempDir = Files.createTempDir();
-      File importFile = new File(tempDir, "wkfModels.xml");
-      Files.copy(xmlFile, importFile);
+    InputStream inputStream = getClass().getResourceAsStream(IMPORT_CONFIG_PATH);
+    File configFile = File.createTempFile("config", ".xml");
+    FileOutputStream fout = new FileOutputStream(configFile);
+    IOUtil.copyCompletely(inputStream, fout);
 
-      if (isTranslate) {
-        importFile = this.translateNodeName(importFile, sourceLanguage, targetLanguage);
-      }
+    File xmlFile = MetaFiles.getPath(metaFile).toFile();
+    File tempDir = java.nio.file.Files.createTempDirectory(null).toFile();
+    File importFile = new File(tempDir, "wkfModels.xml");
+    Files.copy(xmlFile, importFile);
 
-      XMLImporter importer =
-          new XMLImporter(configFile.getAbsolutePath(), tempDir.getAbsolutePath());
-      final StringBuilder log = new StringBuilder();
-      Listener listner =
-          new Listener() {
-
-            @Override
-            public void imported(Integer imported, Integer total) {}
-
-            @Override
-            public void imported(Model arg0) {}
-
-            @Override
-            public void handle(Model arg0, Exception err) {
-              log.append("Error in import: " + err.getStackTrace().toString());
-            }
-          };
-
-      importer.addListener(listner);
-
-      importer.run();
-
-      FileUtils.forceDelete(configFile);
-
-      FileUtils.forceDelete(tempDir);
-
-      FileUtils.forceDelete(xmlFile);
-
-      MetaFileRepository metaFileRepository = Beans.get(MetaFileRepository.class);
-      metaFileRepository.remove(metaFile);
-
-      return log.toString();
-
-    } catch (Exception e) {
-      return e.getMessage();
+    if (translate) {
+      this.translateNodeName(importFile, sourceLanguage, targetLanguage);
     }
+
+    XMLImporter importer = new XMLImporter(configFile.getAbsolutePath(), tempDir.getAbsolutePath());
+    final StringBuilder log = new StringBuilder();
+    Listener listener =
+        new Listener() {
+
+          @Override
+          public void imported(Integer imported, Integer total) {
+            // do nothing
+          }
+
+          @Override
+          public void imported(Model arg0) {
+            log.append("Import model: ");
+            log.append(((WkfModel) arg0).getCode());
+            log.append("\n");
+          }
+
+          @Override
+          public void handle(Model arg0, Exception err) {
+            log.append("Error in import: ");
+            log.append(Arrays.toString(err.getStackTrace()));
+            log.append("\n");
+          }
+        };
+
+    importer.addListener(listener);
+
+    importer.run();
+
+    FileUtils.forceDelete(configFile);
+
+    FileUtils.forceDelete(tempDir);
+
+    FileUtils.forceDelete(xmlFile);
+
+    MetaFileRepository metaFileRepository = Beans.get(MetaFileRepository.class);
+    metaFileRepository.remove(metaFile);
+
+    return log.toString();
   }
 
-  private File translateNodeName(File importFile, String sourceLanguage, String targetLanguage)
-      throws Exception {
+  protected File translateNodeName(File importFile, String sourceLanguage, String targetLanguage)
+      throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = dbf.newDocumentBuilder();
@@ -295,7 +303,8 @@ public class WkfModelServiceImpl implements WkfModelService {
     }
 
     String diagramXml = diagramNodeList.item(0).getTextContent();
-    String[] nodeNames = StringUtils.substringsBetween(diagramXml, "name=\"", "\"");
+    String[] nodeNames =
+        org.apache.commons.lang3.StringUtils.substringsBetween(diagramXml, "name=\"", "\"");
     for (String node : nodeNames) {
       String translationStr = translationService.getTranslationKey(node, sourceLanguage);
       translationStr = translationService.getTranslation(translationStr, targetLanguage);
@@ -316,163 +325,157 @@ public class WkfModelServiceImpl implements WkfModelService {
     return importFile;
   }
 
-  @SuppressWarnings({"serial", "unchecked"})
   @Override
   public List<Map<String, Object>> getProcessPerStatus(WkfModel wkfModel) {
     List<Map<String, Object>> dataList = new ArrayList<>();
-
     List<WkfProcess> processList = wkfDashboardCommonService.findProcesses(wkfModel, null);
 
     for (WkfProcess process : processList) {
-      Map<String, Object> processMap = new HashMap<>();
-      List<Map<String, Object>> configList = new ArrayList<>();
-
-      List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
-      wkfDashboardCommonService.sortProcessConfig(processConfigs);
-
-      List<String> _modelList = new ArrayList<>();
-      for (WkfProcessConfig processConfig : processConfigs) {
-
-        final boolean isMetaModel = processConfig.getMetaModel() != null;
-        final String modelName =
-            isMetaModel
-                ? processConfig.getMetaModel().getName()
-                : processConfig.getMetaJsonModel().getName();
-
-        if (_modelList.contains(modelName)) {
-          continue;
-        }
-        _modelList.add(modelName);
-
-        Map<String, Object> _map =
-            wkfDashboardCommonService.computeStatus(isMetaModel, modelName, process, null, null);
-
-        List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
-        List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statuses");
-        Map<String, Object> taskMap = (Map<String, Object>) _map.get("tasks");
-
-        configList.add(
-            new HashMap<String, Object>() {
-              {
-                put("type", "model");
-                put(
-                    "title",
-                    !StringUtils.isBlank(processConfig.getTitle())
-                        ? processConfig.getTitle()
-                        : modelName);
-                put("modelName", modelName);
-                put("modelRecordCount", recordIdsPerModel.size());
-                put("isMetaModel", isMetaModel);
-                put("recordIdsPerModel", recordIdsPerModel);
-                put("statuses", statusList);
-                put("tasks", taskMap);
-              }
-            });
-      }
-
-      processMap.put(
-          "title",
-          !StringUtils.isBlank(process.getDescription())
-              ? process.getDescription()
-              : process.getName());
-      processMap.put("itemList", configList);
-
-      dataList.add(processMap);
+      dataList.add(buildDataMapPerStatus(process));
     }
+
     return dataList;
   }
 
-  @SuppressWarnings({"serial", "unchecked"})
+  protected Map<String, Object> buildDataMapPerStatus(WkfProcess process) {
+    Map<String, Object> processMap = new HashMap<>();
+    List<Map<String, Object>> configList = new ArrayList<>();
+
+    List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
+    wkfDashboardCommonService.sortProcessConfig(processConfigs);
+
+    List<String> modelNames = new ArrayList<>();
+    for (WkfProcessConfig processConfig : processConfigs) {
+
+      final boolean isMetaModel = processConfig.getMetaModel() != null;
+      final String modelName =
+          isMetaModel
+              ? processConfig.getMetaModel().getName()
+              : processConfig.getMetaJsonModel().getName();
+
+      if (modelNames.contains(modelName)) {
+        continue;
+      }
+      modelNames.add(modelName);
+
+      Map<String, Object> _map =
+          wkfDashboardCommonService.computeStatus(isMetaModel, modelName, process, null, null);
+
+      List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
+      List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statuses");
+      Map<String, Object> taskMap = (Map<String, Object>) _map.get("tasks");
+
+      HashMap<String, Object> map = new HashMap<>();
+      map.put("type", "model");
+      map.put(
+          "title",
+          !StringUtils.isBlank(processConfig.getTitle()) ? processConfig.getTitle() : modelName);
+      map.put("modelName", modelName);
+      map.put("modelRecordCount", recordIdsPerModel.size());
+      map.put("isMetaModel", isMetaModel);
+      map.put("recordIdsPerModel", recordIdsPerModel);
+      map.put("statuses", statusList);
+      map.put("tasks", taskMap);
+      configList.add(map);
+    }
+
+    processMap.put(
+        "title",
+        !StringUtils.isBlank(process.getDescription())
+            ? process.getDescription()
+            : process.getName());
+    processMap.put("itemList", configList);
+
+    return processMap;
+  }
+
   @Override
   public List<Map<String, Object>> getProcessPerUser(WkfModel wkfModel) {
-    User user = AuthUtils.getUser();
     List<Map<String, Object>> dataList = new ArrayList<>();
+    List<WkfProcess> processes = wkfDashboardCommonService.findProcesses(wkfModel, null);
 
-    List<WkfProcess> processList = wkfDashboardCommonService.findProcesses(wkfModel, null);
-
-    for (WkfProcess process : processList) {
-      Map<String, Object> processMap = new HashMap<>();
-      List<Map<String, Object>> configList = new ArrayList<>();
-      WkfProcessConfig firstProcessConfig = null;
-
-      List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
-      wkfDashboardCommonService.sortProcessConfig(processConfigs);
-
-      int taskAssignedToMe = 0;
-      List<String> _modelList = new ArrayList<>();
-      for (WkfProcessConfig processConfig : processConfigs) {
-
-        boolean isDirectCreation = processConfig.getIsDirectCreation();
-        firstProcessConfig =
-            firstProcessConfig == null
-                ? processConfig.getIsStartModel() ? processConfig : null
-                : firstProcessConfig;
-
-        boolean isMetaModel = processConfig.getMetaModel() != null;
-        String modelName =
-            isMetaModel
-                ? processConfig.getMetaModel().getName()
-                : processConfig.getMetaJsonModel().getName();
-
-        if (_modelList.contains(modelName)) {
-          continue;
-        }
-        _modelList.add(modelName);
-
-        Map<String, Object> _map =
-            wkfDashboardCommonService.computeStatus(
-                isMetaModel, modelName, process, user, WkfDashboardCommonService.ASSIGNED_ME);
-        List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
-
-        List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statuses");
-
-        if (!statusList.isEmpty()) {
-          taskAssignedToMe +=
-              statusList.stream().map(s -> (int) s.get("statusCount")).reduce(0, Integer::sum);
-        }
-
-        Map<String, Object> taskMap = (Map<String, Object>) _map.get("tasks");
-
-        configList.add(
-            new HashMap<String, Object>() {
-              {
-                put("type", "model");
-                put(
-                    "title",
-                    !StringUtils.isBlank(processConfig.getTitle())
-                        ? processConfig.getTitle()
-                        : modelName);
-                put("modelName", modelName);
-                put("modelRecordCount", recordIdsPerModel.size());
-                put("isMetaModel", isMetaModel);
-                put("recordIdsPerModel", recordIdsPerModel);
-                put("statuses", statusList);
-                put("tasks", taskMap);
-              }
-            });
-        configList.add(
-            new HashMap<String, Object>() {
-              {
-                put("type", "button");
-                put("isDirectCreation", isDirectCreation);
-                put("modelName", modelName);
-                put("isMetaModel", isMetaModel);
-              }
-            });
-      }
-
-      processMap.put(
-          "title",
-          !StringUtils.isBlank(process.getDescription())
-              ? process.getDescription()
-              : process.getName());
-      processMap.put("taskAssignedToMe", taskAssignedToMe);
-      processMap.put("itemList", configList);
-      processMap.put("processConfig", firstProcessConfig);
-
-      dataList.add(processMap);
+    for (WkfProcess process : processes) {
+      dataList.add(buildDataMapPerUser(process));
     }
 
     return dataList;
+  }
+
+  protected Map<String, Object> buildDataMapPerUser(WkfProcess process) {
+    Map<String, Object> processMap = new HashMap<>();
+    List<Map<String, Object>> configList = new ArrayList<>();
+    WkfProcessConfig firstProcessConfig = null;
+
+    User user = AuthUtils.getUser();
+
+    List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
+    wkfDashboardCommonService.sortProcessConfig(processConfigs);
+
+    int taskAssignedToMe = 0;
+    List<String> modelNames = new ArrayList<>();
+    for (WkfProcessConfig processConfig : processConfigs) {
+
+      if (firstProcessConfig == null) {
+        firstProcessConfig = processConfig.getIsStartModel() ? processConfig : null;
+      }
+
+      boolean isDirectCreation = processConfig.getIsDirectCreation();
+
+      boolean isMetaModel = processConfig.getMetaModel() != null;
+      String modelName =
+          isMetaModel
+              ? processConfig.getMetaModel().getName()
+              : processConfig.getMetaJsonModel().getName();
+
+      if (modelNames.contains(modelName)) {
+        continue;
+      }
+      modelNames.add(modelName);
+
+      Map<String, Object> map =
+          wkfDashboardCommonService.computeStatus(
+              isMetaModel, modelName, process, user, WkfDashboardCommonService.ASSIGNED_ME);
+      List<Long> recordIdsPerModel = (List<Long>) map.get("recordIdsPerModel");
+
+      List<Map<String, Object>> statusList = (List<Map<String, Object>>) map.get("statuses");
+
+      if (!statusList.isEmpty()) {
+        taskAssignedToMe +=
+            statusList.stream().map(s -> (int) s.get("statusCount")).reduce(0, Integer::sum);
+      }
+
+      Map<String, Object> taskMap = (Map<String, Object>) map.get("tasks");
+
+      HashMap<String, Object> modelMap = new HashMap<>();
+      modelMap.put("type", "model");
+      modelMap.put(
+          "title",
+          !StringUtils.isBlank(processConfig.getTitle()) ? processConfig.getTitle() : modelName);
+      modelMap.put("modelName", modelName);
+      modelMap.put("modelRecordCount", recordIdsPerModel.size());
+      modelMap.put("isMetaModel", isMetaModel);
+      modelMap.put("recordIdsPerModel", recordIdsPerModel);
+      modelMap.put("statuses", statusList);
+      modelMap.put("tasks", taskMap);
+      configList.add(modelMap);
+
+      HashMap<String, Object> buttonMap = new HashMap<>();
+      buttonMap.put("type", "button");
+      buttonMap.put("isDirectCreation", isDirectCreation);
+      buttonMap.put("modelName", modelName);
+      buttonMap.put("isMetaModel", isMetaModel);
+      configList.add(buttonMap);
+    }
+
+    String title =
+        !StringUtils.isBlank(process.getDescription())
+            ? process.getDescription()
+            : process.getName();
+    processMap.put("title", title);
+    processMap.put("taskAssignedToMe", taskAssignedToMe);
+    processMap.put("itemList", configList);
+    processMap.put("processConfig", firstProcessConfig);
+
+    return processMap;
   }
 }

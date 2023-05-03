@@ -31,4 +31,6 @@ public final class BpmExceptionMessage {
 
   public static final String EMPTY_OUTPUT_COLUMN = /*$$(*/
       "Output columns can't be empty in import file" /*)*/;
+
+  public static final String NO_WKF_MODEL_IMPORTED = /*$$(*/ "No wkf model was imported." /*)*/;
 }

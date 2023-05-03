@@ -102,7 +102,7 @@ public interface ITranslation {
   public static final String EDITOR_MODEL_NAME_ALERT = /*$$(*/ "Model name should be unique"; /*)*/
 
   /** BPM */
-  public static final String INVALID_WKF_MODEL_XML = /*$$(*/ "Data file format is invalid"; /*)*/
+  public static final String INVALID_WKF_MODEL_XML = /*$$(*/ "The data file is not an XML."; /*)*/
 
   public static final String INVALID_BAML_XML = /*$$(*/
       "Invalid BAML xml. Please contact admin for further info"; /*)*/
