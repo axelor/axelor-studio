@@ -8,7 +8,7 @@
     <extend target="//field[@name='module']">
       <insert position="after">
         <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-          if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+          if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       </insert>
     </extend>
   </form>

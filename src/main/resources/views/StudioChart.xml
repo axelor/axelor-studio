@@ -10,16 +10,16 @@
     <field name="model"/>
     <field name="chartType"/>
     <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-      if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
   </grid>
 
   <form name="studio-chart-form" title="Chart" model="com.axelor.studio.db.StudioChart"
     width="large" onLoad="action-studio-chart-on-load">
     <panel name="mainPanel">
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+        if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       <spacer name="studioAppSpacer"
-        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+        if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       <field name="name"
         onChange="action-studio-meta-json-model-name-onchange-record,action-studio-menu-attrs-check-generate-name"/>
       <field name="title"/>
