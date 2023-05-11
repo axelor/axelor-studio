@@ -29,7 +29,7 @@
       <insert position="before">
         <panel name="actionStudioAppPanel">
           <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-            if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+            if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
           <field name="isCustom" hidden="true"/>
         </panel>
       </insert>

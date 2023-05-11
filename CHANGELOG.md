@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+* Anomaly #64221: Inaccessible application in case of missing properties
+
 ## 1.0.1
 
 * Anomaly #62216: Null Java Pointer : when save a Connector without a request

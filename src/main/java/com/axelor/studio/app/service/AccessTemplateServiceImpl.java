@@ -173,11 +173,11 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     String condition = menu.getConditionToCheck();
 
     if (condition != null) {
-      String[] cond = condition.split("__config__\\.app\\.isApp\\('");
+      String[] cond = condition.split("__config__\\.app\\?.isApp\\('");
       if (cond.length > 1) {
         App app = Beans.get(AppRepository.class).findByCode(cond[1].split("'")[0]);
         if (app != null) {
-          if (condition.trim().equals("__config__.app.isApp('" + app.getCode() + "')")
+          if (condition.trim().equals("__config__.app?.isApp('" + app.getCode() + "')")
               && menu.getAction() == null) {
             appMenus.add(menu.getName());
           }

@@ -7,9 +7,9 @@
     model="com.axelor.meta.db.MetaJsonField">
     <panel name="overviewPanel" title="Overview">
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+        if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       <spacer name="studioAppSpacer"
-        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+        if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       <field name="name"
         onChange="action-studio-meta-json-model-name-onchange-record,action-studio-meta-json-field-record-name"/>
       <field name="title"/>
@@ -35,9 +35,9 @@
     <extend target="//field[@name='modelField']">
       <insert position="after">
         <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-          if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+          if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
         <spacer name="studioAppSpacer"
-          if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+          if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       </insert>
     </extend>
     <extend target="panel-include[last()]">
@@ -112,7 +112,7 @@
     <field name="title"/>
     <field name="type"/>
     <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-      if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
   </grid>
 
   <grid id="studio-json-field-grid" name="json-field-grid" title="Fields"
@@ -130,7 +130,7 @@
     </extend>
     <extend target="//field[@name='modelField']">
       <insert position="after">
-        <field name="studioApp" if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+        <field name="studioApp" if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       </insert>
     </extend>
   </grid>
