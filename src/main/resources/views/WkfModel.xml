@@ -101,7 +101,7 @@
     model="com.axelor.studio.db.WkfModel">
     <panel name="mainPanel">
       <field name="dataFile" type="many-to-one" target="com.axelor.meta.db.MetaFile"
-        widget="binary-link" title="Data file"/>
+        widget="binary-link" title="XML data file"/>
       <field name="translate" title="Translate" type="boolean"
         onChange="action-wkf-model-record-set-source-language"/>
       <field name="sourceLanguageSelect" type="string" selection="select.language"
