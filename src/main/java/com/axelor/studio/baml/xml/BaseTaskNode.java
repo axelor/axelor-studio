@@ -19,7 +19,7 @@ package com.axelor.studio.baml.xml;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 @XmlType
 public abstract class BaseTaskNode extends BaseNode {

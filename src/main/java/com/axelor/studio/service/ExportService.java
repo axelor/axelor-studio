@@ -30,7 +30,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class ExportService {
 
@@ -126,8 +126,8 @@ public class ExportService {
               + indentPlus
               + "<conditionText>"
               + (line.getConditionText() != null
-                  ? StringEscapeUtils.escapeXml(
-                      StringEscapeUtils.escapeXml(line.getConditionText()))
+                  ? StringEscapeUtils.escapeXml11(
+                      StringEscapeUtils.escapeXml11(line.getConditionText()))
                   : "")
               + "</conditionText>"
               + indentPlus

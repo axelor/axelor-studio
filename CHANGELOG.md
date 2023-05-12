@@ -11,6 +11,7 @@
 * Anomaly #64043: BPM: FIx query builder operator on 'Value from' change
 * Anomaly #63945: BPM: Fix empty operator selection on expression builder
 * Feature #63924: Change title for BPM Model import
+* Anomaly #53832: Replace deprecated classes from org.apache.commons.lang3 by org.apache.commons.text
 
 ## 1.0.1
 
