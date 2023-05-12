@@ -47,9 +47,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class WkfDashboardController {
 
-  private static final String CHART_MONTH_STATUS = "chart.wkf.model.status.per.month";
-  private static final String CHART_DAY_STATUS = "chart.wkf.model.status.per.day";
-  private static final String CHART_TIMESPENT_STATUS = "chart.wkf.model.time.spent.per.status";
+  protected static final String CHART_MONTH_STATUS = "chart.wkf.model.status.per.month";
+  protected static final String CHART_DAY_STATUS = "chart.wkf.model.status.per.day";
+  protected static final String CHART_TIMESPENT_STATUS = "chart.wkf.model.time.spent.per.status";
 
   public void showDashboard(ActionRequest request, ActionResponse response) {
     try {
@@ -173,7 +173,7 @@ public class WkfDashboardController {
     }
   }
 
-  private List<Long> getRecordIds(Context context, String tableName, String jsonModel) {
+  protected List<Long> getRecordIds(Context context, String tableName, String jsonModel) {
     String month = (String) context.get("month");
     String day = (String) context.get("day");
     LocalDate fromDate = LocalDate.parse(context.get("fromDate").toString());
@@ -181,7 +181,7 @@ public class WkfDashboardController {
     String _chart = context.get("_chart").toString();
     String status = context.get("status").toString();
 
-    List<Long> idList = new ArrayList<Long>();
+    List<Long> idList = new ArrayList<>();
     if (tableName != null) {
       switch (_chart) {
         case CHART_MONTH_STATUS:

@@ -30,13 +30,10 @@ import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.service.ws.WsConnectorService;
 import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.StringTool;
-import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
 public class WsConnectorController {
-
-  @Inject protected WsConnectorService wsConnectorService;
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void callConnector(ActionRequest request, ActionResponse response) {
@@ -63,7 +60,8 @@ public class WsConnectorController {
       Model model = JPA.find(recordClass, Long.parseLong(recordId.toString()));
       ctx.put(StringTool.toFirstLower(model.getClass().getSimpleName()), model);
       ctx.put("_beans", Beans.class);
-      Map<String, Object> res = wsConnectorService.callConnector(wsConnector, authenticator, ctx);
+      Map<String, Object> res =
+          Beans.get(WsConnectorService.class).callConnector(wsConnector, authenticator, ctx);
       StringBuilder result = new StringBuilder();
       for (String key : res.keySet()) {
         if (!key.startsWith("_") || key.equals("_beans")) continue;

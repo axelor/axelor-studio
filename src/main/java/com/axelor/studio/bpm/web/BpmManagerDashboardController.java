@@ -38,10 +38,14 @@ import org.apache.commons.lang3.StringUtils;
 public class BpmManagerDashboardController {
 
   public void showBpmManagerProcess(ActionRequest request, ActionResponse response) {
-    this.showProcess(0, response);
+    try {
+      this.showProcess(0, response);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
-  private void showProcess(int offset, ActionResponse response) {
+  protected void showProcess(int offset, ActionResponse response) {
     try {
       response.setValues(Beans.get(BpmManagerDashboardService.class).showProcess(offset));
     } catch (Exception e) {
@@ -50,14 +54,22 @@ public class BpmManagerDashboardController {
   }
 
   public void showPreviousProcess(ActionRequest request, ActionResponse response) {
-    this.showProcess(this.getOffset(request, false), response);
+    try {
+      this.showProcess(this.getOffset(request, false), response);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
   public void showNextProcess(ActionRequest request, ActionResponse response) {
-    this.showProcess(this.getOffset(request, true), response);
+    try {
+      this.showProcess(this.getOffset(request, true), response);
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
   }
 
-  private int getOffset(ActionRequest request, boolean isNext) {
+  protected int getOffset(ActionRequest request, boolean isNext) {
     if (isNext) {
       return (int) request.getContext().get("offset") + BpmManagerDashboardServiceImpl.FETCH_LIMIT;
     } else {
@@ -77,7 +89,7 @@ public class BpmManagerDashboardController {
     this.getChartData(request, response, WkfDashboardCommonService.TASK_BY_PROCESS);
   }
 
-  private void getChartData(ActionRequest request, ActionResponse response, String type) {
+  protected void getChartData(ActionRequest request, ActionResponse response, String type) {
     try {
       Context context = request.getContext();
       WkfModel wkfModel = this.getWkfModel(context);
@@ -98,7 +110,7 @@ public class BpmManagerDashboardController {
   }
 
   @SuppressWarnings("rawtypes")
-  private WkfModel getWkfModel(Map<String, Object> context) {
+  protected WkfModel getWkfModel(Map<String, Object> context) {
     Long wkfModelId = Long.valueOf(((Map) context.get("wkfModel")).get("id").toString());
     return Beans.get(WkfModelRepository.class).find(wkfModelId);
   }
@@ -170,7 +182,7 @@ public class BpmManagerDashboardController {
   }
 
   @SuppressWarnings({"unchecked"})
-  private void showAssignedRecords(ActionRequest request, ActionResponse response, String type) {
+  protected void showAssignedRecords(ActionRequest request, ActionResponse response, String type) {
     try {
       Map<String, Object> context = request.getRawContext();
       WkfModel wkfModel = this.getWkfModel(context);

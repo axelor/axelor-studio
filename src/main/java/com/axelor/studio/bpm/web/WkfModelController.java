@@ -52,8 +52,8 @@ import java.util.Optional;
 
 public class WkfModelController {
 
-  private static final String PROCESS_PER_STATUS = "processPerStatus";
-  private static final String PROCESS_PER_USER = "processPerUser";
+  protected static final String PROCESS_PER_STATUS = "processPerStatus";
+  protected static final String PROCESS_PER_USER = "processPerUser";
 
   @SuppressWarnings("unchecked")
   public void deploy(ActionRequest request, ActionResponse response) {
@@ -278,7 +278,7 @@ public class WkfModelController {
     }
   }
 
-  private List<Map<String, Object>> getDataList(ActionRequest request, String type) {
+  protected List<Map<String, Object>> getDataList(ActionRequest request, String type) {
     Object id = request.getData().get("id");
     if (id == null) {
       return Collections.emptyList();
@@ -297,7 +297,7 @@ public class WkfModelController {
     }
   }
 
-  private void openRecordView(
+  protected void openRecordView(
       ActionRequest request,
       ActionResponse response,
       String statusKey,
@@ -318,7 +318,8 @@ public class WkfModelController {
     response.setView(actionViewBuilder.context("ids", recordIds.isEmpty() ? 0 : recordIds).map());
   }
 
-  private Map<String, Object> getDataCtx(ActionRequest request) {
+  @SuppressWarnings("unchecked")
+  protected Map<String, Object> getDataCtx(ActionRequest request) {
     return (Map<String, Object>) request.getData().get("context");
   }
 
@@ -371,7 +372,7 @@ public class WkfModelController {
     }
   }
 
-  private ActionViewBuilder viewNewRecord(String modelName, boolean isMetaModel) {
+  protected ActionViewBuilder viewNewRecord(String modelName, boolean isMetaModel) {
     ActionViewBuilder actionViewBuilder = null;
     if (isMetaModel) {
       MetaModel metaModel = Beans.get(MetaModelRepository.class).findByName(modelName);

@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.web;
 
+import com.axelor.inject.Beans;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.AppLoader;
@@ -24,21 +25,14 @@ import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportService;
 import com.axelor.utils.ExceptionTool;
-import com.google.inject.Inject;
 
 public class AppLoaderController {
-
-  @Inject protected AppLoaderImportService appLoaderImportService;
-
-  @Inject protected AppLoaderExportService appLoaderExportService;
-
-  @Inject protected AppLoaderRepository appLoaderRepository;
 
   public void exportApps(ActionRequest request, ActionResponse response) {
     try {
       AppLoader appLoader = request.getContext().asType(AppLoader.class);
-      appLoader = appLoaderRepository.find(appLoader.getId());
-      appLoaderExportService.exportApps(appLoader);
+      appLoader = Beans.get(AppLoaderRepository.class).find(appLoader.getId());
+      Beans.get(AppLoaderExportService.class).exportApps(appLoader);
       response.setReload(true);
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
@@ -48,8 +42,8 @@ public class AppLoaderController {
   public void importApps(ActionRequest request, ActionResponse response) {
     try {
       AppLoader appLoader = request.getContext().asType(AppLoader.class);
-      appLoader = appLoaderRepository.find(appLoader.getId());
-      appLoaderImportService.importApps(appLoader);
+      appLoader = Beans.get(AppLoaderRepository.class).find(appLoader.getId());
+      Beans.get(AppLoaderImportService.class).importApps(appLoader);
       response.setReload(true);
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
