@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+* Anomaly #63264: Unable to use hideIf, showIf and requiredIf as view attributes
+
 ## 1.0.1
 
 * Anomaly #62216: Null Java Pointer : when save a Connector without a request
