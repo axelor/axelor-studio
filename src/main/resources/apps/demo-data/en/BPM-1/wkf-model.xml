@@ -10,10 +10,12 @@
     <isActive>true</isActive>
 
     <diagramXml><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" camunda:code="BPM-1" camunda:diagramName="Purchase req" camunda:studioApp="BPM-1" camunda:wkfStatusColor="blue">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" camunda:code="BPM-1" camunda:diagramName="Purchase req" camunda:studioApp="BPM-1" camunda:wkfStatusColor="blue" camunda:isSurvey="false">
   <bpmn2:collaboration id="Collaboration_0et4xgd">
     <bpmn2:participant id="Participant_14obht3" processRef="Purchase_Req" />
-    <bpmn2:participant id="Participant_184qfnl" name="" processRef="Process_0ocwbmd" />
+    <bpmn2:participant id="Participant_184qfnl" name="" processRef="Process_0ocwbmd">
+      <bpmn2:extensionElements />
+    </bpmn2:participant>
     <bpmn2:messageFlow id="Flow_1pfxvuw" sourceRef="Event_0q8lx82" targetRef="Event_1grj2i3" />
     <bpmn2:messageFlow id="Flow_0uxjz7f" sourceRef="Event_14pdiz8" targetRef="Event_0hlg3gv" />
   </bpmn2:collaboration>
@@ -130,7 +132,7 @@ purchaseReq.file = $ctx.filterOne('File','self.name = ?1',dmnRes?.file)?.getTarg
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="view" value="custom-model-PurchaseReq-form" />
           <camunda:property name="itemType" value="button" />
@@ -159,7 +161,7 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="view" value="custom-model-PurchaseReq-form" />
           <camunda:property name="itemType" value="button" />
@@ -181,7 +183,7 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="itemType" value="string" />
           <camunda:property name="itemLabel" value="Eligible ?" />
@@ -202,7 +204,7 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="view" value="custom-model-PurchaseReq-form" />
           <camunda:property name="itemType" value="button" />
@@ -227,7 +229,7 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="itemType" value="panel" />
           <camunda:property name="itemLabel" value="3- Rens. budgétaire" />
@@ -259,7 +261,7 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="itemType" value="panel" />
           <camunda:property name="itemLabel" value="2- Produit" />
@@ -274,6 +276,9 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
           <camunda:property name="item" value="panelTab2" />
           <camunda:property name="readonly" value="false" />
         </camunda:properties>
+        <camunda:menus>
+          <camunda:menu menuName="Demandes prod à comp" menuParent="studio-men-purchase-req-root" permanent="false" tagCount="true" isUserMenu="false" menuId="activity_0lxazth-3lkf4uk" />
+        </camunda:menus>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0vv86i2</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1dh2xgv</bpmn2:outgoing>
@@ -283,10 +288,10 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="view" value="custom-model-PurchaseReq-form" />
-          <camunda:property name="viewLabel" value="Demande d'achat" />
+          <camunda:property name="viewLabel" value="Demande d&#39;achat" />
           <camunda:property name="itemType" value="panel" />
           <camunda:property name="itemLabel" value="1- Rens. administratifs" />
           <camunda:property name="item" value="panelTab1" />
@@ -319,7 +324,7 @@ purchaseReq.budget = budget.getTarget()</camunda:script>
         <camunda:properties>
           <camunda:property name="model" value="com.axelor.meta.db.MetaJsonRecord" />
           <camunda:property name="modelName" value="PurchaseReq" />
-          <camunda:property name="modelLabel" value="Demande d'achat" />
+          <camunda:property name="modelLabel" value="Demande d&#39;achat" />
           <camunda:property name="modelType" value="metaJsonModel" />
           <camunda:property name="view" value="custom-model-PurchaseReq-form" />
           <camunda:property name="itemType" value="button" />
@@ -650,8 +655,8 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1torlrz_di" bpmnElement="Event_1torlrz" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="4842" y="-368" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="4843" y="-398" width="41" height="14" />
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
+          <dc:Bounds x="4843" y="-398" width="42" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1rjnzt0_di" bpmnElement="Activity_0aszw4a" bioc:stroke="#e76092" bioc:fill="#f8cfde" color:background-color="#f8cfde" color:border-color="#e76092">
@@ -668,7 +673,7 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_018rzk3_di" bpmnElement="Gateway_018rzk3" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
         <dc:Bounds x="3795" y="-600" width="50" height="50" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#fdecb3">
           <dc:Bounds x="3821" y="-540" width="35" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -677,7 +682,7 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_18d8nvs_di" bpmnElement="Gateway_18d8nvs" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
         <dc:Bounds x="3475" y="-105" width="50" height="50" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#fdecb3">
           <dc:Bounds x="3478" y="-48" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -686,7 +691,7 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_16vrljk_di" bpmnElement="Event_16vrljk" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="3462" y="-748" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="3451" y="-705" width="63" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -704,8 +709,8 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
         <dc:Bounds x="2607" y="-98" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2606" y="-55" width="46" height="27" />
+        <bpmndi:BPMNLabel color:color="#ccecc6">
+          <dc:Bounds x="2606" y="-55" width="47" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_13lm9l1_di" bpmnElement="Activity_02pn3of" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
@@ -713,14 +718,14 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1tsfddu_di" bpmnElement="Event_0q8lx82" bioc:stroke="#ff9800" bioc:fill="#ffe0b3" color:background-color="#ffe0b3" color:border-color="#ff9800">
         <dc:Bounds x="5532" y="-98" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffe0b3">
           <dc:Bounds x="5509" y="-128" width="83" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1ngp3ti_di" bpmnElement="Event_0hlg3gv" bioc:stroke="#ff9800" bioc:fill="#ffe0b3" color:background-color="#ffe0b3" color:border-color="#ff9800">
         <dc:Bounds x="5642" y="-98" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="5618" y="-128" width="86" height="27" />
+        <bpmndi:BPMNLabel color:color="#ffe0b3">
+          <dc:Bounds x="5618" y="-128" width="87" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0s46xwa_di" bpmnElement="Activity_1u2ow7w" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
@@ -728,8 +733,8 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1x4mdwo_di" bpmnElement="Event_1x4mdwo" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="5932" y="-98" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="5932" y="-55" width="60" height="27" />
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
+          <dc:Bounds x="5932" y="-55" width="61" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Participant_184qfnl_di" bpmnElement="Participant_184qfnl" isHorizontal="true" bioc:stroke="#c8c8c8" color:border-color="#c8c8c8">
@@ -751,7 +756,7 @@ return $ctx.save(rec)</bpmn2:script>
         <di:waypoint x="3595" y="880" />
         <di:waypoint x="3695" y="880" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3627" y="862" width="43" height="14" />
+          <dc:Bounds x="3628" y="862" width="42" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0w40pqv_di" bpmnElement="Flow_0w40pqv" bioc:stroke="#8095b3" color:border-color="#8095b3">
@@ -785,7 +790,7 @@ return $ctx.save(rec)</bpmn2:script>
         <di:waypoint x="3570" y="690" />
         <di:waypoint x="3920" y="690" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3645" y="673" width="34" height="14" />
+          <dc:Bounds x="3645" y="673" width="35" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1d0qf3l_di" bpmnElement="Flow_1d0qf3l" bioc:stroke="#8095b3" color:border-color="#8095b3">
@@ -832,8 +837,8 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0tktz9u_di" bpmnElement="Event_14pdiz8" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="4762" y="862" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="4761" y="905" width="60" height="14" />
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
+          <dc:Bounds x="4761" y="905" width="61" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0jzha52_di" bpmnElement="Activity_0jzha52" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
