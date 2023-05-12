@@ -159,7 +159,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
             }
 
             metaAttrs.setValue(value);
-            metaAttrs.setName(name);
+            metaAttrs.setName(checkMetaAttrsName(name));
             metaAttrs.setWkfModelId(wkfModelId);
             metaAttrsList.add(metaAttrs);
           }
@@ -243,5 +243,18 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
             .remove();
 
     log.debug("Total meta attrs removed: {}", attrsRemoved);
+  }
+
+  protected String checkMetaAttrsName(String name) {
+    switch (name) {
+      case "readonlyIf":
+        return "readonly";
+      case "requiredIf":
+        return "required";
+      case "hideIf":
+        return "hidden";
+      default:
+        return name;
+    }
   }
 }
