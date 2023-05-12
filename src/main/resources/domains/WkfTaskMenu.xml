@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_6.0.xsd">
+
+  <module name="studio" package="com.axelor.studio.db"/>
+
+  <entity name="WkfTaskMenu" cacheable="true">
+
+    <string name="menuId" title="Menu id"/>
+    <boolean name="userNewMenu" title="New user menu"/>
+    <string name="menuName" title="Menu name"/>
+    <string name="parentMenuName" title="Menu parent"/>
+    <string name="menuPosition" title="Position"/>
+    <string name="positionMenuName" title="Position menu"/>
+    <string name="formView" title="Form view"/>
+    <string name="gridView" title="Grid view"/>
+    <boolean name="displayTagCount" title="Display tag count"/>
+    <boolean name="permanentMenu" title="Permanent menu"/>
+    <string name="domain" title="Domain"/>
+    <many-to-many name="roleSet" title="Roles" ref="com.axelor.auth.db.Role"/>
+    <one-to-many name="wkfTaskMenuContextList" title="Menu contexts"
+      ref="com.axelor.studio.db.WkfTaskMenuContext" mappedBy="wkfTaskMenu"/>
+    <many-to-one name="wkfTaskConfig" title="Wkf task config"
+      ref="com.axelor.studio.db.WkfTaskConfig"/>
+
+  </entity>
+
+</domain-models>

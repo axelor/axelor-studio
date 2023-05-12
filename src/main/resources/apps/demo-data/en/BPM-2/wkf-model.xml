@@ -12,7 +12,9 @@
     <diagramXml><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" camunda:code="BPM-2" camunda:diagramName="PizzaDelivery" camunda:studioApp="BPM-2" camunda:wkfStatusColor="green" camunda:isSurvey="false">
   <bpmn2:collaboration id="Collaboration_0pb74ca">
-    <bpmn2:participant id="Pizza_Customer" name="Pizza Customer" processRef="Pizza_Main" />
+    <bpmn2:participant id="Pizza_Customer" name="Pizza Customer" processRef="Pizza_Main">
+      <bpmn2:extensionElements />
+    </bpmn2:participant>
     <bpmn2:participant id="Pizza_Vendor" name="Pizza Vendor" processRef="Process_0aaosdm" />
     <bpmn2:messageFlow id="Flow_1tnl68f" sourceRef="Activity_0sv9q8n" targetRef="Activity_0fv5yrm" />
     <bpmn2:messageFlow id="Flow_1mgsuus" name="money" sourceRef="Activity_1qt7nra" targetRef="Activity_1baxn9u" />
@@ -164,8 +166,12 @@ return $ctx.save(rec)</bpmn2:script>
           <camunda:property name="hidden" value="false" />
         </camunda:properties>
         <camunda:executionListener event="end">
-          <camunda:script scriptFormat="axelor" scriptValue="{&#34;fields&#34;:[{&#34;name&#34;:&#34;statusSelect&#34;,&#34;type&#34;:&#34;integer&#34;,&#34;condition&#34;:null,&#34;conditionMeta&#34;:null,&#34;value&#34;:{&#34;from&#34;:&#34;none&#34;,&#34;selected&#34;:{&#34;value&#34;:&#34;3&#34;},&#34;query&#34;:null,&#34;subFields&#34;:[]}}],&#34;targetModel&#34;:&#34;HungryPizza&#34;,&#34;sourceModel&#34;:&#34;&#34;,&#34;sourceModelList&#34;:[],&#34;newRecord&#34;:false,&#34;savedRecord&#34;:false,&#34;save&#34;:false,&#34;isJson&#34;:true,&#34;createVariable&#34;:false,&#34;processId&#34;:null,&#34;modelFrom&#34;:{&#34;title&#34;:&#34;Context&#34;,&#34;id&#34;:&#34;context&#34;}}">hungryPizza.statusSelect = 3</camunda:script>
+          <camunda:script scriptFormat="axelor" scriptValue="{&#34;fields&#34;:[{&#34;name&#34;:&#34;statusSelect&#34;,&#34;type&#34;:&#34;integer&#34;,&#34;condition&#34;:null,&#34;conditionMeta&#34;:null,&#34;value&#34;:{&#34;from&#34;:&#34;none&#34;,&#34;selected&#34;:{&#34;value&#34;:&#34;3&#34;},&#34;query&#34;:null,&#34;subFields&#34;:[]}}],&#34;targetModel&#34;:&#34;HungryPizza&#34;,&#34;sourceModel&#34;:&#34;&#34;,&#34;sourceModelList&#34;:[],&#34;newRecord&#34;:false,&#34;savedRecord&#34;:false,&#34;save&#34;:false,&#34;isJson&#34;:true,&#34;createVariable&#34;:false,&#34;processId&#34;:null,&#34;modelFrom&#34;:{&#34;title&#34;:&#34;Context&#34;,&#34;id&#34;:&#34;context&#34;}}">hungryPizza.statusSelect = 3
+</camunda:script>
         </camunda:executionListener>
+        <camunda:menus>
+          <camunda:menu menuName="Pizza selected" menuParent="studio-pizza-root" position="After" positionMenu="studio-pizza-calm-customer" permanent="false" tagCount="true" isUserMenu="false" menuId="activity_08hvpsb-3qaokf7" />
+        </camunda:menus>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_10k7lbx</bpmn2:incoming>
       <bpmn2:outgoing>Flow_0gqk03c</bpmn2:outgoing>

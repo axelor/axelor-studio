@@ -111,4 +111,6 @@ public interface ITranslation {
 
   public static final String INFINITE_EXECUTION = /*$$(*/
       "Infinite loop execution suspsected"; /*)*/
+
+  public static final String MENU_NOT_FOUND = /*$$(*/ "Menu not found" /*)*/;
 }

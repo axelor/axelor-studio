@@ -252,6 +252,9 @@ public class WkfCommonServiceImpl implements WkfCommonService {
         value = null;
       }
       Property field = mapper.getProperty(property);
+      if (field == null) {
+        continue;
+      }
       if (field.isReference()) {
         try {
           value =

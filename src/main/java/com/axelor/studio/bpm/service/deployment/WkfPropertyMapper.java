@@ -32,33 +32,15 @@ public class WkfPropertyMapper {
     FIELD_MAP.put("deadlineFieldPath", "deadlineFieldPath");
     FIELD_MAP.put("notificationEmail", "emailNotification");
     FIELD_MAP.put("emailEvent", "emailEvent");
-    FIELD_MAP.put("newMenu", "newMenu");
-    FIELD_MAP.put("menuName", "menuName");
-    FIELD_MAP.put("parentMenuName", "menuParent");
-    FIELD_MAP.put("menuPosition", "position");
-    FIELD_MAP.put("positionMenuName", "positionMenu");
-    FIELD_MAP.put("userNewMenu", "newUserMenu");
-    FIELD_MAP.put("userMenuName", "userMenuName");
-    FIELD_MAP.put("userParentMenuName", "userParentMenu");
-    FIELD_MAP.put("userMenuPosition", "userMenuPosition");
-    FIELD_MAP.put("userPositionMenuName", "userPositionMenu");
     FIELD_MAP.put("modelName", "metaModel");
     FIELD_MAP.put("jsonModelName", "metaJsonModel");
     FIELD_MAP.put("displayStatus", "displayStatus");
     FIELD_MAP.put("displayOnModels", "displayOnModels");
     FIELD_MAP.put("expression", "completedIf");
     FIELD_MAP.put("button", "buttons");
-    FIELD_MAP.put("formView", "formView");
-    FIELD_MAP.put("gridView", "gridView");
-    FIELD_MAP.put("displayTagCount", "tagCount");
-    FIELD_MAP.put("userFormView", "userFormView");
-    FIELD_MAP.put("userGridView", "userGridView");
-    FIELD_MAP.put("userDisplayTagCount", "userTagCount");
     FIELD_MAP.put("defaultForm", "defaultForm");
     FIELD_MAP.put("templateName", "template");
     FIELD_MAP.put("helpText", "help");
-    FIELD_MAP.put("permanentMenu", "permanent");
-    FIELD_MAP.put("userPermanentMenu", "userPermanent");
     FIELD_MAP.put("callModel", "model");
     FIELD_MAP.put("callLink", "parentPath");
     FIELD_MAP.put("callLinkCondition", "condition");
@@ -85,5 +67,20 @@ public class WkfPropertyMapper {
     PROCESS_CONFIG_PROPERTIES.put("model", "model");
     PROCESS_CONFIG_PROPERTIES.put("isStartModel", "isStartModel");
     PROCESS_CONFIG_PROPERTIES.put("isDirectCreation", "isDirectCreation");
+  }
+
+  protected static final Map<String, String> MENU_PROPERTIES = new HashMap<String, String>();
+
+  static {
+    MENU_PROPERTIES.put("menuName", "menuName");
+    MENU_PROPERTIES.put("parentMenuName", "menuParent");
+    MENU_PROPERTIES.put("menuPosition", "position");
+    MENU_PROPERTIES.put("positionMenuName", "positionMenu");
+    MENU_PROPERTIES.put("userNewMenu", "isUserMenu");
+    MENU_PROPERTIES.put("formView", "formView");
+    MENU_PROPERTIES.put("gridView", "gridView");
+    MENU_PROPERTIES.put("displayTagCount", "tagCount");
+    MENU_PROPERTIES.put("permanentMenu", "permanent");
+    MENU_PROPERTIES.put("domain", "domain");
   }
 }
