@@ -32,14 +32,13 @@ import com.axelor.studio.db.repo.StudioAppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.builder.StudioAppService;
 import com.axelor.utils.ExceptionTool;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class StudioAppController {
 
-  public void installApp(ActionRequest request, ActionResponse response) throws IOException {
+  public void installApp(ActionRequest request, ActionResponse response) {
     try {
       StudioApp studioApp = request.getContext().asType(StudioApp.class);
       studioApp = Beans.get(StudioAppRepository.class).find(studioApp.getId());
@@ -67,7 +66,7 @@ public class StudioAppController {
     }
   }
 
-  public void importApp(ActionRequest request, ActionResponse response) throws IOException {
+  public void importApp(ActionRequest request, ActionResponse response) {
     try {
       Context context = request.getContext();
       if (!context.containsKey("dataFile")) {
@@ -101,7 +100,7 @@ public class StudioAppController {
   }
 
   @SuppressWarnings("unchecked")
-  public void exportApp(ActionRequest request, ActionResponse response) throws IOException {
+  public void exportApp(ActionRequest request, ActionResponse response) {
     try {
       Context context = request.getContext();
       MetaFile exportFile = null;
@@ -150,7 +149,7 @@ public class StudioAppController {
     }
   }
 
-  public void deleteApp(ActionRequest request, ActionResponse response) throws IOException {
+  public void deleteApp(ActionRequest request, ActionResponse response) {
     try {
       StudioApp studioApp = request.getContext().asType(StudioApp.class);
       studioApp = Beans.get(StudioAppRepository.class).find(studioApp.getId());

@@ -30,8 +30,8 @@ import java.util.Map;
 
 public class StudioSelectionController {
 
-  private static final String SELECTION_TEXT = "selectionText";
-  private static final String SELECTION_OPTION_LIST = "$selectOptionList";
+  protected static final String SELECTION_TEXT = "selectionText";
+  protected static final String SELECTION_OPTION_LIST = "$selectOptionList";
 
   public void fillSelectionText(ActionRequest request, ActionResponse response) {
     try {

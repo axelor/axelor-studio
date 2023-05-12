@@ -58,7 +58,9 @@ public class WsTokenHandler {
         Beans.get(WsAuthenticatorRepository.class);
 
     WsAuthenticator authenticator = wsAuthenticatorRepository.find(Long.parseLong(state));
+
     try {
+
       String jsonResponse = new ObjectMapper().writeValueAsString(paramMap);
       authenticator.setAuthResponse(jsonResponse);
       authenticator = wsAuthenticatorRepository.save(authenticator);

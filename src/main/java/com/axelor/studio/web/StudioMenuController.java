@@ -60,7 +60,7 @@ public class StudioMenuController {
     }
   }
 
-  private Map<String, Object> getMenu(MetaMenu menu) {
+  protected Map<String, Object> getMenu(MetaMenu menu) {
 
     Map<String, Object> values = new HashMap<>();
     values.put("name", menu.getName());
@@ -96,7 +96,7 @@ public class StudioMenuController {
     return values;
   }
 
-  private Map<String, Object> getEmptyMenu() {
+  protected Map<String, Object> getEmptyMenu() {
 
     Map<String, Object> values = new HashMap<>();
     values.put("name", null);

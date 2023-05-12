@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class StudioActionController {
 
-  private Inflector inflector;
+  protected Inflector inflector;
 
   public void setViews(ActionRequest request, ActionResponse response) {
     try {
@@ -63,7 +63,7 @@ public class StudioActionController {
     }
   }
 
-  private void addStudioActionView(
+  protected void addStudioActionView(
       List<StudioActionView> views, String model, String type, boolean isJson, int sequence) {
 
     String viewName = model + "-" + type;

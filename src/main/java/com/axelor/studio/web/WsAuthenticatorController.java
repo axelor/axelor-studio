@@ -26,11 +26,8 @@ import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.service.ws.WsAuthenticatorService;
 import com.axelor.utils.ExceptionTool;
-import com.google.inject.Inject;
 
 public class WsAuthenticatorController {
-
-  @Inject protected WsAuthenticatorService wsAuthenticatorService;
 
   public void authenticate(ActionRequest request, ActionResponse response) {
     try {
@@ -43,12 +40,13 @@ public class WsAuthenticatorController {
       wsAuthenticator = Beans.get(WsAuthenticatorRepository.class).find(wsAuthenticator.getId());
 
       if (wsAuthenticator.getAuthTypeSelect().equals("basic")) {
-        wsAuthenticatorService.authenticate(wsAuthenticator);
+        Beans.get(WsAuthenticatorService.class).authenticate(wsAuthenticator);
         response.setReload(true);
       } else {
         response.setView(
             ActionView.define(I18n.get("Authenticate"))
-                .add("html", wsAuthenticatorService.generatAuthUrl(wsAuthenticator))
+                .add(
+                    "html", Beans.get(WsAuthenticatorService.class).generatAuthUrl(wsAuthenticator))
                 .param("target", "_blank")
                 .map());
       }

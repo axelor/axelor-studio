@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+* Anomaly #59638: Fix all old bad practices from controllers
+
 ## 1.0.1
 
 * Anomaly #62216: Null Java Pointer : when save a Connector without a request
