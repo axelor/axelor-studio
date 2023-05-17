@@ -13,6 +13,11 @@
 * Feature #63924: Change title for BPM Model import
 * Anomaly #53832: Replace deprecated classes from org.apache.commons.lang3 by org.apache.commons.text
 
+## 1.0.2
+
+* Anomaly #63849: Fix DMN breaking error
+* Anomaly #64221: Inaccessible application in case of missing properties
+
 ## 1.0.1
 
 * Anomaly #62216: Null Java Pointer : when save a Connector without a request

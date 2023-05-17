@@ -53,7 +53,7 @@
 
     <readonlyIf></readonlyIf>
 
-    <includeIf>__config__.app.isApp(&apos;BPM-18&apos;)</includeIf>
+    <includeIf>__config__.app?.isApp(&apos;BPM-18&apos;)</includeIf>
 
     <scale>2</scale>
 
@@ -136,7 +136,7 @@
 
     <readonlyIf></readonlyIf>
 
-    <includeIf>__config__.app.isApp(&apos;BPM-18&apos;)</includeIf>
+    <includeIf>__config__.app?.isApp(&apos;BPM-18&apos;)</includeIf>
 
     <scale>2</scale>
 
@@ -219,7 +219,7 @@
 
     <readonlyIf></readonlyIf>
 
-    <includeIf>__config__.app.isApp(&apos;BPM-18&apos;)</includeIf>
+    <includeIf>__config__.app?.isApp(&apos;BPM-18&apos;)</includeIf>
 
     <scale>2</scale>
 
@@ -302,7 +302,7 @@
 
     <readonlyIf></readonlyIf>
 
-    <includeIf>__config__.app.isApp(&apos;BPM-18&apos;)</includeIf>
+    <includeIf>__config__.app?.isApp(&apos;BPM-18&apos;)</includeIf>
 
     <scale>2</scale>
 
