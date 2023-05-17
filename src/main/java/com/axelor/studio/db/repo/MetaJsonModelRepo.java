@@ -36,7 +36,7 @@ public class MetaJsonModelRepo extends MetaJsonModelRepository {
       if (studioApp != null) {
         jsonModel
             .getMenu()
-            .setConditionToCheck("__config__.app.isApp('" + studioApp.getCode() + "')");
+            .setConditionToCheck("__config__.app?.isApp('" + studioApp.getCode() + "')");
       } else {
         jsonModel.getMenu().setConditionToCheck(null);
       }

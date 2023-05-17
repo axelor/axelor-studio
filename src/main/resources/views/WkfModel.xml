@@ -23,7 +23,7 @@
     <field name="versionTag"/>
     <field name="statusSelect"/>
     <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-      if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+      if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
   </grid>
 
   <form name="wkf-model-form" title="BPM Model" model="com.axelor.studio.db.WkfModel"
@@ -34,7 +34,7 @@
         readonlyIf="generatedFromCallActivity"/>
       <field name="name" required="true"/>
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-        if="__config__.app.getApp('studio')?.getEnableStudioApp()"/>
+        if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
       <field name="versionTag"/>
       <field name="wkfStatusColor" widget="SingleSelect"/>
     </panel>

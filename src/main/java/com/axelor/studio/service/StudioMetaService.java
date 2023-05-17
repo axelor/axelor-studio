@@ -241,13 +241,13 @@ public class StudioMetaService {
     if (studioMenu.getStudioApp() != null) {
       if (condition != null) {
         condition =
-            "__config__.app.isApp('"
+            "__config__.app?.isApp('"
                 + studioMenu.getStudioApp().getCode()
                 + "') && ("
                 + condition
                 + ")";
       } else {
-        condition = "__config__.app.isApp('" + studioMenu.getStudioApp().getCode() + "')";
+        condition = "__config__.app?.isApp('" + studioMenu.getStudioApp().getCode() + "')";
       }
     }
     menu.setConditionToCheck(condition);

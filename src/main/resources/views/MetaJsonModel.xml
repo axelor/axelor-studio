@@ -19,7 +19,7 @@
   <form id="studio-json-model-form" name="json-model-form" title="Model"
     model="com.axelor.meta.db.MetaJsonModel">
     <!-- Studio changes -->
-    <panel name="studioAppPanel" if="__config__.app.getApp('studio')?.getEnableStudioApp()">
+    <panel name="studioAppPanel" if="__config__.app?.getApp('studio')?.getEnableStudioApp()">
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"/>
     </panel>
     <!-- /Studio changes -->
