@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+## 1.0.2
+
 * Anomaly #63849: Fix DMN breaking error
 * Anomaly #64221: Inaccessible application in case of missing properties
 
