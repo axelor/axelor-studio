@@ -65,10 +65,16 @@ public class WsConnectorController {
       ctx.put("_beans", Beans.class);
       Map<String, Object> res = wsConnectorService.callConnector(wsConnector, authenticator, ctx);
       StringBuilder result = new StringBuilder();
-      for (String key : res.keySet()) {
+      for (var entry : res.entrySet()) {
+        var key = entry.getKey();
+        var value = entry.getValue();
         if (!key.startsWith("_") || key.equals("_beans")) continue;
-        result.append(key + ":\n");
-        result.append(res.get(key) + "\n\n");
+        result.append(key).append(":\n");
+        if (value instanceof byte[]) {
+          result.append(new String((byte[]) value)).append("\n\n");
+        } else {
+          result.append(value).append("\n\n");
+        }
       }
       response.setValue("$result", result.toString());
     } catch (Exception e) {
