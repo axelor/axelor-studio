@@ -63,11 +63,13 @@ public class WsConnectorController {
       Map<String, Object> res =
           Beans.get(WsConnectorService.class).callConnector(wsConnector, authenticator, ctx);
       StringBuilder result = new StringBuilder();
-      for (String key : res.keySet()) {
-        if (!key.startsWith("_") || key.equals("_beans")) continue;
-        result.append(key + ":\n");
-        result.append(res.get(key) + "\n\n");
-      }
+      res.keySet().stream()
+          .filter(key -> key.startsWith("_") && !key.equals("_beans"))
+          .forEach(
+              key -> {
+                result.append(key + ":\n");
+                result.append(res.get(key) + "\n\n");
+              });
       response.setValue("$result", result.toString());
     } catch (Exception e) {
       ExceptionTool.trace(response, e);

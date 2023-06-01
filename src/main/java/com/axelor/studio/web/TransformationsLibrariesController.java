@@ -22,7 +22,9 @@ public class TransformationsLibrariesController {
   public void validateNewParameter(ActionRequest actionRequest, ActionResponse actionResponse) {
     try {
       Context context = actionRequest.getContext();
-      if (context == null) return;
+      if (context == null) {
+        return;
+      }
       Parameter parameter = context.asType(Parameter.class);
       if ("target".equals(parameter.getName())) {
         actionResponse.setValue("name", null);
@@ -31,16 +33,21 @@ public class TransformationsLibrariesController {
       }
       Transformation transformation = context.getParent().asType(Transformation.class);
       List<Parameter> parameters = transformation.getParameters();
-      if (parameters == null) return;
-      for (Parameter alreadyDefinedParameter : parameters) {
-        if (alreadyDefinedParameter.getName() != null
-            && alreadyDefinedParameter.getName().equals(parameter.getName())) {
-          actionResponse.setValue("name", null);
-          actionResponse.setAlert(
-              String.format(
-                  I18n.get("Parameter %s has Already been defined!"), parameter.getName()));
-        }
+      if (parameters == null) {
+        return;
       }
+      parameters.stream()
+          .filter(
+              alreadyDefinedParameter ->
+                  alreadyDefinedParameter.getName() != null
+                      && alreadyDefinedParameter.getName().equals(parameter.getName()))
+          .forEach(
+              it -> {
+                actionResponse.setValue("name", null);
+                actionResponse.setAlert(
+                    String.format(
+                        I18n.get("Parameter %s has Already been defined!"), parameter.getName()));
+              });
     } catch (Exception e) {
       ExceptionTool.trace(actionResponse, e);
     }
