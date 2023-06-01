@@ -1,3 +1,5 @@
+import com.axelor.gradle.tasks.GenerateChangelog
+
 buildscript {
 	ext.repos = {
 		mavenCentral() {
@@ -57,6 +59,15 @@ dependencies {
 	implementation "org.apache.commons:commons-text:1.9"
 	implementation 'org.jboss.resteasy:resteasy-jaxb-provider:4.7.7.Final'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
+}
+
+tasks.register('generateChangelog', GenerateChangelog) {
+	description "Generate changelog from unreleased entries."
+	group "Axelor"
+	files = fileTree(projectDir) {
+		include 'changelogs/unreleased/*.yml'
+		include 'changelogs/unreleased/*.yaml'
+	}
 }
 
 //
