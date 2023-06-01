@@ -23,7 +23,6 @@ import com.axelor.auth.db.Role;
 import com.axelor.auth.db.repo.GroupRepository;
 import com.axelor.auth.db.repo.PermissionRepository;
 import com.axelor.auth.db.repo.RoleRepository;
-import com.axelor.inject.Beans;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -34,29 +33,34 @@ import java.util.Set;
 
 public class ImportPermission {
 
-  @Inject PermissionRepository permissionRepo;
+  PermissionRepository permissionRepo;
+  GroupRepository groupRepo;
+  RoleRepository roleRepo;
 
-  @Transactional
+  @Inject
+  public ImportPermission(
+      PermissionRepository permissionRepo, GroupRepository groupRepo, RoleRepository roleRepo) {
+    this.permissionRepo = permissionRepo;
+    this.groupRepo = groupRepo;
+    this.roleRepo = roleRepo;
+  }
+
+  @Transactional(rollbackOn = Exception.class)
   public Object importPermission(Object bean, Map<String, Object> values) {
     assert bean instanceof Permission;
     try {
-
-      GroupRepository groupRepository = Beans.get(GroupRepository.class);
 
       Permission permission = (Permission) bean;
       String groups = (String) values.get("group");
       if (permission.getId() != null) {
         if (groups != null && !groups.isEmpty()) {
           for (Group group :
-              groupRepository
-                  .all()
-                  .filter("code in ?1", Arrays.asList(groups.split("\\|")))
-                  .fetch()) {
+              groupRepo.all().filter("code in ?1", Arrays.asList(groups.split("\\|"))).fetch()) {
             Set<Permission> permissions = group.getPermissions();
             if (permissions == null) permissions = new HashSet<Permission>();
             permissions.add(permissionRepo.find(permission.getId()));
             group.setPermissions(permissions);
-            groupRepository.save(group);
+            groupRepo.save(group);
           }
         }
       }
@@ -67,7 +71,7 @@ public class ImportPermission {
     return bean;
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public Object importPermissionToRole(Object bean, Map<String, Object> values) {
 
     assert bean instanceof Permission;
@@ -78,8 +82,7 @@ public class ImportPermission {
       return bean;
     }
 
-    RoleRepository roleRepository = Beans.get(RoleRepository.class);
-    Role role = roleRepository.findByName(roleName);
+    Role role = roleRepo.findByName(roleName);
 
     if (role == null) {
       return bean;

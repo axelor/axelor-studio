@@ -35,7 +35,7 @@ import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl;
 
 public class AxelorScriptEngine extends GroovyScriptEngineImpl {
 
-  private volatile AxelorScriptEngineFactory factory;
+  protected volatile AxelorScriptEngineFactory factory;
 
   AxelorScriptEngine(AxelorScriptEngineFactory factory) {
     super();

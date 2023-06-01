@@ -24,10 +24,10 @@ import javax.xml.bind.annotation.XmlType;
 public class ConditionalNode extends ProcessActionNode {
 
   @XmlAttribute(name = "expression")
-  private String expression;
+  protected String expression;
 
   @XmlAttribute(name = "expressionValue")
-  private String expressionValue;
+  protected String expressionValue;
 
   public String getExpression() {
     return expression;

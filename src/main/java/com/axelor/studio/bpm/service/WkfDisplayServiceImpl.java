@@ -21,7 +21,6 @@ import com.axelor.auth.AuthUtils;
 import com.axelor.auth.db.User;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
-import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
@@ -60,11 +59,25 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
 
   protected static final Logger log = LoggerFactory.getLogger(WkfDisplayServiceImpl.class);
 
-  @Inject protected ProcessEngineService engineService;
+  protected ProcessEngineService engineService;
 
-  @Inject protected WkfInstanceService wkfInstanceService;
+  protected WkfInstanceService wkfInstanceService;
 
-  @Inject protected WkfTaskConfigRepository wkfTaskConfigRepository;
+  protected WkfTaskConfigRepository wkfTaskConfigRepository;
+
+  protected WkfInstanceRepository wkfInstanceRepo;
+
+  @Inject
+  public WkfDisplayServiceImpl(
+      ProcessEngineService engineService,
+      WkfInstanceService wkfInstanceService,
+      WkfTaskConfigRepository wkfTaskConfigRepository,
+      WkfInstanceRepository wkfInstanceRepo) {
+    this.engineService = engineService;
+    this.wkfInstanceService = wkfInstanceService;
+    this.wkfTaskConfigRepository = wkfTaskConfigRepository;
+    this.wkfInstanceRepo = wkfInstanceRepo;
+  }
 
   @Override
   @CallMethod
@@ -129,7 +142,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
     return null;
   }
 
-  private List<String> getTerminatedActivityIds(String instanceId) {
+  protected List<String> getTerminatedActivityIds(String instanceId) {
 
     HistoricProcessInstanceQuery query =
         engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
@@ -145,7 +158,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
     return activityIds;
   }
 
-  private List<String> getActivityIds(String instanceId) {
+  protected List<String> getActivityIds(String instanceId) {
 
     RuntimeService runtimeService = engineService.getEngine().getRuntimeService();
 
@@ -158,7 +171,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
     return activityIds;
   }
 
-  private void getActivityPassCount(String instanceId, Map<String, Integer> activityCountMap) {
+  protected void getActivityPassCount(String instanceId, Map<String, Integer> activityCountMap) {
 
     HistoryService historyService = engineService.getEngine().getHistoryService();
     if (instanceId == null) {
@@ -200,7 +213,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
       Map<String, Integer> activityCountMap = new HashMap<>();
 
       List<WkfInstance> instances =
-          Beans.get(WkfInstanceRepository.class)
+          wkfInstanceRepo
               .all()
               .filter("self.wkfProcess.wkfModel.id = ?1", wkfModel.getId())
               .fetch();
@@ -252,8 +265,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
 
     if (processInstanceId != null) {
 
-      WkfInstance wkfInstance =
-          Beans.get(WkfInstanceRepository.class).findByInstnaceId(processInstanceId);
+      WkfInstance wkfInstance = wkfInstanceRepo.findByInstnaceId(processInstanceId);
 
       if (wkfInstance == null) {
         return statusList;
@@ -277,7 +289,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
     return statusList;
   }
 
-  private boolean isValidDisplayModel(String klassName, WkfInstance wkfInstance) {
+  protected boolean isValidDisplayModel(String klassName, WkfInstance wkfInstance) {
 
     WkfProcess wkfProcess = wkfInstance.getWkfProcess();
 
@@ -291,7 +303,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
     return false;
   }
 
-  private boolean containsModel(String models, String klassName) {
+  protected boolean containsModel(String models, String klassName) {
 
     if (models != null) {
       for (String model : models.split(",")) {
@@ -304,7 +316,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
     return false;
   }
 
-  private void addActiveNodes(
+  protected void addActiveNodes(
       List<Map<String, Object>> statusList, WkfInstance wkfInstance, String klassName) {
 
     HistoryService historyService = engineService.getEngine().getHistoryService();
@@ -367,7 +379,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
     }
   }
 
-  private boolean isValidNode(String activityId, WkfProcess wkfProcess, String klassName) {
+  protected boolean isValidNode(String activityId, WkfProcess wkfProcess, String klassName) {
 
     WkfTaskConfig wkfTaskConfig =
         wkfTaskConfigRepository

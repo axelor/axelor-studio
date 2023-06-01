@@ -26,13 +26,13 @@ import javax.xml.bind.annotation.XmlType;
 public class QueryNode extends BaseTaskNode {
 
   @XmlAttribute(name = "returnType")
-  private ReturnType returnType;
+  protected ReturnType returnType;
 
   @XmlAttribute(name = "model")
-  private String model;
+  protected String model;
 
   @XmlAttribute(name = "isJson")
-  private boolean isJson;
+  protected boolean isJson;
 
   public ReturnType getReturnType() {
     return returnType;
@@ -68,7 +68,7 @@ public class QueryNode extends BaseTaskNode {
     return "\n" + target + " = " + codeBuilder.toString();
   }
 
-  private void addQuery(StringBuilder codeBuilder, String model) {
+  protected void addQuery(StringBuilder codeBuilder, String model) {
 
     String filter = getExpression();
 
@@ -97,7 +97,7 @@ public class QueryNode extends BaseTaskNode {
     }
   }
 
-  private void addDynamicQuery(StringBuilder codeBuilder, String model) {
+  protected void addDynamicQuery(StringBuilder codeBuilder, String model) {
 
     String filter = getExpression();
 

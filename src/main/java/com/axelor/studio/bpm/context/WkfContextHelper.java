@@ -105,7 +105,7 @@ public class WkfContextHelper {
         .create();
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public static FullContext save(Object object) {
 
     return FullContextHelper.save(object);

@@ -40,11 +40,21 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BpmManagerDashboardTaskServiceImpl implements BpmManagerDashboardTaskService {
 
-  @Inject private WkfInstanceService wkfInstanceService;
+  protected WkfInstanceService wkfInstanceService;
 
-  @Inject private WkfTaskConfigRepository wkfTaskConfigRepo;
+  protected WkfTaskConfigRepository wkfTaskConfigRepo;
 
-  @Inject private WkfDashboardCommonService wkfDashboardCommonService;
+  protected WkfDashboardCommonService wkfDashboardCommonService;
+
+  @Inject
+  public BpmManagerDashboardTaskServiceImpl(
+      WkfInstanceService wkfInstanceService,
+      WkfTaskConfigRepository wkfTaskConfigRepo,
+      WkfDashboardCommonService wkfDashboardCommonService) {
+    this.wkfInstanceService = wkfInstanceService;
+    this.wkfTaskConfigRepo = wkfTaskConfigRepo;
+    this.wkfDashboardCommonService = wkfDashboardCommonService;
+  }
 
   @SuppressWarnings({"unchecked"})
   @Override
@@ -119,7 +129,7 @@ public class BpmManagerDashboardTaskServiceImpl implements BpmManagerDashboardTa
   }
 
   @SuppressWarnings("unchecked")
-  private List<Long> computeTaskByProcessConfig(
+  protected List<Long> computeTaskByProcessConfig(
       String modelName,
       boolean isMetaModel,
       WkfProcess process,

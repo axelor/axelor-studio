@@ -43,15 +43,22 @@ import org.camunda.bpm.model.dmn.instance.Text;
 
 public class DmnImportServiceImpl implements DmnImportService {
 
-  private static final String SPACE_PATTERN = "(?m)^[ \t]*\r?\n";
-  private static final String RULE = "row-";
-  private static final String INPUT_ENTRY = "UnaryTests_";
-  private static final String OUTPUT_ENTRY = "LiteralExpression_";
-  private static final String EXPR_LANG = "groovy";
+  protected static final String SPACE_PATTERN = "(?m)^[ \t]*\r?\n";
+  protected static final String RULE = "row-";
+  protected static final String INPUT_ENTRY = "UnaryTests_";
+  protected static final String OUTPUT_ENTRY = "LiteralExpression_";
+  protected static final String EXPR_LANG = "groovy";
 
-  @Inject private DataReaderFactory dataReaderFactory;
+  protected DataReaderFactory dataReaderFactory;
 
-  @Inject private WkfDmnModelRepository dmnModelRepo;
+  protected WkfDmnModelRepository dmnModelRepo;
+
+  @Inject
+  public DmnImportServiceImpl(
+      DataReaderFactory dataReaderFactory, WkfDmnModelRepository dmnModelRepo) {
+    this.dataReaderFactory = dataReaderFactory;
+    this.dmnModelRepo = dmnModelRepo;
+  }
 
   @Override
   public void importDmnTable(MetaFile dataFile, WkfDmnModel dmnModel) {
@@ -67,7 +74,7 @@ public class DmnImportServiceImpl implements DmnImportService {
     this.process(reader, dmnModel);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void process(DataReaderService reader, WkfDmnModel dmnModel) {
     DmnModelInstance dmnModelInstance =
         Dmn.readModelFromStream(new ByteArrayInputStream(dmnModel.getDiagramXml().getBytes()));
@@ -124,14 +131,14 @@ public class DmnImportServiceImpl implements DmnImportService {
     dmnModelRepo.save(dmnModel);
   }
 
-  private DecisionTable getDecisionTable(String sheet, DmnModelInstance dmnModelInstance) {
+  protected DecisionTable getDecisionTable(String sheet, DmnModelInstance dmnModelInstance) {
     return dmnModelInstance.getModelElementsByType(DecisionTable.class).stream()
         .filter(tbl -> tbl.getParentElement().getAttributeValue("id").equals(sheet))
         .findAny()
         .orElse(null);
   }
 
-  private Object checkEntry(
+  protected Object checkEntry(
       String[] headerRow, int cellIndex, DecisionTable table, DataReaderService reader) {
 
     if (StringUtils.isBlank(headerRow[cellIndex])) {
@@ -170,7 +177,7 @@ public class DmnImportServiceImpl implements DmnImportService {
     throw new IllegalStateException(BpmExceptionMessage.INVALID_HEADER);
   }
 
-  private Rule createEntries(
+  protected Rule createEntries(
       Object entryObj,
       String value,
       int j,

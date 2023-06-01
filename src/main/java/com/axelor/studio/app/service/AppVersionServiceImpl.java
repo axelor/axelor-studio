@@ -30,9 +30,14 @@ import org.apache.commons.lang3.StringUtils;
 
 public class AppVersionServiceImpl implements AppVersionService {
 
-  private static final String VERSION_PATTERN = "(\\d(\\.\\d)+)+";
+  protected static final String VERSION_PATTERN = "(\\d(\\.\\d)+)+";
 
-  @Inject private MetaModuleRepository metaModuleRepo;
+  protected MetaModuleRepository metaModuleRepo;
+
+  @Inject
+  public AppVersionServiceImpl(MetaModuleRepository metaModuleRepo) {
+    this.metaModuleRepo = metaModuleRepo;
+  }
 
   @Override
   public String getAppVersion(App app) {

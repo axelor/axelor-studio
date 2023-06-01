@@ -64,7 +64,7 @@ public class MetaJsonModelRepo extends MetaJsonModelRepository {
   public void remove(MetaJsonModel jsonModel) {
 
     if (jsonModel.getStudioMenu() != null && jsonModel.getStudioMenu().getMetaMenu() != null) {
-      Beans.get(StudioMenuRepo.class).remove(jsonModel.getStudioMenu());
+      Beans.get(StudioMenuRepository.class).remove(jsonModel.getStudioMenu());
     }
     super.remove(jsonModel);
   }
