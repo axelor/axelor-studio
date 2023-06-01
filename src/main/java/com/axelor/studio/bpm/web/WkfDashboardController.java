@@ -32,8 +32,6 @@ import com.axelor.rpc.Context;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardService;
 import com.axelor.studio.db.WkfModel;
-import com.axelor.studio.db.WkfProcess;
-import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.db.Wizard;
@@ -98,21 +96,25 @@ public class WkfDashboardController {
       String process = (String) request.getContext().get("_process");
 
       if (wkfModel != null) {
-        for (WkfProcess wkfProcess : wkfModel.getWkfProcessList()) {
-          if (CollectionUtils.isEmpty(wkfProcess.getWkfProcessConfigList())
-              || !wkfProcess.getName().equals(process)) {
-            continue;
-          }
-          for (WkfProcessConfig processConfig : wkfProcess.getWkfProcessConfigList()) {
-            if (processConfig.getMetaModel() != null) {
-              metaModelIds.add(processConfig.getMetaModel().getId());
-            }
+        wkfModel.getWkfProcessList().stream()
+            .filter(
+                wkfProcess ->
+                    CollectionUtils.isNotEmpty(wkfProcess.getWkfProcessConfigList())
+                        && wkfProcess.getName().equals(process))
+            .forEach(
+                it -> {
+                  it.getWkfProcessConfigList()
+                      .forEach(
+                          processConfig -> {
+                            if (processConfig.getMetaModel() != null) {
+                              metaModelIds.add(processConfig.getMetaModel().getId());
+                            }
 
-            if (processConfig.getMetaJsonModel() != null) {
-              jsonModelIds.add(processConfig.getMetaJsonModel().getId());
-            }
-          }
-        }
+                            if (processConfig.getMetaJsonModel() != null) {
+                              jsonModelIds.add(processConfig.getMetaJsonModel().getId());
+                            }
+                          });
+                });
       }
 
       response.setAttr(

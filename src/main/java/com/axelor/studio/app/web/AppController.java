@@ -140,10 +140,8 @@ public class AppController {
       AppRepository appRepository = Beans.get(AppRepository.class);
 
       List<App> appList = new ArrayList<>();
-      for (Map<String, Object> appData : apps) {
-        App app = appRepository.find(Long.parseLong(appData.get("id").toString()));
-        appList.add(app);
-      }
+      apps.forEach(
+          appData -> appList.add(appRepository.find(Long.parseLong(appData.get("id").toString()))));
 
       Beans.get(AppService.class).bulkInstall(appList, importDemo, language);
 
