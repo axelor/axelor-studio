@@ -18,7 +18,6 @@
 package com.axelor.studio.bpm.listener;
 
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
@@ -26,6 +25,7 @@ import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
+import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.util.Collection;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -42,6 +42,24 @@ import org.slf4j.LoggerFactory;
 public class WkfExecutionListener implements ExecutionListener {
 
   protected static final Logger log = LoggerFactory.getLogger(WkfExecutionListener.class);
+
+  protected WkfInstanceRepository wkfInstanceRepo;
+  protected WkfInstanceService wkfInstanceService;
+  protected WkfProcessRepository wkfProcessRepo;
+  protected WkfTaskConfigRepository wkfTaskConfigRepo;
+
+  @Inject
+  public WkfExecutionListener(
+      WkfInstanceRepository wkfInstanceRepo,
+      WkfInstanceService wkfInstanceService,
+      WkfProcessRepository wkfProcessRepo,
+      WkfTaskConfigRepository wkfTaskConfigRepo) {
+
+    this.wkfInstanceRepo = wkfInstanceRepo;
+    this.wkfInstanceService = wkfInstanceService;
+    this.wkfProcessRepo = wkfProcessRepo;
+    this.wkfTaskConfigRepo = wkfTaskConfigRepo;
+  }
 
   @Override
   public void notify(DelegateExecution execution) throws Exception {
@@ -61,7 +79,7 @@ public class WkfExecutionListener implements ExecutionListener {
     }
   }
 
-  private void checkDMNValue(DelegateExecution execution) {
+  protected void checkDMNValue(DelegateExecution execution) {
 
     String compulsory =
         execution
@@ -82,21 +100,20 @@ public class WkfExecutionListener implements ExecutionListener {
     }
   }
 
-  private void createWkfInstance(DelegateExecution execution) {
+  protected void createWkfInstance(DelegateExecution execution) {
 
     String instanceId = execution.getProcessInstanceId();
-    WkfInstanceRepository instanceRepo = Beans.get(WkfInstanceRepository.class);
-    WkfInstance wkfInstance = instanceRepo.findByInstnaceId(instanceId);
+    WkfInstance wkfInstance = wkfInstanceRepo.findByInstnaceId(instanceId);
     log.debug("Process called with related wkfInstance: {}", wkfInstance);
     if (wkfInstance == null) {
       execution.setVariable(
           getProcessKey(execution, execution.getProcessDefinitionId()),
           execution.getProcessInstanceId());
-      createWkfInstance(execution, instanceId, instanceRepo);
+      createWkfInstance(execution, instanceId, wkfInstanceRepo);
     }
   }
 
-  private void processNodeStart(DelegateExecution execution) {
+  protected void processNodeStart(DelegateExecution execution) {
 
     FlowElement flowElement = execution.getBpmnModelElementInstance();
     if (flowElement == null) {
@@ -114,11 +131,11 @@ public class WkfExecutionListener implements ExecutionListener {
       }
 
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
-      Beans.get(WkfInstanceService.class).onNodeActivation(wkfTaskConfig, execution);
+      wkfInstanceService.onNodeActivation(wkfTaskConfig, execution);
     }
   }
 
-  private void processNodeEnd(DelegateExecution execution) {
+  protected void processNodeEnd(DelegateExecution execution) {
 
     FlowElement flowElement = execution.getBpmnModelElementInstance();
     if (flowElement == null) {
@@ -133,11 +150,11 @@ public class WkfExecutionListener implements ExecutionListener {
     } else if (blockingNode(type)) {
 
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
-      Beans.get(WkfInstanceService.class).onNodeDeactivation(wkfTaskConfig, execution);
+      wkfInstanceService.onNodeDeactivation(wkfTaskConfig, execution);
     }
   }
 
-  private void sendMessage(FlowElement flowElement, DelegateExecution execution) {
+  protected void sendMessage(FlowElement flowElement, DelegateExecution execution) {
 
     Collection<MessageEventDefinition> messageDefinitions =
         flowElement.getChildElementsByType(MessageEventDefinition.class);
@@ -179,7 +196,7 @@ public class WkfExecutionListener implements ExecutionListener {
     }
   }
 
-  private String getProcessKey(DelegateExecution execution, String processDefinitionId) {
+  protected String getProcessKey(DelegateExecution execution, String processDefinitionId) {
 
     return execution
         .getProcessEngineServices()
@@ -188,7 +205,7 @@ public class WkfExecutionListener implements ExecutionListener {
         .getKey();
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void createWkfInstance(
       DelegateExecution execution, String instanceId, WkfInstanceRepository instanceRepo) {
 
@@ -196,7 +213,7 @@ public class WkfExecutionListener implements ExecutionListener {
     wkfInstance = new WkfInstance();
     wkfInstance.setInstanceId(instanceId);
     WkfProcess wkfProcess =
-        Beans.get(WkfProcessRepository.class)
+        wkfProcessRepo
             .all()
             .filter("self.processId = ?1", execution.getProcessDefinitionId())
             .fetchOne();
@@ -205,9 +222,9 @@ public class WkfExecutionListener implements ExecutionListener {
     instanceRepo.save(wkfInstance);
   }
 
-  private WkfTaskConfig getWkfTaskConfig(DelegateExecution execution) {
+  protected WkfTaskConfig getWkfTaskConfig(DelegateExecution execution) {
     WkfTaskConfig wkfTaskConfig =
-        Beans.get(WkfTaskConfigRepository.class)
+        wkfTaskConfigRepo
             .all()
             .filter(
                 "self.name = ? and self.wkfModel.id = (select wkfModel.id from WkfProcess where processId = ?)",
@@ -224,7 +241,7 @@ public class WkfExecutionListener implements ExecutionListener {
     return wkfTaskConfig;
   }
 
-  private boolean blockingNode(String type) {
+  protected boolean blockingNode(String type) {
 
     boolean blockinNode = false;
     switch (type) {

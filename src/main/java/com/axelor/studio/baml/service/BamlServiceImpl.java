@@ -32,6 +32,7 @@ import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.StringTool;
 import com.axelor.utils.xml.XPathParse;
 import com.google.common.base.Strings;
+import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -57,6 +58,13 @@ import org.xml.sax.SAXException;
 
 public class BamlServiceImpl implements BamlService {
 
+  protected WkfCommonService wkfCommonService;
+
+  @Inject
+  public BamlServiceImpl(WkfCommonService wkfCommonService) {
+    this.wkfCommonService = wkfCommonService;
+  }
+
   @Override
   public String generateGroovyCode(String xml) {
 
@@ -81,7 +89,7 @@ public class BamlServiceImpl implements BamlService {
     return codeBuilder.toString();
   }
 
-  private void generateCode(StringBuilder codeBuilder, ProcessActionNode processActionNode) {
+  protected void generateCode(StringBuilder codeBuilder, ProcessActionNode processActionNode) {
 
     String returnType = "void";
     String returnVar = "";
@@ -135,13 +143,13 @@ public class BamlServiceImpl implements BamlService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public Model execute(BamlModel bamlModel, Model entity) {
 
     Bindings bindings = new SimpleBindings();
 
     if (entity != null) {
-      String varName = Beans.get(WkfCommonService.class).getVarName(entity);
+      String varName = wkfCommonService.getVarName(entity);
       bindings.put(varName, entity);
     }
 
@@ -158,7 +166,7 @@ public class BamlServiceImpl implements BamlService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public Model execute(BamlModel bamlModel, Map<String, Object> context) {
 
     Bindings bindings = new SimpleBindings();

@@ -26,11 +26,11 @@ import javax.script.ScriptEngineFactory;
 
 public class AxelorScriptEngineFactory implements ScriptEngineFactory {
 
-  private static final String VERSION = "1.0";
+  protected static final String VERSION = "1.0";
 
-  private static final String SHORT_NAME = "axelor";
+  protected static final String SHORT_NAME = "axelor";
 
-  private static final String LANGUAGE_NAME = "axelor";
+  protected static final String LANGUAGE_NAME = "axelor";
 
   @Override
   public ScriptEngine getScriptEngine() {
@@ -143,9 +143,9 @@ public class AxelorScriptEngineFactory implements ScriptEngineFactory {
     return ret.toString();
   }
 
-  private static final List<String> NAMES;
-  private static final List<String> EXTENSIONS;
-  private static final List<String> MIME_TYPES;
+  protected static final List<String> NAMES;
+  protected static final List<String> EXTENSIONS;
+  protected static final List<String> MIME_TYPES;
 
   static {
     List<String> n = new ArrayList<String>(2);

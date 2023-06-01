@@ -26,16 +26,16 @@ import javax.xml.bind.annotation.XmlType;
 public class MapperNode extends BaseNode {
 
   @XmlElement(name = "script", type = String.class)
-  private String script;
+  protected String script;
 
   @XmlElement(name = "scriptMeta", type = String.class)
-  private String scriptMeta;
+  protected String scriptMeta;
 
   @XmlAttribute(name = "targetField")
-  private String targetField;
+  protected String targetField;
 
   @XmlAttribute(name = "sourceField")
-  private String sourceField;
+  protected String sourceField;
 
   public String getScript() {
     return script;

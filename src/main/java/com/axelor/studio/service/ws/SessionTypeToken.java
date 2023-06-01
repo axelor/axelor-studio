@@ -8,7 +8,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
 public class SessionTypeToken implements SessionType {
-  private String token;
+  protected String token;
 
   @Override
   public void extractSessionData(Response response, WsAuthenticator wsAuthenticator) {

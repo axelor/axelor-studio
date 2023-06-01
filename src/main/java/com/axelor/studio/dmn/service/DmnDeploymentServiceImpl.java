@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.dmn.service;
 
-import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
@@ -27,6 +26,7 @@ import com.axelor.studio.db.DmnField;
 import com.axelor.studio.db.DmnTable;
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.db.repo.WkfDmnModelRepository;
+import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -51,15 +51,32 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
 
   protected final Logger log = LoggerFactory.getLogger(DmnDeploymentServiceImpl.class);
 
+  protected WkfDmnModelRepository wkfDmnModelRepo;
+  protected ProcessEngineService processEngineService;
+  protected MetaModelRepository metaModelRepo;
+  protected MetaJsonModelRepository metaJsonModelRepo;
+
+  @Inject
+  public DmnDeploymentServiceImpl(
+      WkfDmnModelRepository wkfDmnModelRepo,
+      ProcessEngineService processEngineService,
+      MetaModelRepository metaModelRepository,
+      MetaJsonModelRepository metaJsonModelRepo) {
+    this.wkfDmnModelRepo = wkfDmnModelRepo;
+    this.processEngineService = processEngineService;
+    this.metaModelRepo = metaModelRepository;
+    this.metaJsonModelRepo = metaJsonModelRepo;
+  }
+
   @Override
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void deploy(WkfDmnModel wkfDmnModel) {
 
     if (wkfDmnModel.getDiagramXml() == null) {
       return;
     }
 
-    ProcessEngine engine = Beans.get(ProcessEngineService.class).getEngine();
+    ProcessEngine engine = processEngineService.getEngine();
 
     String key = wkfDmnModel.getId() + ".dmn";
     DmnModelInstance dmnModelInstance =
@@ -73,10 +90,10 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
     setModels(wkfDmnModel, dmnModelInstance);
     setDecisionTables(wkfDmnModel, dmnModelInstance);
 
-    Beans.get(WkfDmnModelRepository.class).save(wkfDmnModel);
+    wkfDmnModelRepo.save(wkfDmnModel);
   }
 
-  private void setModels(WkfDmnModel wkfDmnModel, DmnModelInstance dmnModelInstance) {
+  protected void setModels(WkfDmnModel wkfDmnModel, DmnModelInstance dmnModelInstance) {
 
     Definitions definitions = dmnModelInstance.getDefinitions();
 
@@ -86,7 +103,6 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
 
     if (metaModels != null) {
       Set<MetaModel> metaModelSet = new HashSet<>();
-      MetaModelRepository metaModelRepo = Beans.get(MetaModelRepository.class);
 
       List<String> models = Arrays.asList(metaModels.split(","));
       for (String modelName : models) {
@@ -99,11 +115,10 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
 
     } else if (jsonModels != null) {
       Set<MetaJsonModel> jsonModelSet = new HashSet<>();
-      MetaJsonModelRepository jsonModelRepo = Beans.get(MetaJsonModelRepository.class);
 
       List<String> models = Arrays.asList(jsonModels.split(","));
       for (String modelName : models) {
-        MetaJsonModel jsonModel = jsonModelRepo.findByName(modelName);
+        MetaJsonModel jsonModel = metaJsonModelRepo.findByName(modelName);
         if (jsonModel != null) {
           jsonModelSet.add(jsonModel);
         }
@@ -116,7 +131,7 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
     }
   }
 
-  private void setDecisionTables(WkfDmnModel wkfDmnModel, DmnModelInstance dmnModelInstance) {
+  protected void setDecisionTables(WkfDmnModel wkfDmnModel, DmnModelInstance dmnModelInstance) {
 
     Map<String, DmnTable> dmnTableMap = new HashMap<String, DmnTable>();
 
@@ -146,7 +161,7 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
     }
   }
 
-  private void setDmnField(DecisionTable decisionTable, DmnTable dmnTable) {
+  protected void setDmnField(DecisionTable decisionTable, DmnTable dmnTable) {
 
     Map<String, DmnField> outputFieldMap = new HashMap<String, DmnField>();
     if (dmnTable.getOutputDmnFieldList() != null) {
