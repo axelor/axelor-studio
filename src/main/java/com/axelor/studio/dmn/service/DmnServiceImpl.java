@@ -30,6 +30,7 @@ import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
+import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaJsonRecord;
@@ -44,7 +45,6 @@ import com.axelor.studio.db.repo.DmnTableRepository;
 import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.context.FullContextHelper;
-import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,34 +71,14 @@ public class DmnServiceImpl implements DmnService {
 
   protected Logger log = LoggerFactory.getLogger(DmnServiceImpl.class);
 
-  protected WkfCommonService wkfCommonService;
-
-  protected DmnTableRepository dmnTableRepo;
-
-  protected MetaJsonFieldRepository metaJsonFieldRepo;
-
-  protected ProcessEngineService processEngineService;
-
-  @Inject
-  public DmnServiceImpl(
-      WkfCommonService wkfCommonService,
-      DmnTableRepository dmnTableRepo,
-      MetaJsonFieldRepository metaJsonFieldRepo,
-      ProcessEngineService processEngineService) {
-    this.wkfCommonService = wkfCommonService;
-    this.dmnTableRepo = dmnTableRepo;
-    this.metaJsonFieldRepo = metaJsonFieldRepo;
-    this.processEngineService = processEngineService;
-  }
-
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public void executeDmn(String decisionDefinitionId, Model model) {
 
-    ProcessEngine processEngine = processEngineService.getEngine();
+    ProcessEngine processEngine = Beans.get(ProcessEngineService.class).getEngine();
 
     FullContext context = new FullContext(model);
-    String varName = wkfCommonService.getVarName(EntityHelper.getEntity(model));
+    String varName = Beans.get(WkfCommonService.class).getVarName(EntityHelper.getEntity(model));
     Map<String, Object> modelMap = new HashMap<String, Object>();
     modelMap.put(varName, context);
     DmnDecisionTableResult dmnDecisionTableResult =
@@ -108,7 +88,10 @@ public class DmnServiceImpl implements DmnService {
 
     List<Map<String, Object>> result = dmnDecisionTableResult.getResultList();
     DmnTable dmnTable =
-        dmnTableRepo.all().filter("self.decisionId = ?1", decisionDefinitionId).fetchOne();
+        Beans.get(DmnTableRepository.class)
+            .all()
+            .filter("self.decisionId = ?1", decisionDefinitionId)
+            .fetchOne();
 
     if (dmnTable != null && !CollectionUtils.isEmpty(result)) {
       Map<String, Object> res = result.get(0);
@@ -122,7 +105,7 @@ public class DmnServiceImpl implements DmnService {
     JpaRepository.of(EntityHelper.getEntityClass(model)).save(model);
   }
 
-  protected void addValue(FullContext context, String field, Object value, Model model) {
+  private void addValue(FullContext context, String field, Object value, Model model) {
 
     if (!field.contains(".")) {
       context.put(field, value);
@@ -150,7 +133,7 @@ public class DmnServiceImpl implements DmnService {
     log.debug("Relational value added: {}", context.get(fieldName));
   }
 
-  protected Object processMetaField(
+  private Object processMetaField(
       String fieldName, String subField, Object value, Class<Model> entityClass) {
 
     Property property = Mapper.of(entityClass).getProperty(fieldName);
@@ -166,11 +149,11 @@ public class DmnServiceImpl implements DmnService {
     return findResult(value, subField, targetModel, isCollection, isSet);
   }
 
-  protected Object processMetaModelJson(
+  private Object processMetaModelJson(
       String fieldName, String subField, Object value, Class<Model> entityClass) {
 
     MetaJsonField jsonField =
-        metaJsonFieldRepo
+        Beans.get(MetaJsonFieldRepository.class)
             .all()
             .filter("self.name = ?1 and self.model = ?2", fieldName, entityClass.getName())
             .fetchOne();
@@ -186,11 +169,11 @@ public class DmnServiceImpl implements DmnService {
     return processMetaJsonField(value, subField, jsonField);
   }
 
-  protected Object processMetaModelJson(
+  private Object processMetaModelJson(
       String fieldName, String subField, Object value, String jsonModel) {
 
     MetaJsonField jsonField =
-        metaJsonFieldRepo
+        Beans.get(MetaJsonFieldRepository.class)
             .all()
             .filter("self.name = ?1 and self.jsonModel.name = ?2", fieldName, jsonModel)
             .fetchOne();
@@ -202,7 +185,7 @@ public class DmnServiceImpl implements DmnService {
     return processMetaJsonField(value, subField, jsonField);
   }
 
-  protected Object processMetaJsonField(Object value, String subField, MetaJsonField jsonField) {
+  private Object processMetaJsonField(Object value, String subField, MetaJsonField jsonField) {
 
     String type = jsonField.getType();
     String targetModel = null;
@@ -221,7 +204,7 @@ public class DmnServiceImpl implements DmnService {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  protected Object findResult(
+  private Object findResult(
       Object value, String subField, String targetModel, boolean isCollection, boolean isSet) {
 
     Object params = getParameter(value);
@@ -256,7 +239,7 @@ public class DmnServiceImpl implements DmnService {
     return WkfContextHelper.filterOne(targetModel, query, params).getTarget();
   }
 
-  protected String getQuery(String subField, boolean collectionParameter) {
+  private String getQuery(String subField, boolean collectionParameter) {
 
     String operator = "=";
     if (collectionParameter) {
@@ -267,7 +250,7 @@ public class DmnServiceImpl implements DmnService {
     return query;
   }
 
-  protected Object getParameter(Object value) {
+  private Object getParameter(Object value) {
 
     Object params = null;
     if (value instanceof String) {
@@ -318,11 +301,11 @@ public class DmnServiceImpl implements DmnService {
     return script;
   }
 
-  protected List<String> extractFields(String decisionDefinitionId) {
+  private List<String> extractFields(String decisionDefinitionId) {
 
     List<String> fields = new ArrayList<String>();
 
-    ProcessEngine processEngine = processEngineService.getEngine();
+    ProcessEngine processEngine = Beans.get(ProcessEngineService.class).getEngine();
 
     DecisionDefinition decisionDefinition =
         processEngine
@@ -361,7 +344,7 @@ public class DmnServiceImpl implements DmnService {
     return fields;
   }
 
-  protected String mapToMetaModelFields(
+  private String mapToMetaModelFields(
       List<String> fields,
       String modelName,
       String searchOperator,
@@ -372,7 +355,7 @@ public class DmnServiceImpl implements DmnService {
     StringBuilder scriptBuilder = new StringBuilder();
 
     Mapper mapper = Mapper.of(EntityHelper.getEntityClass(Class.forName(modelName)));
-    String varName = wkfCommonService.getVarName(modelName);
+    String varName = Beans.get(WkfCommonService.class).getVarName(modelName);
     scriptBuilder.append("def _query = null\n");
     for (String field : fields) {
       String resultField = resultVar + "?." + field;
@@ -380,7 +363,7 @@ public class DmnServiceImpl implements DmnService {
       Property property = mapper.getProperty(field);
       if (property == null) {
         MetaJsonField jsonField =
-            metaJsonFieldRepo
+            Beans.get(MetaJsonFieldRepository.class)
                 .all()
                 .filter("self.model = ?1 and self.name = ?2", modelName, field)
                 .fetchOne();
@@ -408,7 +391,7 @@ public class DmnServiceImpl implements DmnService {
     return scriptBuilder.toString();
   }
 
-  protected void addRelationalField(
+  private void addRelationalField(
       String searchOperator,
       boolean multiple,
       StringBuilder scriptBuilder,
@@ -432,7 +415,7 @@ public class DmnServiceImpl implements DmnService {
     scriptBuilder.append("if(" + resultField + " != null) {" + varName + " = " + field + "}");
   }
 
-  protected String mapToMetaCustomModelFields(
+  private String mapToMetaCustomModelFields(
       List<String> fields,
       String modelName,
       String searchOperator,
@@ -442,10 +425,10 @@ public class DmnServiceImpl implements DmnService {
 
     StringBuilder scriptBuilder = new StringBuilder();
     scriptBuilder.append("def _query = null\n");
-    String varName = wkfCommonService.getVarName(modelName);
+    String varName = Beans.get(WkfCommonService.class).getVarName(modelName);
 
     List<MetaJsonField> metaJsonFields =
-        metaJsonFieldRepo
+        Beans.get(MetaJsonFieldRepository.class)
             .all()
             .filter("self.name in (?1) and self.jsonModel.name = ?2", fields, modelName)
             .fetch();
@@ -460,7 +443,7 @@ public class DmnServiceImpl implements DmnService {
     return scriptBuilder.toString();
   }
 
-  protected void addJsonField(
+  private void addJsonField(
       String searchOperator,
       boolean multiple,
       String resultVar,

@@ -35,16 +35,16 @@ public class ProcessActionNode extends BaseNode {
         @XmlElement(name = "query", type = QueryNode.class),
         @XmlElement(name = "function", type = FunctionNode.class)
       })
-  protected List<BaseNode> nodes;
+  private List<BaseNode> nodes;
 
   @XmlAttribute(name = "sourceModel")
-  protected String sourceModel;
+  private String sourceModel;
 
   @XmlAttribute(name = "targetModel")
-  protected String targetModel;
+  private String targetModel;
 
   @XmlAttribute(name = "staticCompile")
-  protected boolean staticCompile;
+  private boolean staticCompile;
 
   public List<BaseNode> getNodes() {
     return nodes;

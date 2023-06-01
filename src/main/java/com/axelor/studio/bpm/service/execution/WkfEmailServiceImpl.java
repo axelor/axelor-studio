@@ -21,6 +21,7 @@ import com.axelor.auth.db.User;
 import com.axelor.common.Inflector;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.Model;
+import com.axelor.inject.Beans;
 import com.axelor.message.db.EmailAddress;
 import com.axelor.message.db.Message;
 import com.axelor.message.db.Template;
@@ -43,34 +44,12 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public class WkfEmailServiceImpl implements WkfEmailService {
 
-  protected MessageService messageService;
+  @Inject protected MessageService messageService;
 
-  protected WkfUserActionService wkfUserActionService;
+  @Inject protected WkfUserActionService wkfUserActionService;
 
-  protected MetaActionRepository metaActionRepository;
-  protected AppSettingsStudioService appSettingsStudioService;
-
-  protected TemplateRepository templateRepo;
-  protected TemplateMessageService templateMessageService;
-  protected EmailAddressRepository emailAddressRepo;
-
-  @Inject
-  public WkfEmailServiceImpl(
-      MessageService messageService,
-      WkfUserActionService wkfUserActionService,
-      MetaActionRepository metaActionRepository,
-      AppSettingsStudioService appSettingsStudioService,
-      TemplateRepository templateRepo,
-      TemplateMessageService templateMessageService,
-      EmailAddressRepository emailAddressRepo) {
-    this.messageService = messageService;
-    this.wkfUserActionService = wkfUserActionService;
-    this.metaActionRepository = metaActionRepository;
-    this.appSettingsStudioService = appSettingsStudioService;
-    this.templateRepo = templateRepo;
-    this.templateMessageService = templateMessageService;
-    this.emailAddressRepo = emailAddressRepo;
-  }
+  @Inject protected MetaActionRepository metaActionRepository;
+  @Inject protected AppSettingsStudioService appSettingsStudioService;
 
   protected Inflector inflector = Inflector.getInstance();
 
@@ -108,12 +87,13 @@ public class WkfEmailServiceImpl implements WkfEmailService {
 
     String url = createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
     String activeNode = execution.getCurrentActivityName();
-    Template template = templateRepo.findByName(wkfTaskConfig.getTemplateName());
+    Template template =
+        Beans.get(TemplateRepository.class).findByName(wkfTaskConfig.getTemplateName());
 
     Message message = null;
     if (template != null) {
       url = "<a href=\"" + url + "\" >" + url + "</a>";
-      message = templateMessageService.generateMessage(id, model, tag, template);
+      message = Beans.get(TemplateMessageService.class).generateMessage(id, model, tag, template);
       message.setSubject(message.getSubject().replace("{{activeNode}}", activeNode));
       message.setContent(message.getContent().replace("{{activeNode}}", activeNode));
       message.setSubject(message.getSubject().replace("{{recordUrl}}", url));
@@ -131,7 +111,8 @@ public class WkfEmailServiceImpl implements WkfEmailService {
       String content = String.format(EMAIL_CONTENT, user.getName(), activeNode, url, url);
 
       List<EmailAddress> toEmailAddressList = new ArrayList<EmailAddress>();
-      EmailAddress emailAddress = emailAddressRepo.findByAddress(user.getEmail());
+      EmailAddress emailAddress =
+          Beans.get(EmailAddressRepository.class).findByAddress(user.getEmail());
       if (emailAddress == null) {
         emailAddress = new EmailAddress(user.getEmail());
       }
@@ -187,7 +168,7 @@ public class WkfEmailServiceImpl implements WkfEmailService {
     return url;
   }
 
-  protected String getAction(String formName) {
+  private String getAction(String formName) {
 
     MetaAction metaAction =
         metaActionRepository.all().filter("self.xml like '%\"" + formName + "\"%'").fetchOne();

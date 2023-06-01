@@ -22,14 +22,17 @@ import com.axelor.meta.CallMethod;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfTaskConfig;
+import com.google.inject.persist.Transactional;
 import java.util.List;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface WkfInstanceService {
 
+  @Transactional
   public String evalInstance(Model model, String signal) throws ClassNotFoundException;
 
+  @Transactional
   public WkfInstance createWkfInstance(String processInstanceId, WkfProcess wkfProcess);
 
   public boolean isActiveProcessInstance(String processInstanceId, RuntimeService runTimeService);

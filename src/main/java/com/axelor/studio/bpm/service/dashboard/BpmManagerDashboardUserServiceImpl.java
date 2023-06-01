@@ -47,33 +47,17 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUserService {
 
-  protected WkfUserActionService wkfUserActionService;
+  @Inject private WkfUserActionService wkfUserActionService;
 
-  protected WkfInstanceService wkfInstanceService;
+  @Inject private WkfInstanceService wkfInstanceService;
 
-  protected WkfDashboardCommonService wkfDashboardCommonService;
+  @Inject private WkfDashboardCommonService wkfDashboardCommonService;
 
-  protected WkfModelRepository wkfModelRepo;
+  @Inject private WkfModelRepository wkfModelRepo;
 
-  protected WkfTaskConfigRepository wkfTaskConfigRepo;
+  @Inject private WkfTaskConfigRepository wkfTaskConfigRepo;
 
-  protected UserRepository userRepo;
-
-  @Inject
-  public BpmManagerDashboardUserServiceImpl(
-      WkfUserActionService wkfUserActionService,
-      WkfInstanceService wkfInstanceService,
-      WkfDashboardCommonService wkfDashboardCommonService,
-      WkfModelRepository wkfModelRepo,
-      WkfTaskConfigRepository wkfTaskConfigRepo,
-      UserRepository userRepo) {
-    this.wkfUserActionService = wkfUserActionService;
-    this.wkfInstanceService = wkfInstanceService;
-    this.wkfDashboardCommonService = wkfDashboardCommonService;
-    this.wkfModelRepo = wkfModelRepo;
-    this.wkfTaskConfigRepo = wkfTaskConfigRepo;
-    this.userRepo = userRepo;
-  }
+  @Inject private UserRepository userRepo;
 
   @Override
   public List<WkfModel> getWkfModelsByUser(User user) {
@@ -212,7 +196,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
   }
 
   @SuppressWarnings("unchecked")
-  protected List<Long> computeTaskConfig(
+  private List<Long> computeTaskConfig(
       String status,
       WkfTaskConfig config,
       boolean isMetaModel,
@@ -314,14 +298,14 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
     return dataMapList;
   }
 
-  protected List<WkfTaskConfig> getUserTaskConfigs(WkfProcess wkfProcess) {
+  private List<WkfTaskConfig> getUserTaskConfigs(WkfProcess wkfProcess) {
     return wkfTaskConfigRepo
         .all()
         .filter("self.processId = ? AND self.userPath IS NOT NULL", wkfProcess.getProcessId())
         .fetch();
   }
 
-  protected String getUnit(String unitType) {
+  private String getUnit(String unitType) {
     switch (unitType) {
       case "hours":
         return "(60 * 60)";
@@ -334,7 +318,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
     }
   }
 
-  protected void computeAvgTimePerUser(
+  private void computeAvgTimePerUser(
       Query query, Model record, String userPath, Map<Long, List<BigDecimal>> userTimeMap) {
 
     query.setParameter("instanceId", record.getProcessInstanceId());
@@ -422,7 +406,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
     return dataMapList;
   }
 
-  protected void computeTaskDonePerUser(
+  private void computeTaskDonePerUser(
       Query query, Model record, String userPath, Map<Long, BigInteger> userMap) {
 
     query.setParameter("instanceId", record.getProcessInstanceId());

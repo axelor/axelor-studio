@@ -46,7 +46,7 @@ import org.apache.commons.io.IOUtils;
 
 public class AppLoaderImportServiceImpl implements AppLoaderImportService {
 
-  protected static final String[] IMPORT_FILES =
+  private static final String[] IMPORT_FILES =
       new String[] {
         "studio-app.xml",
         "studio-selection.xml",
@@ -65,21 +65,11 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
         "meta-view.xml"
       };
 
-  protected AppLoaderRepository appLoaderRepository;
+  @Inject protected AppLoaderRepository appLoaderRepository;
 
-  protected MetaFiles metaFiles;
+  @Inject protected MetaFiles metaFiles;
 
-  protected AppLoaderExportService appLoaderExportService;
-
-  @Inject
-  public AppLoaderImportServiceImpl(
-      AppLoaderRepository appLoaderRepository,
-      MetaFiles metaFiles,
-      AppLoaderExportService appLoaderExportService) {
-    this.appLoaderRepository = appLoaderRepository;
-    this.metaFiles = metaFiles;
-    this.appLoaderExportService = appLoaderExportService;
-  }
+  @Inject protected AppLoaderExportService appLoaderExportService;
 
   @Override
   public void importApps(AppLoader appLoader) throws FileNotFoundException, IOException {
@@ -98,7 +88,7 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
     FileUtils.deleteDirectory(dataDir);
   }
 
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   protected void addLogFile(AppLoader appLoader, File logFile) throws IOException {
 
     appLoader = appLoaderRepository.find(appLoader.getId());

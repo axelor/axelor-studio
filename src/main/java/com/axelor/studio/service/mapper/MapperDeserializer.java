@@ -27,8 +27,8 @@ import java.io.IOException;
 @SuppressWarnings("rawtypes")
 public class MapperDeserializer extends StdDeserializer {
 
-  protected static final long serialVersionUID = 1L;
-  protected Class<?> subClass;
+  private static final long serialVersionUID = 1L;
+  private Class<?> subClass;
 
   @SuppressWarnings("unchecked")
   public MapperDeserializer(Class<?> subClass) {

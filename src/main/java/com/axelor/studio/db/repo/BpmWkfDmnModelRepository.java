@@ -17,23 +17,16 @@
  */
 package com.axelor.studio.db.repo;
 
+import com.axelor.inject.Beans;
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.dmn.service.DmnService;
-import com.google.inject.Inject;
 
 public class BpmWkfDmnModelRepository extends WkfDmnModelRepository {
-
-  protected DmnService dmnService;
-
-  @Inject
-  public BpmWkfDmnModelRepository(DmnService dmnService) {
-    this.dmnService = dmnService;
-  }
 
   @Override
   public WkfDmnModel copy(WkfDmnModel entity, boolean deep) {
     entity = super.copy(entity, deep);
-    dmnService.renameDiagramIds(entity);
+    Beans.get(DmnService.class).renameDiagramIds(entity);
     entity.clearDmnTableList();
     return entity;
   }

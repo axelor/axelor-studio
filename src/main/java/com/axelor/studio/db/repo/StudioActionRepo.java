@@ -25,15 +25,9 @@ import com.google.inject.Inject;
 
 public class StudioActionRepo extends StudioActionRepository {
 
-  protected StudioMetaService metaService;
+  @Inject private StudioMetaService metaService;
 
-  protected StudioActionService studioActionService;
-
-  @Inject
-  public StudioActionRepo(StudioMetaService metaService, StudioActionService studioActionService) {
-    this.metaService = metaService;
-    this.studioActionService = studioActionService;
-  }
+  @Inject private StudioActionService studioActionService;
 
   @Override
   public StudioAction save(StudioAction studioAction) {

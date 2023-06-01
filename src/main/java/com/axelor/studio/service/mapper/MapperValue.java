@@ -29,11 +29,11 @@ public class MapperValue {
       Arrays.asList(
           new String[] {"MANY_TO_ONE", "many-to-one", "json-many-to-one", "json-one-to-one"});
 
-  protected MapperSelected selected = null;
+  private MapperSelected selected = null;
 
-  protected MapperField parentField = null;
+  private MapperField parentField = null;
 
-  protected String from = null;
+  private String from = null;
 
   public MapperSelected getSelected() {
     return selected;
@@ -197,7 +197,7 @@ public class MapperValue {
     }
   }
 
-  protected void mapSelf(StringBuilder stb) {
+  private void mapSelf(StringBuilder stb) {
 
     stb.append(getSelectedScript());
   }

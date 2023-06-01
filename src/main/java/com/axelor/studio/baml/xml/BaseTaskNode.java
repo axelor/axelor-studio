@@ -25,10 +25,10 @@ import org.apache.commons.lang3.StringEscapeUtils;
 public abstract class BaseTaskNode extends BaseNode {
 
   @XmlAttribute(name = "target")
-  protected String target;
+  private String target;
 
   @XmlAttribute(name = "expression")
-  protected String expression;
+  private String expression;
 
   public String getTarget() {
     return target;

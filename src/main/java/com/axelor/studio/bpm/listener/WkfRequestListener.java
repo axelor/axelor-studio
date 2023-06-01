@@ -25,6 +25,7 @@ import com.axelor.events.PostAction;
 import com.axelor.events.PostRequest;
 import com.axelor.events.RequestEvent;
 import com.axelor.events.internal.BeforeTransactionComplete;
+import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
@@ -35,7 +36,6 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.utils.ExceptionTool;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.persist.Transactional;
@@ -52,21 +52,6 @@ public class WkfRequestListener {
 
   protected static final Logger log = LoggerFactory.getLogger(WkfRequestListener.class);
 
-  protected WkfInstanceRepository wkfInstanceRepo;
-  protected WkfInstanceService wkfInstanceService;
-  protected WkfDisplayService wkfDisplayService;
-
-  @Inject
-  public WkfRequestListener(
-      WkfInstanceRepository wkfInstanceRepo,
-      WkfInstanceService wkfInstanceService,
-      WkfDisplayService wkfDisplayService) {
-
-    this.wkfInstanceRepo = wkfInstanceRepo;
-    this.wkfInstanceService = wkfInstanceService;
-    this.wkfDisplayService = wkfDisplayService;
-  }
-
   public void onBeforeTransactionComplete(@Observes BeforeTransactionComplete event) {
 
     String tenantId = BpmTools.getCurentTenant();
@@ -78,7 +63,7 @@ public class WkfRequestListener {
     processDeleted(event, tenantId);
   }
 
-  protected void processUpdated(BeforeTransactionComplete event, String tenantId) {
+  private void processUpdated(BeforeTransactionComplete event, String tenantId) {
 
     Set<? extends Model> updated = new HashSet<Model>(event.getUpdated());
 
@@ -91,7 +76,7 @@ public class WkfRequestListener {
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
         try {
           log.trace("Eval workflow from updated model: {}, id: {}", modelName, model.getId());
-          wkfInstanceService.evalInstance(model, null);
+          Beans.get(WkfInstanceService.class).evalInstance(model, null);
         } catch (Exception e) {
           ExceptionTool.trace(e);
         }
@@ -151,7 +136,8 @@ public class WkfRequestListener {
         try {
           log.trace("Wkf button cache: {}", WkfCache.WKF_BUTTON_CACHE);
           log.trace("Eval wkf from button model: {}, id: {}", model.getName(), id);
-          String helpText = wkfInstanceService.evalInstance(JPA.find(model, id), signal);
+          String helpText =
+              Beans.get(WkfInstanceService.class).evalInstance(JPA.find(model, id), signal);
           Object res = postAction.getResult();
           if (res instanceof ActionResponse && helpText != null) {
             ((ActionResponse) res).setAlert(helpText);
@@ -174,8 +160,9 @@ public class WkfRequestListener {
       if (values != null && values.get("id") != null) {
 
         List<Map<String, Object>> wkfStatus =
-            wkfDisplayService.getWkfStatus(
-                event.getRequest().getBeanClass(), Long.parseLong(values.get("id").toString()));
+            Beans.get(WkfDisplayService.class)
+                .getWkfStatus(
+                    event.getRequest().getBeanClass(), Long.parseLong(values.get("id").toString()));
         if (wkfStatus.isEmpty()) {
           wkfStatus = null;
         }
@@ -184,12 +171,12 @@ public class WkfRequestListener {
     }
   }
 
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public void processDeleted(BeforeTransactionComplete event, String tenantId) {
 
     Set<? extends Model> deleted = new HashSet<Model>(event.getDeleted());
 
-    //    WkfInstanceRepository wkfInstanceRepository = Beans.get(WkfInstanceRepository.class);
+    WkfInstanceRepository wkfInstanceRepository = Beans.get(WkfInstanceRepository.class);
 
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();
@@ -200,10 +187,11 @@ public class WkfRequestListener {
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
         try {
           log.trace("Remove wkf instance of deleted model: {}, id: {}", modelName, model.getId());
-          WkfInstance wkfInstance = wkfInstanceRepo.findByInstnaceId(model.getProcessInstanceId());
+          WkfInstance wkfInstance =
+              wkfInstanceRepository.findByInstnaceId(model.getProcessInstanceId());
           if (wkfInstance != null
               && wkfInstance.getWkfProcess().getWkfProcessConfigList().size() == 1) {
-            wkfInstanceRepo.remove(wkfInstance);
+            wkfInstanceRepository.remove(wkfInstance);
           }
         } catch (Exception e) {
         }

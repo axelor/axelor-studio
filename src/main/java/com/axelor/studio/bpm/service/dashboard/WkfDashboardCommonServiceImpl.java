@@ -24,6 +24,7 @@ import com.axelor.db.Model;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.MetaModel;
@@ -59,7 +60,6 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
   protected WkfInstanceService wkfInstanceService;
   protected MetaJsonRecordRepository metaJsonRecordRepo;
   protected MetaModelRepository metaModelRepo;
-  protected MetaJsonModelRepository metaJsonModelRepo;
 
   @Inject
   public WkfDashboardCommonServiceImpl(
@@ -67,14 +67,12 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
       WkfTaskConfigRepository wkfTaskConfigRepo,
       WkfInstanceService wkfInstanceService,
       MetaJsonRecordRepository metaJsonRecordRepo,
-      MetaModelRepository metaModelRepo,
-      MetaJsonModelRepository metaJsonModelRepo) {
+      MetaModelRepository metaModelRepo) {
     this.wkfProcessRepo = wkfProcessRepo;
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
     this.wkfInstanceService = wkfInstanceService;
     this.metaJsonRecordRepo = metaJsonRecordRepo;
     this.metaModelRepo = metaModelRepo;
-    this.metaJsonModelRepo = metaJsonModelRepo;
   }
 
   @Override
@@ -127,11 +125,11 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
     ActionViewBuilder actionViewBuilder;
 
     if (isMetaModel) {
-      MetaModel metaModel = metaModelRepo.findByName(modelName);
+      MetaModel metaModel = Beans.get(MetaModelRepository.class).findByName(modelName);
       actionViewBuilder = this.createActionBuilder(status, metaModel);
 
     } else {
-      MetaJsonModel metaJsonModel = metaJsonModelRepo.findByName(modelName);
+      MetaJsonModel metaJsonModel = Beans.get(MetaJsonModelRepository.class).findByName(modelName);
       actionViewBuilder = this.createActionBuilder(status, metaJsonModel);
     }
 

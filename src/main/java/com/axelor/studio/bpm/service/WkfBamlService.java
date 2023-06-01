@@ -18,12 +18,12 @@
 package com.axelor.studio.bpm.service;
 
 import com.axelor.db.Model;
+import com.axelor.inject.Beans;
 import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.BamlModel;
 import com.axelor.studio.db.repo.BamlModelRepository;
 import com.axelor.utils.context.FullContext;
-import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -36,20 +36,6 @@ import org.slf4j.LoggerFactory;
 public class WkfBamlService implements JavaDelegate {
 
   protected static final Logger log = LoggerFactory.getLogger(WkfBamlService.class);
-
-  protected BamlModelRepository bamlModelRepo;
-  protected BamlService bamlService;
-  protected WkfCommonService wkfCommonService;
-
-  @Inject
-  public WkfBamlService(
-      BamlModelRepository bamlModelRepo,
-      BamlService bamlService,
-      WkfCommonService wkfCommonService) {
-    this.bamlModelRepo = bamlModelRepo;
-    this.bamlService = bamlService;
-    this.wkfCommonService = wkfCommonService;
-  }
 
   @Override
   public void execute(DelegateExecution execution) throws Exception {
@@ -64,29 +50,31 @@ public class WkfBamlService implements JavaDelegate {
       String model =
           bpmnModelElementInstance.getAttributeValueNs(
               BpmnParse.CAMUNDA_BPMN_EXTENSIONS_NS.getNamespaceUri(), "bamlModel");
-      BamlModel bamlModel = bamlModelRepo.findByName(model);
+      BamlModel bamlModel = Beans.get(BamlModelRepository.class).findByName(model);
       if (bamlModel != null) {
         executeBaml(execution, bamlModel);
       }
     }
   }
 
-  protected void executeBaml(DelegateExecution execution, BamlModel bamlModel) {
+  private void executeBaml(DelegateExecution execution, BamlModel bamlModel) {
 
     Map<String, Object> context = createContext(execution);
 
-    Model record = bamlService.execute(bamlModel, context);
+    Model record = Beans.get(BamlService.class).execute(bamlModel, context);
     log.debug("Record created from BAML: {}", record);
 
     if (record != null) {
-      String varName = wkfCommonService.getVarName(record);
+      String varName = Beans.get(WkfCommonService.class).getVarName(record);
       Map<String, Object> modelMap = new HashMap<String, Object>();
       modelMap.put(varName, record);
-      execution.getProcessInstance().setVariables(wkfCommonService.createVariables(modelMap));
+      execution
+          .getProcessInstance()
+          .setVariables(Beans.get(WkfCommonService.class).createVariables(modelMap));
     }
   }
 
-  protected Map<String, Object> createContext(DelegateExecution execution) {
+  private Map<String, Object> createContext(DelegateExecution execution) {
 
     Map<String, Object> variables = execution.getVariables();
 

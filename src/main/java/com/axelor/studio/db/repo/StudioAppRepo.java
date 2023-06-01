@@ -24,12 +24,7 @@ import javax.validation.ValidationException;
 
 public class StudioAppRepo extends StudioAppRepository {
 
-  protected StudioAppService studioAppService;
-
-  @Inject
-  public StudioAppRepo(StudioAppService studioAppService) {
-    this.studioAppService = studioAppService;
-  }
+  @Inject private StudioAppService studioAppService;
 
   @Override
   public StudioApp save(StudioApp studioApp) {

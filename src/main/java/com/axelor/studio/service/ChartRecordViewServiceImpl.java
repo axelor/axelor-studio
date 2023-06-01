@@ -25,7 +25,6 @@ import com.axelor.db.QueryBinder;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
@@ -80,17 +79,20 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
   protected MetaJsonModelRepository metaJsonModelRepository;
   protected MetaModelRepository metaModelRepository;
   protected MetaViewRepository metaViewRepository;
+  protected FilterSqlService filterSqlService;
 
   @Inject
   public ChartRecordViewServiceImpl(
       StudioChartRepository studioChartRepository,
       MetaJsonModelRepository metaJsonModelRepository,
       MetaModelRepository metaModelRepository,
-      MetaViewRepository metaViewRepository) {
+      MetaViewRepository metaViewRepository,
+      FilterSqlService filterSqlService) {
     this.studioChartRepository = studioChartRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;
     this.metaModelRepository = metaModelRepository;
     this.metaViewRepository = metaViewRepository;
+    this.filterSqlService = filterSqlService;
   }
 
   @Override
@@ -207,7 +209,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     filterList.addAll(filterForAggregations);
 
     final String tableName = getTableName(studioChart);
-    String sqlFilters = Beans.get(FilterSqlService.class).getSqlFilters(filterList, joins, true);
+    String sqlFilters = filterSqlService.getSqlFilters(filterList, joins, true);
     if (sqlFilters != null) {
       return String.format(
           "select self.id from %s self %s where %s",
@@ -438,15 +440,14 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     return modelClass;
   }
 
-  protected static class DateRangeConvertor {
+  private static class DateRangeConvertor {
 
-    protected static final DateTimeFormatter DATE_FORMAT =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    protected static final DateTimeFormatter MONTH_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM");
-    protected static final DateTimeFormatter YEAR_FORMAT = DateTimeFormatter.ofPattern("yyyy");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter MONTH_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM");
+    private static final DateTimeFormatter YEAR_FORMAT = DateTimeFormatter.ofPattern("yyyy");
 
-    protected final String startDateStr;
-    protected final String endDateStr;
+    private final String startDateStr;
+    private final String endDateStr;
 
     public DateRangeConvertor(String dateGroupType, String value) {
       LocalDate startDate = null;

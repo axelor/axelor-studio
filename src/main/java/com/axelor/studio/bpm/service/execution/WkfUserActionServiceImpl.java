@@ -23,6 +23,7 @@ import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.auth.db.repo.UserRepository;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
+import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.service.WkfCommonService;
@@ -48,46 +49,22 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   public static final String DESCRIPTION = /*$$(*/
       "BPM state <b>%s</b> is activated on<br/> <a href=\"%s\">%s</a><br/>" /*)*/;
 
-  protected WkfCommonService wkfService;
+  @Inject private WkfCommonService wkfService;
 
-  protected UserRepository userRepository;
+  @Inject private UserRepository userRepository;
 
-  protected WkfProcessConfigRepository wkfProcessConfigRepository;
+  @Inject private WkfProcessConfigRepository wkfProcessConfigRepository;
 
-  protected TeamTaskRepository teamTaskRepository;
+  @Inject private TeamTaskRepository teamTaskRepository;
 
-  protected RoleRepository roleRepo;
+  @Inject private RoleRepository roleRepo;
 
-  protected TeamRepository teamRepo;
-
-  protected WkfEmailService wkfEmailService;
-
-  protected MetaModelRepository metaModelRepository;
-
-  @Inject
-  public WkfUserActionServiceImpl(
-      WkfCommonService wkfService,
-      UserRepository userRepository,
-      WkfProcessConfigRepository wkfProcessConfigRepository,
-      TeamTaskRepository teamTaskRepository,
-      RoleRepository roleRepo,
-      TeamRepository teamRepo,
-      MetaModelRepository metaModelRepository,
-      WkfEmailService wkfEmailService) {
-    this.wkfService = wkfService;
-    this.userRepository = userRepository;
-    this.wkfProcessConfigRepository = wkfProcessConfigRepository;
-    this.teamTaskRepository = teamTaskRepository;
-    this.roleRepo = roleRepo;
-    this.teamRepo = teamRepo;
-    this.wkfEmailService = wkfEmailService;
-    this.metaModelRepository = metaModelRepository;
-  }
+  @Inject private TeamRepository teamRepo;
 
   protected static final Pattern FIELD_PATTERN = Pattern.compile("(\\$\\{[^\\}]+\\})");
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public void createUserAction(WkfTaskConfig wkfTaskConfig, DelegateExecution execution) {
 
     String title = wkfTaskConfig.getTaskEmailTitle();
@@ -130,7 +107,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         }
       }
 
-      String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
+      String url =
+          Beans.get(WkfEmailService.class).createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
       teamTask.setDescription(
           String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
 
@@ -169,7 +147,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       modelName = wkfTaskConfig.getModelName();
       modelClass =
           (Class<? extends Model>)
-              Class.forName(metaModelRepository.findByName(modelName).getFullName());
+              Class.forName(
+                  Beans.get(MetaModelRepository.class).findByName(modelName).getFullName());
     } else if (wkfTaskConfig.getJsonModelName() != null) {
       modelName = wkfTaskConfig.getJsonModelName();
       modelClass = MetaJsonRecord.class;
@@ -188,7 +167,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     return wkfContext;
   }
 
-  protected LocalDate getDeadLineDate(String deadLineFieldPath, FullContext wkfContext) {
+  private LocalDate getDeadLineDate(String deadLineFieldPath, FullContext wkfContext) {
 
     LocalDate date = null;
     if (deadLineFieldPath.equals("today")) {
@@ -221,7 +200,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     return user;
   }
 
-  protected String getUserPath(WkfTaskConfig wkfTaskConfig, String processDefinitionId) {
+  private String getUserPath(WkfTaskConfig wkfTaskConfig, String processDefinitionId) {
 
     String userPath = wkfTaskConfig.getUserPath();
     if (userPath == null) {

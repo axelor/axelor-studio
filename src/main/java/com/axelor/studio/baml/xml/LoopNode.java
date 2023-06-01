@@ -24,10 +24,10 @@ import javax.xml.bind.annotation.XmlType;
 public class LoopNode extends ProcessActionNode {
 
   @XmlAttribute(name = "target")
-  protected String target;
+  private String target;
 
   @XmlAttribute(name = "expression")
-  protected String expression;
+  private String expression;
 
   public String getTarget() {
     return target;

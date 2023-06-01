@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BpmMapperField extends MapperField {
 
-  protected String processId = null;
+  private String processId = null;
 
-  protected BpmMapperSearchField searchField;
+  private BpmMapperSearchField searchField;
 
   public String getProcessId() {
     return processId;

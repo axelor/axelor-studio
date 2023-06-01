@@ -17,15 +17,21 @@
  */
 package com.axelor.studio.db.repo;
 
-import com.axelor.inject.Beans;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaMenu;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.builder.StudioMenuService;
+import com.google.inject.Inject;
 
 public class StudioMenuRepo extends StudioMenuRepository {
+
+  @Inject private StudioMenuService studioMenuService;
+
+  @Inject private StudioActionRepo studioActionRepo;
+
+  @Inject private StudioMetaService metaService;
 
   @Override
   public StudioMenu save(StudioMenu studioMenu) {
@@ -33,7 +39,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
       studioMenu.getStudioAction().setMenuAction(true);
     }
     studioMenu = super.save(studioMenu);
-    studioMenu.setMetaMenu(Beans.get(StudioMenuService.class).build(studioMenu));
+    studioMenu.setMetaMenu(studioMenuService.build(studioMenu));
     return studioMenu;
   }
 
@@ -46,7 +52,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
     studioMenu = super.copy(studioMenu, deep);
 
     if (studioAction != null) {
-      studioMenu.setStudioAction(Beans.get(StudioActionRepository.class).copy(studioAction, deep));
+      studioMenu.setStudioAction(studioActionRepo.copy(studioAction, deep));
     }
     studioMenu.setMetaMenu(null);
     return studioMenu;
@@ -58,7 +64,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
     studioMenu.setMetaMenu(null);
 
     if (metaMenu != null) {
-      Beans.get(StudioMetaService.class).removeMetaMenu(metaMenu);
+      metaService.removeMetaMenu(metaMenu);
     }
 
     StudioAction studioAction = studioMenu.getStudioAction();
@@ -66,7 +72,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
     studioMenu.setStudioAction(null);
     if (studioAction != null) {
       try {
-        Beans.get(StudioActionRepository.class).remove(studioAction);
+        studioActionRepo.remove(studioAction);
       } catch (RuntimeException e) {
         throw e;
       }

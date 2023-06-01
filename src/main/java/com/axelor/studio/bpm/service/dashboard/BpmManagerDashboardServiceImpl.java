@@ -34,21 +34,11 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
 
   public static final int FETCH_LIMIT = 20;
 
-  protected WkfDashboardCommonService wkfDashboardCommonService;
+  @Inject private WkfDashboardCommonService wkfDashboardCommonService;
 
-  protected BpmManagerDashboardUserService bpmMgrDashboardUserService;
+  @Inject private BpmManagerDashboardUserService bpmMgrDashboardUserService;
 
-  protected BpmManagerDashboardTaskService bpmMgrDashboardTaskService;
-
-  @Inject
-  public BpmManagerDashboardServiceImpl(
-      WkfDashboardCommonService wkfDashboardCommonService,
-      BpmManagerDashboardUserService bpmMgrDashboardUserService,
-      BpmManagerDashboardTaskService bpmMgrDashboardTaskService) {
-    this.wkfDashboardCommonService = wkfDashboardCommonService;
-    this.bpmMgrDashboardUserService = bpmMgrDashboardUserService;
-    this.bpmMgrDashboardTaskService = bpmMgrDashboardTaskService;
-  }
+  @Inject private BpmManagerDashboardTaskService bpmMgrDashboardTaskService;
 
   @SuppressWarnings({"unchecked", "serial"})
   @Override
@@ -164,7 +154,7 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
   }
 
   @SuppressWarnings({"serial"})
-  protected Map<String, Object> computeAssignedTaskConfigs(
+  private Map<String, Object> computeAssignedTaskConfigs(
       WkfProcess process, String modelName, boolean isMetaModel, User user) {
 
     Object obj[] =

@@ -25,6 +25,7 @@ import com.axelor.data.Listener;
 import com.axelor.data.xml.XMLImporter;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
@@ -53,7 +54,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -61,6 +64,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.xmlbeans.impl.common.IOUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class WkfModelServiceImpl implements WkfModelService {
 
@@ -69,28 +73,19 @@ public class WkfModelServiceImpl implements WkfModelService {
   protected WkfModelRepository wkfModelRepository;
   protected WkfDashboardCommonService wkfDashboardCommonService;
   protected TranslationService translationService;
-  protected AppRepository appRepo;
-  protected BpmDeploymentService bpmDeploymentService;
-  protected MetaFileRepository metaFileRepository;
 
   @Inject
   public WkfModelServiceImpl(
       WkfModelRepository wkfModelRepository,
       WkfDashboardCommonService wkfDashboardCommonService,
-      TranslationService translationService,
-      AppRepository appRepo,
-      BpmDeploymentService bpmDeploymentService,
-      MetaFileRepository metaFileRepository) {
+      TranslationService translationService) {
     this.wkfModelRepository = wkfModelRepository;
     this.wkfDashboardCommonService = wkfDashboardCommonService;
     this.translationService = translationService;
-    this.appRepo = appRepo;
-    this.bpmDeploymentService = bpmDeploymentService;
-    this.metaFileRepository = metaFileRepository;
   }
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public WkfModel createNewVersion(WkfModel wkfModel) {
     WkfModel newVersion =
         wkfModelRepository
@@ -107,7 +102,7 @@ public class WkfModelServiceImpl implements WkfModelService {
   }
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public WkfModel start(WkfModel wkfModel) {
 
     wkfModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
@@ -122,7 +117,7 @@ public class WkfModelServiceImpl implements WkfModelService {
   }
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public WkfModel terminate(WkfModel wkfModel) {
 
     wkfModel.setStatusSelect(WkfModelRepository.STATUS_TERMINATED);
@@ -131,7 +126,7 @@ public class WkfModelServiceImpl implements WkfModelService {
   }
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public WkfModel backToDraft(WkfModel wkfModel) {
 
     wkfModel.setStatusSelect(WkfModelRepository.STATUS_NEW);
@@ -157,7 +152,7 @@ public class WkfModelServiceImpl implements WkfModelService {
   @Override
   public void importStandardWkfModels() throws IOException {
 
-    List<App> appList = appRepo.all().filter("self.active = true").fetch();
+    List<App> appList = Beans.get(AppRepository.class).all().filter("self.active = true").fetch();
 
     if (ObjectUtils.isEmpty(appList)) {
       return;
@@ -209,7 +204,7 @@ public class WkfModelServiceImpl implements WkfModelService {
           @Override
           public void imported(Model arg0) {
             WkfModel wkfModel = (WkfModel) arg0;
-            bpmDeploymentService.deploy(wkfModel, null);
+            Beans.get(BpmDeploymentService.class).deploy(wkfModel, null);
             wkfModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
           }
 
@@ -228,7 +223,7 @@ public class WkfModelServiceImpl implements WkfModelService {
   @Transactional(rollbackOn = Exception.class)
   public String importWkfModels(
       MetaFile metaFile, boolean translate, String sourceLanguage, String targetLanguage)
-      throws Exception {
+      throws IOException, ParserConfigurationException, SAXException, TransformerException {
 
     if (metaFile == null) {
       return null;
@@ -288,13 +283,14 @@ public class WkfModelServiceImpl implements WkfModelService {
 
     FileUtils.forceDelete(xmlFile);
 
+    MetaFileRepository metaFileRepository = Beans.get(MetaFileRepository.class);
     metaFileRepository.remove(metaFile);
 
     return log.toString();
   }
 
   protected File translateNodeName(File importFile, String sourceLanguage, String targetLanguage)
-      throws Exception {
+      throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = dbf.newDocumentBuilder();
@@ -341,7 +337,6 @@ public class WkfModelServiceImpl implements WkfModelService {
     return dataList;
   }
 
-  @SuppressWarnings("unchecked")
   protected Map<String, Object> buildDataMapPerStatus(WkfProcess process) {
     Map<String, Object> processMap = new HashMap<>();
     List<Map<String, Object>> configList = new ArrayList<>();
@@ -406,7 +401,6 @@ public class WkfModelServiceImpl implements WkfModelService {
     return dataList;
   }
 
-  @SuppressWarnings("unchecked")
   protected Map<String, Object> buildDataMapPerUser(WkfProcess process) {
     Map<String, Object> processMap = new HashMap<>();
     List<Map<String, Object>> configList = new ArrayList<>();

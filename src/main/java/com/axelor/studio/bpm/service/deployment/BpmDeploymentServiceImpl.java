@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.service.deployment;
 
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
@@ -64,45 +65,20 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   protected Logger log = LoggerFactory.getLogger(BpmDeploymentServiceImpl.class);
 
-  protected WkfProcessRepository wkfProcessRepository;
-  protected MetaJsonModelRepository metaJsonModelRepository;
-  protected MetaAttrsService metaAttrsService;
-  protected WkfCommonService wkfService;
-  protected MetaFileRepository metaFileRepo;
-  protected WkfProcessApplication wkfProcessApplication;
-  protected WkfNodeService wkfNodeService;
-  protected WkfModelRepository wkfModelRepository;
-  protected ProcessEngineService processEngineService;
+  @Inject protected WkfProcessRepository wkfProcessRepository;
+
+  @Inject protected MetaJsonModelRepository metaJsonModelRepository;
+
+  @Inject protected MetaAttrsService metaAttrsService;
+
+  @Inject protected WkfCommonService wkfService;
 
   protected WkfModel wkfModel;
 
   protected Map<String, Map<String, String>> migrationMap;
 
-  @Inject
-  public BpmDeploymentServiceImpl(
-      WkfProcessRepository wkfProcessRepository,
-      MetaJsonModelRepository metaJsonModelRepository,
-      MetaAttrsService metaAttrsService,
-      WkfCommonService wkfService,
-      MetaFileRepository metaFileRepo,
-      WkfProcessApplication wkfProcessApplication,
-      WkfNodeService wkfNodeService,
-      WkfModelRepository wkfModelRepository,
-      ProcessEngineService processEngineService) {
-
-    this.wkfProcessRepository = wkfProcessRepository;
-    this.metaJsonModelRepository = metaJsonModelRepository;
-    this.metaAttrsService = metaAttrsService;
-    this.wkfService = wkfService;
-    this.metaFileRepo = metaFileRepo;
-    this.wkfProcessApplication = wkfProcessApplication;
-    this.wkfNodeService = wkfNodeService;
-    this.wkfModelRepository = wkfModelRepository;
-    this.processEngineService = processEngineService;
-  }
-
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public void deploy(WkfModel wkfModel, Map<String, Map<String, String>> migrationMap) {
 
     if (wkfModel.getDiagramXml() == null) {
@@ -112,7 +88,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.wkfModel = wkfModel;
     this.migrationMap = migrationMap;
 
-    ProcessEngine engine = processEngineService.getEngine();
+    ProcessEngine engine = Beans.get(ProcessEngineService.class).getEngine();
 
     String key = wkfModel.getId() + ".bpmn";
     BpmnModelInstance bpmInstance =
@@ -132,9 +108,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     Map<String, String> processMap = deployProcess(engine, deploymentBuilder, bpmInstance);
 
-    List<MetaAttrs> metaAttrsList = wkfNodeService.extractNodes(wkfModel, bpmInstance, processMap);
+    List<MetaAttrs> metaAttrsList =
+        Beans.get(WkfNodeService.class).extractNodes(wkfModel, bpmInstance, processMap);
 
-    wkfModelRepository.save(wkfModel);
+    Beans.get(WkfModelRepository.class).save(wkfModel);
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, wkfModel.getId());
   }
@@ -190,7 +167,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     engine
         .getManagementService()
-        .registerProcessApplication(deployment.getId(), wkfProcessApplication.getReference());
+        .registerProcessApplication(
+            deployment.getId(), Beans.get(WkfProcessApplication.class).getReference());
 
     return processMap;
   }
@@ -236,7 +214,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
   }
 
-  protected MigrationPlan createMigrationPlan(
+  private MigrationPlan createMigrationPlan(
       ProcessEngine engine, ProcessDefinition oldDefinition, ProcessDefinition newDefinition) {
 
     Map<String, String> processMap = migrationMap.get(newDefinition.getKey());
@@ -297,6 +275,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   protected void addDmn(DeploymentBuilder deploymentBuilder, Set<MetaFile> dmnFiles) {
 
+    MetaFileRepository metaFileRepo = Beans.get(MetaFileRepository.class);
     for (MetaFile dmnFile : dmnFiles) {
       dmnFile = metaFileRepo.find(dmnFile.getId());
       deploymentBuilder.addModelInstance(
@@ -314,7 +293,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
   }
 
-  protected void addProcessConfig(BpmnModelInstance bpmInstance, WkfProcess process) {
+  private void addProcessConfig(BpmnModelInstance bpmInstance, WkfProcess process) {
 
     BaseElement processElement = bpmInstance.getModelElementById(process.getName());
     ExtensionElements extensionElements = processElement.getExtensionElements();
@@ -352,7 +331,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
   }
 
-  protected Map<String, WkfProcessConfig> createConfigMap(WkfProcess process) {
+  private Map<String, WkfProcessConfig> createConfigMap(WkfProcess process) {
 
     Map<String, WkfProcessConfig> configMap = new HashMap<String, WkfProcessConfig>();
 
@@ -370,7 +349,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     return configMap;
   }
 
-  protected WkfProcessConfig getProcessCofig(
+  private WkfProcessConfig getProcessCofig(
       Map<String, WkfProcessConfig> configMap, ModelElementInstance configParam) {
 
     String metaModel =

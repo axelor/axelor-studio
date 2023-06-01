@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.app.service;
 
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAction;
 import com.axelor.meta.db.MetaFile;
@@ -48,34 +49,29 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class AccessTemplateServiceImpl implements AccessTemplateService {
 
-  protected Map<String, String> menuApp;
+  private Map<String, String> menuApp;
 
-  protected Map<String, String> objMenu;
+  private Map<String, String> objMenu;
 
-  protected List<String> configMenus;
+  private List<String> configMenus;
 
-  protected List<String> appMenus;
+  private List<String> appMenus;
 
-  protected static final String[] objectHeaders = new String[] {"Object", "User", "Manager"};
-  protected static final String[] menuHeaders = new String[] {"Menu", "User", "Manager"};
+  private static final String[] objectHeaders = new String[] {"Object", "User", "Manager"};
+  private static final String[] menuHeaders = new String[] {"Menu", "User", "Manager"};
 
-  protected String defaultApp = null;
+  private String defaultApp = null;
 
   protected MetaMenuRepository metaMenuRepo;
   protected MetaFiles metaFiles;
   protected MetaModelRepository metaModelRepo;
-  protected AppRepository appRepo;
 
   @Inject
   public AccessTemplateServiceImpl(
-      MetaMenuRepository metaMenuRepo,
-      MetaFiles metaFiles,
-      MetaModelRepository metaModelRepo,
-      AppRepository appRepo) {
+      MetaMenuRepository metaMenuRepo, MetaFiles metaFiles, MetaModelRepository metaModelRepo) {
     this.metaMenuRepo = metaMenuRepo;
     this.metaFiles = metaFiles;
     this.metaModelRepo = metaModelRepo;
-    this.appRepo = appRepo;
   }
 
   @Override
@@ -86,7 +82,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     appMenus = new ArrayList<>();
     defaultApp = null;
 
-    App app = appRepo.findByCode("base");
+    App app = Beans.get(AppRepository.class).findByCode("base");
     if (app == null) {
       return null;
     }
@@ -99,14 +95,14 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     return createExcel();
   }
 
-  protected void getMenusPerApp() {
+  private void getMenusPerApp() {
 
     List<MetaMenu> menus = metaMenuRepo.all().filter("self.parent is null").order("id").fetch();
 
     processMenu(menus.iterator());
   }
 
-  protected void processMenu(Iterator<MetaMenu> menuIter) {
+  private void processMenu(Iterator<MetaMenu> menuIter) {
 
     if (!menuIter.hasNext()) {
       return;
@@ -131,7 +127,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     processMenu(menuIter);
   }
 
-  protected boolean validModel(String model) {
+  private boolean validModel(String model) {
 
     if (model == null) {
       return false;
@@ -144,7 +140,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     return !model.equals(MetaJsonRecord.class.getName());
   }
 
-  protected String getObjMenu(MetaMenu menu) {
+  private String getObjMenu(MetaMenu menu) {
 
     if (appMenus.contains(menu.getName())) {
       return menu.getName();
@@ -171,7 +167,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     return null;
   }
 
-  protected String getApp(MetaMenu menu) {
+  private String getApp(MetaMenu menu) {
 
     String appCode = null;
     String condition = menu.getConditionToCheck();
@@ -179,7 +175,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     if (condition != null) {
       String[] cond = condition.split("__config__\\.app\\?.isApp\\('");
       if (cond.length > 1) {
-        App app = appRepo.findByCode(cond[1].split("'")[0]);
+        App app = Beans.get(AppRepository.class).findByCode(cond[1].split("'")[0]);
         if (app != null) {
           if (condition.trim().equals("__config__.app?.isApp('" + app.getCode() + "')")
               && menu.getAction() == null) {
@@ -211,7 +207,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     return appCode;
   }
 
-  protected MetaFile createExcel() throws IOException {
+  private MetaFile createExcel() throws IOException {
 
     XSSFWorkbook workBook = new XSSFWorkbook();
 
@@ -265,7 +261,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     writeRow(sheet, new String[] {obj, usersRights, "rwcde"});
   }
 
-  protected void writeMenuSheet(XSSFWorkbook workBook, String menu, String app) {
+  private void writeMenuSheet(XSSFWorkbook workBook, String menu, String app) {
     XSSFSheet sheet = workBook.getSheet(app + "-menu");
     if (sheet == null) {
       sheet = workBook.createSheet(app + "-menu");
@@ -276,7 +272,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     appMenus.remove(menu);
   }
 
-  protected void writeRow(XSSFSheet sheet, String[] values) {
+  private void writeRow(XSSFSheet sheet, String[] values) {
 
     XSSFRow row = sheet.createRow(sheet.getPhysicalNumberOfRows());
 
@@ -286,7 +282,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     }
   }
 
-  protected void updateNoMenuObjects() {
+  private void updateNoMenuObjects() {
 
     List<MetaModel> metaModels =
         metaModelRepo.all().filter("self.fullName not in ?1", objMenu.keySet()).fetch();
@@ -311,7 +307,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     }
   }
 
-  protected boolean addObject(MetaModel model) {
+  private boolean addObject(MetaModel model) {
 
     for (Entry<String, String> entry : objMenu.entrySet()) {
       if (model.getFullName().contains(entry.getKey())) {

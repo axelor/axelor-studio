@@ -23,21 +23,21 @@ import org.apache.commons.lang3.StringUtils;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapperField {
 
-  protected String dataPath = null;
+  private String dataPath = null;
 
-  protected String type = null;
+  private String type = null;
 
-  protected String target = null;
+  private String target = null;
 
-  protected String jsonModel = null;
+  private String jsonModel = null;
 
-  protected String name = null;
+  private String name = null;
 
-  protected String parent = null;
+  private String parent = null;
 
-  protected MapperValue value = null;
+  private MapperValue value = null;
 
-  protected String condition = null;
+  private String condition = null;
 
   public String getDataPath() {
     return dataPath;

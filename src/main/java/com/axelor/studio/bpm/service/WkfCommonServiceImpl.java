@@ -26,7 +26,6 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.rpc.Context;
 import com.axelor.script.GroovyScriptHelper;
-import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
@@ -55,25 +54,11 @@ public class WkfCommonServiceImpl implements WkfCommonService {
 
   protected static final Logger log = LoggerFactory.getLogger(WkfCommonServiceImpl.class);
 
-  protected WkfProcessConfigRepository wkfProcessConfigRepository;
+  @Inject protected WkfProcessConfigRepository wkfProcessConfigRepository;
 
-  protected MetaJsonFieldRepository metaJsonFieldRepository;
+  @Inject protected MetaJsonFieldRepository metaJsonFieldRepository;
 
-  protected WkfModelRepository wkfModelRepository;
-
-  protected AppService appService;
-
-  @Inject
-  public WkfCommonServiceImpl(
-      WkfProcessConfigRepository wkfProcessConfigRepository,
-      MetaJsonFieldRepository metaJsonFieldRepository,
-      WkfModelRepository wkfModelRepository,
-      AppService appService) {
-    this.wkfProcessConfigRepository = wkfProcessConfigRepository;
-    this.wkfModelRepository = wkfModelRepository;
-    this.metaJsonFieldRepository = metaJsonFieldRepository;
-    this.appService = appService;
-  }
+  @Inject protected WkfModelRepository wkfModelRepository;
 
   @Override
   public WkfProcessConfig findCurrentProcessConfig(Model model) {
@@ -218,7 +203,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
     return name;
   }
 
-  protected String getModelName(Model model) {
+  private String getModelName(Model model) {
 
     if (model instanceof MetaJsonRecord) {
       return ((MetaJsonRecord) model).getJsonModel();

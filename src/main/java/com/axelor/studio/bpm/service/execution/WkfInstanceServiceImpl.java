@@ -20,6 +20,7 @@ package com.axelor.studio.bpm.service.execution;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
+import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
@@ -73,44 +74,18 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         BpmnModelConstants.BPMN_ELEMENT_USER_TASK, BpmnModelConstants.BPMN_ELEMENT_RECEIVE_TASK
       };
 
-  protected ProcessEngineService engineService;
+  @Inject protected ProcessEngineService engineService;
 
-  protected WkfInstanceRepository wkfInstanceRepository;
+  @Inject protected WkfInstanceRepository wkfInstanceRepository;
 
-  protected WkfCommonService wkfService;
+  @Inject protected WkfCommonService wkfService;
 
-  protected MetaFiles metaFiles;
+  @Inject protected MetaFiles metaFiles;
 
-  protected WkfTaskConfigRepository wkfTaskConfigRepository;
-
-  protected WkfTaskService wkfTaskService;
-
-  protected WkfEmailService wkfEmailService;
-
-  protected WkfUserActionService wkfUserActionService;
-
-  @Inject
-  public WkfInstanceServiceImpl(
-      ProcessEngineService engineService,
-      WkfInstanceRepository wkfInstanceRepository,
-      WkfCommonService wkfService,
-      MetaFiles metaFiles,
-      WkfTaskConfigRepository wkfTaskConfigRepository,
-      WkfTaskService wkfTaskService,
-      WkfEmailService wkfEmailService,
-      WkfUserActionService wkfUserActionService) {
-    this.engineService = engineService;
-    this.wkfInstanceRepository = wkfInstanceRepository;
-    this.wkfService = wkfService;
-    this.metaFiles = metaFiles;
-    this.wkfTaskConfigRepository = wkfTaskConfigRepository;
-    this.wkfTaskService = wkfTaskService;
-    this.wkfEmailService = wkfEmailService;
-    this.wkfUserActionService = wkfUserActionService;
-  }
+  @Inject protected WkfTaskConfigRepository wkfTaskConfigRepository;
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public String evalInstance(Model model, String signal) throws ClassNotFoundException {
 
     model = EntityHelper.getEntity(model);
@@ -141,7 +116,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
           findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
 
       if (processInstance != null && wkfInstance != null && !processInstance.isEnded()) {
-        helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal);
+        helpText =
+            Beans.get(WkfTaskService.class).runTasks(engine, wkfInstance, processInstance, signal);
       }
     }
 
@@ -182,7 +158,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public WkfInstance createWkfInstance(String processInstanceId, WkfProcess wkfProcess) {
 
     WkfInstance instance = new WkfInstance();
@@ -193,7 +169,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     return wkfInstanceRepository.save(instance);
   }
 
-  protected void addRelatedProcessInstanceId(Model model) {
+  private void addRelatedProcessInstanceId(Model model) {
 
     WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
 
@@ -215,7 +191,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
   }
 
-  protected boolean addRelatedInstance(Model model, WkfProcessConfig wkfProcessConfig) {
+  private boolean addRelatedInstance(Model model, WkfProcessConfig wkfProcessConfig) {
 
     log.debug(
         "Find related instance for the model: {}, id: {}, path: {}",
@@ -243,7 +219,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
   }
 
-  protected ProcessInstance findProcessInstance(
+  private ProcessInstance findProcessInstance(
       String processInstanceId, RuntimeService runTimeService) {
 
     ProcessInstance processInstance =
@@ -401,14 +377,14 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         && wkfTaskConfig.getEmailEvent() != null
         && wkfTaskConfig.getEmailEvent().equals("start")) {
       try {
-        wkfEmailService.sendEmail(wkfTaskConfig, execution);
+        Beans.get(WkfEmailService.class).sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
         ExceptionTool.trace(e);
       }
     }
 
     if (wkfTaskConfig.getCreateTask()) {
-      wkfUserActionService.createUserAction(wkfTaskConfig, execution);
+      Beans.get(WkfUserActionService.class).createUserAction(wkfTaskConfig, execution);
     }
   }
 
@@ -423,7 +399,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         && wkfTaskConfig.getEmailEvent() != null
         && wkfTaskConfig.getEmailEvent().equals("end")) {
       try {
-        wkfEmailService.sendEmail(wkfTaskConfig, execution);
+        Beans.get(WkfEmailService.class).sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
         ExceptionTool.trace(e);
       }
@@ -513,7 +489,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         .execute(true, true);
   }
 
-  protected Map<String, Object> createVariables(String processInstanceId) {
+  private Map<String, Object> createVariables(String processInstanceId) {
 
     Map<String, Object> varMap = new HashMap<String, Object>();
 
@@ -615,7 +591,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @SuppressWarnings("rawtypes")
-  protected void addChildProcessInstanceId(
+  private void addChildProcessInstanceId(
       String processInstanceId, FullContext modelCtx, Map<String, Object> ctxMap) {
 
     RuntimeService runtimeService = engineService.getEngine().getRuntimeService();

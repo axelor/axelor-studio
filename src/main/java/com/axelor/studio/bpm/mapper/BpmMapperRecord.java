@@ -25,12 +25,12 @@ import java.util.List;
 
 public class BpmMapperRecord extends MapperRecord {
 
-  protected String processId = null;
+  private String processId = null;
 
-  protected boolean createVariable = false;
+  private boolean createVariable = false;
 
   @JsonProperty("fields")
-  protected List<BpmMapperField> bpmMapperFields = new ArrayList<BpmMapperField>();
+  private List<BpmMapperField> bpmMapperFields = new ArrayList<BpmMapperField>();
 
   public String getProcessId() {
     return processId;

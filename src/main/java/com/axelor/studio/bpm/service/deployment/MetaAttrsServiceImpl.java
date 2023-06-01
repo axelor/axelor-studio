@@ -64,21 +64,11 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
           + WkfInstanceService.class.getName()
           + ").isActivatedModelTask(%s, '%s')";
 
-  protected MetaModelRepository metaModelRepository;
+  @Inject protected MetaModelRepository metaModelRepository;
 
-  protected MetaAttrsRepository metaAttrsRepository;
+  @Inject protected MetaAttrsRepository metaAttrsRepository;
 
-  protected RoleRepository roleRepository;
-
-  @Inject
-  public MetaAttrsServiceImpl(
-      MetaModelRepository metaModelRepository,
-      MetaAttrsRepository metaAttrsRepository,
-      RoleRepository roleRepository) {
-    this.metaModelRepository = metaModelRepository;
-    this.metaAttrsRepository = metaAttrsRepository;
-    this.roleRepository = roleRepository;
-  }
+  @Inject protected RoleRepository roleRepository;
 
   @Override
   public List<MetaAttrs> createMetaAttrs(
@@ -180,7 +170,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
     return metaAttrsList;
   }
 
-  protected String getModel(String value) {
+  private String getModel(String value) {
 
     MetaModel metaModel = metaModelRepository.findByName(value);
 
@@ -191,7 +181,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
     return value;
   }
 
-  protected MetaAttrs findMetaAttrs(MetaAttrs metaAttrs, Long wkfModelId) {
+  private MetaAttrs findMetaAttrs(MetaAttrs metaAttrs, Long wkfModelId) {
 
     MetaAttrs savedAttrs =
         metaAttrsRepository
@@ -218,7 +208,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
     return metaAttrs;
   }
 
-  protected Set<Role> findRoles(String roles) {
+  private Set<Role> findRoles(String roles) {
 
     Set<Role> roleSet = new HashSet<Role>();
 
@@ -231,7 +221,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
   }
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public void saveMetaAttrs(List<MetaAttrs> metaAttrsList, Long wkfModelId) {
 
     List<Long> metaAttrsIds = new ArrayList<Long>();

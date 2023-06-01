@@ -9,9 +9,8 @@ import java.util.List;
 
 public class FullTransformation {
 
-  protected TransformationRepository transformationRepository;
+  @Inject protected TransformationRepository transformationRepository;
 
-  @Inject
   public FullTransformation(TransformationRepository transformationRepository) {
     this.transformationRepository = transformationRepository;
   }

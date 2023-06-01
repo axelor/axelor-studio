@@ -21,6 +21,7 @@ import com.axelor.auth.db.Permission;
 import com.axelor.auth.db.Role;
 import com.axelor.auth.db.repo.PermissionRepository;
 import com.axelor.auth.db.repo.RoleRepository;
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaMenu;
@@ -49,20 +50,17 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
   protected PermissionRepository permissionRepo;
   protected RoleRepository roleRepo;
   protected MetaMenuRepository metaMenuRepo;
-  protected AppRepository appRepo;
 
   @Inject
   public AccessConfigImportServiceImpl(
       AccessConfigRepository accessConfigRepo,
       PermissionRepository permissionRepo,
       RoleRepository roleRepo,
-      MetaMenuRepository metaMenuRepo,
-      AppRepository appRepo) {
+      MetaMenuRepository metaMenuRepo) {
     this.accessConfigRepo = accessConfigRepo;
     this.permissionRepo = permissionRepo;
     this.roleRepo = roleRepo;
     this.metaMenuRepo = metaMenuRepo;
-    this.appRepo = appRepo;
   }
 
   @Override
@@ -76,7 +74,7 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     processWorkbook(workBook);
   }
 
-  protected void processWorkbook(XSSFWorkbook workBook) {
+  private void processWorkbook(XSSFWorkbook workBook) {
 
     Iterator<XSSFSheet> sheetIter = workBook.iterator();
 
@@ -91,9 +89,9 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     }
   }
 
-  protected void importObjectAccess(XSSFSheet sheet) {
+  private void importObjectAccess(XSSFSheet sheet) {
 
-    App app = appRepo.findByCode(sheet.getSheetName());
+    App app = Beans.get(AppRepository.class).findByCode(sheet.getSheetName());
     if (app == null) {
       return;
     }
@@ -108,7 +106,7 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     }
   }
 
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public Map<Integer, AccessConfig> getAccessConfig(Row row, App app) {
 
     Map<Integer, AccessConfig> configMap = new HashMap<>();
@@ -133,7 +131,7 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     return configMap;
   }
 
-  protected void createObjectRoles(Map<Integer, AccessConfig> accessMap, Row row) {
+  private void createObjectRoles(Map<Integer, AccessConfig> accessMap, Row row) {
 
     Iterator<Cell> cellIter = row.iterator();
     String obj = cellIter.next().getStringCellValue();
@@ -149,12 +147,12 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     }
   }
 
-  protected boolean invalidValue(String value) {
+  private boolean invalidValue(String value) {
 
     return !"rwcde".startsWith(value);
   }
 
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public Permission getPermission(String model, String value, AccessConfig config) {
 
     String[] objs = model.split("\\.");
@@ -209,7 +207,7 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     return permissionRepo.save(permission);
   }
 
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public void addRole(AccessConfig config, Permission permission) {
 
     String name = config.getApp().getCode() + "." + config.getName();
@@ -223,9 +221,9 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     accessConfigRepo.save(config);
   }
 
-  protected void importMenuAccess(XSSFSheet sheet) {
+  private void importMenuAccess(XSSFSheet sheet) {
 
-    App app = appRepo.findByCode(sheet.getSheetName().split("-")[0]);
+    App app = Beans.get(AppRepository.class).findByCode(sheet.getSheetName().split("-")[0]);
     if (app == null) {
       return;
     }
@@ -240,7 +238,7 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     }
   }
 
-  protected void createMenuRoles(Map<Integer, AccessConfig> accessMap, Row row) {
+  private void createMenuRoles(Map<Integer, AccessConfig> accessMap, Row row) {
 
     Iterator<Cell> cellIter = row.iterator();
     String menu = cellIter.next().getStringCellValue().trim();
@@ -255,7 +253,7 @@ public class AccessConfigImportServiceImpl implements AccessConfigImportService 
     }
   }
 
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public void addRole(AccessConfig config, String menu) {
 
     String name = config.getApp().getCode() + "." + config.getName();

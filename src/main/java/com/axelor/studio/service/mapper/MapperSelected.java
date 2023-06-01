@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapperSelected {
 
-  protected String value = null;
+  private String value = null;
 
-  protected String targetName = null;
+  private String targetName = null;
 
   public String getValue() {
     return value;

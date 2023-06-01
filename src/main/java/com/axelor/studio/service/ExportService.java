@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 public class ExportService {
 
-  protected ExportService() {
+  private ExportService() {
     throw new IllegalStateException("Should not be instantiated.");
   }
 

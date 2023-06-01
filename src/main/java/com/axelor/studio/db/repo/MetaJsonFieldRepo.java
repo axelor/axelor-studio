@@ -29,14 +29,7 @@ import com.google.inject.Inject;
 
 public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
 
-  protected MetaModelRepository metaModelRepo;
-  protected JsonFieldService jsonFieldService;
-
-  @Inject
-  public MetaJsonFieldRepo(MetaModelRepository metaModelRepo, JsonFieldService jsonFieldService) {
-    this.metaModelRepo = metaModelRepo;
-    this.jsonFieldService = jsonFieldService;
-  }
+  @Inject MetaModelRepository metaModelRepo;
 
   @Override
   public MetaJsonField save(MetaJsonField metaJsonField) {
@@ -46,7 +39,7 @@ public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
       metaJsonField.setIncludeIf("__config__.app?.isApp('" + studioApp.getCode() + "')");
     }
 
-    jsonFieldService.updateSelection(metaJsonField);
+    Beans.get(JsonFieldService.class).updateSelection(metaJsonField);
 
     return super.save(metaJsonField);
   }
@@ -63,7 +56,7 @@ public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
           .trackingFields(metaModel, metaJsonField.getName(), "Field removed");
     }
 
-    jsonFieldService.removeSelection(metaJsonField);
+    Beans.get(JsonFieldService.class).removeSelection(metaJsonField);
 
     super.remove(metaJsonField);
   }
