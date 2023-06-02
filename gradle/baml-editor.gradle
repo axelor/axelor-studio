@@ -1,0 +1,62 @@
+ext {
+    bamlRootPath = "react-components/baml"
+    bamlBuildPath = "${bamlRootPath}/build"
+}
+
+task yarnBamlInstall(type: YarnTask) {
+    group = 'com.axelor.addons'
+    description = 'Install dependencies'
+    workingDir = file("${bamlRootPath}")
+
+    args = ['install']
+}
+
+task yarnBamlBuild(type: YarnTask) {
+    group = 'com.axelor.addons'
+    description = 'Build App'
+    environment = [
+            CI: 'false'
+    ]
+    workingDir = file("${bamlRootPath}")
+
+    dependsOn yarnBamlInstall
+    mustRunAfter yarnBamlInstall
+
+    outputs.upToDateWhen { false }
+    outputs.dir('build')
+
+    args = ["run", "build"]
+}
+
+task copyBamlWebapp(type: Copy) {
+    group = 'com.axelor.addons'
+    description = 'Copy into webapp'
+
+    dependsOn yarnBamlBuild
+    mustRunAfter yarnBamlBuild
+
+    destinationDir = file(rootProject.buildDir)
+    into("webapp/baml-editor") {
+        from "${bamlBuildPath}"
+    }
+}
+
+rootProject.tasks.named("clean") {
+    delete "${bamlBuildPath}"
+    delete "${bamlRootPath}/node_modules"
+}
+
+rootProject.tasks.named("war") {
+    dependsOn copyBamlWebapp
+    mustRunAfter copyBamlWebapp
+}
+
+rootProject.tasks.named("compileJava") {
+    dependsOn copyBamlWebapp
+    mustRunAfter copyBamlWebapp
+}
+
+rootProject.tasks.named("processResources") {
+    dependsOn copyBamlWebapp
+    mustRunAfter copyBamlWebapp
+}
