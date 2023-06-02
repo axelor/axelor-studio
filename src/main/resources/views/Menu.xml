@@ -10,7 +10,7 @@
     action="action.studio.view" order="10" if="__config__.app?.isApp('studio')"/>
 
   <action-view name="action.studio.view" title="Studio">
-    <view type="html" name="studio/custom-model"/>
+    <view type="html" name="studio/custom-model/"/>
   </action-view>
 
   <menuitem name="studio-app-studio-components" title="Studio components" order="25"

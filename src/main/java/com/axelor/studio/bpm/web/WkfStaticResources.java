@@ -24,6 +24,6 @@ public class WkfStaticResources implements StaticResourceProvider {
 
   @Override
   public void register(List<String> resources) {
-    resources.add("wkf/wkf-editor");
+    resources.add("wkf/wkf-editor/");
   }
 }
