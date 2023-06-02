@@ -36,7 +36,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class StudioSelectionService {
+public class StudioSelectionServiceImpl {
 
   protected static final String TITLE = "title";
   protected static final String VALUE = "value";
@@ -50,7 +50,7 @@ public class StudioSelectionService {
   protected StudioSelectionRepository studioSelectionRepo;
 
   @Inject
-  public StudioSelectionService(
+  public StudioSelectionServiceImpl(
       MetaSelectRepository metaSelectRepository, StudioSelectionRepository studioSelectionRepo) {
     this.metaSelectRepository = metaSelectRepository;
     this.studioSelectionRepo = studioSelectionRepo;

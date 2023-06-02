@@ -22,8 +22,8 @@ import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaMenu;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioMenu;
-import com.axelor.studio.service.StudioMetaService;
-import com.axelor.studio.service.builder.StudioMenuService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.builder.StudioMenuServiceImpl;
 
 public class StudioMenuRepo extends StudioMenuRepository {
 
@@ -33,7 +33,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
       studioMenu.getStudioAction().setMenuAction(true);
     }
     studioMenu = super.save(studioMenu);
-    studioMenu.setMetaMenu(Beans.get(StudioMenuService.class).build(studioMenu));
+    studioMenu.setMetaMenu(Beans.get(StudioMenuServiceImpl.class).build(studioMenu));
     return studioMenu;
   }
 
@@ -58,7 +58,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
     studioMenu.setMetaMenu(null);
 
     if (metaMenu != null) {
-      Beans.get(StudioMetaService.class).removeMetaMenu(metaMenu);
+      Beans.get(StudioMetaServiceImpl.class).removeMetaMenu(metaMenu);
     }
 
     StudioAction studioAction = studioMenu.getStudioAction();

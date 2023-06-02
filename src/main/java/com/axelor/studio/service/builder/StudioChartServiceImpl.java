@@ -36,7 +36,7 @@ import com.axelor.meta.schema.ObjectViews;
 import com.axelor.studio.db.Filter;
 import com.axelor.studio.db.StudioChart;
 import com.axelor.studio.exception.StudioExceptionMessage;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.axelor.studio.service.filter.FilterCommonService;
 import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Joiner;
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * adding query, search fields , onInit actions..etc. All filters with parameter checked will be
  * used as search fields.
  */
-public class StudioChartService {
+public class StudioChartServiceImpl {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -79,13 +79,13 @@ public class StudioChartService {
 
   protected FilterCommonService filterCommonService;
 
-  protected StudioMetaService metaService;
+  protected StudioMetaServiceImpl metaService;
 
   @Inject
-  public StudioChartService(
+  public StudioChartServiceImpl(
       MetaModelRepository metaModelRepo,
       FilterCommonService filterCommonService,
-      StudioMetaService metaService) {
+      StudioMetaServiceImpl metaService) {
     this.metaModelRepo = metaModelRepo;
     this.filterCommonService = filterCommonService;
     this.metaService = metaService;

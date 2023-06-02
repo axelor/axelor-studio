@@ -23,20 +23,20 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioActionLine;
 import com.axelor.studio.db.StudioActionView;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.util.List;
 import org.apache.commons.lang3.StringEscapeUtils;
 
-public class StudioActionViewService {
+public class StudioActionViewServiceImpl {
 
   protected static final String INDENT = "\t";
 
-  protected StudioMetaService metaService;
+  protected StudioMetaServiceImpl metaService;
 
   @Inject
-  public StudioActionViewService(StudioMetaService metaService) {
+  public StudioActionViewServiceImpl(StudioMetaServiceImpl metaService) {
     this.metaService = metaService;
   }
 

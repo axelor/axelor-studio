@@ -19,20 +19,20 @@ package com.axelor.studio.service;
 
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonField;
-import com.axelor.studio.service.builder.StudioSelectionService;
+import com.axelor.studio.service.builder.StudioSelectionServiceImpl;
 import com.axelor.utils.ModelTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 
-public class JsonFieldService {
+public class JsonFieldServiceImpl {
 
   public static final String SELECTION_PREFIX = "custom-json-select-";
 
-  protected StudioSelectionService studioSelectionService;
+  protected StudioSelectionServiceImpl studioSelectionService;
 
   @Inject
-  public JsonFieldService(StudioSelectionService studioSelectionService) {
+  public JsonFieldServiceImpl(StudioSelectionServiceImpl studioSelectionService) {
     this.studioSelectionService = studioSelectionService;
   }
 

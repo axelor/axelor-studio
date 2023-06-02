@@ -36,7 +36,7 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
-import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.db.DmnField;
 import com.axelor.studio.db.DmnTable;
 import com.axelor.studio.db.WkfDmnModel;
@@ -77,14 +77,14 @@ public class DmnServiceImpl implements DmnService {
 
   protected MetaJsonFieldRepository metaJsonFieldRepo;
 
-  protected ProcessEngineService processEngineService;
+  protected ProcessEngineServiceImpl processEngineService;
 
   @Inject
   public DmnServiceImpl(
       WkfCommonService wkfCommonService,
       DmnTableRepository dmnTableRepo,
       MetaJsonFieldRepository metaJsonFieldRepo,
-      ProcessEngineService processEngineService) {
+      ProcessEngineServiceImpl processEngineService) {
     this.wkfCommonService = wkfCommonService;
     this.dmnTableRepo = dmnTableRepo;
     this.metaJsonFieldRepo = metaJsonFieldRepo;

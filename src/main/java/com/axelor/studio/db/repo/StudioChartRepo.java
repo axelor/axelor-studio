@@ -20,7 +20,7 @@ package com.axelor.studio.db.repo;
 import com.axelor.meta.db.MetaView;
 import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.studio.db.StudioChart;
-import com.axelor.studio.service.builder.StudioChartService;
+import com.axelor.studio.service.builder.StudioChartServiceImpl;
 import com.google.inject.Inject;
 import java.util.List;
 import javax.validation.ValidationException;
@@ -29,10 +29,11 @@ public class StudioChartRepo extends StudioChartRepository {
 
   protected MetaViewRepository metaViewRepo;
 
-  protected StudioChartService studioChartService;
+  protected StudioChartServiceImpl studioChartService;
 
   @Inject
-  public StudioChartRepo(MetaViewRepository metaViewRepo, StudioChartService studioChartService) {
+  public StudioChartRepo(
+      MetaViewRepository metaViewRepo, StudioChartServiceImpl studioChartService) {
     this.metaViewRepo = metaViewRepo;
     this.studioChartService = studioChartService;
   }

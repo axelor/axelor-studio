@@ -35,7 +35,7 @@ import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioActionLine;
 import com.axelor.studio.db.repo.StudioActionLineRepository;
 import com.axelor.studio.db.repo.StudioActionRepository;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.axelor.studio.service.filter.FilterSqlService;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Joiner;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioActionScriptService {
+public class StudioActionScriptServiceImpl {
 
   protected static final String INDENT = "\t";
 
@@ -68,11 +68,11 @@ public class StudioActionScriptService {
 
   protected StudioActionLineRepository studioActionLineRepo;
 
-  protected StudioMetaService metaService;
+  protected StudioMetaServiceImpl metaService;
 
   @Inject
-  public StudioActionScriptService(
-      StudioActionLineRepository studioActionLineRepo, StudioMetaService metaService) {
+  public StudioActionScriptServiceImpl(
+      StudioActionLineRepository studioActionLineRepo, StudioMetaServiceImpl metaService) {
     this.studioActionLineRepo = studioActionLineRepo;
     this.metaService = metaService;
   }

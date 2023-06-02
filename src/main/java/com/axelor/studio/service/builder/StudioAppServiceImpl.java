@@ -73,7 +73,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioAppService {
+public class StudioAppServiceImpl {
 
   protected JpaSecurity jpaSecurity;
 
@@ -84,7 +84,7 @@ public class StudioAppService {
   protected MetaJsonModelRepository metaJsonModelRepo;
 
   @Inject
-  public StudioAppService(
+  public StudioAppServiceImpl(
       JpaSecurity jpaSecurity,
       AppLoaderExportService appLoaderExportService,
       AppLoaderImportService appLoaderImportService,
@@ -97,7 +97,7 @@ public class StudioAppService {
     this.metaJsonModelRepo = metaJsonModelRepo;
   }
 
-  protected final Logger log = LoggerFactory.getLogger(StudioAppService.class);
+  protected final Logger log = LoggerFactory.getLogger(StudioAppServiceImpl.class);
 
   public StudioApp build(StudioApp studioApp) {
 

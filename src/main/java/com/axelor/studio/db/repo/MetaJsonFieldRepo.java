@@ -23,17 +23,18 @@ import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.db.StudioApp;
-import com.axelor.studio.service.JsonFieldService;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.JsonFieldServiceImpl;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.google.inject.Inject;
 
 public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
 
   protected MetaModelRepository metaModelRepo;
-  protected JsonFieldService jsonFieldService;
+  protected JsonFieldServiceImpl jsonFieldService;
 
   @Inject
-  public MetaJsonFieldRepo(MetaModelRepository metaModelRepo, JsonFieldService jsonFieldService) {
+  public MetaJsonFieldRepo(
+      MetaModelRepository metaModelRepo, JsonFieldServiceImpl jsonFieldService) {
     this.metaModelRepo = metaModelRepo;
     this.jsonFieldService = jsonFieldService;
   }
@@ -59,7 +60,7 @@ public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
       MetaModel metaModel =
           metaModelRepo.all().filter("self.fullName = ?1", metaJsonField.getModel()).fetchOne();
 
-      Beans.get(StudioMetaService.class)
+      Beans.get(StudioMetaServiceImpl.class)
           .trackingFields(metaModel, metaJsonField.getName(), "Field removed");
     }
 

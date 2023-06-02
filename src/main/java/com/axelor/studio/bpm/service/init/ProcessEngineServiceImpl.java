@@ -35,7 +35,7 @@ import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.variable.Variables;
 
 @Singleton
-public class ProcessEngineService {
+public class ProcessEngineServiceImpl {
 
   protected static final Map<String, ProcessEngine> engineMap =
       new ConcurrentHashMap<String, ProcessEngine>();
@@ -43,7 +43,7 @@ public class ProcessEngineService {
   protected final AppSettingsStudioService appSettingsStudioService;
 
   @Inject
-  public ProcessEngineService(AppSettingsStudioService appSettingsStudioService) {
+  public ProcessEngineServiceImpl(AppSettingsStudioService appSettingsStudioService) {
     this.appSettingsStudioService = appSettingsStudioService;
 
     addEngine(BpmTools.getCurentTenant());

@@ -64,7 +64,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.IOUtils;
 
-public class ImportService {
+public class ImportServiceImpl {
 
   protected StudioChartRepository studioChartRepo;
 
@@ -99,7 +99,7 @@ public class ImportService {
   protected MetaViewRepository metaViewRepo;
 
   @Inject
-  public ImportService(
+  public ImportServiceImpl(
       StudioChartRepository studioChartRepo,
       MetaJsonModelRepository metaJsonModelRepo,
       MetaJsonFieldRepository metaJsonFieldRepo,

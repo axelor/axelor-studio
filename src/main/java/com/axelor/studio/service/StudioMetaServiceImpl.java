@@ -58,9 +58,9 @@ import javax.persistence.NoResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioMetaService {
+public class StudioMetaServiceImpl {
 
-  protected final Logger log = LoggerFactory.getLogger(StudioMetaService.class);
+  protected final Logger log = LoggerFactory.getLogger(StudioMetaServiceImpl.class);
 
   protected MetaActionRepository metaActionRepo;
 
@@ -73,7 +73,7 @@ public class StudioMetaService {
   protected MetaModelRepository metaModelRepo;
 
   @Inject
-  public StudioMetaService(
+  public StudioMetaServiceImpl(
       MetaActionRepository metaActionRepo,
       MetaViewRepository metaViewRepo,
       MetaMenuRepository metaMenuRepo,

@@ -22,7 +22,7 @@ import com.axelor.meta.db.MetaJsonField;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.repo.MetaJsonFieldRepo;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.axelor.utils.ExceptionTool;
 
 public class MetaJsonFieldController {
@@ -44,7 +44,7 @@ public class MetaJsonFieldController {
         return;
       }
 
-      Beans.get(StudioMetaService.class).trackJsonField(metaJsonField);
+      Beans.get(StudioMetaServiceImpl.class).trackJsonField(metaJsonField);
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
     }

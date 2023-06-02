@@ -33,17 +33,17 @@ import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioAction;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.google.inject.Inject;
 import javax.mail.MessagingException;
 
-public class StudioActionEmailService {
+public class StudioActionEmailServiceImpl {
 
   protected MetaModelRepository metaModelRepo;
 
   protected MetaJsonModelRepository metaJsonModelRepo;
 
-  protected StudioMetaService studioMetaService;
+  protected StudioMetaServiceImpl studioMetaService;
 
   protected TemplateRepository templateRepo;
 
@@ -52,10 +52,10 @@ public class StudioActionEmailService {
   protected MessageService messageService;
 
   @Inject
-  public StudioActionEmailService(
+  public StudioActionEmailServiceImpl(
       MetaModelRepository metaModelRepo,
       MetaJsonModelRepository metaJsonModelRepo,
-      StudioMetaService studioMetaService,
+      StudioMetaServiceImpl studioMetaService,
       TemplateRepository templateRepo,
       TemplateMessageService templateMessageService,
       MessageService messageService) {

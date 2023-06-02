@@ -25,7 +25,7 @@ import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
-import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
@@ -73,7 +73,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         BpmnModelConstants.BPMN_ELEMENT_USER_TASK, BpmnModelConstants.BPMN_ELEMENT_RECEIVE_TASK
       };
 
-  protected ProcessEngineService engineService;
+  protected ProcessEngineServiceImpl engineService;
 
   protected WkfInstanceRepository wkfInstanceRepository;
 
@@ -91,7 +91,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   @Inject
   public WkfInstanceServiceImpl(
-      ProcessEngineService engineService,
+      ProcessEngineServiceImpl engineService,
       WkfInstanceRepository wkfInstanceRepository,
       WkfCommonService wkfService,
       MetaFiles metaFiles,

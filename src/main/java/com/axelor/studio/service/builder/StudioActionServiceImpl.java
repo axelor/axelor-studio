@@ -31,21 +31,21 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioActionService {
+public class StudioActionServiceImpl {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected StudioActionViewService studioActionViewService;
+  protected StudioActionViewServiceImpl studioActionViewService;
 
-  protected StudioActionScriptService studioActionScriptService;
+  protected StudioActionScriptServiceImpl studioActionScriptService;
 
-  protected StudioActionEmailService studioActionEmailService;
+  protected StudioActionEmailServiceImpl studioActionEmailService;
 
   @Inject
-  public StudioActionService(
-      StudioActionViewService studioActionViewService,
-      StudioActionScriptService studioActionScriptService,
-      StudioActionEmailService studioActionEmailService) {
+  public StudioActionServiceImpl(
+      StudioActionViewServiceImpl studioActionViewService,
+      StudioActionScriptServiceImpl studioActionScriptService,
+      StudioActionEmailServiceImpl studioActionEmailService) {
     this.studioActionViewService = studioActionViewService;
     this.studioActionEmailService = studioActionEmailService;
     this.studioActionScriptService = studioActionScriptService;

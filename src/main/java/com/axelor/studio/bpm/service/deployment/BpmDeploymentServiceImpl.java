@@ -23,7 +23,7 @@ import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.service.WkfCommonService;
-import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
@@ -70,9 +70,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfCommonService wkfService;
   protected MetaFileRepository metaFileRepo;
   protected WkfProcessApplication wkfProcessApplication;
-  protected WkfNodeService wkfNodeService;
+  protected WkfNodeServiceImpl wkfNodeService;
   protected WkfModelRepository wkfModelRepository;
-  protected ProcessEngineService processEngineService;
+  protected ProcessEngineServiceImpl processEngineService;
 
   protected WkfModel wkfModel;
 
@@ -86,9 +86,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfCommonService wkfService,
       MetaFileRepository metaFileRepo,
       WkfProcessApplication wkfProcessApplication,
-      WkfNodeService wkfNodeService,
+      WkfNodeServiceImpl wkfNodeService,
       WkfModelRepository wkfModelRepository,
-      ProcessEngineService processEngineService) {
+      ProcessEngineServiceImpl processEngineService) {
 
     this.wkfProcessRepository = wkfProcessRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;
