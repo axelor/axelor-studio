@@ -1,0 +1,2 @@
+title: BPM:: Fix wrong evaluation of IN operator in case of selection on expression builder
+type: fix
