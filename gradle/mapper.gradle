@@ -1,0 +1,62 @@
+ext {
+    mapperRootPath = "react-components/bpm-webapp/apps/mapper"
+    mapperBuildPath = "${mapperRootPath}/build"
+}
+
+task yarnMapperInstall(type: YarnTask) {
+    group = 'com.axelor.addons'
+    description = 'Install dependencies'
+    workingDir = file("${mapperRootPath}")
+
+    args = ['install']
+}
+
+task yarnMapperBuild(type: YarnTask) {
+    group = 'com.axelor.addons'
+    description = 'Build App'
+    environment = [
+            CI: 'false'
+    ]
+    workingDir = file("${mapperRootPath}")
+
+    dependsOn yarnMapperInstall
+    mustRunAfter yarnMapperInstall
+
+    outputs.upToDateWhen { false }
+    outputs.dir('build')
+
+    args = ["run", "build"]
+}
+
+task copyMapperWebapp(type: Copy) {
+    group = 'com.axelor.addons'
+    description = 'Copy into webapp'
+
+    dependsOn yarnMapperBuild
+    mustRunAfter yarnMapperBuild
+
+    destinationDir = file(rootProject.buildDir)
+    into("webapp/mapper") {
+        from "${mapperBuildPath}"
+    }
+}
+
+rootProject.tasks.named("clean") {
+    delete "${mapperBuildPath}"
+    delete "${mapperRootPath}/node_modules"
+}
+
+rootProject.tasks.named("war") {
+    dependsOn copyMapperWebapp
+    mustRunAfter copyMapperWebapp
+}
+
+rootProject.tasks.named("compileJava") {
+    dependsOn copyMapperWebapp
+    mustRunAfter copyMapperWebapp
+}
+
+rootProject.tasks.named("processResources") {
+    dependsOn copyMapperWebapp
+    mustRunAfter copyMapperWebapp
+}

@@ -1,0 +1,62 @@
+ext {
+    studioRootPath = "react-components/studio"
+    studioBuildPath = "${studioRootPath}/build"
+}
+
+task yarnStudioInstall(type: YarnTask) {
+    group = 'com.axelor.addons'
+    description = 'Install dependencies'
+    workingDir = file("${studioRootPath}")
+
+    args = ['install']
+}
+
+task yarnStudioBuild(type: YarnTask) {
+    group = 'com.axelor.addons'
+    description = 'Build App'
+    environment = [
+            CI: 'false'
+    ]
+    workingDir = file("${studioRootPath}")
+
+    dependsOn yarnStudioInstall
+    mustRunAfter yarnStudioInstall
+
+    outputs.upToDateWhen { false }
+    outputs.dir('build')
+
+    args = ["run", "build"]
+}
+
+task copyStudioWebapp(type: Copy) {
+    group = 'com.axelor.addons'
+    description = 'Copy into webapp'
+
+    dependsOn yarnStudioBuild
+    mustRunAfter yarnStudioBuild
+
+    destinationDir = file(rootProject.buildDir)
+    into("webapp/studio/custom-model") {
+        from "${studioBuildPath}"
+    }
+}
+
+rootProject.tasks.named("clean") {
+    delete "${studioBuildPath}"
+    delete "${studioRootPath}/node_modules"
+}
+
+rootProject.tasks.named("war") {
+    dependsOn copyStudioWebapp
+    mustRunAfter copyStudioWebapp
+}
+
+rootProject.tasks.named("compileJava") {
+    dependsOn copyStudioWebapp
+    mustRunAfter copyStudioWebapp
+}
+
+rootProject.tasks.named("processResources") {
+    dependsOn copyStudioWebapp
+    mustRunAfter copyStudioWebapp
+}
