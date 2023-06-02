@@ -22,9 +22,6 @@ import com.axelor.studio.db.WkfModel;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.xml.sax.SAXException;
 
 public interface WkfModelService {
 
@@ -42,7 +39,7 @@ public interface WkfModelService {
 
   public String importWkfModels(
       MetaFile metaFile, boolean translate, String sourceLanguage, String targetLanguage)
-      throws IOException, ParserConfigurationException, SAXException, TransformerException;
+      throws Exception;
 
   public List<Map<String, Object>> getProcessPerStatus(WkfModel wkfModel);
 

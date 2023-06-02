@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BpmMapperSearchField {
 
-  private String name;
+  protected String name;
 
-  private String title;
+  protected String title;
 
   public String getName() {
     return name;

@@ -39,17 +39,33 @@ import javax.mail.MessagingException;
 
 public class StudioActionEmailService {
 
-  @Inject private MetaModelRepository metaModelRepo;
+  protected MetaModelRepository metaModelRepo;
 
-  @Inject private MetaJsonModelRepository metaJsonModelRepo;
+  protected MetaJsonModelRepository metaJsonModelRepo;
 
-  @Inject private StudioMetaService studioMetaService;
+  protected StudioMetaService studioMetaService;
 
-  @Inject private TemplateRepository templateRepo;
+  protected TemplateRepository templateRepo;
 
-  @Inject private TemplateMessageService templateMessageService;
+  protected TemplateMessageService templateMessageService;
 
-  @Inject private MessageService messageService;
+  protected MessageService messageService;
+
+  @Inject
+  public StudioActionEmailService(
+      MetaModelRepository metaModelRepo,
+      MetaJsonModelRepository metaJsonModelRepo,
+      StudioMetaService studioMetaService,
+      TemplateRepository templateRepo,
+      TemplateMessageService templateMessageService,
+      MessageService messageService) {
+    this.metaModelRepo = metaModelRepo;
+    this.metaJsonModelRepo = metaJsonModelRepo;
+    this.studioMetaService = studioMetaService;
+    this.templateRepo = templateRepo;
+    this.templateMessageService = templateMessageService;
+    this.messageService = messageService;
+  }
 
   public MetaAction build(StudioAction studioAction) {
     String name = studioAction.getName();

@@ -42,9 +42,14 @@ import org.slf4j.LoggerFactory;
  */
 public class StudioDashboardService {
 
-  private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Inject private StudioMetaService metaService;
+  protected StudioMetaService metaService;
+
+  @Inject
+  public StudioDashboardService(StudioMetaService metaService) {
+    this.metaService = metaService;
+  }
 
   /**
    * Method to generate Dashboard (meta schema) from View Builder.
@@ -128,7 +133,7 @@ public class StudioDashboardService {
    * @param chart Chart to open from action-view.
    * @return Name of action-view.
    */
-  private MetaAction getAction(
+  protected MetaAction getAction(
       String dashboard, String name, String model, StudioDashlet studioDashlet) {
 
     String actionName = "action-" + (dashboard + "-" + name).replace(".", "-");

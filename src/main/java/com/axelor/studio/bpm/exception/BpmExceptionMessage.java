@@ -19,7 +19,7 @@ package com.axelor.studio.bpm.exception;
 
 public final class BpmExceptionMessage {
 
-  private BpmExceptionMessage() {}
+  protected BpmExceptionMessage() {}
 
   public static final String MISSING_INPUT_LABEL = /*$$(*/ "Missing input label" /*)*/;
 

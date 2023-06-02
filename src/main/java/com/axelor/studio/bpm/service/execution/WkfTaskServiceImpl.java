@@ -24,6 +24,7 @@ import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.db.MetaJsonRecord;
+import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
@@ -59,19 +60,37 @@ public class WkfTaskServiceImpl implements WkfTaskService {
 
   protected static final int RECURSIVE_TASK_EXECUTION_SECONDS_LIMIT = 10;
 
-  @Inject protected WkfTaskConfigRepository wkfTaskConfigRepository;
+  protected WkfTaskConfigRepository wkfTaskConfigRepository;
 
-  @Inject protected WkfInstanceService wkfInstanceService;
+  protected WkfInstanceService wkfInstanceService;
 
-  @Inject protected WkfInstanceRepository wkfInstanceRepository;
+  protected WkfInstanceRepository wkfInstanceRepository;
 
-  @Inject protected WkfProcessRepository wkfProcessRepository;
+  protected WkfProcessRepository wkfProcessRepository;
 
-  @Inject protected WkfCommonService wkfService;
+  protected WkfCommonService wkfService;
+
+  protected AppService appService;
 
   protected int recursiveTaskExecutionCount = 0;
 
   protected LocalTime recursiveTaskExecutionTime = LocalTime.now();
+
+  @Inject
+  public WkfTaskServiceImpl(
+      WkfTaskConfigRepository wkfTaskConfigRepository,
+      WkfInstanceService wkfInstanceService,
+      WkfInstanceRepository wkfInstanceRepository,
+      WkfProcessRepository wkfProcessRepository,
+      WkfCommonService wkfService,
+      AppService appService) {
+    this.wkfTaskConfigRepository = wkfTaskConfigRepository;
+    this.wkfInstanceService = wkfInstanceService;
+    this.wkfInstanceRepository = wkfInstanceRepository;
+    this.wkfProcessRepository = wkfProcessRepository;
+    this.wkfService = wkfService;
+    this.appService = appService;
+  }
 
   @Override
   public String runTasks(

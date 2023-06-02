@@ -19,7 +19,7 @@ package com.axelor.studio.exception;
 
 public final class StudioExceptionMessage {
 
-  private StudioExceptionMessage() {}
+  protected StudioExceptionMessage() {}
 
   /** Check if studio app code is not conflicting with existing app. */
   public static final String STUDIO_APP_1 = /*$$(*/

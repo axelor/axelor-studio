@@ -27,9 +27,15 @@ import javax.validation.ValidationException;
 
 public class StudioChartRepo extends StudioChartRepository {
 
-  @Inject private MetaViewRepository metaViewRepo;
+  protected MetaViewRepository metaViewRepo;
 
-  @Inject private StudioChartService studioChartService;
+  protected StudioChartService studioChartService;
+
+  @Inject
+  public StudioChartRepo(MetaViewRepository metaViewRepo, StudioChartService studioChartService) {
+    this.metaViewRepo = metaViewRepo;
+    this.studioChartService = studioChartService;
+  }
 
   @Override
   public StudioChart save(StudioChart studioChart) throws ValidationException {

@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
 public class FunctionNode extends BaseTaskNode {
 
   @XmlAttribute(name = "returnType")
-  private ReturnType returnType;
+  protected ReturnType returnType;
 
   public ReturnType getReturnType() {
     return returnType;

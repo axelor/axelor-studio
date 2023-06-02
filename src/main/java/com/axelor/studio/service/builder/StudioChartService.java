@@ -23,6 +23,7 @@ import static com.axelor.utils.MetaJsonFieldType.ONE_TO_ONE;
 
 import com.axelor.common.Inflector;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
@@ -55,32 +56,40 @@ import org.slf4j.LoggerFactory;
  */
 public class StudioChartService {
 
-  private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String Tab1 = "\n \t";
-  private static final String Tab2 = "\n \t\t";
-  private static final String Tab3 = "\n \t\t\t";
-  private static final List<String> dateTypes =
+  protected static final String Tab1 = "\n \t";
+  protected static final String Tab2 = "\n \t\t";
+  protected static final String Tab3 = "\n \t\t\t";
+  protected static final List<String> dateTypes =
       Arrays.asList(
           new String[] {"DATE", "DATETIME", "LOCALDATE", "LOCALDATETIME", "ZONNEDDATETIME"});
   protected static final List<String> CLICK_HANDLER_SUPPORTED_CHARTS =
       Arrays.asList("bar", "hbar", "scatter", "pie", "donut");
 
-  private List<String> searchFields;
+  protected List<String> searchFields;
 
   //	private List<RecordField> onNewFields;
 
-  private List<String> joins;
+  protected List<String> joins;
 
-  private String categType;
+  protected String categType;
 
-  @Inject private MetaModelRepository metaModelRepo;
+  protected MetaModelRepository metaModelRepo;
 
-  @Inject private FilterSqlService filterSqlService;
+  protected FilterCommonService filterCommonService;
 
-  @Inject private FilterCommonService filterCommonService;
+  protected StudioMetaService metaService;
 
-  @Inject private StudioMetaService metaService;
+  @Inject
+  public StudioChartService(
+      MetaModelRepository metaModelRepo,
+      FilterCommonService filterCommonService,
+      StudioMetaService metaService) {
+    this.metaModelRepo = metaModelRepo;
+    this.filterCommonService = filterCommonService;
+    this.metaService = metaService;
+  }
 
   /**
    * Root Method to access the service it generate AbstractView from ViewBuilder.
@@ -116,7 +125,7 @@ public class StudioChartService {
     }
   }
 
-  private String createXml(StudioChart studioChart, String[] queryString) {
+  protected String createXml(StudioChart studioChart, String[] queryString) {
 
     String xml =
         "<chart name=\"" + studioChart.getName() + "\" title=\"" + studioChart.getTitle() + "\" ";
@@ -178,7 +187,7 @@ public class StudioChartService {
    * @param viewBuilder ViewBuilder of type chart
    * @return StringArray with first element as query string and second as aggregate field name.
    */
-  private String[] prepareQuery(StudioChart studioChart) {
+  protected String[] prepareQuery(StudioChart studioChart) {
 
     String query =
         createSumQuery(
@@ -208,7 +217,8 @@ public class StudioChartService {
       query += "," + Tab3 + aggField + " AS agg_field";
     }
 
-    String filters = filterSqlService.getSqlFilters(studioChart.getFilterList(), joins, true);
+    String filters =
+        Beans.get(FilterSqlService.class).getSqlFilters(studioChart.getFilterList(), joins, true);
     addSearchField(studioChart.getFilterList());
     String model = studioChart.getModel();
 
@@ -241,9 +251,11 @@ public class StudioChartService {
     return new String[] {query, null};
   }
 
-  private String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
+  protected String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
 
     String sumField = null;
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
+
     if (isJson) {
       String sqlType = filterSqlService.getSqlType(jsonField.getType());
       sumField =
@@ -261,7 +273,7 @@ public class StudioChartService {
     return "SELECT" + Tab3 + "SUM(" + sumField + ") AS sum_field," + Tab3;
   }
 
-  private String getGroup(
+  protected String getGroup(
       boolean isJson,
       MetaField metaField,
       MetaJsonField jsonField,
@@ -271,6 +283,8 @@ public class StudioChartService {
     if (!isJson && metaField == null || isJson && jsonField == null) {
       return null;
     }
+
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     String typeName = null;
     String group = null;
@@ -305,7 +319,7 @@ public class StudioChartService {
     return group;
   }
 
-  private String getDateTypeGroup(String dateType, String typeName, String group) {
+  protected String getDateTypeGroup(String dateType, String typeName, String group) {
 
     switch (dateType) {
       case "year":
@@ -326,7 +340,7 @@ public class StudioChartService {
    *
    * @return
    */
-  private String getSearchFields() {
+  protected String getSearchFields() {
 
     String search = "<search-fields>";
 
@@ -403,11 +417,13 @@ public class StudioChartService {
   //
   //	}
 
-  private void addSearchField(List<Filter> filters) {
+  protected void addSearchField(List<Filter> filters) {
 
     if (filters == null) {
       return;
     }
+
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     for (Filter filter : filters) {
       if (!filter.getIsParameter()) {
@@ -437,7 +453,7 @@ public class StudioChartService {
     }
   }
 
-  private String getMetaSearchField(String fieldStr, MetaField field) {
+  protected String getMetaSearchField(String fieldStr, MetaField field) {
 
     fieldStr = "<field name=\"" + fieldStr + "\" title=\"" + field.getLabel();
 
@@ -445,7 +461,8 @@ public class StudioChartService {
       String fieldType = filterCommonService.getFieldType(field);
       fieldStr += "\" type=\"" + fieldType;
     } else {
-      String[] targetRef = filterSqlService.getDefaultTarget(field.getName(), field.getTypeName());
+      String[] targetRef =
+          Beans.get(FilterSqlService.class).getDefaultTarget(field.getName(), field.getTypeName());
       String[] nameField = targetRef[0].split("\\.");
       fieldStr +=
           "\" widget=\"ref-text\" type=\""
@@ -459,7 +476,9 @@ public class StudioChartService {
     return fieldStr;
   }
 
-  private String getJsonSearchField(String fieldStr, MetaJsonField field) {
+  protected String getJsonSearchField(String fieldStr, MetaJsonField field) {
+
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     fieldStr = "<field name=\"" + fieldStr + "\" title=\"" + field.getTitle();
 
@@ -496,7 +515,7 @@ public class StudioChartService {
     return fieldStr;
   }
 
-  private String getTable(String model) {
+  protected String getTable(String model) {
 
     String[] models = model.split("\\.");
     MetaModel metaModel = metaModelRepo.findByName(models[models.length - 1]);
@@ -515,7 +534,8 @@ public class StudioChartService {
       return metaField.getName();
     }
 
-    return filterSqlService.getDefaultTarget(metaField.getName(), metaField.getTypeName())[0];
+    return Beans.get(FilterSqlService.class)
+        .getDefaultTarget(metaField.getName(), metaField.getTypeName())[0];
   }
 
   @CallMethod
@@ -525,6 +545,8 @@ public class StudioChartService {
         .contains(metaJsonField.getType())) {
       return metaJsonField.getName();
     }
+
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     if (metaJsonField.getTargetJsonModel() != null) {
       return filterSqlService
@@ -548,6 +570,7 @@ public class StudioChartService {
     }
 
     Object targetField = null;
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
     try {
       if (object instanceof MetaJsonField) {
         targetField = filterSqlService.parseJsonField((MetaJsonField) object, target, null, null);

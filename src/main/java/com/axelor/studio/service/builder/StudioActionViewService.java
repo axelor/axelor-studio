@@ -31,9 +31,14 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 public class StudioActionViewService {
 
-  private static final String INDENT = "\t";
+  protected static final String INDENT = "\t";
 
-  @Inject private StudioMetaService metaService;
+  protected StudioMetaService metaService;
+
+  @Inject
+  public StudioActionViewService(StudioMetaService metaService) {
+    this.metaService = metaService;
+  }
 
   public MetaAction build(StudioAction studioAction) {
 
@@ -66,7 +71,7 @@ public class StudioActionViewService {
         studioAction.getName(), "action-view", xml.toString(), model, studioAction.getXmlId());
   }
 
-  private void appendParams(List<StudioActionLine> params, StringBuilder xml) {
+  protected void appendParams(List<StudioActionLine> params, StringBuilder xml) {
 
     if (params == null) {
       return;
@@ -78,7 +83,7 @@ public class StudioActionViewService {
     }
   }
 
-  private void appendContext(StudioAction studioAction, StringBuilder xml) {
+  protected void appendContext(StudioAction studioAction, StringBuilder xml) {
     boolean addJsonCtx = true;
     if (studioAction.getLines() != null) {
       for (StudioActionLine context : studioAction.getLines()) {
@@ -105,7 +110,7 @@ public class StudioActionViewService {
     }
   }
 
-  private void appendDomain(String domain, Boolean isJson, StringBuilder xml) {
+  protected void appendDomain(String domain, Boolean isJson, StringBuilder xml) {
 
     if (isJson) {
       String jsonDomain = "self.jsonModel = :jsonModel";
@@ -121,7 +126,7 @@ public class StudioActionViewService {
     }
   }
 
-  private void appendViews(List<StudioActionView> views, StringBuilder xml) {
+  protected void appendViews(List<StudioActionView> views, StringBuilder xml) {
 
     views.sort((action1, action2) -> action1.getSequence().compareTo(action2.getSequence()));
     for (StudioActionView view : views) {
@@ -135,7 +140,7 @@ public class StudioActionViewService {
     }
   }
 
-  private String appendBasic(StudioAction studioAction, StringBuilder xml) {
+  protected String appendBasic(StudioAction studioAction, StringBuilder xml) {
 
     xml.append("<action-view name=\"" + studioAction.getName() + "\" ");
     xml.append("title=\"" + studioAction.getTitle() + "\" ");

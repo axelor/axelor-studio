@@ -25,9 +25,16 @@ import com.google.inject.Inject;
 
 public class StudioDashboardRepo extends StudioDashboardRepository {
 
-  @Inject private StudioDashboardService studioDashboardService;
+  protected StudioDashboardService studioDashboardService;
 
-  @Inject private MetaViewRepository metaViewRepo;
+  protected MetaViewRepository metaViewRepo;
+
+  @Inject
+  public StudioDashboardRepo(
+      StudioDashboardService studioDashboardService, MetaViewRepository metaViewRepo) {
+    this.studioDashboardService = studioDashboardService;
+    this.metaViewRepo = metaViewRepo;
+  }
 
   @Override
   public StudioDashboard save(StudioDashboard studioDashboard) {

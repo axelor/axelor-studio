@@ -33,15 +33,25 @@ import org.slf4j.LoggerFactory;
 
 public class StudioActionService {
 
-  private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Inject private StudioActionViewService studioActionViewService;
+  protected StudioActionViewService studioActionViewService;
 
-  @Inject private StudioActionScriptService studioActionScriptService;
+  protected StudioActionScriptService studioActionScriptService;
 
-  @Inject private StudioActionEmailService studioActionEmailService;
+  protected StudioActionEmailService studioActionEmailService;
 
-  @Transactional
+  @Inject
+  public StudioActionService(
+      StudioActionViewService studioActionViewService,
+      StudioActionScriptService studioActionScriptService,
+      StudioActionEmailService studioActionEmailService) {
+    this.studioActionViewService = studioActionViewService;
+    this.studioActionEmailService = studioActionEmailService;
+    this.studioActionScriptService = studioActionScriptService;
+  }
+
+  @Transactional(rollbackOn = Exception.class)
   public MetaAction build(StudioAction studioAction) {
 
     if (studioAction == null) {
@@ -107,7 +117,7 @@ public class StudioActionService {
     return studioAction;
   }
 
-  private void setStudioActionView(
+  protected void setStudioActionView(
       String viewType, String viewName, List<StudioActionView> studioActionViews) {
     StudioActionView studioActionView = new StudioActionView();
     studioActionView.setViewType(viewType);

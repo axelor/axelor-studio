@@ -26,21 +26,21 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapperRecord {
 
-  private String targetModel = null;
+  protected String targetModel = null;
 
-  private String sourceModel = null;
+  protected String sourceModel = null;
 
-  private boolean newRecord = true;
+  protected boolean newRecord = true;
 
-  private boolean savedRecord = false;
+  protected boolean savedRecord = false;
 
-  private boolean save = true;
+  protected boolean save = true;
 
-  private String targetVariable = "rec";
+  protected String targetVariable = "rec";
 
-  private StringBuilder scriptBuilder = new StringBuilder();
+  protected StringBuilder scriptBuilder = new StringBuilder();
 
-  private List<MapperField> fields = new ArrayList<MapperField>();
+  protected List<MapperField> fields = new ArrayList<MapperField>();
 
   public String getTargetModel() {
     return targetModel;

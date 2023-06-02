@@ -20,7 +20,6 @@ package com.axelor.studio.app.listener;
 import com.axelor.common.StringUtils;
 import com.axelor.event.Observes;
 import com.axelor.events.StartupEvent;
-import com.axelor.inject.Beans;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
@@ -52,7 +51,7 @@ public class AppServerStartListener {
 
   public void onStartUp(@Observes @Priority(value = -1) StartupEvent event) {
     try {
-      Beans.get(AppService.class).initApps();
+      appService.initApps();
     } catch (Exception e) {
       ExceptionTool.trace(e);
     }

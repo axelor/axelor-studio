@@ -24,10 +24,10 @@ import javax.xml.bind.annotation.XmlType;
 public abstract class BaseNode {
 
   @XmlAttribute(name = "id")
-  private String id;
+  protected String id;
 
   @XmlAttribute(name = "name")
-  private String name;
+  protected String name;
 
   public String getId() {
     return id;

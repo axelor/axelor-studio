@@ -42,7 +42,7 @@ import org.camunda.bpm.model.dmn.instance.Rule;
 
 public class DmnExportServiceImpl implements DmnExportService {
 
-  private Workbook workbook;
+  protected Workbook workbook;
 
   @Override
   public File exportDmnTable(WkfDmnModel wkfDmnModel) {
@@ -76,7 +76,7 @@ public class DmnExportServiceImpl implements DmnExportService {
     return exportFile;
   }
 
-  private void processTables(Collection<DecisionTable> tables) {
+  protected void processTables(Collection<DecisionTable> tables) {
     for (DecisionTable table : tables) {
       String sheetName = table.getParentElement().getAttributeValue("id");
       Sheet sheet = workbook.createSheet(sheetName);
@@ -85,7 +85,7 @@ public class DmnExportServiceImpl implements DmnExportService {
     }
   }
 
-  private void createHeaderRow(Sheet sheet, DecisionTable table) {
+  protected void createHeaderRow(Sheet sheet, DecisionTable table) {
     Row titleRow = sheet.createRow(sheet.getLastRowNum());
     Cell titleCell = titleRow.createCell(0);
     titleCell.setCellValue(table.getParentElement().getAttributeValue("name"));
@@ -119,7 +119,7 @@ public class DmnExportServiceImpl implements DmnExportService {
     sheet.autoSizeColumn(outputIndex);
   }
 
-  private void createDataRow(Sheet sheet, DecisionTable table) {
+  protected void createDataRow(Sheet sheet, DecisionTable table) {
     int index = sheet.getLastRowNum() + 1;
     for (Rule rule : table.getRules()) {
       Row row = sheet.createRow(index);
