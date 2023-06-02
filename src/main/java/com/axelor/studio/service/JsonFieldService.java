@@ -29,9 +29,14 @@ public class JsonFieldService {
 
   public static final String SELECTION_PREFIX = "custom-json-select-";
 
-  @Inject private StudioSelectionService studioSelectionService;
+  protected StudioSelectionService studioSelectionService;
 
-  @Transactional
+  @Inject
+  public JsonFieldService(StudioSelectionService studioSelectionService) {
+    this.studioSelectionService = studioSelectionService;
+  }
+
+  @Transactional(rollbackOn = Exception.class)
   public void updateSelection(MetaJsonField metaJsonField) {
 
     String selectionText = metaJsonField.getSelectionText();
@@ -53,7 +58,7 @@ public class JsonFieldService {
             .getName());
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeSelection(MetaJsonField metaJsonField) {
 
     String name = getSelectionName(metaJsonField);

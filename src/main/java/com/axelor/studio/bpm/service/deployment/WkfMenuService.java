@@ -52,17 +52,29 @@ public class WkfMenuService {
   public static final String MENU_PREFIX = "wkf-node-menu-";
   public static final String USER_MENU_PREFIX = "wkf-node-user-menu-";
 
-  @Inject protected MetaMenuRepository metaMenuRepository;
+  protected MetaMenuRepository metaMenuRepository;
 
-  @Inject protected MetaActionRepository metaActionRepository;
+  protected MetaActionRepository metaActionRepository;
 
-  @Inject protected MetaModelRepository metaModelRepository;
+  protected MetaModelRepository metaModelRepository;
 
-  @Inject protected TeamRepository teamRepo;
+  protected TeamRepository teamRepo;
+
+  @Inject
+  public WkfMenuService(
+      MetaMenuRepository metaMenuRepository,
+      MetaActionRepository metaActionRepository,
+      MetaModelRepository metaModelRepository,
+      TeamRepository teamRepo) {
+    this.metaMenuRepository = metaMenuRepository;
+    this.metaActionRepository = metaActionRepository;
+    this.metaModelRepository = metaModelRepository;
+    this.teamRepo = teamRepo;
+  }
 
   protected Inflector inflector = Inflector.getInstance();
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void createOrUpdateMenu(WkfTaskConfig wkfTaskConfig) {
 
     String name = MENU_PREFIX + wkfTaskConfig.getId();
@@ -95,7 +107,7 @@ public class WkfMenuService {
     metaMenuRepository.save(metaMenu);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void createOrUpdateUserMenu(WkfTaskConfig wkfTaskConfig) {
 
     String name = USER_MENU_PREFIX + wkfTaskConfig.getId();
@@ -121,7 +133,7 @@ public class WkfMenuService {
     metaMenuRepository.save(metaMenu);
   }
 
-  private MetaMenu findOrCreateMenu(String name) {
+  protected MetaMenu findOrCreateMenu(String name) {
 
     MetaMenu menu = metaMenuRepository.findByName(name);
     if (menu == null) {
@@ -130,7 +142,7 @@ public class WkfMenuService {
     return menu;
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public MetaAction createOrUpdateAction(
       MetaMenu metaMenu, WkfTaskConfig wkfTaskConfig, boolean userMenu) {
 
@@ -203,7 +215,7 @@ public class WkfMenuService {
     return metaActionRepository.save(metaAction);
   }
 
-  private Map<String, String> getViewNames(
+  protected Map<String, String> getViewNames(
       WkfTaskConfig wkfTaskConfig, boolean userMenu, boolean isJson) {
     String viewPrefix = getViewPrefix(wkfTaskConfig, isJson);
 
@@ -234,7 +246,7 @@ public class WkfMenuService {
     return viewMap;
   }
 
-  private String createQuery(WkfTaskConfig wkfTaskConfig, boolean userMenu, boolean isJson) {
+  protected String createQuery(WkfTaskConfig wkfTaskConfig, boolean userMenu, boolean isJson) {
 
     Property property = null;
     String query = "self.processInstanceId in (:processInstanceIds)";
@@ -272,7 +284,7 @@ public class WkfMenuService {
     return query;
   }
 
-  private String getViewPrefix(WkfTaskConfig wkfTaskConfig, boolean isJson) {
+  protected String getViewPrefix(WkfTaskConfig wkfTaskConfig, boolean isJson) {
 
     if (isJson) {
       return "custom-model-" + wkfTaskConfig.getJsonModelName();
@@ -295,7 +307,7 @@ public class WkfMenuService {
     return null;
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeMenu(WkfTaskConfig wkfTaskConfig) {
 
     String name = MENU_PREFIX + wkfTaskConfig.getId();
@@ -308,7 +320,7 @@ public class WkfMenuService {
     removeAction(name);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeUserMenu(WkfTaskConfig wkfTaskConfig) {
 
     String name = USER_MENU_PREFIX + wkfTaskConfig.getId();
@@ -322,7 +334,7 @@ public class WkfMenuService {
     removeAction(name);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeAction(String menuName) {
 
     MetaAction metaAction = metaActionRepository.findByName(menuName.replace("-", "."));

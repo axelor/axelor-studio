@@ -75,23 +75,29 @@ import org.slf4j.LoggerFactory;
 
 public class StudioAppService {
 
-  @Inject protected JpaSecurity jpaSecurity;
+  protected JpaSecurity jpaSecurity;
 
-  @Inject protected AppLoaderExportService appLoaderExportService;
-  @Inject protected AppLoaderImportService appLoaderImportService;
+  protected AppLoaderExportService appLoaderExportService;
+  protected AppLoaderImportService appLoaderImportService;
 
-  @Inject protected StudioAppRepository studioAppRepo;
-  @Inject private AppRepository appRepo;
+  protected AppRepository appRepo;
+  protected MetaJsonModelRepository metaJsonModelRepo;
 
-  public static final String STUDIO_APP_CODE = "code";
-  public static final String STUDIO_APP_NAME = "name";
-  public static final String STUDIO_APP_DESC = "description";
-  public static final String STUDIO_APP_SEQ = "sequence";
-  public static final String STUDIO_APP_IMAGE = "image";
-  public static final String STUDIO_APP_MODULES = "modules";
-  public static final String STUDIO_APP_DEPENDS_ON = "dependsOn";
+  @Inject
+  public StudioAppService(
+      JpaSecurity jpaSecurity,
+      AppLoaderExportService appLoaderExportService,
+      AppLoaderImportService appLoaderImportService,
+      AppRepository appRepo,
+      MetaJsonModelRepository metaJsonModelRepo) {
+    this.jpaSecurity = jpaSecurity;
+    this.appLoaderExportService = appLoaderExportService;
+    this.appLoaderImportService = appLoaderImportService;
+    this.appRepo = appRepo;
+    this.metaJsonModelRepo = metaJsonModelRepo;
+  }
 
-  private final Logger log = LoggerFactory.getLogger(StudioAppService.class);
+  protected final Logger log = LoggerFactory.getLogger(StudioAppService.class);
 
   public StudioApp build(StudioApp studioApp) {
 
@@ -124,7 +130,7 @@ public class StudioAppService {
     return studioApp;
   }
 
-  private void checkCode(StudioApp studioApp) {
+  protected void checkCode(StudioApp studioApp) {
 
     App app = appRepo.findByCode(studioApp.getCode());
 
@@ -134,7 +140,7 @@ public class StudioAppService {
     }
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void clean(StudioApp studioApp) {
 
     if (studioApp.getGeneratedApp() != null) {
@@ -143,7 +149,7 @@ public class StudioAppService {
     }
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void deleteApp(StudioApp studioApp) {
     Beans.get(StudioAppRepository.class).remove(studioApp);
   }
@@ -273,7 +279,7 @@ public class StudioAppService {
           continue;
         }
         List<MetaJsonModel> jsonModels =
-            Beans.get(MetaJsonModelRepository.class)
+            metaJsonModelRepo
                 .all()
                 .filter("self.studioApp.id = :studioAppId")
                 .bind("studioAppId", studioAppId)

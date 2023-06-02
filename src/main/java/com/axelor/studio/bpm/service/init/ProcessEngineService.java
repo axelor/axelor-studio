@@ -37,7 +37,7 @@ import org.camunda.bpm.engine.variable.Variables;
 @Singleton
 public class ProcessEngineService {
 
-  private static final Map<String, ProcessEngine> engineMap =
+  protected static final Map<String, ProcessEngine> engineMap =
       new ConcurrentHashMap<String, ProcessEngine>();
 
   protected final AppSettingsStudioService appSettingsStudioService;

@@ -60,24 +60,38 @@ import org.slf4j.LoggerFactory;
 
 public class StudioMetaService {
 
-  private final Logger log = LoggerFactory.getLogger(StudioMetaService.class);
+  protected final Logger log = LoggerFactory.getLogger(StudioMetaService.class);
 
-  @Inject private MetaActionRepository metaActionRepo;
+  protected MetaActionRepository metaActionRepo;
 
-  @Inject private MetaViewRepository metaViewRepo;
+  protected MetaViewRepository metaViewRepo;
 
-  @Inject private MetaMenuRepository metaMenuRepo;
+  protected MetaMenuRepository metaMenuRepo;
 
-  @Inject private StudioMenuRepository studioMenuRepo;
+  protected StudioMenuRepository studioMenuRepo;
 
-  @Inject private MetaModelRepository metaModelRepo;
+  protected MetaModelRepository metaModelRepo;
+
+  @Inject
+  public StudioMetaService(
+      MetaActionRepository metaActionRepo,
+      MetaViewRepository metaViewRepo,
+      MetaMenuRepository metaMenuRepo,
+      StudioMenuRepository studioMenuRepo,
+      MetaModelRepository metaModelRepo) {
+    this.metaActionRepo = metaActionRepo;
+    this.metaViewRepo = metaViewRepo;
+    this.metaMenuRepo = metaMenuRepo;
+    this.studioMenuRepo = studioMenuRepo;
+    this.metaModelRepo = metaModelRepo;
+  }
 
   /**
    * Removes MetaActions from comma separated names in string.
    *
    * @param actionNames Comma separated string of action names.
    */
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeMetaActions(String xmlIds) {
 
     log.debug("Removing actions: {}", xmlIds);
@@ -101,7 +115,7 @@ public class StudioMetaService {
     }
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public MetaAction updateMetaAction(
       String name, String actionType, String xml, String model, String xmlId) {
 
@@ -125,7 +139,7 @@ public class StudioMetaService {
    *
    * @param viewIterator ViewBuilder iterator
    */
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public MetaView generateMetaView(AbstractView view) {
 
     String name = view.getName();
@@ -270,7 +284,7 @@ public class StudioMetaService {
     return menu;
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeMetaMenu(MetaMenu metaMenu) {
     Preconditions.checkNotNull(metaMenu, "metaMenu cannot be null.");
 
@@ -288,7 +302,7 @@ public class StudioMetaService {
     metaMenuRepo.remove(metaMenu);
   }
 
-  private Integer getPriority(String object, String name) {
+  protected Integer getPriority(String object, String name) {
     String query =
         String.format("SELECT MAX(obj.priority) FROM %s obj WHERE obj.name = :name", object);
 
@@ -305,7 +319,7 @@ public class StudioMetaService {
     }
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void trackJsonField(MetaJsonModel jsonModel) {
 
     String messageBody = "";
@@ -338,7 +352,7 @@ public class StudioMetaService {
     }
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void trackingFields(
       AuditableModel auditableModel, String messageBody, String messageSubject) {
 
@@ -357,7 +371,7 @@ public class StudioMetaService {
     Beans.get(MailMessageRepository.class).save(message);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void trackJsonField(MetaJsonField metaJsonField) {
 
     MetaModel metaModel =

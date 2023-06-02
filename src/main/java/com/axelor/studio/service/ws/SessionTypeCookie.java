@@ -8,7 +8,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 public class SessionTypeCookie implements SessionType {
-  private Map<String, NewCookie> cookies = new HashMap<>();
+  protected Map<String, NewCookie> cookies = new HashMap<>();
 
   @Override
   public void extractSessionData(Response response, WsAuthenticator wsAuthenticator) {

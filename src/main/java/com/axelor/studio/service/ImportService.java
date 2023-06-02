@@ -66,37 +66,74 @@ import org.apache.commons.io.IOUtils;
 
 public class ImportService {
 
-  @Inject private StudioChartRepository studioChartRepo;
+  protected StudioChartRepository studioChartRepo;
 
-  @Inject private MetaJsonModelRepository metaJsonModelRepo;
+  protected MetaJsonModelRepository metaJsonModelRepo;
 
-  @Inject private MetaJsonFieldRepository metaJsonFieldRepo;
+  protected MetaJsonFieldRepository metaJsonFieldRepo;
 
-  @Inject private StudioSelectionRepository studioSelectionRepo;
+  protected StudioSelectionRepository studioSelectionRepo;
 
-  @Inject private StudioDashboardRepository studioDashboardRepo;
+  protected StudioDashboardRepository studioDashboardRepo;
 
-  @Inject private StudioMenuRepository studioMenuRepo;
+  protected StudioMenuRepository studioMenuRepo;
 
-  @Inject private StudioActionRepository studioActionRepo;
+  protected StudioActionRepository studioActionRepo;
 
-  @Inject private StudioAppRepository studioAppRepo;
+  protected StudioAppRepository studioAppRepo;
 
-  @Inject private MetaFiles metaFiles;
+  protected MetaFiles metaFiles;
 
-  @Inject private MetaFileRepository metaFileRepo;
+  protected MetaFileRepository metaFileRepo;
 
-  @Inject private AppLoaderRepository appLoaderRepository;
+  protected AppLoaderRepository appLoaderRepository;
 
-  @Inject private WsRequestRepository wsRequestRepo;
+  protected WsRequestRepository wsRequestRepo;
 
-  @Inject private WsAuthenticatorRepository wsAuthenticatorRepo;
+  protected WsAuthenticatorRepository wsAuthenticatorRepo;
 
-  @Inject private WsConnectorRepository wsConnectorRepo;
+  protected WsConnectorRepository wsConnectorRepo;
 
-  @Inject private ViewGenerator viewGenerator;
+  protected ViewGenerator viewGenerator;
 
-  @Inject private MetaViewRepository metaViewRepo;
+  protected MetaViewRepository metaViewRepo;
+
+  @Inject
+  public ImportService(
+      StudioChartRepository studioChartRepo,
+      MetaJsonModelRepository metaJsonModelRepo,
+      MetaJsonFieldRepository metaJsonFieldRepo,
+      StudioSelectionRepository studioSelectionRepo,
+      StudioDashboardRepository studioDashboardRepo,
+      StudioMenuRepository studioMenuRepo,
+      StudioActionRepository studioActionRepo,
+      StudioAppRepository studioAppRepo,
+      MetaFiles metaFiles,
+      MetaFileRepository metaFileRepo,
+      AppLoaderRepository appLoaderRepository,
+      WsRequestRepository wsRequestRepo,
+      WsAuthenticatorRepository wsAuthenticatorRepo,
+      WsConnectorRepository wsConnectorRepo,
+      ViewGenerator viewGenerator,
+      MetaViewRepository metaViewRepo) {
+
+    this.studioChartRepo = studioChartRepo;
+    this.metaJsonModelRepo = metaJsonModelRepo;
+    this.metaJsonFieldRepo = metaJsonFieldRepo;
+    this.studioSelectionRepo = studioSelectionRepo;
+    this.studioDashboardRepo = studioDashboardRepo;
+    this.studioMenuRepo = studioMenuRepo;
+    this.studioActionRepo = studioActionRepo;
+    this.studioAppRepo = studioAppRepo;
+    this.metaFiles = metaFiles;
+    this.metaFileRepo = metaFileRepo;
+    this.appLoaderRepository = appLoaderRepository;
+    this.wsRequestRepo = wsRequestRepo;
+    this.wsAuthenticatorRepo = wsAuthenticatorRepo;
+    this.wsConnectorRepo = wsConnectorRepo;
+    this.viewGenerator = viewGenerator;
+    this.metaViewRepo = metaViewRepo;
+  }
 
   public Object importMetaJsonModel(Object bean, Map<String, Object> values) {
 
@@ -182,7 +219,7 @@ public class ImportService {
   }
 
   // Import methods specific for import from StudioApp
-  private MetaFile importImg(String name, String data) {
+  protected MetaFile importImg(String name, String data) {
 
     if (data == null) {
       return null;

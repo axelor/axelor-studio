@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
 
 public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
-  private static final String[] EXPORT_TEMPLATES =
+  protected static final String[] EXPORT_TEMPLATES =
       new String[] {
         "studio-app",
         "json-model",
@@ -89,23 +89,37 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
         "meta-view"
       };
 
-  private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final List<String> JSON_EXTRACT_TYPES =
       Arrays.asList(new String[] {"integer", "decimal", "boolean", "text"});
 
-  @Inject protected MetaFiles metaFiles;
+  protected MetaFiles metaFiles;
 
-  @Inject protected AppLoaderRepository appLoaderRepository;
+  protected AppLoaderRepository appLoaderRepository;
 
-  @Inject protected MetaJsonRecordRepository metaJsonRecordRepository;
+  protected MetaJsonRecordRepository metaJsonRecordRepository;
 
-  @Inject protected JpaSecurity jpaSecurity;
+  protected JpaSecurity jpaSecurity;
 
-  @Inject protected MetaJsonModelRepository metaJsonModelRepository;
+  protected MetaJsonModelRepository metaJsonModelRepository;
+
+  @Inject
+  public AppLoaderExportServiceImpl(
+      MetaFiles metaFiles,
+      AppLoaderRepository appLoaderRepository,
+      MetaJsonRecordRepository metaJsonRecordRepository,
+      JpaSecurity jpaSecurity,
+      MetaJsonModelRepository metaJsonModelRepository) {
+    this.metaFiles = metaFiles;
+    this.appLoaderRepository = appLoaderRepository;
+    this.metaJsonRecordRepository = metaJsonRecordRepository;
+    this.jpaSecurity = jpaSecurity;
+    this.metaJsonModelRepository = metaJsonModelRepository;
+  }
 
   @Override
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void exportApps(AppLoader appLoader) {
 
     if (CollectionUtils.isEmpty(appLoader.getExportedStudioAppSet())) {
@@ -203,7 +217,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     fout.close();
   }
 
-  private XMLInput createInput(AppDataLoader dataLoader, boolean relationalInput)
+  protected XMLInput createInput(AppDataLoader dataLoader, boolean relationalInput)
       throws ClassNotFoundException {
 
     XMLInput xmlInput;
@@ -246,7 +260,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return xmlInput;
   }
 
-  private String getBindNodeName(String root) {
+  protected String getBindNodeName(String root) {
     return root.substring(0, root.length() - 1);
   }
 
@@ -468,7 +482,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return value;
   }
 
-  private String getTargetName(Map<String, Object> fieldAttrs) {
+  protected String getTargetName(Map<String, Object> fieldAttrs) {
 
     String targetName = (String) fieldAttrs.get("targetName");
     if (Strings.isNullOrEmpty(targetName)) {
@@ -594,7 +608,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return fields.toString();
   }
 
-  private List<XMLBind> getMetaFieldBinding(
+  protected List<XMLBind> getMetaFieldBinding(
       Mapper modelMapper, AppDataLoader dataLoader, boolean relationalInput) {
 
     List<XMLBind> fieldBindings = new ArrayList<XMLBind>();
@@ -623,7 +637,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return fieldBindings;
   }
 
-  private XMLBind createDummyFieldBinding(String name) {
+  protected XMLBind createDummyFieldBinding(String name) {
 
     XMLBind dummyBind = new XMLBind();
     dummyBind.setNode(name);
@@ -632,7 +646,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     return dummyBind;
   }
 
-  private void addRelationalMetaFieldBind(Mapper modelMapper, MetaField field, XMLBind fieldBind) {
+  protected void addRelationalMetaFieldBind(
+      Mapper modelMapper, MetaField field, XMLBind fieldBind) {
 
     Property property = modelMapper.getProperty(field.getName());
     if (property.isCollection()) {

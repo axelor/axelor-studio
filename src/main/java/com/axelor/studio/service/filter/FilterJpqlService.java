@@ -33,9 +33,14 @@ import org.slf4j.LoggerFactory;
  */
 public class FilterJpqlService {
 
-  private final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Inject private FilterCommonService filterCommonService;
+  protected FilterCommonService filterCommonService;
+
+  @Inject
+  public FilterJpqlService(FilterCommonService filterCommonService) {
+    this.filterCommonService = filterCommonService;
+  }
 
   public String getJpqlFilters(List<Filter> filterList) {
 

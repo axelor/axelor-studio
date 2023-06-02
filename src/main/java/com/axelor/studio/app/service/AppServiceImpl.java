@@ -28,7 +28,6 @@ import com.axelor.db.Model;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
@@ -73,37 +72,38 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class AppServiceImpl implements AppService {
 
-  private final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
+  protected final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
 
-  private static final String DIR_APPS = "apps";
+  protected static final String DIR_APPS = "apps";
 
-  private static final String DIR_APPS_DEMO = Paths.get("apps", "demo-data").toString();
+  protected static final String DIR_APPS_DEMO = Paths.get("apps", "demo-data").toString();
 
-  private static final String DIR_APPS_INIT = Paths.get("apps", "init-data").toString();
+  protected static final String DIR_APPS_INIT = Paths.get("apps", "init-data").toString();
 
-  private static final String DIR_APPS_ROLES = Paths.get("apps", "roles").toString();
+  protected static final String DIR_APPS_ROLES = Paths.get("apps", "roles").toString();
 
-  private static final String CONFIG_PATTERN = "-config.xml";
+  protected static final String CONFIG_PATTERN = "-config.xml";
 
-  private static final String IMG_DIR = "img";
+  protected static final String IMG_DIR = "img";
 
-  private static final String EXT_DIR = "extra";
+  protected static final String EXT_DIR = "extra";
 
-  private static final Pattern patCsv = Pattern.compile("^<\\s*csv-inputs");
+  protected static final Pattern patCsv = Pattern.compile("^<\\s*csv-inputs");
 
-  private static final Pattern patXml = Pattern.compile("^<\\s*xml-inputs");
+  protected static final Pattern patXml = Pattern.compile("^<\\s*xml-inputs");
 
-  private static final String APP_CODE = "code";
-  private static final String APP_IMAGE = "image";
-  private static final String APP_MODULES = "modules";
-  private static final String APP_DEPENDS_ON = "dependsOn";
-  private static final String APP_VERSION = "appVersion";
+  protected static final String APP_CODE = "code";
+  protected static final String APP_IMAGE = "image";
+  protected static final String APP_MODULES = "modules";
+  protected static final String APP_DEPENDS_ON = "dependsOn";
+  protected static final String APP_VERSION = "appVersion";
 
   protected final AppRepository appRepo;
   protected final MetaFiles metaFiles;
   protected final AppVersionService appVersionService;
   protected final MetaModelRepository metaModelRepo;
   protected final AppSettingsStudioService appSettingsService;
+  protected final MetaModuleRepository metaModuleRepo;
 
   @Inject
   public AppServiceImpl(
@@ -111,12 +111,14 @@ public class AppServiceImpl implements AppService {
       MetaFiles metaFiles,
       AppVersionService appVersionService,
       MetaModelRepository metaModelRepo,
-      AppSettingsStudioService appSettingsService) {
+      AppSettingsStudioService appSettingsService,
+      MetaModuleRepository metaModuleRepo) {
     this.appRepo = appRepo;
     this.metaFiles = metaFiles;
     this.appVersionService = appVersionService;
     this.metaModelRepo = metaModelRepo;
     this.appSettingsService = appSettingsService;
+    this.metaModuleRepo = metaModuleRepo;
   }
 
   @Override
@@ -143,12 +145,12 @@ public class AppServiceImpl implements AppService {
     return saveApp(app);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public App saveApp(App app) {
     return appRepo.save(app);
   }
 
-  private void importData(App app, String dataDir, boolean useLang) throws IOException {
+  protected void importData(App app, String dataDir, boolean useLang) throws IOException {
 
     String modules = app.getModules();
     if (modules == null) {
@@ -169,7 +171,7 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private void importPerConfig(String appCode, File dataDir) throws IOException {
+  protected void importPerConfig(String appCode, File dataDir) throws IOException {
 
     try {
       File[] configs =
@@ -192,7 +194,7 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private String getLanguage(App app) {
+  protected String getLanguage(App app) {
 
     String lang = app.getLanguageSelect();
 
@@ -203,7 +205,7 @@ public class AppServiceImpl implements AppService {
     return lang;
   }
 
-  private void importParentData(App app) throws IOException {
+  protected void importParentData(App app) throws IOException {
 
     List<App> depends = getDepends(app, true);
 
@@ -215,7 +217,7 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private App importDataInit(App app) throws IOException {
+  protected App importDataInit(App app) throws IOException {
 
     String lang = getLanguage(app);
     if (lang == null) {
@@ -231,7 +233,7 @@ public class AppServiceImpl implements AppService {
     return app;
   }
 
-  private void runImport(File config, File data) throws FileNotFoundException {
+  protected void runImport(File config, File data) throws FileNotFoundException {
 
     log.debug(
         "Running import with config path: {}, data path: {}",
@@ -258,7 +260,8 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private File extract(String module, String dirName, String lang, String code) throws IOException {
+  protected File extract(String module, String dirName, String lang, String code)
+      throws IOException {
     String dirNamePattern = dirName.replaceAll("[/\\\\]", "(/|\\\\\\\\)");
     List<URL> files = new ArrayList<>();
 
@@ -302,12 +305,12 @@ public class AppServiceImpl implements AppService {
     return tmp;
   }
 
-  private List<URL> fetchUrls(String module, String fileName) {
+  protected List<URL> fetchUrls(String module, String fileName) {
     final String fileNamePattern = fileName.replaceAll("[/\\\\]", "(/|\\\\\\\\)");
     return MetaScanner.findAll(module, fileNamePattern, "(.+?)");
   }
 
-  private void copy(InputStream in, File toDir, String name) throws IOException {
+  protected void copy(InputStream in, File toDir, String name) throws IOException {
     File dst = FileUtils.getFile(toDir, name);
     com.google.common.io.Files.createParentDirs(dst);
     try (FileOutputStream out = new FileOutputStream(dst)) {
@@ -315,7 +318,7 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private void clean(File file) throws IOException {
+  protected void clean(File file) throws IOException {
     File[] files = file == null ? null : file.listFiles();
     if (files == null) {
       return;
@@ -353,7 +356,7 @@ public class AppServiceImpl implements AppService {
     return app.getActive();
   }
 
-  private List<App> getDepends(App app, Boolean active) {
+  protected List<App> getDepends(App app, Boolean active) {
 
     List<App> apps = new ArrayList<>();
     app = appRepo.find(app.getId());
@@ -371,7 +374,7 @@ public class AppServiceImpl implements AppService {
     return sortApps(apps);
   }
 
-  private List<String> getNames(List<App> apps) {
+  protected List<String> getNames(List<App> apps) {
 
     List<String> names = new ArrayList<>();
 
@@ -382,7 +385,7 @@ public class AppServiceImpl implements AppService {
     return names;
   }
 
-  private List<App> getChildren(App app) {
+  protected List<App> getChildren(App app) {
 
     String code = app.getCode();
 
@@ -429,7 +432,7 @@ public class AppServiceImpl implements AppService {
     return saveApp(app);
   }
 
-  private List<App> sortApps(Collection<App> apps) {
+  protected List<App> sortApps(Collection<App> apps) {
 
     List<App> appsList = new ArrayList<>(apps);
 
@@ -440,7 +443,7 @@ public class AppServiceImpl implements AppService {
     return appsList;
   }
 
-  private int compare(App app1, App app2) {
+  protected int compare(App app1, App app2) {
     Integer order1 = app1.getInstallOrder();
     Integer order2 = app2.getInstallOrder();
     return order1.compareTo(order2);
@@ -448,7 +451,7 @@ public class AppServiceImpl implements AppService {
 
   @Override
   public void initApps() throws IOException {
-    final List<MetaModule> modules = Beans.get(MetaModuleRepository.class).all().fetch();
+    final List<MetaModule> modules = metaModuleRepo.all().fetch();
 
     for (MetaModule module : modules) {
 
@@ -482,7 +485,7 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private void importApp(File dataFile, Map<App, Object> appDependsOnMap)
+  protected void importApp(File dataFile, Map<App, Object> appDependsOnMap)
       throws IOException, ClassNotFoundException {
 
     log.debug("Running import/update app with data path: {}", dataFile.getAbsolutePath());
@@ -570,7 +573,7 @@ public class AppServiceImpl implements AppService {
   }
 
   @SuppressWarnings("unchecked")
-  private void setAppDependsOn(Map<App, Object> appDepednsOnMap) {
+  protected void setAppDependsOn(Map<App, Object> appDepednsOnMap) {
 
     for (Entry<App, Object> appEntry : appDepednsOnMap.entrySet()) {
 
@@ -591,7 +594,7 @@ public class AppServiceImpl implements AppService {
     }
   }
 
-  private void importAppImage(
+  protected void importAppImage(
       App app, Mapper mapper, Property property, String image, File dataFile) {
 
     final Path path = Paths.get(dataFile.getParent());
@@ -653,7 +656,7 @@ public class AppServiceImpl implements AppService {
     return saveApp(app);
   }
 
-  private void importParentRoles(App app) throws IOException {
+  protected void importParentRoles(App app) throws IOException {
 
     List<App> depends = getDepends(app, true);
 

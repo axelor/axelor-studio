@@ -18,7 +18,11 @@
 package com.axelor.studio.bpm.service;
 
 import com.axelor.common.ResourceUtils;
+import com.axelor.meta.MetaFiles;
+import com.axelor.studio.db.repo.AppLoaderRepository;
+import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportServiceImpl;
+import com.google.inject.Inject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -29,7 +33,15 @@ import org.apache.commons.io.IOUtils;
 
 public class AppLoaderImportBpmServiceImpl extends AppLoaderImportServiceImpl {
 
-  private static final String[] IMPORT_FILES =
+  @Inject
+  public AppLoaderImportBpmServiceImpl(
+      AppLoaderRepository appLoaderRepository,
+      MetaFiles metaFiles,
+      AppLoaderExportService appLoaderExportService) {
+    super(appLoaderRepository, metaFiles, appLoaderExportService);
+  }
+
+  protected static final String[] IMPORT_FILES =
       new String[] {"wkf-model.xml", "wkf-dmn-model.xml", "baml-model.xml"};
 
   @Override

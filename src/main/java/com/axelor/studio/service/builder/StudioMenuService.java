@@ -19,7 +19,6 @@ package com.axelor.studio.service.builder;
 
 import com.axelor.common.Inflector;
 import com.axelor.db.mapper.Mapper;
-import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaAction;
@@ -51,11 +50,23 @@ import org.apache.commons.lang3.StringUtils;
 
 public class StudioMenuService {
 
-  @Inject private StudioActionService studioActionService;
+  protected StudioActionService studioActionService;
 
-  @Inject private StudioMetaService metaService;
+  protected StudioMetaService metaService;
 
-  @Transactional
+  protected StudioMenuRepo studioMenuRepo;
+
+  @Inject
+  public StudioMenuService(
+      StudioActionService studioActionService,
+      StudioMetaService metaService,
+      StudioMenuRepo studioMenuRepo) {
+    this.studioActionService = studioActionService;
+    this.metaService = metaService;
+    this.studioMenuRepo = studioMenuRepo;
+  }
+
+  @Transactional(rollbackOn = Exception.class)
   public MetaMenu build(StudioMenu studioMenu) {
 
     MetaMenu menu = metaService.createMenu(studioMenu);
@@ -141,7 +152,7 @@ public class StudioMenuService {
     return Optional.empty();
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public StudioMenu updateStudioMenu(
       StudioMenu studioMenu,
       String objectName,
@@ -181,10 +192,10 @@ public class StudioMenuService {
 
     studioMenu.setStudioAction(studioAction);
 
-    return Beans.get(StudioMenuRepo.class).save(studioMenu);
+    return studioMenuRepo.save(studioMenu);
   }
 
-  private List<StudioActionView> getActionViews(
+  protected List<StudioActionView> getActionViews(
       StudioAction studioAction, Boolean isJson, String objectName, String objectClass) {
 
     List<StudioActionView> views = studioAction.getStudioActionViews();
@@ -205,7 +216,7 @@ public class StudioMenuService {
     return views;
   }
 
-  private void setStudioActionView(
+  protected void setStudioActionView(
       String viewType, String viewName, List<StudioActionView> studioActionViews) {
 
     StudioActionView studioActionView = new StudioActionView();

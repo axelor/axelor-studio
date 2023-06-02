@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.service.ws;
 
-import com.axelor.inject.Beans;
 import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.WsKeyValue;
 import com.axelor.studio.db.WsRequest;
@@ -40,17 +39,29 @@ import org.apache.http.client.utils.URIBuilder;
 
 public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
-  @Inject protected WsConnectorService wsConnectorService;
+  protected WsConnectorService wsConnectorService;
 
-  @Inject protected WsAuthenticatorRepository wsAuthenticatorRepository;
-  @Inject protected AppSettingsStudioService appSettingsStudioService;
+  protected WsAuthenticatorRepository wsAuthenticatorRepository;
+  protected AppSettingsStudioService appSettingsStudioService;
+  protected GroovyTemplates templates;
+
+  @Inject
+  public WsAuthenticatorServiceImpl(
+      WsConnectorService wsConnectorService,
+      WsAuthenticatorRepository wsAuthenticatorRepository,
+      AppSettingsStudioService appSettingsStudioService,
+      GroovyTemplates templates) {
+    this.wsConnectorService = wsConnectorService;
+    this.wsAuthenticatorRepository = wsAuthenticatorRepository;
+    this.appSettingsStudioService = appSettingsStudioService;
+    this.templates = templates;
+  }
 
   @Override
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void authenticate(WsAuthenticator wsAuthenticator) {
 
     String authType = wsAuthenticator.getAuthTypeSelect();
-    GroovyTemplates templates = Beans.get(GroovyTemplates.class);
     Map<String, Object> ctx = new HashMap<>();
     Client client = ClientBuilder.newClient();
 
@@ -99,7 +110,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
     return url;
   }
 
-  private String getRedirectUrl() {
+  protected String getRedirectUrl() {
 
     String redirectUrl = appSettingsStudioService.baseUrl();
 
@@ -150,7 +161,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public Response refereshToken(WsAuthenticator wsAuthenticator) {
 
     String tokenResponse = wsAuthenticator.getTokenResponse();
@@ -159,7 +170,6 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       return null;
     }
 
-    GroovyTemplates templates = Beans.get(GroovyTemplates.class);
     Map<String, Object> ctx = new HashMap<>();
     Client client = ClientBuilder.newClient();
     ObjectMapper mapper = new ObjectMapper();

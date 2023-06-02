@@ -41,11 +41,21 @@ import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 
 public class WkfNodeService {
 
-  @Inject protected MetaAttrsService metaAttrsService;
+  protected MetaAttrsService metaAttrsService;
 
-  @Inject protected WkfTaskConfigRepository wkfConfigRepository;
+  protected WkfTaskConfigRepository wkfConfigRepository;
 
-  @Inject protected WkfMenuService wkfMenuService;
+  protected WkfMenuService wkfMenuService;
+
+  @Inject
+  public WkfNodeService(
+      MetaAttrsService metaAttrsService,
+      WkfTaskConfigRepository wkfConfigRepository,
+      WkfMenuService wkfMenuService) {
+    this.metaAttrsService = metaAttrsService;
+    this.wkfConfigRepository = wkfConfigRepository;
+    this.wkfMenuService = wkfMenuService;
+  }
 
   public List<MetaAttrs> extractNodes(
       WkfModel wkfModel, BpmnModelInstance bpmInstance, Map<String, String> processMap) {
@@ -84,7 +94,7 @@ public class WkfNodeService {
     return metaAttrsList;
   }
 
-  private Process findProcess(FlowNode activity) {
+  protected Process findProcess(FlowNode activity) {
 
     ModelElementInstance modelElementInstance = activity.getParentElement();
 
@@ -146,7 +156,7 @@ public class WkfNodeService {
     return config;
   }
 
-  private void updateMenus(WkfTaskConfig taskConfig, boolean remove) {
+  protected void updateMenus(WkfTaskConfig taskConfig, boolean remove) {
 
     if (!remove && taskConfig.getNewMenu()) {
       wkfMenuService.createOrUpdateMenu(taskConfig);

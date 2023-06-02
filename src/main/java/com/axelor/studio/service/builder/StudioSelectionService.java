@@ -38,16 +38,23 @@ import org.apache.commons.lang3.StringUtils;
 
 public class StudioSelectionService {
 
-  private static final String TITLE = "title";
-  private static final String VALUE = "value";
-  private static final String COLOR = "color";
-  private static final String ICON = "icon";
+  protected static final String TITLE = "title";
+  protected static final String VALUE = "value";
+  protected static final String COLOR = "color";
+  protected static final String ICON = "icon";
 
   public static final String SELECTION_PREFIX = "custom-studio-selection-";
 
-  @Inject private MetaSelectRepository metaSelectRepository;
+  protected MetaSelectRepository metaSelectRepository;
 
-  @Inject private StudioSelectionRepository studioSelectionRepo;
+  protected StudioSelectionRepository studioSelectionRepo;
+
+  @Inject
+  public StudioSelectionService(
+      MetaSelectRepository metaSelectRepository, StudioSelectionRepository studioSelectionRepo) {
+    this.metaSelectRepository = metaSelectRepository;
+    this.studioSelectionRepo = studioSelectionRepo;
+  }
 
   public List<Map<String, String>> createSelectionText(String selectionName) {
     List<Map<String, String>> optionMapList = new ArrayList<>();
@@ -81,7 +88,7 @@ public class StudioSelectionService {
     return optionMapList;
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeStudioSelection(String name) {
     if (name == null) {
       return;
@@ -94,7 +101,7 @@ public class StudioSelectionService {
     }
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void removeSelection(String name, String xmlId) {
 
     if (name == null && xmlId == null) {
@@ -119,7 +126,7 @@ public class StudioSelectionService {
         xmlId);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public String updateMetaSelectFromText(
       String selectionText, String name, StudioApp studioApp, String xmlId) {
 
@@ -146,7 +153,7 @@ public class StudioSelectionService {
     return name;
   }
 
-  private MetaSelect updateSelectItems(String selectionText, String name, String xmlId) {
+  protected MetaSelect updateSelectItems(String selectionText, String name, String xmlId) {
 
     MetaSelect metaSelect = xmlId != null ? findMetaSelectById(xmlId) : findMetaSelectByName(name);
 
@@ -172,7 +179,7 @@ public class StudioSelectionService {
     return metaSelect;
   }
 
-  private MetaSelectItem updateItem(
+  protected MetaSelectItem updateItem(
       Map<String, MetaSelectItem> itemMap, int order, Map<String, String> optionMap) {
 
     String title = null;
@@ -201,7 +208,7 @@ public class StudioSelectionService {
     return metaSelectItem;
   }
 
-  private MetaSelect findMetaSelectByName(String name) {
+  protected MetaSelect findMetaSelectByName(String name) {
 
     return metaSelectRepository
         .all()
@@ -209,7 +216,7 @@ public class StudioSelectionService {
         .fetchOne();
   }
 
-  private MetaSelect findMetaSelectById(String xmlId) {
+  protected MetaSelect findMetaSelectById(String xmlId) {
 
     return metaSelectRepository
         .all()
@@ -217,7 +224,7 @@ public class StudioSelectionService {
         .fetchOne();
   }
 
-  private Integer getPriority(String name, String xmlId) {
+  protected Integer getPriority(String name, String xmlId) {
 
     MetaSelect metaSelect =
         metaSelectRepository
@@ -299,7 +306,7 @@ public class StudioSelectionService {
     return optionMapList;
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public StudioSelection createStudioSelection(
       String selectionText, String name, StudioApp studioApp) {
 

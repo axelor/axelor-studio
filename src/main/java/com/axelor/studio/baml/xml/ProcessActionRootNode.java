@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
 public class ProcessActionRootNode {
 
   @XmlElements({@XmlElement(name = "process-action", type = ProcessActionNode.class)})
-  private List<ProcessActionNode> processActions;
+  protected List<ProcessActionNode> processActions;
 
   public List<ProcessActionNode> getProcessActions() {
     return processActions;
