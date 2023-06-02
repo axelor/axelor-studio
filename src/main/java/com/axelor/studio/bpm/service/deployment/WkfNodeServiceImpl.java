@@ -39,19 +39,19 @@ import org.camunda.bpm.model.bpmn.instance.FlowNode;
 import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 
-public class WkfNodeService {
+public class WkfNodeServiceImpl {
 
   protected MetaAttrsService metaAttrsService;
 
   protected WkfTaskConfigRepository wkfConfigRepository;
 
-  protected WkfMenuService wkfMenuService;
+  protected WkfMenuServiceImpl wkfMenuService;
 
   @Inject
-  public WkfNodeService(
+  public WkfNodeServiceImpl(
       MetaAttrsService metaAttrsService,
       WkfTaskConfigRepository wkfConfigRepository,
-      WkfMenuService wkfMenuService) {
+      WkfMenuServiceImpl wkfMenuService) {
     this.metaAttrsService = metaAttrsService;
     this.wkfConfigRepository = wkfConfigRepository;
     this.wkfMenuService = wkfMenuService;

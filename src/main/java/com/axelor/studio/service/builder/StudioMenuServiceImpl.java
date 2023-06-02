@@ -35,7 +35,7 @@ import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
@@ -48,18 +48,18 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class StudioMenuService {
+public class StudioMenuServiceImpl {
 
-  protected StudioActionService studioActionService;
+  protected StudioActionServiceImpl studioActionService;
 
-  protected StudioMetaService metaService;
+  protected StudioMetaServiceImpl metaService;
 
   protected StudioMenuRepo studioMenuRepo;
 
   @Inject
-  public StudioMenuService(
-      StudioActionService studioActionService,
-      StudioMetaService metaService,
+  public StudioMenuServiceImpl(
+      StudioActionServiceImpl studioActionService,
+      StudioMetaServiceImpl metaService,
       StudioMenuRepo studioMenuRepo) {
     this.studioActionService = studioActionService;
     this.metaService = metaService;

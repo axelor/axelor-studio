@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author axelor
  */
-public class ReportBuilderService {
+public class ReportBuilderServiceImpl {
 
   protected Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -75,7 +75,7 @@ public class ReportBuilderService {
   protected MetaModelRepository metaModelRepo;
 
   @Inject
-  public ReportBuilderService(
+  public ReportBuilderServiceImpl(
       MetaFieldRepository metaFieldRepo,
       MetaViewRepository metaViewRepo,
       MetaModelRepository metaModelRepo) {

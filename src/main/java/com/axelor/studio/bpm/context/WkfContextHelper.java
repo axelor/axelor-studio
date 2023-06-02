@@ -21,7 +21,7 @@ import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.service.WkfCommonService;
-import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.context.FullContextHelper;
 import com.google.inject.persist.Transactional;
@@ -123,7 +123,7 @@ public class WkfContextHelper {
     }
 
     RuntimeService runtimeService =
-        Beans.get(ProcessEngineService.class).getEngine().getRuntimeService();
+        Beans.get(ProcessEngineServiceImpl.class).getEngine().getRuntimeService();
 
     Object value = runtimeService.getVariable(processInstanceId, variable);
 
@@ -136,7 +136,7 @@ public class WkfContextHelper {
 
   public static void evalStartConditions(String variableName, Object value) {
     RuntimeService runtimeService =
-        Beans.get(ProcessEngineService.class).getEngine().getRuntimeService();
+        Beans.get(ProcessEngineServiceImpl.class).getEngine().getRuntimeService();
 
     runtimeService
         .createConditionEvaluation()

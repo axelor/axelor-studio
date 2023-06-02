@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 
-public class WkfMenuService {
+public class WkfMenuServiceImpl {
 
   public static final String MENU_PREFIX = "wkf-node-menu-";
   public static final String USER_MENU_PREFIX = "wkf-node-user-menu-";
@@ -61,7 +61,7 @@ public class WkfMenuService {
   protected TeamRepository teamRepo;
 
   @Inject
-  public WkfMenuService(
+  public WkfMenuServiceImpl(
       MetaMenuRepository metaMenuRepository,
       MetaActionRepository metaActionRepository,
       MetaModelRepository metaModelRepository,

@@ -21,7 +21,7 @@ import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
-import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.db.DmnField;
 import com.axelor.studio.db.DmnTable;
 import com.axelor.studio.db.WkfDmnModel;
@@ -52,14 +52,14 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
   protected final Logger log = LoggerFactory.getLogger(DmnDeploymentServiceImpl.class);
 
   protected WkfDmnModelRepository wkfDmnModelRepo;
-  protected ProcessEngineService processEngineService;
+  protected ProcessEngineServiceImpl processEngineService;
   protected MetaModelRepository metaModelRepo;
   protected MetaJsonModelRepository metaJsonModelRepo;
 
   @Inject
   public DmnDeploymentServiceImpl(
       WkfDmnModelRepository wkfDmnModelRepo,
-      ProcessEngineService processEngineService,
+      ProcessEngineServiceImpl processEngineService,
       MetaModelRepository metaModelRepository,
       MetaJsonModelRepository metaJsonModelRepo) {
     this.wkfDmnModelRepo = wkfDmnModelRepo;

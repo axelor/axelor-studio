@@ -26,7 +26,7 @@ import com.axelor.meta.schema.views.Dashboard;
 import com.axelor.meta.schema.views.Dashlet;
 import com.axelor.studio.db.StudioDashboard;
 import com.axelor.studio.db.StudioDashlet;
-import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -40,14 +40,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author axelor
  */
-public class StudioDashboardService {
+public class StudioDashboardServiceImpl {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected StudioMetaService metaService;
+  protected StudioMetaServiceImpl metaService;
 
   @Inject
-  public StudioDashboardService(StudioMetaService metaService) {
+  public StudioDashboardServiceImpl(StudioMetaServiceImpl metaService) {
     this.metaService = metaService;
   }
 

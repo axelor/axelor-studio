@@ -18,16 +18,16 @@
 package com.axelor.studio.db.repo;
 
 import com.axelor.studio.db.StudioApp;
-import com.axelor.studio.service.builder.StudioAppService;
+import com.axelor.studio.service.builder.StudioAppServiceImpl;
 import com.google.inject.Inject;
 import javax.validation.ValidationException;
 
 public class StudioAppRepo extends StudioAppRepository {
 
-  protected StudioAppService studioAppService;
+  protected StudioAppServiceImpl studioAppService;
 
   @Inject
-  public StudioAppRepo(StudioAppService studioAppService) {
+  public StudioAppRepo(StudioAppServiceImpl studioAppService) {
     this.studioAppService = studioAppService;
   }
 
