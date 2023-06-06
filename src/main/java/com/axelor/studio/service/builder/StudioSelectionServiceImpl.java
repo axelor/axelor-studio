@@ -64,27 +64,26 @@ public class StudioSelectionServiceImpl {
       return optionMapList;
     }
 
-    for (Option option : options) {
-      if (option.getHidden() != null && option.getHidden()) {
-        continue;
-      }
+    options.stream()
+        .filter(option -> option.getHidden() == null || !option.getHidden())
+        .forEach(
+            option -> {
+              Map<String, String> optionMap = new LinkedHashMap<>();
 
-      Map<String, String> optionMap = new LinkedHashMap<>();
-
-      if (option.getValue().equals(option.getTitle())) {
-        optionMap.put(VALUE, option.getValue());
-      } else {
-        optionMap.put(TITLE, option.getTitle());
-        optionMap.put(VALUE, option.getValue());
-      }
-      if (!StringUtils.isBlank(option.getColor())) {
-        optionMap.put(COLOR, option.getColor());
-      }
-      if (!StringUtils.isBlank(option.getIcon())) {
-        optionMap.put(ICON, option.getIcon());
-      }
-      optionMapList.add(optionMap);
-    }
+              if (option.getValue().equals(option.getTitle())) {
+                optionMap.put(VALUE, option.getValue());
+              } else {
+                optionMap.put(TITLE, option.getTitle());
+                optionMap.put(VALUE, option.getValue());
+              }
+              if (!StringUtils.isBlank(option.getColor())) {
+                optionMap.put(COLOR, option.getColor());
+              }
+              if (!StringUtils.isBlank(option.getIcon())) {
+                optionMap.put(ICON, option.getIcon());
+              }
+              optionMapList.add(optionMap);
+            });
     return optionMapList;
   }
 
@@ -162,9 +161,7 @@ public class StudioSelectionServiceImpl {
     if (metaSelect == null) {
       metaSelect = new MetaSelect(name);
     } else {
-      for (MetaSelectItem item : metaSelect.getItems()) {
-        itemMap.put(item.getValue(), item);
-      }
+      metaSelect.getItems().forEach(item -> itemMap.put(item.getValue(), item));
     }
     metaSelect.clearItems();
 
@@ -246,23 +243,24 @@ public class StudioSelectionServiceImpl {
       return Joiner.on("\n").join(options);
     }
 
-    for (Map<String, String> option : selectOptions) {
-      if (!option.containsKey(TITLE)) {
-        options.add(option.get(VALUE));
-      } else {
-        options.add(option.get(VALUE) + ":" + option.get(TITLE));
-      }
+    selectOptions.forEach(
+        option -> {
+          if (!option.containsKey(TITLE)) {
+            options.add(option.get(VALUE));
+          } else {
+            options.add(option.get(VALUE) + ":" + option.get(TITLE));
+          }
 
-      String color = option.get(COLOR);
-      if (StringUtils.isNotBlank(color)) {
-        options.add(COLOR + ":" + color);
-      }
+          String color = option.get(COLOR);
+          if (StringUtils.isNotBlank(color)) {
+            options.add(COLOR + ":" + color);
+          }
 
-      String icon = option.get(ICON);
-      if (StringUtils.isNotBlank(icon)) {
-        options.add(ICON + ":" + icon);
-      }
-    }
+          String icon = option.get(ICON);
+          if (StringUtils.isNotBlank(icon)) {
+            options.add(ICON + ":" + icon);
+          }
+        });
     return Joiner.on("\n").join(options);
   }
 

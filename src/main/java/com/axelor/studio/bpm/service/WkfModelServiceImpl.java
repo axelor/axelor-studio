@@ -334,9 +334,7 @@ public class WkfModelServiceImpl implements WkfModelService {
     List<Map<String, Object>> dataList = new ArrayList<>();
     List<WkfProcess> processList = wkfDashboardCommonService.findProcesses(wkfModel, null);
 
-    for (WkfProcess process : processList) {
-      dataList.add(buildDataMapPerStatus(process));
-    }
+    processList.forEach(process -> dataList.add(buildDataMapPerStatus(process)));
 
     return dataList;
   }
@@ -350,39 +348,41 @@ public class WkfModelServiceImpl implements WkfModelService {
     wkfDashboardCommonService.sortProcessConfig(processConfigs);
 
     List<String> modelNames = new ArrayList<>();
-    for (WkfProcessConfig processConfig : processConfigs) {
+    processConfigs.forEach(
+        processConfig -> {
+          final boolean isMetaModel = processConfig.getMetaModel() != null;
+          final String modelName =
+              isMetaModel
+                  ? processConfig.getMetaModel().getName()
+                  : processConfig.getMetaJsonModel().getName();
 
-      final boolean isMetaModel = processConfig.getMetaModel() != null;
-      final String modelName =
-          isMetaModel
-              ? processConfig.getMetaModel().getName()
-              : processConfig.getMetaJsonModel().getName();
+          if (modelNames.contains(modelName)) {
+            return;
+          }
+          modelNames.add(modelName);
 
-      if (modelNames.contains(modelName)) {
-        continue;
-      }
-      modelNames.add(modelName);
+          Map<String, Object> _map =
+              wkfDashboardCommonService.computeStatus(isMetaModel, modelName, process, null, null);
 
-      Map<String, Object> _map =
-          wkfDashboardCommonService.computeStatus(isMetaModel, modelName, process, null, null);
+          List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
+          List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statuses");
+          Map<String, Object> taskMap = (Map<String, Object>) _map.get("tasks");
 
-      List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
-      List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statuses");
-      Map<String, Object> taskMap = (Map<String, Object>) _map.get("tasks");
-
-      HashMap<String, Object> map = new HashMap<>();
-      map.put("type", "model");
-      map.put(
-          "title",
-          !StringUtils.isBlank(processConfig.getTitle()) ? processConfig.getTitle() : modelName);
-      map.put("modelName", modelName);
-      map.put("modelRecordCount", recordIdsPerModel.size());
-      map.put("isMetaModel", isMetaModel);
-      map.put("recordIdsPerModel", recordIdsPerModel);
-      map.put("statuses", statusList);
-      map.put("tasks", taskMap);
-      configList.add(map);
-    }
+          HashMap<String, Object> map = new HashMap<>();
+          map.put("type", "model");
+          map.put(
+              "title",
+              !StringUtils.isBlank(processConfig.getTitle())
+                  ? processConfig.getTitle()
+                  : modelName);
+          map.put("modelName", modelName);
+          map.put("modelRecordCount", recordIdsPerModel.size());
+          map.put("isMetaModel", isMetaModel);
+          map.put("recordIdsPerModel", recordIdsPerModel);
+          map.put("statuses", statusList);
+          map.put("tasks", taskMap);
+          configList.add(map);
+        });
 
     processMap.put(
         "title",
@@ -399,9 +399,7 @@ public class WkfModelServiceImpl implements WkfModelService {
     List<Map<String, Object>> dataList = new ArrayList<>();
     List<WkfProcess> processes = wkfDashboardCommonService.findProcesses(wkfModel, null);
 
-    for (WkfProcess process : processes) {
-      dataList.add(buildDataMapPerUser(process));
-    }
+    processes.forEach(process -> dataList.add(buildDataMapPerUser(process)));
 
     return dataList;
   }

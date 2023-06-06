@@ -219,30 +219,34 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     url = UrlEscapers.urlFragmentEscaper().escape(url);
 
     MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-    for (WsKeyValue wsKeyValue : wsRequest.getHeaderWsKeyValueList()) {
-      if (wsKeyValue.getSubWsKeyValueList() != null
-          && !wsKeyValue.getSubWsKeyValueList().isEmpty()) {
-        Map<String, Object> subHeaders = new HashMap<>();
-        for (WsKeyValue key : wsKeyValue.getSubWsKeyValueList()) {
-          subHeaders.put(key.getWsKey(), templates.fromText(key.getWsValue()).make(ctx).render());
-        }
-        headers.add(wsKeyValue.getWsKey(), subHeaders);
-      } else {
-        String value = wsKeyValue.getWsValue();
-        if (!Strings.isNullOrEmpty(value)) {
-          value = templates.fromText(wsKeyValue.getWsValue()).make(ctx).render();
-          if (!StringUtils.isBlank(value)
-              && value.startsWith("Basic ")
-              && wsKeyValue.getWsKey().equals("Authorization")) {
-            headers.add(
-                wsKeyValue.getWsKey(),
-                "Basic " + new String(Base64.encodeBase64(value.substring(6).getBytes())));
-          } else {
-            headers.add(wsKeyValue.getWsKey(), value);
-          }
-        }
-      }
-    }
+    wsRequest
+        .getHeaderWsKeyValueList()
+        .forEach(
+            wsKeyValue -> {
+              if (wsKeyValue.getSubWsKeyValueList() != null
+                  && !wsKeyValue.getSubWsKeyValueList().isEmpty()) {
+                Map<String, Object> subHeaders = new HashMap<>();
+                for (WsKeyValue key : wsKeyValue.getSubWsKeyValueList()) {
+                  subHeaders.put(
+                      key.getWsKey(), templates.fromText(key.getWsValue()).make(ctx).render());
+                }
+                headers.add(wsKeyValue.getWsKey(), subHeaders);
+              } else {
+                String value = wsKeyValue.getWsValue();
+                if (!Strings.isNullOrEmpty(value)) {
+                  value = templates.fromText(wsKeyValue.getWsValue()).make(ctx).render();
+                  if (!StringUtils.isBlank(value)
+                      && value.startsWith("Basic ")
+                      && wsKeyValue.getWsKey().equals("Authorization")) {
+                    headers.add(
+                        wsKeyValue.getWsKey(),
+                        "Basic " + new String(Base64.encodeBase64(value.substring(6).getBytes())));
+                  } else {
+                    headers.add(wsKeyValue.getWsKey(), value);
+                  }
+                }
+              }
+            });
 
     String requestType = wsRequest.getRequestTypeSelect();
     Entity<?> entity = null;

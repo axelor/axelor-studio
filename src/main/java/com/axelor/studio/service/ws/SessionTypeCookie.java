@@ -17,8 +17,6 @@ public class SessionTypeCookie implements SessionType {
 
   @Override
   public void injectSessionData(Invocation.Builder request) {
-    for (Map.Entry<String, NewCookie> cookie : this.cookies.entrySet()) {
-      request.cookie(cookie.getValue());
-    }
+    this.cookies.forEach((key, value) -> request.cookie(value));
   }
 }

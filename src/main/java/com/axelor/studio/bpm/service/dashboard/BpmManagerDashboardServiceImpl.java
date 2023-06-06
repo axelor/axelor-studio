@@ -63,104 +63,126 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
     List<WkfModel> showWkfModels =
         wkfModelList.stream().skip(offset).limit(FETCH_LIMIT).collect(Collectors.toList());
 
-    for (WkfModel wkfModel : showWkfModels) {
+    showWkfModels.forEach(
+        wkfModel -> {
+          boolean isSuperAdmin = user.getCode().equals("admin");
+          boolean isAdmin = wkfDashboardCommonService.isAdmin(wkfModel, user);
+          boolean isManager = wkfDashboardCommonService.isManager(wkfModel, user);
+          boolean isUser = wkfDashboardCommonService.isUser(wkfModel, user);
 
-      boolean isSuperAdmin = user.getCode().equals("admin");
-      boolean isAdmin = wkfDashboardCommonService.isAdmin(wkfModel, user);
-      boolean isManager = wkfDashboardCommonService.isManager(wkfModel, user);
-      boolean isUser = wkfDashboardCommonService.isUser(wkfModel, user);
+          List<WkfProcess> processes = wkfDashboardCommonService.findProcesses(wkfModel, null);
+          List<Map<String, Object>> processList = new ArrayList<>();
 
-      List<WkfProcess> processes = wkfDashboardCommonService.findProcesses(wkfModel, null);
-      List<Map<String, Object>> processList = new ArrayList<>();
-
-      for (WkfProcess process : processes) {
-        List<Map<String, Object>> configList = new ArrayList<>();
-
-        List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
-        wkfDashboardCommonService.sortProcessConfig(processConfigs);
-
-        List<String> _modelList = new ArrayList<>();
-        for (WkfProcessConfig processConfig : processConfigs) {
-
-          boolean isMetaModel = processConfig.getMetaModel() != null;
-          String modelName =
-              isMetaModel
-                  ? processConfig.getMetaModel().getName()
-                  : processConfig.getMetaJsonModel().getName();
-
-          if (_modelList.contains(modelName)) {
-            continue;
-          }
-          _modelList.add(modelName);
-
-          Map<String, Object> _map =
-              this.computeAssignedTaskConfigs(process, modelName, isMetaModel, user);
-          List<Long> recordIdsUserPerModel = (List<Long>) _map.get("recordIdsUserPerModel");
-          List<Map<String, Object>> statusUserList =
-              (List<Map<String, Object>>) _map.get("statusUserList");
-
-          List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
-          List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statusList");
-
-          List<Long> recordIdsModel = new ArrayList<>();
-
-          if (isSuperAdmin || isAdmin || isManager) {
-            recordIdsModel.addAll(recordIdsPerModel);
-            recordIdsModel.addAll(recordIdsUserPerModel);
-          } else if (isUser) {
-            recordIdsModel.addAll(recordIdsUserPerModel);
-          }
-
-          configList.add(
-              new HashMap<String, Object>() {
-                {
-                  put("type", "model");
-                  put(
-                      "title",
-                      !StringUtils.isBlank(processConfig.getTitle())
-                          ? processConfig.getTitle()
-                          : modelName);
-                  put("modelName", modelName);
-                  put("modelRecordCount", recordIdsModel.size());
-                  put("isMetaModel", isMetaModel);
-                  put("recordIdsPerModel", recordIdsModel);
-                  put("userStatuses", statusUserList);
-                  put("statuses", statusList);
-                }
+          processes.forEach(
+              process -> {
+                prepareProcessList(
+                    processList, process, user, isSuperAdmin, isAdmin, isManager, isUser);
               });
-        }
-        processList.add(
-            new HashMap<String, Object>() {
-              {
-                put(
-                    "title",
-                    !StringUtils.isBlank(process.getDescription())
-                        ? process.getDescription()
-                        : process.getName());
-                put("itemList", configList);
-              }
-            });
-      }
-
-      modelList.add(
-          new HashMap<String, Object>() {
-            {
-              put("title", wkfModel.getName());
-              put("versionTag", wkfModel.getVersionTag());
-              put("processList", processList);
-              put("isSuperAdmin", isSuperAdmin);
-              put("isAdmin", isAdmin);
-              put("isManager", isManager);
-              put("isUser", isUser);
-            }
-          });
-    }
+        });
 
     dataMap.put("$modelList", modelList);
     dataMap.put("$offset", offset);
     dataMap.put("$limit", FETCH_LIMIT);
     dataMap.put("$totalRecord", totalRecord);
     return dataMap;
+  }
+
+  protected void prepareProcessList(
+      List<Map<String, Object>> processList,
+      WkfProcess process,
+      User user,
+      boolean isSuperAdmin,
+      boolean isAdmin,
+      boolean isManager,
+      boolean isUser) {
+    List<Map<String, Object>> configList = new ArrayList<>();
+
+    List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
+    wkfDashboardCommonService.sortProcessConfig(processConfigs);
+
+    List<String> _modelList = new ArrayList<>();
+    processConfigs.forEach(
+        processConfig ->
+            prepareConfigList(
+                configList,
+                _modelList,
+                process,
+                processConfig,
+                user,
+                isSuperAdmin,
+                isAdmin,
+                isManager,
+                isUser));
+    processList.add(
+        new HashMap<String, Object>() {
+          {
+            put(
+                "title",
+                !StringUtils.isBlank(process.getDescription())
+                    ? process.getDescription()
+                    : process.getName());
+            put("itemList", configList);
+          }
+        });
+  }
+
+  protected void prepareConfigList(
+      List<Map<String, Object>> configList,
+      List<String> _modelList,
+      WkfProcess process,
+      WkfProcessConfig processConfig,
+      User user,
+      boolean isSuperAdmin,
+      boolean isAdmin,
+      boolean isManager,
+      boolean isUser) {
+
+    boolean isMetaModel = processConfig.getMetaModel() != null;
+    String modelName =
+        isMetaModel
+            ? processConfig.getMetaModel().getName()
+            : processConfig.getMetaJsonModel().getName();
+
+    if (_modelList.contains(modelName)) {
+      return;
+    }
+    _modelList.add(modelName);
+
+    Map<String, Object> _map =
+        this.computeAssignedTaskConfigs(process, modelName, isMetaModel, user);
+    List<Long> recordIdsUserPerModel = (List<Long>) _map.get("recordIdsUserPerModel");
+    List<Map<String, Object>> statusUserList =
+        (List<Map<String, Object>>) _map.get("statusUserList");
+
+    List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
+    List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statusList");
+
+    List<Long> recordIdsModel = new ArrayList<>();
+
+    if (isSuperAdmin || isAdmin || isManager) {
+      recordIdsModel.addAll(recordIdsPerModel);
+      recordIdsModel.addAll(recordIdsUserPerModel);
+    } else if (isUser) {
+      recordIdsModel.addAll(recordIdsUserPerModel);
+    }
+
+    configList.add(
+        new HashMap<String, Object>() {
+          {
+            put("type", "model");
+            put(
+                "title",
+                !StringUtils.isBlank(processConfig.getTitle())
+                    ? processConfig.getTitle()
+                    : modelName);
+            put("modelName", modelName);
+            put("modelRecordCount", recordIdsModel.size());
+            put("isMetaModel", isMetaModel);
+            put("recordIdsPerModel", recordIdsModel);
+            put("userStatuses", statusUserList);
+            put("statuses", statusList);
+          }
+        });
   }
 
   @SuppressWarnings({"serial"})

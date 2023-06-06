@@ -19,6 +19,7 @@ package com.axelor.studio.bpm.script;
 
 import groovy.lang.GroovySystem;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.script.ScriptEngine;
@@ -137,9 +138,7 @@ public class AxelorScriptEngineFactory implements ScriptEngineFactory {
   @Override
   public String getProgram(String... statements) {
     StringBuilder ret = new StringBuilder();
-    for (String statement : statements) {
-      ret.append(statement).append('\n');
-    }
+    Arrays.asList(statements).forEach(statement -> ret.append(statement).append('\n'));
     return ret.toString();
   }
 

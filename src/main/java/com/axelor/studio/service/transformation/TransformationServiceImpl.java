@@ -32,12 +32,15 @@ public class TransformationServiceImpl implements TransformationService {
   public List<Parameter> removeMatchingPlaceholdersAndReturnUnusedParameters(
       List<Parameter> parameters, List<String> placeholders) {
     List<Parameter> unusedParameters = new ArrayList<>();
-    for (Parameter parameter : parameters) {
-      String parameterName = parameter.getName();
-      if (!placeholders.contains(parameterName)) {
-        unusedParameters.add(parameter);
-      } else placeholders.removeAll(Collections.singleton(parameterName));
-    }
+    parameters.forEach(
+        parameter -> {
+          String parameterName = parameter.getName();
+          if (!placeholders.contains(parameterName)) {
+            unusedParameters.add(parameter);
+          } else {
+            placeholders.removeAll(Collections.singleton(parameterName));
+          }
+        });
     return unusedParameters;
   }
 

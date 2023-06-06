@@ -59,9 +59,7 @@ public class StudioChartRepo extends StudioChartRepository {
         all()
             .filter("self.metaViewGenerated = ?1 and self.id != ?2", metaView, studioChart.getId())
             .fetch();
-    for (StudioChart chart : studioCharts) {
-      chart.setMetaViewGenerated(null);
-    }
+    studioCharts.forEach(chart -> chart.setMetaViewGenerated(null));
 
     if (metaView != null) {
       metaViewRepo.remove(metaView);

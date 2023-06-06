@@ -70,9 +70,7 @@ public class ProcessActionNode extends BaseNode {
     }
 
     StringBuilder codeBuilder = new StringBuilder();
-    for (BaseNode baseNode : nodes) {
-      codeBuilder.append(baseNode.toCode(dynamic));
-    }
+    nodes.forEach(baseNode -> codeBuilder.append(baseNode.toCode(dynamic)));
 
     return codeBuilder.toString();
   }

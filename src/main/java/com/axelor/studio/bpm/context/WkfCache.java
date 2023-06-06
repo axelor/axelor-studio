@@ -21,10 +21,12 @@ import com.axelor.db.JPA;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 
@@ -40,13 +42,14 @@ public class WkfCache {
 
     Map<Long, String> modelMap = new HashMap<Long, String>();
     modelMap.put(0L, "");
-    for (WkfProcessConfig config : wkfProcessConfigs) {
-      String model = config.getModel();
-      if (config.getMetaJsonModel() != null) {
-        model = config.getMetaJsonModel().getName();
-      }
-      modelMap.put(config.getId(), model);
-    }
+    wkfProcessConfigs.forEach(
+        config -> {
+          String model = config.getModel();
+          if (config.getMetaJsonModel() != null) {
+            model = config.getMetaJsonModel().getName();
+          }
+          modelMap.put(config.getId(), model);
+        });
     WKF_MODEL_CACHE.put(BpmTools.getCurentTenant(), modelMap);
   }
 
@@ -56,13 +59,13 @@ public class WkfCache {
 
     MultiMap multiMap = new MultiValueMap();
     multiMap.put(0L, null);
-    for (WkfTaskConfig config : wkfTaskConfigs) {
-      if (config.getButton() != null) {
-        for (String btnName : config.getButton().split(",")) {
-          multiMap.put(config.getId(), btnName);
-        }
-      }
-    }
+    wkfTaskConfigs.stream()
+        .filter(config -> config.getButton() != null)
+        .collect(Collectors.toMap(WkfTaskConfig::getId, WkfTaskConfig::getButton))
+        .forEach(
+            (configId, button) ->
+                Arrays.asList(button.split(","))
+                    .forEach(btnName -> multiMap.put(configId, btnName)));
 
     WKF_BUTTON_CACHE.put(BpmTools.getCurentTenant(), multiMap);
   }

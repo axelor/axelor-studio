@@ -62,9 +62,7 @@ public class WkfNodeServiceImpl {
 
     Map<String, WkfTaskConfig> configMap = new HashMap<>();
     if (wkfModel.getWkfTaskConfigList() != null) {
-      for (WkfTaskConfig config : wkfModel.getWkfTaskConfigList()) {
-        configMap.put(config.getName(), config);
-      }
+      wkfModel.getWkfTaskConfigList().forEach(config -> configMap.put(config.getName(), config));
     }
 
     List<MetaAttrs> metaAttrsList = new ArrayList<MetaAttrs>();
@@ -75,15 +73,16 @@ public class WkfNodeServiceImpl {
     activities.addAll(bpmInstance.getModelElementsByType(EndEvent.class));
 
     if (activities != null) {
-      for (FlowNode activity : activities) {
-        WkfTaskConfig config = updateTaskConfig(wkfModel, configMap, metaAttrsList, activity);
-        Process process = findProcess(activity);
-        if (process != null) {
-          config.setProcessId(processMap.get(process.getId()));
-        }
-        updateMenus(config, false);
-        wkfModel.addWkfTaskConfigListItem(config);
-      }
+      activities.forEach(
+          activity -> {
+            WkfTaskConfig config = updateTaskConfig(wkfModel, configMap, metaAttrsList, activity);
+            Process process = findProcess(activity);
+            if (process != null) {
+              config.setProcessId(processMap.get(process.getId()));
+            }
+            updateMenus(config, false);
+            wkfModel.addWkfTaskConfigListItem(config);
+          });
     }
 
     for (String name : configMap.keySet()) {

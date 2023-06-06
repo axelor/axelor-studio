@@ -82,21 +82,22 @@ public class WkfRequestListener {
 
     Set<? extends Model> updated = new HashSet<Model>(event.getUpdated());
 
-    for (Model model : updated) {
-      String modelName = EntityHelper.getEntityClass(model).getName();
-      if (model instanceof MetaJsonRecord) {
-        modelName = ((MetaJsonRecord) model).getJsonModel();
-      }
+    updated.forEach(
+        model -> {
+          String modelName = EntityHelper.getEntityClass(model).getName();
+          if (model instanceof MetaJsonRecord) {
+            modelName = ((MetaJsonRecord) model).getJsonModel();
+          }
 
-      if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
-        try {
-          log.trace("Eval workflow from updated model: {}, id: {}", modelName, model.getId());
-          wkfInstanceService.evalInstance(model, null);
-        } catch (Exception e) {
-          ExceptionTool.trace(e);
-        }
-      }
-    }
+          if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
+            try {
+              log.trace("Eval workflow from updated model: {}, id: {}", modelName, model.getId());
+              wkfInstanceService.evalInstance(model, null);
+            } catch (Exception e) {
+              ExceptionTool.trace(e);
+            }
+          }
+        });
 
     if (!updated.containsAll(event.getUpdated())) {
       processUpdated(event, tenantId);
@@ -191,23 +192,26 @@ public class WkfRequestListener {
 
     //    WkfInstanceRepository wkfInstanceRepository = Beans.get(WkfInstanceRepository.class);
 
-    for (Model model : deleted) {
-      String modelName = EntityHelper.getEntityClass(model).getName();
-      if (model instanceof MetaJsonRecord) {
-        modelName = ((MetaJsonRecord) model).getJsonModel();
-      }
-
-      if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
-        try {
-          log.trace("Remove wkf instance of deleted model: {}, id: {}", modelName, model.getId());
-          WkfInstance wkfInstance = wkfInstanceRepo.findByInstnaceId(model.getProcessInstanceId());
-          if (wkfInstance != null
-              && wkfInstance.getWkfProcess().getWkfProcessConfigList().size() == 1) {
-            wkfInstanceRepo.remove(wkfInstance);
+    deleted.forEach(
+        model -> {
+          String modelName = EntityHelper.getEntityClass(model).getName();
+          if (model instanceof MetaJsonRecord) {
+            modelName = ((MetaJsonRecord) model).getJsonModel();
           }
-        } catch (Exception e) {
-        }
-      }
-    }
+
+          if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
+            try {
+              log.trace(
+                  "Remove wkf instance of deleted model: {}, id: {}", modelName, model.getId());
+              WkfInstance wkfInstance =
+                  wkfInstanceRepo.findByInstnaceId(model.getProcessInstanceId());
+              if (wkfInstance != null
+                  && wkfInstance.getWkfProcess().getWkfProcessConfigList().size() == 1) {
+                wkfInstanceRepo.remove(wkfInstance);
+              }
+            } catch (Exception e) {
+            }
+          }
+        });
   }
 }

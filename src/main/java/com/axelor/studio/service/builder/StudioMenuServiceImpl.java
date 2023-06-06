@@ -105,19 +105,25 @@ public class StudioMenuServiceImpl {
         studioAction.setTypeSelect(StudioActionRepository.TYPE_SELECT_VIEW);
         String domain = action.getDomain();
         studioAction.setDomainCondition(domain);
-        for (ActionView.View view : action.getViews()) {
-          StudioActionView studioActionView = new StudioActionView();
-          studioActionView.setViewType(view.getType());
-          studioActionView.setViewName(view.getName());
-          studioAction.addStudioActionView(studioActionView);
-        }
+        action
+            .getViews()
+            .forEach(
+                view -> {
+                  StudioActionView studioActionView = new StudioActionView();
+                  studioActionView.setViewType(view.getType());
+                  studioActionView.setViewName(view.getName());
+                  studioAction.addStudioActionView(studioActionView);
+                });
         if (action.getParams() != null) {
-          for (ActionView.Param param : action.getParams()) {
-            StudioActionLine paramLine = new StudioActionLine();
-            paramLine.setName(param.getName());
-            paramLine.setValue(param.getValue());
-            studioAction.addViewParam(paramLine);
-          }
+          action
+              .getParams()
+              .forEach(
+                  param -> {
+                    StudioActionLine paramLine = new StudioActionLine();
+                    paramLine.setName(param.getName());
+                    paramLine.setValue(param.getValue());
+                    studioAction.addViewParam(paramLine);
+                  });
         }
         List<ActionView.Context> contextList = null;
         try {
@@ -130,18 +136,19 @@ public class StudioMenuServiceImpl {
         }
 
         if (!CollectionUtils.isEmpty(contextList)) {
-          for (ActionView.Context ctx : contextList) {
-            StudioActionLine ctxLine = new StudioActionLine();
-            ctxLine.setName(ctx.getName());
-            if (ctx.getName().contentEquals("jsonModel")
-                && domain != null
-                && domain.contains("self.jsonModel = :jsonModel")) {
-              studioAction.setIsJson(true);
-              studioAction.setModel(ctx.getExpression());
-            }
-            ctxLine.setValue(ctx.getExpression());
-            studioAction.addLine(ctxLine);
-          }
+          contextList.forEach(
+              ctx -> {
+                StudioActionLine ctxLine = new StudioActionLine();
+                ctxLine.setName(ctx.getName());
+                if (ctx.getName().contentEquals("jsonModel")
+                    && domain != null
+                    && domain.contains("self.jsonModel = :jsonModel")) {
+                  studioAction.setIsJson(true);
+                  studioAction.setModel(ctx.getExpression());
+                }
+                ctxLine.setValue(ctx.getExpression());
+                studioAction.addLine(ctxLine);
+              });
         }
 
         return Optional.of(studioAction);

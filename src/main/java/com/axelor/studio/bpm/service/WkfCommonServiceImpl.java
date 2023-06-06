@@ -153,39 +153,39 @@ public class WkfCommonServiceImpl implements WkfCommonService {
   public Map<String, Object> createVariables(Map<String, Object> modelMap) {
 
     Map<String, Object> varMap = new HashMap<String, Object>();
-    for (String name : modelMap.keySet()) {
+    modelMap.forEach(
+        (key, value) -> {
+          Object model = value;
 
-      Object model = modelMap.get(name);
+          if (model == null) {
+            varMap.put(key, Variables.objectValue(null, true).create());
+            return;
+          }
 
-      if (model == null) {
-        varMap.put(name, Variables.objectValue(null, true).create());
-        continue;
-      }
+          ObjectValue var = null;
+          Long id = null;
+          if (model instanceof Model) {
+            var =
+                Variables.objectValue(model, true)
+                    .serializationDataFormat(JPAVariableSerializer.NAME)
+                    .create();
+            id = ((Model) model).getId();
+          } else {
+            var =
+                Variables.objectValue(model, true)
+                    .serializationDataFormat(SerializationDataFormats.JSON)
+                    .create();
 
-      ObjectValue var = null;
-      Long id = null;
-      if (model instanceof Model) {
-        var =
-            Variables.objectValue(model, true)
-                .serializationDataFormat(JPAVariableSerializer.NAME)
-                .create();
-        id = ((Model) model).getId();
-      } else {
-        var =
-            Variables.objectValue(model, true)
-                .serializationDataFormat(SerializationDataFormats.JSON)
-                .create();
+            if (model instanceof FullContext) {
+              id = (Long) ((FullContext) model).get("id");
+            }
+          }
+          varMap.put(key, var);
 
-        if (model instanceof FullContext) {
-          id = (Long) ((FullContext) model).get("id");
-        }
-      }
-      varMap.put(name, var);
-
-      if (id != null) {
-        varMap.put(name + "Id", Variables.longValue(id));
-      }
-    }
+          if (id != null) {
+            varMap.put(key + "Id", Variables.longValue(id));
+          }
+        });
 
     log.debug("Process variables: {}", varMap);
     return varMap;
@@ -259,27 +259,27 @@ public class WkfCommonServiceImpl implements WkfCommonService {
 
     Mapper mapper = Mapper.of(EntityHelper.getEntityClass(model));
 
-    for (String property : propertyMap.keySet()) {
-      Object value =
-          element.getAttributeValueNs(
-              BpmnParser.CAMUNDA_BPMN_EXTENSIONS_NS, propertyMap.get(property));
-      if (value != null && value.equals("undefined")) {
-        value = null;
-      }
-      Property field = mapper.getProperty(property);
-      if (field.isReference()) {
-        try {
-          value =
-              JpaRepository.of((Class<? extends Model>) field.getTarget())
-                  .all()
-                  .filter("self.name = ?1", value)
-                  .fetchOne();
-        } catch (Exception e) {
-          ExceptionTool.trace(e);
-        }
-      }
-      mapper.set(model, property, value);
-    }
+    propertyMap.forEach(
+        (key, property) -> {
+          Object value =
+              element.getAttributeValueNs(BpmnParser.CAMUNDA_BPMN_EXTENSIONS_NS, property);
+          if (value != null && value.equals("undefined")) {
+            value = null;
+          }
+          Property field = mapper.getProperty(key);
+          if (field.isReference()) {
+            try {
+              value =
+                  JpaRepository.of((Class<? extends Model>) field.getTarget())
+                      .all()
+                      .filter("self.name = ?1", value)
+                      .fetchOne();
+            } catch (Exception e) {
+              ExceptionTool.trace(e);
+            }
+          }
+          mapper.set(model, key, value);
+        });
 
     return model;
   }

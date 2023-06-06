@@ -52,7 +52,6 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
@@ -437,15 +436,17 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     List<ProcessInstance> processInstances =
         runtimeService.createProcessInstanceQuery().active().unlimitedList();
 
-    for (ProcessInstance processInstance : processInstances) {
-      try {
-        runtimeService.deleteProcessInstance(
-            processInstance.getProcessInstanceId(), "Reset", true, true, false);
+    processInstances.forEach(
+        processInstance -> {
+          try {
+            runtimeService.deleteProcessInstance(
+                processInstance.getProcessInstanceId(), "Reset", true, true, false);
 
-      } catch (Exception e) {
-        log.debug("Error removing process instance: {}", processInstance.getProcessInstanceId());
-      }
-    }
+          } catch (Exception e) {
+            log.debug(
+                "Error removing process instance: {}", processInstance.getProcessInstanceId());
+          }
+        });
   }
 
   @Override
@@ -523,30 +524,32 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       return varMap;
     }
 
-    for (WkfProcessConfig wkfProcessConfig :
-        wkfInstance.getWkfProcess().getWkfProcessConfigList()) {
+    wkfInstance
+        .getWkfProcess()
+        .getWkfProcessConfigList()
+        .forEach(
+            wkfProcessConfig -> {
+              Model model =
+                  FullContextHelper.getRepository(wkfProcessConfig.getModel())
+                      .all()
+                      .filter("self.processInstanceId = ?1", processInstanceId)
+                      .fetchOne();
 
-      Model model =
-          FullContextHelper.getRepository(wkfProcessConfig.getModel())
-              .all()
-              .filter("self.processInstanceId = ?1", processInstanceId)
-              .fetchOne();
+              if (model == null) {
+                return;
+              }
 
-      if (model == null) {
-        continue;
-      }
+              Object var =
+                  Variables.objectValue(new FullContext(model), true)
+                      .serializationDataFormat(SerializationDataFormats.JSON)
+                      .create();
 
-      Object var =
-          Variables.objectValue(new FullContext(model), true)
-              .serializationDataFormat(SerializationDataFormats.JSON)
-              .create();
+              Long id = ((Model) model).getId();
 
-      Long id = ((Model) model).getId();
-
-      String varName = wkfService.getVarName(model);
-      varMap.put(varName, var);
-      varMap.put(varName + "Id", id);
-    }
+              String varName = wkfService.getVarName(model);
+              varMap.put(varName, var);
+              varMap.put(varName + "Id", id);
+            });
 
     return varMap;
   }
@@ -561,18 +564,19 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     HistoricActivityInstanceQuery query =
         historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId);
 
-    for (HistoricActivityInstance instance : query.list()) {
+    query
+        .list()
+        .forEach(
+            instance -> {
+              String name = instance.getActivityName();
+              String id = instance.getActivityId();
 
-      //		  String type = instance.getActivityType();
-      String name = instance.getActivityName();
-      String id = instance.getActivityId();
+              if (name != null) {
+                id = name + "(" + id + ")";
+              }
 
-      if (name != null) {
-        id = name + "(" + id + ")";
-      }
-
-      nodes.add(id);
-    }
+              nodes.add(id);
+            });
 
     return nodes;
   }

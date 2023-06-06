@@ -26,6 +26,7 @@ import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.studio.service.loader.AppLoaderExportServiceImpl;
 import com.google.inject.Inject;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
 
 public class AppLoaderExportBpmServiceImpl extends AppLoaderExportServiceImpl {
@@ -53,11 +54,12 @@ public class AppLoaderExportBpmServiceImpl extends AppLoaderExportServiceImpl {
 
     Map<String, InputStream> templateMap = super.getExportTemplateResources();
 
-    for (String filePrefix : EXPORT_TEMPLATES) {
-      templateMap.put(
-          filePrefix + ".xml",
-          ResourceUtils.getResourceStream("data-export/" + filePrefix + ".tmpl"));
-    }
+    Arrays.asList(EXPORT_TEMPLATES)
+        .forEach(
+            filePrefix ->
+                templateMap.put(
+                    filePrefix + ".xml",
+                    ResourceUtils.getResourceStream("data-export/" + filePrefix + ".tmpl")));
 
     return templateMap;
   }

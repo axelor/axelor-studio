@@ -37,7 +37,6 @@ import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
-import com.axelor.studio.db.DmnField;
 import com.axelor.studio.db.DmnTable;
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.db.repo.DmnTableRepository;
@@ -63,7 +62,6 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.camunda.bpm.model.dmn.instance.DecisionTable;
-import org.camunda.bpm.model.dmn.instance.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,11 +110,11 @@ public class DmnServiceImpl implements DmnService {
 
     if (dmnTable != null && !CollectionUtils.isEmpty(result)) {
       Map<String, Object> res = result.get(0);
-      for (DmnField dmnField : dmnTable.getOutputDmnFieldList()) {
-        if (dmnField.getField() != null) {
-          addValue(context, dmnField.getField(), res.get(dmnField.getName()), model);
-        }
-      }
+      dmnTable.getOutputDmnFieldList().stream()
+          .filter(dmnField -> dmnField.getField() != null)
+          .forEach(
+              dmnField ->
+                  addValue(context, dmnField.getField(), res.get(dmnField.getName()), model));
     }
 
     JpaRepository.of(EntityHelper.getEntityClass(model)).save(model);
@@ -349,13 +347,9 @@ public class DmnServiceImpl implements DmnService {
       return fields;
     }
 
-    for (DecisionTable decisionTable : decisionTables) {
-      Collection<Output> outputs = decisionTable.getOutputs();
-
-      for (Output output : outputs) {
-        fields.add(output.getName());
-      }
-    }
+    decisionTables.stream()
+        .map(decisionTable -> decisionTable.getOutputs())
+        .forEach(outputs -> outputs.forEach(output -> fields.add(output.getName())));
 
     log.debug("Output fields: {}", fields);
     return fields;

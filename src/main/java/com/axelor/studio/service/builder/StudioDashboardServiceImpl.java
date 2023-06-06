@@ -75,44 +75,46 @@ public class StudioDashboardServiceImpl {
     List<AbstractWidget> dashlets = new ArrayList<AbstractWidget>();
 
     studioDashboard.clearGeneratedActions();
-    for (StudioDashlet studioDashlet : studioDashboard.getStudioDashletList()) {
+    studioDashboard
+        .getStudioDashletList()
+        .forEach(
+            studioDashlet -> {
+              Dashlet dashlet = new Dashlet();
+              String name = null;
+              String model = null;
+              MetaView metaView = studioDashlet.getMetaView();
+              MetaAction action = studioDashlet.getAction();
 
-      Dashlet dashlet = new Dashlet();
-      String name = null;
-      String model = null;
-      MetaView metaView = studioDashlet.getMetaView();
-      MetaAction action = studioDashlet.getAction();
+              String actionName = null;
+              if (metaView != null) {
+                name = metaView.getName();
+                model = metaView.getModel();
+                MetaAction metaAction = getAction(boardName, name, model, studioDashlet);
+                actionName = metaAction.getName();
+                studioDashboard.addGeneratedAction(metaAction);
+              } else if (action != null) {
+                model = action.getModel();
+                actionName = action.getName();
+              }
 
-      String actionName = null;
-      if (metaView != null) {
-        name = metaView.getName();
-        model = metaView.getModel();
-        MetaAction metaAction = getAction(boardName, name, model, studioDashlet);
-        actionName = metaAction.getName();
-        studioDashboard.addGeneratedAction(metaAction);
-      } else if (action != null) {
-        model = action.getModel();
-        actionName = action.getName();
-      }
+              dashlet.setAction(actionName);
+              Integer height = studioDashlet.getHeight();
+              if (height == 0) {
+                height = 350;
+              }
+              dashlet.setHeight(height.toString());
+              dashlet.setCanSearch(studioDashlet.getCanSearch());
 
-      dashlet.setAction(actionName);
-      Integer height = studioDashlet.getHeight();
-      if (height == 0) {
-        height = 350;
-      }
-      dashlet.setHeight(height.toString());
-      dashlet.setCanSearch(studioDashlet.getCanSearch());
+              Integer colSpan = studioDashlet.getColspan();
+              if (colSpan > 12) {
+                colSpan = 12;
+              } else if (colSpan <= 0) {
+                colSpan = 6;
+              }
 
-      Integer colSpan = studioDashlet.getColspan();
-      if (colSpan > 12) {
-        colSpan = 12;
-      } else if (colSpan <= 0) {
-        colSpan = 6;
-      }
-
-      dashlet.setColSpan(colSpan);
-      dashlets.add(dashlet);
-    }
+              dashlet.setColSpan(colSpan);
+              dashlets.add(dashlet);
+            });
 
     if (dashlets.isEmpty()) {
       return null;

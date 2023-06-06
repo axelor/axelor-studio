@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -105,24 +106,22 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
       Set<MetaModel> metaModelSet = new HashSet<>();
 
       List<String> models = Arrays.asList(metaModels.split(","));
-      for (String modelName : models) {
-        MetaModel metaModel = metaModelRepo.findByName(modelName);
-        if (metaModel != null) {
-          metaModelSet.add(metaModel);
-        }
-      }
+      metaModelSet.addAll(
+          models.stream()
+              .map(modelName -> metaModelRepo.findByName(modelName))
+              .filter(Objects::nonNull)
+              .collect(Collectors.toSet()));
       wkfDmnModel.setMetaModelSet(metaModelSet);
 
     } else if (jsonModels != null) {
       Set<MetaJsonModel> jsonModelSet = new HashSet<>();
 
       List<String> models = Arrays.asList(jsonModels.split(","));
-      for (String modelName : models) {
-        MetaJsonModel jsonModel = metaJsonModelRepo.findByName(modelName);
-        if (jsonModel != null) {
-          jsonModelSet.add(jsonModel);
-        }
-      }
+      jsonModelSet.addAll(
+          models.stream()
+              .map(modelName -> metaJsonModelRepo.findByName(modelName))
+              .filter(Objects::nonNull)
+              .collect(Collectors.toSet()));
       wkfDmnModel.setJsonModelSet(jsonModelSet);
 
     } else {

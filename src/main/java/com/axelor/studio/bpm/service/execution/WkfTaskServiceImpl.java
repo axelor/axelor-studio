@@ -146,9 +146,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
       if (!validButtons.isEmpty() || config.getExpression() != null) {
 
         Map<String, Object> btnVariables = new HashMap<String, Object>();
-        for (String button : validButtons) {
-          btnVariables.put(button, button.equals(signal));
-        }
+        validButtons.forEach(button -> btnVariables.put(button, button.equals(signal)));
 
         Map<String, Object> variables = wkfService.createVariables(btnVariables);
         variables.putAll(ctxVariables);
