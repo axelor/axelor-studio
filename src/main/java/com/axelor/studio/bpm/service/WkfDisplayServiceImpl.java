@@ -46,7 +46,6 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
-import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstanceQuery;
@@ -151,9 +150,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
 
     List<String> activityIds = new ArrayList<>();
 
-    for (HistoricProcessInstance instance : query.list()) {
-      activityIds.add(instance.getEndActivityId());
-    }
+    query.list().forEach(instance -> activityIds.add(instance.getEndActivityId()));
 
     return activityIds;
   }
@@ -182,26 +179,28 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
         historyService.createHistoricActivityInstanceQuery().processInstanceId(instanceId).list();
 
     Set<String> multiInstanceIds = new HashSet<>();
-    for (HistoricActivityInstance historicActivityInstance : activityInstances) {
+    activityInstances.forEach(
+        historicActivityInstance -> {
+          int count = 0;
+          String activityId = historicActivityInstance.getActivityId();
 
-      int count = 0;
-      String activityId = historicActivityInstance.getActivityId();
-
-      if (historicActivityInstance.getActivityType().equals(ActivityTypes.MULTI_INSTANCE_BODY)) {
-        activityId = activityId.split("#")[0];
-        if (!multiInstanceIds.contains(activityId)) {
-          multiInstanceIds.add(activityId);
-          activityCountMap.remove(activityId);
-        }
-      } else if (multiInstanceIds.contains(activityId)) {
-        continue;
-      }
-      if (activityCountMap.containsKey(activityId)) {
-        count = activityCountMap.get(activityId);
-      }
-      count += 1;
-      activityCountMap.put(activityId, count);
-    }
+          if (historicActivityInstance
+              .getActivityType()
+              .equals(ActivityTypes.MULTI_INSTANCE_BODY)) {
+            activityId = activityId.split("#")[0];
+            if (!multiInstanceIds.contains(activityId)) {
+              multiInstanceIds.add(activityId);
+              activityCountMap.remove(activityId);
+            }
+          } else if (multiInstanceIds.contains(activityId)) {
+            return;
+          }
+          if (activityCountMap.containsKey(activityId)) {
+            count = activityCountMap.get(activityId);
+          }
+          count += 1;
+          activityCountMap.put(activityId, count);
+        });
   }
 
   @Override
@@ -219,9 +218,8 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
               .fetch();
 
       log.trace("Total process instances: {}", instances.size());
-      for (WkfInstance instance : instances) {
-        getActivityPassCount(instance.getInstanceId(), activityCountMap);
-      }
+      instances.forEach(
+          instance -> getActivityPassCount(instance.getInstanceId(), activityCountMap));
 
       log.trace("Count map: {}", activityCountMap);
       String activityCount =
@@ -343,40 +341,41 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
 
     User activeUser = AuthUtils.getUser();
 
-    for (HistoricActivityInstance node : activeNodes) {
-      boolean valid = isValidNode(node.getActivityId(), wkfInstance.getWkfProcess(), klassName);
-      if (!valid) {
-        continue;
-      }
-      String title = node.getActivityName();
-      if (title == null) {
-        title = node.getActivityId();
-      }
+    activeNodes.forEach(
+        node -> {
+          boolean valid = isValidNode(node.getActivityId(), wkfInstance.getWkfProcess(), klassName);
+          if (!valid) {
+            return;
+          }
+          String title = node.getActivityName();
+          if (title == null) {
+            title = node.getActivityId();
+          }
 
-      String color = wkfInstance.getWkfProcess().getWkfModel().getWkfStatusColor();
-      if (color == null) {
-        color = "green";
-      }
+          String color = wkfInstance.getWkfProcess().getWkfModel().getWkfStatusColor();
+          if (color == null) {
+            color = "green";
+          }
 
-      Map<String, Object> statusMap = new HashMap<>();
-      statusMap.put("name", node.getActivityId());
-      statusMap.put("title", title);
-      statusMap.put("color", color);
-      if (!activeUser.getNoHelp()) {
-        WkfTaskConfig config =
-            wkfTaskConfigRepository
-                .all()
-                .filter(
-                    "self.name = ? and self.wkfModel.id = ?",
-                    node.getActivityId(),
-                    wkfInstance.getWkfProcess().getWkfModel().getId())
-                .fetchOne();
-        if (config != null) {
-          statusMap.put("help", config.getHelpText());
-        }
-      }
-      statusList.add(statusMap);
-    }
+          Map<String, Object> statusMap = new HashMap<>();
+          statusMap.put("name", node.getActivityId());
+          statusMap.put("title", title);
+          statusMap.put("color", color);
+          if (!activeUser.getNoHelp()) {
+            WkfTaskConfig config =
+                wkfTaskConfigRepository
+                    .all()
+                    .filter(
+                        "self.name = ? and self.wkfModel.id = ?",
+                        node.getActivityId(),
+                        wkfInstance.getWkfProcess().getWkfModel().getId())
+                    .fetchOne();
+            if (config != null) {
+              statusMap.put("help", config.getHelpText());
+            }
+          }
+          statusList.add(statusMap);
+        });
   }
 
   protected boolean isValidNode(String activityId, WkfProcess wkfProcess, String klassName) {

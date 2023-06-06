@@ -17,13 +17,14 @@
  */
 package com.axelor.studio.app.service;
 
-import com.axelor.meta.db.MetaModule;
 import com.axelor.meta.db.repo.MetaModuleRepository;
 import com.axelor.studio.db.App;
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -49,16 +50,12 @@ public class AppVersionServiceImpl implements AppVersionService {
     List<String> versions = new ArrayList<>();
     Pattern pattern = Pattern.compile(VERSION_PATTERN);
 
-    for (String moduleName : modulesArr) {
-      MetaModule module = metaModuleRepo.findByName(moduleName);
-      if (module == null) {
-        continue;
-      }
-      Matcher matcher = pattern.matcher(module.getModuleVersion());
-      if (matcher.find()) {
-        versions.add(matcher.group(1));
-      }
-    }
+    Arrays.asList(modulesArr).stream()
+        .map(moduleName -> metaModuleRepo.findByName(moduleName))
+        .filter(Objects::nonNull)
+        .map(module -> pattern.matcher(module.getModuleVersion()))
+        .filter(Matcher::find)
+        .forEach(matcher -> versions.add(matcher.group(1)));
 
     if (versions.isEmpty()) {
       return null;

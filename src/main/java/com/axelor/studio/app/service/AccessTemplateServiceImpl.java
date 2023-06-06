@@ -39,7 +39,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -220,24 +219,23 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     Collections.sort(keys);
 
     Set<String> menuProcessed = new HashSet<>();
-    for (String obj : keys) {
-      String menu = objMenu.get(obj);
-      String app = menuApp.get(menu);
-      if (app == null) {
-        continue;
-      }
-      writeObjectSheet(workBook, obj, menu, app);
-      if (!menuProcessed.contains(menu)) {
-        writeMenuSheet(workBook, menu, app);
-        menuProcessed.add(menu);
-      }
-    }
+    keys.forEach(
+        obj -> {
+          String menu = objMenu.get(obj);
+          String app = menuApp.get(menu);
+          if (app == null) {
+            return;
+          }
+          writeObjectSheet(workBook, obj, menu, app);
+          if (!menuProcessed.contains(menu)) {
+            writeMenuSheet(workBook, menu, app);
+            menuProcessed.add(menu);
+          }
+        });
 
     List<String> menusRemaining = new ArrayList<>();
     menusRemaining.addAll(appMenus);
-    for (String menu : menusRemaining) {
-      writeMenuSheet(workBook, menu, menuApp.get(menu));
-    }
+    menusRemaining.forEach(menu -> writeMenuSheet(workBook, menu, menuApp.get(menu)));
 
     return createMetaFile(workBook);
   }
@@ -313,21 +311,22 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
 
   protected boolean addObject(MetaModel model) {
 
-    for (Entry<String, String> entry : objMenu.entrySet()) {
-      if (model.getFullName().contains(entry.getKey())) {
-        objMenu.put(model.getFullName(), entry.getValue());
-        return true;
-      }
+    if (objMenu.entrySet().stream()
+        .filter(entry -> model.getFullName().contains(entry.getKey()))
+        .findFirst()
+        .map(entry -> objMenu.put(model.getFullName(), entry.getValue()))
+        .isPresent()) {
+      return true;
     }
 
     String pkgName = model.getPackageName();
-    for (Entry<String, String> entry : objMenu.entrySet()) {
-      String key = entry.getKey();
-      String objPkg = key.substring(0, key.lastIndexOf("."));
-      if (pkgName.equals(objPkg)) {
-        objMenu.put(model.getFullName(), entry.getValue());
-        return true;
-      }
+    if (objMenu.entrySet().stream()
+        .filter(
+            entry -> pkgName.equals(entry.getKey().substring(0, entry.getKey().lastIndexOf("."))))
+        .findFirst()
+        .map(entry -> objMenu.put(model.getFullName(), entry.getValue()))
+        .isPresent()) {
+      return true;
     }
 
     return false;

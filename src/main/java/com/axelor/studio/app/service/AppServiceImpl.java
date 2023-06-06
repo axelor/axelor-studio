@@ -61,6 +61,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -289,18 +290,19 @@ public class AppServiceImpl implements AppService {
 
     final File tmp = Files.createTempDirectory(null).toFile();
 
-    for (URL url : files) {
-      String name = url.getFile();
-      name = Paths.get(name.replaceAll("file:.+!/", "")).toString();
-      if (!StringUtils.isEmpty(lang)) {
-        name = name.replace(Paths.get(dirName, lang).toString(), dirName);
-      }
-      try {
-        copy(url.openStream(), tmp, name);
-      } catch (IOException e) {
-        ExceptionTool.trace(e);
-      }
-    }
+    files.forEach(
+        url -> {
+          String name = url.getFile();
+          name = Paths.get(name.replaceAll("file:.+!/", "")).toString();
+          if (!StringUtils.isEmpty(lang)) {
+            name = name.replace(Paths.get(dirName, lang).toString(), dirName);
+          }
+          try {
+            copy(url.openStream(), tmp, name);
+          } catch (IOException e) {
+            ExceptionTool.trace(e);
+          }
+        });
 
     return tmp;
   }
@@ -365,11 +367,9 @@ public class AppServiceImpl implements AppService {
       return apps;
     }
 
-    for (App depend : app.getDependsOnSet()) {
-      if (depend.getActive().equals(active)) {
-        apps.add(depend);
-      }
-    }
+    app.getDependsOnSet().stream()
+        .filter(depend -> depend.getActive().equals(active))
+        .forEach(depend -> apps.add(depend));
 
     return sortApps(apps);
   }
@@ -378,9 +378,7 @@ public class AppServiceImpl implements AppService {
 
     List<String> names = new ArrayList<>();
 
-    for (App app : apps) {
-      names.add(app.getName());
-    }
+    apps.forEach(app -> names.add(app.getName()));
 
     return names;
   }
@@ -575,23 +573,20 @@ public class AppServiceImpl implements AppService {
   @SuppressWarnings("unchecked")
   protected void setAppDependsOn(Map<App, Object> appDepednsOnMap) {
 
-    for (Entry<App, Object> appEntry : appDepednsOnMap.entrySet()) {
+    appDepednsOnMap.forEach(
+        (key, value) -> {
+          Set<App> dependsOnSet = new HashSet<>();
+          App app = key;
+          List<String> dependsOnList = (List<String>) value;
 
-      Set<App> dependsOnSet = new HashSet<>();
-      App app = appEntry.getKey();
-      List<String> dependsOnList = (List<String>) appEntry.getValue();
+          dependsOnList.stream()
+              .map(appRepo::findByCode)
+              .filter(Objects::nonNull)
+              .forEach(dependsOnSet::add);
+          app.setDependsOnSet(dependsOnSet);
 
-      for (String appCode : dependsOnList) {
-        App dependsOnApp = appRepo.findByCode(appCode);
-        if (dependsOnApp == null) {
-          continue;
-        }
-        dependsOnSet.add(dependsOnApp);
-      }
-      app.setDependsOnSet(dependsOnSet);
-
-      saveApp(app);
-    }
+          saveApp(app);
+        });
   }
 
   protected void importAppImage(

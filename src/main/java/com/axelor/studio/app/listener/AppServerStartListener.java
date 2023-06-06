@@ -29,8 +29,11 @@ import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Priority;
 
 public class AppServerStartListener {
@@ -73,13 +76,11 @@ public class AppServerStartListener {
       if (apps.equalsIgnoreCase("all")) {
         appList = appRepository.all().filter("self.active IS NULL OR self.active = false").fetch();
       } else {
-        String[] appCodes = apps.split(",");
-        for (String code : appCodes) {
-          App app = appRepository.findByCode(code.trim());
-          if (app != null) {
-            appList.add(app);
-          }
-        }
+        appList.addAll(
+            Arrays.asList(apps.split(",")).stream()
+                .map(code -> appRepository.findByCode(code.trim()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
       }
 
       if (appList.isEmpty()) {

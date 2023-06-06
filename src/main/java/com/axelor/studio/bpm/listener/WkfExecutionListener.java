@@ -185,15 +185,16 @@ public class WkfExecutionListener implements ExecutionListener {
     Collection<MessageCorrelationResult> results = msgBuilder.correlateAllWithResult();
     log.debug("Message result : {}", results.size());
 
-    for (MessageCorrelationResult result : results) {
-      ProcessInstance resultInstance = result.getProcessInstance();
-      log.debug("Resulted process instance: {}", resultInstance);
-      if (resultInstance != null) {
-        execution.setVariable(
-            getProcessKey(execution, resultInstance.getProcessDefinitionId()),
-            resultInstance.getId());
-      }
-    }
+    results.forEach(
+        result -> {
+          ProcessInstance resultInstance = result.getProcessInstance();
+          log.debug("Resulted process instance: {}", resultInstance);
+          if (resultInstance != null) {
+            execution.setVariable(
+                getProcessKey(execution, resultInstance.getProcessDefinitionId()),
+                resultInstance.getId());
+          }
+        });
   }
 
   protected String getProcessKey(DelegateExecution execution, String processDefinitionId) {

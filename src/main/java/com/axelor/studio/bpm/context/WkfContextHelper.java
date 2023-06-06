@@ -148,9 +148,7 @@ public class WkfContextHelper {
 
     List<Long> values = new ArrayList<Long>();
 
-    for (FullContext fullContext : lines) {
-      values.add((Long) fullContext.get("id"));
-    }
+    lines.forEach(fullContext -> values.add((Long) fullContext.get("id")));
 
     return values;
   }

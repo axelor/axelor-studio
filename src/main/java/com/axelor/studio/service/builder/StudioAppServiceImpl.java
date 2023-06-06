@@ -32,7 +32,6 @@ import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaFile;
-import com.axelor.meta.db.MetaJsonField;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
@@ -64,7 +63,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -286,18 +284,19 @@ public class StudioAppServiceImpl {
                 .fetch();
         if (ObjectUtils.notEmpty(jsonModels)) {
           XMLConfig xmlConfig = new XMLConfig();
-          for (MetaJsonModel jsonModel : jsonModels) {
-            List<FullContext> records = FullContextHelper.filter(jsonModel.getName(), null);
-            if (ObjectUtils.isEmpty(records)) {
-              continue;
-            }
+          jsonModels.forEach(
+              jsonModel -> {
+                List<FullContext> records = FullContextHelper.filter(jsonModel.getName(), null);
+                if (ObjectUtils.isEmpty(records)) {
+                  return;
+                }
 
-            Map<String, Object> jsonFieldMap = MetaStore.findJsonFields(jsonModel.getName());
-            appLoaderExportService.fixTargetName(jsonFieldMap);
-            xmlConfig.getInputs().add(createXMLInput(jsonModel, jsonFieldMap, false));
-            xmlConfig.getInputs().add(createXMLInput(jsonModel, jsonFieldMap, true));
-            generateModelDataFiles(jsonModel, exportDir, jsonFieldMap, records);
-          }
+                Map<String, Object> jsonFieldMap = MetaStore.findJsonFields(jsonModel.getName());
+                appLoaderExportService.fixTargetName(jsonFieldMap);
+                xmlConfig.getInputs().add(createXMLInput(jsonModel, jsonFieldMap, false));
+                xmlConfig.getInputs().add(createXMLInput(jsonModel, jsonFieldMap, true));
+                generateModelDataFiles(jsonModel, exportDir, jsonFieldMap, records);
+              });
 
           if (ObjectUtils.notEmpty(xmlConfig.getInputs())) {
             File configFile = new File(exportDir, "data-config.xml");
@@ -322,24 +321,25 @@ public class StudioAppServiceImpl {
             .collect(Collectors.toList());
     ctx.put("__ids__", ids);
 
-    for (Entry<String, InputStream> mapEntry : templateISmap.entrySet()) {
-      log.debug("Exporting file: {}", mapEntry.getKey());
-      File file = null;
-      FileWriter writer = null;
-      try {
-        file = new File(parentFile, mapEntry.getKey());
-        writer = new FileWriter(file);
-        templates.from(new InputStreamReader(mapEntry.getValue())).make(ctx).render(writer);
-      } catch (Exception e) {
-        ExceptionTool.trace(e);
-      } finally {
-        try {
-          if (writer != null) writer.close();
-          deleteEmptyFile(file);
-        } catch (IOException e) {
-        }
-      }
-    }
+    templateISmap.forEach(
+        (key, value) -> {
+          log.debug("Exporting file: {}", key);
+          File file = null;
+          FileWriter writer = null;
+          try {
+            file = new File(parentFile, key);
+            writer = new FileWriter(file);
+            templates.from(new InputStreamReader(value)).make(ctx).render(writer);
+          } catch (Exception e) {
+            ExceptionTool.trace(e);
+          } finally {
+            try {
+              if (writer != null) writer.close();
+              deleteEmptyFile(file);
+            } catch (IOException e) {
+            }
+          }
+        });
   }
 
   protected void deleteEmptyFile(File file) {
@@ -391,35 +391,38 @@ public class StudioAppServiceImpl {
       MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput) {
 
     List<XMLBind> fieldBindings = new ArrayList<>();
-    for (MetaJsonField jsonField : jsonModel.getFields()) {
-      String fieldName = jsonField.getName();
-      XMLBind dummyBind = new XMLBind();
-      dummyBind.setNode(fieldName);
-      dummyBind.setField("_" + fieldName);
-      fieldBindings.add(dummyBind);
+    jsonModel
+        .getFields()
+        .forEach(
+            jsonField -> {
+              String fieldName = jsonField.getName();
+              XMLBind dummyBind = new XMLBind();
+              dummyBind.setNode(fieldName);
+              dummyBind.setField("_" + fieldName);
+              fieldBindings.add(dummyBind);
 
-      if (relationalInput
-          && jsonField.getTargetJsonModel() == null
-          && jsonField.getTargetModel() == null) {
-        continue;
-      }
+              if (relationalInput
+                  && jsonField.getTargetJsonModel() == null
+                  && jsonField.getTargetModel() == null) {
+                return;
+              }
 
-      XMLBind xmlBind = new XMLBind();
-      xmlBind.setNode(jsonField.getName());
-      xmlBind.setField("$attrs." + jsonField.getName());
-      if (jsonField.getTargetJsonModel() != null || jsonField.getTargetModel() != null) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> fieldAttrs = (Map<String, Object>) jsonFieldMap.get(fieldName);
-        if (ObjectUtils.notEmpty(fieldAttrs)) {
-          log.debug("Json Field name: {}, Field attrs: {}", fieldName, fieldAttrs);
-          appLoaderExportService.addRelationaJsonFieldBind(jsonField, fieldAttrs, xmlBind);
-        }
-      } else if (jsonField.getType().equals("boolean")) {
-        xmlBind.setAdapter("Boolean");
-      }
+              XMLBind xmlBind = new XMLBind();
+              xmlBind.setNode(jsonField.getName());
+              xmlBind.setField("$attrs." + jsonField.getName());
+              if (jsonField.getTargetJsonModel() != null || jsonField.getTargetModel() != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> fieldAttrs = (Map<String, Object>) jsonFieldMap.get(fieldName);
+                if (ObjectUtils.notEmpty(fieldAttrs)) {
+                  log.debug("Json Field name: {}, Field attrs: {}", fieldName, fieldAttrs);
+                  appLoaderExportService.addRelationaJsonFieldBind(jsonField, fieldAttrs, xmlBind);
+                }
+              } else if (jsonField.getType().equals("boolean")) {
+                xmlBind.setAdapter("Boolean");
+              }
 
-      fieldBindings.add(xmlBind);
-    }
+              fieldBindings.add(xmlBind);
+            });
 
     return fieldBindings;
   }
@@ -447,25 +450,31 @@ public class StudioAppServiceImpl {
                 "<%ss xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
                     + "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n",
                 dasherizeModel));
-        for (FullContext record : records) {
-          if (!jpaSecurity.isPermitted(
-              JpaSecurity.CAN_READ, MetaJsonRecord.class, (Long) record.get("id"))) {
-            continue;
-          }
-          stringBuffer.append(String.format("<%s>\n", dasherizeModel));
 
-          for (MetaJsonField jsonField : jsonModel.getFields()) {
-            String field = jsonField.getName();
-            Map<String, Object> fieldAttrs = (Map<String, Object>) jsonFieldMap.get(field);
-            stringBuffer.append(
-                String.format(
-                    "\t<%s>%s</%s>\n",
-                    field,
-                    appLoaderExportService.extractJsonFieldValue(record, fieldAttrs),
-                    field));
-          }
-          stringBuffer.append(String.format("</%s>\n\n", dasherizeModel));
-        }
+        records.forEach(
+            record -> {
+              if (!jpaSecurity.isPermitted(
+                  JpaSecurity.CAN_READ, MetaJsonRecord.class, (Long) record.get("id"))) {
+                return;
+              }
+              stringBuffer.append(String.format("<%s>\n", dasherizeModel));
+
+              jsonModel
+                  .getFields()
+                  .forEach(
+                      jsonField -> {
+                        String field = jsonField.getName();
+                        Map<String, Object> fieldAttrs =
+                            (Map<String, Object>) jsonFieldMap.get(field);
+                        stringBuffer.append(
+                            String.format(
+                                "\t<%s>%s</%s>\n",
+                                field,
+                                appLoaderExportService.extractJsonFieldValue(record, fieldAttrs),
+                                field));
+                      });
+              stringBuffer.append(String.format("</%s>\n\n", dasherizeModel));
+            });
         stringBuffer.append(String.format("</%ss>\n", dasherizeModel));
         File dataFile = new File(parentDir, modelName + ".xml");
         org.apache.commons.io.FileUtils.writeStringToFile(

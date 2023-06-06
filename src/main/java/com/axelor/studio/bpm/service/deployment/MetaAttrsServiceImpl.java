@@ -237,14 +237,15 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
     List<Long> metaAttrsIds = new ArrayList<Long>();
     metaAttrsIds.add(0L);
 
-    for (MetaAttrs metaAttrs : metaAttrsList) {
-      MetaAttrs saved = findMetaAttrs(metaAttrs, wkfModelId);
-      log.debug("Creating meta attrs: {}", saved);
-      saved.setValue(metaAttrs.getValue());
-      saved.setRoles(metaAttrs.getRoles());
-      metaAttrsRepository.save(saved);
-      metaAttrsIds.add(saved.getId());
-    }
+    metaAttrsList.forEach(
+        metaAttrs -> {
+          MetaAttrs saved = findMetaAttrs(metaAttrs, wkfModelId);
+          log.debug("Creating meta attrs: {}", saved);
+          saved.setValue(metaAttrs.getValue());
+          saved.setRoles(metaAttrs.getRoles());
+          metaAttrsRepository.save(saved);
+          metaAttrsIds.add(saved.getId());
+        });
 
     long attrsRemoved =
         Query.of(MetaAttrs.class)

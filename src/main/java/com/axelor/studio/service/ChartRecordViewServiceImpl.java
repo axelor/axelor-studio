@@ -38,7 +38,6 @@ import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.meta.loader.XMLViews;
 import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.meta.schema.actions.ActionView.ActionViewBuilder;
-import com.axelor.meta.schema.views.ChartSearchField;
 import com.axelor.meta.schema.views.ChartView;
 import com.axelor.meta.schema.views.ChartView.ChartSeries;
 import com.axelor.meta.schema.views.Selection.Option;
@@ -188,10 +187,13 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     }
 
     if (ObjectUtils.notEmpty(chart.getSearchFields())) {
-      for (ChartSearchField searchFields : chart.getSearchFields()) {
-        String name = searchFields.getName();
-        params.put(name, context.get(name));
-      }
+      chart
+          .getSearchFields()
+          .forEach(
+              searchField -> {
+                String name = searchField.getName();
+                params.put(name, context.get(name));
+              });
     }
     return params;
   }

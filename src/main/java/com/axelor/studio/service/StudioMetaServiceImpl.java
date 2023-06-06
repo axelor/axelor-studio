@@ -105,14 +105,19 @@ public class StudioMetaServiceImpl {
             .filter("self.xmlId in ?1 OR self.name in ?1 ", Arrays.asList(xmlIds.split(",")))
             .fetch();
 
-    for (MetaAction action : metaActions) {
-      List<MetaMenu> menus = metaMenuRepo.all().filter("self.action = ?1", action).fetch();
-      for (MetaMenu metaMenu : menus) {
-        metaMenu.setAction(null);
-        metaMenuRepo.save(metaMenu);
-      }
-      metaActionRepo.remove(action);
-    }
+    metaActions.forEach(
+        action -> {
+          metaMenuRepo
+              .all()
+              .filter("self.action = ?1", action)
+              .fetchStream()
+              .forEach(
+                  metaMenu -> {
+                    metaMenu.setAction(null);
+                    metaMenuRepo.save(metaMenu);
+                  });
+          metaActionRepo.remove(action);
+        });
   }
 
   @Transactional(rollbackOn = Exception.class)
@@ -289,15 +294,14 @@ public class StudioMetaServiceImpl {
     Preconditions.checkNotNull(metaMenu, "metaMenu cannot be null.");
 
     List<MetaMenu> subMenus = metaMenuRepo.all().filter("self.parent = ?1", metaMenu).fetch();
-    for (MetaMenu subMenu : subMenus) {
-      subMenu.setParent(null);
-    }
+    subMenus.forEach(subMenu -> subMenu.setParent(null));
     List<StudioMenu> subStudioMenus =
         studioMenuRepo.all().filter("self.parentMenu = ?1", metaMenu).fetch();
-    for (StudioMenu subStudioMenu : subStudioMenus) {
-      subStudioMenu.setParentMenu(null);
-      studioMenuRepo.save(subStudioMenu);
-    }
+    subStudioMenus.forEach(
+        subStudioMenu -> {
+          subStudioMenu.setParentMenu(null);
+          studioMenuRepo.save(subStudioMenu);
+        });
 
     metaMenuRepo.remove(metaMenu);
   }

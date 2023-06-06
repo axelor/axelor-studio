@@ -426,32 +426,32 @@ public class StudioChartServiceImpl {
 
     FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
 
-    for (Filter filter : filters) {
-      if (!filter.getIsParameter()) {
-        continue;
-      }
-      String fieldStr = "param" + filter.getId();
+    filters.stream()
+        .filter(filter -> filter.getIsParameter())
+        .forEach(
+            filter -> {
+              String fieldStr = "param" + filter.getId();
 
-      Object object = null;
-      StringBuilder parent = new StringBuilder("self");
-      if (filter.getIsJson()) {
-        object =
-            filterSqlService.parseJsonField(
-                filter.getMetaJsonField(), filter.getTargetField(), null, parent);
-      } else {
-        object =
-            filterSqlService.parseMetaField(
-                filter.getMetaField(), filter.getTargetField(), null, parent, true);
-      }
+              Object object = null;
+              StringBuilder parent = new StringBuilder("self");
+              if (filter.getIsJson()) {
+                object =
+                    filterSqlService.parseJsonField(
+                        filter.getMetaJsonField(), filter.getTargetField(), null, parent);
+              } else {
+                object =
+                    filterSqlService.parseMetaField(
+                        filter.getMetaField(), filter.getTargetField(), null, parent, true);
+              }
 
-      if (object instanceof MetaField) {
-        fieldStr = getMetaSearchField(fieldStr, (MetaField) object);
-      } else {
-        fieldStr = getJsonSearchField(fieldStr, (MetaJsonField) object);
-      }
+              if (object instanceof MetaField) {
+                fieldStr = getMetaSearchField(fieldStr, (MetaField) object);
+              } else {
+                fieldStr = getJsonSearchField(fieldStr, (MetaJsonField) object);
+              }
 
-      searchFields.add(fieldStr + "\" x-required=\"true\" />");
-    }
+              searchFields.add(fieldStr + "\" x-required=\"true\" />");
+            });
   }
 
   protected String getMetaSearchField(String fieldStr, MetaField field) {

@@ -20,6 +20,7 @@ package com.axelor.studio.bpm.listener;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.db.WkfTaskConfig;
+import java.util.Arrays;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
@@ -36,9 +37,8 @@ public class WkfTaskConfigListener {
         WkfCache.WKF_BUTTON_CACHE.put(tenantId, new MultiValueMap());
       }
       onRemove(config);
-      for (String btnName : config.getButton().split(",")) {
-        WkfCache.WKF_BUTTON_CACHE.get(tenantId).put(config.getId(), btnName);
-      }
+      Arrays.asList(config.getButton().split(","))
+          .forEach(btnName -> WkfCache.WKF_BUTTON_CACHE.get(tenantId).put(config.getId(), btnName));
     }
   }
 

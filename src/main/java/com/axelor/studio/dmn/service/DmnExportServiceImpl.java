@@ -77,12 +77,12 @@ public class DmnExportServiceImpl implements DmnExportService {
   }
 
   protected void processTables(Collection<DecisionTable> tables) {
-    for (DecisionTable table : tables) {
-      String sheetName = table.getParentElement().getAttributeValue("id");
-      Sheet sheet = workbook.createSheet(sheetName);
-      this.createHeaderRow(sheet, table);
-      this.createDataRow(sheet, table);
-    }
+    tables.forEach(
+        table -> {
+          Sheet sheet = workbook.createSheet(table.getParentElement().getAttributeValue("id"));
+          this.createHeaderRow(sheet, table);
+          this.createDataRow(sheet, table);
+        });
   }
 
   protected void createHeaderRow(Sheet sheet, DecisionTable table) {

@@ -164,29 +164,31 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     wkfModel.setDeploymentId(deployment.getId());
 
     log.debug("Definitions deployed: {}", definitions.size());
-    for (ProcessDefinition definition : definitions) {
+    definitions.forEach(
+        definition -> {
+          WkfProcess process =
+              wkfProcessRepository
+                  .all()
+                  .filter(
+                      "self.name = ? and self.wkfModel.id = ?",
+                      definition.getKey(),
+                      wkfModel.getId())
+                  .fetchOne();
 
-      WkfProcess process =
-          wkfProcessRepository
-              .all()
-              .filter(
-                  "self.name = ? and self.wkfModel.id = ?", definition.getKey(), wkfModel.getId())
-              .fetchOne();
+          if (process == null) {
+            process = new WkfProcess();
+            wkfModel.addWkfProcessListItem(process);
+          }
 
-      if (process == null) {
-        process = new WkfProcess();
-        wkfModel.addWkfProcessListItem(process);
-      }
+          process.setName(definition.getKey());
+          process.setProcessId(definition.getId());
+          process.setDescription(definition.getName());
 
-      process.setName(definition.getKey());
-      process.setProcessId(definition.getId());
-      process.setDescription(definition.getName());
+          addProcessConfig(bpmInstance, process);
+          addDisplayProperties(bpmInstance, process);
 
-      addProcessConfig(bpmInstance, process);
-      addDisplayProperties(bpmInstance, process);
-
-      processMap.put(definition.getKey(), definition.getId());
-    }
+          processMap.put(definition.getKey(), definition.getId());
+        });
 
     engine
         .getManagementService()
@@ -206,34 +208,40 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .list();
 
     log.debug("Old definition size " + oldDefinitions.size());
-    for (ProcessDefinition oldDefinition : oldDefinitions) {
-      for (ProcessDefinition newDefinition : definitions) {
-        if (oldDefinition.getKey().equals(newDefinition.getKey())) {
-          log.debug(
-              "Migrating from old defintion: {}, to new definition: {}",
-              oldDefinition.getKey(),
-              newDefinition.getKey());
+    oldDefinitions.forEach(
+        oldDefinition ->
+            definitions.stream()
+                .filter(newDefinition -> oldDefinition.getKey().equals(newDefinition.getKey()))
+                .forEach(
+                    newDefinition -> {
+                      log.debug(
+                          "Migrating from old defintion: {}, to new definition: {}",
+                          oldDefinition.getKey(),
+                          newDefinition.getKey());
 
-          MigrationPlan plan = createMigrationPlan(engine, oldDefinition, newDefinition);
+                      MigrationPlan plan =
+                          createMigrationPlan(engine, oldDefinition, newDefinition);
 
-          if (plan == null) {
-            continue;
-          }
+                      if (plan == null) {
+                        return;
+                      }
 
-          ProcessInstanceQuery query =
-              engine
-                  .getRuntimeService()
-                  .createProcessInstanceQuery()
-                  .processDefinitionId(oldDefinition.getId());
+                      ProcessInstanceQuery query =
+                          engine
+                              .getRuntimeService()
+                              .createProcessInstanceQuery()
+                              .processDefinitionId(oldDefinition.getId());
 
-          long nbInstances = query.count();
-          log.debug("Process instances to migrate: {}", nbInstances);
-          if (nbInstances > 0) {
-            engine.getRuntimeService().newMigration(plan).processInstanceQuery(query).execute();
-          }
-        }
-      }
-    }
+                      long nbInstances = query.count();
+                      log.debug("Process instances to migrate: {}", nbInstances);
+                      if (nbInstances > 0) {
+                        engine
+                            .getRuntimeService()
+                            .newMigration(plan)
+                            .processInstanceQuery(query)
+                            .execute();
+                      }
+                    }));
   }
 
   protected MigrationPlan createMigrationPlan(
@@ -254,41 +262,44 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     ModelInstance modelInstance =
         engine.getRepositoryService().getBpmnModelInstance(oldDefinition.getId());
 
-    for (String key : processMap.keySet()) {
-      long count =
-          engine
-              .getHistoryService()
-              .createHistoricActivityInstanceQuery()
-              .processDefinitionId(oldDefinition.getId())
-              .activityId(key)
-              .unfinished()
-              .count();
+    processMap
+        .keySet()
+        .forEach(
+            key -> {
+              long count =
+                  engine
+                      .getHistoryService()
+                      .createHistoricActivityInstanceQuery()
+                      .processDefinitionId(oldDefinition.getId())
+                      .activityId(key)
+                      .unfinished()
+                      .count();
 
-      if (count == 0) {
-        continue;
-      }
+              if (count == 0) {
+                return;
+              }
 
-      ModelElementInstance instance = modelInstance.getModelElementById(key);
+              ModelElementInstance instance = modelInstance.getModelElementById(key);
 
-      String value = processMap.get(key);
-      if (value != null) {
-        if (instance
-            .getElementType()
-            .getTypeName()
-            .equals(BpmnModelConstants.BPMN_ELEMENT_INTERMEDIATE_CATCH_EVENT)) {
-          planBuilder.mapActivities(key, value).updateEventTrigger();
-        } else {
-          planBuilder.mapActivities(key, value);
-        }
-      }
+              String value = processMap.get(key);
+              if (value != null) {
+                if (instance
+                    .getElementType()
+                    .getTypeName()
+                    .equals(BpmnModelConstants.BPMN_ELEMENT_INTERMEDIATE_CATCH_EVENT)) {
+                  planBuilder.mapActivities(key, value).updateEventTrigger();
+                } else {
+                  planBuilder.mapActivities(key, value);
+                }
+              }
 
-      Collection<MultiInstanceLoopCharacteristics> childInstaces =
-          instance.getChildElementsByType(MultiInstanceLoopCharacteristics.class);
+              Collection<MultiInstanceLoopCharacteristics> childInstaces =
+                  instance.getChildElementsByType(MultiInstanceLoopCharacteristics.class);
 
-      if (childInstaces != null && !childInstaces.isEmpty()) {
-        planBuilder.mapActivities(key + "#multiInstanceBody", value + "#multiInstanceBody");
-      }
-    }
+              if (childInstaces != null && !childInstaces.isEmpty()) {
+                planBuilder.mapActivities(key + "#multiInstanceBody", value + "#multiInstanceBody");
+              }
+            });
 
     plan = planBuilder.build();
 
@@ -297,11 +308,12 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   protected void addDmn(DeploymentBuilder deploymentBuilder, Set<MetaFile> dmnFiles) {
 
-    for (MetaFile dmnFile : dmnFiles) {
-      dmnFile = metaFileRepo.find(dmnFile.getId());
-      deploymentBuilder.addModelInstance(
-          dmnFile.getId() + ".dmn", Dmn.readModelFromFile(MetaFiles.getPath(dmnFile).toFile()));
-    }
+    dmnFiles.forEach(
+        dmnFile ->
+            deploymentBuilder.addModelInstance(
+                dmnFile.getId() + ".dmn",
+                Dmn.readModelFromFile(
+                    MetaFiles.getPath(metaFileRepo.find(dmnFile.getId())).toFile())));
   }
 
   protected void addDisplayProperties(BpmnModelInstance bpmInstance, WkfProcess process) {
@@ -342,14 +354,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     Collection<ModelElementInstance> configParams =
         processConfigElement.getChildElementsByType(processConfigParamType);
 
-    for (ModelElementInstance configParam : configParams) {
-      WkfProcessConfig config = getProcessCofig(configMap, configParam);
-      config =
-          (WkfProcessConfig)
-              wkfService.addProperties(
-                  WkfPropertyMapper.PROCESS_CONFIG_PROPERTIES, config, configParam);
-      process.addWkfProcessConfigListItem(config);
-    }
+    configParams.forEach(
+        configParam -> {
+          WkfProcessConfig config = getProcessCofig(configMap, configParam);
+          config =
+              (WkfProcessConfig)
+                  wkfService.addProperties(
+                      WkfPropertyMapper.PROCESS_CONFIG_PROPERTIES, config, configParam);
+          process.addWkfProcessConfigListItem(config);
+        });
   }
 
   protected Map<String, WkfProcessConfig> createConfigMap(WkfProcess process) {
@@ -357,13 +370,16 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     Map<String, WkfProcessConfig> configMap = new HashMap<String, WkfProcessConfig>();
 
     if (process.getWkfProcessConfigList() != null) {
-      for (WkfProcessConfig config : process.getWkfProcessConfigList()) {
-        if (config.getMetaModel() != null) {
-          configMap.put(config.getMetaModel().getName(), config);
-        } else if (config.getMetaJsonModel() != null) {
-          configMap.put(config.getMetaJsonModel().getName(), config);
-        }
-      }
+      process
+          .getWkfProcessConfigList()
+          .forEach(
+              config -> {
+                if (config.getMetaModel() != null) {
+                  configMap.put(config.getMetaModel().getName(), config);
+                } else if (config.getMetaJsonModel() != null) {
+                  configMap.put(config.getMetaJsonModel().getName(), config);
+                }
+              });
       process.clearWkfProcessConfigList();
     }
 

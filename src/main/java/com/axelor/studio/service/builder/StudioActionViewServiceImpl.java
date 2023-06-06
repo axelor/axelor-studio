@@ -77,10 +77,11 @@ public class StudioActionViewServiceImpl {
       return;
     }
 
-    for (StudioActionLine param : params) {
-      xml.append("\n" + INDENT + "<view-param name=\"" + param.getName() + "\" ");
-      xml.append("value=\"" + StringEscapeUtils.escapeXml(param.getValue()) + "\" />");
-    }
+    params.forEach(
+        param -> {
+          xml.append("\n" + INDENT + "<view-param name=\"" + param.getName() + "\" ");
+          xml.append("value=\"" + StringEscapeUtils.escapeXml(param.getValue()) + "\" />");
+        });
   }
 
   protected void appendContext(StudioAction studioAction, StringBuilder xml) {

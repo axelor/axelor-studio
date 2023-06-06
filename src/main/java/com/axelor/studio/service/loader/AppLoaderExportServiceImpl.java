@@ -134,14 +134,16 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
         addImportConfigFile(appLoader, exportDir);
 
-        for (AppDataLoader dataLoader : appLoader.getAppDataLoaderList()) {
-
-          if (dataLoader.getIsJson()) {
-            addJsonModelData(dataLoader, exportDir);
-          } else {
-            addMetaModelData(dataLoader, exportDir);
-          }
-        }
+        appLoader
+            .getAppDataLoaderList()
+            .forEach(
+                dataLoader -> {
+                  if (dataLoader.getIsJson()) {
+                    addJsonModelData(dataLoader, exportDir);
+                  } else {
+                    addMetaModelData(dataLoader, exportDir);
+                  }
+                });
       }
 
       File zipFile = createExportZip(exportDir);
@@ -178,11 +180,12 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
     Map<String, InputStream> templateMap = new HashMap<String, InputStream>();
 
-    for (String filePrefix : EXPORT_TEMPLATES) {
-      templateMap.put(
-          filePrefix + ".xml",
-          ResourceUtils.getResourceStream("data-export/" + filePrefix + ".tmpl"));
-    }
+    Arrays.asList(EXPORT_TEMPLATES)
+        .forEach(
+            filePrefix ->
+                templateMap.put(
+                    filePrefix + ".xml",
+                    ResourceUtils.getResourceStream("data-export/" + filePrefix + ".tmpl")));
 
     return templateMap;
   }

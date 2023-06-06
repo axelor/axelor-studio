@@ -18,7 +18,6 @@
 package com.axelor.studio.service.ws;
 
 import com.axelor.studio.db.WsAuthenticator;
-import com.axelor.studio.db.WsKeyValue;
 import com.axelor.studio.db.WsRequest;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
@@ -96,9 +95,11 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
     try {
       URIBuilder uriBuilder = new URIBuilder(url);
 
-      for (WsKeyValue wsKeyValue : authRequest.getPayLoadWsKeyValueList()) {
-        uriBuilder.addParameter(wsKeyValue.getWsKey(), wsKeyValue.getWsValue());
-      }
+      authRequest
+          .getPayLoadWsKeyValueList()
+          .forEach(
+              wsKeyValue ->
+                  uriBuilder.addParameter(wsKeyValue.getWsKey(), wsKeyValue.getWsValue()));
 
       uriBuilder.addParameter("state", wsAuthenticator.getId().toString());
       uriBuilder.addParameter("redirect_uri", getRedirectUrl());

@@ -31,7 +31,6 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.variable.Variables;
 
 @Singleton
@@ -77,14 +76,19 @@ public class ProcessEngineServiceImpl {
             .setDefaultSerializationFormat(Variables.SerializationDataFormats.JAVA.name())
             .buildProcessEngine();
 
-    for (Deployment deployment : engine.getRepositoryService().createDeploymentQuery().list()) {
-      engine
-          .getManagementService()
-          .registerProcessApplication(
-              deployment.getId(), Beans.get(WkfProcessApplication.class).getReference());
+    engine
+        .getRepositoryService()
+        .createDeploymentQuery()
+        .list()
+        .forEach(
+            deployment -> {
+              engine
+                  .getManagementService()
+                  .registerProcessApplication(
+                      deployment.getId(), Beans.get(WkfProcessApplication.class).getReference());
 
-      engine.getManagementService().registerDeploymentForJobExecutor(deployment.getId());
-    }
+              engine.getManagementService().registerDeploymentForJobExecutor(deployment.getId());
+            });
 
     engineMap.put(tenantId, engine);
   }

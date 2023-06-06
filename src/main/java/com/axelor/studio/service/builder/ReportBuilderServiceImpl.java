@@ -126,15 +126,18 @@ public class ReportBuilderServiceImpl {
 
     FormView formView = (FormView) view;
 
-    for (AbstractWidget widget : formView.getItems()) {
-      if (widget instanceof PanelTabs) {
-        PanelTabs panelTabs = (PanelTabs) widget;
-        AbstractWidget tabItem = panelTabs.getItems().get(0);
-        processAbstractWidget(tabItem, false);
-        continue;
-      }
-      processAbstractWidget(widget, false);
-    }
+    formView
+        .getItems()
+        .forEach(
+            widget -> {
+              if (widget instanceof PanelTabs) {
+                PanelTabs panelTabs = (PanelTabs) widget;
+                AbstractWidget tabItem = panelTabs.getItems().get(0);
+                processAbstractWidget(tabItem, false);
+                return;
+              }
+              processAbstractWidget(widget, false);
+            });
   }
 
   /**
