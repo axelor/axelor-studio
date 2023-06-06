@@ -103,7 +103,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
             .order("pathCondition")
             .fetch();
 
-    Map<String, Object> ctxMap = new HashMap<String, Object>();
+    Map<String, Object> ctxMap = new HashMap<>();
     ctxMap.put(getVarName(model), new FullContext(model));
 
     for (WkfProcessConfig config : configs) {
@@ -144,6 +144,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
     try {
       result = helper.eval(expr);
     } catch (Exception e) {
+      ExceptionTool.trace(e);
     }
     log.debug("Eval expr: {}, result: {}", expr, result);
     return result;
@@ -152,35 +153,34 @@ public class WkfCommonServiceImpl implements WkfCommonService {
   @Override
   public Map<String, Object> createVariables(Map<String, Object> modelMap) {
 
-    Map<String, Object> varMap = new HashMap<String, Object>();
+    Map<String, Object> varMap = new HashMap<>();
     modelMap.forEach(
         (key, value) -> {
-          Object model = value;
 
-          if (model == null) {
+          if (value == null) {
             varMap.put(key, Variables.objectValue(null, true).create());
             return;
           }
 
-          ObjectValue var = null;
+          ObjectValue variable;
           Long id = null;
-          if (model instanceof Model) {
-            var =
-                Variables.objectValue(model, true)
+          if (value instanceof Model) {
+            variable =
+                Variables.objectValue(value, true)
                     .serializationDataFormat(JPAVariableSerializer.NAME)
                     .create();
-            id = ((Model) model).getId();
+            id = ((Model) value).getId();
           } else {
-            var =
-                Variables.objectValue(model, true)
+            variable =
+                Variables.objectValue(value, true)
                     .serializationDataFormat(SerializationDataFormats.JSON)
                     .create();
 
-            if (model instanceof FullContext) {
-              id = (Long) ((FullContext) model).get("id");
+            if (value instanceof FullContext) {
+              id = (Long) ((FullContext) value).get("id");
             }
           }
-          varMap.put(key, var);
+          varMap.put(key, variable);
 
           if (id != null) {
             varMap.put(key + "Id", Variables.longValue(id));
@@ -268,9 +268,9 @@ public class WkfCommonServiceImpl implements WkfCommonService {
           }
           Property field = mapper.getProperty(key);
           if (field == null) {
-        continue;
-      }
-      if (field.isReference()) {
+            return;
+          }
+          if (field.isReference()) {
             try {
               value =
                   JpaRepository.of((Class<? extends Model>) field.getTarget())

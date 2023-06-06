@@ -222,8 +222,8 @@ public class WkfNodeServiceImpl {
         StringUtils.isNotEmpty(menuId)
                 && StringUtils.isNotEmpty(isUserMenu)
                 && isUserMenu.equals("true")
-            ? WkfMenuService.USER_MENU_PREFIX + menuId
-            : WkfMenuService.MENU_PREFIX + menuId;
+            ? WkfMenuServiceImpl.USER_MENU_PREFIX + menuId
+            : WkfMenuServiceImpl.MENU_PREFIX + menuId;
 
     if (menuMap.containsKey(menuId)) {
       taskMenu = menuMap.get(menuId);
