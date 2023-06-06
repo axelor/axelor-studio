@@ -37,8 +37,8 @@ import com.axelor.studio.db.Filter;
 import com.axelor.studio.db.StudioChart;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.StudioMetaServiceImpl;
-import com.axelor.studio.service.filter.FilterCommonService;
-import com.axelor.studio.service.filter.FilterSqlService;
+import com.axelor.studio.service.filter.FilterCommonServiceImpl;
+import com.axelor.studio.service.filter.FilterSqlServiceImpl;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
@@ -77,14 +77,14 @@ public class StudioChartServiceImpl {
 
   protected MetaModelRepository metaModelRepo;
 
-  protected FilterCommonService filterCommonService;
+  protected FilterCommonServiceImpl filterCommonService;
 
   protected StudioMetaServiceImpl metaService;
 
   @Inject
   public StudioChartServiceImpl(
       MetaModelRepository metaModelRepo,
-      FilterCommonService filterCommonService,
+      FilterCommonServiceImpl filterCommonService,
       StudioMetaServiceImpl metaService) {
     this.metaModelRepo = metaModelRepo;
     this.filterCommonService = filterCommonService;
@@ -218,7 +218,8 @@ public class StudioChartServiceImpl {
     }
 
     String filters =
-        Beans.get(FilterSqlService.class).getSqlFilters(studioChart.getFilterList(), joins, true);
+        Beans.get(FilterSqlServiceImpl.class)
+            .getSqlFilters(studioChart.getFilterList(), joins, true);
     addSearchField(studioChart.getFilterList());
     String model = studioChart.getModel();
 
@@ -254,7 +255,7 @@ public class StudioChartServiceImpl {
   protected String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
 
     String sumField = null;
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
+    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
 
     if (isJson) {
       String sqlType = filterSqlService.getSqlType(jsonField.getType());
@@ -284,7 +285,7 @@ public class StudioChartServiceImpl {
       return null;
     }
 
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
+    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
 
     String typeName = null;
     String group = null;
@@ -423,7 +424,7 @@ public class StudioChartServiceImpl {
       return;
     }
 
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
+    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
 
     for (Filter filter : filters) {
       if (!filter.getIsParameter()) {
@@ -462,7 +463,8 @@ public class StudioChartServiceImpl {
       fieldStr += "\" type=\"" + fieldType;
     } else {
       String[] targetRef =
-          Beans.get(FilterSqlService.class).getDefaultTarget(field.getName(), field.getTypeName());
+          Beans.get(FilterSqlServiceImpl.class)
+              .getDefaultTarget(field.getName(), field.getTypeName());
       String[] nameField = targetRef[0].split("\\.");
       fieldStr +=
           "\" widget=\"ref-text\" type=\""
@@ -478,7 +480,7 @@ public class StudioChartServiceImpl {
 
   protected String getJsonSearchField(String fieldStr, MetaJsonField field) {
 
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
+    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
 
     fieldStr = "<field name=\"" + fieldStr + "\" title=\"" + field.getTitle();
 
@@ -534,7 +536,7 @@ public class StudioChartServiceImpl {
       return metaField.getName();
     }
 
-    return Beans.get(FilterSqlService.class)
+    return Beans.get(FilterSqlServiceImpl.class)
         .getDefaultTarget(metaField.getName(), metaField.getTypeName())[0];
   }
 
@@ -546,7 +548,7 @@ public class StudioChartServiceImpl {
       return metaJsonField.getName();
     }
 
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
+    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
 
     if (metaJsonField.getTargetJsonModel() != null) {
       return filterSqlService
@@ -570,7 +572,7 @@ public class StudioChartServiceImpl {
     }
 
     Object targetField = null;
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
+    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
     try {
       if (object instanceof MetaJsonField) {
         targetField = filterSqlService.parseJsonField((MetaJsonField) object, target, null, null);

@@ -83,7 +83,7 @@ public class StudioActionEmailServiceImpl {
             + "\" id=\""
             + studioAction.getXmlId()
             + "\">\n\t"
-            + "<call class=\"com.axelor.studio.service.builder.StudioActionEmailService\" method=\"sendEmail(id, '"
+            + "<call class=\"com.axelor.studio.service.builder.StudioActionEmailServiceImpl\" method=\"sendEmail(id, '"
             + (studioAction.getIsJson()
                 ? ((MetaJsonModel) model).getName()
                 : ((MetaModel) model).getFullName())

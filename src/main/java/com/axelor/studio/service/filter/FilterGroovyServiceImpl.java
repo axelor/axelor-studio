@@ -30,24 +30,24 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilterGroovyService {
+public class FilterGroovyServiceImpl {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected FilterCommonService filterCommonService;
+  protected FilterCommonServiceImpl filterCommonService;
 
   protected MetaModelRepository metaModelRepo;
 
   protected MetaJsonFieldRepository metaJsonFieldRepo;
 
-  protected FilterSqlService filterSqlService;
+  protected FilterSqlServiceImpl filterSqlService;
 
   @Inject
-  public FilterGroovyService(
-      FilterCommonService filterCommonService,
+  public FilterGroovyServiceImpl(
+      FilterCommonServiceImpl filterCommonService,
       MetaModelRepository metaModelRepo,
       MetaJsonFieldRepository metaJsonFieldRepo,
-      FilterSqlService filterSqlService) {
+      FilterSqlServiceImpl filterSqlService) {
     this.filterCommonService = filterCommonService;
     this.metaModelRepo = metaModelRepo;
     this.metaJsonFieldRepo = metaJsonFieldRepo;

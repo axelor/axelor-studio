@@ -36,7 +36,7 @@ import com.axelor.studio.db.StudioActionLine;
 import com.axelor.studio.db.repo.StudioActionLineRepository;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.service.StudioMetaServiceImpl;
-import com.axelor.studio.service.filter.FilterSqlService;
+import com.axelor.studio.service.filter.FilterSqlServiceImpl;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -437,7 +437,7 @@ public class StudioActionScriptServiceImpl {
       if (jsonField != null && jsonField.getTargetModel() != null) {
         if (line.getValue() != null && !line.getValue().contentEquals("$." + jsonField.getName())) {
           targetObject =
-              Beans.get(FilterSqlService.class)
+              Beans.get(FilterSqlServiceImpl.class)
                   .parseJsonField(jsonField, line.getValue().replace("$.", ""), null, null);
         } else {
           sourceModel = jsonField.getTargetModel();
@@ -448,7 +448,7 @@ public class StudioActionScriptServiceImpl {
       if (field != null && field.getTypeName() != null) {
         if (line.getValue() != null && !line.getValue().contentEquals("$." + field.getName())) {
           targetObject =
-              Beans.get(FilterSqlService.class)
+              Beans.get(FilterSqlServiceImpl.class)
                   .parseMetaField(field, line.getValue().replace("$.", ""), null, null, false);
         } else {
           sourceModel = field.getTypeName();

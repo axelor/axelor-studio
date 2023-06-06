@@ -20,7 +20,7 @@ package com.axelor.studio.service.filter;
 import com.axelor.meta.db.MetaField;
 import java.util.Arrays;
 
-public class FilterCommonService {
+public class FilterCommonServiceImpl {
 
   /**
    * It will return value of tag used by filter 'value'.
