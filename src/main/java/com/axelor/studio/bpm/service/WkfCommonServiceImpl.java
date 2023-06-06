@@ -267,7 +267,10 @@ public class WkfCommonServiceImpl implements WkfCommonService {
             value = null;
           }
           Property field = mapper.getProperty(key);
-          if (field.isReference()) {
+          if (field == null) {
+        continue;
+      }
+      if (field.isReference()) {
             try {
               value =
                   JpaRepository.of((Class<? extends Model>) field.getTarget())

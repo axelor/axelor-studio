@@ -100,6 +100,8 @@ public interface ITranslation {
       "Please enter form name and title"; /*)*/
   public static final String EDITOR_FIELD_NAME_ALERT = /*$$(*/ "Field name should be unique"; /*)*/
   public static final String EDITOR_MODEL_NAME_ALERT = /*$$(*/ "Model name should be unique"; /*)*/
+  public static final String EDITOR_SIDE_PANEL_ALERT = /*$$(*/
+      "Main panel is required to have side panels"; /*)*/
 
   /** BPM */
   public static final String INVALID_WKF_MODEL_XML = /*$$(*/ "The data file is not an XML."; /*)*/
@@ -109,4 +111,6 @@ public interface ITranslation {
 
   public static final String INFINITE_EXECUTION = /*$$(*/
       "Infinite loop execution suspsected"; /*)*/
+
+  public static final String MENU_NOT_FOUND = /*$$(*/ "Menu not found" /*)*/;
 }

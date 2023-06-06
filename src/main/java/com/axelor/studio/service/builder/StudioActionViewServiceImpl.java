@@ -27,7 +27,7 @@ import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.util.List;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class StudioActionViewServiceImpl {
 
@@ -80,7 +80,7 @@ public class StudioActionViewServiceImpl {
     params.forEach(
         param -> {
           xml.append("\n" + INDENT + "<view-param name=\"" + param.getName() + "\" ");
-          xml.append("value=\"" + StringEscapeUtils.escapeXml(param.getValue()) + "\" />");
+          xml.append("value=\"" + StringEscapeUtils.escapeXml11(param.getValue()) + "\" />");
         });
   }
 
@@ -98,9 +98,9 @@ public class StudioActionViewServiceImpl {
             || contextValue.startsWith("action:")
             || contextValue.startsWith("select:")
             || contextValue.startsWith("select[]:")) {
-          xml.append("expr=\"" + StringEscapeUtils.escapeXml(contextValue) + "\" />");
+          xml.append("expr=\"" + StringEscapeUtils.escapeXml11(contextValue) + "\" />");
         } else {
-          xml.append("expr=\"eval:" + StringEscapeUtils.escapeXml(contextValue) + "\" />");
+          xml.append("expr=\"eval:" + StringEscapeUtils.escapeXml11(contextValue) + "\" />");
         }
       }
     }
@@ -123,7 +123,7 @@ public class StudioActionViewServiceImpl {
     }
 
     if (domain != null) {
-      xml.append("\n" + INDENT + "<domain>" + StringEscapeUtils.escapeXml(domain) + "</domain>");
+      xml.append("\n" + INDENT + "<domain>" + StringEscapeUtils.escapeXml11(domain) + "</domain>");
     }
   }
 

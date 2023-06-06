@@ -101,7 +101,7 @@
     model="com.axelor.studio.db.WkfModel">
     <panel name="mainPanel">
       <field name="dataFile" type="many-to-one" target="com.axelor.meta.db.MetaFile"
-        widget="binary-link" title="Data file"/>
+        widget="binary-link" title="XML data file"/>
       <field name="translate" title="Translate" type="boolean"
         onChange="action-wkf-model-record-set-source-language"/>
       <field name="sourceLanguageSelect" type="string" selection="select.language"
@@ -224,7 +224,7 @@
   </action-record>
 
   <action-view name="action-wkf-view-open-editor" title="BPM Studio">
-    <view type="html" name="wkf-editor/index.html?id={{_id}}&amp;timerTask={{_timerTask}}"/>
+    <view type="html" name="wkf-editor/?id={{_id}}&amp;timerTask={{_timerTask}}"/>
     <context name="_timerTask"
       expr="eval: !com.axelor.app.AppSettings.get().getBoolean('application.multi_tenancy', false)"/>
   </action-view>

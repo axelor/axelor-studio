@@ -1,3 +1,5 @@
+import com.axelor.gradle.tasks.GenerateChangelog
+
 buildscript {
 	ext.repos = {
 		mavenCentral() {
@@ -8,15 +10,33 @@ buildscript {
 			content { excludeGroupByRegex "com\\.axelor.*" }
 		}
 		maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
+
+		// Declare the Node.js download repository
+		ivy {
+			name = "Node.js"
+			setUrl("https://nodejs.org/dist/")
+			patternLayout {
+				artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]")
+			}
+			metadataSources {
+				artifact()
+			}
+			content {
+				includeModule("org.nodejs", "node")
+			}
+		}
 	}
 	ext.aopVersion = '6.1.0'
 	repositories repos
 	dependencies {
 		classpath "com.axelor:axelor-gradle:${aopVersion}"
+		classpath "com.github.node-gradle:gradle-node-plugin:5.0.0"
 	}
 }
 
 repositories repos
+
+apply plugin: 'com.github.node-gradle.node'
 
 apply from: "version.gradle"
 apply plugin: "com.axelor.app"
@@ -55,8 +75,31 @@ dependencies {
 	implementation "org.eclipse.birt.runtime.3_7_1:Tidy:1"
 	implementation "org.apache.commons:commons-exec:1.2"
 	implementation "org.apache.commons:commons-text:1.9"
-
+	implementation 'org.jboss.resteasy:resteasy-jaxb-provider:4.7.7.Final'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
 }
+
+tasks.register('generateChangelog', GenerateChangelog) {
+	description "Generate changelog from unreleased entries."
+	group "Axelor"
+	files = fileTree(projectDir) {
+		include 'changelogs/unreleased/*.yml'
+		include 'changelogs/unreleased/*.yaml'
+	}
+}
+
+node {
+	version = '16.17.0'
+	npmVersion = '8.15.0'
+	yarnVersion = '1.22.19'
+	download = true
+}
+
+apply from: './gradle/wkf-editor.gradle'
+apply from: './gradle/mapper.gradle'
+apply from: './gradle/studio-custom-model.gradle'
+apply from: './gradle/baml-editor.gradle'
+apply from: './gradle/ws-builder.gradle'
 
 //
 // Publish

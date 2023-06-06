@@ -23,8 +23,10 @@ import com.axelor.studio.db.*;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.text.Templates;
 import com.axelor.utils.ExceptionTool;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.base.Strings;
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
@@ -362,6 +364,9 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       case "json":
         entity = getJsonEntity(wsRequest, templates, ctx);
         break;
+      case "xml":
+        entity = getXmlEntity(wsRequest, templates, ctx);
+        break;
       case "text":
         entity = Entity.text(text);
         break;
@@ -405,6 +410,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                 ? null
                 : Entity.entity(new ByteArrayInputStream((byte[]) obj), "application/octet-stream");
         break;
+      default:
+        break;
     }
 
     return entity;
@@ -416,13 +423,41 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     Map<String, Object> payLoads = new HashMap<>();
 
     for (WsKeyValue wsKeyValue : wsRequest.getPayLoadWsKeyValueList()) {
-      payLoads.put(wsKeyValue.getWsKey(), createJson(templates, ctx, wsKeyValue));
+      payLoads.put(wsKeyValue.getWsKey(), createPayload(templates, ctx, wsKeyValue));
     }
 
     return Entity.json(payLoads);
   }
 
-  protected Object createJson(Templates templates, Map<String, Object> ctx, WsKeyValue wsKeyValue) {
+  protected Entity<?> getXmlEntity(
+      WsRequest wsRequest, Templates templates, Map<String, Object> ctx) {
+
+    var wsKeyValues = wsRequest.getPayLoadWsKeyValueList();
+
+    if (wsKeyValues == null) {
+      return Entity.xml("");
+    }
+
+    if (wsKeyValues.size() > 1) {
+      return Entity.xml("");
+    }
+
+    var rootName = wsKeyValues.get(0).getWsKey();
+    var payload = createPayload(templates, ctx, wsKeyValues.get(0));
+
+    try {
+      XmlMapper xmlMapper = new XmlMapper();
+      String xml =
+          xmlMapper.writer().withRootName(rootName).writeValueAsString(payload);
+      return Entity.xml(xml);
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage(), e);
+      return Entity.xml("");
+    }
+  }
+
+  protected Object createPayload(
+      Templates templates, Map<String, Object> ctx, WsKeyValue wsKeyValue) {
 
     Object jsonVal;
     if (wsKeyValue.getWsValue() == null) {
@@ -430,7 +465,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         List<Object> subPayLoad = new ArrayList<>();
         for (WsKeyValue subKeyValue : wsKeyValue.getSubWsKeyValueList()) {
           if (subKeyValue.getWsKey() == null && subKeyValue.getWsValue() == null) {
-            subPayLoad.add(createJson(templates, ctx, subKeyValue));
+            subPayLoad.add(createPayload(templates, ctx, subKeyValue));
           } else if (subKeyValue.getWsKey() == null) {
 
             Object jsonSubVal = templates.fromText(subKeyValue.getWsValue()).make(ctx).render();
@@ -449,7 +484,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             subPayLoad.add(jsonSubVal);
           } else {
             Map<String, Object> subMap = new HashMap<>();
-            subMap.put(subKeyValue.getWsKey(), createJson(templates, ctx, subKeyValue));
+            subMap.put(subKeyValue.getWsKey(), createPayload(templates, ctx, subKeyValue));
             subPayLoad.add(subMap);
           }
         }
@@ -457,7 +492,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       } else {
         Map<String, Object> subPayLoad = new HashMap<>();
         for (WsKeyValue subKeyValue : wsKeyValue.getSubWsKeyValueList()) {
-          subPayLoad.put(subKeyValue.getWsKey(), createJson(templates, ctx, subKeyValue));
+          subPayLoad.put(subKeyValue.getWsKey(), createPayload(templates, ctx, subKeyValue));
         }
         jsonVal = subPayLoad;
       }
@@ -498,6 +533,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       return List.class;
     } else if (responseStr.startsWith(("{"))) {
       return Map.class;
-    } else return Object.class;
+    } else {
+      return Object.class;
+    }
   }
 }

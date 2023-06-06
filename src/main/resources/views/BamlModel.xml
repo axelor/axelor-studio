@@ -75,7 +75,7 @@
 
   <action-view name="action-open-record-builder" title="Record builders">
     <view type="html"
-      name="record-builder?id={{_id}}&amp;model={{recordModel}}&amp;resultField=partnerQuery&amp;resultMetaField=leadQuery"/>
+      name="record-builder/?id={{_id}}&amp;model={{recordModel}}&amp;resultField=partnerQuery&amp;resultMetaField=leadQuery"/>
     <view-param name="popup" value="reload"/>
     <view-param name="popup-save" value="false"/>
     <context name="recordModel" expr="eval:_model"/>

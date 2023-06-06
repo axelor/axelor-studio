@@ -57,8 +57,7 @@ tag=$(cat version.txt)
 
 echo "You are going to release version $tag."
 read -r -p "Are you sure? [y/N] " response
-if [[ ! "$response" =~ ^([yY])$ ]]
-then
+if [[ ! "$response" =~ ^([yY])$ ]]; then
   echo "Exit..."
   exit 0
 fi
@@ -142,13 +141,10 @@ prepare() {
   print_step "Preparing sources for $tag..."
 
   if [[ -f "CHANGELOG.md" ]]; then
-      print_sub_step "  * Update CHANGELOG.md"
-
-      sed -i "1 s/^## Current .*$/## $tag/" CHANGELOG.md
-      sed -i '1s/^/## Current \(unreleased\)\n\n/' CHANGELOG.md
+    print_sub_step "  * Update CHANGELOG.md"
+    # TODO: Add changelog generation + version change sed
   fi
 }
-
 
 release_source() {
   print_step "Pushing release $tag..."
@@ -168,7 +164,7 @@ release_source() {
 
 merge_in_stable() {
   if [[ "${stable_branch}" == "${target_branch}" ]]; then
-    return;
+    return
   fi
 
   print_step "Merging into stable branch $stable_branch..."

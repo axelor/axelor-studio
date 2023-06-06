@@ -33,6 +33,8 @@ import com.axelor.meta.db.repo.MetaMenuRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.studio.db.WkfTaskMenu;
+import com.axelor.studio.db.WkfTaskMenuContext;
 import com.axelor.team.db.Team;
 import com.axelor.team.db.repo.TeamRepository;
 import com.axelor.utils.ExceptionTool;
@@ -41,11 +43,13 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WkfMenuServiceImpl {
 
@@ -77,60 +81,46 @@ public class WkfMenuServiceImpl {
   @Transactional(rollbackOn = Exception.class)
   public void createOrUpdateMenu(WkfTaskConfig wkfTaskConfig) {
 
-    String name = MENU_PREFIX + wkfTaskConfig.getId();
-    MetaMenu metaMenu = findOrCreateMenu(name);
-    metaMenu.setTitle(wkfTaskConfig.getMenuName());
-    MetaAction action = createOrUpdateAction(metaMenu, wkfTaskConfig, false);
-    if (action == null) {
-      if (metaMenu.getId() != null) {
-        metaMenuRepository.remove(metaMenu);
-      }
+    List<WkfTaskMenu> taskMenuList = wkfTaskConfig.getWkfTaskMenuList();
+    if (CollectionUtils.isEmpty(taskMenuList)) {
       return;
     }
-    metaMenu.setAction(action);
-    metaMenu.setParent(null);
-    metaMenu.setTagCount(wkfTaskConfig.getDisplayTagCount());
-    if (wkfTaskConfig.getParentMenuName() != null) {
-      metaMenu.setParent(metaMenuRepository.findByName(wkfTaskConfig.getParentMenuName()));
-    }
-    if (wkfTaskConfig.getPositionMenuName() != null) {
-      MetaMenu positionMenu = metaMenuRepository.findByName(wkfTaskConfig.getPositionMenuName());
-      if (positionMenu != null) {
-        if (wkfTaskConfig.getMenuPosition() != null
-            && wkfTaskConfig.getMenuPosition().equals("before")) {
-          metaMenu.setOrder(positionMenu.getOrder() - 1);
-        } else {
-          metaMenu.setOrder(positionMenu.getOrder() + 1);
+
+    for (WkfTaskMenu taskMenu : taskMenuList) {
+      String name = taskMenu.getMenuId();
+
+      MetaMenu metaMenu = findOrCreateMenu(name);
+      metaMenu.setTitle(taskMenu.getMenuName());
+      MetaAction action = createOrUpdateAction(metaMenu, wkfTaskConfig, taskMenu);
+      if (action == null) {
+        if (metaMenu.getId() != null) {
+          metaMenuRepository.remove(metaMenu);
+        }
+        return;
+      }
+      metaMenu.setAction(action);
+      metaMenu.setParent(null);
+      metaMenu.setTagCount(taskMenu.getDisplayTagCount());
+      if (taskMenu.getParentMenuName() != null) {
+        metaMenu.setParent(metaMenuRepository.findByName(taskMenu.getParentMenuName()));
+      }
+      if (taskMenu.getPositionMenuName() != null) {
+        MetaMenu positionMenu = metaMenuRepository.findByName(taskMenu.getPositionMenuName());
+        if (positionMenu != null) {
+          if (taskMenu.getMenuPosition() != null && taskMenu.getMenuPosition().equals("before")) {
+            metaMenu.setOrder(positionMenu.getOrder() - 1);
+          } else {
+            metaMenu.setOrder(positionMenu.getOrder() + 1);
+          }
         }
       }
-    }
-    metaMenuRepository.save(metaMenu);
-  }
-
-  @Transactional(rollbackOn = Exception.class)
-  public void createOrUpdateUserMenu(WkfTaskConfig wkfTaskConfig) {
-
-    String name = USER_MENU_PREFIX + wkfTaskConfig.getId();
-    MetaMenu metaMenu = findOrCreateMenu(name);
-    metaMenu.setTitle(wkfTaskConfig.getUserMenuName());
-    metaMenu.setAction(createOrUpdateAction(metaMenu, wkfTaskConfig, true));
-    metaMenu.setParent(null);
-    if (wkfTaskConfig.getUserParentMenuName() != null) {
-      metaMenu.setParent(metaMenuRepository.findByName(wkfTaskConfig.getUserParentMenuName()));
-    }
-    metaMenu.setTagCount(wkfTaskConfig.getUserDisplayTagCount());
-    if (wkfTaskConfig.getUserPositionMenuName() != null) {
-      MetaMenu positionMenu =
-          metaMenuRepository.findByName(wkfTaskConfig.getUserPositionMenuName());
-      if (positionMenu != null) {
-        if (wkfTaskConfig.getUserMenuPosition().equals("before")) {
-          metaMenu.setOrder(positionMenu.getOrder() - 1);
-        } else {
-          metaMenu.setOrder(positionMenu.getOrder() + 1);
-        }
+      Set<Role> roleSet = null;
+      if (CollectionUtils.isNotEmpty(taskMenu.getRoleSet())) {
+        roleSet = new HashSet<>(taskMenu.getRoleSet());
       }
+      metaMenu.setRoles(roleSet);
+      metaMenuRepository.save(metaMenu);
     }
-    metaMenuRepository.save(metaMenu);
   }
 
   protected MetaMenu findOrCreateMenu(String name) {
@@ -144,12 +134,13 @@ public class WkfMenuServiceImpl {
 
   @Transactional(rollbackOn = Exception.class)
   public MetaAction createOrUpdateAction(
-      MetaMenu metaMenu, WkfTaskConfig wkfTaskConfig, boolean userMenu) {
+      MetaMenu metaMenu, WkfTaskConfig wkfTaskConfig, WkfTaskMenu taskMenu) {
 
     if (wkfTaskConfig.getModelName() == null && wkfTaskConfig.getJsonModelName() == null) {
       return null;
     }
 
+    boolean userMenu = taskMenu.getUserNewMenu();
     String name = metaMenu.getName().replace("-", ".");
     MetaAction metaAction = metaActionRepository.findByName(name);
 
@@ -160,10 +151,9 @@ public class WkfMenuServiceImpl {
     String model = getModelName(wkfTaskConfig);
     metaAction.setModel(model);
     boolean isJson = model.equals(MetaJsonRecord.class.getName());
-    String query = createQuery(wkfTaskConfig, userMenu, isJson);
-    Map<String, String> viewMap = getViewNames(wkfTaskConfig, userMenu, isJson);
-    boolean permanent =
-        userMenu ? wkfTaskConfig.getUserPermanentMenu() : wkfTaskConfig.getPermanentMenu();
+    String query = createQuery(wkfTaskConfig, taskMenu, userMenu, isJson);
+    Map<String, String> viewMap = getViewNames(wkfTaskConfig, taskMenu, isJson);
+    boolean permanent = taskMenu.getPermanentMenu();
 
     if (userMenu && query == null) {
       if (metaAction.getId() != null) {
@@ -200,43 +190,47 @@ public class WkfMenuServiceImpl {
             + "',"
             + permanent
             + ")\" />\n"
-            + (userMenu
-                ? "<context name=\"currentUserId\" expr=\"eval:__user__.id\" />\n<context name=\"teamIds\" expr=\"call:com.axelor.studio.bpm.service.deployment.WkfMenuService:getTeamIds(__user__)\" />\n"
+            + (userMenu && !Strings.isNullOrEmpty(wkfTaskConfig.getUserPath())
+                ? "\t<context name=\"currentUserId\" expr=\"eval:__user__.id\" />\n"
+                : "")
+            + (userMenu && !Strings.isNullOrEmpty(wkfTaskConfig.getTeamPath())
+                ? "\t<context name=\"teamIds\" expr=\"call:com.axelor.studio.bpm.service.deployment.WkfMenuService:getTeamIds(__user__)\" />\n"
                 : "")
             + (isJson
-                ? "<context name=\"jsonModel\" expr=\""
+                ? "\t<context name=\"jsonModel\" expr=\""
                     + wkfTaskConfig.getJsonModelName()
                     + "\" />\n"
-                : "")
-            + "</action-view>";
+                : "");
 
+    if (CollectionUtils.isNotEmpty(taskMenu.getWkfTaskMenuContextList())) {
+      for (WkfTaskMenuContext context : taskMenu.getWkfTaskMenuContextList()) {
+        String key = context.getKey();
+        String value = context.getValue();
+        if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
+          continue;
+        }
+        xml += "\t<context name=\"" + key + "\" expr=\"" + value + "\" />\n";
+      }
+    }
+
+    xml += "</action-view>";
     metaAction.setXml(xml);
 
     return metaActionRepository.save(metaAction);
   }
 
   protected Map<String, String> getViewNames(
-      WkfTaskConfig wkfTaskConfig, boolean userMenu, boolean isJson) {
+      WkfTaskConfig wkfTaskConfig, WkfTaskMenu taskMenu, boolean isJson) {
     String viewPrefix = getViewPrefix(wkfTaskConfig, isJson);
 
     String form = viewPrefix + "-form";
     String grid = viewPrefix + "-grid";
 
-    if (userMenu) {
-      if (wkfTaskConfig.getUserFormView() != null) {
-        form = wkfTaskConfig.getUserFormView();
-      }
-      if (wkfTaskConfig.getUserGridView() != null) {
-        grid = wkfTaskConfig.getUserGridView();
-      }
-
-    } else {
-      if (wkfTaskConfig.getFormView() != null) {
-        form = wkfTaskConfig.getFormView();
-      }
-      if (wkfTaskConfig.getGridView() != null) {
-        grid = wkfTaskConfig.getGridView();
-      }
+    if (taskMenu.getFormView() != null) {
+      form = taskMenu.getFormView();
+    }
+    if (taskMenu.getGridView() != null) {
+      grid = taskMenu.getGridView();
     }
 
     Map<String, String> viewMap = new HashMap<String, String>();
@@ -246,12 +240,16 @@ public class WkfMenuServiceImpl {
     return viewMap;
   }
 
-  protected String createQuery(WkfTaskConfig wkfTaskConfig, boolean userMenu, boolean isJson) {
+  protected String createQuery(
+      WkfTaskConfig wkfTaskConfig, WkfTaskMenu taskMenu, boolean userMenu, boolean isJson) {
 
     Property property = null;
     String query = "self.processInstanceId in (:processInstanceIds)";
     if (isJson) {
       query += " AND self.jsonModel = :jsonModel";
+    }
+    if (StringUtils.isNotBlank(taskMenu.getDomain())) {
+      query += " AND (" + taskMenu.getDomain() + ")";
     }
 
     if (userMenu) {
@@ -310,23 +308,28 @@ public class WkfMenuServiceImpl {
   @Transactional(rollbackOn = Exception.class)
   public void removeMenu(WkfTaskConfig wkfTaskConfig) {
 
-    String name = MENU_PREFIX + wkfTaskConfig.getId();
-
-    MetaMenu metaMenu = metaMenuRepository.findByName(name);
-    if (metaMenu != null) {
-      metaMenuRepository.remove(metaMenu);
+    List<WkfTaskMenu> taskMenuList = wkfTaskConfig.getWkfTaskMenuList();
+    if (CollectionUtils.isEmpty(taskMenuList)) {
+      return;
     }
 
-    removeAction(name);
+    for (WkfTaskMenu taskMenu : taskMenuList) {
+      String name = taskMenu.getMenuId();
+
+      MetaMenu metaMenu = metaMenuRepository.findByName(name);
+      if (metaMenu != null) {
+        metaMenuRepository.remove(metaMenu);
+      }
+
+      removeAction(name);
+    }
   }
 
   @Transactional(rollbackOn = Exception.class)
-  public void removeUserMenu(WkfTaskConfig wkfTaskConfig) {
-
-    String name = USER_MENU_PREFIX + wkfTaskConfig.getId();
+  public void removeMenu(WkfTaskMenu taskMenu) {
+    String name = taskMenu.getMenuId();
 
     MetaMenu metaMenu = metaMenuRepository.findByName(name);
-
     if (metaMenu != null) {
       metaMenuRepository.remove(metaMenu);
     }
