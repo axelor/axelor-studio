@@ -39,11 +39,11 @@ import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilterSqlService {
+public class FilterSqlServiceImpl {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected FilterCommonService filterCommonService;
+  protected FilterCommonServiceImpl filterCommonService;
 
   protected MetaFieldRepository metaFieldRepo;
 
@@ -52,8 +52,8 @@ public class FilterSqlService {
   protected MetaJsonFieldRepository metaJsonFieldRepo;
 
   @Inject
-  public FilterSqlService(
-      FilterCommonService filterCommonService,
+  public FilterSqlServiceImpl(
+      FilterCommonServiceImpl filterCommonService,
       MetaModelRepository metaModelRepo,
       MetaJsonFieldRepository metaJsonFieldRepo,
       MetaFieldRepository metaFieldRepo) {

@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author axelor
  */
-public class FilterJpqlService {
+public class FilterJpqlServiceImpl {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected FilterCommonService filterCommonService;
+  protected FilterCommonServiceImpl filterCommonService;
 
   @Inject
-  public FilterJpqlService(FilterCommonService filterCommonService) {
+  public FilterJpqlServiceImpl(FilterCommonServiceImpl filterCommonService) {
     this.filterCommonService = filterCommonService;
   }
 
