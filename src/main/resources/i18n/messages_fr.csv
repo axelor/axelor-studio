@@ -181,7 +181,7 @@
 "Expression","Expression",,
 "Extra","Extra",,
 "Field","Champ",,
-"Field name should be unique","Le nom d'un champ doit être unique",,
+"Field name should be unique. Check","Le nom des champs doit être unique, Vérifié",,
 "Field options","Options du champ",,
 "Field tracking","Traçabilité par champ",,
 "Field type","Type de champ ",,
