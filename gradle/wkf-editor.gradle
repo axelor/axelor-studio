@@ -44,10 +44,20 @@ task copyBpmWebapp(type: Copy) {
 rootProject.tasks.named("clean") {
     delete "${bpmBuildPath}"
     delete "${bpmRootPath}/apps/bpm/node_modules"
+    delete "${bpmRootPath}/apps/bpm/yarn.lock"
+    delete "${bpmRootPath}/apps/bpm/package-lock.json"
     delete "${bpmRootPath}/apps/generic-builder/node_modules"
+    delete "${bpmRootPath}/apps/generic-builder/yarn.lock"
+    delete "${bpmRootPath}/apps/generic-builder/package-lock.json"
     delete "${bpmRootPath}/apps/mapper/node_modules"
+    delete "${bpmRootPath}/apps/mapper/yarn.lock"
+    delete "${bpmRootPath}/apps/mapper/package-lock.json"
     delete "${bpmRootPath}/apps/timer-builder/node_modules"
+    delete "${bpmRootPath}/apps/timer-builder/yarn.lock"
+    delete "${bpmRootPath}/apps/timer-builder/package-lock.json"
     delete "${bpmRootPath}/node_modules"
+    delete "${bpmRootPath}/yarn.lock"
+    delete "${bpmRootPath}/package-lock.json"
 }
 
 rootProject.tasks.named("war") {

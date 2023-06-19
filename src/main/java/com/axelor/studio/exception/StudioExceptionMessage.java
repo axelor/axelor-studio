@@ -61,4 +61,7 @@ public final class StudioExceptionMessage {
       "Please select the App(s) to export" /*)*/;
 
   public static final String SUCCESS_STUDIO_APP_IMPORT = /*$$(*/ "Apps imported successfully" /*)*/;
+
+  public static final String STUDIO_APP_IN_REF = /*$$(*/
+      "This App is in referenced. Please unlink it before continue." /*)*/;
 }

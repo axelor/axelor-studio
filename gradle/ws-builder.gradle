@@ -44,6 +44,8 @@ task copyWebServicesBuilderWebapp(type: Copy) {
 rootProject.tasks.named("clean") {
     delete "${webServicesBuilderBuildPath}"
     delete "${webServicesBuilderRootPath}/node_modules"
+    delete "${webServicesBuilderRootPath}/yarn.lock"
+    delete "${webServicesBuilderRootPath}/package-lock.json"
 }
 
 rootProject.tasks.named("war") {

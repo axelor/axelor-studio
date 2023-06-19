@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.service;
 
+import com.axelor.auth.AuthUtils;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
@@ -36,11 +37,14 @@ import com.axelor.utils.StringTool;
 import com.axelor.utils.context.FullContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.script.Bindings;
 import javax.script.SimpleBindings;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.impl.variable.serializer.jpa.JPAVariableSerializer;
@@ -139,7 +143,11 @@ public class WkfCommonServiceImpl implements WkfCommonService {
       simpleBindings.putAll(varMap);
       helper = new GroovyScriptHelper(simpleBindings);
     }
-    helper.getBindings().put("$ctx", WkfContextHelper.class);
+    Bindings bindings = helper.getBindings();
+    bindings.put("$ctx", WkfContextHelper.class);
+    bindings.put("__user__", AuthUtils.getUser());
+    bindings.put("__date__", LocalDate.now());
+    bindings.put("__datetime__", LocalDateTime.now());
     Object result = null;
     try {
       result = helper.eval(expr);

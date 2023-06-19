@@ -116,16 +116,16 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     String helpText = null;
 
-    if (model.getProcessInstanceId() == null) {
+    if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
       checkSubProcess(model);
     }
 
-    if (model.getProcessInstanceId() == null) {
+    if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
       addRelatedProcessInstanceId(model);
       log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
     }
 
-    if (model.getProcessInstanceId() != null) {
+    if (!Strings.isNullOrEmpty(model.getProcessInstanceId())) {
 
       ProcessEngine engine = engineService.getEngine();
 
@@ -610,7 +610,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       Object parentModel = modelCtx.get(taskConfig.getCallLink());
       if (parentModel != null && parentModel instanceof FullContext) {
         Model parent = (Model) ((FullContext) parentModel).getTarget();
-        if (parent.getProcessInstanceId() != null) {
+        if (!Strings.isNullOrEmpty(parent.getProcessInstanceId())) {
           addChildProcessInstanceId(parent.getProcessInstanceId(), modelCtx, ctxMap);
           break;
         }

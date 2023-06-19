@@ -66,6 +66,8 @@ import com.axelor.studio.bpm.service.execution.WkfTaskServiceImpl;
 import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.execution.WkfUserActionServiceImpl;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
+import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
+import com.axelor.studio.bpm.service.message.BpmErrorMessageServiceImpl;
 import com.axelor.studio.db.repo.BpmWkfDmnModelRepository;
 import com.axelor.studio.db.repo.BpmWkfInstanceRepository;
 import com.axelor.studio.db.repo.BpmWkfModelRepository;
@@ -174,5 +176,7 @@ public class StudioModule extends AxelorModule {
     bind(BpmManagerDashboardTaskService.class).to(BpmManagerDashboardTaskServiceImpl.class);
     bind(AppLoaderImportServiceImpl.class).to(AppLoaderImportBpmServiceImpl.class);
     bind(ServerStartListener.class);
+
+    bind(BpmErrorMessageService.class).to(BpmErrorMessageServiceImpl.class);
   }
 }

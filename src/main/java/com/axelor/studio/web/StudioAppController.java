@@ -156,7 +156,7 @@ public class StudioAppController {
       Beans.get(StudioAppServiceImpl.class).deleteApp(studioApp);
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionTool.trace(response, I18n.get(StudioExceptionMessage.STUDIO_APP_IN_REF));
     }
   }
 }

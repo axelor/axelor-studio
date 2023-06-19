@@ -98,7 +98,8 @@ public interface ITranslation {
   public static final String REQUIRED = /*$$(*/ "required"; /*)*/
   public static final String EDITOR_ENTER_NAME_TITLE_ALERT = /*$$(*/
       "Please enter form name and title"; /*)*/
-  public static final String EDITOR_FIELD_NAME_ALERT = /*$$(*/ "Field name should be unique"; /*)*/
+  public static final String EDITOR_FIELD_NAME_ALERT = /*$$(*/
+      "Field name should be unique. Check"; /*)*/
   public static final String EDITOR_MODEL_NAME_ALERT = /*$$(*/ "Model name should be unique"; /*)*/
   public static final String EDITOR_SIDE_PANEL_ALERT = /*$$(*/
       "Main panel is required to have side panels"; /*)*/

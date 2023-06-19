@@ -82,8 +82,9 @@
 				 <strong x-translate>{{$fmt('name')}}</strong>
 			  </div>
 			  <div class="app-cards__buttons">
+			  	<a class="btn btn-small btn-info pull-right" href="" ng-show="false"></a>
 				<a class="btn btn-small btn-info pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-install-app" x-translate>Install</a>
-				<a class="btn btn-small btn-success pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-method-studio-app-export" x-translate>Export</a>
+				<a class="btn btn-small btn-success pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-view-studio-app-export" x-translate>Export</a>
 				<a class="btn btn-small btn-success pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-delete-app" x-translate>Delete</a>
 				<a class="btn btn-small btn-danger pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-method-studio-app-uninstall-app" x-translate>Uninstall</a>
 			  </div>

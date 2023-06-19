@@ -44,6 +44,8 @@ task copyBamlWebapp(type: Copy) {
 rootProject.tasks.named("clean") {
     delete "${bamlBuildPath}"
     delete "${bamlRootPath}/node_modules"
+    delete "${bamlRootPath}/yarn.lock"
+    delete "${bamlRootPath}/package-lock.json"
 }
 
 rootProject.tasks.named("war") {

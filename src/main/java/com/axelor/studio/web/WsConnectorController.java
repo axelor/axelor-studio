@@ -45,14 +45,17 @@ public class WsConnectorController {
       if (recordId == null || recordModel == null) {
         return;
       }
+      WsAuthenticator authenticator = null;
 
       Long connectorId = Long.parseLong(((Map) context.get("connector")).get("id").toString());
       WsConnector wsConnector = Beans.get(WsConnectorRepository.class).find(connectorId);
-
-      Long authenticatorId =
-          Long.parseLong(((Map) context.get("authenticator")).get("id").toString());
-      WsAuthenticator authenticator =
-          Beans.get(WsAuthenticatorRepository.class).find(authenticatorId);
+      if (context.get("authenticator") != null) {
+        Long authenticatorId =
+            Long.parseLong(((Map) context.get("authenticator")).get("id").toString());
+        authenticator = Beans.get(WsAuthenticatorRepository.class).find(authenticatorId);
+      } else {
+        authenticator = null;
+      }
 
       Map<String, Object> ctx = new HashMap<>();
       Class<? extends Model> recordClass =

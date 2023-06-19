@@ -22,7 +22,9 @@ import com.axelor.inject.Beans;
 import com.axelor.meta.db.repo.MetaJsonRecordRepository;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
+import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +33,7 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
+import org.camunda.bpm.engine.impl.pvm.runtime.PvmExecutionImpl;
 import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl;
 
 public class AxelorScriptEngine extends GroovyScriptEngineImpl {
@@ -55,7 +58,16 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
     bindings.put("__date__", LocalDate.now());
     bindings.put("__datetime__", LocalDateTime.now());
     bindings.put("$transform", WkfTransformationHelper.class);
-    return new GroovyScriptHelper(bindings).eval(script);
+    Object object = null;
+    try {
+      object = new GroovyScriptHelper(bindings).eval(script);
+    } catch (Exception e) {
+      ExceptionTool.trace(e);
+
+      PvmExecutionImpl execution = (PvmExecutionImpl) bindings.get("execution");
+      Beans.get(BpmErrorMessageService.class).sendBpmErrorMessage(execution, e.getMessage());
+    }
+    return object;
   }
 
   @Override
