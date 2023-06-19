@@ -174,17 +174,14 @@ public class StudioMenuService {
     if (!Strings.isNullOrEmpty(domain)) {
       studioAction.setDomainCondition(domain);
     }
-    List<StudioActionView> views = getActionViews(studioAction, isJson, objectName, objectClass);
-    if (views != null && views.size() > 0) {
-      studioAction.setStudioActionViews(views);
-    }
+    addActionViews(studioAction, isJson, objectName, objectClass);
 
     studioMenu.setStudioAction(studioAction);
 
     return Beans.get(StudioMenuRepo.class).save(studioMenu);
   }
 
-  private List<StudioActionView> getActionViews(
+  private void addActionViews(
       StudioAction studioAction, Boolean isJson, String objectName, String objectClass) {
 
     List<StudioActionView> views = studioAction.getStudioActionViews();
@@ -199,19 +196,16 @@ public class StudioMenuService {
       objectName = StringUtils.substringAfterLast(objectName, ".");
       viewName = Inflector.getInstance().dasherize(objectName);
     }
-    this.setStudioActionView("grid", viewName + "-grid", views);
-    this.setStudioActionView("form", viewName + "-form", views);
-
-    return views;
+    this.setStudioActionView("grid", viewName + "-grid", studioAction);
+    this.setStudioActionView("form", viewName + "-form", studioAction);
   }
 
-  private void setStudioActionView(
-      String viewType, String viewName, List<StudioActionView> studioActionViews) {
+  private void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
 
     StudioActionView studioActionView = new StudioActionView();
     studioActionView.setViewType(viewType);
     studioActionView.setViewName(viewName);
-    studioActionViews.add(studioActionView);
+    studioAction.addStudioActionView(studioActionView);
   }
 
   public String generateStudioMenuName(String name) {

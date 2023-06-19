@@ -17,7 +17,7 @@
       <bind node="menuBackground" to="menuBackground"/>
       <bind node="menuOrder" to="menuOrder"/>
       <bind node="menuTop" to="menuTop"/>
-      <bind node="studioMenus" to="studioMenus" search="self.xmlId = :xmlId">
+      <bind node="studioMenu" to="studioMenu" search="self.xmlId = :xmlId">
         <bind node="@name" to="name" alias="studioMenusName"/>
         <bind node="@title" to="title"/>
         <bind node="@xmlId" to="xmlId"/>
