@@ -1,0 +1,5 @@
+---
+title: Add List of headers suggestions to the header builder in version XML of Ws-Builder
+type: feature
+description: |
+  Add a list of headers to be chosen by the user , you can use the standard headers in HTTP/1.1 specification by the Internet Engineering Task Force (IETF)

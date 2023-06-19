@@ -13,8 +13,8 @@
       selection="studio.ws.request.payload.type"/>
     <one-to-many name="parameterWsKeyValueList" title="Parameters" ref="WsKeyValue"
       mappedBy="wsParameter"/>
-    <one-to-many name="headerWsKeyValueList" title="Headers" ref="WsKeyValue"
-      mappedBy="wsHeader"/>
+    <one-to-many name="headerWsKeyValueList" title="Headers"
+      ref="WsKeyValueSelectionHeader" mappedBy="wsHeader"/>
     <one-to-many name="payLoadWsKeyValueList" title="Payload" ref="WsKeyValue"
       mappedBy="wsRequest"/>
     <integer name="sequence" title="Sequence"/>
