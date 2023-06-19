@@ -45,7 +45,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -164,20 +163,38 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       }
 
       byte[] responseByte = wsResponse.readEntity(byte[].class);
-      if (wsResponse.getMediaType() != null
-          && wsResponse.getMediaType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+      ArrayList responseData = new ArrayList<Object>();
+      if (wsResponse.getMediaType() != null) {
+        MediaType mediaType = new MediaTypeFactory().get(wsResponse.getMediaType().getSubtype());
         try {
-          ctx.put(
-              "_" + count,
-              (new ObjectMapper())
-                  .readValue(responseByte, determineResponseType(new String(responseByte))));
-        } catch (Exception e) {
+          if (repeatIndex == 1) {
+            responseData.add(ctx.get("_" + count));
+            responseData.add(mediaType.parseResponse(responseByte));
+            ctx.put("_" + count, responseData);
+          } else if (repeatIndex != 0) {
+            responseData = (ArrayList) ctx.get("_" + count);
+            responseData.add(mediaType.parseResponse(responseByte));
+            ctx.put("_" + count, responseData);
+          } else {
+            ctx.put("_" + count, mediaType.parseResponse(responseByte));
+          }
+        } catch (IOException e) {
           ExceptionTool.trace(e);
           ctx.put("_" + count, responseByte);
         }
       } else {
-        ctx.put("_" + count, responseByte);
+        if (repeatIndex == 1) {
+          responseData.add(ctx.get("_" + count));
+          ctx.put("_" + count, responseData.add(responseByte));
+        } else if (repeatIndex != 0) {
+          responseData = (ArrayList) ctx.get("_" + count);
+          responseData.add(responseByte);
+          ctx.put("_" + count, responseData);
+        } else {
+          ctx.put("_" + count, responseByte);
+        }
       }
+
       log.debug("Request{}: {} ", count, ctx.get("_" + count));
 
       if (lastRepeatIf != null && (!lastRepeatIf.equals(repeatIf))) {
@@ -438,8 +455,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
     try {
       XmlMapper xmlMapper = new XmlMapper();
-      String xml =
-          xmlMapper.writer().withRootName(rootName).writeValueAsString(payload);
+      String xml = xmlMapper.writer().withRootName(rootName).writeValueAsString(payload);
       return Entity.xml(xml);
     } catch (JsonProcessingException e) {
       log.error(e.getMessage(), e);
@@ -517,15 +533,5 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     }
 
     return Entity.form(payLoads);
-  }
-
-  private Class<?> determineResponseType(String responseStr) {
-    if (responseStr.startsWith("[")) {
-      return List.class;
-    } else if (responseStr.startsWith(("{"))) {
-      return Map.class;
-    } else {
-      return Object.class;
-    }
   }
 }

@@ -21,6 +21,7 @@ import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.WsRequest;
 import com.axelor.text.Templates;
+import java.io.IOException;
 import java.util.Map;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -29,7 +30,8 @@ import javax.ws.rs.core.Response;
 public interface WsConnectorService {
 
   public Map<String, Object> callConnector(
-      WsConnector wsConnector, WsAuthenticator authenticator, Map<String, Object> ctx);
+      WsConnector wsConnector, WsAuthenticator authenticator, Map<String, Object> ctx)
+      throws IOException;
 
   Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator);
 
