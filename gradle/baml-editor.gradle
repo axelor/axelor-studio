@@ -45,7 +45,7 @@ rootProject.tasks.named("clean") {
     delete "${bamlBuildPath}"
     delete "${bamlRootPath}/node_modules"
     delete "${bamlRootPath}/yarn.lock"
-    delete "${bamlRootPath}/package_lock.json"
+    delete "${bamlRootPath}/package-lock.json"
 }
 
 rootProject.tasks.named("war") {

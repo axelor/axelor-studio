@@ -45,7 +45,7 @@ rootProject.tasks.named("clean") {
     delete "${studioBuildPath}"
     delete "${studioRootPath}/node_modules"
     delete "${studioRootPath}/yarn.lock"
-    delete "${studioRootPath}/package_lock.json"
+    delete "${studioRootPath}/package-lock.json"
 }
 
 rootProject.tasks.named("war") {

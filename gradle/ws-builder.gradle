@@ -45,7 +45,7 @@ rootProject.tasks.named("clean") {
     delete "${webServicesBuilderBuildPath}"
     delete "${webServicesBuilderRootPath}/node_modules"
     delete "${webServicesBuilderRootPath}/yarn.lock"
-    delete "${webServicesBuilderRootPath}/package_lock.json"
+    delete "${webServicesBuilderRootPath}/package-lock.json"
 }
 
 rootProject.tasks.named("war") {
