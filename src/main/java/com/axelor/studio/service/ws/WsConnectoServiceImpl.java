@@ -233,11 +233,11 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     url = UrlEscapers.urlFragmentEscaper().escape(url);
 
     MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-    for (WsKeyValue wsKeyValue : wsRequest.getHeaderWsKeyValueList()) {
+    for (WsKeyValueSelectionHeader wsKeyValue : wsRequest.getHeaderWsKeyValueList()) {
       if (wsKeyValue.getSubWsKeyValueList() != null
           && !wsKeyValue.getSubWsKeyValueList().isEmpty()) {
         Map<String, Object> subHeaders = new HashMap<>();
-        for (WsKeyValue key : wsKeyValue.getSubWsKeyValueList()) {
+        for (WsKeyValueSelectionHeader key : wsKeyValue.getSubWsKeyValueList()) {
           subHeaders.put(key.getWsKey(), templates.fromText(key.getWsValue()).make(ctx).render());
         }
         headers.add(wsKeyValue.getWsKey(), subHeaders);
