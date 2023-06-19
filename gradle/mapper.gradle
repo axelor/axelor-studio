@@ -44,6 +44,8 @@ task copyMapperWebapp(type: Copy) {
 rootProject.tasks.named("clean") {
     delete "${mapperBuildPath}"
     delete "${mapperRootPath}/node_modules"
+    delete "${mapperRootPath}/yarn.lock"
+    delete "${mapperRootPath}/package_lock.json"
 }
 
 rootProject.tasks.named("war") {
