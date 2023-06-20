@@ -1,9 +1,11 @@
 ext {
     bpmRootPath = "react-components/bpm-webapp"
     bpmBuildPath = "${bpmRootPath}/apps/bpm/build"
+    mapperRootPath = "react-components/bpm-webapp/apps/mapper"
+    mapperBuildPath = "${mapperRootPath}/build"
 }
 
-task yarnBpmInstall(type: YarnTask) {
+task bpmInstall(type: YarnTask) {
     group = 'com.axelor.addons'
     description = 'Install dependencies'
     workingDir = file("${bpmRootPath}")
@@ -11,7 +13,7 @@ task yarnBpmInstall(type: YarnTask) {
     args = ['install']
 }
 
-task yarnBpmBuild(type: YarnTask) {
+task bpmBuild(type: YarnTask) {
     group = 'com.axelor.addons'
     description = 'Build App'
     environment = [
@@ -19,58 +21,24 @@ task yarnBpmBuild(type: YarnTask) {
     ]
     workingDir = file("${bpmRootPath}")
 
-    dependsOn yarnBpmInstall
-    mustRunAfter yarnBpmInstall
+    dependsOn bpmInstall
+    mustRunAfter bpmInstall
 
-    outputs.upToDateWhen { false }
     outputs.dir('build')
 
     args = ["run", "build"]
 }
 
-task copyBpmWebapp(type: Copy) {
-    group = 'com.axelor.addons'
-    description = 'Copy into webapp'
-
-    dependsOn yarnBpmBuild
-    mustRunAfter yarnBpmBuild
-
-    destinationDir = file(rootProject.buildDir)
-    into("webapp/wkf-editor") {
-        from "${bpmBuildPath}"
-    }
-}
-
 rootProject.tasks.named("clean") {
     delete "${bpmBuildPath}"
     delete "${bpmRootPath}/apps/bpm/node_modules"
-    delete "${bpmRootPath}/apps/bpm/yarn.lock"
-    delete "${bpmRootPath}/apps/bpm/package-lock.json"
+    delete "${bpmRootPath}/apps/bpm/build"
     delete "${bpmRootPath}/apps/generic-builder/node_modules"
-    delete "${bpmRootPath}/apps/generic-builder/yarn.lock"
-    delete "${bpmRootPath}/apps/generic-builder/package-lock.json"
+    delete "${bpmRootPath}/apps/generic-builder/build"
     delete "${bpmRootPath}/apps/mapper/node_modules"
-    delete "${bpmRootPath}/apps/mapper/yarn.lock"
-    delete "${bpmRootPath}/apps/mapper/package-lock.json"
+    delete "${bpmRootPath}/apps/mapper/build"
     delete "${bpmRootPath}/apps/timer-builder/node_modules"
-    delete "${bpmRootPath}/apps/timer-builder/yarn.lock"
-    delete "${bpmRootPath}/apps/timer-builder/package-lock.json"
+    delete "${bpmRootPath}/apps/timer-builder/build"
     delete "${bpmRootPath}/node_modules"
-    delete "${bpmRootPath}/yarn.lock"
-    delete "${bpmRootPath}/package-lock.json"
-}
-
-rootProject.tasks.named("war") {
-    dependsOn copyBpmWebapp
-    mustRunAfter copyBpmWebapp
-}
-
-rootProject.tasks.named("compileJava") {
-    dependsOn copyBpmWebapp
-    mustRunAfter copyBpmWebapp
-}
-
-rootProject.tasks.named("processResources") {
-    dependsOn copyBpmWebapp
-    mustRunAfter copyBpmWebapp
+    delete "${bpmRootPath}/build"
 }

@@ -30,7 +30,7 @@ buildscript {
 	repositories repos
 	dependencies {
 		classpath "com.axelor:axelor-gradle:${aopVersion}"
-		classpath "com.github.node-gradle:gradle-node-plugin:5.0.0"
+		classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
 	}
 }
 
@@ -96,10 +96,41 @@ node {
 }
 
 apply from: './gradle/wkf-editor.gradle'
-apply from: './gradle/mapper.gradle'
 apply from: './gradle/studio-custom-model.gradle'
 apply from: './gradle/baml-editor.gradle'
 apply from: './gradle/ws-builder.gradle'
+
+processResources {
+	dependsOn bamlBuild
+	dependsOn studioBuild
+	dependsOn bpmBuild
+	dependsOn wsBuilderBuild
+
+	from(file("$projectDir/react-components/baml/build")) {
+		include "**"
+		into "webapp/baml-editor"
+	}
+
+	from(file("$projectDir/react-components/studio/build")) {
+		include "**"
+		into "webapp/studio/custom-model"
+	}
+
+	from(file("$projectDir/react-components/bpm-webapp/apps/bpm/build")) {
+		include "**"
+		into "webapp/wkf-editor"
+	}
+
+	from(file("$projectDir/react-components/bpm-webapp/apps/mapper/build")) {
+		include "**"
+		into "webapp/mapper"
+	}
+
+	from(file("$projectDir/react-components/webservices-builder/build")) {
+		include "**"
+		into "webapp/ws-builder"
+	}
+}
 
 //
 // Publish

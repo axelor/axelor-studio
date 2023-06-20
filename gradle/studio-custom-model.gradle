@@ -3,7 +3,7 @@ ext {
     studioBuildPath = "${studioRootPath}/build"
 }
 
-task yarnStudioInstall(type: YarnTask) {
+task studioInstall(type: NpmTask) {
     group = 'com.axelor.addons'
     description = 'Install dependencies'
     workingDir = file("${studioRootPath}")
@@ -11,7 +11,7 @@ task yarnStudioInstall(type: YarnTask) {
     args = ['install']
 }
 
-task yarnStudioBuild(type: YarnTask) {
+task studioBuild(type: NpmTask) {
     group = 'com.axelor.addons'
     description = 'Build App'
     environment = [
@@ -19,46 +19,16 @@ task yarnStudioBuild(type: YarnTask) {
     ]
     workingDir = file("${studioRootPath}")
 
-    dependsOn yarnStudioInstall
-    mustRunAfter yarnStudioInstall
+    dependsOn studioInstall
+    mustRunAfter studioInstall
 
-    outputs.upToDateWhen { false }
     outputs.dir('build')
 
     args = ["run", "build"]
 }
 
-task copyStudioWebapp(type: Copy) {
-    group = 'com.axelor.addons'
-    description = 'Copy into webapp'
-
-    dependsOn yarnStudioBuild
-    mustRunAfter yarnStudioBuild
-
-    destinationDir = file(rootProject.buildDir)
-    into("webapp/studio/custom-model") {
-        from "${studioBuildPath}"
-    }
-}
-
 rootProject.tasks.named("clean") {
     delete "${studioBuildPath}"
     delete "${studioRootPath}/node_modules"
-    delete "${studioRootPath}/yarn.lock"
-    delete "${studioRootPath}/package-lock.json"
-}
-
-rootProject.tasks.named("war") {
-    dependsOn copyStudioWebapp
-    mustRunAfter copyStudioWebapp
-}
-
-rootProject.tasks.named("compileJava") {
-    dependsOn copyStudioWebapp
-    mustRunAfter copyStudioWebapp
-}
-
-rootProject.tasks.named("processResources") {
-    dependsOn copyStudioWebapp
-    mustRunAfter copyStudioWebapp
+    delete "${studioRootPath}/build"
 }
