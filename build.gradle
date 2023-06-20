@@ -26,7 +26,7 @@ buildscript {
 			}
 		}
 	}
-	ext.aopVersion = '6.1.0'
+	ext.aopVersion = '6.1.3'
 	repositories repos
 	dependencies {
 		classpath "com.axelor:axelor-gradle:${aopVersion}"
