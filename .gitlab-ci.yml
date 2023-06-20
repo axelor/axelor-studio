@@ -24,11 +24,13 @@ build:
   script:
     - ./gradlew -xtest clean build --refresh-dependencies
   interruptible: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
 
 .publish_template: &publish_configuration
   stage: publish
   script:
-    - ./gradlew clean build publish --refresh-dependencies -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew -xtest clean build publish --refresh-dependencies -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration
