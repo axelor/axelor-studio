@@ -1,26 +1,24 @@
 ext {
-    webServicesBuilderRootPath = "react-components/webservices-builder"
-    webServicesBuilderBuildPath = "${webServicesBuilderRootPath}/build"
+    wsBuilderRootPath = "react-components/webservices-builder"
+    wsBuilderBuildPath = "${wsBuilderRootPath}/build"
 }
 
-task npmWebServicesBuilderInstall(type: NpmTask) {
-    group = 'com.axelor.addons'
+tasks.register('wsBuilderInstall', NpmTask) {
     description = 'Install dependencies'
-    workingDir = file("${webServicesBuilderRootPath}")
+    workingDir = file("${wsBuilderRootPath}")
 
-    args = ['install', '-f']
+    args = ['install']
 }
 
-task npmWebServicesBuilderBuild(type: NpmTask) {
-    group = 'com.axelor.addons'
+tasks.register('wsBuilderBuild', NpmTask) {
     description = 'Build App'
     environment = [
             CI: 'false'
     ]
-    workingDir = file("${webServicesBuilderRootPath}")
+    workingDir = file("${wsBuilderRootPath}")
 
-    dependsOn npmWebServicesBuilderInstall
-    mustRunAfter npmWebServicesBuilderInstall
+    dependsOn wsBuilderInstall
+    mustRunAfter wsBuilderInstall
 
     outputs.upToDateWhen { false }
     outputs.dir('build')
@@ -28,37 +26,7 @@ task npmWebServicesBuilderBuild(type: NpmTask) {
     args = ["run", "build"]
 }
 
-task copyWebServicesBuilderWebapp(type: Copy) {
-    group = 'com.axelor.addons'
-    description = 'Copy into webapp'
-
-    dependsOn npmWebServicesBuilderBuild
-    mustRunAfter npmWebServicesBuilderBuild
-
-    destinationDir = file(rootProject.buildDir)
-    into("webapp/ws-builder") {
-        from "${webServicesBuilderBuildPath}"
-    }
-}
-
-rootProject.tasks.named("clean") {
-    delete "${webServicesBuilderBuildPath}"
-    delete "${webServicesBuilderRootPath}/node_modules"
-    delete "${webServicesBuilderRootPath}/yarn.lock"
-    delete "${webServicesBuilderRootPath}/package-lock.json"
-}
-
-rootProject.tasks.named("war") {
-    dependsOn copyWebServicesBuilderWebapp
-    mustRunAfter copyWebServicesBuilderWebapp
-}
-
-rootProject.tasks.named("compileJava") {
-    dependsOn copyWebServicesBuilderWebapp
-    mustRunAfter copyWebServicesBuilderWebapp
-}
-
-rootProject.tasks.named("processResources") {
-    dependsOn copyWebServicesBuilderWebapp
-    mustRunAfter copyWebServicesBuilderWebapp
+clean {
+    delete "${wsBuilderBuildPath}"
+    delete "${wsBuilderRootPath}/node_modules"
 }

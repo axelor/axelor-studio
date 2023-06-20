@@ -3,24 +3,22 @@ ext {
     mapperBuildPath = "${mapperRootPath}/build"
 }
 
-task yarnMapperInstall(type: YarnTask) {
-    group = 'com.axelor.addons'
+tasks.register('mapperInstall', YarnTask) {
     description = 'Install dependencies'
     workingDir = file("${mapperRootPath}")
 
     args = ['install']
 }
 
-task yarnMapperBuild(type: YarnTask) {
-    group = 'com.axelor.addons'
+tasks.register('mapperBuild', YarnTask) {
     description = 'Build App'
     environment = [
             CI: 'false'
     ]
     workingDir = file("${mapperRootPath}")
 
-    dependsOn yarnMapperInstall
-    mustRunAfter yarnMapperInstall
+    dependsOn mapperInstall
+    mustRunAfter mapperInstall
 
     outputs.upToDateWhen { false }
     outputs.dir('build')
@@ -28,37 +26,7 @@ task yarnMapperBuild(type: YarnTask) {
     args = ["run", "build"]
 }
 
-task copyMapperWebapp(type: Copy) {
-    group = 'com.axelor.addons'
-    description = 'Copy into webapp'
-
-    dependsOn yarnMapperBuild
-    mustRunAfter yarnMapperBuild
-
-    destinationDir = file(rootProject.buildDir)
-    into("webapp/mapper") {
-        from "${mapperBuildPath}"
-    }
-}
-
-rootProject.tasks.named("clean") {
+clean {
     delete "${mapperBuildPath}"
     delete "${mapperRootPath}/node_modules"
-    delete "${mapperRootPath}/yarn.lock"
-    delete "${mapperRootPath}/package-lock.json"
-}
-
-rootProject.tasks.named("war") {
-    dependsOn copyMapperWebapp
-    mustRunAfter copyMapperWebapp
-}
-
-rootProject.tasks.named("compileJava") {
-    dependsOn copyMapperWebapp
-    mustRunAfter copyMapperWebapp
-}
-
-rootProject.tasks.named("processResources") {
-    dependsOn copyMapperWebapp
-    mustRunAfter copyMapperWebapp
 }

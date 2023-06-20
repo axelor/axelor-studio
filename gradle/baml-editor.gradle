@@ -3,24 +3,22 @@ ext {
     bamlBuildPath = "${bamlRootPath}/build"
 }
 
-task yarnBamlInstall(type: YarnTask) {
-    group = 'com.axelor.addons'
+tasks.register('bamlInstall', NpmTask) {
     description = 'Install dependencies'
     workingDir = file("${bamlRootPath}")
 
-    args = ['install']
+    args = ['install', '-f']
 }
 
-task yarnBamlBuild(type: YarnTask) {
-    group = 'com.axelor.addons'
+tasks.register('bamlBuild', NpmTask) {
     description = 'Build App'
     environment = [
             CI: 'false'
     ]
     workingDir = file("${bamlRootPath}")
 
-    dependsOn yarnBamlInstall
-    mustRunAfter yarnBamlInstall
+    dependsOn bamlInstall
+    mustRunAfter bamlInstall
 
     outputs.upToDateWhen { false }
     outputs.dir('build')
@@ -28,37 +26,7 @@ task yarnBamlBuild(type: YarnTask) {
     args = ["run", "build"]
 }
 
-task copyBamlWebapp(type: Copy) {
-    group = 'com.axelor.addons'
-    description = 'Copy into webapp'
-
-    dependsOn yarnBamlBuild
-    mustRunAfter yarnBamlBuild
-
-    destinationDir = file(rootProject.buildDir)
-    into("webapp/baml-editor") {
-        from "${bamlBuildPath}"
-    }
-}
-
-rootProject.tasks.named("clean") {
+clean {
     delete "${bamlBuildPath}"
     delete "${bamlRootPath}/node_modules"
-    delete "${bamlRootPath}/yarn.lock"
-    delete "${bamlRootPath}/package-lock.json"
-}
-
-rootProject.tasks.named("war") {
-    dependsOn copyBamlWebapp
-    mustRunAfter copyBamlWebapp
-}
-
-rootProject.tasks.named("compileJava") {
-    dependsOn copyBamlWebapp
-    mustRunAfter copyBamlWebapp
-}
-
-rootProject.tasks.named("processResources") {
-    dependsOn copyBamlWebapp
-    mustRunAfter copyBamlWebapp
 }
