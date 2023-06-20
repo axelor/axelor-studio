@@ -1,34 +1,32 @@
 ext {
-    webServicesBuilderRootPath = "react-components/webservices-builder"
-    webServicesBuilderBuildPath = "${webServicesBuilderRootPath}/build"
+    wsBuilderRootPath = "react-components/webservices-builder"
+    wsBuilderBuildPath = "${wsBuilderRootPath}/build"
 }
 
-task wsBuilderInstall(type: NpmTask) {
-    group = 'com.axelor.addons'
+tasks.register('wsBuilderInstall', NpmTask) {
     description = 'Install dependencies'
-    workingDir = file("${webServicesBuilderRootPath}")
+    workingDir = file("${wsBuilderRootPath}")
 
     args = ['install']
 }
 
-task wsBuilderBuild(type: NpmTask) {
-    group = 'com.axelor.addons'
+tasks.register('wsBuilderBuild', NpmTask) {
     description = 'Build App'
     environment = [
             CI: 'false'
     ]
-    workingDir = file("${webServicesBuilderRootPath}")
+    workingDir = file("${wsBuilderRootPath}")
 
     dependsOn wsBuilderInstall
     mustRunAfter wsBuilderInstall
 
+    outputs.upToDateWhen { false }
     outputs.dir('build')
 
-    args = ["run", "build", "-f"]
+    args = ["run", "build"]
 }
 
-rootProject.tasks.named("clean") {
-    delete "${webServicesBuilderBuildPath}"
-    delete "${webServicesBuilderRootPath}/node_modules"
-    delete "${webServicesBuilderRootPath}/build"
+clean {
+    delete "${wsBuilderBuildPath}"
+    delete "${wsBuilderRootPath}/node_modules"
 }
