@@ -95,18 +95,12 @@ node {
 	download = true
 }
 
-apply from: './gradle/wkf-editor.gradle'
-apply from: './gradle/mapper.gradle'
-apply from: './gradle/studio-custom-model.gradle'
-apply from: './gradle/baml-editor.gradle'
-apply from: './gradle/ws-builder.gradle'
-
 processResources {
-	dependsOn bamlBuild
-	dependsOn studioBuild
-	dependsOn bpmBuild
-	dependsOn mapperBuild
-	dependsOn wsBuilderBuild
+	dependsOn ":react-components:baml:bamlBuild"
+	dependsOn ":react-components:studio:studioBuild"
+	dependsOn ":react-components:bpm-webapp:bpmBuild"
+	dependsOn ":react-components:bpm-webapp:mapperBuild"
+	dependsOn ":react-components:webservices-builder:wsBuilderBuild"
 
 	from(file("$projectDir/react-components/baml/build")) {
 		include "**"
