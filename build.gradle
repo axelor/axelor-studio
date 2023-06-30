@@ -95,37 +95,47 @@ node {
 	download = true
 }
 
-processResources {
-	dependsOn ":react-components:baml:bamlBuild"
-	dependsOn ":react-components:studio:studioBuild"
-	dependsOn ":react-components:bpm-webapp:bpmBuild"
-	dependsOn ":react-components:bpm-webapp:mapperBuild"
-	dependsOn ":react-components:webservices-builder:wsBuilderBuild"
+try {
+	tasks.named(":react-components:baml:bamlBuild")
+	tasks.named(":react-components:studio:studioBuild")
+	tasks.named(":react-components:bpm-webapp:bpmBuild")
+	tasks.named(":react-components:bpm-webapp:mapperBuild")
+	tasks.named(":react-components:webservices-builder:wsBuilderBuild")
 
-	from(file("$projectDir/react-components/baml/build")) {
-		include "**"
-		into "webapp/baml-editor"
-	}
+	processResources {
+		dependsOn ":react-components:baml:bamlBuild"
+		dependsOn ":react-components:studio:studioBuild"
+		dependsOn ":react-components:bpm-webapp:bpmBuild"
+		dependsOn ":react-components:bpm-webapp:mapperBuild"
+		dependsOn ":react-components:webservices-builder:wsBuilderBuild"
 
-	from(file("$projectDir/react-components/studio/build")) {
-		include "**"
-		into "webapp/studio/custom-model"
-	}
+		from(file("$projectDir/react-components/baml/build")) {
+			include "**"
+			into "webapp/baml-editor"
+		}
 
-	from(file("$projectDir/react-components/bpm-webapp/apps/bpm/build")) {
-		include "**"
-		into "webapp/wkf-editor"
-	}
+		from(file("$projectDir/react-components/studio/build")) {
+			include "**"
+			into "webapp/studio/custom-model"
+		}
 
-	from(file("$projectDir/react-components/bpm-webapp/apps/mapper/build")) {
-		include "**"
-		into "webapp/mapper"
-	}
+		from(file("$projectDir/react-components/bpm-webapp/apps/bpm/build")) {
+			include "**"
+			into "webapp/wkf-editor"
+		}
 
-	from(file("$projectDir/react-components/webservices-builder/build")) {
-		include "**"
-		into "webapp/ws-builder"
+		from(file("$projectDir/react-components/bpm-webapp/apps/mapper/build")) {
+			include "**"
+			into "webapp/mapper"
+		}
+
+		from(file("$projectDir/react-components/webservices-builder/build")) {
+			include "**"
+			into "webapp/ws-builder"
+		}
 	}
+} catch (ignored) {
+	// ignore
 }
 
 //
