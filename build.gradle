@@ -96,11 +96,11 @@ node {
 }
 
 try {
-	tasks.named(":react-components:baml:bamlBuild")
-	tasks.named(":react-components:studio:studioBuild")
-	tasks.named(":react-components:bpm-webapp:bpmBuild")
-	tasks.named(":react-components:bpm-webapp:mapperBuild")
-	tasks.named(":react-components:webservices-builder:wsBuilderBuild")
+	tasks.getByPath(":react-components:baml:bamlBuild")
+	tasks.getByPath(":react-components:studio:studioBuild")
+	tasks.getByPath(":react-components:bpm-webapp:bpmBuild")
+	tasks.getByPath(":react-components:bpm-webapp:mapperBuild")
+	tasks.getByPath(":react-components:webservices-builder:wsBuilderBuild")
 
 	processResources {
 		dependsOn ":react-components:baml:bamlBuild"
