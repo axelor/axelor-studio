@@ -57,11 +57,17 @@ test {
 }
 
 dependencies {
-	if (file("../axelor-message").exists()) {
+	if (findProject(":modules:axelor-message") != null) {
 		api project(":modules:axelor-message")
 	}
 	else {
-		api "com.axelor.addons:axelor-message:1.0.1"
+		api "com.axelor.addons:axelor-message:1.1.0"
+	}
+	if (findProject(":modules:axelor-utils") != null) {
+		api project(":modules:axelor-utils")
+	}
+	else {
+		api "com.axelor.addons:axelor-utils:1.2.0"
 	}
 
 	api "org.camunda.bpm:camunda-engine:7.17.0"
