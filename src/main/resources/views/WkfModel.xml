@@ -49,14 +49,17 @@
       </panel>
       <panel name="permissionPanel" title="Permissions">
         <panel name="adminPanel" title="Admins" groups="admins" colSpan="12" itemSpan="6">
+          <field name="sendAdminsNotification" colSpan="12"/>
           <field name="adminUserSet"/>
           <field name="adminRoleSet"/>
         </panel>
         <panel name="managerPanel" title="Managers" colSpan="12" itemSpan="6">
+          <field name="sendManagerNotification" colSpan="12"/>
           <field name="managerUserSet"/>
           <field name="managerRoleSet"/>
         </panel>
         <panel name="userPanel" title="Users" colSpan="12" itemSpan="6">
+          <field name="sendUserNotification" colSpan="12"/>
           <field name="userSet"/>
           <field name="roleSet"/>
         </panel>
