@@ -1,3 +1,55 @@
+## 1.2.0 (2023-07-03)
+
+#### Changes
+
+* BPM: Change title of the field 'App builder' to 'App' on bpm editor
+
+#### Features
+
+* Bump AOP version to 6.1.3
+* Studio: Field size
+* Add List of headers suggestions to the header builder in version XML of Ws-Builder
+
+  <details>
+  
+  Add a list of headers to be chosen by the user , you can use the standard headers in HTTP/1.1 specification by the Internet Engineering Task Force (IETF)
+  
+  </details>
+
+* BPM: Add support for date, datetime and user variable on completedIf condition
+* BPM : Manage BPM exceptions / errors with AOP MailMessage
+* Studio: Tab panel
+* Handle response types at parsing to Json , and add some improvement in WS BUILDER
+
+  <details>
+  
+  * when getting the response of execution of a request , we parse this response to Json Object .
+  there are many types of response that can be at the response , until now we manage only responses that are compatible with APPLICATION_JSON_TYPE and APPLICATION_XML_TYPE , we have to manage all existing types
+  additional points :
+  * manage m2o and m2m in the payload builder
+  * manage Repeated Requests by storing the result of each repeated occurrence
+  * tool bar is  responsive for ws-Builder now
+  * Add possibility to open the request and the authentication in a new tabs in ws builder
+  * Add the features in WsAuthentication ( version Xml ) to the web service React App
+  
+  </details>
+
+* Update xsd to 6.1
+* Studio: Toolbar selections
+
+#### Fixed
+
+* Studio: Fix unable to export app from button on the card view
+* Studio: Unnecessary spacer creation
+* BPM: Fix BPM process infinite loop
+* Studio: Separator widget
+* DMN: Fix rule input cells
+* Studio: Fix multiple issues while import the app
+* DMN: Fix reload issue
+* Studio: Property updates
+* Studio: Fix App export issue in widget attrs
+* BPM: Manage null and empty values for process instance id
+
 ## 1.1.0 (2023-06-02)
 
 #### Features

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <domain-models xmlns="http://axelor.com/xml/ns/domain-models"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_6.0.xsd">
+  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_6.1.xsd">
 
   <module name="studio" package="com.axelor.studio.db"/>
 
@@ -28,12 +28,16 @@
     <string name="wkfStatusColor" title="Wkf status color" selection="color.name.selection"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
 
+    <boolean name="sendAdminsNotification" title="Send admins notification" default="false"/>
     <many-to-many name="adminUserSet" title="Users" ref="com.axelor.auth.db.User"/>
     <many-to-many name="adminRoleSet" title="Roles" ref="com.axelor.auth.db.Role"/>
 
+    <boolean name="sendManagerNotification" title="Send managers notification"
+      default="false"/>
     <many-to-many name="managerUserSet" title="Users" ref="com.axelor.auth.db.User"/>
     <many-to-many name="managerRoleSet" title="Roles" ref="com.axelor.auth.db.Role"/>
 
+    <boolean name="sendUserNotification" title="Send users notification" default="false"/>
     <many-to-many name="userSet" title="Users" ref="com.axelor.auth.db.User"/>
     <many-to-many name="roleSet" title="Roles" ref="com.axelor.auth.db.Role"/>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <object-views xmlns="http://axelor.com/xml/ns/object-views"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.1.xsd">
 
   <grid name="wkf-model-grid" title="BPM Model" model="com.axelor.studio.db.WkfModel"
     orderBy="code" edit-icon="false">
@@ -49,14 +49,17 @@
       </panel>
       <panel name="permissionPanel" title="Permissions">
         <panel name="adminPanel" title="Admins" groups="admins" colSpan="12" itemSpan="6">
+          <field name="sendAdminsNotification" colSpan="12"/>
           <field name="adminUserSet"/>
           <field name="adminRoleSet"/>
         </panel>
         <panel name="managerPanel" title="Managers" colSpan="12" itemSpan="6">
+          <field name="sendManagerNotification" colSpan="12"/>
           <field name="managerUserSet"/>
           <field name="managerRoleSet"/>
         </panel>
         <panel name="userPanel" title="Users" colSpan="12" itemSpan="6">
+          <field name="sendUserNotification" colSpan="12"/>
           <field name="userSet"/>
           <field name="roleSet"/>
         </panel>
