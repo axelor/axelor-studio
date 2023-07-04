@@ -1,1 +1,10 @@
 rootProject.name = "axelor-studio"
+
+include ":react-components:baml"
+include ":react-components:bpm-webapp"
+include ":react-components:webservices-builder"
+include ":react-components:studio"
+
+if (JavaVersion.current() != JavaVersion.VERSION_11) {
+    throw new GradleException("This build requires JDK-11.")
+}
