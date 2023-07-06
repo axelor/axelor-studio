@@ -1,0 +1,15 @@
+{
+    "name": "bpm-webapp",
+    "private": true,
+    "engines": {
+        "node": ">=14",
+        "yarn": ">=1.22"
+    },
+    "workspaces": [
+        "apps/*"
+    ],
+    "scripts": {
+        "start": "yarn workspace bpmnjs run start",
+        "build": "yarn workspace bpmnjs run build"
+    }
+}

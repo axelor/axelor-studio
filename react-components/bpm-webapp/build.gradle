@@ -1,0 +1,82 @@
+description = 'Axelor\'s BPM webapp'
+
+buildscript {
+    repositories repos
+    dependencies {
+        classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
+    }
+}
+
+apply plugin: 'base'
+apply plugin: 'com.github.node-gradle.node'
+
+node {
+    version = '16.17.0'
+    yarnVersion = '1.22.19'
+    download = true
+}
+
+tasks.register('bpmBuild', YarnTask) {
+    group = 'axelor'
+    description = 'Build BPM webapp'
+    environment = [
+        CI: 'false'
+    ]
+
+    outputs.dir('apps/bpm/build')
+    inputs.files('package.json', 'yarn.lock',
+            'apps/bpm/package.json', 'apps/bpm/yarn.lock',
+            'apps/generic-builder/package.json', 'apps/generic-builder/yarn.lock',
+            'apps/mapper/package.json', 'apps/mapper/yarn.lock',
+            'apps/timer-builder/package.json')
+    inputs.dir('apps/bpm/src')
+    inputs.dir('apps/bpm/public')
+    inputs.dir('apps/generic-builder/src')
+    inputs.dir('apps/generic-builder/public')
+    inputs.dir('apps/mapper/src')
+    inputs.dir('apps/mapper/public')
+    inputs.dir('apps/timer-builder/src')
+    inputs.dir('apps/timer-builder/public')
+
+    dependsOn 'bpmInstall'
+    args = ["run", "build"]
+}
+
+tasks.register('bpmInstall', YarnTask) {
+    group = 'axelor'
+    description = 'Install BPM webapp dependencies'
+
+    args = ['install']
+}
+
+tasks.register('mapperBuild', YarnTask) {
+    group = 'axelor'
+    description = 'Build BPM webapp'
+    environment = [
+        CI: 'false'
+    ]
+    
+    workingDir = file("apps/mapper")
+
+    outputs.dir('apps/mapper/build')
+    inputs.files('apps/mapper/package.json', 'apps/mapper/yarn.lock')
+    inputs.dir('apps/mapper/src')
+    inputs.dir('apps/mapper/public')
+
+    dependsOn 'mapperInstall'
+    args = ["run", "build"]
+}
+
+tasks.register('mapperInstall', YarnTask) {
+    group = 'axelor'
+    description = 'Install BPM webapp dependencies'
+    workingDir = file("apps/mapper")
+
+    args = ['install']
+}
+
+clean {
+    delete "build", "node_modules",
+            "apps/bpm/build", "apps/bpm/node_modules",
+            "apps/mapper/build", "apps/mapper/node_modules"
+}
