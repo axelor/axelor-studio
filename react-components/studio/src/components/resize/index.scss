@@ -1,0 +1,36 @@
+@use "sass:math";
+$columns: 12;
+$spacer-width: 14;
+$spacer-width-in-px: $spacer-width * 1px;
+
+$gridWidth: percentage(math.div(100,12));
+
+
+@for $i from 1 through $columns {
+	@if $i== 12 {
+		.column.col-#{$i} {
+			width: calc(($gridWidth/100 * $i) - (2 * $spacer-width-in-px));
+		}
+	} @else {
+		.fill-row > div ~ div {
+			~ {
+				.column.col-#{$i} {
+					width: calc(($gridWidth/100 * $i) - (1 * $spacer-width-in-px));
+				}
+			}
+		}
+		.column.col-#{$i} {
+			width: calc(($gridWidth/100 * $i) - (2 * $spacer-width-in-px));
+		}
+		.empty-row > div ~ div {
+			~ {
+				.column.col-#{$i} {
+					width: calc(($gridWidth/100 * $i) - (1 * $spacer-width-in-px));
+				}
+			}
+			.column.col-#{$i} {
+				width: calc(($gridWidth/100 * $i) - (2 * $spacer-width-in-px));
+			}
+		}
+	}
+}

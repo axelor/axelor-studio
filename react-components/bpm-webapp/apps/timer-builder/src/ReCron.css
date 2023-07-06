@@ -1,0 +1,44 @@
+.vertical-cron .c-host {
+  display: flex;
+  flex-direction: row;
+  font-family: Roboto;
+}
+
+.vertical-cron .c-host .c-tabs {
+  flex-direction: column;
+  border: 0;
+  border-right: 1px solid #ccc;
+}
+
+.vertical-cron .c-host .c-tabs .c-tab {
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+}
+
+.vertical-cron .c-host .c-tab-content {
+  padding-top: 0.5rem;
+  padding-left: 1rem;
+}
+.vertical-cron .c-host .c-tab-content .c-and-item,
+.vertical-cron .c-host .c-tab-content .c-and-weekday-item,
+.vertical-cron .c-host .c-tab-content .c-and-monthday-item {
+  min-width: max-content;
+}
+
+.vertical-cron .c-host .c-tab-content .c-and-item-label,
+.vertical-cron .c-host .c-tab-content .c-and-monthday-item-label {
+  min-width: 2ch;
+}
+
+.vertical-cron .c-host .c-tab-content .c-and-weekday-item-label {
+  min-width: 9ch;
+}
+
+.vertical-cron
+  .c-host
+  .c-tab-content[tab-name="MONTH"]
+  .c-and-item
+  .c-and-item-label {
+  min-width: 9ch;
+}
