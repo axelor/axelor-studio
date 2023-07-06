@@ -1,0 +1,23 @@
+.bpmn-icon-start-event-timer {
+  display: none;
+}
+
+.bpmn-icon-intermediate-event-catch-timer {
+  display: none;
+}
+
+.bpmn-icon-intermediate-event-catch-non-interrupting-timer {
+  display: none;
+}
+
+.bpmn-icon-start-event-non-interrupting-timer {
+  display: none;
+}
+
+.group > .bpmn-icon-start-event-non-interrupting-timer {
+  display: none;
+}
+
+.group > .bpmn-icon-intermediate-event-catch-timer {
+  display: none;
+}

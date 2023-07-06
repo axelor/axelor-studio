@@ -1,0 +1,44 @@
+description = 'Axelor\'s Studio'
+
+buildscript {
+    repositories repos
+    dependencies {
+        classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
+    }
+}
+
+apply plugin: 'base'
+apply plugin: 'com.github.node-gradle.node'
+
+node {
+    version = '16.17.0'
+    npmVersion = '8.15.0'
+    download = true
+}
+
+tasks.register('studioBuild', NpmTask) {
+    group = 'axelor'
+    description = 'Build Studio'
+    environment = [
+        CI: 'false'
+    ]
+
+    outputs.dir('build')
+    inputs.files('package.json', 'package-lock.json')
+    inputs.dir('src')
+    inputs.dir('public')
+
+    dependsOn 'studioInstall'
+    args = ["run", "build"]
+}
+
+tasks.register('studioInstall', NpmTask) {
+    group = 'axelor'
+    description = 'Install Studio dependencies'
+
+    args = ['install']
+}
+
+clean {
+    delete "build", "node_modules"
+}
