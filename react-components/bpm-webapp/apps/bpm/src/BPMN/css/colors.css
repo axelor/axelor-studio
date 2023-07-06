@@ -1,0 +1,96 @@
+.djs-palette .bpmn-icon-task {
+  color: #5eaeda !important;
+}
+
+.djs-palette .bpmn-icon-start-event-none {
+  color: #55c041 !important;
+}
+
+.djs-palette .bpmn-icon-intermediate-event-none {
+  color: #ff9800 !important;
+}
+
+.djs-palette .bpmn-icon-data-store {
+  color: #e53935 !important;
+}
+
+.djs-palette .bpmn-icon-data-object {
+  color: #a80ca8 !important;
+}
+
+.djs-palette .bpmn-icon-participant {
+  color: rgb(128, 149, 179) !important;
+}
+
+.djs-palette .bpmn-icon-group {
+  color: rgb(128, 149, 179) !important;
+}
+
+.djs-palette .bpmn-icon-subprocess-expanded {
+  color: #6097fc !important;
+}
+
+.djs-palette .bpmn-icon-end-event-none {
+  color: #ff7043 !important;
+}
+
+.djs-palette .bpmn-icon-gateway-none {
+  color: #f9c000 !important;
+}
+
+.djs-context-pad .bpmn-icon-task {
+  color: #3f97f6 !important;
+}
+
+.djs-context-pad .bpmn-icon-start-event-none {
+  color: #55c041 !important;
+}
+
+.djs-context-pad .bpmn-icon-intermediate-event-none {
+  color: #ff9800 !important;
+}
+
+.djs-context-pad .bpmn-icon-end-event-none {
+  color: #ff7043 !important;
+}
+
+.djs-context-pad .bpmn-icon-gateway-none {
+  color: #f9c000 !important;
+}
+
+.djs-context-pad .bpmn-icon-trash {
+  color: red !important;
+}
+
+.djs-context-pad .bpmn-icon-receive-task {
+  color: #f8b200 !important;
+}
+
+.djs-context-pad .bpmn-icon-intermediate-event-catch-message {
+  color: #ff9800 !important;
+}
+
+.djs-context-pad .bpmn-icon-intermediate-event-catch-timer {
+  color: #ff9800 !important;
+}
+
+.djs-context-pad .bpmn-icon-intermediate-event-catch-condition {
+  color: #ff9800 !important;
+}
+
+.djs-context-pad .bpmn-icon-intermediate-event-catch-signal {
+  color: #ff9800 !important;
+}
+
+.djs-context-pad .bpmn-icon-text-annotation {
+  color: #a9b1bd !important;
+}
+
+.djs-label {
+  fill: black !important;
+}
+
+.djs-context-pad .entry {
+  background-color: transparent;
+  box-shadow: 0 0 2px 1px transparent;
+}
