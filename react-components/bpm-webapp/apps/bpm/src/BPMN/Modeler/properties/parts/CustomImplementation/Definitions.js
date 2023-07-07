@@ -29,10 +29,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Select from "../../../../../components/Select";
 import StaticSelect from "../../../../../components/StaticSelect";
 import {
+  Checkbox,
   TextField,
   Textbox,
 } from "../../../../../components/properties/components";
-import { translate } from "../../../../../utils";
+import { getBool, translate } from "../../../../../utils";
 import { getStudioApp, fetchWkf } from "../../../../../services/api";
 import Service from "../../../../../services/Service";
 import { WKF_COLORS, STATUS } from "../../../constants";
@@ -123,7 +124,7 @@ export default function Definition({
   reloadView,
   handleSnackbarClick,
   enableStudioApp = false,
-  fetchDiagram,
+  addNewVersion = () => {},
   showError,
   bpmnFactory,
 }) {
@@ -240,39 +241,6 @@ export default function Definition({
       if (url) {
         openWebApp(url, translate("BPM State"));
       }
-    }
-  };
-
-  const addNewVersion = async () => {
-    let actionRes = await Service.action({
-      model: "com.axelor.studio.db.WkfModel",
-      action: " action-wkf-model-method-create-new-version",
-      data: {
-        context: {
-          _model: "com.axelor.studio.db.WkfModel",
-          ...wkf,
-          _signal: "newVersionBtn",
-          _source: "newVersionBtn",
-          _viewName: "wkf-model-form",
-          _viewType: "form",
-          __check_version: true,
-          _views: [
-            { type: "grid", name: "wkf-model-grid" },
-            { type: "form", name: "wkf-model-form" },
-          ],
-        },
-      },
-    });
-    if (
-      actionRes &&
-      actionRes.data &&
-      actionRes.data[0] &&
-      actionRes.data[0].values &&
-      actionRes.data[0].values.newVersionId
-    ) {
-      const id = actionRes.data[0].values.newVersionId;
-      if (!id) return;
-      fetchDiagram(id);
     }
   };
 
@@ -427,6 +395,7 @@ export default function Definition({
       <TextField
         element={element}
         canRemove={true}
+        readOnly={true}
         entry={{
           id: "versionTag",
           label: translate("Version tag"),
@@ -439,7 +408,23 @@ export default function Definition({
           },
         }}
       />
-
+      <Checkbox
+        element={element}
+        entry={{
+          id: "newVersionOnDeploy",
+          label: translate("New version on deploy"),
+          modelProperty: "newVersionOnDeploy",
+          widget: "checkbox",
+          get: function () {
+            return {
+              newVersionOnDeploy: getBool(getProperty("newVersionOnDeploy")),
+            };
+          },
+          set: function (e, value) {
+            setProperty("newVersionOnDeploy", !value?.newVersionOnDeploy);
+          },
+        }}
+      />
       <label className={classes.label}>{translate("Wkf status color")}</label>
       <br />
       <StaticSelect

@@ -32,7 +32,7 @@ export default function DrawerContent({
   updateCommentsCount,
   handleSnackbarClick,
   enableStudioApp,
-  fetchDiagram,
+  addNewVersion,
   changeColor,
   bpmnModeler,
   showError,
@@ -88,7 +88,7 @@ export default function DrawerContent({
                   updateCommentsCount={updateCommentsCount}
                   handleSnackbarClick={handleSnackbarClick}
                   enableStudioApp={enableStudioApp}
-                  fetchDiagram={fetchDiagram}
+                  addNewVersion={addNewVersion}
                   changeColor={changeColor}
                   bpmnModeler={bpmnModeler}
                   showError={showError}
