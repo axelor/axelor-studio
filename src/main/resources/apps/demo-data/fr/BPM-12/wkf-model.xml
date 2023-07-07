@@ -15,7 +15,7 @@
   <bpmn2:process id="Process_Boundary_Event" name="Boundary Event" isExecutable="false">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="Expense" metaModelLabel="Expense (Expense)" isStartModel="true" model="com.axelor.apps.hr.db.Expense" metaModelFullName="com.axelor.apps.hr.db.Expense" title="Expense" />
+        <camunda:processConfigurationParameter metaModel="Expense" isStartModel="true" model="com.axelor.apps.hr.db.Expense" metaModelFullName="com.axelor.apps.hr.db.Expense" title="Expense" metaModelLabel="Expense (Expense)" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="StartEvent_1">
@@ -62,7 +62,7 @@
     <bpmn2:sequenceFlow id="Flow_1445fms" sourceRef="Activity_0fahoug" targetRef="Activity_1knkqzx" />
     <bpmn2:boundaryEvent id="Event_13lu7at" attachedToRef="Activity_1knkqzx">
       <bpmn2:outgoing>Flow_08oe0ud</bpmn2:outgoing>
-      <bpmn2:conditionalEventDefinition id="ConditionalEventDefinition_0lkxmx6" camunda:variableName="expense" camunda:scriptValue="[{&#34;metaModalName&#34;:&#34;Expense&#34;,&#34;metaModalType&#34;:&#34;metaModel&#34;,&#34;rules&#34;:[{&#34;id&#34;:0,&#34;parentId&#34;:-1,&#34;combinator&#34;:&#34;and&#34;,&#34;rules&#34;:[{&#34;fieldName&#34;:&#34;exTaxTotal&#34;,&#34;operator&#34;:&#34;&#60;&#34;,&#34;fieldValue&#34;:null,&#34;fieldValue2&#34;:null,&#34;isRelationalValue&#34;:null,&#34;relatedValueFieldName&#34;:null,&#34;relatedValueModal&#34;:null,&#34;fieldType&#34;:&#34;DECIMAL&#34;,&#34;field&#34;:{&#34;readonly&#34;:true,&#34;defaultValue&#34;:&#34;0&#34;,&#34;precision&#34;:20,&#34;name&#34;:&#34;exTaxTotal&#34;,&#34;scale&#34;:2,&#34;type&#34;:&#34;DECIMAL&#34;,&#34;title&#34;:&#34;Total W.T.&#34;},&#34;isShow&#34;:false,&#34;allField&#34;:[{&#34;readonly&#34;:true,&#34;defaultValue&#34;:&#34;0&#34;,&#34;precision&#34;:20,&#34;name&#34;:&#34;exTaxTotal&#34;,&#34;scale&#34;:2,&#34;type&#34;:&#34;DECIMAL&#34;,&#34;title&#34;:&#34;Total W.T.&#34;}]}]}]}]" camunda:combinator="and">
+      <bpmn2:conditionalEventDefinition id="ConditionalEventDefinition_0lkxmx6" camunda:variableName="expense" camunda:scriptValue="[{&#34;metaModalName&#34;:&#34;Expense&#34;,&#34;metaModalType&#34;:&#34;metaModel&#34;,&#34;rules&#34;:[{&#34;id&#34;:0,&#34;parentId&#34;:-1,&#34;combinator&#34;:&#34;and&#34;,&#34;rules&#34;:[{&#34;fieldName&#34;:&#34;exTaxTotal&#34;,&#34;operator&#34;:&#34;&#60;&#34;,&#34;fieldValue&#34;:null,&#34;fieldValue2&#34;:null,&#34;isRelationalValue&#34;:null,&#34;relatedValueFieldName&#34;:null,&#34;relatedValueModal&#34;:null,&#34;fieldType&#34;:&#34;DECIMAL&#34;,&#34;field&#34;:{&#34;readonly&#34;:true,&#34;defaultValue&#34;:&#34;0&#34;,&#34;precision&#34;:20,&#34;name&#34;:&#34;exTaxTotal&#34;,&#34;scale&#34;:2,&#34;type&#34;:&#34;DECIMAL&#34;,&#34;title&#34;:&#34;Total W.T.&#34;},&#34;isShow&#34;:false,&#34;allField&#34;:[{&#34;readonly&#34;:true,&#34;defaultValue&#34;:&#34;0&#34;,&#34;precision&#34;:20,&#34;name&#34;:&#34;exTaxTotal&#34;,&#34;scale&#34;:2,&#34;type&#34;:&#34;DECIMAL&#34;,&#34;title&#34;:&#34;Total W.T.&#34;}]}]}]}]" camunda:combinator="and" camunda:checked="false">
         <bpmn2:condition xs:type="bpmn2:tFormalExpression" language="axelor">expense?.exTaxTotal &lt; 0</bpmn2:condition>
       </bpmn2:conditionalEventDefinition>
     </bpmn2:boundaryEvent>
@@ -112,9 +112,9 @@
     <bpmn2:scriptTask id="Activity_1evqrwc" name="Reset" scriptFormat="axelor" camunda:scriptValue="{&#34;fields&#34;:[{&#34;name&#34;:&#34;statusSelect&#34;,&#34;type&#34;:&#34;INTEGER&#34;,&#34;condition&#34;:null,&#34;conditionMeta&#34;:null,&#34;value&#34;:{&#34;selected&#34;:{&#34;value&#34;:&#34;1&#34;},&#34;from&#34;:&#34;none&#34;,&#34;subFields&#34;:[]}}],&#34;targetModel&#34;:&#34;Expense&#34;,&#34;sourceModel&#34;:&#34;&#34;,&#34;sourceModelList&#34;:[],&#34;newRecord&#34;:false,&#34;savedRecord&#34;:true,&#34;save&#34;:true,&#34;isJson&#34;:false,&#34;createVariable&#34;:false,&#34;processId&#34;:null,&#34;modelFrom&#34;:{&#34;title&#34;:&#34;Context&#34;,&#34;id&#34;:&#34;context&#34;}}">
       <bpmn2:incoming>Flow_08oe0ud</bpmn2:incoming>
       <bpmn2:outgoing>Flow_01a930z</bpmn2:outgoing>
-      <bpmn2:script>def rec = $ctx.find('Expense',expenseId)
+      <bpmn2:script>def rec = __ctx__.find('Expense',expenseId)
 rec.statusSelect = 1
-return $ctx.save(rec)</bpmn2:script>
+return __ctx__.save(rec)</bpmn2:script>
     </bpmn2:scriptTask>
   </bpmn2:process>
   <bpmn2:escalation id="Escalation_2cfv8gs" name="Escalation_0o34j83" escalationCode="refused" />
@@ -220,19 +220,19 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1ixga5b_di" bpmnElement="Event_1dyf2mg" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="782" y="212" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="789" y="183" width="41" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_13zhf09_di" bpmnElement="Event_1b0x7c2" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="782" y="262" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="782" y="303" width="35" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1yshrcr_di" bpmnElement="Event_16uqhm0" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="782" y="322" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="777" y="363" width="46" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
@@ -250,7 +250,7 @@ return $ctx.save(rec)</bpmn2:script>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1nfw90i_di" bpmnElement="Event_1nfw90i" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="1112" y="272" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="1121" y="315" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>

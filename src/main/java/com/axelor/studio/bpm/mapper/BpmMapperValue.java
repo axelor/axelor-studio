@@ -62,7 +62,7 @@ public class BpmMapperValue extends MapperValue {
     if (processId != null && valueStr != null) {
       Iterator<String> values = Arrays.asList(valueStr.split("\\?")).iterator();
 
-      valueStr = "$ctx.getVariable(" + processId + ",'" + values.next() + "')";
+      valueStr = "__ctx__.getVariable(" + processId + ",'" + values.next() + "')";
 
       if (values.hasNext()) {
         valueStr += "?" + Joiner.on('?').join(values);
@@ -70,7 +70,8 @@ public class BpmMapperValue extends MapperValue {
     }
 
     if (MANY_TO_ONE_TYPE.contains(parentField.getType()) && valueStr != null) {
-      stb.append("$ctx.find('" + parentField.getTarget() + "'," + valueStr + "?.id)?.getTarget()");
+      stb.append(
+          "__ctx__.find('" + parentField.getTarget() + "'," + valueStr + "?.id)?.getTarget()");
     } else {
       stb.append(valueStr);
     }
@@ -86,7 +87,7 @@ public class BpmMapperValue extends MapperValue {
       if (searchField != null) {
         String query = "'self." + searchField.getName() + " = ?1'";
         stb.append(
-            "$ctx.filterOne('"
+            "__ctx__.filterOne('"
                 + parentField.getTarget()
                 + "',"
                 + query
@@ -97,7 +98,7 @@ public class BpmMapperValue extends MapperValue {
         if (value != null && !value.endsWith(".id")) {
           value += "?.id";
         }
-        stb.append("$ctx.find('" + parentField.getTarget() + "'," + value + ")?.getTarget()");
+        stb.append("__ctx__.find('" + parentField.getTarget() + "'," + value + ")?.getTarget()");
       }
     } else {
       stb.append(value);

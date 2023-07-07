@@ -101,7 +101,7 @@ public class WkfBamlService implements JavaDelegate {
             context.put(key, variable);
           }
         });
-    context.put("$ctx", WkfContextHelper.class);
+    context.put("__ctx__", WkfContextHelper.class);
 
     log.debug("Context keys for BAML execution: {}", context.keySet());
 

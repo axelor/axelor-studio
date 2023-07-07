@@ -110,3 +110,17 @@ The reactBuild task will automatically install node dependencies and build the r
 The reactClean task will clean the react apps in the axelor-studio module (deletion of node_modules and build folders).
 
 Build results of axeolr-studio react apps will be copied in the webapp of your project and so will be included in the war by the studioReactCopy task which is made to run right before the war task.
+
+## BPM Groovy Script Variables
+
+Some variables are available to be used with groovy script expressions in BPM. This includes:
+
+* `__studiouser__` - current user
+* `__date__` - current date as `LocalDate`
+* `__datetime__` - current datetime as `LocalDateTime`
+* `__time__` - current time as `LocalTime`
+* `__config__` - application configuration as `axelor-config.properties`
+* `__beans__` - beans class as `Beans.class`
+* `__ctx__` - workflow context helper as `WkfContextHelper`
+* `__transform__` - workflow transformation helper for web service connector as `WkfTransformationHelper`
+* `__repo__` - repository of given model class

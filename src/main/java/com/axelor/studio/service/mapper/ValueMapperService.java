@@ -17,16 +17,15 @@
  */
 package com.axelor.studio.service.mapper;
 
-import com.axelor.app.AppSettings;
 import com.axelor.auth.AuthUtils;
 import com.axelor.db.Model;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.script.GroovyScriptHelper;
+import com.axelor.studio.bpm.script.AxelorBindingsHelper;
 import com.axelor.studio.db.ValueMapper;
 import com.axelor.utils.StringTool;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.context.FullContextHelper;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import javax.script.Bindings;
@@ -43,18 +42,17 @@ public class ValueMapperService {
     String modelName = getModelVariable(model);
 
     Bindings bindings = new SimpleBindings();
-    bindings.put("$ctx", FullContextHelper.class);
+    bindings = AxelorBindingsHelper.getBindings(bindings);
+    bindings.put("__ctx__", FullContextHelper.class);
     bindings.put(modelName, new FullContext(model));
     bindings.put(modelName + "Id", model.getId());
-    bindings.put("__date__", LocalDate.now());
     bindings.put("__time__", LocalDateTime.now());
     bindings.put("__datetime__", ZonedDateTime.now());
-    bindings.put("__user__", AuthUtils.getUser());
+    bindings.put("__studiouser__", AuthUtils.getUser());
     bindings.put("__this__", new FullContext(model));
     bindings.put("__self__", model);
     bindings.put("__parent__", new FullContext(model).getParent());
     bindings.put("__id__", model.getId());
-    bindings.put("__config__", AppSettings.get());
 
     Object result = new GroovyScriptHelper(bindings).eval(mapper.getScript());
 

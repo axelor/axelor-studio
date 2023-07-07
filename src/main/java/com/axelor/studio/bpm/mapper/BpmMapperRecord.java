@@ -61,13 +61,13 @@ public class BpmMapperRecord extends MapperRecord {
 
     StringBuilder scriptBuilder = getScriptBuilder();
 
-    String saveStr = "$ctx.save(" + getTargetVariable() + ")";
+    String saveStr = "__ctx__.save(" + getTargetVariable() + ")";
     if (!isSave()) {
       saveStr = getTargetVariable();
     }
 
     if (createVariable) {
-      scriptBuilder.append("$ctx.createVariable(" + saveStr + ", execution)");
+      scriptBuilder.append("__ctx__.createVariable(" + saveStr + ", execution)");
 
     } else if (isNewRecord() || isSavedRecord() || isSave()) {
       scriptBuilder.append("return " + saveStr);
@@ -82,7 +82,7 @@ public class BpmMapperRecord extends MapperRecord {
     String src = StringTool.toFirstLower(getSourceModel());
 
     if (processId != null) {
-      src = "$ctx.getVariable(" + processId + ",'" + src + "')";
+      src = "__ctx__.getVariable(" + processId + ",'" + src + "')";
     }
 
     src = "def src = " + src + "\n";

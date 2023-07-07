@@ -79,7 +79,7 @@ public class WkfProcessEngineConfigurationImpl extends StandaloneProcessEngineCo
   @Override
   protected void initBeans() {
     super.initBeans();
-    beans.put("$ctx", Beans.get(WkfContextHelper.class));
+    beans.put("__ctx__", Beans.get(WkfContextHelper.class));
   }
 
   @Override
