@@ -1409,6 +1409,43 @@ function BpmnModelerComponent() {
     }
   };
 
+  const addCallActivityExtensionElement = React.useCallback((shape) => {
+    if (shape?.type !== "bpmn:CallActivity") {
+      return;
+    }
+    let bo = getBusinessObject(shape);
+    const bpmnFactory = bpmnModeler.get("bpmnFactory");
+    let { extensionElements } = bo;
+    let result = createParent(shape, bo);
+    const elements = getElements(bpmnModeler);
+    let processId;
+    for (const [key, value] of Object.entries(elements)) {
+      const activity = value?.elements?.find((v) => v.id === shape.id);
+      if (activity) {
+        processId = key;
+        break;
+      }
+    }
+    let camundaProperties = elementHelper.createElement(
+      "camunda:In",
+      {
+        source: processId,
+        target: processId,
+      },
+      result && result.parent,
+      bpmnFactory
+    );
+    if (!extensionElements) {
+      extensionElements = elementHelper.createElement(
+        "bpmn:ExtensionElements",
+        { values: [camundaProperties] },
+        bo,
+        bpmnFactory
+      );
+      bo.extensionElements = extensionElements;
+    }
+  }, []);
+
   const handleAdd = (row) => {
     if (!row) return;
     const { values = [] } = row;
@@ -1618,7 +1655,9 @@ function BpmnModelerComponent() {
       setColors(event && event.context && event.context.connection);
     });
     bpmnModeler.on("commandStack.shape.create.postExecuted", (event) => {
-      setColors(event && event.context && event.context.shape);
+      const shape = event?.context?.shape;
+      setColors(shape);
+      addCallActivityExtensionElement(shape);
     });
     bpmnModeler
       .get("eventBus")
@@ -1643,7 +1682,7 @@ function BpmnModelerComponent() {
         element: rootElement,
       });
     });
-  }, [updateTabs]);
+  }, [updateTabs, addCallActivityExtensionElement]);
 
   useEffect(() => {
     async function fetchApp() {

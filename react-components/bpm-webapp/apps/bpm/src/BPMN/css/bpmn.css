@@ -148,6 +148,7 @@ h1 {
   border-radius: 2px;
   cursor: pointer;
   position: relative;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
