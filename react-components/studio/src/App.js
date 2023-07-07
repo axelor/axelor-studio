@@ -16,11 +16,15 @@ import {
 	fetchLanguages,
 	fetchUserPreferences,
 	getEnableAppBuilder,
-	metaJsonFieldService,
 } from "./Toolbar/api";
 import AxelorService from "./services/axelor.rest";
-import { generateCustomModelSchema, translate } from "./utils";
-import { ENTITY_TYPE } from "./constants";
+import { getParams, translate } from "./utils";
+import { MODEL_TYPE, relationalFields, ENTITY_TYPE } from "./constants";
+import {
+	fetchJSONFields,
+	fetchMetaViewService,
+	getCustomFieldsData,
+} from "./helpers/helpers";
 
 const useStyles = makeStyles({
 	toolbarWrapper: {
@@ -54,18 +58,6 @@ const theme = createTheme({
 	},
 });
 
-const getParams = () => {
-	const params = new URL(document.location).searchParams;
-	const isStudioLite = params.get("isStudioLite");
-	const model = params.get("model");
-	const modelTitle = params.get("modelTitle");
-	return {
-		isStudioLite,
-		model,
-		modelTitle,
-	};
-};
-
 function AppContent() {
 	const classes = useStyles();
 	const { update, state } = useStore();
@@ -85,50 +77,128 @@ function AppContent() {
 		event.returnValue = translate("Are you sure you want to close the tab?");
 	};
 
-	const fetchJSONFields = React.useCallback(
-		(ids, record) => {
-			const criteria = [];
-			if (ids.length) {
-				criteria.push({ fieldName: "id", operator: "in", value: ids });
-				const data = {
-					criteria,
+	React.useEffect(() => {
+		const { type, model, view, customField, isStudioLite, modelTitle } =
+			getParams();
+		if (!model && (!type || !isStudioLite)) return;
+		async function init() {
+			const metaModelService = new AxelorService({
+				model:
+					type || isStudioLite
+						? "com.axelor.meta.db.MetaJsonModel"
+						: "com.axelor.meta.db.MetaModel",
+			});
+			let data = {
+				related: {
+					menuBuilder: ["title", "parentMenu"],
+				},
+				data: {
+					_domain: `name = '${model}'`,
+				},
+			};
+			if (view && !isStudioLite) {
+				data = {
+					...data,
+					fields: ["metaFields", "packageName", "name", "fullName"],
+					metaFields: [
+						"typeName",
+						"label",
+						"mappedBy",
+						"relationship",
+						"name",
+						"packageName",
+					],
 				};
-				metaJsonFieldService
-					.search({ data, sortBy: ["sequence"] })
-					.then((res) => {
-						if (res.data) {
-							const list = res.data || [];
-							const schema = generateCustomModelSchema(list, record);
-							update((draft) => {
-								draft.widgets = {
-									...schema.widgets,
-								};
-								draft.items = schema.items;
-								draft.loader = false;
-							});
-						} else {
-							update((draft) => {
-								draft.loader = false;
-							});
-						}
-					});
-			} else {
-				const schema = generateCustomModelSchema([], record);
+			}
+
+			update((draft) => {
+				draft.modelType =
+					type || isStudioLite ? MODEL_TYPE.CUSTOM : MODEL_TYPE.BASE;
+				draft.loader = true;
+			});
+			const res = await metaModelService.search(data);
+			if (res && res.data) {
+				const record = res.data[0];
+				const modelName = res.data[0].fullName;
+				const { fields = [], ...rest } = record;
 				update((draft) => {
-					draft.widgets = {
-						...schema.widgets,
-					};
-					draft.items = schema.items;
-					draft.loader = false;
-					draft.model = record;
-					draft.customModel = record;
+					draft.model = { ...record, entityType: ENTITY_TYPE.META };
+					draft.entityType = ENTITY_TYPE.META;
+					draft.widgets = null;
+					draft.initialWidgets = null;
+					draft.view = null;
+					draft.exView = null;
+					draft.modelField = null;
+					draft.originalXML = null;
+					draft.extensionXML = null;
+					draft.extensionView = null;
+					draft.translationList = [];
+					draft.initialTranslationList = [];
+					draft.selectedView = null;
 					draft.editWidget = -1;
 					draft.editWidgetType = null;
+					if (view && !isStudioLite) {
+						const _fields = (record.metaFields || []).map((f) => {
+							return JSON.parse(
+								JSON.stringify({
+									...f,
+									type:
+										relationalFields[f.relationship] ||
+										(f.typeName || "").toLowerCase(),
+									...(f.relationship && {
+										targetModel: `${f.packageName}.${f.typeName}`,
+									}),
+									packageName: undefined,
+								})
+							);
+						});
+						draft.metaFieldStore = [..._fields];
+						draft.metaFields = [..._fields];
+
+						const metaFields = [..._fields];
+						const model = { ...record };
+
+						fetchMetaViewService(
+							view,
+							modelName,
+							metaFields,
+							model,
+							update
+						).then(() => {
+							if (customField) {
+								getCustomFieldsData(model, customField, update);
+							}
+						});
+					} else if (!type && model && customField && !view && !isStudioLite) {
+						draft.loader = false;
+						const model = { ...record };
+						getCustomFieldsData(model, customField, update);
+					} else {
+						draft.loader = false;
+						if (type || isStudioLite) {
+							fetchJSONFields(
+								fields.map((f) => f.id),
+								rest,
+								update
+							);
+						}
+						draft.customModel = record;
+					}
+				});
+			} else {
+				update((draft) => {
+					draft.loader = false;
 				});
 			}
-		},
-		[update]
-	);
+		}
+		init();
+		if (isStudioLite) {
+			update((draft) => {
+				draft.isStudioLite = isStudioLite || "false";
+				draft.queryModel = { title: modelTitle || model, name: model };
+			});
+		}
+	}, [update]);
 
 	React.useEffect(() => {
 		fetchLanguages().then((result) => {
@@ -161,7 +231,6 @@ function AppContent() {
 			const resizeObserver = new ResizeObserver(() => {
 				setToolbarHeight(toolbar.offsetHeight);
 			});
-
 			resizeObserver.observe(toolbar);
 			return () => resizeObserver.unobserve(toolbar);
 		}
@@ -213,68 +282,6 @@ function AppContent() {
 			}
 		};
 	}, [future.length, past.length, baseHasChanges, customFieldHasChanges]);
-
-	React.useEffect(() => {
-		const { isStudioLite, model, modelTitle } = getParams();
-		async function init() {
-			if (!isStudioLite || !model) return;
-			const metaModelService = new AxelorService({
-				model: "com.axelor.meta.db.MetaJsonModel",
-			});
-			let data = {
-				related: {
-					menuBuilder: ["title", "parentMenu"],
-				},
-				data: {
-					_domain: `name = '${model}'`,
-				},
-			};
-			update((draft) => {
-				draft.loader = true;
-			});
-			const res = await metaModelService.search(data);
-			if (res.data) {
-				const record = res.data[0];
-				const { fields = [], ...rest } = record;
-				update((draft) => {
-					draft.model = { ...record, entityType: ENTITY_TYPE.META };
-					draft.entityType = ENTITY_TYPE.META;
-					draft.widgets = null;
-					draft.initialWidgets = null;
-					draft.items = [];
-					draft.initialItems = null;
-					draft.view = null;
-					draft.exView = null;
-					draft.modelField = null;
-					draft.customFields = [];
-					draft.customFieldWidgets = null;
-					draft.originalXML = null;
-					draft.extensionXML = null;
-					draft.extensionView = null;
-					draft.extensionMoves = [];
-					draft.errorList = {};
-					draft.attrsList = [];
-					draft.translationList = [];
-					draft.initialTranslationList = [];
-					draft.removedTranslationList = [];
-					draft.selectedView = null;
-					draft.editWidget = -1;
-					draft.editWidgetType = null;
-					draft.tabIndex = 0;
-					fetchJSONFields(
-						fields.map((f) => f.id),
-						rest
-					);
-					draft.customModel = record;
-				});
-			}
-		}
-		init();
-		update((draft) => {
-			draft.isStudioLite = JSON.parse(isStudioLite || "false");
-			draft.queryModel = { title: modelTitle || model, name: model };
-		});
-	}, [update, fetchJSONFields]);
 
 	return (
 		<Grid className={classes.container} ref={gridRef}>

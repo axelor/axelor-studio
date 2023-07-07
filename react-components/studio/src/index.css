@@ -194,6 +194,9 @@ code {
 	padding: 12px 10px 10px;
 }
 
+.custom-field-pallett-view {
+	outline: none !important;
+}
 .form-view {
 	width: 50%;
 	margin: 0 2%;

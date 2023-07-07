@@ -466,13 +466,13 @@ function StoreProvider({ children }) {
 					 hence we assume changes are in customFields */
 					draft.customFieldHasChanges = true;
 				}
-				const index = draft.metaFields.findIndex(
+				const index = draft.metaFields?.findIndex(
 					(f) =>
 						f.typeName === dragWidgetProps.attrs.typeName &&
 						f.name === dragWidgetProps.attrs.name
 				);
 				if (index !== -1) {
-					draft.metaFields.splice(index, 1);
+					draft.metaFields && draft.metaFields.splice(index, 1);
 				}
 
 				const hoverAttr = { ...draft.hoverAttr };

@@ -76,9 +76,13 @@ export default function ConnectorBuilder({
   const fetchRequests = async () => {
     if (!connector || !connector.wsRequestList) return [];
     const requestIds = connector.wsRequestList.map((l) => l.id);
+    const criteria = [];
+    if (requestIds.length) {
+      criteria.push({ fieldName: "id", operator: "IN", value: requestIds });
+    }
     const res = await Service.search("com.axelor.studio.db.WsRequest", {
       data: {
-        criteria: [{ fieldName: "id", operator: "IN", value: requestIds }],
+        criteria,
       },
       sortBy: ["sequence"],
     });
@@ -103,7 +107,7 @@ export default function ConnectorBuilder({
           );
         }
       });
-    let expr = `def _res = $beans.get(Class.forName('com.axelor.studio.service.ws.WsConnectorService')).callConnector($ctx.filterOne('WsConnector','self.name = ?1', '${
+    let expr = `def _res = __beans__.get(Class.forName('com.axelor.studio.service.ws.WsConnectorService')).callConnector(__ctx__.filterOne('WsConnector','self.name = ?1', '${
       connector && connector.name
     }').getTarget(), null, [${str && str.length > 0 ? str.toString() : ":"}])`;
     if (request && request.index) {
@@ -115,7 +119,7 @@ export default function ConnectorBuilder({
     if (resultVariable) {
       expr =
         expr +
-        `\nexecution.setVariable('${resultVariable}', $ctx.createVariable(${
+        `\nexecution.setVariable('${resultVariable}', __ctx__.createVariable(${
           returnExpression ? returnExpression : "_res"
         }))`;
     }

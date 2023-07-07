@@ -61,7 +61,7 @@ export default function TabPanel({
   updateCommentsCount,
   handleSnackbarClick,
   enableStudioApp,
-  fetchDiagram,
+  addNewVersion,
   changeColor,
   bpmnModeler,
   showError,
@@ -91,7 +91,7 @@ export default function TabPanel({
           updateCommentsCount={updateCommentsCount}
           handleSnackbarClick={handleSnackbarClick}
           enableStudioApp={enableStudioApp}
-          fetchDiagram={fetchDiagram}
+          addNewVersion={addNewVersion}
           showError={showError}
         />
       ) : (

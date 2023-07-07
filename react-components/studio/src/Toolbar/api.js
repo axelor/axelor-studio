@@ -43,7 +43,7 @@ export async function getCustomModel(options) {
 }
 
 export function fetchCustomFields(modelField, model) {
-	const _domain = `self.jsonModel = null and self.modelField='${modelField.name}' and self.model='${model.fullName}'`;
+	const _domain = `self.jsonModel = null and self.modelField='${modelField.name}' and self.model='${model?.fullName}'`;
 	return metaJsonFieldService.search({
 		data: { _domain },
 		sortBy: ["sequence"],
@@ -196,7 +196,7 @@ export async function fetchCustomModel(modelId, handleError = () => {}) {
 export async function fetchViews(view) {
 	const viewCriteria = {
 		operator: "and",
-		criteria: [{ fieldName: "name", operator: "=", value: `${view.name}` }],
+		criteria: [{ fieldName: "name", operator: "=", value: `${view?.name}` }],
 	};
 	const viewList = await metaViewService.search({ data: viewCriteria });
 	let views;

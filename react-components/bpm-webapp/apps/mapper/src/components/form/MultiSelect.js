@@ -98,7 +98,7 @@ const builtInVars = [
   '__date__',
   '__time__',
   '__datetime__',
-  '__user__',
+  '__studiouser__',
   '__this__',
   '__self__',
   '__parent__',
@@ -227,7 +227,7 @@ function MultiSelector(props) {
           if (isContext && value && value[0] && value.length === 1 && type) {
             if (value[0].title === 'Built In Variables') {
               return (
-                isBPMN ? ['__date__', '__datetime__', '__user__'] : builtInVars
+                isBPMN ? ['__date__', '__datetime__', '__studiouser__'] : builtInVars
               ).map((ele) => {
                 return { name: ele };
               });

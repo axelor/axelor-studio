@@ -1,4 +1,4 @@
-import services from "../../../services/Service";
+import services from "../../services/Service";
 
 const joinURL = (model, subURL) => {
   return `ws/rest/${model}/${subURL}`;

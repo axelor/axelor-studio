@@ -98,23 +98,25 @@ const getChangedTranslationList = (
 	removedTranslationList
 ) => {
 	const deletedTranslationList = [];
-	const changedTranslationList = list.filter((item) => {
-		if (removedTranslationList.indexOf(item.key) !== -1) {
-			item.id &&
-				deletedTranslationList.push({ id: item.id, version: item.version });
-			return false;
-		}
-		if (item.id) {
-			const initialItem = initialList.find(
-				(i) => i.language === item.language && i.key === item.key
-			);
-			if (initialItem && initialItem.message !== item.message) {
-				return true;
+	const changedTranslationList =
+		list?.length > 0 &&
+		list.filter((item) => {
+			if (removedTranslationList.indexOf(item.key) !== -1) {
+				item.id &&
+					deletedTranslationList.push({ id: item.id, version: item.version });
+				return false;
 			}
-			return false;
-		}
-		return true;
-	});
+			if (item.id) {
+				const initialItem = initialList.find(
+					(i) => i.language === item.language && i.key === item.key
+				);
+				if (initialItem && initialItem.message !== item.message) {
+					return true;
+				}
+				return false;
+			}
+			return true;
+		});
 	return { changedTranslationList, deletedTranslationList };
 };
 
@@ -320,7 +322,7 @@ function ToolbarContainer(props) {
 					const schema = Utils.generateXMLToViewSchema({
 						view: record,
 						fields: draft.metaFieldStore,
-						extensionXML: views.extensionXML,
+						extensionXML: views?.extensionXML,
 						attrsList: attrsList || [],
 					});
 					draft.widgets = schema.widgets;
@@ -685,13 +687,13 @@ function ToolbarContainer(props) {
 						);
 					let translationList = [];
 					let isTranslationChanged = false;
-					if (changedTranslationList.length) {
+					if (changedTranslationList?.length) {
 						isTranslationChanged = true;
 						await saveTranslationList(changedTranslationList, (error) => {
 							showAlert(error?.message, error?.title);
 						});
 					}
-					if (deletedTranslationList.length) {
+					if (deletedTranslationList?.length) {
 						isTranslationChanged = true;
 						await deleteTranslationList(deletedTranslationList, (error) => {
 							showAlert(error?.message, error?.title);

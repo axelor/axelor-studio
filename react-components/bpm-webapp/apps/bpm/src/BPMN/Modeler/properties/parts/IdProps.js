@@ -1,7 +1,15 @@
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 
-export default function IdProps(group, element, translate, options) {
+import { getFlowElements } from "../../extra";
+
+export default function IdProps(
+  group,
+  element,
+  translate,
+  options,
+  bpmnModeler
+) {
   let description = options && options.description;
   // Id
   group.entries.push({
@@ -17,6 +25,29 @@ export default function IdProps(group, element, translate, options) {
       element = element.labelTarget || element;
       if (element.businessObject) {
         element.businessObject.id = properties["id"];
+
+        /**
+         * Update callactivity extension elements on id updates
+         */
+        if (element?.type === "bpmn:Process") {
+          const flowElements = getFlowElements(element?.businessObject);
+          console.log(flowElements, element)
+          const callActivities = flowElements?.filter(
+            (e) => e.baseType === "bpmn:CallActivity"
+          );
+          if (!callActivities?.length) return;
+          const elementRegistry = bpmnModeler.get("elementRegistry");
+          callActivities?.forEach((activity) => {
+            const element = elementRegistry.get(activity.id);
+            const camundaIn =
+              element?.businessObject?.extensionElements?.values?.find(
+                (v) => v.$type === "camunda:In"
+              );
+            if (!camundaIn) return;
+            camundaIn.source = properties["id"];
+            camundaIn.target = properties["id"];
+          });
+        }
       }
     },
     validate: function (element, values) {

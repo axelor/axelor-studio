@@ -1571,7 +1571,7 @@ const generateViewFromJson = ({
 		if (element) {
 			const { type, ...attributes } = element.attributes || {};
 			if (element.name.indexOf("panel") === -1) {
-				field = fields.find((f) => f.name === attributes.name);
+				field = fields?.find((f) => f.name === attributes.name);
 			}
 			const attrs = {};
 			Object.keys(attributes).map((key) => {
@@ -1661,18 +1661,20 @@ const generateViewFromJson = ({
 				}
 				// override with meta attrs list
 				if (widget.name) {
-					const list = (attrsList || []).filter(
-						(attr) => attr.field === widget.name
-					);
-					list.forEach((attr) => {
-						if (["selection-in"].includes(attr.name)) {
-							widget[attr.name] = attr.value;
-						} else {
-							widget[
-								editorKeyReplacer(dashToCamelCase(attr.name), MODEL_TYPE.BASE)
-							] = attr.value;
-						}
-					});
+					const list =
+						attrsList &&
+						attrsList.length > 0 &&
+						attrsList.filter((attr) => attr.field === widget.name);
+					list &&
+						list.forEach((attr) => {
+							if (["selection-in"].includes(attr.name)) {
+								widget[attr.name] = attr.value;
+							} else {
+								widget[
+									editorKeyReplacer(dashToCamelCase(attr.name), MODEL_TYPE.BASE)
+								] = attr.value;
+							}
+						});
 				}
 				_widgets[_ID] = { ...widget };
 			}
@@ -1712,7 +1714,7 @@ const generateXMLToViewSchema = ({
 	attrsList,
 }) => {
 	const { elements } = JSON.parse(
-		convert.xml2json(view.xml, {
+		convert.xml2json(view?.xml, {
 			compact: false,
 			fullTagEmptyElement: false,
 		})
@@ -1809,6 +1811,24 @@ export function getDuplicateArrayValues(arr, isCustomForm = false) {
 	);
 	return duplicateValues;
 }
+export const getParams = () => {
+	const params = new URL(document.location).searchParams;
+	const isStudioLite = JSON.parse(params.get("isStudioLite") || false);
+	const modelTitle = params.get("modelTitle");
+	const type = JSON.parse(params.get("json") || true);
+	const model = params.get("model");
+	const view = params.get("view");
+	const customField = params.get("customField");
+
+	return {
+		type,
+		model,
+		view,
+		customField,
+		isStudioLite,
+		modelTitle,
+	};
+};
 
 export default {
 	camleCaseString,
@@ -1840,4 +1860,5 @@ export default {
 	getDefaultGridFormName,
 	isPanelTab,
 	getDuplicateArrayValues,
+	getParams,
 };

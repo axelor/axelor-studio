@@ -44,7 +44,7 @@ import {
   getAppStudioConfig,
   getBPMNModels,
 } from "../../services/api";
-import { getAxelorScope, getBool, translate } from "../../utils";
+import { getAxelorScope, getBool, translate, convertSVGtoBase64 } from "../../utils";
 import {
   FILL_COLORS,
   USER_TASKS_TYPES,
@@ -177,6 +177,12 @@ function BpmnModelerComponent() {
 
   const classes = useStyles();
   const diagramXmlRef = React.useRef(null);
+
+  const getBase64SVG = async () => {
+    const { svg } = await bpmnModeler.saveSVG({ format: true });
+    const base64SVG = await convertSVGtoBase64(svg);
+    return base64SVG;
+  };
 
   const handleMenuActionTab = React.useCallback((val) => {
     setMenuAction(val);
@@ -316,6 +322,7 @@ function BpmnModelerComponent() {
               "studioApp",
               "description",
               "wkfStatusColor",
+              "newVersionOnDeploy",
             ].forEach((key) => {
               if (key === "name") {
                 setProperty("diagramName", oldWkf[key], true);
@@ -406,6 +413,7 @@ function BpmnModelerComponent() {
       <bpmn2:definitions 
         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
         xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" 
+        camunda:newVersionOnDeploy="false"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
         xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" 
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
@@ -435,6 +443,7 @@ function BpmnModelerComponent() {
         let { diagramXml } = wkf;
         setWkf(wkf);
         newBpmnDiagram(diagramXml, isDeploy, id, wkf);
+        return wkf;
       } else {
         newBpmnDiagram(undefined, isDeploy, id);
       }
@@ -802,6 +811,7 @@ function BpmnModelerComponent() {
         wkfStatusColor: attrs["camunda:wkfStatusColor"] || "blue",
         versionTag: attrs["camunda:versionTag"],
         description: attrs["camunda:description"],
+        newVersionOnDeploy: attrs["camunda:newVersionOnDeploy"] || false,
         studioApp,
       });
       if (res && res.data && res.data[0]) {
@@ -976,12 +986,89 @@ function BpmnModelerComponent() {
     return { status: 0 };
   };
 
+  const addNewVersion = async () => {
+    let actionRes = await Service.action({
+      model: "com.axelor.studio.db.WkfModel",
+      action: " action-wkf-model-method-create-new-version",
+      data: {
+        context: {
+          _model: "com.axelor.studio.db.WkfModel",
+          ...wkf,
+          _signal: "newVersionBtn",
+          _source: "newVersionBtn",
+          _viewName: "wkf-model-form",
+          _viewType: "form",
+          __check_version: true,
+          _views: [
+            { type: "grid", name: "wkf-model-grid" },
+            { type: "form", name: "wkf-model-form" },
+          ],
+        },
+      },
+    });
+    if (actionRes?.data && actionRes.data[0]?.values?.newVersionId) {
+      const id = actionRes.data[0].values.newVersionId;
+      if (!id) return;
+      setId(id);
+      return await fetchDiagram(id);
+    }
+  };
+
+  const startAction = async (newWkf) => {
+    let actionStart = await Service.action({
+      model: "com.axelor.studio.db.WkfModel",
+      action: "action-wkf-model-method-start",
+      data: {
+        context: {
+          _model: "com.axelor.studio.db.WkfModel",
+          ...newWkf,
+        },
+      },
+    });
+    if (actionStart?.data && actionStart.data[0]?.reload) {
+      handleSnackbarClick("success", "Started Successfully");
+      fetchDiagram(newWkf.id, true);
+    } else {
+      handleSnackbarClick(
+        "error",
+        actionStart?.data?.message || actionStart?.data?.title || "Error"
+      );
+    }
+  };
+
+  const getDefinitionProperties = () => {
+    let attrs = bpmnModeler?._definitions?.$attrs;
+    return {
+      name: attrs["camunda:diagramName"],
+      code: attrs["camunda:code"],
+      description: attrs["camunda:description"],
+      newVersionOnDeploy: attrs["camunda:newVersionOnDeploy"],
+      versionTag: attrs["camunda:versionTag"],
+      wkfStatusColor: attrs["camunda:wkfStatusColor"],
+    };
+  }
+  
+  const addImage = async (id) => {
+    if (!id) return;
+    const wkf = (await fetchWkf(id)) || {};
+    const bpmnImage = await getBase64SVG();
+    let res = await Service.add("com.axelor.studio.db.WkfModel", {
+      ...wkf,
+      bpmnImage,
+    });
+    const wkfModel = res?.data && res?.data[0];
+    let { diagramXml } = wkfModel;
+    setWkf(wkfModel);
+    newBpmnDiagram(diagramXml, true, id, wkfModel);
+  };
+
   const deploy = async (wkfMigrationMap, isMigrateOld, newWkf = wkf) => {
     try {
       const { xml } = await bpmnModeler.saveXML({ format: true });
       diagramXmlRef.current = xml;
       let res = await Service.add("com.axelor.studio.db.WkfModel", {
         ...newWkf,
+        ...(getDefinitionProperties() || {}),
         diagramXml: xml,
       });
       if (res && res.data && res.data[0]) {
@@ -1010,9 +1097,9 @@ function BpmnModelerComponent() {
           actionRes.data[0].reload
         ) {
           if (newWkf && newWkf.statusSelect !== 1) {
+            await addImage(newWkf?.id);
             handleSnackbarClick("success", "Deployed Successfully");
           }
-          fetchDiagram(newWkf.id, true);
         } else {
           handleSnackbarClick(
             "error",
@@ -1028,34 +1115,14 @@ function BpmnModelerComponent() {
           (res && res.data && (res.data.message || res.data.title)) || "Error"
         );
       }
-      if (newWkf && newWkf.statusSelect === 1) {
-        let actionStart = await Service.action({
-          model: "com.axelor.studio.db.WkfModel",
-          action: "action-wkf-model-method-start",
-          data: {
-            context: {
-              _model: "com.axelor.studio.db.WkfModel",
-              ...res.data[0],
-            },
-          },
-        });
-        if (
-          actionStart &&
-          actionStart.data &&
-          actionStart.data[0] &&
-          actionStart.data[0].reload
-        ) {
-          handleSnackbarClick("success", "Started Successfully");
-          fetchDiagram(newWkf.id, true);
-        } else {
-          handleSnackbarClick(
-            "error",
-            (actionStart &&
-              actionStart.data &&
-              (actionStart.data.message || actionStart.data.title)) ||
-              "Error"
-          );
+      if (newWkf && newWkf.newVersionOnDeploy && newWkf.statusSelect === 2) {
+        let newVersionWkf = await addNewVersion();
+        if (newVersionWkf && newVersionWkf.statusSelect === 1) {
+          startAction(newVersionWkf);
         }
+      }
+      if (newWkf && newWkf.statusSelect === 1) {
+        startAction(res.data[0]);
       }
     } catch (err) {
       console.error(err);
@@ -1118,6 +1185,7 @@ function BpmnModelerComponent() {
         diagramXmlRef.current = xml;
         let res = await Service.add("com.axelor.studio.db.WkfModel", {
           ...wkf,
+          ...(getDefinitionProperties() || {}),
           diagramXml: xml,
         });
         deploy(wkfMigrationMap, isMigrateOld, res && res.data && res.data[0]);
@@ -1184,16 +1252,15 @@ function BpmnModelerComponent() {
       const newValue =
         !["null", ""].includes(attrs[`camunda:${name}`]) &&
         isInitial &&
-        value &&
-        (value !== "" || value !== "null")
+        !["null", "", null, undefined].includes(value)
           ? value
           : attrs[`camunda:${name}`]
           ? attrs[`camunda:${name}`]
-          : value && (value !== "" || value !== "null")
+          : !["null", "", null, undefined].includes(value)
           ? value
           : undefined;
       attrs[`camunda:${name}`] = newValue;
-      if (!newValue) {
+      if (!newValue && name !== "newVersionOnDeploy") {
         delete attrs[`camunda:${name}`];
         return;
       }
@@ -1409,6 +1476,43 @@ function BpmnModelerComponent() {
     }
   };
 
+  const addCallActivityExtensionElement = React.useCallback((shape) => {
+    if (shape?.type !== "bpmn:CallActivity") {
+      return;
+    }
+    let bo = getBusinessObject(shape);
+    const bpmnFactory = bpmnModeler.get("bpmnFactory");
+    let { extensionElements } = bo;
+    let result = createParent(shape, bo);
+    const elements = getElements(bpmnModeler);
+    let processId;
+    for (const [key, value] of Object.entries(elements)) {
+      const activity = value?.elements?.find((v) => v.id === shape.id);
+      if (activity) {
+        processId = key;
+        break;
+      }
+    }
+    let camundaProperties = elementHelper.createElement(
+      "camunda:In",
+      {
+        source: processId,
+        target: processId,
+      },
+      result && result.parent,
+      bpmnFactory
+    );
+    if (!extensionElements) {
+      extensionElements = elementHelper.createElement(
+        "bpmn:ExtensionElements",
+        { values: [camundaProperties] },
+        bo,
+        bpmnFactory
+      );
+      bo.extensionElements = extensionElements;
+    }
+  }, []);
+
   const handleAdd = (row) => {
     if (!row) return;
     const { values = [] } = row;
@@ -1618,7 +1722,9 @@ function BpmnModelerComponent() {
       setColors(event && event.context && event.context.connection);
     });
     bpmnModeler.on("commandStack.shape.create.postExecuted", (event) => {
-      setColors(event && event.context && event.context.shape);
+      const shape = event?.context?.shape;
+      setColors(shape);
+      addCallActivityExtensionElement(shape);
     });
     bpmnModeler
       .get("eventBus")
@@ -1643,7 +1749,7 @@ function BpmnModelerComponent() {
         element: rootElement,
       });
     });
-  }, [updateTabs]);
+  }, [updateTabs, addCallActivityExtensionElement]);
 
   useEffect(() => {
     async function fetchApp() {
@@ -1765,7 +1871,7 @@ function BpmnModelerComponent() {
                   updateCommentsCount={updateCommentsCount}
                   handleSnackbarClick={handleSnackbarClick}
                   enableStudioApp={enableStudioApp}
-                  fetchDiagram={fetchDiagram}
+                  addNewVersion={addNewVersion}
                   changeColor={changeColor}
                   bpmnModeler={bpmnModeler}
                   showError={showError}

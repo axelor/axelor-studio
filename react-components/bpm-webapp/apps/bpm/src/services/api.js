@@ -795,3 +795,23 @@ export async function getExpressionValues(model, options) {
     return data;
   }
 }
+
+export async function getActions(models) {
+  const entity = `com.axelor.meta.db.MetaAction`;
+  const payload = {
+    data: {
+      _domainContext: { _id: null, _model: entity },
+      criteria: [
+        {
+          fieldName: "model",
+          operator: "IN",
+          value: models,
+        },
+      ],
+    },
+    fields: ["module", "name", "type", "priority"],
+    limit: 20,
+  };
+  const res = await Service.search(entity, payload);
+  return res.data || [];
+}

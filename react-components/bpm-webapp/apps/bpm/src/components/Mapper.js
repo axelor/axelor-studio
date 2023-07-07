@@ -27,7 +27,7 @@ function Mapper({ open, handleClose, onSave, params, bpmnModeler, element }) {
       const elements = elementRegistry && elementRegistry._elements;
       let rootElement = elements && elements[processId.name];
       if (!rootElement) {
-        const elements = bpmnModeler.get("canvas").getRootElement();
+        const elements = bpmnModeler?.get("canvas")?.getRootElement();
         const { participants } = elements.businessObject;
         if (participants && participants.length > 0) {
           let participant = participants.find(

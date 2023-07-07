@@ -22,7 +22,7 @@ import {
   getCustomModelData,
   getNameField,
   getData,
-} from "../expression-builder/services/api";
+} from "../services/api";
 import { getExpressionValues } from "../../services/api";
 
 import {

@@ -111,6 +111,31 @@ function dashToUnderScore(str) {
   return str.replace("json-", "").replaceAll("-", "_").toLowerCase();
 }
 
+function convertSVGtoBase64(svgXml) {
+  return new Promise((resolve, reject) => {
+    var img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function () {
+      var canvas = document.createElement("CANVAS");
+      var ctx = canvas.getContext("2d");
+      var dataURL;
+      canvas.height = this.naturalHeight;
+      canvas.width = this.naturalWidth;
+      ctx.drawImage(this, 0, 0);
+      dataURL = canvas.toDataURL("image/png", 1);
+      resolve(dataURL);
+    };
+
+    img.onerror = function () {
+      resolve(null);
+    };
+
+    img.src =
+      "data:image/svg+xml;base64," +
+      window.btoa(unescape(encodeURIComponent(svgXml)));
+  });
+}
+
 export {
   download,
   translate,
@@ -124,4 +149,5 @@ export {
   lowerCaseFirstLetter,
   splitWithComma,
   dashToUnderScore,
+  convertSVGtoBase64,
 };

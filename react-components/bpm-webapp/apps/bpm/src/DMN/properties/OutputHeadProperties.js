@@ -25,7 +25,7 @@ import {
 import { Selection } from "../../components/expression-builder/components";
 import { translate, lowerCaseFirstLetter, getLowerCase } from "../../utils";
 import { RELATIONAL_TYPES, ALL_TYPES } from "../constants";
-import { getNameField } from "../expression-builder/services/api";
+import { getNameField } from "../services/api";
 import AlertDialog from "../../components/AlertDialog";
 
 const useStyles = makeStyles((theme) => ({

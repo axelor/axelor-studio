@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
   const { oldElements, currentElements } = ids || {};
   const [wkfMigrationMap, setWkfMigrationMap] = useState({});
-  const [isMigrateOld, setIsMigrateOld] = useState(true);
+  const [isMigrateOld, setIsMigrateOld] = useState(false);
   const classes = useStyles();
 
   const handleAdd = (oldEle, newEle, processId) => {

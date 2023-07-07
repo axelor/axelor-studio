@@ -25,6 +25,7 @@ import {
   TextField,
   Textbox,
 } from "../../../../../components/properties/components";
+import { TASK_LISTENER_EVENT_TYPE_OPTION } from "../../../constants";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
@@ -82,14 +83,7 @@ const LISTENER_TYPE_LABEL = {
   script: translate("Script"),
 };
 
-const taskListenerEventTypeOptions = [
-  { name: translate("create"), value: "create" },
-  { name: translate("assignment"), value: "assignment" },
-  { name: translate("complete"), value: "complete" },
-  { name: translate("delete"), value: "delete" },
-  { name: translate("update"), value: "update" },
-  { name: translate("timeout"), value: "timeout" },
-];
+
 
 const timerOptions = [
   { value: "timeDate", name: translate("Date") },
@@ -518,7 +512,7 @@ export default function ListenerProps({
                   return selectedExecutionEntity ||
                     selectedExecutionEntity === 0
                     ? getExecutionOptions()
-                    : taskListenerEventTypeOptions;
+                    : TASK_LISTENER_EVENT_TYPE_OPTION;
                 },
                 get: function () {
                   const listener = getListener();

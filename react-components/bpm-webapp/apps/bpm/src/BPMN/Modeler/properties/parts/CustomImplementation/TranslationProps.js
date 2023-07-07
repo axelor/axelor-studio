@@ -107,8 +107,8 @@ export default function TranslationProps({
         ? "categoryValue"
         : "name";
     element.businessObject[modelProperty] = val;
-    let elementRegistry = bpmnModeler.get("elementRegistry");
-    let modeling = bpmnModeler.get("modeling");
+    let elementRegistry = bpmnModeler?.get("elementRegistry");
+    let modeling = bpmnModeler?.get("modeling");
     let shape = elementRegistry.get(element.id);
     if (!shape) return;
     modeling &&
@@ -273,7 +273,7 @@ export default function TranslationProps({
   }, [element]);
 
   useEffect(() => {
-    let canvas = bpmnModeler.get("canvas");
+    let canvas = bpmnModeler?.get("canvas");
     if (!canvas) return;
     let isSubscribed = true;
     let rootElement = canvas.getRootElement();

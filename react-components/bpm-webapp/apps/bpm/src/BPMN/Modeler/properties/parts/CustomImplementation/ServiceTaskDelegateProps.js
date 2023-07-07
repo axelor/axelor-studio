@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import AddIcon from "@material-ui/icons/Add";
@@ -17,6 +17,8 @@ import {
   getDMNModel,
   getDMNModels,
   getBamlModels,
+  fetchModels,
+  getActions,
 } from "../../../../../services/api";
 import { getBool } from "../../../../../utils";
 import {
@@ -116,6 +118,12 @@ const useStyles = makeStyles((theme) => ({
     color: "#666",
     margin: "3px 0px",
   },
+  actionContainer: {
+    margin: "5px 0px 0px",
+  },
+  actionSelect: {
+    margin: "3px 0px",
+  },
   baml: {
     display: "flex",
     alignItems: "center",
@@ -133,7 +141,6 @@ const implementationOptions = [
     name: translate("Delegate expression"),
     value: "delegateExpression",
   },
-  { name: translate("DMN"), value: "dmn" },
   { name: translate("External"), value: "external" },
 ];
 
@@ -146,6 +153,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
   const [open, setOpen] = useState(false);
   const [isBaml, setBaml] = useState(false);
   const [compulsory, setCompulsory] = useState(true);
+  const [actions, setActions] = useState([]);
 
   const classes = useStyles();
 
@@ -157,10 +165,13 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
     setOpen(false);
   };
 
-  const getPropertyValue = (propertyName) => {
-    const bo = getBusinessObject(element);
-    return bo && bo[propertyName];
-  };
+  const getPropertyValue = React.useCallback(
+    (propertyName) => {
+      const bo = getBusinessObject(element);
+      return bo && bo[propertyName];
+    },
+    [element]
+  );
 
   const setPropertyValue = (propertyName, value) => {
     const bo = getBusinessObject(element);
@@ -252,28 +263,30 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
   }, [getProperty]);
 
   useEffect(() => {
-    let bo = getBusinessObject(element);
-    let type = "script";
+    const bo = getBusinessObject(element);
+
     if (!bo) {
-      setImplementationType(type);
+      setImplementationType("script");
       return;
     }
-    if (bo.expression || bo.expression === "") {
-      type = "expression";
-    } else if (bo.class || bo.class === "") {
-      type = "class";
-    } else if (bo.delegateExpression || bo.delegateExpression === "") {
-      type = "delegateExpression";
-    } else if (bo.topic || bo.topic === "") {
-      type = "external";
-    } else if (bo.decisionRef) {
-      type = "dmn";
-      setBindingType(bo.decisionRefBinding);
-    } else {
-      type = "";
-    }
-    setImplementationType(type);
+
+    const implementationType = getProperty("implementationType");
+    setImplementationType(implementationType || "");
   }, [element, getProperty]);
+
+  useEffect(() => {
+    if (implementationType === "actions") {
+      const bo = getBusinessObject(element);
+      const attrs = bo && bo.$attrs;
+      const actions = attrs["camunda:actions"]?.split(",");
+      const value =
+        actions &&
+        actions.map((action) => {
+          return { name: action };
+        });
+      setActions(value);
+    } else setActions([]);
+  }, [implementationType, element]);
 
   useEffect(() => {
     if (implementationType === "dmn") {
@@ -306,6 +319,25 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
     } else {
       setVisible(false);
     }
+  }, [element]);
+
+  const fetchActions = useCallback(async () => {
+    const models = await fetchModels(element);
+    if (!models.length) return;
+    let metaModels = [],
+      metaJsonModels = [];
+    (models || []).forEach((m) => {
+      if (m.type === "metaModel") {
+        metaModels.push(m);
+      } else {
+        metaJsonModels.push(m);
+      }
+    });
+    const modelNames = [
+      metaJsonModels.length ? "com.axelor.meta.db.MetaJsonRecord" : null,
+      ...metaModels.map((m) => m.fullName),
+    ];
+    return await getActions(modelNames);
   }, [element]);
 
   return (
@@ -389,10 +421,8 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
             </div>
           </React.Fragment>
         )}
-        {((element && element.type === "bpmn:ServiceTask" && !isBaml) ||
-          (element &&
-            element.type !== "bpmn:ServiceTask" &&
-            element.type !== "bpmn:SendTask")) && (
+        {((element?.type === "bpmn:ServiceTask" && !isBaml) ||
+          element?.type !== "bpmn:SendTask") && (
           <React.Fragment>
             <SelectBox
               element={element}
@@ -402,10 +432,15 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                 modelProperty: "implementationType",
                 selectOptions: function () {
                   let options;
-                  if (!is(element, "bpmn:BusinessRuleTask")) {
-                    options = implementationOptions.filter(function (option) {
-                      return option.value !== "dmn";
-                    });
+                  if (is(element, "bpmn:BusinessRuleTask")) {
+                    const dmn = { name: translate("DMN"), value: "dmn" };
+                    options = [...implementationOptions, dmn];
+                  } else if (is(element, "bpmn:ServiceTask")) {
+                    const actions = {
+                      name: translate("Actions"),
+                      value: "actions",
+                    };
+                    options = [...implementationOptions, actions];
                   } else {
                     options = implementationOptions;
                   }
@@ -413,7 +448,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                 },
                 emptyParameter: true,
                 get: function () {
-                  return { implementationType: implementationType };
+                  return { implementationType };
                 },
                 set: function (e, values) {
                   if (!values) return;
@@ -434,7 +469,15 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                   if (values.implementationType === "dmn") {
                     setPropertyValue("mapDecisionResult", "singleResult");
                   }
+
+                  if (values.implementationType !== "actions") {
+                    element.businessObject.class = undefined;
+                    setProperty("isAction", undefined);
+                    setProperty("actions", undefined);
+                  }
+
                   setImplementationType(values.implementationType);
+                  setProperty("implementationType", values.implementationType);
                 },
               }}
             />
@@ -466,7 +509,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                     }
                   },
                   validate: function (e, values) {
-                    if (!values.class && implementationType === "class") {
+                    if (!values.class) {
                       return { class: translate("Must provide a value") };
                     }
                   },
@@ -502,10 +545,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                       }
                     },
                     validate: function (e, values) {
-                      if (
-                        !values.expression &&
-                        implementationType === "expression"
-                      ) {
+                      if (!values.expression) {
                         return {
                           expression: translate("Must provide a value"),
                         };
@@ -566,10 +606,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                     }
                   },
                   validate: function (e, values) {
-                    if (
-                      !values.delegateExpression &&
-                      implementationType === "delegateExpression"
-                    ) {
+                    if (!values.delegateExpression) {
                       return {
                         delegateExpression: translate("Must provide a value"),
                       };
@@ -693,10 +730,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                         setPropertyValue("decisionRefVersionTag", undefined);
                       },
                       validate: function (e, values) {
-                        if (
-                          !values.decisionRefVersion &&
-                          bindingType === "version"
-                        ) {
+                        if (!values.decisionRefVersion) {
                           return {
                             decisionRefVersion: translate(
                               "Must provide a value"
@@ -729,10 +763,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                         setPropertyValue("decisionRefVersion", undefined);
                       },
                       validate: function (e, values) {
-                        if (
-                          !values.decisionRefVersionTag &&
-                          bindingType === "versionTag"
-                        ) {
+                        if (!values.decisionRefVersionTag) {
                           return {
                             decisionRefVersionTag: translate(
                               "Must provide a value"
@@ -836,7 +867,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                       }
                     },
                     validate: function (e, values) {
-                      if (!values.topic && implementationType === "external") {
+                      if (!values.topic) {
                         return { topic: translate("Must provide a value") };
                       }
                     },
@@ -873,6 +904,43 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                   canRemove={true}
                 />
               </React.Fragment>
+            )}
+            {implementationType === "actions" && (
+              <div className={classes.actionContainer}>
+                <label className={classes.label}>{translate("Actions")}</label>
+                <Select
+                  className={classes.actionSelect}
+                  update={(value) => {
+                    setActions(value);
+                    if (value?.length) {
+                      element.businessObject.class = `com.axelor.studio.bpm.service.execution.WkfActionService`;
+                      element.businessObject.topic = undefined;
+                      element.businessObject.expression = undefined;
+                      element.businessObject.resultVariable = undefined;
+                      element.businessObject.delegateExpression = undefined;
+                      element.businessObject.decisionRef = undefined;
+                      setProperty(
+                        "actions",
+                        value?.map((v) => v.name).join(",")
+                      );
+                      setProperty("isAction", "true");
+                    } else {
+                      element.businessObject.class = undefined;
+                      setProperty("actions", undefined);
+                      setProperty("isAction", undefined);
+                    }
+                  }}
+                  name="actions"
+                  validate={(values) => {
+                    if (!values?.actions?.length) {
+                      return { actions: translate("Must provide a value") };
+                    }
+                  }}
+                  value={actions || []}
+                  multiple={true}
+                  fetchMethod={fetchActions}
+                />
+              </div>
             )}
           </React.Fragment>
         )}

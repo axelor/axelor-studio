@@ -9,6 +9,7 @@ import {
   brown,
   cyan,
 } from "@material-ui/core/colors";
+import { translate } from "mapper/src/utils";
 
 export const FILL_COLORS = {
   "bpmn:Task": "#cfe7f4",
@@ -156,6 +157,7 @@ export const WKF_FIELDS = [
   "name",
   "wkfStatusColor",
   "studioApp",
+  "newVersionOnDeploy",
 ];
 
 export const RELATED_FIELDS = ["name", "processId", "wkfProcessConfigList"];
@@ -228,4 +230,12 @@ export const CONDITIONAL_SOURCES = [
   "bpmn:TextAnnotation",
   "bpmn:MessageFlow",
   "bpmn:Participant",
+];
+export const TASK_LISTENER_EVENT_TYPE_OPTION = [
+  { name: translate("create"), value: "create", label: translate("create") },
+  { name: translate("assignment"), value: "assignment", label: translate("assignment") },
+  { name: translate("complete"), value: "complete", label: translate("complete") },
+  { name: translate("delete"), value: "delete", label: translate("delete") },
+  { name: translate("update"), value: "update", label: translate("update") },
+  { name: translate("timeout"), value: "timeout", label: translate("timeout") },
 ];

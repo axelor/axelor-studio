@@ -1,11 +1,11 @@
 import AxelorService from "./axelor.rest";
-import services from "../../../services/Service";
-import { sortBy } from "../../../utils";
+import services from "../../services/Service";
+import { sortBy } from "../../utils";
 import {
   allowed_types,
   query_custom_types,
-} from "../../../components/expression-builder/extra/data";
-import { getButtons } from "../../../services/api";
+} from "../../components/expression-builder/extra/data";
+import { getButtons } from "../../services/api";
 
 const metaModalService = new AxelorService({
   model: "com.axelor.meta.db.MetaModel",

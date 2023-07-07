@@ -234,7 +234,7 @@ const BUILT_IN_VARIABLES = [
     title: translate('Current date'),
   },
   {
-    name: '__user__',
+    name: '__studiouser__',
     title: translate('Current user'),
   },
   {

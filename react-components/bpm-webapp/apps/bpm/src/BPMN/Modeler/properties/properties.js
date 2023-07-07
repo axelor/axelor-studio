@@ -127,9 +127,9 @@ function createGeneralTabGroups(
     processOptions = { processIdDescription: PROCESS_KEY_HINT };
   }
 
-  idProps(generalGroup, element, translate, idOptions);
+  idProps(generalGroup, element, translate, idOptions, bpmnModeler);
   nameProps(generalGroup, element, bpmnFactory, canvas, translate, bpmnModeler);
-  processProps(generalGroup, element, translate, processOptions);
+  processProps(generalGroup, element, translate, processOptions, bpmnModeler);
   versionTag(generalGroup, element, translate);
   executableProps(generalGroup, element, translate);
   colorProps(generalGroup, element, translate);

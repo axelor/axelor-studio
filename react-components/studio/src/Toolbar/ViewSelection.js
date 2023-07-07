@@ -1,21 +1,22 @@
 import React from "react";
 
 import AxelorService from "./../services/axelor.rest";
-import Utils, { generateCustomModelSchema, translate } from "./../utils";
+import { generateCustomModelSchema, translate } from "./../utils";
 import Select from "./Select";
 import { relationalFields, MODEL_TYPE, PANEL_PROPS } from "./../constants";
-import {
-	fetchCustomFields,
-	getEnableAppBuilder,
-	fetchViews,
-	fetchAttrsList,
-	getTranslationList,
-	metaJsonFieldService,
-} from "./api";
+import { getEnableAppBuilder, fetchViews, fetchCustomFields } from "./api";
 import { modelSearch } from "./customModelSearch";
 import { generateXpath } from "./../store/xpathGenerator";
 import convert from "xml-js";
 import _ from "lodash";
+
+import {
+	fetchJSONFields,
+	getAttrsData,
+	getSchemaData,
+	getTranslationsData,
+	metaFieldFilter,
+} from "../helpers/helpers";
 
 const metaViewService = new AxelorService({
 	model: "com.axelor.meta.db.MetaView",
@@ -44,51 +45,6 @@ function ViewSelection({
 	const modelName = `com.axelor.meta.db.${
 		modelType !== MODEL_TYPE.CUSTOM ? "MetaModel" : "MetaJsonModel"
 	}`;
-
-	const fetchJSONFields = React.useCallback(
-		(ids, record) => {
-			const criteria = [];
-			if (ids.length) {
-				criteria.push({ fieldName: "id", operator: "in", value: ids });
-				const data = {
-					criteria,
-				};
-				metaJsonFieldService
-					.search({ data, sortBy: ["sequence"] })
-					.then((res) => {
-						if (res.data) {
-							const list = res.data || [];
-							const schema = generateCustomModelSchema(list, record);
-							update((draft) => {
-								draft.widgets = {
-									...schema.widgets,
-								};
-								draft.items = schema.items;
-								draft.loader = false;
-							});
-						} else {
-							update((draft) => {
-								draft.loader = false;
-							});
-						}
-					});
-			} else {
-				const schema = generateCustomModelSchema([], record);
-				update((draft) => {
-					draft.widgets = {
-						...schema.widgets,
-					};
-					draft.items = schema.items;
-					draft.loader = false;
-					draft.model = record;
-					draft.customModel = record;
-					draft.editWidget = -1;
-					draft.editWidgetType = null;
-				});
-			}
-		},
-		[update]
-	);
 
 	const handleModelSelect = React.useMemo(
 		() =>
@@ -211,7 +167,8 @@ function ViewSelection({
 							} else {
 								fetchJSONFields(
 									fields.map((f) => f.id),
-									rest
+									rest,
+									update
 								);
 								draft.customModel = record;
 							}
@@ -219,15 +176,7 @@ function ViewSelection({
 					}
 				});
 			}),
-		[
-			update,
-			modelName,
-			modelType,
-			fetchJSONFields,
-			clearHistory,
-			reset,
-			runIfConfirmed,
-		]
+		[update, modelName, modelType, clearHistory, reset, runIfConfirmed]
 	);
 
 	const doesViewExists = !!selectedView;
@@ -265,22 +214,9 @@ function ViewSelection({
 					update(draft => {draft.selectedView = view})
 
 				const views = await fetchViews(view);
-				const attrsList = await fetchAttrsList({
-					model: model.name,
-					view: view.name,
-				});
-				const schema = Utils.generateXMLToViewSchema({
-					view: views.view,
-					fields: metaFieldStore,
-					extensionXML: views.extensionXML,
-					attrsList,
-				});
-				const translationNames = Object.values(schema.widgets)
-					.filter(
-						(widget) => widget.title && widget.title.startsWith("studio:")
-					)
-					.map((widget) => widget.title);
-				const translationList = await getTranslationList(translationNames);
+				const attrsList = await getAttrsData(model, view);
+				const schema = getSchemaData(views, metaFieldStore, attrsList);
+				const translationList = await getTranslationsData(schema);
 				const originalViewData = {
 					operator: "and",
 					criteria: [
@@ -343,7 +279,7 @@ function ViewSelection({
 						draft.initialWidgets = schema.widgets;
 						draft.items = schema.items;
 						draft.initialItems = schema.items;
-						draft.metaFields = [...draft.metaFieldStore].filter(
+						draft.metaFields = [...(draft.metaFieldStore || [])]?.filter(
 							(field) =>
 								schema.fieldList.findIndex((f) => f.name === field.name) === -1
 						);
@@ -397,18 +333,8 @@ function ViewSelection({
 		};
 	}, []);
 
-	const metaFieldFilter = React.useCallback(() => {
-		const _domain = `self.json = true and self.metaModel.id='${
-			model ? model.id : -1
-		}'`;
-		return {
-			_domain,
-			fields: ["name"],
-		};
-	}, [model]);
-
 	const doesModelFieldExists = !!modelField;
-	const handleMetaFieldSelect = React.useMemo(
+	const handleMetaField = React.useMemo(
 		() =>
 			runIfConfirmed((field) => {
 				if (field) {
@@ -457,13 +383,18 @@ function ViewSelection({
 				}
 			}, !doesModelFieldExists || !customFieldHasChanges),
 		[
-			model,
-			update,
-			runIfConfirmed,
-			doesModelFieldExists,
 			clearHistory,
 			customFieldHasChanges,
+			doesModelFieldExists,
+			model,
+			runIfConfirmed,
+			update,
 		]
+	);
+
+	const handleMetaFieldFilter = React.useCallback(
+		() => metaFieldFilter(model),
+		[model]
 	);
 
 	const handleTypeSelect = React.useMemo(
@@ -578,9 +509,9 @@ function ViewSelection({
 					<Select
 						label="Custom fields"
 						model="com.axelor.meta.db.MetaField"
-						searchFilter={metaFieldFilter}
-						onChange={handleMetaFieldSelect}
 						value={modelField || null}
+						searchFilter={handleMetaFieldFilter}
+						onChange={(modelField) => handleMetaField(modelField)}
 					/>
 				</React.Fragment>
 			)}

@@ -548,7 +548,7 @@ function ExpressionBuilder({
     const prefix = isBPM
       ? 'self'
       : isBPMN && generateWithId
-      ? `$ctx.find('${upperCaseFirstLetter(modalName)}', ${modalName}Id)`
+      ? `__ctx__.find('${upperCaseFirstLetter(modalName)}', ${modalName}Id)`
       : modalName;
     const map_operators = MAP_OPERATOR[isBPM ? 'BPM' : expression];
     const returnValues = [];
@@ -1406,7 +1406,7 @@ function ExpressionBuilder({
           }${showBracket ? ')' : ''}`
         : null;
       const expBPMN = str
-        ? `return $ctx.createVariable($ctx.${
+        ? `return __ctx__.createVariable(__ctx__.${
             singleResult ? 'filterOne' : 'filter'
           }("${model}","${str}"${
             vals && vals.length > 0 ? `${valueParameters}` : ``

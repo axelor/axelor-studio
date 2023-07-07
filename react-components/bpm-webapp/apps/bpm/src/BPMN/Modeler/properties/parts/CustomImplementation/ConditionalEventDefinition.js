@@ -21,6 +21,8 @@ import {
 } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
 import { fetchModels } from "../../../../../services/api";
+import Select from "../../../../../components/Select";
+import { TASK_LISTENER_EVENT_TYPE_OPTION } from "../../../constants";
 
 const conditionType = "script";
 
@@ -36,6 +38,13 @@ const useStyles = makeStyles((theme) => ({
   },
   textbox: {
     width: "100%",
+  },
+  label: {
+    fontWeight: "bolder",
+    display: "inline-block",
+    verticalAlign: "middle",
+    color: "#666",
+    marginBottom: "-8px",
   },
   expressionBuilder: {
     display: "flex",
@@ -67,6 +76,7 @@ export default function ConditionalEventProps({
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [readOnly, setReadOnly] = useState(false);
+  const [variableEventValue, setVariableEventValue] = useState("");
   const classes = useStyles();
 
   const getter = () => {
@@ -200,6 +210,11 @@ export default function ConditionalEventProps({
     setReadOnly(scriptValue ? true : false);
   }, [getValue, element]);
 
+  useEffect(() => {
+    const { variableEvent } = getValue("variableEvent")(element);
+    setVariableEventValue(variableEvent ?? "");
+  }, [element, getValue]);
+
   return (
     <div>
       <TextField
@@ -211,25 +226,49 @@ export default function ConditionalEventProps({
           widget: "textField",
           get: getValue("variableName"),
           set: setValue("variableName"),
+          validate: function (e, values) {
+            if (!values?.variableName && conditionType === "script") {
+              return { variableName: translate("Must provide a value") };
+            }
+          },
         }}
       />
       {!(
         is(element, "bpmn:StartEvent") && !isEventSubProcess(element.parent)
       ) && (
-        <TextField
-          element={element}
-          entry={{
-            id: "variableEvent",
-            label: translate("Variable event"),
-            description: translate(
-              "Specify more than one variable change event as a comma separated list."
-            ),
-            modelProperty: "variableEvent",
-            widget: "textField",
-            get: getValue("variableEvent"),
-            set: setValue("variableEvent"),
-          }}
-        />
+        <>
+          <label className={classes.label}>{translate("Variable event")}</label>
+          <Select
+            multiple
+            options={TASK_LISTENER_EVENT_TYPE_OPTION}
+            update={(value) => {
+              const optionString = value?.map((item) => item?.value)?.join(",");
+              setVariableEventValue(optionString);
+              setValue("variableEvent")(element, {
+                variableEvent: optionString,
+              });
+            }}
+            name="multiSelect"
+            value={variableEventValue
+              ?.split(",")
+              ?.flatMap((v) =>
+                TASK_LISTENER_EVENT_TYPE_OPTION?.filter(
+                  (item) => item?.value?.toString() === v
+                )
+              )}
+            optionLabel="name"
+            optionLabelSecondary="title"
+            isLabel={false}
+            validate={function (values) {
+              if (
+                !values?.multiSelect?.length &&
+                conditionType === "script"
+              ) {
+                return { multiSelect: translate("Must provide a value") };
+              }
+            }}
+          />
+        </>
       )}
       <div className={classes.expressionBuilder}>
         <Textbox

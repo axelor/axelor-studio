@@ -579,7 +579,7 @@ function ExpressionBuilder({
     const prefix = isBPM
       ? "self"
       : generateWithId
-      ? `$ctx.find('${upperCaseFirstLetter(modalName)}', ${modalName}Id)`
+      ? `__ctx__.find('${upperCaseFirstLetter(modalName)}', ${modalName}Id)`
       : modalName;
     const map_operators = map_operator[isBPM ? "BPM" : expression];
     const returnValues = [];
