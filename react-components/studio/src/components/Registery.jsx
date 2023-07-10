@@ -1,8 +1,8 @@
-import Field from "./Field";
-import Panel from "./Panel";
-import TabPanel from "./TabPanel";
-import Form from "./Form";
-import Menu from "./Menu";
+import Field from "./Field"
+import Panel from "./Panel"
+import TabPanel from "./TabPanel"
+import Form from "./Form"
+import Menu from "./Menu"
 
 // common Registery contains all Form Components
 const Registery = {
@@ -23,6 +23,6 @@ const Registery = {
 		component: TabPanel,
 		props: { className: "panel tabs-panel" },
 	},
-};
+}
 
-export default Registery;
+export default Registery

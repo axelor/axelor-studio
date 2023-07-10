@@ -1,81 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import AutoComplete, {
-	createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
-import _ from "lodash";
-import { TextField, Typography, Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import AxelorService from "../services/axelor.rest";
-import { camleCaseString, getDefaultGridFormName, translate } from "../utils";
-import { useDebounceEffect } from "../common.func";
-import SearchView from "./SearchView";
-import { useStore } from "../store/context";
-import { ACTIONS, SHOW_MORE } from "../constants";
-
-const filter = createFilterOptions();
-const useStyles = makeStyles({
-	autoComplete: {
-		backgroundColor: "#293846",
-		marginTop: 15,
-		".modern-dark &": {
-			backgroundColor: "#323232",
-		},
-	},
-	label: {
-		color: "#e7eaec !important",
-		fontSize: 12,
-	},
-	popperAutoComplete: {
-		"& ul, .MuiAutocomplete-noOptions": {
-			backgroundColor: "rgb(41, 56, 70) !important",
-			".modern-dark &": {
-				backgroundColor: "#1b1b1b !important",
-			},
-		},
-		"& li, .MuiAutocomplete-noOptions": {
-			color: "#e7eaec !important",
-			backgroundColor: "rgb(41, 56, 70) !important",
-			".modern-dark &": {
-				backgroundColor: "#1b1b1b !important",
-			},
-		},
-		"& li:hover, .MuiAutocomplete-noOptions": {
-			color: "#e7eaec !important",
-			backgroundColor: "#2f4050 !important",
-			".modern-dark &": {
-				backgroundColor: "#323232 !important",
-			},
-		},
-	},
-	input: {
-		color: "#e7eaec",
-		fontSize: 13,
-	},
-	root: {
-		color: "#e7eaec",
-	},
-	error: {
-		color: "red",
-		marginBottom: 5,
-		fontSize: 13,
-	},
-	option: {
-		fontSize: 13,
-	},
-	disabled: {
-		color: "#a3a3a3 !important",
-		fontSize: 12,
-	},
-	groupTitle: {
-		position: "sticky",
-		top: "-8px",
-		padding: "4px 10px",
-		color: "white",
-		fontSize: 14,
-		fontWeight: "bold",
-		backgroundColor: "#293846",
-	},
-});
+import React, { useState, useEffect, useCallback, useMemo } from "react"
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete"
+import _ from "lodash"
+import { TextField, Typography, Box, Popper } from "@mui/material"
+import AxelorService from "../services/axelor.rest"
+import { camleCaseString, getDefaultGridFormName, translate } from "../utils"
+import { useDebounceEffect } from "../common.func"
+import SearchView from "./SearchView"
+import { useStore } from "../store/context"
+import { ACTIONS, SHOW_MORE } from "../constants"
+const filter = createFilterOptions()
 
 export default function SelectComponent(_props) {
 	const {
@@ -95,68 +28,69 @@ export default function SelectComponent(_props) {
 		getOptionLabel,
 		shouldFetchInStart = false,
 		_domain,
-	} = _props.field;
-	const { props, error } = _props;
+	} = _props.field
+	const { props, error, loader, filled } = _props
 	const { propertyList, setPropertyList, onChange, editWidgetType, modelType } =
-		props;
+		props
 	const value = useMemo(() => {
-		let value = propertyList[name] || "";
+		let value = propertyList[name] || ""
 		if (commaSeparated && type === "select") {
-			const values = value ? value.split(",") : [];
+			const values = value ? value.split(",") : []
 			value = values.map((val) => {
-				return { [valueField]: val };
-			});
+				return { [valueField]: val }
+			})
 		}
-		return value;
-	}, [propertyList, name, commaSeparated, type, valueField]);
+		return value
+	}, [propertyList, name, commaSeparated, type, valueField])
 
-	const [data, setData] = useState([...preData]);
-	const [searchText, setsearchText] = useState(null);
-	const isMounted = React.useRef(true);
-	const [moreDialog, setMoreDialog] = useState(false);
-	const [offset, setOffset] = useState(0);
-	const [total, setTotal] = useState(0);
-	const [initialFetch, setInitialFetch] = useState(false);
-	const { targetModel } = propertyList;
-	const classes = useStyles();
+	const [data, setData] = useState([...preData])
+	const [searchText, setsearchText] = useState(null)
+	const isMounted = React.useRef(true)
+	const [moreDialog, setMoreDialog] = useState(false)
+	const [offset, setOffset] = useState(0)
+	const [total, setTotal] = useState(0)
+	const [initialFetch, setInitialFetch] = useState(false)
+	const { targetModel } = propertyList
 	const disabled = isDisabled
 		? isDisabled(propertyList, editWidgetType, modelType)
-		: false;
-	const isTypeOnClick = name === "onClick" && type === "select";
-	const [isLoading, setIsLoading] = useState(true);
-	const { state } = useStore();
-	const { model, modelType: stateModelType } = state;
-	const [tabIndex, setTabIndex] = useState(state.model ? 0 : 1);
+		: false
+	const isTypeOnClick = name === "onClick" && type === "select"
+	const [isLoading, setIsLoading] = useState(true)
+	const { state } = useStore()
+	const { model, modelType: stateModelType } = state
+	const [tabIndex, setTabIndex] = useState(state.model ? 0 : 1)
+	const localLimit = moreDialog ? 6 : limit
 
 	const handleInputChange = useCallback(
 		(e, value, reason) => {
 			if (reason !== "reset") {
 				if (type === "objectSelection" && typeof value === "object") {
-					setsearchText(value[displayField]);
+					setsearchText(value[displayField])
 				} else {
-					setsearchText(value);
+					setsearchText(value)
 				}
 			}
 		},
 		[type, displayField]
-	);
+	)
 
 	const getSelectValue = useCallback(
 		(value = []) => {
 			if (commaSeparated) {
-				return value ? value.map((e) => e.name).join(",") : "";
+				return value ? value.map((e) => e.name).join(",") : ""
 			}
-			return ref ? value[valueField] : value;
+			return ref ? value[valueField] : value
 		},
 		[valueField, commaSeparated, ref]
-	);
+	)
 
 	const fetchOptions = useCallback(
 		(searchText = "", offset = 0) => {
+			setIsLoading(true)
 			const currentModel =
 				stateModelType === "CUSTOM"
 					? "com.axelor.meta.db.MetaJsonRecord"
-					: model?.fullName;
+					: model?.fullName
 			const modelFilters = [
 				{
 					type: translate("Model actions"),
@@ -181,20 +115,23 @@ export default function SelectComponent(_props) {
 						value: currentModel || "",
 					},
 				},
-			];
-			const criteria = [];
+			]
+			const criteria = []
 			if (searchText) {
 				criteria.push({
 					fieldName: "name",
 					operator: "like",
 					value: searchText,
-				});
+				})
 			}
 			if (
 				(name === "gridView" || name === "formView") &&
 				needsTargetModel.includes(props.type)
 			) {
-				if (!targetModel) return;
+				if (!targetModel) {
+					setIsLoading(false)
+					return
+				}
 			}
 			if (name === "gridView") {
 				needsTargetModel.includes(props.type) &&
@@ -202,8 +139,8 @@ export default function SelectComponent(_props) {
 						fieldName: "model",
 						operator: "=",
 						value: targetModel,
-					});
-				criteria.push({ fieldName: "type", operator: "=", value: "grid" });
+					})
+				criteria.push({ fieldName: "type", operator: "=", value: "grid" })
 			}
 			if (name === "formView") {
 				needsTargetModel.includes(props.type) &&
@@ -211,15 +148,15 @@ export default function SelectComponent(_props) {
 						fieldName: "model",
 						operator: "=",
 						value: targetModel,
-					});
-				criteria.push({ fieldName: "type", operator: "=", value: "form" });
+					})
+				criteria.push({ fieldName: "type", operator: "=", value: "form" })
 			}
 			if (isTypeOnClick && moreDialog) {
 				tabIndex === ACTIONS.GLOBAL
 					? criteria.push(modelFilters[ACTIONS.GLOBAL].criteria)
 					: tabIndex === ACTIONS.MODEL
 					? criteria.push(modelFilters[ACTIONS.MODEL].criteria)
-					: criteria.push(modelFilters[ACTIONS.OTHER].criteria);
+					: criteria.push(modelFilters[ACTIONS.OTHER].criteria)
 			}
 			const data = {
 				...(_domain
@@ -230,14 +167,14 @@ export default function SelectComponent(_props) {
 					: {}),
 				criteria,
 				operator: "and",
-			};
+			}
 			const fields = [
 				"name",
 				"fullName",
 				valueField,
 				displayField,
 				"parent",
-			].filter((e) => e);
+			].filter((e) => e)
 			if (shouldFetchInStart && initialFetch) {
 				// setData(data);
 			} else if (isTypeOnClick && !moreDialog) {
@@ -270,7 +207,7 @@ export default function SelectComponent(_props) {
 							limit: 5,
 							offset,
 						}),
-					]);
+					])
 
 					const data = await Promise.all(
 						fetchedData.map((result, index) =>
@@ -285,37 +222,37 @@ export default function SelectComponent(_props) {
 										id: "no_data_found",
 								  }
 						)
-					);
+					)
 					data.push({
 						name: translate(SHOW_MORE),
 						id: "studio_show_More_View",
-					});
-					setData(data.flat());
-				};
-				getActions();
+					})
+					setData(data.flat())
+				}
+				getActions()
 			} else {
 				return new AxelorService({ model: ref })
-					.search({ fields, data, limit, offset })
+					.search({ fields, data, limit: localLimit, offset })
 					.then(({ data, total } = {}) => {
-						shouldFetchInStart && setInitialFetch(true);
+						shouldFetchInStart && setInitialFetch(true)
 						if (data && data.length) {
 							if (isMounted.current) {
 								!moreDialog &&
 									!shouldFetchInStart &&
-									total > limit &&
+									total > localLimit &&
 									data.push({
 										[displayField]: translate(SHOW_MORE),
 										id: "studio_show_More_View",
-									});
-								setTotal(total);
-								const uniqueData = _.uniqBy(data, displayField);
-								setData(uniqueData);
+									})
+								setTotal(total)
+								const uniqueData = _.uniqBy(data, displayField)
+								setData(uniqueData)
 							}
 						} else {
-							setData([]);
+							setData([])
 						}
-						setIsLoading(false);
-					});
+						setIsLoading(false)
+					})
 			}
 		},
 		[
@@ -324,7 +261,7 @@ export default function SelectComponent(_props) {
 			targetModel,
 			valueField,
 			displayField,
-			limit,
+			localLimit,
 			needsTargetModel,
 			props.type,
 			moreDialog,
@@ -336,11 +273,11 @@ export default function SelectComponent(_props) {
 			stateModelType,
 			_domain,
 		]
-	);
+	)
 
 	const optionDebounceHandler = React.useCallback(() => {
-		ref && searchText != null && fetchOptions(searchText);
-	}, [fetchOptions, searchText, ref]);
+		ref && searchText != null && fetchOptions(searchText)
+	}, [fetchOptions, searchText, ref])
 
 	const getValue = useCallback(
 		(value) => {
@@ -349,81 +286,81 @@ export default function SelectComponent(_props) {
 						[valueField]: value,
 						[displayField]: value,
 				  }
-				: value;
+				: value
 		},
 		[valueField, ref, displayField]
-	);
+	)
 
 	const getInputAsOption = React.useCallback(
 		(value) => {
 			if (value && typeof value === "string" && ref) {
-				value = { [valueField]: value };
+				value = { [valueField]: value }
 			}
-			return value;
+			return value
 		},
 		[ref, valueField]
-	);
+	)
 
 	const handleSearch = React.useCallback((value) => {
-		setsearchText(value);
-		setOffset(0);
-	}, []);
+		setsearchText(value)
+		setOffset(0)
+	}, [])
 
 	const handleNext = React.useCallback(() => {
-		const newOffset = offset + limit;
+		const newOffset = offset + localLimit
 		if (newOffset <= total) {
-			setOffset(newOffset);
-			fetchOptions(searchText, newOffset);
+			setOffset(newOffset)
+			fetchOptions(searchText, newOffset)
 		}
-	}, [limit, total, offset, fetchOptions, searchText]);
+	}, [localLimit, total, offset, fetchOptions, searchText])
 
 	const handlePrevious = React.useCallback(() => {
-		let newOffset = offset - limit;
-		newOffset = newOffset > 0 ? newOffset : 0;
-		setOffset(newOffset);
-		fetchOptions(searchText, newOffset);
-	}, [offset, limit, searchText, fetchOptions]);
+		let newOffset = offset - localLimit
+		newOffset = newOffset > 0 ? newOffset : 0
+		setOffset(newOffset)
+		fetchOptions(searchText, newOffset)
+	}, [offset, localLimit, searchText, fetchOptions])
 
 	const handleClose = React.useCallback(() => {
-		setMoreDialog(false);
-		setsearchText(null);
-		setOffset(0);
-	}, []);
+		setMoreDialog(false)
+		setsearchText(null)
+		setOffset(0)
+	}, [])
 
 	const handleChange = React.useCallback(
 		async (e, _value) => {
 			if (_value?.id === "studio_show_More_View") {
-				setMoreDialog(true);
-				return;
+				setMoreDialog(true)
+				return
 			}
 			if (multiple) {
 				if (e.fromDialog) {
-					_value = [...value, _value];
-					handleSearch("");
+					_value = [...value, _value]
+					handleSearch("")
 				} else {
 					const hasMoreView =
-						_value.findIndex((v) => v?.id === "studio_show_More_View") !== -1;
+						_value.findIndex((v) => v?.id === "studio_show_More_View") !== -1
 					if (hasMoreView) {
-						setMoreDialog(true);
-						return;
+						setMoreDialog(true)
+						return
 					} else {
-						handleSearch("");
+						handleSearch("")
 					}
 					const isNoDataFound =
-						_value.findIndex((v) => v?.id === "no_data_found") !== -1;
-					if (isNoDataFound) return;
+						_value.findIndex((v) => v?.id === "no_data_found") !== -1
+					if (isNoDataFound) return
 				}
 				_value = _value
 					.map((val) => {
 						if (val?.id !== "studio_show_More_View") {
-							return getInputAsOption(val);
+							return getInputAsOption(val)
 						}
-						return undefined;
+						return undefined
 					})
-					.filter((e) => e);
+					.filter((e) => e)
 			} else {
 				if (_value && _value.inputValue && _value.inputValue.length && ref) {
-					_value[valueField] = _value.inputValue;
+					_value[valueField] = _value.inputValue
 				}
 			}
 			let updatedValue = {
@@ -432,14 +369,14 @@ export default function SelectComponent(_props) {
 					type === "objectSelection"
 						? _value
 						: _value && getSelectValue(_value),
-			};
-			let payload = {};
+			}
+			let payload = {}
 			if (name === "targetModel") {
-				const { targetModel } = updatedValue || {};
+				const { targetModel } = updatedValue || {}
 				payload = {
 					gridView: _value ? getDefaultGridFormName(targetModel) : null,
 					formView: _value ? getDefaultGridFormName(targetModel, true) : null,
-				};
+				}
 			}
 			if (name === "contextField") {
 				if (updatedValue[name]) {
@@ -452,12 +389,12 @@ export default function SelectComponent(_props) {
 							},
 						},
 						model: "com.axelor.meta.db.MetaJsonField",
-					});
+					})
 					if (res?.data?.[0]?.values) {
 						updatedValue = {
 							...updatedValue,
 							...res.data[0].values,
-						};
+						}
 					}
 				} else {
 					updatedValue = {
@@ -466,17 +403,17 @@ export default function SelectComponent(_props) {
 						contextFieldTargetName: null,
 						contextFieldValue: null,
 						contextFieldTitle: null,
-					};
+					}
 				}
 			}
 			if (name === "contextFieldTitle") {
-				updatedValue.contextFieldValue = _value?.id?.toString() || null;
+				updatedValue.contextFieldValue = _value?.id?.toString() || null
 			}
-			setPropertyList({ ...(updatedValue || {}), ...payload });
+			setPropertyList({ ...(updatedValue || {}), ...payload })
 			onChange(
 				{ ...(updatedValue || {}), ...payload },
 				name !== "selection" ? name : undefined
-			);
+			)
 		},
 		[
 			getSelectValue,
@@ -493,61 +430,124 @@ export default function SelectComponent(_props) {
 			handleSearch,
 			model,
 		]
-	);
+	)
 
 	const handleTabChange = useCallback((_, value) => {
-		setTabIndex(value);
-	}, []);
+		setTabIndex(value)
+	}, [])
 
-	let inputProps = {};
+	let inputProps = {}
 	if (moreDialog && isTypeOnClick) {
-		inputProps.currentTab = tabIndex;
-		inputProps.onTabChange = handleTabChange;
-		inputProps.isTypeOnClick = isTypeOnClick;
+		inputProps.currentTab = tabIndex
+		inputProps.onTabChange = handleTabChange
+		inputProps.isTypeOnClick = isTypeOnClick
 	}
 
-	useDebounceEffect(optionDebounceHandler, 500);
+	useDebounceEffect(optionDebounceHandler, 500)
 
 	useEffect(() => {
-		isMounted.current = true;
+		isMounted.current = true
 		return () => {
-			isMounted.current = false;
-		};
-	}, []);
+			isMounted.current = false
+		}
+	}, [])
 
 	const _value = useMemo(
 		() => (multiple ? value || [] : getValue(value)),
 		[value, multiple, getValue]
-	);
+	)
 
 	useEffect(() => {
 		if (moreDialog) {
-			setIsLoading(true);
-			fetchOptions(searchText);
-			setOffset(0);
-			setData([]);
+			setIsLoading(true)
+			fetchOptions(searchText)
+			setOffset(0)
+			setData([])
 		}
-	}, [fetchOptions, moreDialog, searchText]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [fetchOptions, moreDialog])
 
 	return (
-		<div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-			<AutoComplete
-				classes={{
-					inputFocused: disabled ? classes.disabled : classes.input,
-					clearIndicator: classes.input,
-					popupIndicator: disabled ? classes.disabled : classes.input,
-					popper: classes.popperAutoComplete,
-					option: classes.option,
-					noOptions: classes.option,
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				width: "100%",
+			}}
+		>
+			<Autocomplete
+				sx={{
+					backgroundColor: "#293846",
+					marginTop: "15px",
+					"& .MuiFormLabel-root": {
+						color: "#e7eaec !important",
+						fontSize: 12,
+					},
+					"& .MuiChip-root": {
+						backgroundColor: "#e0e0e0",
+					},
+					...(disabled
+						? {}
+						: {
+								"& .MuiOutlinedInput-notchedOutline": {
+									borderColor: filled ? "green" : "rgba(0,0,0, 0.23)",
+								},
+								"&:hover .MuiOutlinedInput-notchedOutline": {
+									borderColor: "white",
+								},
+						  }),
+					"& .MuiInputBase-input, .MuiIconButton-root": {
+						color: "#fff !important",
+						fontSize: 13,
+					},
+					"& .Mui-disabled": {
+						fontSize: 12,
+						WebkitTextFillColor: "#a3a3a3 !important",
+					},
 				}}
-				className={classes.autoComplete}
+				componentsProps={{
+					paper: {
+						sx: {
+							fontSize: 13,
+							backgroundColor: "rgb(41, 56, 70)",
+							WebkitTextFillColor: "#e7eaec",
+							"& ul, .MuiAutocomplete-noOptions": {
+								backgroundColor: "rgb(41, 56, 70) !important",
+								".modern-dark &": {
+									backgroundColor: "#1b1b1b !important",
+								},
+							},
+							"& li, .MuiAutocomplete-noOptions": {
+								color: "#e7eaec !important",
+								backgroundColor: "rgb(41, 56, 70) !important",
+								".modern-dark &": {
+									backgroundColor: "#1b1b1b !important",
+								},
+							},
+							"& li:hover, .MuiAutocomplete-noOptions": {
+								color: "#e7eaec !important",
+								backgroundColor: "#2f4050 !important",
+								".modern-dark &": {
+									backgroundColor: "#323232 !important",
+								},
+							},
+							"& .Mui-focused": {
+								backgroundColor: "#2f4050 !important",
+								".modern-dark &": {
+									backgroundColor: "#323232 !important",
+								},
+							},
+						},
+					},
+				}}
 				onOpen={() => {
-					ref && !shouldFetchInStart && !initialFetch && setData([]);
-					ref && fetchOptions(searchText);
+					ref && !shouldFetchInStart && !initialFetch && setData([])
+					ref && fetchOptions(searchText)
 				}}
-				disabled={disabled}
+				disabled={disabled || loader}
 				multiple={multiple}
 				options={data}
+				loading={isLoading}
 				groupBy={(option) => option.type}
 				forcePopupIcon={true}
 				freeSolo={type !== "objectSelection"}
@@ -557,7 +557,7 @@ export default function SelectComponent(_props) {
 				onInputChange={handleInputChange}
 				{...{
 					filterOptions: (options, params) => {
-						const filtered = filter(options, params);
+						const filtered = filter(options, params)
 						// Suggest the creation of a new value
 						if (searchText && canAddNew) {
 							filtered.splice(0, 0, {
@@ -565,23 +565,23 @@ export default function SelectComponent(_props) {
 								name: searchText,
 								title: `${translate("Add")} "${searchText}"`,
 								type: translate("Add new"),
-							});
+							})
 						}
 						const showMore = options.find(
 							(o) => o.id === "studio_show_More_View"
-						);
+						)
 						if (
 							showMore &&
 							!["", null, undefined].includes(params.inputValue)
 						) {
 							const hasShowMore =
 								filtered.findIndex((o) => o.id === "studio_show_More_View") !==
-								-1;
+								-1
 
-							!hasShowMore && filtered.push({ ...showMore });
+							!hasShowMore && filtered.push({ ...showMore })
 						}
 
-						return filtered;
+						return filtered
 					},
 				}}
 				onChange={handleChange}
@@ -592,17 +592,20 @@ export default function SelectComponent(_props) {
 						error={Boolean(error)}
 						variant="outlined"
 						label={translate(camleCaseString(title || name))}
-						InputLabelProps={{
-							className: disabled ? classes.disabled : classes.label,
-						}}
 					/>
 				)}
 				renderGroup={(params) => (
 					<Box key={params.key}>
 						<Typography
-							className={classes.groupTitle}
-							style={{
+							sx={{
 								borderBottom: `${isTypeOnClick ? "2px solid gray" : "none"}`,
+								position: "sticky",
+								top: "-8px",
+								padding: "4px 10px",
+								color: "white",
+								fontSize: 14,
+								fontWeight: "bold",
+								backgroundColor: "#293846",
 							}}
 						>
 							{params.group}
@@ -612,23 +615,32 @@ export default function SelectComponent(_props) {
 				)}
 				getOptionLabel={(option) => {
 					if (getOptionLabel) {
-						return getOptionLabel(option, data);
+						return getOptionLabel(option, data)
 					}
 					return option.type === translate("Add new")
 						? option["title"]
 						: typeof option === "string"
 						? option
-						: option[displayField] || "";
+						: option[displayField] || ""
 				}}
+				/*
+				  reason for using popperComponent
+					https://redmine.axelor.com/issues/63206#note-9
+				  https://redmine.axelor.com/attachments/46790/Screencast%20from%202023-07-24%2019-00-03.webm
+				*/
+				PopperComponent={(props) => <Popper {...props} />}
 			/>
 			{error && (
-				<Typography className={classes.error}>{translate(error)}</Typography>
+				<Typography sx={{ color: "red", fontSize: 13 }}>
+					{translate(error)}
+				</Typography>
 			)}
 			<SearchView
 				searchText={searchText}
 				list={data}
 				total={total}
 				offset={offset}
+				limit={localLimit}
 				displayField={displayField}
 				open={moreDialog}
 				onNext={handleNext}
@@ -641,5 +653,5 @@ export default function SelectComponent(_props) {
 				{...inputProps}
 			/>
 		</div>
-	);
+	)
 }

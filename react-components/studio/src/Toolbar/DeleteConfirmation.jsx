@@ -1,30 +1,11 @@
-import React from "react";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import { makeStyles } from "@material-ui/core/styles";
-
-import { translate } from "../utils";
-
-const useStyles = makeStyles({
-	paper: {
-		minWidth: 300,
-	},
-	button: {
-		textTransform: "none",
-		backgroundColor: "#0275d8",
-		borderColor: "#0275d8",
-		color: "#fff",
-		"&:hover": {
-			backgroundColor: "#0275d8",
-			borderColor: "#0275d8",
-			color: "#fff",
-		},
-	},
-});
+import React from "react"
+import Button from "@mui/material/Button"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
+import { translate } from "../utils"
 
 export default function DeleteConfirmation({
 	onOk,
@@ -33,15 +14,16 @@ export default function DeleteConfirmation({
 	message,
 	title = "Delete Confirmation",
 }) {
-	const classes = useStyles();
 	return (
 		<Dialog
 			open={open}
 			onClose={onClose}
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
-			classes={{
-				paper: classes.paper,
+			sx={{
+				"& .MuiDialog-paper": {
+					minWidth: 300,
+				},
 			}}
 		>
 			<DialogTitle id="alert-dialog-title">{translate(title)}</DialogTitle>
@@ -51,13 +33,42 @@ export default function DeleteConfirmation({
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
-				<Button onClick={onOk} color="primary" className={classes.button}>
+				<Button
+					onClick={onOk}
+					color="primary"
+					sx={{
+						textTransform: "none",
+						bgcolor: "#0275d8",
+						borderColor: "#0275d8",
+						color: "#fff",
+						"&:hover": {
+							bgcolor: "#0275d8",
+							borderColor: "#0275d8",
+							color: "#fff",
+						},
+					}}
+				>
 					{translate("Yes")}
 				</Button>
-				<Button onClick={onClose} color="primary" autoFocus className={classes.button}>
+				<Button
+					onClick={onClose}
+					color="primary"
+					autoFocus
+					sx={{
+						textTransform: "none",
+						bgcolor: "#0275d8",
+						borderColor: "#0275d8",
+						color: "#fff",
+						"&:hover": {
+							bgcolor: "#0275d8",
+							borderColor: "#0275d8",
+							color: "#fff",
+						},
+					}}
+				>
 					{translate("No")}
 				</Button>
 			</DialogActions>
 		</Dialog>
-	);
+	)
 }

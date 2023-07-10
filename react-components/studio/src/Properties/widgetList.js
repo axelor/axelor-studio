@@ -4,7 +4,7 @@ const selectWidget = [
 	"RadioSelect",
 	"MultiSelect",
 	"ImageSelect",
-];
+]
 const data = {
 	boolean: [
 		"InlineCheckbox",
@@ -49,6 +49,6 @@ const data = {
 		"SelectProgress",
 		...selectWidget,
 	],
-};
+}
 
-export default data;
+export default data

@@ -1,33 +1,29 @@
-import React from "react";
-import classNames from "classnames";
-import Tooltip from "@material-ui/core/Tooltip";
-import AddIcon from "@material-ui/icons/Add";
+import React from "react"
+import classNames from "classnames"
+import Tooltip from "@mui/material/Tooltip"
+import AddIcon from "@mui/icons-material/Add"
 
-import { GridContainer, useGridWidget } from "./Grid";
-import { translate } from "../utils";
-import { useStoreState, useStore } from "../store/context";
-import { MODEL_TYPE } from "../constants";
+import { GridContainer, useGridWidget } from "./Grid"
+import { translate } from "../utils"
+import { useStoreState } from "../store/context"
+import { MODEL_TYPE } from "../constants"
 
-const panelAttrs = { cols: 1 };
+const panelAttrs = { cols: 1 }
 
 /**
  * Panel Component
  * Used As Container to group Field Component like form group
  */
 function TabPanelComponent(props) {
-	const WidgetComponent = useGridWidget();
-	const { modelType } = useStoreState();
-	const { id, attrs, isDragging, isTab = false, addTabPanel, ...rest } = props;
-	const { title, items = [] } = attrs;
-	let { current } = attrs;
+	const WidgetComponent = useGridWidget()
+	const { modelType, highlightedOption } = useStoreState()
+	const { id, attrs, isTab = false, addTabPanel, ...rest } = props
+	const { title, items = [] } = attrs
+	let { current } = attrs
 	const tabs = [...items.slice()].reduce(
 		(all, tab) => all.concat([tab, 0]),
 		[0]
-	);
-	const {
-		state: { highlightedOption },
-		update,
-	} = useStore();
+	)
 
 	// reuse common tab attributes
 	const getTabAttributes = (id, index) => ({
@@ -40,20 +36,13 @@ function TabPanelComponent(props) {
 		panelId: props.id,
 		panelColumns: attrs.cols,
 		tabId: props.id,
-	});
-	let activeTabIndex = items.indexOf(current);
+	})
+	let activeTabIndex = items.indexOf(current)
 	// if active tab index not found, take first element as active one
 	if (activeTabIndex === -1) {
-		activeTabIndex = 0;
-		current = items.length ? items[0] : 0;
+		activeTabIndex = 0
+		current = items.length ? items[0] : 0
 	}
-	React.useEffect(() => {
-		if (modelType === MODEL_TYPE.BASE && props._type !== "customField") {
-			update((draft) => {
-				draft.tabPanelItems = items;
-			});
-		}
-	}, [update, items, props._type, modelType]);
 
 	return (
 		<React.Fragment>
@@ -91,7 +80,7 @@ function TabPanelComponent(props) {
 						) && (
 							<div style={{ display: "flex", alignItems: "center" }}>
 								<Tooltip title={translate("Add tab")} arrow>
-									<AddIcon onClick={() => addTabPanel({ attrs, id })} />
+									<AddIcon onClick={() => addTabPanel({ id })} />
 								</Tooltip>
 							</div>
 						)}
@@ -106,8 +95,8 @@ function TabPanelComponent(props) {
 				</GridContainer>
 			)}
 		</React.Fragment>
-	);
+	)
 }
 
 //panel tabs-panel
-export default TabPanelComponent;
+export default TabPanelComponent

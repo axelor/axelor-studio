@@ -1,97 +1,92 @@
-import AxelorService from "../services/axelor.rest";
+import AxelorService from "../services/axelor.rest"
 import {
 	fetchAttrsList,
 	fetchCustomFields,
 	fetchViews,
-	getTranslationList,
 	metaJsonFieldService,
-} from "../Toolbar/api";
-import Utils, { generateCustomModelSchema } from "../utils";
+} from "../Toolbar/api"
+import { generateCustomModelSchema, generateXMLToViewSchema } from "../utils"
+import { validateWidgets } from "../store/validation"
 
-import convert from "xml-js";
-import { generateXpath } from "../store/xpathGenerator";
-import { PANEL_PROPS } from "../constants";
-import _ from "lodash";
+import convert from "xml-js"
+import { generateXpath } from "../store/xpathGenerator"
+import { MODEL_TYPE } from "../constants"
+import _ from "lodash"
+import { getPanel } from "../fields"
 
 const metaViewService = new AxelorService({
 	model: "com.axelor.meta.db.MetaView",
-});
+})
 
 export const metaFieldFilter = (model) => {
 	const _domain = `self.json = true and self.metaModel.id='${
 		model ? model.id : -1
-	}'`;
+	}'`
 	return {
 		_domain,
 		fields: ["name"],
-	};
-};
-
-export const getTranslationsData = async (schema) => {
-	const translationNames = Object.values(schema.widgets)
-		.filter((widget) => widget.title && widget.title.startsWith("studio:"))
-		.map((widget) => widget.title);
-	const translationList = await getTranslationList(translationNames);
-	return translationList;
-};
+	}
+}
 
 export const getAttrsData = async (model, view) => {
 	const data = await fetchAttrsList({
 		model: model.name,
 		view: view.name,
-	});
-	return data;
-};
+	})
+	return data
+}
 
 export const getSchemaData = (views, fields, attrsList) => {
-	const data = Utils.generateXMLToViewSchema({
+	const data = generateXMLToViewSchema({
 		view: views.view,
 		fields,
 		extensionXML: views.extensionXML,
 		attrsList,
-	});
-	return data;
-};
+	})
+	return data
+}
 
 export const fetchJSONFields = (ids, record, update) => {
-	const criteria = [];
+	const criteria = []
 	if (ids.length) {
-		criteria.push({ fieldName: "id", operator: "in", value: ids });
+		criteria.push({ fieldName: "id", operator: "in", value: ids })
 		const data = {
 			criteria,
-		};
+		}
 		metaJsonFieldService.search({ data, sortBy: ["sequence"] }).then((res) => {
 			if (res.data) {
-				const list = res.data || [];
-				const schema = generateCustomModelSchema(list, record);
+				const list = res.data || []
+				const schema = generateCustomModelSchema(list, record)
 				update((draft) => {
 					draft.widgets = {
 						...schema.widgets,
-					};
-					draft.items = schema.items;
-					draft.loader = false;
-				});
+					}
+					draft.items = schema.items
+					draft.loader = false
+					validateWidgets(draft, schema.widgets, false)
+				})
 			} else {
 				update((draft) => {
-					draft.loader = false;
-				});
+					draft.loader = false
+				})
 			}
-		});
+		})
 	} else {
-		const schema = generateCustomModelSchema([], record);
+		const schema = generateCustomModelSchema([], record)
 		update((draft) => {
 			draft.widgets = {
 				...schema.widgets,
-			};
-			draft.items = schema.items;
-			draft.loader = false;
-			draft.model = record;
-			draft.customModel = record;
-			draft.editWidget = -1;
-			draft.editWidgetType = null;
-		});
+			}
+			draft.items = schema.items
+			draft.loader = false
+			draft.model = record
+			draft.customModel = record
+			draft.editWidget = -1
+			draft.editWidgetType = null
+			validateWidgets(draft, schema.widgets, false)
+		})
 	}
-};
+}
 
 export const fetchMetaViewService = async (
 	view,
@@ -102,7 +97,7 @@ export const fetchMetaViewService = async (
 ) => {
 	const viewData = {
 		_domain: `self.type='form' and self.model='${modelName}' and (self.computed = true OR self.name NOT IN (select meta.name from MetaView meta where meta.computed = true))`,
-	};
+	}
 	const fetchFields = [
 		"name",
 		"model",
@@ -112,26 +107,25 @@ export const fetchMetaViewService = async (
 		"xmlId",
 		"computed",
 		"xml",
-	];
+	]
 
 	const res = await metaViewService.search({
 		data: viewData,
 		fields: fetchFields,
-	});
+	})
 
-	const { data = [] } = res;
-	const viewOptions = data.filter((d) => d.name === view);
-	const [selectedViewOption] = viewOptions;
+	const { data = [] } = res
+	const viewOptions = data.filter((d) => d.name === view)
+	const [selectedViewOption] = viewOptions
 	update((draft) => {
-		draft.selectedView = selectedViewOption;
-	});
+		draft.selectedView = selectedViewOption
+	})
 
-	const views = await fetchViews(selectedViewOption);
+	const views = await fetchViews(selectedViewOption)
 
 	if (views) {
-		const attrsList = await getAttrsData(model, view);
-		const schema = getSchemaData(views, fields, attrsList);
-		const translationList = await getTranslationsData(schema);
+		const attrsList = await getAttrsData(model, view)
+		const schema = getSchemaData(views, fields, attrsList)
 		const originalViewData = {
 			operator: "and",
 			criteria: [
@@ -151,9 +145,9 @@ export const fetchMetaViewService = async (
 				},
 				{ fieldName: "name", operator: "=", value: `${view}` },
 			],
-		};
+		}
 		metaViewService.search({ data: originalViewData }).then((res) => {
-			const { data = [] } = res;
+			const { data = [] } = res
 			if (data[0]) {
 				update((draft) => {
 					draft.originalXML = JSON.parse(
@@ -161,117 +155,114 @@ export const fetchMetaViewService = async (
 							compact: false,
 							fullTagEmptyElement: false,
 						})
-					);
-				});
+					)
+				})
 			}
-		});
+		})
 		// fetch studio extension view
 		const _viewSearch = {
 			_domain: `self.xmlId = 'studio-${view}' and self.extension = true`,
-		};
+		}
 		metaViewService
 			.search({ data: _viewSearch })
 			.then((res) => {
-				const { data: resData = [] } = res;
-				const record = resData[0];
+				const { data: resData = [] } = res
+				const record = resData[0]
 				if (record) {
 					update((draft) => {
-						draft.extensionView = record;
+						draft.extensionView = record
 						draft.extensionXML = JSON.parse(
 							convert.xml2json(record.xml, {
 								compact: false,
 								fullTagEmptyElement: false,
 							})
-						);
-					});
+						)
+					})
 				}
 			})
 			.catch((err) => {
-				throw err;
-			});
+				throw err
+			})
 
 		update((draft) => {
-			draft.attrsList = attrsList;
-			draft.translationList = translationList;
-			draft.initialTranslationList = translationList;
-			draft.removedTranslationList = [];
+			draft.attrsList = attrsList
+			draft.selectedView = selectedViewOption
+			if (views.view) {
+				draft.view = { fields: draft.metaFields, view: views.view }
+				draft.exView = views.view
+			}
+			draft.customFields = []
+			draft.customFieldWidgets = null
+			draft.customFieldItems = []
+			draft.modelField = null
+			draft.loader = false
+			draft.extensionMoves = []
+			draft.widgetErrorList = {}
+			draft.customErrorList = {}
 			if (schema) {
-				draft.widgets = schema.widgets;
-				draft.initialWidgets = schema.widgets;
-				draft.items = schema.items;
-				draft.initialItems = schema.items;
+				draft.widgets = schema.widgets
+				draft.items = schema.items
 				draft.metaFields = [...draft.metaFieldStore].filter(
 					(field) =>
 						schema.fieldList.findIndex((f) => f.name === field.name) === -1
-				);
+				)
+				validateWidgets(draft, schema.widgets, false)
 			}
-			draft.selectedView = selectedViewOption;
-			if (views.view) {
-				draft.view = { fields: draft.metaFields, view: views.view };
-				draft.exView = views.view;
-			}
-			draft.customFields = [];
-			draft.customFieldWidgets = null;
-			draft.customFieldItems = null;
-			draft.modelField = null;
-			draft.loader = false;
-			draft.extensionMoves = [];
-			draft.errorList = {};
-			generateXpath(draft);
-		});
+			generateXpath(draft)
+		})
 	} else {
 		update((draft) => {
-			draft.loader = false;
-		});
+			draft.loader = false
+		})
 	}
-};
+}
 
 export const handleMetaFieldSelect = (field, model, update) => {
 	if (field) {
 		fetchCustomFields(field, model).then((res) => {
-			const { data = [] } = res;
+			const { data = [] } = res
 			const schema = generateCustomModelSchema(
 				data,
 				undefined,
 				"",
 				"customForm"
-			);
+			)
 			update((draft) => {
-				const newId = _.uniqueId();
+				const newId = _.uniqueId()
 				draft.customFieldWidgets =
 					Object.keys(schema.widgets)?.length > 2
 						? schema.widgets
 						: {
 								...schema.widgets,
-								[newId]: {
+								[newId]: getPanel(MODEL_TYPE.BASE, {
 									name: `panel${newId}`,
-									...PANEL_PROPS,
 									model: draft.model.fullName,
-								},
-						  };
+								}),
+						  }
 				draft.customFieldItems =
-					schema.items?.length > 0 ? schema.items : [`${newId}`];
-				draft.customFields = data;
-				draft.modelField = field;
-				draft.customFieldHasChanges = false;
-			});
-		});
+					schema.items?.length > 0 ? schema.items : [`${newId}`]
+				draft.customFields = data
+				draft.modelField = field
+				draft.customFieldHasChanges = false
+				validateWidgets(draft, schema.widgets, true)
+			})
+		})
 	} else {
 		update((draft) => {
-			draft.customFieldWidgets = null;
-			draft.customFieldItems = null;
-			draft.customFields = [];
-			draft.modelField = field;
-			draft.customFieldHasChanges = false;
-		});
+			draft.customFieldWidgets = null
+			draft.customFieldItems = []
+			draft.customFields = []
+			draft.modelField = field
+			draft.customFieldHasChanges = false
+		})
 	}
-};
+}
 
 export const getCustomFieldsData = (model, customField, update) => {
-	const payload = metaFieldFilter(model);
+	const payload = metaFieldFilter(model)
 	const service = new AxelorService({
 		model: "com.axelor.meta.db.MetaField",
-	});
+	})
 	const data = {
 		...(payload._domain && { _domain: payload._domain }),
 		...(payload._domainContext && {
@@ -279,13 +270,13 @@ export const getCustomFieldsData = (model, customField, update) => {
 		}),
 		criteria: [...(payload.criteria || [])],
 		operator: "and",
-	};
-	const fields = payload.fields || [];
+	}
+	const fields = payload.fields || []
 	service.search({ fields, data }).then((response = {}) => {
-		const { data = [] } = response;
+		const { data = [] } = response
 		if (response && response.data) {
-			const field = data.find((d) => d.name === customField);
-			handleMetaFieldSelect(field, model, update);
+			const field = data.find((d) => d.name === customField)
+			handleMetaFieldSelect(field, model, update)
 		}
-	});
-};
+	})
+}

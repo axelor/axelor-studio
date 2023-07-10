@@ -1,13 +1,13 @@
-import React from "react";
-import classNames from "classnames";
-import Editor from "../Editor";
+import React from "react"
+import classNames from "classnames"
+import Editor from "../Editor"
 
-export default React.memo(function MainPanel({ toolbarOffset }) {
-	const [design] = React.useState(true);
+export default React.memo(function MainPanel({ toolbarOffset, className }) {
+	const [design] = React.useState(true)
 
 	return (
 		<div
-			className={classNames("form-layout-container", {
+			className={classNames(className, "form-layout-container", {
 				"form-layout-design": design,
 			})}
 			style={{
@@ -22,5 +22,5 @@ export default React.memo(function MainPanel({ toolbarOffset }) {
 		>
 			<Editor design={design} />
 		</div>
-	);
-});
+	)
+})

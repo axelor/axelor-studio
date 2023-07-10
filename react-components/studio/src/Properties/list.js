@@ -1,4 +1,4 @@
-import fontAwesomeList from "./fa-icons";
+import fontAwesomeList from "./fa-icons"
 import {
 	Name,
 	Type,
@@ -66,15 +66,15 @@ import {
 	Sidebar,
 	CanCollapse,
 	CollapseIf,
-} from "./propertyFields";
+} from "./propertyFields"
 import {
 	StringField,
 	IntegerField,
 	StaticSelectField,
 	SelectField,
 	BooleanField,
-} from "./fieldTypes";
-import { MODEL_TYPE } from "./../constants";
+} from "./fieldTypes"
+import { MODEL_TYPE } from "./../constants"
 
 /** Options */
 const stringOption = {
@@ -131,7 +131,7 @@ const stringOption = {
 			dependModelType: MODEL_TYPE.CUSTOM,
 		}),
 	],
-};
+}
 
 const integerOption = {
 	overview: [
@@ -157,7 +157,7 @@ const integerOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const decimalOption = {
 	overview: [
@@ -197,7 +197,7 @@ const decimalOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const booleanOption = {
 	overview: [
@@ -223,7 +223,7 @@ const booleanOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const datetimeOption = {
 	overview: [
@@ -249,7 +249,7 @@ const datetimeOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const panelOption = {
 	overview: [Name({ existsCheck: true }), Type, Title, StudioApp],
@@ -266,7 +266,7 @@ const panelOption = {
 	conditions: [OnlyIf, ShowIf, HideIf, ReadOnlyIf],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ItemSpan, ShowTitle],
-};
+}
 
 const panelStackOption = {
 	overview: [Name({ existsCheck: true }), Type, StudioApp],
@@ -292,7 +292,7 @@ const panelStackOption = {
 	conditions: [ShowIf, HideIf, ReadOnlyIf],
 	roles: [Roles],
 	widgetAttributes: [ColSpan],
-};
+}
 
 const panelTabOption = {
 	overview: [Name({ existsCheck: true }), Type, Title, StudioApp],
@@ -300,7 +300,7 @@ const panelTabOption = {
 	conditions: [ShowIf, HideIf, ReadOnlyIf],
 	roles: [Roles],
 	widgetAttributes: [ShowTitle],
-};
+}
 
 const buttonOption = {
 	overview: [
@@ -349,7 +349,7 @@ const buttonOption = {
 			modelType: MODEL_TYPE.CUSTOM,
 		}),
 	],
-};
+}
 
 const seperatorOption = {
 	overview: [
@@ -373,7 +373,7 @@ const seperatorOption = {
 	],
 	roles: [Roles],
 	widgetAttributes: [ColSpan],
-};
+}
 
 const spacerOption = {
 	overview: [Name({ existsCheck: true }), Type, StudioApp],
@@ -382,7 +382,7 @@ const spacerOption = {
 	conditions: [OnlyIf, ShowIf, HideIf, ValidIf],
 	roles: [Roles],
 	widgetAttributes: [ColSpan],
-};
+}
 
 const labelOption = {
 	overview: [Name({ existsCheck: true }), Type, Title, StudioApp],
@@ -392,7 +392,7 @@ const labelOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const viewerOption = {
 	overview: [Name({ existsCheck: true }), Type, Title, StudioApp],
@@ -402,7 +402,7 @@ const viewerOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const manyToOneOption = {
 	overview: [
@@ -437,7 +437,7 @@ const manyToOneOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const manyToManyAndOneToManyOption = {
 	overview: [
@@ -473,7 +473,7 @@ const manyToManyAndOneToManyOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const customRelationOption = {
 	overview: [
@@ -505,7 +505,7 @@ const customRelationOption = {
 	valueExpr: [ValueExpression],
 	roles: [Roles],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const formOption = {
 	overview: [
@@ -545,29 +545,25 @@ const formOption = {
 			canAddNew: true,
 		}),
 	],
-};
+}
 
 const commonOption = {
 	overview: [Name(), Type, Title, StudioApp],
 	uiOptions: [Hidden, VisibleInGrid, ColumnSequence, Css],
 	conditions: [ShowIf, HideIf, ReadOnlyIf, IncludeIf, ValidIf],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const dummyOption = {
 	overview: [Name(), DummyType],
-};
+}
 const viewOption = {
-	overview: [
-		Name({ existsCheck: true }),
-		Type,
-		{ ...Title, readOnly: true, translationView: false },
-	],
-};
+	overview: [Name({ existsCheck: true }), Type, { ...Title, readOnly: true }],
+}
 
 const gridOption = {
 	overview: [Name({ existsCheck: true }), Type, Title, Model, Editable],
-};
+}
 
 const panelDashletOption = {
 	overview: [
@@ -581,39 +577,39 @@ const panelDashletOption = {
 	uiOptions: [ReadOnly, Hidden, Height, Css, Refresh],
 	conditions: [ShowIf, HideIf, ReadOnlyIf],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const menuItemOption = {
 	overview: [Name({ existsCheck: true }), Type, Action],
 	widgetAttributes: [ShowTitle],
-};
+}
 
 const dividerOption = {
 	overview: [Name({ existsCheck: true }), Type],
 	conditions: [If, ShowIf, HideIf, IfModule],
-};
+}
 
 const menuOption = {
 	overview: [Name({ existsCheck: true }), Type],
 	widgetAttributes: [ShowTitle],
 	conditions: [If, IfModule, IncludeIf],
-};
+}
 
 const panelRelatedOption = {
 	overview: [Name({ existsCheck: true }), Type, Title, Field, OnNew, OnChange],
 	uiOptions: [FormView, GridView, Height, Editable, ReadOnly, Hidden, Css],
 	conditions: [ShowIf, HideIf, ReadOnlyIf, ValidIf, CanMove, OrderBy],
 	widgetAttributes: [ColSpan, ShowTitle],
-};
+}
 
 const panelIncludeOption = {
 	overview: [Type, IncludeView, IncludeFrom, IfModule],
 	widgetAttributes: [ShowTitle],
-};
+}
 
 const hiliteOption = {
 	overview: [Name({ existsCheck: true }), If, Color, Background, Strong, Css],
-};
+}
 
 export const options = [
 	{ type: "form", value: viewOption },
@@ -665,6 +661,6 @@ export const options = [
 	{ type: "item", value: menuItemOption },
 	{ type: "divider", value: dividerOption },
 	{ type: "hilite", value: hiliteOption },
-];
+]
 
-export default options;
+export default options

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react"
 
 export const useKeyPress = (key, callback, allowCaps = true, node = null) => {
 	// implement the callback ref pattern
-	const callbackRef = useRef(callback);
+	const callbackRef = useRef(callback)
 	useEffect(() => {
-		callbackRef.current = callback;
-	});
+		callbackRef.current = callback
+	})
 
 	// handle what happens on key press
 	const handleKeyPress = useCallback(
@@ -15,29 +15,29 @@ export const useKeyPress = (key, callback, allowCaps = true, node = null) => {
 				(allowCaps ? event.key?.toLowerCase() : event.key) === key &&
 				event.ctrlKey
 			) {
-				event.preventDefault();
+				event.preventDefault()
 				if (event.target?.tagName === "INPUT" && (key === "s" || key === "S")) {
-					event.target.blur();
+					event.target.blur()
 					await new Promise((resolve) => {
 						setTimeout(() => {
-							resolve();
-						}, 500);
-					});
+							resolve()
+						}, 500)
+					})
 				}
-				callbackRef.current(event);
+				callbackRef.current(event)
 			}
 		},
 		[key, allowCaps]
-	);
+	)
 
 	useEffect(() => {
 		// target is either the provided node or the document
-		const targetNode = node ?? document;
+		const targetNode = node ?? document
 		// attach the event listener
-		targetNode && targetNode.addEventListener("keydown", handleKeyPress);
+		targetNode && targetNode.addEventListener("keydown", handleKeyPress)
 
 		// remove the event listener
 		return () =>
-			targetNode && targetNode.removeEventListener("keydown", handleKeyPress);
-	}, [handleKeyPress, node]);
-};
+			targetNode && targetNode.removeEventListener("keydown", handleKeyPress)
+	}, [handleKeyPress, node])
+}

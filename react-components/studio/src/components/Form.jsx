@@ -1,36 +1,29 @@
-import React from "react";
-import Grid from "./Grid";
-import { PANEL_TYPE } from "../constants";
-import { useStore } from "../store/context";
-
+import React from "react"
+import Grid from "./Grid"
+import { PANEL_TYPE } from "../constants"
+import { isSidebarPanel } from "../utils"
 /**
  * Form Component
  * Used As Main Container i.e. <form />
  */
 function FormComponent({ attrs = {}, items = [], design, widgets, ...rest }) {
 	// render top level items as Widgets using Context FormConsumer
-	const { update } = useStore();
-
-	const allItems = React.useMemo(() => {
-		const sideItems = [];
-		const mainItems = [];
+	const { mainItems, sideItems } = React.useMemo(() => {
+		const sideItems = []
+		let mainItems = []
 		items.forEach((item) => {
-			const sidebar =
-				widgets[item]?.sidebar ||
-				JSON.parse(widgets[item].widgetAttrs || "{}")?.sidebar;
+			if (widgets[item]) {
+				if (isSidebarPanel(widgets[item])) sideItems.push(item)
+				else mainItems.push(item)
+			}
+		})
 
-			const isSidePanel = JSON.parse(sidebar || false);
-
-			if (widgets[item] && isSidePanel) sideItems.push(item);
-			else if (widgets[item] && !isSidePanel) mainItems.push(item);
-		});
-		return { sideItems, mainItems };
-	}, [items, widgets]);
+		return { sideItems, mainItems }
+	}, [items, widgets])
 
 	const rootPanel = React.useMemo(() => {
-		const { sideItems, mainItems } = allItems;
-		const hasSidebar = sideItems.length > 0;
-		return hasSidebar
+		const hasSidePanel = sideItems.length > 0
+		return hasSidePanel
 			? {
 					items: [
 						{
@@ -51,21 +44,14 @@ function FormComponent({ attrs = {}, items = [], design, widgets, ...rest }) {
 					items: [
 						{
 							layout: PANEL_TYPE.grid,
-							items: mainItems,
+							items: items,
 							colSpan: 12,
 							panelType: "mainPanel",
+							...(rest._type === "customField" ? { cols: 12 } : {}), // this determines whether panel responds to colSpan changes or not.
 						},
 					],
-			  };
-	}, [allItems]);
-
-	React.useEffect(() => {
-		const { mainItems, sideItems } = allItems;
-		update((draft) => {
-			draft.mainItems = mainItems;
-			draft.sideItems = sideItems;
-		});
-	}, [allItems, update]);
+			  }
+	}, [sideItems, mainItems, items, rest._type])
 
 	return (
 		<div className="flex-container">
@@ -93,7 +79,8 @@ function FormComponent({ attrs = {}, items = [], design, widgets, ...rest }) {
 						attrs={attrs}
 						_type={rest._type}
 						widgets={widgets}
-						errorList={rest.errorList}
+						widgetErrorList={rest.widgetErrorList}
+						customErrorList={rest.customErrorList}
 						canRemove={rest.canRemove}
 						isBase={rest.isBase}
 						panelType={panelType}
@@ -101,7 +88,7 @@ function FormComponent({ attrs = {}, items = [], design, widgets, ...rest }) {
 				</div>
 			))}
 		</div>
-	);
+	)
 }
 
-export default FormComponent;
+export default FormComponent

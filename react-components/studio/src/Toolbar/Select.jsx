@@ -1,67 +1,14 @@
-import React, { useState } from "react";
-import { TextField } from "@material-ui/core";
-import AutoComplete from "@material-ui/lab/Autocomplete";
-import _ from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState } from "react"
+import { TextField } from "@mui/material"
+import Autocomplete from "@mui/material/Autocomplete"
+import _ from "lodash"
 
-import AxelorService from "../services/axelor.rest";
-import { useDebounceEffect } from "../common.func";
-import SearchView from "../components/SearchView";
-import { translate } from "../utils";
-import { SHOW_MORE } from "../constants";
-import { useStoreState } from "../store/context";
-
-const useStyles = makeStyles({
-	autoComplete: {
-		"& > div > label": {
-			color: "#e7eaec !important",
-			fontSize: 12,
-		},
-	},
-	autoCompleteRoot: {
-		width: 200,
-		marginLeft: 10,
-		color: "#e7eaec",
-	},
-	inputView: {
-		color: "#fff",
-		fontSize: 13,
-		"& > *": {
-			color: "#fff",
-		},
-	},
-	popperView: {
-		"& ul, .MuiAutocomplete-noOptions , .MuiAutocomplete-loading": {
-			backgroundColor: "rgb(41, 56, 70) !important",
-			".modern-dark &": {
-				backgroundColor: "#1b1b1b !important",
-			},
-		},
-		"& li, .MuiAutocomplete-noOptions, .MuiAutocomplete-loading": {
-			color: "#e7eaec !important",
-			backgroundColor: "rgb(41, 56, 70) !important",
-			".modern-dark &": {
-				backgroundColor: "#1b1b1b !important",
-			},
-		},
-		"& li:hover, .MuiAutocomplete-noOptions, .MuiAutocomplete-loading": {
-			color: "#e7eaec !important",
-			backgroundColor: "#2f4050 !important",
-			".modern-dark &": {
-				backgroundColor: "#323232 !important",
-			},
-		},
-		'& li[data-focus="true"]': {
-			backgroundColor: "#2f4050 !important",
-			".modern-dark &": {
-				backgroundColor: "#323232 !important",
-			},
-		},
-	},
-	option: {
-		fontSize: 13,
-	},
-});
+import AxelorService from "../services/axelor.rest"
+import { useDebounceEffect } from "../common.func"
+import SearchView from "../components/SearchView"
+import { translate } from "../utils"
+import { SHOW_MORE } from "../constants"
+import { useStoreState } from "../store/context"
 
 function Select({
 	value,
@@ -82,49 +29,50 @@ function Select({
 	autoFocus,
 	...props
 }) {
-	const classes = useStyles();
-	const { loader } = useStoreState();
-	const [open, setOpen] = useState(false);
-	const [searchText, setSearchText] = useState("");
-	const [loading, setLoading] = useState(false);
-	const [list, setList] = useState([]);
-	const [searchMore, setSearchMore] = useState(false);
-	const [offset, setOffset] = useState(0);
-	const [total, setTotal] = useState(0);
+	const { loader } = useStoreState()
+	const [open, setOpen] = useState(false)
+	const [searchText, setSearchText] = useState("")
+	const [loading, setLoading] = useState(false)
+	const [list, setList] = useState([])
+	const [searchMore, setSearchMore] = useState(false)
+	const [offset, setOffset] = useState(0)
+	const [total, setTotal] = useState(0)
+
+	const localLimit = searchMore ? 6 : limit
 
 	const search = React.useCallback(
 		async (searchText = "") => {
 			if (onSearch) {
-				setLoading(true);
+				setLoading(true)
 				const { models, total } = await onSearch({
-					limit,
+					limit: localLimit,
 					searchText,
 					searchFilter,
 					filterData,
 					modelType,
 					offset,
-				});
+				})
 				!searchMore &&
-					total > limit &&
+					total > localLimit &&
 					models.push({
 						name: translate(SHOW_MORE),
 						id: "studio_show_More_View",
-					});
-				const uniqueList = _.uniqBy(models, "name");
-				setList(uniqueList);
-				setLoading(false);
-				setTotal(total);
+					})
+				const uniqueList = _.uniqBy(models, "name")
+				setList(uniqueList)
+				setLoading(false)
+				setTotal(total)
 			} else if (model) {
-				const service = new AxelorService({ model });
-				setLoading(true);
-				const _data = searchFilter(searchText) || {};
-				const criteria = [];
+				const service = new AxelorService({ model })
+				setLoading(true)
+				const _data = searchFilter(searchText) || {}
+				const criteria = []
 				if (searchText) {
 					criteria.push({
 						fieldName: "name",
 						operator: "like",
 						value: searchText,
-					});
+					})
 				}
 				const data = {
 					...(_data._domain && { _domain: _data._domain }),
@@ -133,29 +81,29 @@ function Select({
 					}),
 					criteria: [...criteria, ...(_data.criteria || [])],
 					operator: "and",
-				};
-				const fields = _data.fields || [];
+				}
+				const fields = _data.fields || []
 				service
-					.search({ fields, data, limit, offset: offset })
+					.search({ fields, data, limit: localLimit, offset: offset })
 					.then((response = {}) => {
-						const { data = [], total } = response;
-						setLoading(false);
-						const list = filterData ? filterData([...data]) : [...data];
+						const { data = [], total } = response
+						setLoading(false)
+						const list = filterData ? filterData([...data]) : [...data]
 						!searchMore &&
-							total > limit &&
+							total > localLimit &&
 							list.push({
 								name: translate(SHOW_MORE),
 								id: "studio_show_More_View",
-							});
-						setTotal(total);
-						const uniqueList = _.uniqBy(list, "name");
-						setList(uniqueList);
-					});
+							})
+						setTotal(total)
+						const uniqueList = _.uniqBy(list, "name")
+						setList(uniqueList)
+					})
 			}
 		},
 		[
 			onSearch,
-			limit,
+			localLimit,
 			searchFilter,
 			filterData,
 			modelType,
@@ -163,82 +111,122 @@ function Select({
 			searchMore,
 			model,
 		]
-	);
+	)
 	const handleNext = React.useCallback(() => {
-		const newOffset = offset + limit;
+		const newOffset = offset + localLimit
 		if (newOffset <= total) {
-			setOffset(newOffset);
+			setOffset(newOffset)
 		}
-	}, [limit, total, offset]);
+	}, [localLimit, total, offset])
 
 	const handlePrevious = React.useCallback(() => {
 		setOffset((offset) => {
-			const newOffset = offset - limit;
-			return newOffset > 0 ? newOffset : 0;
-		});
-	}, [limit]);
+			const newOffset = offset - localLimit
+			return newOffset > 0 ? newOffset : 0
+		})
+	}, [localLimit])
 
 	const debounceHandler = React.useCallback(() => {
-		!options && search(searchText);
-	}, [searchText, search, options]);
+		!options && search(searchText)
+	}, [searchText, search, options])
 
 	const debounceInitializer = React.useCallback(() => {
-		!options && setLoading(true);
-	}, [options]);
+		!options && setLoading(true)
+	}, [options])
 
 	const handleChange = React.useCallback(
 		(e, value) => {
 			if (value?.id === "studio_show_More_View") {
-				setSearchMore(true);
+				setSearchMore(true)
 			} else {
-				onChange(value);
+				onChange(value)
 			}
 		},
 		[onChange]
-	);
+	)
 
 	const handleTextChange = React.useCallback((value) => {
-		setSearchText(value);
-		setOffset(0);
-	}, []);
+		setSearchText(value)
+		setOffset(0)
+	}, [])
 
 	const handleClose = React.useCallback(() => {
-		setSearchMore(false);
-		setOffset(0);
-		setSearchText("");
-	}, []);
+		setSearchMore(false)
+		setOffset(0)
+		setSearchText("")
+	}, [])
 
-	useDebounceEffect(debounceHandler, 500, debounceInitializer);
+	useDebounceEffect(debounceHandler, 500, debounceInitializer)
 
 	return (
 		<React.Fragment>
-			<AutoComplete
+			<Autocomplete
+				sx={{
+					marginLeft: 1,
+					"& .MuiInputBase-root": {
+						color: "#FFFFFF",
+					},
+					"& .Mui-disabled": { WebkitTextFillColor: "#959697 " },
+				}}
+				componentsProps={{
+					paper: {
+						sx: {
+							backgroundColor: "rgb(41, 56, 70) ",
+							WebkitTextFillColor: "#e7eaec ",
+							fontSize: 13,
+							"& ul, .MuiAutocomplete-noOptions , .MuiAutocomplete-loading": {
+								backgroundColor: "rgb(41, 56, 70) !important",
+								".modern-dark &": {
+									backgroundColor: "#1b1b1b !important",
+								},
+							},
+							"& li, .MuiAutocomplete-noOptions, .MuiAutocomplete-loading": {
+								color: "#e7eaec !important",
+								backgroundColor: "rgb(41, 56, 70) !important",
+								".modern-dark &": {
+									backgroundColor: "#1b1b1b !important",
+								},
+							},
+							"& li:hover, .MuiAutocomplete-noOptions, .MuiAutocomplete-loading":
+								{
+									color: "#e7eaec !important",
+									backgroundColor: "#2f4050 !important",
+									".modern-dark &": {
+										backgroundColor: "#323232 !important",
+									},
+								},
+							"& .Mui-focused": {
+								backgroundColor: "#2f4050 !important",
+								".modern-dark &": {
+									backgroundColor: "#323232 !important",
+								},
+							},
+						},
+					},
+					clearIndicator: {
+						sx: {
+							color: "#e7eaec",
+						},
+					},
+					popupIndicator: {
+						sx: {
+							color: "#e7eaec",
+						},
+					},
+				}}
 				autoComplete
 				disabled={loader}
 				onBlur={() => !searchMore && setSearchText("")}
 				open={showDropDown ?? open}
-				classes={{
-					root: classes.autoCompleteRoot,
-					inputFocused: classes.input,
-					clearIndicator: classes.input,
-					popupIndicator: classes.input,
-					input: classes.inputView,
-					endAdornment: classes.inputView,
-					popper: classes.popperView,
-					option: classes.option,
-					noOptions: classes.option,
-					loading: classes.option,
-				}}
 				size="small"
-				className={classes.autoComplete}
 				onInputChange={(e, value, reason) => {
-					reason !== "reset" && setSearchText(value);
+					reason !== "reset" && setSearchText(value)
 				}}
 				onOpen={() => {
-					setOpen(true);
+					setOpen(true)
 					if (!options) {
-						setList([]);
-						search(searchText);
+						setList([])
+						search(searchText)
 					}
 				}}
 				filterOptions={(options, { inputValue, getOptionLabel }) => {
@@ -248,10 +236,10 @@ function Select({
 							getOptionLabel(option)
 								.toLowerCase()
 								.includes(inputValue.toLowerCase())
-					);
+					)
 				}}
 				onClose={(e, reason) => {
-					setOpen(false);
+					setOpen(false)
 					if (
 						!(
 							reason === "select-option" &&
@@ -259,21 +247,32 @@ function Select({
 						) &&
 						reason !== "toggleInput"
 					) {
-						setSearchText("");
+						setSearchText("")
 					}
 					if (reason === "blur") {
-						return handleOutsideClick(false);
+						return handleOutsideClick(false)
 					}
 				}}
 				renderInput={(params) => {
 					return (
 						<TextField
 							{...params}
+							sx={{
+								width: "200px",
+								"& input": {
+									fontSize: "13px",
+								},
+								WebkitTextFillColor: "#e7eaec ",
+								"& .Mui-disabled": {
+									WebkitTextFillColor: "#959697 !important",
+								},
+							}}
 							placeholder={translate(label)}
 							fullWidth
 							autoFocus={autoFocus}
+							variant="standard"
 						/>
-					);
+					)
 				}}
 				options={loading ? [] : options ?? list}
 				loading={loading}
@@ -285,8 +284,8 @@ function Select({
 						: option.name
 				}
 				onChange={handleChange}
-				value={!options && open  ? null : value}
-				getOptionSelected={getOptionSelected}
+				value={!options && open ? null : value}
+				isOptionEqualToValue={getOptionSelected}
 				{...props}
 			/>
 			<SearchView
@@ -295,6 +294,8 @@ function Select({
 				model={model}
 				total={total}
 				offset={offset}
+				limit={localLimit}
+				isDataLoading={loading}
 				open={searchMore}
 				onNext={handleNext}
 				onPrevious={handlePrevious}
@@ -305,7 +306,7 @@ function Select({
 				getOptionLabel={props.getOptionLabel}
 			/>
 		</React.Fragment>
-	);
+	)
 }
 
-export default React.memo(Select);
+export default React.memo(Select)

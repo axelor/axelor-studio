@@ -1,70 +1,42 @@
-import React from "react";
-import { Divider, Container, Grid, useMediaQuery } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import React from "react"
+import { Divider, Container, Grid, useMediaQuery } from "@mui/material"
+import { styled } from "@mui/material/styles"
+import { getFields } from "../../fields"
+import FieldComponent from "../../components/FieldComponent"
+import Widget from "../../components/Widget"
+import Field from "./Field"
+import classNames from "classnames"
 
-import { fieldTypes, modelFields } from "../../fields";
-import FieldComponent from "../../components/FieldComponent";
-import Widget from "../../components/Widget";
-import Field from "./Field";
-import { useStore } from "../../store/context";
-import { MODEL_TYPE, TYPE } from "../../constants";
-import classNames from "classnames";
+const WidgetIcon = styled(Widget)({
+	"&&&": { border: "none !important", boxShadow: "none", padding: "5px 0" },
+})
 
-const useStyles = makeStyles((theme) => ({
-	container: {
-		width: "min-content",
-		height: "fit-content",
-		backgroundColor: "#fafafa",
-		border: "1px solid lightgray",
-		padding: "0",
-		margin: "1rem 0",
-		borderRadius: 5,
-		marginTop: 14,
-		boxShadow: "1px 2px 8px 0px rgb(1 1 1 / 50%) !important",
-	},
-	attributeItem: {
-		"&:hover": {
-			backgroundColor: "rgb(41 56 70 / 35%)",
-		},
-	},
-	divider: {
-		margin: "4px",
-		background: "gray",
-	},
-	widget: {
-		border: "none !important",
-		boxShadow: "none",
-		padding: "5px 0",
-	},
-}));
+export default React.memo(function AddPanelView({
+	toolbarOffset,
+	isStudioLite,
+	modelType,
+}) {
+	const isResponsive = useMediaQuery(`(max-height: ${720 + toolbarOffset}px)`)
+	const fields = React.useMemo(() => getFields(modelType), [modelType])
 
-export default React.memo(function AddPanelView({ toolbarOffset }) {
-	const classes = useStyles();
-	const { state } = useStore();
-	const { isStudioLite } = state;
-
-	const isResponsive = useMediaQuery(`(max-height: ${720 + toolbarOffset}px)`);
-	const fields = [...fieldTypes, ...modelFields].filter((e) => {
-		if (e.name === "Menu" && state.modelType === MODEL_TYPE.CUSTOM) {
-			return false;
-		}
-		return true;
-	});
-
-	const showField = (field) => {
-		if ([TYPE.menubar, TYPE.toolbar].includes(field.type) && state.widgets) {
-			const index = Object.values(state.widgets).findIndex(
-				(w) => w.type === field.type
-			);
-			return index === -1;
-		} else if (isStudioLite && field.name === "oneToMany") {
-			return false;
-		}
-		return true;
-	};
+	const showField = (field) =>
+		!isStudioLite || (isStudioLite && field.name !== "oneToMany")
 
 	return (
-		<Container className={classNames(classes.container, "toolbar-pallete")}>
+		<Container
+			className={classNames("toolbar-pallete")}
+			sx={{
+				width: "min-content !important",
+				height: "fit-content !important",
+				backgroundColor: "#fafafa",
+				border: "1px solid lightgray",
+				padding: "0 !important",
+				margin: "1rem 0",
+				borderRadius: "5px !important",
+				marginTop: "14px !important",
+				boxShadow: "1px 2px 8px 0px rgb(1 1 1 / 50%) !important",
+			}}
+		>
 			{fields.map(
 				(fieldType, index) =>
 					(!isStudioLite ||
@@ -76,41 +48,43 @@ export default React.memo(function AddPanelView({ toolbarOffset }) {
 									fieldType.value.map((field, i) => {
 										if (
 											field.editorType &&
-											!field.editorType.includes(state.modelType)
+											!field.editorType.includes(modelType)
 										) {
-											return null;
+											return null
 										}
 										if (!showField(field)) {
-											return null;
+											return null
 										}
 										return (
 											<Grid
 												item
 												xs={isResponsive ? 6 : 12}
-												className={classes.attributeItem}
+												sx={{
+													"&:hover": {
+														backgroundColor: "rgb(41 56 70 / 35%)",
+													},
+												}}
 												key={i}
 											>
 												<Field key={i}>
-													<Widget
+													<WidgetIcon
 														id={field.id}
 														attrs={field}
 														design={true}
 														component={FieldComponent}
-														isCoreField={true}
 														isPalleteField={true}
-														className={classes.widget}
 													/>
 												</Field>
 											</Grid>
-										);
+										)
 									})}
 							</Grid>
 							{index < fields.length - 1 && (
-								<Divider className={classes.divider} />
+								<Divider sx={{ margin: "4px", background: "gray" }} />
 							)}
 						</React.Fragment>
 					)
 			)}
 		</Container>
-	);
-});
+	)
+})
