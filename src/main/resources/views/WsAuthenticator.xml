@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <object-views xmlns="http://axelor.com/xml/ns/object-views"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.1.xsd">
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
   <grid name="ws-authenticator-grid" model="com.axelor.studio.db.WsAuthenticator"
-    title="Authenticator">
+        title="Authenticator">
     <field name="name"/>
     <field name="authTypeSelect"/>
     <field name="isAuthenticated"/>
@@ -12,45 +12,45 @@
   </grid>
 
   <form name="ws-authenticator-form" model="com.axelor.studio.db.WsAuthenticator"
-    title="Authenticator" width="large">
+        title="Authenticator" width="large">
     <panel name="mainPanel">
       <field name="studioApp"/>
       <spacer/>
       <field name="name"/>
       <button name="btnAuthenticate" title="Authenticate"
-        onClick="save,action-studio-ws-authenticator-authenticate" colSpan="3"
-        showIf="!isAuthenticated" hidden="true"/>
-      <field name="isAuthenticated" colSpan="3"/>
-      <field name="authWsRequest" canEdit="true" canNew="true"/>
+              onClick="save,action-studio-ws-authenticator-authenticate"
+              colSpan="3" showIf="authWsRequest != null &amp;&amp; !isAuthenticated" hidden="true"/>
+      <field name="isAuthenticated" showIf="authWsRequest != null &amp;&amp; ( username == null || password == null) " colSpan="3"/>
+      <field name="authWsRequest" canEdit="true" canNew="true"
+             readonlyIf="username != null || password != null"/>
       <field name="authTypeSelect"/>
       <field name="username"
-        showIf="authTypeSelect == 'basic' &amp;&amp; authWsRequest == null "/>
+             showIf="authTypeSelect == 'basic' &amp;&amp; authWsRequest == null "/>
       <field name="password"
-        showIf="authTypeSelect == 'basic' &amp;&amp; authWsRequest == null" widget="password"/>
+             showIf="authTypeSelect == 'basic' &amp;&amp; authWsRequest == null" widget="password"/>
       <field name="responseType" title="Response type"
-        showIf="authTypeSelect == 'basic' &amp;&amp; authWsRequest != null"/>
+             showIf="authTypeSelect == 'basic' &amp;&amp; authWsRequest != null"/>
       <field name="tokenName" title="Token field name"
-        showIf="authTypeSelect == 'basic' &amp;&amp;  responseType == 'token' &amp;&amp; authWsRequest != null"/>
+             showIf="authTypeSelect == 'basic' &amp;&amp;  responseType == 'token' &amp;&amp; authWsRequest != null"/>
       <field name="tokenWsRequest" canEdit="true" canNew="true" hidden="true"
-        showIf="authTypeSelect == 'oauth2'" requiredIf="authTypeSelect == 'oauth2'"/>
+             showIf="authTypeSelect == 'oauth2'" requiredIf="authTypeSelect == 'oauth2'"/>
       <field name="refreshTokenWsRequest" canEdit="true" canNew="true" hidden="true"
-        showIf="authTypeSelect == 'oauth2'" requiredIf="authTypeSelect == 'oauth2'"/>
+             showIf="authTypeSelect == 'oauth2'" requiredIf="authTypeSelect == 'oauth2'"/>
     </panel>
     <panel-tabs>
       <panel name="panelTabAuthResponse" title="Auth response">
         <field name="authResponse" colSpan="12" showTitle="false"/>
       </panel>
       <panel name="panelTokenResponse" showIf="authTypeSelect == 'oauth2'"
-        title="Token response">
+             title="Token response">
         <field name="tokenResponse" colSpan="12" showTitle="false"/>
       </panel>
       <panel name="panelRefreshTokenResponse" showIf="authTypeSelect == 'oauth2'"
-        title="Refresh token response">
+             title="Refresh token response">
         <field name="refreshTokenResponse" colSpan="12" showTitle="false"/>
       </panel>
     </panel-tabs>
   </form>
-
   <action-method name="action-studio-ws-authenticator-authenticate">
     <call class="com.axelor.studio.web.WsAuthenticatorController" method="authenticate"/>
   </action-method>
