@@ -20,7 +20,7 @@ tasks.register('bpmBuild', YarnTask) {
     group = 'axelor'
     description = 'Build BPM webapp'
     environment = [
-        CI: 'false'
+            CI: 'false'
     ]
 
     outputs.dir('apps/bpm/build')
@@ -39,23 +39,23 @@ tasks.register('bpmBuild', YarnTask) {
     inputs.dir('apps/timer-builder/public')
 
     dependsOn 'bpmInstall'
-    args = ["run", "build"]
+    args = ["run", "build", "--cache-folder=.yarn_cache"]
 }
 
 tasks.register('bpmInstall', YarnTask) {
     group = 'axelor'
     description = 'Install BPM webapp dependencies'
 
-    args = ['install']
+    args = ["install", "-f", "--network-timeout=100000", "--cache-folder=.yarn_cache"]
 }
 
 tasks.register('mapperBuild', YarnTask) {
     group = 'axelor'
     description = 'Build BPM webapp'
     environment = [
-        CI: 'false'
+            CI: 'false'
     ]
-    
+
     workingDir = file("apps/mapper")
 
     outputs.dir('apps/mapper/build')
@@ -64,19 +64,23 @@ tasks.register('mapperBuild', YarnTask) {
     inputs.dir('apps/mapper/public')
 
     dependsOn 'mapperInstall'
-    args = ["run", "build"]
+    args = ["run", "build", "--cache-folder=.yarn_cache"]
 }
 
 tasks.register('mapperInstall', YarnTask) {
     group = 'axelor'
     description = 'Install BPM webapp dependencies'
+    environment = [
+            CI: 'false'
+    ]
+
     workingDir = file("apps/mapper")
 
-    args = ['install']
+    args = ["install", "-f", "--network-timeout=100000", "--cache-folder=.yarn_cache"]
 }
 
 clean {
-    delete "build", "node_modules",
+    delete "build", "node_modules", ".yarn_cache",
             "apps/bpm/build", "apps/bpm/node_modules",
-            "apps/mapper/build", "apps/mapper/node_modules"
+            "apps/mapper/build", "apps/mapper/node_modules", "apps/mapper/.yarn_cache"
 }
