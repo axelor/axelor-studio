@@ -162,36 +162,36 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         }
       }
 
-      byte[] responseByte = wsResponse.readEntity(byte[].class);
-      ArrayList responseData = new ArrayList<Object>();
+      // byte[] responseByte = wsResponse.readEntity(byte[].class);
+      ArrayList<Object> responseData = new ArrayList<>();
       if (wsResponse.getMediaType() != null) {
         MediaType mediaType = new MediaTypeFactory().get(wsResponse.getMediaType().getSubtype());
         try {
           if (repeatIndex == 1) {
             responseData.add(ctx.get("_" + count));
-            responseData.add(mediaType.parseResponse(responseByte));
+            responseData.add(mediaType.parseResponse(wsResponse));
             ctx.put("_" + count, responseData);
           } else if (repeatIndex != 0) {
             responseData = (ArrayList) ctx.get("_" + count);
-            responseData.add(mediaType.parseResponse(responseByte));
+            responseData.add(mediaType.parseResponse(wsResponse));
             ctx.put("_" + count, responseData);
           } else {
-            ctx.put("_" + count, mediaType.parseResponse(responseByte));
+            ctx.put("_" + count, mediaType.parseResponse(wsResponse));
           }
         } catch (IOException e) {
           ExceptionTool.trace(e);
-          ctx.put("_" + count, responseByte);
+          ctx.put("_" + count, wsResponse.readEntity(byte[].class));
         }
       } else {
         if (repeatIndex == 1) {
           responseData.add(ctx.get("_" + count));
-          ctx.put("_" + count, responseData.add(responseByte));
+          ctx.put("_" + count, responseData.add(wsResponse.readEntity(byte[].class)));
         } else if (repeatIndex != 0) {
           responseData = (ArrayList) ctx.get("_" + count);
-          responseData.add(responseByte);
+          responseData.add(wsResponse.readEntity(byte[].class));
           ctx.put("_" + count, responseData);
         } else {
-          ctx.put("_" + count, responseByte);
+          ctx.put("_" + count, wsResponse.readEntity(byte[].class));
         }
       }
 
