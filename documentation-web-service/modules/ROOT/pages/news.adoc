@@ -1,0 +1,39 @@
+= Release Notes
+
+:toc-title:
+
+:github-repo-url: https://github.com/axelor/axelor-open-platform
+
+== 1.0.0
+
+The main highlights are:
+
+* Create connector for executing requests
+* Create request builder
+* Create authentication ( basic auth and Oauth2 )
+* Create connector script in BPM Tasks
+
+== 1.1.0
+
+This release adds a significant number of upgrades and new features.
+
+The main highlights are :
+
+* Create react app for creating tha main elements of the Web service project
+* Create transformation library for the parameter and payload builders
+* Add script builder for "repeat if" and "call if" fields
+* Add json view for payloads and parameters
+* Improve basic authentication type
+* Improve payload builder
+
+== 1.2.0
+
+This release adds a significant number of upgrades and new features.
+
+The main highlights are :
+
+* Add support for xml request type
+* Add parser for Xml and Json and Text types of responses
+* Improve UI for react App
+* create documentation with antora for web service project
+

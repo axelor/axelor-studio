@@ -1,0 +1,146 @@
+= Define Request
+:toc-title:
+:page-pagination:
+
+It is the basic definition of the api request. It is used with both connector and authenticator.
+The connector is a container for requests , that handle the authentication and the execution of a series of requests.
+
+== Create a general request
+
+To create an HTTP request to communicate with any Api, you typically need to define the following components:
+
+<1> **Request URL :** Specify the URL or endpoint you want to send the request to.
+<2> **Request method :** Choose the appropriate HTTP method for your request, such as GET, POST, PUT, DELETE, etc. This determines the action you want to perform on the server.
+<3> **Request headers :** Set any headers required for your request, such as Content-Type, Authorization, or custom headers. Headers provide additional information about the request.
+<4> **Request body (optional) :** If your request requires a payload or data, you can include it in the request body. The body format depends on the specific API or service you are interacting with. It can be JSON, form data, XML, or other formats.
+<5> **Authentication (if applicable) :** If the API or service requires authentication, you may need to include authentication credentials in the headers or request body. The method of authentication depends on the specific authentication mechanism being used.
+<6> **Send the request :** Use an HTTP client library or framework in your preferred programming language to send the request to the server. The library will handle the low-level details of establishing the connection, sending the request, and receiving the response.
+<7> **Handle the response :** Once you receive the response from the server, you can access the response status code, headers, and body. You may need to parse the response body based on its format and extract the relevant data.
+// Pease see this link bellow to understand more of result request
+
+== Define request in WS project
+
+
+image::request.png[request form]
+
+
+<1> **App :**  Use axelor application plugin
+<2> **Name :** The name of the request ( Required) .
+<3> **URL :** It can be a sub url of connector or full url of the api request.
+<4> **Type :** Type can be any of GET, POST, PUT, DELETE, PATCH (all are REST api request type)
+<5> ** PayLoad type :**  It is a type of data put inside the payload of the request, we can find :
+* **Form :** If the request accepts html form data, just like AOP login request.
+* **Json :** If the request accepts json data as payload.
+* **XML :** if the request accepts xml as data of payload.
+* **Text :** if the payload is of simple text type.
+* **File path :** If payload data required a file content but in context if we are providing only file path then this type should be used.
+* **File link :** If payload required a file content but in context if we have url of file.
+* **File text :** If payload requests a file content and in context if we have content of file in text format.
+* **Stream :** If payload required a file content and in context we have a file data in octet stream
+
+<6> **Call if :** Groovy expression to conditionally call the request, so request will be called only if this expression is true.
+<7> **Repeat if :** This is also a groovy expression, if provided it will keep calling the request until expression is true. All requests of a connector with the same ‘Repeat if’ get combined for execution in a loop. For example, to search and download files we have two requests one for search and one for download, if both requests have the same ‘Repeat if’ both will be called in a loop one after another. It is added for the pagination purpose.
+<8> **Headers :** Provide here all headers required for the api request call.
+<9> **Payload :** It is a key and value pair of data to be passed a payload of the request. Nested data support is also there.
+
+== Payload | Parameter builder
+
+As we know there is different forms to define the body / payload of the request,to define a payload or a parameter we created a builder that can form a json or a xml payload or any payload type selected.
+
+image::key-value.png[key value form]
+
+In Json object there is always e key with a value , the value can be an object or simple value or a list .
+the Same for the Xml , the key represent the entre point .
+
+<1> **key :**  key for the
+<2> **value :** the value of the key , it can be an object or a list or a simple value ( string , int , boolean ...)
+<3> **List :** specify that the value of the key is a list
+<4> **Sub key value :** when we want to define the value as a list or an object , we need a new payload builder .
+
+IMPORTANT: when we don't select the List checkbox , and the value is null for the payload , that's mean we the payload is an object with the key name and the value is the **Sub key value**
+
+=== Sub key value
+
+there is a rules to work with the sub value key builder :
+
+* A line without key and value : that's mean it's mean this line is another object .
+* A line with  empty key and a value specified : this case is correct if only the list option is checked , and that's mean the list has s value of this line ( not an object )
+* A line with key and a value : that's mean the line is a simple object with a key and a value .
+* A line with empty value and a key : that's mean the line is an object with the key name and the value is another object or a List .
+
+=== Use cases
+
+We have four case to build a payload json for the request :
+
+==== **The first case :**
+A pair of a key and a value :
+
+image::payload1.png[key value form]
+
+The payload json will be like this :
+----
+{
+   “password” : “admin”,
+   ”username” : ”admin”
+}
+----
+
+==== **The second case :**
+define a key with sub key value ( an empty value ) and with list option selected
+
+image::payload2.png[key value form]
+
+image::payload3.png[key value form]
+
+When we selected the list option , that's mean we want to create a list with the key name,
+so we need to add the right information in **Sub key value**
+The payload json will be like this :
+----
+{
+    “fields” : [ “name” , ”id” ]
+}
+----
+
+NOTE: you can return back to Sub key value part to undersatnd why we have only "name" and "id" inside the list
+
+==== **The Third case :**
+Define a key without value ( an empty value ) and with list option  **selected**
+
+image::payloadList.png[key value form]
+
+image::payload33.png[key value form]
+
+When we don't select the list option , that's mean we want to create an object with the key name,
+so we need to add the right information in **Sub key value**
+The payload json will be like this :
+----
+{
+     “list” : [ { “id” : 1, ”name” : ”test” } ]
+}
+----
+
+==== **The Fourth case :**
+Define a key without value ( an empty value ) and with list option not selected and sub key value
+
+image::fourthCase.png[key value form]
+
+image::payloadEx4.png[key value form]
+
+When we don't select the list option , that's mean we want to create an object with the key name,
+so we need to add the right information in **Sub key value**
+The payload json will be like this :
+----
+{
+    “data” : { “id” : 1, ”version” : 5 }
+}
+----
+
+image::payloadEx4.png[key value form]
+
+== Header builder
+
+In the context of HTTP requests, headers are additional pieces of information sent by a client (such as a web browser) to a server or by a server to a client.
+Headers provide metadata about the request or the response and help facilitate communication between the two parties.
+In the Header Builder you can select from a list of a common headers the appropriate values  .
+
+image::headerB.png[header  builder form]
