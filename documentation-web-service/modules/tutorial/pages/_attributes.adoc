@@ -1,0 +1,2 @@
+:moduledir : ..
+:imagesdir: {moduledir}/assets/images
