@@ -8,6 +8,7 @@ image: axelor/app-builder:6.1
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  NODE_OPTIONS: "--max_old_space_size=8192"
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle

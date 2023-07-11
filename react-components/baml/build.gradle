@@ -12,15 +12,15 @@ apply plugin: 'com.github.node-gradle.node'
 
 node {
     version = '16.17.0'
-    npmVersion = '8.15.0'
+    yarnVersion = '1.22.19'
     download = true
 }
 
-tasks.register('bamlBuild', NpmTask) {
+tasks.register('bamlBuild', YarnTask) {
     group = 'axelor'
     description = 'Build Baml editor'
     environment = [
-        CI: 'false'
+            CI: 'false'
     ]
 
     outputs.dir('build')
@@ -29,16 +29,19 @@ tasks.register('bamlBuild', NpmTask) {
     inputs.dir('public')
 
     dependsOn 'bamlInstall'
-    args = ["run", "build"]
+    args = ["run", "build", "--cache-folder=.yarn_cache"]
 }
 
-tasks.register('bamlInstall', NpmTask) {
+tasks.register('bamlInstall', YarnTask) {
     group = 'axelor'
     description = 'Install Baml editor dependencies'
+    environment = [
+            CI: 'false'
+    ]
 
-    args = ['install', '-f']
+    args = ["install", "-f", "--network-timeout=100000", "--cache-folder=.yarn_cache"]
 }
 
 clean {
-    delete "build", "node_modules"
+    delete "build", "node_modules", ".yarn_cache"
 }
