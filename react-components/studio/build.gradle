@@ -1,7 +1,31 @@
 description = 'Axelor\'s Studio'
 
 buildscript {
-	repositories repos
+	repositories {
+		mavenCentral() {
+			content { excludeGroupByRegex "com\\.axelor.*" }
+		}
+		maven {
+			url 'https://plugins.gradle.org/m2/'
+			content { excludeGroupByRegex "com\\.axelor.*" }
+		}
+		maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
+
+		// Declare the Node.js download repository
+		ivy {
+			name = "Node.js"
+			setUrl("https://nodejs.org/dist/")
+			patternLayout {
+				artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]")
+			}
+			metadataSources {
+				artifact()
+			}
+			content {
+				includeModule("org.nodejs", "node")
+			}
+		}
+	}
 	dependencies {
 		classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
 	}
