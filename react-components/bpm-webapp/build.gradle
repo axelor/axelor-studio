@@ -39,14 +39,14 @@ tasks.register('bpmBuild', YarnTask) {
     inputs.dir('apps/timer-builder/public')
 
     dependsOn 'bpmInstall'
-    args = ["run", "build", "--cache-folder=.yarn_cache"]
+    args = ["build"]
 }
 
 tasks.register('bpmInstall', YarnTask) {
     group = 'axelor'
     description = 'Install BPM webapp dependencies'
 
-    args = ["install", "-f", "--network-timeout=100000", "--cache-folder=.yarn_cache"]
+    args = ["install"]
 }
 
 tasks.register('mapperBuild', YarnTask) {
@@ -64,7 +64,7 @@ tasks.register('mapperBuild', YarnTask) {
     inputs.dir('apps/mapper/public')
 
     dependsOn 'mapperInstall'
-    args = ["run", "build", "--cache-folder=.yarn_cache"]
+    args = ["build"]
 }
 
 tasks.register('mapperInstall', YarnTask) {
@@ -76,11 +76,11 @@ tasks.register('mapperInstall', YarnTask) {
 
     workingDir = file("apps/mapper")
 
-    args = ["install", "-f", "--network-timeout=100000", "--cache-folder=.yarn_cache"]
+    args = ["install"]
 }
 
 clean {
-    delete "build", "node_modules", ".yarn_cache",
+    delete "build", "node_modules",
             "apps/bpm/build", "apps/bpm/node_modules",
-            "apps/mapper/build", "apps/mapper/node_modules", "apps/mapper/.yarn_cache"
+            "apps/mapper/build", "apps/mapper/node_modules"
 }

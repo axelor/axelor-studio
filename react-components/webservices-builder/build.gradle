@@ -29,7 +29,7 @@ tasks.register('wsBuilderBuild', YarnTask) {
     inputs.dir('public')
 
     dependsOn 'wsBuilderInstall'
-    args = ["run", "build", "--cache-folder=.yarn_cache"]
+    args = ["build"]
 }
 
 tasks.register('wsBuilderInstall', YarnTask) {
@@ -39,9 +39,9 @@ tasks.register('wsBuilderInstall', YarnTask) {
             CI: 'false'
     ]
 
-    args = ["install", "-f", "--network-timeout=100000", "--cache-folder=.yarn_cache"]
+    args = ["install"]
 }
 
 clean {
-    delete "build", "node_modules", ".yarn_cache"
+    delete "build", "node_modules"
 }
