@@ -46,7 +46,7 @@ export const tabPropertyAuth = [
         widget: 'selectBox',
         emptyParameter: false,
         selectOptions: [
-          {name: 'Cookie', default: 'coockie', value: 'coockie'},
+          {name: 'Cookie', default: 'cookie', value: 'cookie'},
           {name: 'Jeton', default: 'jeton', value: 'token'},
         ],
       },
