@@ -562,7 +562,7 @@ function WebServiceEditor() {
     mapper.businessObject.authRequest = request?.authWsRequest ?
       request.authWsRequest :
       null;
-    mapper.businessObject.responseType = request?.responseType ? request.responseType : "coockie";
+    mapper.businessObject.responseType = request?.responseType ? request.responseType : "cookie";
     mapper.businessObject.tokenName = request?.tokenName;
     modeling.createShape(
       mapper,
@@ -1496,7 +1496,7 @@ function WebServiceEditor() {
     const result = await addAuth({
       name: ele.businessObject.name,
       studioApp: ele.businessObject.studioApp,
-      authWsRequest: ele.businessObject.Standard === false ?  ele.children[0].businessObject.authRequest : null,
+      authWsRequest: ele.businessObject.Standard === "false" ?  ele.children[0].businessObject.authRequest : null,
       tokenWsRequest:
         ele.businessObject.type !== 'basic' ?
           ele.children[1].businessObject.authRequest :
@@ -1889,7 +1889,7 @@ function WebServiceEditor() {
           removeElement([element.children[1], element.children[2]]);
         }
         else if(element?.type === 'bpmn:Task'){
-          if(element?.businessObject?.responseType === "coockie" && renderComponent === 1 ){
+          if(element?.businessObject?.responseType === "cookie" && renderComponent === 1 ){
            setRenderComponent(0)
           }
           else{
@@ -1956,7 +1956,7 @@ function WebServiceEditor() {
           />
         );
       case 'textField':
-        if(model === AUTHENTICATION && element?.type === 'bpmn:Task' && element.businessObject.responseType === "coockie" && entry.name === "tokenName"){
+        if(model === AUTHENTICATION && element?.type === 'bpmn:Task' && element.businessObject.responseType === "cookie" && entry.name === "tokenName"){
           entry = {...entry,hidden : true};
         }
         else{
@@ -2001,6 +2001,7 @@ function WebServiceEditor() {
           />
         );
       case 'authentificationAction':
+        console.log("test")
         return (
           <AuthentificationAction
             bpmnModeler={bpmnModelerGlobal}
