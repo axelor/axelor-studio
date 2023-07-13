@@ -1,0 +1,6 @@
+* xref:index.adoc[Use cases]
+** xref:case1.adoc[Case 1: Connecting to an axelor instance using the web service]
+** xref:case2.adoc[Case 2: Connecting to google services ( use of an Oauth2 authentication ) ]
+** xref:case3.adoc[Step 3: XML request exchange ]
+** xref:case4.adoc[Step 4: Use case for a Basic authentication]
+** xref:case5.adoc[Step 5: recursive execution of multiple request]

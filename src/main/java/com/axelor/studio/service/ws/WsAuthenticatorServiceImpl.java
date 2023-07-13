@@ -64,19 +64,20 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
     Map<String, Object> ctx = new HashMap<>();
     Client client = ClientBuilder.newClient();
 
-    Response response;
-    if (authType.equals("basic")) {
-      ctx.put("username", wsAuthenticator.getUsername());
-      ctx.put("password", wsAuthenticator.getPassword());
-      response =
-          wsConnectorService.callRequest(
-              wsAuthenticator.getAuthWsRequest(),
-              wsAuthenticator.getAuthWsRequest().getWsUrl(),
-              client,
-              templates,
-              ctx);
-    } else {
-      response = performOAuth2(wsAuthenticator, client, templates, ctx);
+    Response response = null;
+    if(wsAuthenticator.getAuthWsRequest() != null) {
+      if (authType.equals("basic")) {
+        response =
+                wsConnectorService.callRequest(
+                        wsAuthenticator.getAuthWsRequest(),
+                        wsAuthenticator.getAuthWsRequest().getWsUrl(),
+                        client,
+                        templates,
+                        ctx);
+
+      } else {
+        response = performOAuth2(wsAuthenticator, client, templates, ctx);
+      }
     }
 
     if (response != null && response.getStatus() == 200) {

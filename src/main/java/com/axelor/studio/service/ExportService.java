@@ -200,6 +200,45 @@ public class ExportService {
     return StringEscapeUtils.unescapeXml(xml);
   }
 
+  public static String exportWsKeyValueHeadersLines(
+      List<WsKeyValueSelectionHeader> wsKeyValues, int count, String type) {
+    String xml = "";
+
+    String indent = "\n" + Strings.repeat("\t", count);
+    String indentPlus = "\n" + Strings.repeat("\t", count + 1);
+
+    for (WsKeyValueSelectionHeader wsKeyValue : wsKeyValues) {
+      xml +=
+          indent
+              + "<"
+              + type
+              + ">"
+              + indentPlus
+              + "<key>"
+              + (wsKeyValue.getWsKey() != null ? wsKeyValue.getWsKey() : "")
+              + "</key>"
+              + indentPlus
+              + "<value>"
+              + (wsKeyValue.getWsValue() != null ? wsKeyValue.getWsValue() : "")
+              + "</value>"
+              + indentPlus
+              + "<isList>"
+              + wsKeyValue.getIsList()
+              + "</isList>"
+              + indentPlus
+              + "<subWsKeyValues>"
+              + exportWsKeyValueHeadersLines(wsKeyValue.getSubWsKeyValueList(), count + 2, type)
+              + indentPlus
+              + "</subWsKeyValues>"
+              + indent
+              + "</"
+              + type
+              + ">";
+    }
+
+    return StringEscapeUtils.unescapeXml(xml);
+  }
+
   public static String exportRequests(Set<WsRequest> wsRequests, int count, String type) {
     String xml = "";
 

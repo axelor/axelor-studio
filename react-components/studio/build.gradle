@@ -1,44 +1,71 @@
 description = 'Axelor\'s Studio'
 
 buildscript {
-    repositories repos
-    dependencies {
-        classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
-    }
+	repositories {
+		mavenCentral() {
+			content { excludeGroupByRegex "com\\.axelor.*" }
+		}
+		maven {
+			url 'https://plugins.gradle.org/m2/'
+			content { excludeGroupByRegex "com\\.axelor.*" }
+		}
+		maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
+
+		// Declare the Node.js download repository
+		ivy {
+			name = "Node.js"
+			setUrl("https://nodejs.org/dist/")
+			patternLayout {
+				artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]")
+			}
+			metadataSources {
+				artifact()
+			}
+			content {
+				includeModule("org.nodejs", "node")
+			}
+		}
+	}
+	dependencies {
+		classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
+	}
 }
 
 apply plugin: 'base'
 apply plugin: 'com.github.node-gradle.node'
 
 node {
-    version = '16.17.0'
-    npmVersion = '8.15.0'
-    download = true
+	version = '16.17.0'
+	yarnVersion = '1.22.19'
+	download = true
 }
 
-tasks.register('studioBuild', NpmTask) {
-    group = 'axelor'
-    description = 'Build Studio'
-    environment = [
-        CI: 'false'
-    ]
+tasks.register('studioBuild', YarnTask) {
+	group = 'axelor'
+	description = 'Build Studio'
+	environment = [
+		CI: 'false'
+	]
 
-    outputs.dir('build')
-    inputs.files('package.json', 'package-lock.json')
-    inputs.dir('src')
-    inputs.dir('public')
+	outputs.dir('build')
+	inputs.files('package.json', 'package-lock.json')
+	inputs.dir('src')
+	inputs.dir('public')
 
-    dependsOn 'studioInstall'
-    args = ["run", "build"]
+	dependsOn 'studioInstall'
+	args = ["build"]
 }
 
-tasks.register('studioInstall', NpmTask) {
-    group = 'axelor'
-    description = 'Install Studio dependencies'
+tasks.register('studioInstall', YarnTask) {
+	group = 'axelor'
+	description = 'Install Studio dependencies'
+	environment = [
+		CI: 'false'
+	]
 
-    args = ['install']
+	args = ["install"]
 }
 
 clean {
-    delete "build", "node_modules"
+	delete "build", "node_modules"
 }
