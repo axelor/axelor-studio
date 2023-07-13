@@ -1,0 +1,25 @@
+= API CONSOLE
+// page:page-id.adoc#whats-a-page-id == What's a page ID?
+// page:page-id.adoc#important == Why are page IDs important?
+//[#whats-a-cross-reference]
+
+This is a general api connector feature for Axelor Open Suite.
+It is a part of Axelor's studio module. It facilitates calling of REST api through UI.
+It is one more step toward no code or low code concept.
+Dependency on backend coding for simple integrations will be reduced significantly  with this feature.
+
+There are 3 main parts of the api connector feature which are :
+
+* **Connector** : The connector is a set of requests with an authenticator for the same root url. It generally serves a particular functional aspect for example searching and downloading a file from google drive or creating events on a google calendar.
+* **Request** : The third part is a request that represents the actual web service (REST) request. It has different types and payloads with headers. Response from one request call can be used on  another request of the same connector.
+* **Authentication** : The authenticator is similar to the connector but it handles the authentication part for api call. One authenticator can be used with multiple connectors.
+
+[#xref-macro]
+== Module And Menu
+
+We can find the elements of the web service project in App builder -> Web service , it is installed with the **axelor BPMN** .
+there is the request and the connector and the authentication and another stuff things as The transformation libraries .
+We are going to explain each component in the next sections ...
+
+image::menu.png[alt text,align="left"]
+=

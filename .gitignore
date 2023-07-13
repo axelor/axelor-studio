@@ -46,6 +46,7 @@ hs_err_pid*
 
 # JavaScript
 node_modules
+.yarn_cache
 
 # dependencies
 node_modules

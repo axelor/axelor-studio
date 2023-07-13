@@ -1,7 +1,31 @@
 description = 'Axelor\'s BPM webapp'
 
 buildscript {
-    repositories repos
+    repositories {
+        mavenCentral() {
+            content { excludeGroupByRegex "com\\.axelor.*" }
+        }
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+            content { excludeGroupByRegex "com\\.axelor.*" }
+        }
+        maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
+
+        // Declare the Node.js download repository
+        ivy {
+            name = "Node.js"
+            setUrl("https://nodejs.org/dist/")
+            patternLayout {
+                artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]")
+            }
+            metadataSources {
+                artifact()
+            }
+            content {
+                includeModule("org.nodejs", "node")
+            }
+        }
+    }
     dependencies {
         classpath "com.github.node-gradle:gradle-node-plugin:3.5.1"
     }
@@ -20,7 +44,7 @@ tasks.register('bpmBuild', YarnTask) {
     group = 'axelor'
     description = 'Build BPM webapp'
     environment = [
-        CI: 'false'
+            CI: 'false'
     ]
 
     outputs.dir('apps/bpm/build')
@@ -39,23 +63,23 @@ tasks.register('bpmBuild', YarnTask) {
     inputs.dir('apps/timer-builder/public')
 
     dependsOn 'bpmInstall'
-    args = ["run", "build"]
+    args = ["build"]
 }
 
 tasks.register('bpmInstall', YarnTask) {
     group = 'axelor'
     description = 'Install BPM webapp dependencies'
 
-    args = ['install']
+    args = ["install"]
 }
 
 tasks.register('mapperBuild', YarnTask) {
     group = 'axelor'
     description = 'Build BPM webapp'
     environment = [
-        CI: 'false'
+            CI: 'false'
     ]
-    
+
     workingDir = file("apps/mapper")
 
     outputs.dir('apps/mapper/build')
@@ -64,15 +88,19 @@ tasks.register('mapperBuild', YarnTask) {
     inputs.dir('apps/mapper/public')
 
     dependsOn 'mapperInstall'
-    args = ["run", "build"]
+    args = ["build"]
 }
 
 tasks.register('mapperInstall', YarnTask) {
     group = 'axelor'
     description = 'Install BPM webapp dependencies'
+    environment = [
+            CI: 'false'
+    ]
+
     workingDir = file("apps/mapper")
 
-    args = ['install']
+    args = ["install"]
 }
 
 clean {

@@ -973,6 +973,7 @@
 
   <selection name="studio.ws.request.headers.value">
     <option value="application/json">application/json</option>
+    <option value="gzip">gzip</option>
     <option value="text/plain">text/plain</option>
     <option value="text/html">text/html</option>
     <option value="text/css">text/css</option>

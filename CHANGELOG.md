@@ -1,3 +1,17 @@
+## 1.2.1 (2023-07-13)
+
+#### Features
+
+* Add documentation for web service builder using Antora
+* Update Utils and Message dependencies
+
+#### Fixed
+
+* Ws-builder , Hide authenticate button when no request is selected
+* BPM, pass variables in call activity
+* Add new parser for xml responses
+* Fix export/import Web service components
+
 ## 1.2.0 (2023-07-03)
 
 #### Changes
