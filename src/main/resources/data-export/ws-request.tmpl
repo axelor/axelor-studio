@@ -10,7 +10,7 @@
 	query.fetch().each({
 		request ->
 
-				headers = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.headerWsKeyValueList, 4, 'header')
+				headers = com.axelor.studio.service.ExportService.exportWsKeyValueHeadersLines(request.headerWsKeyValueList, 4, 'header')
 
 				payloads = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.payLoadWsKeyValueList, 4, 'payload')
 

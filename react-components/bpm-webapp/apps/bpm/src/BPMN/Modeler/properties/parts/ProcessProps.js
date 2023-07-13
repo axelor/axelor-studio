@@ -2,9 +2,15 @@ import nameEntryFactory from "./implementation/Name";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
-import { getProcessBusinessObject } from "../../extra";
+import { getProcessBusinessObject, getFlowElements } from "../../extra";
 
-export default function ProcessProps(group, element, translate, options) {
+export default function ProcessProps(
+  group,
+  element,
+  translate,
+  options,
+  bpmnModeler
+) {
   let businessObject = getBusinessObject(element);
 
   let processIdDescription = options && options.processIdDescription;
@@ -32,12 +38,27 @@ export default function ProcessProps(group, element, translate, options) {
       };
 
       idEntry.set = function (element, values) {
-        if (
-          element &&
-          element.businessObject &&
-          element.businessObject.processRef
-        ) {
-          element.businessObject.processRef.id = values.processId;
+        const process = element.businessObject.processRef;
+        if (process) {
+          process.id = values.processId;
+
+          /**Update call activity nodes */
+          const flowElements = getFlowElements(process);
+          const callActivities = flowElements?.filter(
+            (e) => e.baseType === "bpmn:CallActivity"
+          );
+          if (!callActivities?.length) return;
+          const elementRegistry = bpmnModeler.get("elementRegistry");
+          callActivities?.forEach((activity) => {
+            const element = elementRegistry.get(activity.id);
+            const camundaIn =
+              element?.businessObject?.extensionElements?.values?.find(
+                (v) => v.$type === "camunda:In"
+              );
+            if (!camundaIn) return;
+            camundaIn.source = values.processId;
+            camundaIn.target = values.processId;
+          });
         }
       };
 
@@ -45,7 +66,11 @@ export default function ProcessProps(group, element, translate, options) {
         let idValue = values.processId;
         let bo = getBusinessObject(element);
         if (!(bo && bo.processRef)) return;
-        let processIdError = utils.isIdValid(bo && bo.processRef, idValue, translate);
+        let processIdError = utils.isIdValid(
+          bo && bo.processRef,
+          idValue,
+          translate
+        );
         return processIdError ? { processId: processIdError } : {};
       };
 

@@ -273,7 +273,7 @@ export default function TranslationProps({
   }, [element]);
 
   useEffect(() => {
-    let canvas = bpmnModeler.get("canvas");
+    let canvas = bpmnModeler?.get("canvas");
     if (!canvas) return;
     let isSubscribed = true;
     let rootElement = canvas.getRootElement();

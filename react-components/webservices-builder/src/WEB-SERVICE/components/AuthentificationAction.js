@@ -85,21 +85,25 @@ export default function AuthentificationAction({
       {!isAuth && (
         <Button
           className={classes.btn}
-          onClick={async () => {
-            const res = await action();
-            if (res === false) {
-              setError(true);
-              setTimeout(() => {
-                setError(false);
-              }, 3000);
-            } else {
-              const modeling = bpmnModeler.get('modeling');
-              modeling.updateProperties(element, {
-                [name]: true,
-              });
-              element.businessObject[name] = true;
-              setAuth(true);
-            }
+          onClick={() => {
+            Promise.resolve(action())
+            .then((res)=> {
+              if (res === false) {
+                setError(true);
+                setTimeout(() => {
+                  setError(false);
+                }, 3000);
+              } else {
+                setAuth(true);
+                const modeling = bpmnModeler.get('modeling');
+                modeling.updateProperties(element, {
+                  [name]: true,
+                });
+                element.businessObject[name] = true;
+              }
+
+            })
+            
           }}
         >
           Authentificate
@@ -116,6 +120,7 @@ export default function AuthentificationAction({
               }
             }}
             className={classes.checkbox}
+            checked={isAuth}
           />
         }
         checked={isAuth}

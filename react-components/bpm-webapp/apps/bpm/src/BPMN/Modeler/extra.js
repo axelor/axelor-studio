@@ -109,6 +109,7 @@ export const getFlowElements = (process, ele = []) => {
           id: element.id,
           name: element.name || element.id,
           type: getType(element),
+          baseType: element?.$type,
         });
       } else if (SUBPROCESS_TYPES.includes(getType(element))) {
         if (SUBPROCESS_TYPES.includes(getType(element))) {
@@ -122,6 +123,7 @@ export const getFlowElements = (process, ele = []) => {
                 ? "multiinstancesequential"
                 : "multiinstanceparallel"
               : getType(element),
+            baseType: element?.$type,
           });
         }
         const nestedElements = getFlowElements(element, []);

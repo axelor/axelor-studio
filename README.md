@@ -54,6 +54,11 @@ ext {
     wsBuilderPath = "${studioModulePath}/react-components/webservices-builder"
 }
 
+tasks.getByPath(":modules:axelor-studio:react-components:baml:bamlInstall").mustRunAfter(":modules:axelor-studio:react-components:bpm-webapp:bpmInstall")
+tasks.getByPath(":modules:axelor-studio:react-components:bpm-webapp:bpmInstall").mustRunAfter(":modules:axelor-studio:react-components:bpm-webapp:mapperInstall")
+tasks.getByPath(":modules:axelor-studio:react-components:bpm-webapp:mapperInstall").mustRunAfter(":modules:axelor-studio:react-components:studio:studioInstall")
+tasks.getByPath(":modules:axelor-studio:react-components:studio:studioInstall").mustRunAfter(":modules:axelor-studio:react-components:webservices-builder:wsBuilderInstall")
+
 tasks.register('studioReactCopy', Copy) {
     description = 'Copy Studio React into webapp'
 
