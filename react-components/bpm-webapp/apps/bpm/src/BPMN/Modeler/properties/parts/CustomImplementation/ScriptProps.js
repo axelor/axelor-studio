@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { Edit, NotInterested } from "@material-ui/icons";
+import Edit from "@material-ui/icons/Edit";
 
 import Select from "../../../../../components/Select";
 import QueryBuilder from "../../../../../components/QueryBuilder";
@@ -28,7 +28,9 @@ import {
   TextField,
   Textbox,
   Checkbox,
+  SelectBox,
 } from "../../../../../components/properties/components";
+import AlertDialog from "../../../../../components/AlertDialog";
 import { translate, getBool } from "../../../../../utils";
 
 const useStyles = makeStyles((theme) => ({
@@ -69,6 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textbox: {
     width: "100%",
+    height: "calc(100% - 10px)",
   },
   dialog: {
     minWidth: 300,
@@ -89,12 +92,38 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
   },
+  scriptDialog: {
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+  },
+  typeLabel: {
+    padding: "0px 10px",
+    background: "gray",
+    color: "white",
+  },
+  entryLabel: {
+    padding: "0px 10px",
+    color: "white",
+  },
+  script: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
+
+const implementationOptions = [
+  { name: translate("Script"), value: "script" },
+  { name: translate("Request"), value: "request" },
+  {
+    name: translate("Connector"),
+    value: "connector",
+  },
+];
 
 export default function ScriptProps({ element, index, label, bpmnModeler }) {
   const [isVisible, setVisible] = useState(false);
   const [open, setOpen] = React.useState(false);
-  const [isQuery, setQuery] = useState(false);
   const [metaModel, setMetaModel] = useState(null);
   const [metaJsonModel, setMetaJsonModel] = useState(null);
   const [models, setModels] = useState([]);
@@ -108,8 +137,10 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [isCustom, setIsCustom] = useState(false);
-  const [isConnector, setConnector] = useState(false);
   const [openConnector, setOpenConnector] = useState(false);
+  const [type, setType] = useState("script");
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
   const classes = useStyles();
 
   const handleClickOpen = () => {
@@ -134,6 +165,7 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
   const updateScript = ({ expr, exprMeta } = {}) => {
     element.businessObject.script = expr;
     element.businessObject.scriptFormat = "axelor";
+    setScript(expr);
     setProperty("scriptValue", exprMeta ? exprMeta : undefined);
   };
 
@@ -320,6 +352,7 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
     if (!value) {
       setProperty(name, undefined);
       setProperty(`${name}ModelName`, undefined);
+      setProperty(`${name}ModelLabel`, undefined);
       setProperty("defaultForm", undefined);
       setDefaultForm(null);
       setDefaultFormVisible(false);
@@ -365,6 +398,13 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
     }
   };
 
+  const getScript = React.useCallback(() => {
+    let bo = getBusinessObject(element);
+    return {
+      script: (bo?.get("script") || "")?.replace(/[\u200B-\u200D\uFEFF]/g, ""),
+    };
+  }, [element]);
+
   const getSelectValue = React.useCallback(
     (name) => {
       let label = getProperty(`${name}Label`);
@@ -391,9 +431,9 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
     const displayStatus = getProperty("displayStatus");
     const isCustom = getProperty("isCustom");
     const defaultForm = getSelectValue("defaultForm");
-    const isConnector = getProperty("connector");
+    const type = getProperty("type");
     setDisplayStatus(getBool(displayStatus));
-    setConnector(getBool(isConnector));
+    setType(type || "script");
     setIsCustom(
       isCustom === undefined || isCustom === ""
         ? metaJsonModel
@@ -427,14 +467,8 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
   }, [getProperty, getSelectValue, getFormViews]);
 
   useEffect(() => {
-    const query = getProperty("query") || false;
     const scriptValue = getProperty("scriptValue");
-    const isConnector = getProperty("connector");
-
-    setQuery(getBool(query));
-    setReadOnly(
-      (getBool(query) || scriptValue) && !getBool(isConnector) ? true : false
-    );
+    setReadOnly(!!scriptValue);
   }, [getProperty]);
 
   useEffect(() => {
@@ -458,60 +492,35 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
           {index > 0 && <div className={classes.divider} />}
         </React.Fragment>
         <div className={classes.groupLabel}>{translate(label)}</div>
-        <Checkbox
+        <SelectBox
           element={element}
           entry={{
-            id: "query",
-            label: translate("Query"),
-            modelProperty: "query",
-            widget: "checkbox",
+            id: "type",
+            label: "Type",
+            modelProperty: "type",
+            selectOptions: function () {
+              return implementationOptions;
+            },
+            emptyParameter: false,
             get: function () {
-              return {
-                query: isQuery,
-              };
+              return { type };
             },
             set: function (e, values) {
-              let query = !values.query;
-              element.businessObject.scriptFormat = "axelor";
-              if (!query) {
+              let type = values?.type;
+              setProperty("type", type);
+              setType(type);
+              if (type === "request") {
                 updateValue("metaModel", undefined);
                 updateValue("metaJsonModel", undefined);
                 setProperty("defaultForm", undefined);
                 setProperty("displayStatus", undefined);
                 setProperty("displayOnModels", undefined);
+                setProperty("isCustom", undefined);
+              } else if (type === "connector") {
+                setProperty("resultVariable", undefined);
               }
-              setProperty("query", query);
-              setQuery(query);
-              if (!query && getProperty("scriptValue")) {
-                setReadOnly(true);
-              } else {
-                setReadOnly(query);
-              }
-            },
-          }}
-        />
-        <Checkbox
-          element={element}
-          entry={{
-            id: "connector",
-            label: translate("Connector"),
-            modelProperty: "connector",
-            widget: "checkbox",
-            get: function () {
-              return {
-                connector: isConnector,
-              };
-            },
-            set: function (e, values) {
-              let connector = !values.connector;
-              if (connector === true) {
-                setReadOnly(false);
-              } else if (isQuery || getProperty("scriptValue")) {
-                setReadOnly(true);
-              }
-              element.businessObject.scriptFormat = "axelor";
-              setProperty("connector", connector);
-              setConnector(connector);
+              updateScript({ expr: undefined, exprMeta: undefined });
+              setReadOnly(false);
             },
           }}
         />
@@ -520,28 +529,38 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
             element={element}
             className={classes.textbox}
             rows={3}
-            readOnly={isReadOnly ? true : false}
+            readOnly={isReadOnly}
             entry={{
               id: "script",
-              label: translate("Script"),
+              label: (
+                <div className={classes.script}>
+                  <div>{translate("Script")}</div>
+                  <div style={{ display: "flex" }}>
+                    <div className={classes.typeLabel}>
+                      {
+                        implementationOptions?.find((i) => i?.value === type)
+                          ?.name
+                      }
+                    </div>
+                    <div
+                      className={classes.entryLabel}
+                      style={{
+                        background: isReadOnly ? "rgb(88, 180, 35)" : "#0275d8",
+                      }}
+                    >
+                      {isReadOnly
+                        ? translate("Generated")
+                        : translate("Manually edited")}
+                    </div>
+                  </div>
+                </div>
+              ),
               modelProperty: "script",
               get: function () {
-                let bo = getBusinessObject(element);
-                return {
-                  script: ((bo && bo.get("script")) || "").replace(
-                    /[\u200B-\u200D\uFEFF]/g,
-                    ""
-                  ),
-                };
+                return getScript();
               },
               set: function (e, values) {
-                if (element.businessObject) {
-                  element.businessObject.script = values.script;
-                  element.businessObject.scriptFormat = "axelor";
-                  element.businessObject.resource = undefined;
-                  setProperty("scriptOperatorType", undefined);
-                  setProperty("scriptValue", undefined);
-                }
+                updateScript({ expr: values?.script });
               },
               validate: function (e, values) {
                 if (!values.script) {
@@ -552,8 +571,10 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
           />
           <div className={classes.new}>
             <Tooltip title="Enable" aria-label="enable">
-              <NotInterested
-                className={classes.newIcon}
+              {/* Code icon is not available in material icons */}
+              <i
+                className="fa fa-code"
+                style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
                 onClick={() => {
                   if (isReadOnly) {
                     setAlertMessage(
@@ -561,33 +582,37 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                     );
                     setAlertTitle("Warning");
                     setAlert(true);
+                  } else {
+                    setOpenScriptDialog(true);
                   }
                 }}
-              />
+              ></i>
             </Tooltip>
             <Edit
               className={classes.newIcon}
               onClick={() => {
-                isConnector
+                type === "connector"
                   ? setOpenConnector(true)
-                  : isQuery
+                  : type === "request"
                   ? handleClickOpen()
                   : handleMapperOpen();
               }}
             />
-            {isConnector
+            {type === "connector"
               ? openConnector && (
                   <ConnectorBuilder
                     open={openConnector}
                     handleClose={() => {
                       setOpenConnector(false);
-                      setReadOnly(false);
                     }}
-                    updateScript={(val) => updateScript(val)}
+                    updateScript={(val) => {
+                      updateScript(val);
+                      setReadOnly(true);
+                    }}
                     getDefaultValues={() => getProperty("scriptValue")}
                   />
                 )
-              : isQuery
+              : type === "request"
               ? open && (
                   <QueryBuilder
                     open={open}
@@ -647,6 +672,8 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                       setAlertMessage(null);
                       setAlertTitle(null);
                       setReadOnly(false);
+                      setOpenScriptDialog(true);
+                      setScript(getScript()?.script);
                       if (element.businessObject) {
                         setProperty("scriptOperatorType", undefined);
                         setProperty("scriptValue", undefined);
@@ -669,9 +696,40 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                 </DialogActions>
               </Dialog>
             )}
+            {openScriptDialog && (
+              <AlertDialog
+                className={classes.scriptDialog}
+                openAlert={openScriptDialog}
+                alertClose={() => setOpenScriptDialog(false)}
+                handleAlertOk={() => {
+                  updateScript({ expr: script });
+                  setOpenScriptDialog(false);
+                }}
+                title={translate("Add script")}
+                children={
+                  <Textbox
+                    element={element}
+                    className={classes.textbox}
+                    showLabel={false}
+                    defaultHeight={window?.innerHeight - 205}
+                    entry={{
+                      id: "script",
+                      label: translate("Script"),
+                      modelProperty: "script",
+                      get: function () {
+                        return getScript();
+                      },
+                      set: function (e, values) {
+                        setScript(values?.script);
+                      },
+                    }}
+                  />
+                }
+              />
+            )}
           </div>
         </div>
-        {!isConnector && (
+        {type !== "connector" && (
           <TextField
             element={element}
             entry={{
@@ -679,18 +737,13 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
               label: translate("Result variable"),
               modelProperty: "scriptResultVariable",
               get: function () {
-                let bo = getBusinessObject(element);
-                let boResultVariable = bo && bo.get("camunda:resultVariable");
-                return { scriptResultVariable: boResultVariable };
+                return { scriptResultVariable: getProperty("resultVariable") };
               },
               set: function (e, values) {
-                if (element.businessObject) {
-                  element.businessObject.resultVariable =
-                    values.scriptResultVariable || undefined;
-                }
+                setProperty("resultVariable", values?.scriptResultVariable);
               },
               validate: function (e, values) {
-                if (!values.scriptResultVariable && isQuery) {
+                if (!values?.scriptResultVariable && type === "request") {
                   return {
                     scriptResultVariable: translate("Must provide a value"),
                   };
@@ -700,8 +753,7 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
             canRemove={true}
           />
         )}
-
-        {!isQuery && (
+        {type !== "request" && (
           <React.Fragment>
             <label className={classes.label}>{translate("Model")}</label>
             <Checkbox
@@ -783,7 +835,6 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                 />
               </React.Fragment>
             )}
-
             <div className={classes.container}>
               <Checkbox
                 element={element}

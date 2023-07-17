@@ -316,15 +316,15 @@ function Builder({
     );
     const json = {
       fields: jsonFields,
-      targetModel: model.name,
+      targetModel: model?.name,
       sourceModel: getSourceModelString(sourceModelList),
       sourceModelList,
       newRecord,
       savedRecord,
       save,
-      isJson: model.modelType === ModelType.CUSTOM,
+      isJson: model?.modelType === ModelType.CUSTOM,
       createVariable,
-      processId: processId && processId.name,
+      processId: processId?.name,
       modelFrom,
     };
     return JSON.stringify({ ...json });
@@ -386,10 +386,10 @@ function Builder({
       const jsonQuery = getJSONQuery();
       let _model = params.model;
       if (!_model) {
-        if (model.modelType === ModelType.CUSTOM) {
+        if (model?.modelType === ModelType.CUSTOM) {
           _model = 'com.axelor.meta.db.MetaJsonRecord';
         } else {
-          _model = model.fullName;
+          _model = model?.fullName;
         }
       }
       const scriptString = await generateScriptString(jsonQuery, _model);
@@ -398,7 +398,7 @@ function Builder({
         ...builderRecord,
         [params.resultMetaField]: jsonQuery,
         [params.resultField]: expressionQuery,
-        [params.targetField]: model.name,
+        [params.targetField]: model?.name,
         [params.sourceField]: getSourceModelString(sourceModelList),
       };
       onSave &&
