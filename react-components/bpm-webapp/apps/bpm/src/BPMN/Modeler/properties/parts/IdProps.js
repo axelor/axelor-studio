@@ -31,7 +31,6 @@ export default function IdProps(
          */
         if (element?.type === "bpmn:Process") {
           const flowElements = getFlowElements(element?.businessObject);
-          console.log(flowElements, element)
           const callActivities = flowElements?.filter(
             (e) => e.baseType === "bpmn:CallActivity"
           );

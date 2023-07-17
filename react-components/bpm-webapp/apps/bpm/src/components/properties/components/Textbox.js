@@ -75,6 +75,8 @@ export default function Textbox({
   bpmnModeler,
   readOnly: parentReadOnly = false,
   className,
+  defaultHeight,
+  showLabel = true,
 }) {
   const classes = useStyles();
   const {
@@ -243,12 +245,13 @@ export default function Textbox({
 
   return (
     <div className={classnames(classes.root, className)} ref={containerRef}>
-      <label className={classes.label}>{label}</label>
+      {showLabel && <label className={classes.label}>{label}</label>}
       {entry.id === "script" ? (
         <ScriptEditor
           id={`camunda_${modelProperty}`}
           value={value || ""}
           isError={isError}
+          defaultHeight={defaultHeight}
           readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
           width={containerWidth}
           onChange={setValue}
@@ -296,9 +299,10 @@ function ScriptEditor({
   onBlur,
   isError,
   readOnly,
+  defaultHeight,
 }) {
   const classes = useStyles();
-  const [height, setHeight] = useState(INITIAL_HEIGHT);
+  const [height, setHeight] = useState(defaultHeight || INITIAL_HEIGHT);
   const [width, setWidth] = useState(containerWidth - PADDING * 2);
   const savedDimension = useRef({ width, height });
 

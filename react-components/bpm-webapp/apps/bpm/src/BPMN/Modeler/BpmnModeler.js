@@ -44,7 +44,12 @@ import {
   getAppStudioConfig,
   getBPMNModels,
 } from "../../services/api";
-import { getAxelorScope, getBool, translate, convertSVGtoBase64 } from "../../utils";
+import {
+  getAxelorScope,
+  getBool,
+  translate,
+  convertSVGtoBase64,
+} from "../../utils";
 import {
   FILL_COLORS,
   USER_TASKS_TYPES,
@@ -1046,8 +1051,8 @@ function BpmnModelerComponent() {
       versionTag: attrs["camunda:versionTag"],
       wkfStatusColor: attrs["camunda:wkfStatusColor"],
     };
-  }
-  
+  };
+
   const addImage = async (id) => {
     if (!id) return;
     const wkf = (await fetchWkf(id)) || {};
@@ -1839,6 +1844,7 @@ function BpmnModelerComponent() {
               setHeight(height + d.height);
               setCSSWidth(width + d.width);
             }}
+            minWidth={width === 0 ? width : drawerWidth}
             maxWidth={window.innerWidth - 150}
           >
             <Drawer
