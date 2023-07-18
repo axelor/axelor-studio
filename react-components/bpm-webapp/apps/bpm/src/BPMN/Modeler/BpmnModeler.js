@@ -198,10 +198,14 @@ function BpmnModelerComponent() {
   }, []);
 
   const alertOpen = (
-    { onOk = () => {}, onCancel = () => {} },
+    actions,
     alertMessage = "Item is required.",
     title = "Error"
   ) => {
+    const { onOk = () => {}, onCancel = () => {} } = actions || {
+      onOk: () => {},
+      onCancel: () => {},
+    };
     setAlert({
       open: true,
       alertMessage,
