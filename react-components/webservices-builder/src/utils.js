@@ -37,9 +37,7 @@ function getGroovyBasicPayload(transformations, model, wsValue) {
     transformations && transformations[0]?.operation?.groovyTemplate;
   if (groovy) {
     let newGroovy = groovy;
-    console.log(wsValue)
     if(wsValue?.subField){
-      console.log("subField")
       newGroovy = newGroovy?.replace(
         '#{target}',
         (model?.name && wsValue.name) ? `${model?.name.toLowerCase()}.${`${wsValue.name}.${getSubFieldName(wsValue.subField)}`}` : `"${wsValue}"`,
@@ -150,7 +148,6 @@ function isBPMQuery(type) {
 
 function groovy(element, model) {
   if (element?.wsValue?.name) {
-    console.log("hello")
     return getGroovyBasicPayload(
       element.transformations,
       model,

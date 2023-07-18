@@ -13,6 +13,7 @@
 		"@testing-library/user-event": "^7.1.2",
 		"axios": "^0.19.0",
 		"classnames": "^2.2.6",
+		"clsx": "^1.2.1",
 		"dasherize": "^2.0.0",
 		"immer": "^5.1.0",
 		"lodash": "^4.17.15",
@@ -28,6 +29,7 @@
 		"xml-js": "^1.6.11"
 	},
 	"scripts": {
+		"preinstall": "npx only-allow pnpm",
 		"start": "react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",

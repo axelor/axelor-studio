@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {DialogTitle, Paper} from '@material-ui/core';
 import {Add, Delete} from '@material-ui/icons';
 import Line from '../../components/Line';

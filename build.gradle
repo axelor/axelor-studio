@@ -90,11 +90,6 @@ try {
 	tasks.getByPath(":react-components:bpm-webapp:mapperBuild")
 	tasks.getByPath(":react-components:webservices-builder:wsBuilderBuild")
 
-	tasks.getByPath(":react-components:baml:bamlInstall").mustRunAfter(":react-components:bpm-webapp:bpmInstall")
-	tasks.getByPath(":react-components:bpm-webapp:bpmInstall").mustRunAfter(":react-components:bpm-webapp:mapperInstall")
-	tasks.getByPath(":react-components:bpm-webapp:mapperInstall").mustRunAfter(":react-components:studio:studioInstall")
-	tasks.getByPath(":react-components:studio:studioInstall").mustRunAfter(":react-components:webservices-builder:wsBuilderInstall")
-
 	processResources {
 		dependsOn ":react-components:baml:bamlBuild"
 		dependsOn ":react-components:studio:studioBuild"

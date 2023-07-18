@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { TextField, CircularProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from '@material-ui/core/styles'
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import _uniqueId from "lodash/uniqueId";
 
