@@ -2001,7 +2001,6 @@ function WebServiceEditor() {
           />
         );
       case 'authentificationAction':
-        console.log("test")
         return (
           <AuthentificationAction
             bpmnModeler={bpmnModelerGlobal}

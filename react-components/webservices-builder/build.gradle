@@ -36,11 +36,11 @@ apply plugin: 'com.github.node-gradle.node'
 
 node {
     version = '16.17.0'
-    yarnVersion = '1.22.19'
+    pnpmVersion = '8.6.3'
     download = true
 }
 
-tasks.register('wsBuilderBuild', YarnTask) {
+tasks.register('wsBuilderBuild', PnpmTask) {
     group = 'axelor'
     description = 'Build WS builder'
     environment = [
@@ -48,7 +48,7 @@ tasks.register('wsBuilderBuild', YarnTask) {
     ]
 
     outputs.dir('build')
-    inputs.files('package.json', 'package-lock.json')
+    inputs.files('package.json', 'pnpm-lock.yaml')
     inputs.dir('src')
     inputs.dir('public')
 
@@ -56,7 +56,7 @@ tasks.register('wsBuilderBuild', YarnTask) {
     args = ["build"]
 }
 
-tasks.register('wsBuilderInstall', YarnTask) {
+tasks.register('wsBuilderInstall', PnpmTask) {
     group = 'axelor'
     description = 'Install WS builder dependencies'
     environment = [

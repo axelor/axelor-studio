@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import classnames from 'classnames';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import { PlayArrow, RotateLeft } from '@material-ui/icons';
 import { runTestConnector } from '../../services/api';

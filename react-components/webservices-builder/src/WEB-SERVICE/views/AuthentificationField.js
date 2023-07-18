@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {Add, Edit} from '@material-ui/icons';
 import {TextField} from '../components';
 

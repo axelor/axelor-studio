@@ -4,7 +4,7 @@ import Popper from '@material-ui/core/Popper';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Chip from '@material-ui/core/Chip';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import _uniqueId from 'lodash/uniqueId';
 
 import { translate, useDebounce } from '../../../utils';

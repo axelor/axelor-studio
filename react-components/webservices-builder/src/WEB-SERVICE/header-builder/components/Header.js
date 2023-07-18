@@ -1,5 +1,5 @@
 import React from 'react';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {ArrowRightAlt, Delete} from '@material-ui/icons';
 import {HEADERS_KEYS, HEADERS_VALUES} from '../../constants';
 import {SelectionField} from '../../components'
