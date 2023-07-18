@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {DialogTitle, TextField} from '@material-ui/core';
 import {Add, ArrowRightAlt, Delete, Edit} from '@material-ui/icons';
 import {TransformationBuilder} from '../../transformation-builder/index';

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import classnames from 'classnames';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {Add, Edit} from '@material-ui/icons';
 import CustomizedTables from '../components/Table';
 import RequestBuilder from '../request-builder/request-builder';

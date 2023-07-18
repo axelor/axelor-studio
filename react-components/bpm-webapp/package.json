@@ -1,15 +1,16 @@
 {
-    "name": "bpm-webapp",
-    "private": true,
-    "engines": {
-        "node": ">=14",
-        "yarn": ">=1.22"
-    },
-    "workspaces": [
-        "apps/*"
-    ],
-    "scripts": {
-        "start": "yarn workspace bpmnjs run start",
-        "build": "yarn workspace bpmnjs run build"
-    }
+  "name": "bpm-webapp",
+  "private": true,
+  "engines": {
+    "node": ">=14",
+    "pnpm": ">=8"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "start": "pnpm --filter bpmnjs run start",
+    "build": "pnpm --filter bpmnjs run build"
+  }
 }

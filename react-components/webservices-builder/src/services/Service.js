@@ -112,7 +112,6 @@ export class Service {
       ...options,
     };
     const url = `ws/rest/${entity}/search`;
-    console.log(url);
     return this.post(url, data);
   }
 

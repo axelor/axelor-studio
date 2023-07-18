@@ -1,7 +1,6 @@
 import Service from './Service';
 import * as _ from 'lodash';
 import { getFormName, getItemsByType } from '../utils';
-import { ModelType } from '../WEB-SERVICE/constants';
 
 export async function getMetaModal(data) {
   const res = await Service.search('com.axelor.meta.db.MetaModel', {data});
@@ -122,9 +121,7 @@ export async function getMetaFields(model) {
 export async function getRecords(metaModel) {
   let res = {} ;
   if(metaModel.type ===  "metaModel"){
-    console.log(metaModel)
     res = await Service.search(metaModel.fullName, {});
-    console.log(res)
     return res ? res.data : [];
   }else if(metaModel.type === "metaJsonModel"){
     res = await Service.search("com.axelor.meta.db.MetaJsonRecord", {_domain : `self.jsonModel = ${metaModel.name}`});

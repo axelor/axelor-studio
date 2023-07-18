@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import classnames from 'classnames';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {Check, Close, Delete, Edit} from '@material-ui/icons';
 import Description from './Description';
 import {useDispatch, useSelector} from 'react-redux';

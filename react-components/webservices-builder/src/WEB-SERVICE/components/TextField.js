@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import classnames from 'classnames';
-import {makeStyles} from '@material-ui/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import {Close} from '@material-ui/icons';
 
 import Description from './Description';
