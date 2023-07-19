@@ -1810,7 +1810,7 @@ export function getDuplicateArrayValues(arr, isCustomForm = false) {
 	return duplicateValues;
 }
 
-export default {
+const utils = {
 	camleCaseString,
 	translate,
 	processXML,
@@ -1841,3 +1841,4 @@ export default {
 	isPanelTab,
 	getDuplicateArrayValues,
 };
+export default utils;

@@ -30,7 +30,7 @@ export const BooleanField = ({ ...props }) => ({
 	...props,
 });
 
-export default {
+const Fields = {
 	StringField,
 	ObjectSelectionField,
 	IntegerField,
@@ -38,3 +38,5 @@ export default {
 	StaticSelectField,
 	BooleanField,
 };
+
+export default Fields;

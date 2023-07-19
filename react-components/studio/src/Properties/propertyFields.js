@@ -758,7 +758,7 @@ export const Strong = BooleanField({
 	dependModelType: MODEL_TYPE.BASE,
 });
 
-export default {
+const PropertyFields = {
 	Name,
 	Type,
 	Title,
@@ -819,3 +819,5 @@ export default {
 	ItemSpan,
 	Css,
 };
+
+export default PropertyFields;

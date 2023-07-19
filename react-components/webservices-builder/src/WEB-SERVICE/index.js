@@ -6,7 +6,6 @@ import {
   Box,
   Tabs,
   Tab,
-  colors,
   DialogTitle,
   DialogContentText,
   DialogContent,
@@ -495,6 +494,7 @@ function WebServiceEditor() {
     participant.businessObject.versionRequest = request?.version;
     participant.businessObject.description = request?.description;
 
+    const colors = {};
     colors.stroke = STROKE_COLORS['bpmn:Task'];
     colors.fill = FILL_COLORS['bpmn:Task'];
     participant.businessObject.di.set('stroke', 'black');
@@ -570,6 +570,7 @@ function WebServiceEditor() {
       process,
     );
     mapper.bpmnModeler = bpmnModelerAuth;
+    const colors = {};
     if (is(mapper, ['bpmn:Task'])) {
       colors.stroke = STROKE_COLORS['bpmn:Task'];
       colors.fill = FILL_COLORS['bpmn:Task'];
@@ -664,6 +665,7 @@ function WebServiceEditor() {
     mapper3.businessObject.authRequest = request?.refreshTokenWsRequest ?
       request.refreshTokenWsRequest :
       null;
+    const colors = {};
     if (is(mapper2, ['bpmn:Task'])) {
       colors.stroke = STROKE_COLORS['bpmn:Task'];
       colors.fill = FILL_COLORS['bpmn:Task'];
@@ -705,6 +707,7 @@ function WebServiceEditor() {
     mapper.businessObject.expression = request?.username;
     mapper2.businessObject.name = "Password"
     mapper2.businessObject.expression = request?.password;
+    const colors = {};
     if (is(mapper, ['bpmn:Task'])) {
       colors.stroke = STROKE_COLORS['bpmn:Task'];
       colors.fill = FILL_COLORS['bpmn:Mapper'];
@@ -1859,6 +1862,7 @@ function WebServiceEditor() {
             },
             element,
           );
+          const colors = {};
           colors.stroke = '#009688';
           colors.fill = '#B2DFDB';
           mapper.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
