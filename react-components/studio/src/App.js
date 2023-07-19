@@ -158,8 +158,13 @@ function AppContent() {
 		const toolbar = document.querySelector(toolbarSelector);
 
 		if (toolbar) {
-			const resizeObserver = new ResizeObserver(() => {
-				setToolbarHeight(toolbar.offsetHeight);
+			const resizeObserver = new ResizeObserver((entries) => {
+				window.requestAnimationFrame(() => {
+					if (!Array.isArray(entries) || !entries?.length) {
+						return;
+					}
+					setToolbarHeight(toolbar.offsetHeight);
+				});
 			});
 
 			resizeObserver.observe(toolbar);
