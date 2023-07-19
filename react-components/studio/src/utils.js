@@ -1830,7 +1830,7 @@ export const getParams = () => {
 	};
 };
 
-export default {
+const utils = {
 	camleCaseString,
 	translate,
 	processXML,
@@ -1862,3 +1862,4 @@ export default {
 	getDuplicateArrayValues,
 	getParams,
 };
+export default utils;
