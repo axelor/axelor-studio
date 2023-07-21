@@ -11,9 +11,6 @@ import nameProps from "./parts/NameProps";
 import executableProps from "./parts/ExecutableProps";
 import colorProps from "./parts/CustomImplementation/ColorProps";
 
-// camunda properties
-import versionTag from "./parts/VersionTagProps";
-
 // job configuration
 import jobConfiguration from "./parts/JobConfigurationProps";
 
@@ -130,7 +127,6 @@ function createGeneralTabGroups(
   idProps(generalGroup, element, translate, idOptions, bpmnModeler);
   nameProps(generalGroup, element, bpmnFactory, canvas, translate, bpmnModeler);
   processProps(generalGroup, element, translate, processOptions, bpmnModeler);
-  versionTag(generalGroup, element, translate);
   executableProps(generalGroup, element, translate);
   colorProps(generalGroup, element, translate);
 

@@ -1008,7 +1008,38 @@ function BpmnModelerComponent() {
     }
   };
 
-  const startAction = async (newWkf) => {
+  const deployAction = async (context, newWkf) => {
+    let actionRes = await Service.action({
+      model: "com.axelor.studio.db.WkfModel",
+      action: "action-wkf-model-method-deploy",
+      data: {
+        context: {
+          ...context,
+        },
+      },
+    });
+    if (
+      actionRes &&
+      actionRes.data &&
+      actionRes.data[0] &&
+      actionRes.data[0].reload
+    ) {
+      if (newWkf && newWkf.statusSelect !== 1) {
+        handleSnackbarClick("success", "Deployed Successfully");
+      }
+      fetchDiagram(newWkf.id, true);
+    } else {
+      handleSnackbarClick(
+        "error",
+        (actionRes &&
+          actionRes.data &&
+          (actionRes.data.message || actionRes.data.title)) ||
+          "Error"
+      );
+    }
+  };
+
+  const startAction = async (newWkf, wkfMigrationMap, isDeploy = false) => {
     let actionStart = await Service.action({
       model: "com.axelor.studio.db.WkfModel",
       action: "action-wkf-model-method-start",
@@ -1020,8 +1051,20 @@ function BpmnModelerComponent() {
       },
     });
     if (actionStart?.data && actionStart.data[0]?.reload) {
-      handleSnackbarClick("success", "Started Successfully");
-      fetchDiagram(newWkf.id, true);
+      if (isDeploy) {
+        await deployAction(
+          {
+            _model: "com.axelor.studio.db.WkfModel",
+            ...newWkf,
+            isMigrateOld: false,
+            wkfMigrationMap,
+          },
+          newWkf
+        );
+      } else {
+        handleSnackbarClick("success", "Started Successfully");
+        fetchDiagram(newWkf.id, true);
+      }
     } else {
       handleSnackbarClick(
         "error",
@@ -1061,34 +1104,7 @@ function BpmnModelerComponent() {
         if (newWkf && newWkf.statusSelect === 1 && newWkf.oldNodes) {
           context.isMigrateOld = isMigrateOld;
         }
-        let actionRes = await Service.action({
-          model: "com.axelor.studio.db.WkfModel",
-          action: "action-wkf-model-method-deploy",
-          data: {
-            context: {
-              ...context,
-            },
-          },
-        });
-        if (
-          actionRes &&
-          actionRes.data &&
-          actionRes.data[0] &&
-          actionRes.data[0].reload
-        ) {
-          if (newWkf && newWkf.statusSelect !== 1) {
-            handleSnackbarClick("success", "Deployed Successfully");
-          }
-          fetchDiagram(newWkf.id, true);
-        } else {
-          handleSnackbarClick(
-            "error",
-            (actionRes &&
-              actionRes.data &&
-              (actionRes.data.message || actionRes.data.title)) ||
-              "Error"
-          );
-        }
+        await deployAction(context, newWkf);
       } else {
         handleSnackbarClick(
           "error",
@@ -1098,7 +1114,7 @@ function BpmnModelerComponent() {
       if (newWkf && newWkf.newVersionOnDeploy && newWkf.statusSelect === 2) {
         let newVersionWkf = await addNewVersion();
         if (newVersionWkf && newVersionWkf.statusSelect === 1) {
-          startAction(newVersionWkf);
+          startAction(newVersionWkf, wkfMigrationMap, true);
         }
       }
       if (newWkf && newWkf.statusSelect === 1) {

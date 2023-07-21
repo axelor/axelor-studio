@@ -20,10 +20,11 @@
     <string name="description" title="Description" large="true"/>
     <integer name="statusSelect" title="Status" default="1"
       selection="bpm.model.status.select"/>
-    <string name="versionTag" title="Version tag"/>
+    <string name="versionTag" title="Version tag" default="1"/>
     <many-to-one name="previousVersion" title="Previous version" ref="WkfModel"/>
     <string name="oldNodes" large="true"/>
     <boolean name="isActive" default="true"/>
+    <boolean name="newVersionOnDeploy" title="New version on deploy" default="false"/>
     <boolean name="generatedFromCallActivity" title="Generated from call activity"/>
     <string name="wkfStatusColor" title="Wkf status color" selection="color.name.selection"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>

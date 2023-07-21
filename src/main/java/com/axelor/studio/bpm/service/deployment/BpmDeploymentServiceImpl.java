@@ -134,10 +134,6 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       migrateRunningInstances(wkfModel.getDeploymentId(), engine, definitions);
     }
 
-    if (definitions.size() == 1) {
-      wkfModel.setVersionTag(definitions.get(0).getVersionTag());
-    }
-
     wkfModel.setDeploymentId(deployment.getId());
 
     log.debug("Definitions deployed: {}", definitions.size());

@@ -39,6 +39,7 @@ import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.translation.ITranslation;
 import com.axelor.utils.service.TranslationService;
+import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -96,6 +97,12 @@ public class WkfModelServiceImpl implements WkfModelService {
     if (newVersion == null) {
       newVersion = wkfModelRepository.copy(wkfModel, true);
       newVersion.setPreviousVersion(wkfModel);
+      String newVersionTag =
+          Strings.isNullOrEmpty(wkfModel.getVersionTag())
+              ? "1"
+              : String.valueOf(Long.valueOf(wkfModel.getVersionTag()) + 1);
+      newVersion.setCode(getBpmCode(wkfModel.getCode(), newVersionTag, wkfModel.getVersionTag()));
+      newVersion.setVersionTag(newVersionTag);
     }
 
     return wkfModelRepository.save(newVersion);
@@ -477,5 +484,15 @@ public class WkfModelServiceImpl implements WkfModelService {
     processMap.put("processConfig", firstProcessConfig);
 
     return processMap;
+  }
+
+  protected String getBpmCode(String code, String newVersionTag, String oldVersionTag) {
+    if (code.endsWith("-" + oldVersionTag)) {
+      code = code.substring(0, code.lastIndexOf('-') + 1) + newVersionTag;
+    } else {
+      code += "-" + newVersionTag;
+    }
+
+    return code;
   }
 }
