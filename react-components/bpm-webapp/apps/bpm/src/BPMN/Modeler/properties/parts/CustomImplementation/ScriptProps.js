@@ -101,10 +101,13 @@ const useStyles = makeStyles((theme) => ({
     padding: "0px 10px",
     background: "gray",
     color: "white",
+    borderRadius: 25,
+    marginRight: 5
   },
   entryLabel: {
     padding: "0px 10px",
     color: "white",
+    borderRadius: 25,
   },
   script: {
     display: "flex",
