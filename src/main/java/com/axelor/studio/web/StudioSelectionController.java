@@ -62,7 +62,7 @@ public class StudioSelectionController {
   public void generateSelectionText(ActionRequest request, ActionResponse response) {
     try {
       List<Map<String, String>> selectOptions =
-          (List<Map<String, String>>) request.getContext().get(SELECTION_OPTION_LIST);
+          (List<Map<String, String>>) request.getContext().get("selectOptionList");
 
       String selectionText =
           Beans.get(StudioSelectionService.class).generateSelectionText(selectOptions);
