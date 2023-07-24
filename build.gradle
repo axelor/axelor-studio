@@ -83,48 +83,39 @@ tasks.register('generateChangelog', GenerateChangelog) {
 	}
 }
 
-try {
-	tasks.getByPath(":react-components:baml:bamlBuild")
-	tasks.getByPath(":react-components:studio:studioBuild")
-	tasks.getByPath(":react-components:bpm-webapp:bpmBuild")
-	tasks.getByPath(":react-components:bpm-webapp:mapperBuild")
-	tasks.getByPath(":react-components:webservices-builder:wsBuilderBuild")
+for (int i = 0; i < gradle.ext.reactComponents?.size() - 1; i++) {
+	tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i).name}:reactBuild").finalizedBy(tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i + 1).name}:reactBuild"))
+}
 
-	processResources {
-		dependsOn ":react-components:baml:bamlBuild"
-		dependsOn ":react-components:studio:studioBuild"
-		dependsOn ":react-components:bpm-webapp:bpmBuild"
-		dependsOn ":react-components:bpm-webapp:mapperBuild"
-		dependsOn ":react-components:webservices-builder:wsBuilderBuild"
+processResources {
+	gradle.ext.reactComponents?.each {
+		dependsOn ":react-components:${it.name}:reactBuild"
+	}
 
-		from(file("$projectDir/react-components/baml/build")) {
+	gradle.ext.componentPaths.each { paths ->
+		from(file("$projectDir/${paths.from}")) {
 			include "**"
-			into "webapp/baml-editor"
-		}
-
-		from(file("$projectDir/react-components/studio/build")) {
-			include "**"
-			into "webapp/studio/custom-model"
-		}
-
-		from(file("$projectDir/react-components/bpm-webapp/apps/bpm/build")) {
-			include "**"
-			into "webapp/wkf-editor"
-		}
-
-		from(file("$projectDir/react-components/bpm-webapp/apps/mapper/build")) {
-			include "**"
-			into "webapp/mapper"
-		}
-
-		from(file("$projectDir/react-components/webservices-builder/build")) {
-			include "**"
-			into "webapp/ws-builder"
+			into "${paths.to}"
 		}
 	}
-} catch (ignored) {
-	// ignore
 }
+
+tasks.register('reactCopy', Copy) {
+    description = 'Copy Studio React into webapp'
+
+	gradle.ext.reactComponents?.each {
+		dependsOn ":react-components:${it.name}:reactBuild"
+	}
+
+    destinationDir = file(rootProject.buildDir)
+
+	gradle.ext.componentPaths.each { paths ->
+		into("${paths.to}") {
+			from "$projectDir/${paths.from}"
+		}
+	}
+}
+
 
 //
 // Publish

@@ -53,6 +53,7 @@ tasks.register('wsBuilderBuild', PnpmTask) {
     inputs.dir('public')
 
     dependsOn 'wsBuilderInstall'
+    mustRunAfter 'wsBuilderInstall'
     args = ["build"]
 }
 
@@ -64,6 +65,10 @@ tasks.register('wsBuilderInstall', PnpmTask) {
     ]
 
     args = ["install"]
+}
+
+tasks.register("reactBuild", GradleBuild) {
+    tasks = ["wsBuilderBuild"]
 }
 
 clean {

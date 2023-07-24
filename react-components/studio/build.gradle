@@ -53,6 +53,7 @@ tasks.register('studioBuild', PnpmTask) {
 	inputs.dir('public')
 
 	dependsOn 'studioInstall'
+	mustRunAfter 'studioInstall'
 	args = ["build"]
 }
 
@@ -64,6 +65,10 @@ tasks.register('studioInstall', PnpmTask) {
 	]
 
 	args = ["install"]
+}
+
+tasks.register("reactBuild", GradleBuild) {
+    tasks = ["studioBuild"]
 }
 
 clean {

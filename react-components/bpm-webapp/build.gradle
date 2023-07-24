@@ -63,6 +63,7 @@ tasks.register('bpmBuild', PnpmTask) {
     inputs.dir('apps/timer-builder/public')
 
     dependsOn 'bpmInstall'
+    mustRunAfter 'bpmInstall'
     args = ["build"]
 }
 
@@ -88,6 +89,7 @@ tasks.register('mapperBuild', PnpmTask) {
     inputs.dir('apps/mapper/public')
 
     dependsOn 'mapperInstall'
+    mustRunAfter 'mapperInstall'
     args = ["build"]
 }
 
@@ -101,6 +103,11 @@ tasks.register('mapperInstall', PnpmTask) {
     workingDir = file("apps/mapper")
 
     args = ["install"]
+}
+
+
+tasks.register("reactBuild", GradleBuild) {
+    tasks = ["bpmBuild", "mapperBuild"]
 }
 
 clean {
