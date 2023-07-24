@@ -1,3 +1,9 @@
+## 1.2.2 (2023-07-24)
+
+#### Fixed
+
+* StudioSelection : Custom selection is broken
+
 ## 1.2.1 (2023-07-13)
 
 #### Features
