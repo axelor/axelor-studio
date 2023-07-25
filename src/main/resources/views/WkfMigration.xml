@@ -20,6 +20,7 @@
         onClick="save,action-wkf-migration-method-generate-node-map,save" colSpan="4"
         showIf="sourceVersion &amp;&amp; targetVersion"/>
 
+      <field name="removeOldVersionMenu"/>
       <panel-dashlet name="mappingPanelDashlet" title="Node mapping"
         action="action-wkf-migration-view-mapping" colSpan="12" hideIf="!mapping" height="500"/>
 

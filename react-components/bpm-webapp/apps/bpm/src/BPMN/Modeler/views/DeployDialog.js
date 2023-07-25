@@ -59,11 +59,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
+export default function DeployDialog({
+  open,
+  onClose,
+  ids,
+  onOk,
+  wkf,
+  element,
+}) {
   const { oldElements, currentElements } = ids || {};
   const [wkfMigrationMap, setWkfMigrationMap] = useState({});
   const [isMigrateOld, setIsMigrateOld] = useState(false);
+  const [removeOldVersionMenu, setRemoveOldVersionMenu] = useState(false);
   const classes = useStyles();
+
+  const getProperty = React.useCallback(
+    (name) => {
+      let propertyName = `camunda:${name}`;
+      return (element?.$attrs && element.$attrs[propertyName]) || "";
+    },
+    [element]
+  );
 
   const handleAdd = (oldEle, newEle, processId) => {
     const cloneWkfMigrationMap = { ...wkfMigrationMap };
@@ -75,7 +91,13 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
   };
 
   const onConfirm = () => {
-    onOk(wkfMigrationMap, isMigrateOld);
+    onOk(
+      {
+        ...wkfMigrationMap,
+        props: { removeOldVersionMenu: JSON.stringify(removeOldVersionMenu) },
+      },
+      isMigrateOld
+    );
   };
 
   const getCurrentElements = (processId, elementType) => {
@@ -135,7 +157,7 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
         <strong>{translate("Node mapping")}</strong>
       </DialogTitle>
       <DialogContent>
-        {wkf && wkf.statusSelect === 1 && oldElements && (
+        {wkf?.statusSelect === 1 && oldElements && (
           <FormControlLabel
             control={
               <Switch
@@ -148,6 +170,23 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
               />
             }
             label={translate("Migrate previous version records?")}
+          />
+        )}
+        {(wkf?.statusSelect === 1 || getProperty("newVersionOnDeploy")) && (
+          <FormControlLabel
+            control={
+              <Switch
+                checked={removeOldVersionMenu}
+                onChange={() => {
+                  setRemoveOldVersionMenu(
+                    (removeOldVersionMenu) => !removeOldVersionMenu
+                  );
+                }}
+                color="primary"
+                name="removeOldVersionMenu"
+              />
+            }
+            label={translate("Remove old version menu")}
           />
         )}
         {oldElements &&

@@ -1927,6 +1927,7 @@ function BpmnModelerComponent() {
             onOk={(wkfMigrationMap, isMigrateOld) =>
               handleOk(wkfMigrationMap, isMigrateOld)
             }
+            element={selectedElement}
             wkf={wkf}
           />
         )}
