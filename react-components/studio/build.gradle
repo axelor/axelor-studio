@@ -47,10 +47,11 @@ tasks.register('studioBuild', PnpmTask) {
 		CI: 'false'
 	]
 
-	outputs.dir('build')
-	inputs.files('package.json', 'pnpm-lock.yaml')
-	inputs.dir('src')
-	inputs.dir('public')
+    println "TOTOOOOOOOOOOO: $projectDir"
+    outputs.dir("$projectDir/build")
+    inputs.files("$projectDir/package.json", "$projectDir/pnpm-lock.yaml")
+    inputs.dir("$projectDir/src")
+    inputs.dir("$projectDir/public")
 
 	dependsOn 'studioInstall'
 	mustRunAfter 'studioInstall'

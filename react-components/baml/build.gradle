@@ -47,10 +47,10 @@ tasks.register('bamlBuild', PnpmTask) {
             CI: 'false'
     ]
 
-    outputs.dir('build')
-    inputs.files('package.json', 'pnpm-lock.yaml')
-    inputs.dir('src')
-    inputs.dir('public')
+    outputs.dir("$projectDir/build")
+    inputs.files("$projectDir/package.json", "$projectDir/pnpm-lock.yaml")
+    inputs.dir("$projectDir/src")
+    inputs.dir("$projectDir/public")
 
     dependsOn 'bamlInstall'
     mustRunAfter 'bamlInstall'
