@@ -1,5 +1,3 @@
-rootProject.name = "axelor-studio"
-
 if (JavaVersion.current() != JavaVersion.VERSION_11) {
     throw new GradleException("This build requires JDK-11.")
 }
