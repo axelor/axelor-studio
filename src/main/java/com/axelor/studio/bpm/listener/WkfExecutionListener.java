@@ -86,7 +86,7 @@ public class WkfExecutionListener implements ExecutionListener {
 
     String instanceId = execution.getProcessInstanceId();
     WkfInstanceRepository instanceRepo = Beans.get(WkfInstanceRepository.class);
-    WkfInstance wkfInstance = instanceRepo.findByInstnaceId(instanceId);
+    WkfInstance wkfInstance = instanceRepo.findByInstanceId(instanceId);
     log.debug("Process called with related wkfInstance: {}", wkfInstance);
     if (wkfInstance == null) {
       execution.setVariable(

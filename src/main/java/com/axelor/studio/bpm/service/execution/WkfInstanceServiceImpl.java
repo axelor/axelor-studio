@@ -106,7 +106,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       ProcessEngine engine = engineService.getEngine();
 
       WkfInstance wkfInstance =
-          wkfInstanceRepository.findByInstnaceId(model.getProcessInstanceId());
+          wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
 
       if (wkfInstance == null) {
         return helpText;
@@ -148,7 +148,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     modelMap.put(wkfService.getVarName(model), new FullContext(model));
     builder.setVariables(wkfService.createVariables(modelMap));
     ProcessInstance processInstance = builder.executeWithVariablesInReturn();
-    WkfInstance instance = wkfInstanceRepository.findByInstnaceId(model.getProcessInstanceId());
+    WkfInstance instance = wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
     if (instance != null) {
       instance.setModelId(model.getId());
       instance.setModelName(model.getClass().getName());
@@ -493,7 +493,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     Map<String, Object> varMap = new HashMap<String, Object>();
 
-    WkfInstance wkfInstance = wkfInstanceRepository.findByInstnaceId(processInstanceId);
+    WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
 
     if (wkfInstance == null) {
       return varMap;
@@ -603,7 +603,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     for (ProcessInstance processInstance : processInstances) {
       WkfInstance wkfInstance =
-          wkfInstanceRepository.findByInstnaceId(processInstance.getProcessInstanceId());
+          wkfInstanceRepository.findByInstanceId(processInstance.getProcessInstanceId());
       if (wkfInstance == null) {
         continue;
       }
@@ -646,5 +646,16 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
 
     return true;
+  }
+
+  @Transactional
+  @Override
+  public void updateProcessInstance(String processInstanceId, int migrationStatus) {
+    WkfInstance instance = wkfInstanceRepository.findByInstanceId(processInstanceId);
+    if (instance == null) {
+      return;
+    }
+    instance.setMigrationStatusSelect(migrationStatus);
+    wkfInstanceRepository.save(instance);
   }
 }

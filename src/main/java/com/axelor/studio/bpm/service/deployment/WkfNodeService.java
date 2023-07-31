@@ -30,6 +30,7 @@ import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.axelor.studio.db.repo.WkfTaskMenuContextRepository;
 import com.axelor.studio.db.repo.WkfTaskMenuRepository;
 import com.google.inject.Inject;
+import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -117,6 +118,7 @@ public class WkfNodeService {
     return null;
   }
 
+  @Transactional
   public WkfTaskConfig updateTaskConfig(
       WkfModel wkfModel,
       Map<String, WkfTaskConfig> configMap,

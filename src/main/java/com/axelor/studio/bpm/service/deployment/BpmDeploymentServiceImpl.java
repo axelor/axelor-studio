@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.service.deployment;
 
+import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAttrs;
@@ -24,11 +25,13 @@ import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.service.WkfCommonService;
+import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
+import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.google.inject.Inject;
@@ -46,6 +49,7 @@ import org.camunda.bpm.engine.migration.MigrationPlanBuilder;
 import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
@@ -73,12 +77,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   @Inject protected WkfCommonService wkfService;
 
+  @Inject protected WkfInstanceService wkfInstanceService;
+
+  @Inject protected WkfModelRepository wkfModelRepo;
+
   protected WkfModel wkfModel;
 
   protected Map<String, Map<String, String>> migrationMap;
 
   @Override
-  @Transactional
   public void deploy(WkfModel wkfModel, Map<String, Map<String, String>> migrationMap) {
 
     if (wkfModel.getDiagramXml() == null) {
@@ -111,9 +118,14 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     List<MetaAttrs> metaAttrsList =
         Beans.get(WkfNodeService.class).extractNodes(wkfModel, bpmInstance, processMap);
 
-    Beans.get(WkfModelRepository.class).save(wkfModel);
+    saveWkfModel(wkfModel);
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, wkfModel.getId());
+  }
+
+  @Transactional
+  protected WkfModel saveWkfModel(WkfModel wkfModel) {
+    return wkfModelRepo.save(wkfModel);
   }
 
   protected Map<String, String> deployProcess(
@@ -179,6 +191,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .deploymentId(oldDeploymentId)
             .list();
 
+    boolean isMigrationError = false;
     log.debug("Old definition size " + oldDefinitions.size());
     for (ProcessDefinition oldDefinition : oldDefinitions) {
       for (ProcessDefinition newDefinition : definitions) {
@@ -202,11 +215,32 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
           long nbInstances = query.count();
           log.debug("Process instances to migrate: {}", nbInstances);
+
           if (nbInstances > 0) {
-            engine.getRuntimeService().newMigration(plan).processInstanceQuery(query).execute();
+            List<ProcessInstance> processInstances = query.list();
+            for (ProcessInstance instance : processInstances) {
+              try {
+                engine
+                    .getRuntimeService()
+                    .newMigration(plan)
+                    .processInstanceIds(instance.getId())
+                    .execute();
+
+                wkfInstanceService.updateProcessInstance(
+                    instance.getId(), WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+
+              } catch (Exception e) {
+                isMigrationError = true;
+                wkfInstanceService.updateProcessInstance(
+                    instance.getId(), WkfInstanceRepository.STATUS_MIGRATION_ERROR);
+              }
+            }
           }
         }
       }
+    }
+    if (isMigrationError) {
+      throw new IllegalStateException(I18n.get("Migration error"));
     }
   }
 
