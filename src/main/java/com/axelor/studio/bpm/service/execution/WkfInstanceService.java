@@ -66,4 +66,6 @@ public interface WkfInstanceService {
   public List<String> getNodes(String processInstanceId);
 
   public void cancelNode(String processInstanceId, String activityId);
+
+  public void updateProcessInstance(String processInstanceId, int migrationStatus);
 }

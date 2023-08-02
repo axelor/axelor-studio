@@ -8,12 +8,15 @@
     <field name="name"/>
     <field name="instanceId"/>
     <field name="wkfProcess.wkfModel"/>
+    <field name="migrationStatusSelect"/>
   </grid>
 
   <form name="wkf-instance-form" title="Process Instance"
     model="com.axelor.studio.db.WkfInstance" width="large"
     onLoad="action-wkf-attrs-refresh-instance-state" canNew="false">
     <panel name="mainPanel" colSpan="12">
+      <field name="migrationStatusSelect" widget="NavSelect" colSpan="12" readonly="true"
+        showTitle="false"/>
       <field name="name" readonly="true"/>
       <field name="instanceId" colSpan="3" readonly="true"/>
       <button name="openDashboardBtn" title="Dashboard"
