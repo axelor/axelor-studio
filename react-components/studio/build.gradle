@@ -32,6 +32,8 @@ buildscript {
 }
 
 apply plugin: 'base'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'com.github.node-gradle.node'
 
 node {
@@ -47,12 +49,13 @@ tasks.register('studioBuild', PnpmTask) {
 		CI: 'false'
 	]
 
-	outputs.dir('build')
-	inputs.files('package.json', 'pnpm-lock.yaml')
-	inputs.dir('src')
-	inputs.dir('public')
+    outputs.dir("$projectDir/build")
+    inputs.files("$projectDir/package.json", "$projectDir/pnpm-lock.yaml")
+    inputs.dir("$projectDir/src")
+    inputs.dir("$projectDir/public")
 
 	dependsOn 'studioInstall'
+	mustRunAfter 'studioInstall'
 	args = ["build"]
 }
 
@@ -66,6 +69,15 @@ tasks.register('studioInstall', PnpmTask) {
 	args = ["install"]
 }
 
+tasks.register("reactBuild", GradleBuild) {
+    tasks = ["studioBuild"]
+}
+
+tasks.register("reactClean", Delete) {
+		delete "build", "node_modules"
+}
+
 clean {
-	delete "build", "node_modules"
+	dependsOn "reactClean"
+	mustRunAfter "reactClean"
 }

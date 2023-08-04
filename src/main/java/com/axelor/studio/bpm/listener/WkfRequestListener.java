@@ -204,7 +204,7 @@ public class WkfRequestListener {
               log.trace(
                   "Remove wkf instance of deleted model: {}, id: {}", modelName, model.getId());
               WkfInstance wkfInstance =
-                  wkfInstanceRepo.findByInstnaceId(model.getProcessInstanceId());
+                  wkfInstanceRepo.findByInstanceId(model.getProcessInstanceId());
               if (wkfInstance != null
                   && wkfInstance.getWkfProcess().getWkfProcessConfigList().size() == 1) {
                 wkfInstanceRepo.remove(wkfInstance);

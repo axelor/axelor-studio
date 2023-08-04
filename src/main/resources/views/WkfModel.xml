@@ -35,8 +35,9 @@
       <field name="name" required="true"/>
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
         if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
-      <field name="versionTag"/>
+      <field name="versionTag" readonly="true"/>
       <field name="wkfStatusColor" widget="SingleSelect"/>
+      <field name="newVersionOnDeploy"/>
     </panel>
     <panel-tabs>
       <panel name="allProcessPanel" title="All Processes">

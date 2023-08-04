@@ -263,7 +263,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
 
     if (processInstanceId != null) {
 
-      WkfInstance wkfInstance = wkfInstanceRepo.findByInstnaceId(processInstanceId);
+      WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(processInstanceId);
 
       if (wkfInstance == null) {
         return statusList;

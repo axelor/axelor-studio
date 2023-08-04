@@ -29,4 +29,10 @@
     <option value="others">Others</option>
   </selection>
 
+  <selection name="wkf.instance.migration.status.select">
+    <option value="1">Not migrated</option>
+    <option value="2">Migrated successfully</option>
+    <option value="3">Migration error</option>
+  </selection>
+
 </object-views>

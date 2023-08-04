@@ -1,10 +1,28 @@
-rootProject.name = "axelor-studio"
-
-include ":react-components:baml"
-include ":react-components:bpm-webapp"
-include ":react-components:webservices-builder"
-include ":react-components:studio"
-
 if (JavaVersion.current() != JavaVersion.VERSION_11) {
     throw new GradleException("This build requires JDK-11.")
+}
+
+
+if (providers.systemProperty("include.react").getOrNull() != null) {
+  def modules = []
+  file("react-components").traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
+    if (new File(it, "build.gradle").exists()) {
+      modules.add(it)
+    }
+  }
+
+  gradle.ext.reactComponents = modules
+
+  modules.each { dir ->
+    include ":react-components:$dir.name"
+    project(":react-components:$dir.name").projectDir = dir
+  }
+
+  gradle.ext.componentPaths = [
+    [from: "react-components/baml/build", to:"webapp/baml-editor"],
+    [from: "react-components/studio/build", to:"webapp/studio/custom-model"],
+    [from: "react-components/bpm-webapp/apps/bpm/build", to:"webapp/wkf-editor"],
+    [from: "react-components/bpm-webapp/apps/mapper/build", to:"webapp/mapper"],
+    [from: "react-components/webservices-builder/build", to:"webapp/ws-builder"]
+  ]
 }

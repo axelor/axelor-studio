@@ -42,7 +42,7 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
   public void sendBpmErrorMessage(PvmExecutionImpl execution, String errorMessage) {
 
     WkfProcess process =
-        wkfInstanceRepository.findByInstnaceId(execution.getProcessInstanceId()).getWkfProcess();
+        wkfInstanceRepository.findByInstanceId(execution.getProcessInstanceId()).getWkfProcess();
 
     WkfProcessConfig processConfig =
         wkfProcessConfigRepository.all().filter("self.wkfProcess = ?1", process).fetchOne();

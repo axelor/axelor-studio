@@ -103,7 +103,7 @@ public class WkfExecutionListener implements ExecutionListener {
   protected void createWkfInstance(DelegateExecution execution) {
 
     String instanceId = execution.getProcessInstanceId();
-    WkfInstance wkfInstance = wkfInstanceRepo.findByInstnaceId(instanceId);
+    WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(instanceId);
     log.debug("Process called with related wkfInstance: {}", wkfInstance);
     if (wkfInstance == null) {
       execution.setVariable(

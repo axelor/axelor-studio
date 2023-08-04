@@ -8,13 +8,21 @@
   <entity name="WkfInstance" cacheable="true">
 
     <string name="name" title="Name"/>
+    <integer name="migrationStatusSelect" title="Migration status"
+      selection="wkf.instance.migration.status.select" default="1"/>
     <string name="instanceId" title="Instance id"/>
     <string name="currentStatus" large="true" title="Current status"/>
     <long name="modelId"/>
     <string name="modelName"/>
     <many-to-one name="wkfProcess" ref="WkfProcess"/>
 
-    <finder-method name="findByInstnaceId" using="instanceId"/>
+    <finder-method name="findByInstanceId" using="instanceId"/>
+
+    <extra-code><![CDATA[
+        public static final int STATUS_NOT_MIGRATED = 1;
+        public static final int STATUS_MIGRATED_SUCCESSFULLY = 2;
+        public static final int STATUS_MIGRATION_ERROR = 3;
+    ]]></extra-code>
 
   </entity>
 
