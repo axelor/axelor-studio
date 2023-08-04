@@ -67,5 +67,6 @@ public interface WkfInstanceService {
 
   public void cancelNode(String processInstanceId, String activityId);
 
-  public void updateProcessInstance(String processInstanceId, int migrationStatus);
+  public void updateProcessInstance(
+      WkfProcess process, String processInstanceId, int migrationStatus);
 }

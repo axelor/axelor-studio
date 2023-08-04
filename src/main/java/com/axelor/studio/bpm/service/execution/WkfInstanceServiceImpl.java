@@ -363,15 +363,22 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
 
     List<String> processInstanceIds =
-        processInstanceQuery.processDefinitionId(processId).activeActivityIdIn(nodeKey).unfinished()
-            .list().stream()
+        processInstanceQuery
+            .processDefinitionId(processId)
+            .activeActivityIdIn(nodeKey)
+            .unfinished()
+            .list()
+            .stream()
             .map(it -> it.getId())
             .collect(Collectors.toList());
 
     if (permanent) {
       processInstanceQuery =
           engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
-      processInstanceQuery.processDefinitionId(processId).executedActivityIdIn(nodeKey).list()
+      processInstanceQuery
+          .processDefinitionId(processId)
+          .executedActivityIdIn(nodeKey)
+          .list()
           .stream()
           .forEach(it -> processInstanceIds.add(it.getId()));
     }
@@ -680,12 +687,18 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   @Transactional
   @Override
-  public void updateProcessInstance(String processInstanceId, int migrationStatus) {
+  public void updateProcessInstance(
+      WkfProcess process, String processInstanceId, int migrationStatus) {
+
     WkfInstance instance = wkfInstanceRepository.findByInstanceId(processInstanceId);
     if (instance == null) {
       return;
     }
     instance.setMigrationStatusSelect(migrationStatus);
+    if (process != null) {
+      instance.setWkfProcess(process);
+      instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
+    }
     wkfInstanceRepository.save(instance);
   }
 }

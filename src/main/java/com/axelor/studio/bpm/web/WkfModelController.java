@@ -74,7 +74,7 @@ public class WkfModelController {
 
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-      Beans.get(BpmDeploymentService.class).deploy(wkfModel, migrationMap);
+      Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap);
 
       response.setReload(true);
     } catch (Exception e) {
@@ -105,7 +105,7 @@ public class WkfModelController {
 
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-      Beans.get(WkfModelService.class).start(wkfModel);
+      Beans.get(WkfModelService.class).start(null, wkfModel);
 
       response.setReload(true);
     } catch (Exception e) {

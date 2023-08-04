@@ -30,7 +30,7 @@ public interface WkfModelService {
 
   public WkfModel createNewVersion(WkfModel wkfModel);
 
-  public WkfModel start(WkfModel wkfModel);
+  public WkfModel start(WkfModel sourceModel, WkfModel targetModel);
 
   public WkfModel terminate(WkfModel wkfModel);
 

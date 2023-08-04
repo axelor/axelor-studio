@@ -41,4 +41,8 @@ public final class BpmExceptionMessage {
   public static final String PROCESS_INSTANCE_ID = /*$$(*/ "Process instance id" /*)*/;
 
   public static final String BPM_ERROR = /*$$(*/ "BPM error" /*)*/;
+
+  public static final String MIGRATION_DONE = /*$$(*/ "Migration done successfully" /*)*/;
+
+  public static final String MIGRATION_ERR = /*$$(*/ "Migration error" /*)*/;
 }
