@@ -32,6 +32,8 @@ buildscript {
 }
 
 apply plugin: 'base'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 apply plugin: 'com.github.node-gradle.node'
 
 node {
@@ -110,8 +112,13 @@ tasks.register("reactBuild", GradleBuild) {
     tasks = ["bpmBuild", "mapperBuild"]
 }
 
-clean {
+tasks.register("reactClean", Delete) {
     delete "build", "node_modules",
             "apps/bpm/build", "apps/bpm/node_modules",
             "apps/mapper/build", "apps/mapper/node_modules"
+}
+
+clean {
+    dependsOn "reactClean"
+    mustRunAfter "reactClean"
 }
