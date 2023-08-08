@@ -74,7 +74,9 @@ public class ProcessEngineService {
             .setHistory(ProcessEngineConfiguration.HISTORY_AUDIT)
             .setJobExecutorActivate(!multiTeant)
             .setMetricsEnabled(false)
+            .setJobExecutor(Beans.get(WkfJobExecutor.class))
             .setDefaultSerializationFormat(Variables.SerializationDataFormats.JAVA.name())
+            .setJobExecutorDeploymentAware(true)
             .buildProcessEngine();
 
     for (Deployment deployment : engine.getRepositoryService().createDeploymentQuery().list()) {
