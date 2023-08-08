@@ -1745,7 +1745,11 @@ function BpmnModelerComponent() {
   useEffect(() => {
     if (!bpmnModeler) return;
     bpmnModeler.on("commandStack.connection.create.postExecuted", (event) => {
+      const element = event?.context?.target;
       setColors(event && event.context && event.context.connection);
+      updateTabs({
+        element,
+      });
     });
     bpmnModeler.on("commandStack.shape.create.postExecuted", (event) => {
       const shape = event?.context?.shape;
