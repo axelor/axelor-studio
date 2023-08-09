@@ -29,6 +29,7 @@ export default function ProcessProps(
         description: processIdDescription && translate(processIdDescription),
         modelProperty: "processId",
         widget: "textField", //validationAwareTextField
+        isProcess: true,
       };
 
       // in participants we have to change the default behavior of set and get
