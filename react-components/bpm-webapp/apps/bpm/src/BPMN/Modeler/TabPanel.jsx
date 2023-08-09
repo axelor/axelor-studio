@@ -2,6 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import RenderComponent from "./RenderWidget";
 import { isHiddenProperty } from "./extra.js";
 import { translate } from "../../utils";
@@ -32,7 +33,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Entry({ entry, selectedElement, changeColor, bpmnModeler, wkf }) {
+const getProcessId = (element) => {
+  const bo = getBusinessObject(element);
+  const processRef = bo && bo.get("processRef");
+  return processRef?.id || bo?.id;
+};
+
+function Entry({ entry, selectedElement, changeColor, bpmnModeler, readOnly }) {
   return (
     !isHiddenProperty(selectedElement, entry) && (
       <div key={entry.id}>
@@ -41,6 +48,7 @@ function Entry({ entry, selectedElement, changeColor, bpmnModeler, wkf }) {
           selectedElement={selectedElement}
           changeColor={changeColor}
           bpmnModeler={bpmnModeler}
+          readOnly={readOnly}
         />
       </div>
     )
@@ -67,6 +75,20 @@ export default function TabPanel({
   showError,
 }) {
   const classes = useStyles();
+
+  const getReadOnly = React.useCallback(
+    (entry) => {
+      const proceedId = getProcessId(selectedElement);
+      const oldNodes = JSON.parse(wkf?.oldNodes || "{}");
+      return (
+        (oldNodes || {}).hasOwnProperty(proceedId) &&
+        wkf?.statusSelect !== 1 &&
+        entry?.isProcess
+      );
+    },
+    [selectedElement, wkf]
+  );
+
   return (
     <div
       key={group.id}
@@ -109,6 +131,7 @@ export default function TabPanel({
                   selectedElement={selectedElement}
                   changeColor={changeColor}
                   bpmnModeler={bpmnModeler}
+                  readOnly={getReadOnly(entry)}
                 />
               ))}
             </div>

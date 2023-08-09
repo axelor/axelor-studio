@@ -13,12 +13,18 @@ export default function RenderComponent({
   selectedElement,
   changeColor,
   bpmnModeler,
+  readOnly,
 }) {
   if (!entry && entry.widget) return;
   switch (entry.widget) {
     case "textField":
       return (
-        <TextField entry={entry} element={selectedElement} canRemove={true} />
+        <TextField
+          entry={entry}
+          element={selectedElement}
+          readOnly={readOnly}
+          canRemove={true}
+        />
       );
     case "textBox":
       return (
