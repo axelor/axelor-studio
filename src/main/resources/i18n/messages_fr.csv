@@ -95,6 +95,7 @@
 "Can collapse","Repliable",,
 "Can search",,,
 "Can't alter nodes for real existing selection field","Impossible d’altérer les nœuds pour les champs sélection réel existants",,
+"Can't restart inactive process",,,
 "Chart","Graphique",,
 "Chart type","Type de graphique",,
 "Charts",,,
