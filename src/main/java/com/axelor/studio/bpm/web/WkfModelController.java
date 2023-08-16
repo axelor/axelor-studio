@@ -39,6 +39,7 @@ import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
@@ -78,6 +79,10 @@ public class WkfModelController {
       response.setReload(true);
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
+      WkfModel model = request.getContext().asType(WkfModel.class);
+      Beans.get(BpmErrorMessageService.class)
+          .sendBpmErrorMessage(
+              null, e.getMessage(), Beans.get(WkfModelRepository.class).find(model.getId()), null);
     }
   }
 

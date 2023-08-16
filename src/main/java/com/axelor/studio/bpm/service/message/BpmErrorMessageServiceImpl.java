@@ -3,14 +3,15 @@ package com.axelor.studio.bpm.service.message;
 import com.axelor.auth.db.Role;
 import com.axelor.auth.db.User;
 import com.axelor.auth.db.repo.UserRepository;
-import com.axelor.db.EntityHelper;
+import com.axelor.db.Model;
+import com.axelor.i18n.I18n;
 import com.axelor.message.service.MailMessageService;
-import com.axelor.meta.db.MetaModel;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
+import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfModel;
-import com.axelor.studio.db.WkfProcess;
-import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
-import com.axelor.studio.db.repo.WkfProcessConfigRepository;
+import com.axelor.studio.db.repo.WkfModelRepository;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.HashSet;
@@ -22,58 +23,73 @@ import org.camunda.bpm.engine.impl.pvm.runtime.PvmExecutionImpl;
 public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
 
   protected WkfInstanceRepository wkfInstanceRepository;
-  protected WkfProcessConfigRepository wkfProcessConfigRepository;
   protected MailMessageService mailMessageService;
   protected UserRepository userRepo;
+  protected WkfModelRepository wkfModelRepo;
 
   @Inject
   public BpmErrorMessageServiceImpl(
       MailMessageService mailMessageService,
       WkfInstanceRepository wkfInstanceRepository,
-      WkfProcessConfigRepository wkfProcessConfigRepository,
-      UserRepository userRepo) {
+      UserRepository userRepo,
+      WkfModelRepository wkfModelRepo) {
     this.mailMessageService = mailMessageService;
     this.wkfInstanceRepository = wkfInstanceRepository;
-    this.wkfProcessConfigRepository = wkfProcessConfigRepository;
     this.userRepo = userRepo;
+    this.wkfModelRepo = wkfModelRepo;
   }
 
   @Override
-  public void sendBpmErrorMessage(PvmExecutionImpl execution, String errorMessage) {
+  public void sendBpmErrorMessage(
+      PvmExecutionImpl execution, String errorMessage, WkfModel model, String processInstanceId) {
+    Long relatedId = null;
+    Class<? extends Model> relatedModel = WkfModel.class;
+    String body = errorMessage;
 
-    WkfProcess process =
-        wkfInstanceRepository.findByInstnaceId(execution.getProcessInstanceId()).getWkfProcess();
+    if (execution != null || !Strings.isNullOrEmpty(processInstanceId)) {
+      boolean isExecution = Strings.isNullOrEmpty(processInstanceId);
 
-    WkfProcessConfig processConfig =
-        wkfProcessConfigRepository.all().filter("self.wkfProcess = ?1", process).fetchOne();
-    
-    MetaModel metaModel = EntityHelper.getEntity(processConfig.getMetaModel());
-    boolean isJson = metaModel == null;
-    String body =
-        "BPM model : "
-            + process.getWkfModel().getId()
-            + "</br> Process instance id : "
-            + execution.getProcessInstanceId()
-            + "</br> Node ids : "
-            + execution.getActivityId()
-            + "("
-            + execution.getCurrentActivityName()
-            + ") </br></br> "
-            + errorMessage;
+      WkfInstance instance =
+          wkfInstanceRepository.findByInstnaceId(
+              isExecution ? execution.getProcessInstanceId() : processInstanceId);
 
-    getRelatedUserSet(process.getWkfModel())
-        .forEach(
-            user ->
-                mailMessageService.sendNotification(
-                    user,
-                    "BPM error",
-                    body,
-                    isJson
-                        ? processConfig.getMetaJsonModel().getId()
-                        : metaModel.getId(),
-                    isJson
-                        ? processConfig.getMetaJsonModel().getClass()
-                        : metaModel.getClass()));
+      if (instance == null) {
+        return;
+      }
+
+      relatedId = instance.getId();
+      relatedModel = WkfInstance.class;
+
+      model = instance.getWkfProcess().getWkfModel();
+      String activtyDetails =
+          isExecution
+              ? ("</br>"
+                  + I18n.get(BpmExceptionMessage.NODE_IDS)
+                  + " : "
+                  + execution.getActivityId()
+                  + "("
+                  + execution.getCurrentActivityName()
+                  + ")")
+              : "";
+      body =
+          I18n.get(BpmExceptionMessage.BPM_MODEL)
+              + " : "
+              + model.getId()
+              + "</br>"
+              + I18n.get(BpmExceptionMessage.PROCESS_INSTANCE_ID)
+              + " : "
+              + instance.getInstanceId()
+              + activtyDetails
+              + "</br></br> "
+              + errorMessage;
+    } else if (model != null) {
+      relatedId = model.getId();
+    }
+
+    for (User user : getRelatedUserSet(model)) {
+      mailMessageService.sendNotification(
+          user, I18n.get(BpmExceptionMessage.BPM_ERROR), body, relatedId, relatedModel);
+    }
   }
 
   protected Set<User> getRelatedUserSet(WkfModel model) {
