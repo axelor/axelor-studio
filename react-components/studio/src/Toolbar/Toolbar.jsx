@@ -3,7 +3,7 @@ import { IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import classnames from "classnames";
 import ViewSelection from "./ViewSelection";
-import { MODEL_TYPE, TYPE } from "./../constants";
+import { MODEL_TYPE, TYPE } from "../constants";
 import { useKeyPress } from "../custom-hooks/useKeyPress";
 import { useComponentVisible } from "../custom-hooks/useComponentVisible";
 import { translate } from "../utils";

@@ -7,7 +7,7 @@ import { TextField, Typography, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AxelorService from "../services/axelor.rest";
 import { camleCaseString, getDefaultGridFormName, translate } from "../utils";
-import { useDebounceEffect } from "./../common.func";
+import { useDebounceEffect } from "../common.func";
 import SearchView from "./SearchView";
 import { useStore } from "../store/context";
 import { ACTIONS, SHOW_MORE } from "../constants";

@@ -1,19 +1,26 @@
 import React from "react";
 
-import AxelorService from "./../services/axelor.rest";
-import Utils, { generateCustomModelSchema, translate } from "./../utils";
+import AxelorService from "../services/axelor.rest";
+import Utils, {
+  generateCustomModelSchema,
+  translate,
+} from "../utils";
 import Select from "./Select";
-import { relationalFields, MODEL_TYPE, PANEL_PROPS } from "./../constants";
 import {
-	fetchCustomFields,
-	getEnableAppBuilder,
-	fetchViews,
-	fetchAttrsList,
-	getTranslationList,
-	metaJsonFieldService,
+  relationalFields,
+  MODEL_TYPE,
+  PANEL_PROPS,
+} from "../constants";
+import {
+  getEnableAppBuilder,
+  fetchViews,
+  fetchCustomFields,
+  fetchAttrsList,
+  getTranslationList,
+  metaJsonFieldService,
 } from "./api";
 import { modelSearch } from "./customModelSearch";
-import { generateXpath } from "./../store/xpathGenerator";
+import { generateXpath } from "../store/xpathGenerator";
 import convert from "xml-js";
 import _ from "lodash";
 
@@ -412,10 +419,10 @@ function ViewSelection({
 		() =>
 			runIfConfirmed((field) => {
 				if (field) {
-					
+
 					// update selection(field) immediately
 					update(draft => {draft.modelField = field})
-					
+
 					fetchCustomFields(field, model).then((res) => {
 						const { data = [] } = res;
 						const schema = generateCustomModelSchema(

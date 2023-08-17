@@ -30,9 +30,8 @@ hs_err_pid*
 .#*
 [#]*#
 
-# dotenv or direnv
-.env
-.envrc
+# local env files
+*.local
 
 # Miscellaneous
 *.log

@@ -13,7 +13,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "./Toolbar";
 import { useStore } from "../store/context";
 import { generateView } from "../store/extensionGenerator";
-import AxelorService from "./../services/axelor.rest";
+import AxelorService from "../services/axelor.rest";
 import Utils, {
 	generateCustomModelSchema,
 	translate,
@@ -44,8 +44,8 @@ import {
 	deleteTranslationList,
 } from "./api";
 import DeleteConfirmation from "./DeleteConfirmation";
-import { getXML } from "./../store/computeXML";
-import { generateXpath, eGeneratePath } from "./../store/xpathGenerator";
+import { getXML } from "../store/computeXML";
+import { generateXpath, eGeneratePath } from "../store/xpathGenerator";
 import {
 	optimizeExtension,
 	getUpdatedAttrsList,

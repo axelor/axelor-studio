@@ -22,7 +22,7 @@ import { original } from "immer";
 import { generateExtension } from "./computeXML";
 import { generateXpath } from "./xpathGenerator";
 import { validateParentPanelItems, validateOnRemove } from "./validation";
-import Utils, { isExtensionView } from "./../utils";
+import Utils, { isExtensionView } from "../utils";
 
 const StoreContext = React.createContext();
 

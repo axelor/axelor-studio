@@ -4,8 +4,8 @@ import AutoComplete from "@material-ui/lab/Autocomplete";
 import _ from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
 
-import AxelorService from "./../services/axelor.rest";
-import { useDebounceEffect } from "./../common.func";
+import AxelorService from "../services/axelor.rest";
+import { useDebounceEffect } from "../common.func";
 import SearchView from "../components/SearchView";
 import { translate } from "../utils";
 import { SHOW_MORE } from "../constants";

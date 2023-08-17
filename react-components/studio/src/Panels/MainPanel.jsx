@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import Editor from "./../Editor";
+import Editor from "../Editor";
 
 export default React.memo(function MainPanel({ toolbarOffset }) {
 	const [design] = React.useState(true);
