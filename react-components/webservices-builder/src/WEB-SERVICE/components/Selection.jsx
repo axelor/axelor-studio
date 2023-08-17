@@ -52,7 +52,7 @@ export default function AutoComplete(props) {
     readOnly = false,
     concatValue,
     isProcessContext = false,
-    inputRootClass = {},
+    inputRootClass = "",
     ...other
   } = props;
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Drawer,
   IconButton,
@@ -13,13 +13,13 @@ import {
   DialogActions,
   Button,
   Snackbar,
-} from '@material-ui/core';
-import { Resizable } from 're-resizable';
-import BpmnModeler from './main/baml-js/lib/Modeler';
-import ScriptBox from './views/ScriptBox';
-import customControlsModuleRequest from './custom/custom request';
-import customControlsModuleAuth from './custom/custom auth';
-import ParameterTable from './views/ParameterProps';
+} from "@material-ui/core";
+import { Resizable } from "re-resizable";
+import BpmnModeler from "./main/baml-js/lib/Modeler";
+import ScriptBox from "./views/ScriptBox";
+import customControlsModuleRequest from "./custom/custom request";
+import customControlsModuleAuth from "./custom/custom auth";
+import ParameterTable from "./views/ParameterProps";
 import {
   Textbox,
   TextField,
@@ -27,9 +27,13 @@ import {
   Checkbox,
   Description,
   NewSelect,
-} from './components';
-import { tabProperty } from './tabProperty';
-import { fromPayloadsToPayloads, getGroovyBasicPayload, translate } from '../utils';
+} from "./components";
+import { tabProperty } from "./tabProperty";
+import {
+  fromPayloadsToPayloads,
+  getGroovyBasicPayload,
+  translate,
+} from "../utils";
 import {
   Save,
   Delete,
@@ -38,31 +42,31 @@ import {
   Menu,
   Add,
   Edit,
-} from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-import './main/baml-js/assets/diagram-js.css';
-import './main/baml-font/css/bpmn.css';
-import './css/bpmn.css';
-import Expression from './views/Expression';
-import { Alert, TabContext, TabPanel } from '@material-ui/lab';
-import Checkboxs from './components/CheckBoxs';
-import CustomizedTables from './components/Table';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import { getChildLanes } from './main/baml-js/lib/features/modeling/util/LaneUtil';
-import ReactDOM from 'react-dom';
-import { store } from './store';
-import { Selection } from './components';
-import { tabPropertyAuth } from './tabPropertyAuth';
-import { is } from './ModelUtil';
-import { FILL_COLORS, STROKE_COLORS } from './constants';
-import { tabPropertyConnector } from './tabPropertyConnector';
-import AuthentificationField from './views/AuthentificationField';
-import TestConnector from './components/TestConnector';
-import { addRequest } from './payloads-builder/services/api';
-import TextFieldMapper from './components/textBoxMapper';
-import JSONFormatter from 'json-formatter-js';
-import { updateModelPayload } from './payloads-builder/features/payloadReducer';
-import { updateHeader } from './header-builder/features/headerReducer';
+} from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles";
+import "./main/baml-js/assets/diagram-js.css";
+import "./main/baml-font/css/bpmn.css";
+import "./css/bpmn.css";
+import Expression from "./views/Expression";
+import { Alert, TabContext, TabPanel } from "@material-ui/lab";
+import Checkboxs from "./components/CheckBoxs";
+import CustomizedTables from "./components/Table";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { getChildLanes } from "./main/baml-js/lib/features/modeling/util/LaneUtil";
+import ReactDOM from "react-dom";
+import { store } from "./store";
+import { Selection } from "./components";
+import { tabPropertyAuth } from "./tabPropertyAuth";
+import { is } from "./ModelUtil";
+import { FILL_COLORS, STROKE_COLORS } from "./constants";
+import { tabPropertyConnector } from "./tabPropertyConnector";
+import AuthentificationField from "./views/AuthentificationField";
+import TestConnector from "./components/TestConnector";
+import { addRequest } from "./payloads-builder/services/api";
+import TextFieldMapper from "./components/textBoxMapper";
+import JSONFormatter from "json-formatter-js";
+import { updateModelPayload } from "./payloads-builder/features/payloadReducer";
+import { updateHeader } from "./header-builder/features/headerReducer";
 import {
   addAuth,
   addConnector,
@@ -77,17 +81,17 @@ import {
   getConnectorById,
   getkeys,
   getRequestById,
-} from '../services/api';
-import AuthentificationAction from './components/AuthentificationAction';
-import { updateModelParam } from './request-builder/features/requestReducer';
-import ContextBuilder from './context-builder/context-builder';
-import classNames from 'classnames';
+} from "../services/api";
+import AuthentificationAction from "./components/AuthentificationAction";
+import { updateModelParam } from "./request-builder/features/requestReducer";
+import ContextBuilder from "./context-builder/context-builder";
+import classNames from "classnames";
 const resizeStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   borderLeft: "solid 1px #ddd",
-  background: "#f0f0f0"
+  background: "#f0f0f0",
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -104,27 +108,27 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
   },
   drawerContainer: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   nodeTitle: {
-    fontSize: '120%',
-    fontWeight: 'bolder',
+    fontSize: "120%",
+    fontWeight: "bolder",
   },
   propertyLable: {
     fontSize: 13,
-    fontWeight: 'bolder',
-    margin: '10px 0px',
+    fontWeight: "bolder",
+    margin: "10px 0px",
   },
   toolTip: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    '& > p': {
-      '@media (max-width: 20px)': {
-        display: 'none',
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    "& > p": {
+      "@media (max-width: 20px)": {
+        display: "none",
       },
-    }
+    },
   },
   toolTipFont: {
     fontSize: 10,
@@ -132,188 +136,188 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 5,
   },
   save: {
-    'margin': theme.spacing(1),
-    'backgroundColor': '#0275d8',
-    'borderColor': '#0267bf',
-    'color': 'white',
-    '&:hover': {
-      backgroundColor: '#025aa5',
-      borderColor: '#014682',
-      color: 'white',
+    margin: theme.spacing(1),
+    backgroundColor: "#0275d8",
+    borderColor: "#0267bf",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#025aa5",
+      borderColor: "#014682",
+      color: "white",
     },
   },
   icon: {
-    color: 'green',
-    width: '1.6em',
-    height: '1.2em',
+    color: "green",
+    width: "1.6em",
+    height: "1.2em",
   },
   dialogTitle: {
-    'color': '#0274d7',
-    'paddingLeft': 0,
-    'paddingRight': 3,
-    'display': 'flex',
-    'flexDirection': 'row',
-    'alignItems': 'center',
-    '& #simple-dialog-title': {
-      cursor: 'pointer',
+    color: "#0274d7",
+    paddingLeft: 0,
+    paddingRight: 3,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    "& #simple-dialog-title": {
+      cursor: "pointer",
     },
   },
   btnContainer: {
-    border: '1px solid #dcdc',
-    background: '#F8F8F8',
-    width: '9%',
-    minWidth:85
+    border: "1px solid #dcdc",
+    background: "#F8F8F8",
+    width: "9%",
+    minWidth: 85,
   },
   consoleHeader: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     marginTop: 5,
-    alignItems: 'center',
+    alignItems: "center",
     backgroundColor: "#424242",
     paddingInline: "inherit",
-    borderRadius: '15px 15px 0px 0px'
+    borderRadius: "15px 15px 0px 0px",
   },
   copy: {
-    'marginLeft': 'auto',
-    'backgroundColor': '#025aa5',
-    'borderColor': '#0267bf',
-    'color': 'white',
-    'padding': '2',
+    marginLeft: "auto",
+    backgroundColor: "#025aa5",
+    borderColor: "#0267bf",
+    color: "white",
+    padding: "2",
     fontSize: 10,
-    '&:hover': {
-      backgroundColor: '#0267ba',
-      borderColor: '#014682',
-      color: 'white',
+    "&:hover": {
+      backgroundColor: "#0267ba",
+      borderColor: "#014682",
+      color: "white",
     },
   },
   console: {
-    'backgroundColor': '#656565',
-    'padding': 10,
-    'minHeight': '40%',
-    borderRadius: '0px 0px 15px 15px',
-    'fontWeight': 'bold !important',
-    '& .json-formatter-key': {
-      color: '#EBC456 !important',
+    backgroundColor: "#656565",
+    padding: 10,
+    minHeight: "40%",
+    borderRadius: "0px 0px 15px 15px",
+    fontWeight: "bold !important",
+    "& .json-formatter-key": {
+      color: "#EBC456 !important",
       marginRight: 5,
     },
-    '& .json-formatter-string': {
-      color: 'white !important',
+    "& .json-formatter-string": {
+      color: "white !important",
     },
-    '& .json-formatter-boolean': {
-      color: 'white !important',
+    "& .json-formatter-boolean": {
+      color: "white !important",
     },
-    '& .json-formatter-number': {
-      color: 'white !important',
+    "& .json-formatter-number": {
+      color: "white !important",
     },
-    '& .json-formatter-function': {
-      color: 'white !important',
+    "& .json-formatter-function": {
+      color: "white !important",
     },
-    '& .json-formatter-row': {
+    "& .json-formatter-row": {
       marginBottom: 8,
     },
   },
   box: {
-    '& > div > div > div': {
-      borderBottom: '1px solid black',
+    "& > div > div > div": {
+      borderBottom: "1px solid black",
     },
   },
   saveButtonText: {
     marginLeft: 10,
   },
   saveMessageAlert: {
-    width: '100%',
+    width: "100%",
     marginBottom: 10,
-    display: 'flex',
-    justifyContent: 'space-between',
+    display: "flex",
+    justifyContent: "space-between",
   },
   paper: {
     margin: theme.spacing(1),
     width: `calc(100% - 16px)`,
-    display: 'flex',
-    height: 'calc(100% - 50px)',
-    overflow: 'hidden',
+    display: "flex",
+    height: "calc(100% - 50px)",
+    overflow: "hidden",
   },
   dialogPaper: {
-    maxWidth: '70%',
-    maxHeight: '80%',
-    resize: 'both',
-    width: '70%',
-    height: '90%',
+    maxWidth: "70%",
+    maxHeight: "80%",
+    resize: "both",
+    width: "70%",
+    height: "90%",
   },
   iconButton: {
     padding: 0,
     paddingLeft: 5,
   },
   iconParams: {
-    backgroundColor: '#30363D',
+    backgroundColor: "#30363D",
   },
   inputSelect: {
-    width: '24%',
-    marginLeft: '2%',
-    display: 'flex',
-    minWidth:250,
-    alignItems: 'end',
+    width: "24%",
+    marginLeft: "2%",
+    display: "flex",
+    minWidth: 250,
+    alignItems: "end",
   },
   tabNav: {
-    'marginTop': 20,
-    '& .MuiTabs-indicator': {
-      display: 'none',
+    marginTop: 20,
+    "& .MuiTabs-indicator": {
+      display: "none",
     },
-    '& .Mui-selected': {
-      backgroundColor: '#E3E3E3',
+    "& .Mui-selected": {
+      backgroundColor: "#E3E3E3",
     },
   },
   messageResponseSuccess: {
-    backgroundColor: '#D6E9DC',
-    color: '#4f8758',
+    backgroundColor: "#D6E9DC",
+    color: "#4f8758",
     padding: 15,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     borderRadius: 10,
   },
   messageResponseError: {
-    backgroundColor: '#D70038',
-    color: 'white',
+    backgroundColor: "#D70038",
+    color: "white",
     padding: 15,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     borderRadius: 10,
   },
   tabPanel: {
     padding: 10,
-    backgroundColor: 'rgb(248, 248, 248)',
-    height: '100%',
+    backgroundColor: "rgb(248, 248, 248)",
+    height: "100%",
   },
   tabPanelConsole: {
     padding: 10,
-    height: '100%',
-    borderRadius: "15px"
+    height: "100%",
+    borderRadius: "15px",
   },
   tabStyle: {
-    border: ' 0.1px solid #ccc !important',
-    borderBottom: 'none',
+    border: " 0.1px solid #ccc !important",
+    borderBottom: "none",
     backgroundColor: "white",
     minHeight: 10,
-    width: '33.33%',
-    minWidth: '33.33%',
+    width: "33.33%",
+    minWidth: "33.33%",
   },
   toolbarButtons: {
-    display: 'flex',
-    padding: '20px 20px 0px 20px',
-    position: 'relative',
-    width: '48%',
+    display: "flex",
+    padding: "20px 20px 0px 20px",
+    position: "relative",
+    width: "48%",
   },
   header: {
-    display: 'flex',
-    flexDirection: 'row',
-    "flex-wrap":"wrap",
-    width: '100%',
-    alignItems:"end",
-    margin:5
+    display: "flex",
+    flexDirection: "row",
+    "flex-wrap": "wrap",
+    width: "100%",
+    alignItems: "end",
+    margin: 5,
   },
   active: {
-    backgroundColor: '#a3a3a3',
+    backgroundColor: "#a3a3a3",
   },
   property: {
-    marginBottom: '5%',
+    marginBottom: "5%",
   },
 }));
 
@@ -381,22 +385,26 @@ let bpmnModelerAuth = null;
 let bpmnModelerConnector = null;
 let bpmnModelerGlobal = null;
 const MODELS = [
-  { name: 'Request', title: 'Request' },
-  { name: 'Authentification', title: 'Authentification' },
-  { name: 'Connector', title: 'Connector' },
+  { name: "Request", title: "Request" },
+  { name: "Authentification", title: "Authentification" },
+  { name: "Connector", title: "Connector" },
 ];
 
 function WebServiceEditor() {
   const [width, setWidth] = useState(DRAWER_WIDTH);
-  const [height, setHeight] = useState('100%');
+  const [height, setHeight] = useState("100%");
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [element, setElement] = useState(null);
-  const [model, setModel] = useState( new URLSearchParams(window.location.search).get('model') ?  parseInt(new URLSearchParams(window.location.search).get('model')) : 1);
+  const [model, setModel] = useState(
+    new URLSearchParams(window.location.search).get("model")
+      ? parseInt(new URLSearchParams(window.location.search).get("model"))
+      : 1
+  );
   const [consoleResponse, setConsole] = useState(null);
   const [request, setRequest] = useState(null);
   const [authRequest, setAuthRequest] = useState(null);
   const [connector, setConnector] = useState(null);
-  const [renderComponent,setRenderComponent] = useState(0);
+  const [renderComponent, setRenderComponent] = useState(0);
   const formatter = useRef(null);
   const [openSnackbar, setSnackbar] = useState({
     open: false,
@@ -409,42 +417,47 @@ function WebServiceEditor() {
     action: null,
     alertConfig: {
       alertMessage:
-        'Current changes will be lost. Do you really want to proceed?',
-      alertTitle: 'New',
+        "Current changes will be lost. Do you really want to proceed?",
+      alertTitle: "New",
     },
   });
-  useEffect(()=>{
+  useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
-    const id = searchParams.get('id');
-    const modelFromUrl = searchParams.get('model');
+    const id = searchParams.get("id");
+    const modelFromUrl = searchParams.get("model");
 
-    if(id !== null && modelFromUrl !== null){
-      switch(parseInt(modelFromUrl)){
-        case REQUEST : getRequest(parseInt(id));break;
-        case AUTHENTICATION : getAuth(parseInt(id));
-        break;
-        default : return;
+    if (id !== null && modelFromUrl !== null) {
+      switch (parseInt(modelFromUrl)) {
+        case REQUEST:
+          getRequest(parseInt(id));
+          break;
+        case AUTHENTICATION:
+          getAuth(parseInt(id));
+          break;
+        default:
+          return;
       }
-    }else{
-
+    } else {
     }
-  },[])
+  }, []);
   const dispatch = useDispatch();
-  const criteriaQuery = useSelector((state) => state.payloadReducer.queryCriteria)
+  const criteriaQuery = useSelector(
+    (state) => state.payloadReducer.queryCriteria
+  );
   const modelPayloadsStore = useSelector(
-    (state) => state.payloadReducer.modelPayloads,
+    (state) => state.payloadReducer.modelPayloads
   );
   const modelParamStore = useSelector(
-    (state) => state.requestReducer.modelParameters,
+    (state) => state.requestReducer.modelParameters
   );
   const headersStore = useSelector((state) => state.headerReducer.headers);
   const classes = useStyles();
   const setCSSWidth = (width) => {
     document.documentElement.style.setProperty(
-      '--bpmn-container-width',
-      `${width}px`,
+      "--bpmn-container-width",
+      `${width}px`
     );
-    setDrawerOpen(width === '0px' ? false : true);
+    setDrawerOpen(width === "0px" ? false : true);
   };
 
   const handleSnackbarClick = (messageType, message) => {
@@ -456,7 +469,7 @@ function WebServiceEditor() {
   };
 
   const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setSnackbar({
@@ -467,12 +480,10 @@ function WebServiceEditor() {
   };
 
   // BPM Build Functions
-  const createParticipant = (
-    request
-  ) => {
-    const elementFactory = bpmnModeler.get('elementFactory');
-    const elementRegistry = bpmnModeler.get('elementRegistry');
-    const modeling = bpmnModeler.get('modeling');
+  const createParticipant = (request) => {
+    const elementFactory = bpmnModeler.get("elementFactory");
+    const elementRegistry = bpmnModeler.get("elementRegistry");
+    const modeling = bpmnModeler.get("modeling");
     const definitions = bpmnModeler.getDefinitions();
     const Nelement =
       definitions && definitions.rootElements && definitions.rootElements[0];
@@ -481,7 +492,7 @@ function WebServiceEditor() {
     if (!rootElement) return;
     const process = rootElement;
     const participant = elementFactory.createParticipantShape({
-      type: 'bpmn:Participant',
+      type: "bpmn:Participant",
     });
     participant.businessObject.name = request?.name;
     participant.businessObject.studioApp = request?.studioApp;
@@ -495,22 +506,22 @@ function WebServiceEditor() {
     participant.businessObject.description = request?.description;
 
     const colors = {};
-    colors.stroke = STROKE_COLORS['bpmn:Task'];
-    colors.fill = FILL_COLORS['bpmn:Task'];
-    participant.businessObject.di.set('stroke', 'black');
-    participant.businessObject.di.set('fill', 'white');
+    colors.stroke = STROKE_COLORS["bpmn:Task"];
+    colors.fill = FILL_COLORS["bpmn:Task"];
+    participant.businessObject.di.set("stroke", "black");
+    participant.businessObject.di.set("fill", "white");
     modeling.createShape(
       participant,
       { x: 150, y: 50, width: 900, height: 600 },
-      process,
+      process
     );
     modeling.splitLane(participant, 3);
     const childLanes = getChildLanes(participant);
     childLanes.forEach((child, id) => {
       // add tables to Requests / Payloads / Headers
-      const overlays = bpmnModeler.get('overlays');
+      const overlays = bpmnModeler.get("overlays");
       child.businessObject.name =
-        id === 0 ? 'Parameters' : id === 1 ? 'Headers' : 'Payloads';
+        id === 0 ? "Parameters" : id === 1 ? "Headers" : "Payloads";
       // child.businessObject.$parent = participant?.businessObject?.processRef?.laneSets[0]
       overlays.add(child.id, {
         position: {
@@ -521,15 +532,15 @@ function WebServiceEditor() {
       });
       modeling &&
         modeling.updateProperties(child, {
-          name: id === 0 ? 'Parameters' : id === 1 ? 'Headers' : 'Payloads',
+          name: id === 0 ? "Parameters" : id === 1 ? "Headers" : "Payloads",
         });
       ReactDOM.render(
         <Provider store={store}>
           <CustomizedTables
-            type={id === 0 ? 'parameters' : id === 2 ? 'payloads' : 'headers'}
+            type={id === 0 ? "parameters" : id === 2 ? "payloads" : "headers"}
           />
         </Provider>,
-        document.getElementById(child.id),
+        document.getElementById(child.id)
       );
     });
     participant.bpmnModeler = bpmnModeler;
@@ -539,12 +550,12 @@ function WebServiceEditor() {
   };
 
   const removeElement = (children) => {
-    const elementRegistry = bpmnModelerGlobal.get('elementRegistry');
+    const elementRegistry = bpmnModelerGlobal.get("elementRegistry");
     const definitions = bpmnModelerGlobal.getDefinitions();
     const Nelement =
       definitions && definitions.rootElements && definitions.rootElements[0];
     const rootElement = elementRegistry.get(Nelement.id);
-    const modeling = bpmnModelerGlobal.get('modeling');
+    const modeling = bpmnModelerGlobal.get("modeling");
     if (children) {
       modeling.removeElements([...children]);
     } else modeling.removeElements([...rootElement.children]);
@@ -553,46 +564,47 @@ function WebServiceEditor() {
   };
 
   const createMapper = (request) => {
-    const elementFactory = bpmnModelerAuth.get('elementFactory');
-    const elementRegistry = bpmnModelerAuth.get('elementRegistry');
-    const modeling = bpmnModelerAuth.get('modeling');
-    const process = elementRegistry.get('ProcessAction_3');
-    const mapper = elementFactory.createParticipantShape({ type: 'bpmn:Task' });
-    mapper.businessObject.name = 'Auth Request';
-    mapper.businessObject.authRequest = request?.authWsRequest ?
-      request.authWsRequest :
-      null;
-    mapper.businessObject.responseType = request?.responseType ? request.responseType : "cookie";
+    const elementFactory = bpmnModelerAuth.get("elementFactory");
+    const elementRegistry = bpmnModelerAuth.get("elementRegistry");
+    const modeling = bpmnModelerAuth.get("modeling");
+    const process = elementRegistry.get("ProcessAction_3");
+    const mapper = elementFactory.createParticipantShape({ type: "bpmn:Task" });
+    mapper.businessObject.name = "Auth Request";
+    mapper.businessObject.authRequest = request?.authWsRequest
+      ? request.authWsRequest
+      : null;
+    mapper.businessObject.responseType = request?.responseType
+      ? request.responseType
+      : "cookie";
     mapper.businessObject.tokenName = request?.tokenName;
     modeling.createShape(
       mapper,
       { x: 220, y: 80, width: 130, height: 120 },
-      process,
+      process
     );
     mapper.bpmnModeler = bpmnModelerAuth;
     const colors = {};
-    if (is(mapper, ['bpmn:Task'])) {
-      colors.stroke = STROKE_COLORS['bpmn:Task'];
-      colors.fill = FILL_COLORS['bpmn:Task'];
-      mapper.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
-      mapper.businessObject.di.set('fill', FILL_COLORS['bpmn:Task']);
+    if (is(mapper, ["bpmn:Task"])) {
+      colors.stroke = STROKE_COLORS["bpmn:Task"];
+      colors.fill = FILL_COLORS["bpmn:Task"];
+      mapper.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
+      mapper.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
     }
     modeling.setColor(mapper, colors);
     //setElement(mapper)
   };
 
-
   const createConnectorMapper = async (connector) => {
-    const elementFactory = bpmnModelerConnector.get('elementFactory');
-    const elementRegistry = bpmnModelerConnector.get('elementRegistry');
-    const modeling = bpmnModelerConnector.get('modeling');
-    const process = elementRegistry.get('ProcessAction_2');
+    const elementFactory = bpmnModelerConnector.get("elementFactory");
+    const elementRegistry = bpmnModelerConnector.get("elementRegistry");
+    const modeling = bpmnModelerConnector.get("modeling");
+    const process = elementRegistry.get("ProcessAction_2");
     if (connector) {
       let mapper = null;
       if (connector?.wsRequestList && connector?.wsRequestList?.length > 0) {
         connector.wsRequestList.forEach((request, id) => {
           mapper = elementFactory.createParticipantShape({
-            type: 'bpmn:Mapper',
+            type: "bpmn:Mapper",
           });
           mapper.businessObject.name = request.name;
           mapper.businessObject.requestTypeSelect = request.requestTypeSelect;
@@ -600,7 +612,7 @@ function WebServiceEditor() {
           modeling.createShape(
             mapper,
             { x: 220 + id * 180, y: 80, width: 130, height: 120 },
-            process,
+            process
           );
         });
         let mappers = [...process.children];
@@ -610,7 +622,7 @@ function WebServiceEditor() {
         }
       } else {
         const mapper = elementFactory.createParticipantShape({
-          type: 'bpmn:Mapper',
+          type: "bpmn:Mapper",
         });
         mapper.businessObject.name = null;
         mapper.businessObject.requestTypeSelect = null;
@@ -618,12 +630,12 @@ function WebServiceEditor() {
         modeling.createShape(
           mapper,
           { x: 220, y: 80, width: 130, height: 120 },
-          process,
+          process
         );
       }
     } else {
       const mapper = elementFactory.createParticipantShape({
-        type: 'bpmn:Mapper',
+        type: "bpmn:Mapper",
       });
       mapper.businessObject.name = null;
       mapper.businessObject.requestTypeSelect = null;
@@ -631,150 +643,153 @@ function WebServiceEditor() {
       modeling.createShape(
         mapper,
         { x: 220, y: 80, width: 130, height: 120 },
-        process,
+        process
       );
     }
   };
 
   const createMapperQauth = (request) => {
-    const elementFactory = bpmnModelerAuth.get('elementFactory');
-    const elementRegistry = bpmnModelerAuth.get('elementRegistry');
-    const modeling = bpmnModelerAuth.get('modeling');
-    const process = elementRegistry.get('ProcessAction_3');
+    const elementFactory = bpmnModelerAuth.get("elementFactory");
+    const elementRegistry = bpmnModelerAuth.get("elementRegistry");
+    const modeling = bpmnModelerAuth.get("modeling");
+    const process = elementRegistry.get("ProcessAction_3");
     const mapper2 = elementFactory.createParticipantShape({
-      type: 'bpmn:Task',
+      type: "bpmn:Task",
     });
     const mapper3 = elementFactory.createParticipantShape({
-      type: 'bpmn:Task',
+      type: "bpmn:Task",
     });
     modeling.createShape(
       mapper2,
       { x: 420, y: 80, width: 130, height: 120 },
-      process,
+      process
     );
     modeling.createShape(
       mapper3,
       { x: 620, y: 80, width: 130, height: 120 },
-      process,
+      process
     );
-    mapper2.businessObject.name = 'Token request';
-    mapper2.businessObject.authRequest = request?.tokenWsRequest ?
-      request.tokenWsRequest :
-      null;
-    mapper3.businessObject.name = 'Refresh Token request';
-    mapper3.businessObject.authRequest = request?.refreshTokenWsRequest ?
-      request.refreshTokenWsRequest :
-      null;
+    mapper2.businessObject.name = "Token request";
+    mapper2.businessObject.authRequest = request?.tokenWsRequest
+      ? request.tokenWsRequest
+      : null;
+    mapper3.businessObject.name = "Refresh Token request";
+    mapper3.businessObject.authRequest = request?.refreshTokenWsRequest
+      ? request.refreshTokenWsRequest
+      : null;
     const colors = {};
-    if (is(mapper2, ['bpmn:Task'])) {
-      colors.stroke = STROKE_COLORS['bpmn:Task'];
-      colors.fill = FILL_COLORS['bpmn:Task'];
-      mapper2.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
-      mapper2.businessObject.di.set('fill', FILL_COLORS['bpmn:Task']);
+    if (is(mapper2, ["bpmn:Task"])) {
+      colors.stroke = STROKE_COLORS["bpmn:Task"];
+      colors.fill = FILL_COLORS["bpmn:Task"];
+      mapper2.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
+      mapper2.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
     }
     modeling.setColor(mapper2, colors);
-    if (is(mapper3, ['bpmn:Task'])) {
-      colors.stroke = STROKE_COLORS['bpmn:Task'];
-      colors.fill = FILL_COLORS['bpmn:Task'];
-      mapper3.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
-      mapper3.businessObject.di.set('fill', FILL_COLORS['bpmn:Task']);
+    if (is(mapper3, ["bpmn:Task"])) {
+      colors.stroke = STROKE_COLORS["bpmn:Task"];
+      colors.fill = FILL_COLORS["bpmn:Task"];
+      mapper3.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
+      mapper3.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
     }
     modeling.setColor(mapper3, colors);
   };
 
   const createMapperStandard = (request) => {
-    const elementFactory = bpmnModelerAuth.get('elementFactory');
-    const elementRegistry = bpmnModelerAuth.get('elementRegistry');
-    const modeling = bpmnModelerAuth.get('modeling');
-    const process = elementRegistry.get('ProcessAction_3');
+    const elementFactory = bpmnModelerAuth.get("elementFactory");
+    const elementRegistry = bpmnModelerAuth.get("elementRegistry");
+    const modeling = bpmnModelerAuth.get("modeling");
+    const process = elementRegistry.get("ProcessAction_3");
     const mapper = elementFactory.createParticipantShape({
-      type: 'bpmn:Mapper',
+      type: "bpmn:Mapper",
     });
     const mapper2 = elementFactory.createParticipantShape({
-      type: 'bpmn:Mapper',
+      type: "bpmn:Mapper",
     });
     modeling.createShape(
       mapper,
       { x: 220, y: 80, width: 130, height: 120 },
-      process,
+      process
     );
     modeling.createShape(
       mapper2,
       { x: 420, y: 80, width: 130, height: 120 },
-      process,
+      process
     );
-    mapper.businessObject.name = 'Username';
+    mapper.businessObject.name = "Username";
     mapper.businessObject.expression = request?.username;
-    mapper2.businessObject.name = "Password"
+    mapper2.businessObject.name = "Password";
     mapper2.businessObject.expression = request?.password;
     const colors = {};
-    if (is(mapper, ['bpmn:Task'])) {
-      colors.stroke = STROKE_COLORS['bpmn:Task'];
-      colors.fill = FILL_COLORS['bpmn:Mapper'];
-      mapper.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
-      mapper.businessObject.di.set('fill', FILL_COLORS['bpmn:Task']);
+    if (is(mapper, ["bpmn:Task"])) {
+      colors.stroke = STROKE_COLORS["bpmn:Task"];
+      colors.fill = FILL_COLORS["bpmn:Mapper"];
+      mapper.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
+      mapper.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
     }
-    if (is(mapper2, ['bpmn:Mapper'])) {
-      colors.stroke = STROKE_COLORS['bpmn:Task'];
-      colors.fill = FILL_COLORS['bpmn:Task'];
-      mapper.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
-      mapper.businessObject.di.set('fill', FILL_COLORS['bpmn:Task']);
+    if (is(mapper2, ["bpmn:Mapper"])) {
+      colors.stroke = STROKE_COLORS["bpmn:Task"];
+      colors.fill = FILL_COLORS["bpmn:Task"];
+      mapper.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
+      mapper.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
     }
     modeling.setColor(mapper, colors);
     modeling.setColor(mapper2, colors);
-   // setElement(mapper);
+    // setElement(mapper);
   };
 
   // from connector / authentification => Request
 
   const editButton = async () => {
     let params = new URLSearchParams();
-    if (element.type === 'bpmn:Mapper' || element.type === 'bpmn:Task') {
-      params.append('id', element?.businessObject?.authRequest?.id);
+    if (element.type === "bpmn:Mapper" || element.type === "bpmn:Task") {
+      params.append("id", element?.businessObject?.authRequest?.id);
       params.append("model", REQUEST);
-    } else if (element.type === 'bpmn:Process-action' && model === CONNECTOR) {
-      params.append('id', element?.businessObject.defaultWsAuthenticator?.id);
+    } else if (element.type === "bpmn:Process-action" && model === CONNECTOR) {
+      params.append("id", element?.businessObject.defaultWsAuthenticator?.id);
       params.append("model", AUTHENTICATION);
     }
     window.top.document
-    .getElementsByTagName("iframe")[0]
-    ?.contentWindow.parent.axelor.$openHtmlTab(
-      `ws-builder/?id=${params.get("id")}&model=${params.get("model")}`,"WS Studio")
+      .getElementsByTagName("iframe")[0]
+      ?.contentWindow.parent.axelor.$openHtmlTab(
+        `ws-builder/?id=${params.get("id")}&model=${params.get("model")}`,
+        "WS Studio"
+      );
   };
 
   const addButton = () => {
     let params = new URLSearchParams();
-    if (element.type === 'bpmn:Mapper' || element.type === 'bpmn:Task') {
+    if (element.type === "bpmn:Mapper" || element.type === "bpmn:Task") {
       params.append("model", REQUEST);
       //createNewRequest();
-    } else if (element.type === 'bpmn:Process-action') {
+    } else if (element.type === "bpmn:Process-action") {
       params.append("model", AUTHENTICATION);
-
     }
     window.top.document
-    .getElementsByTagName("iframe")[0]
-    ?.contentWindow.parent.axelor.$openHtmlTab(
-      `ws-builder/?model=${params.get("model")}`,"WS Studio")
+      .getElementsByTagName("iframe")[0]
+      ?.contentWindow.parent.axelor.$openHtmlTab(
+        `ws-builder/?model=${params.get("model")}`,
+        "WS Studio"
+      );
   };
 
   // Request Model
   const getRequest = async (id) => {
     let res = await getRequestById(id, {
       fields: [
-        'name',
-        'studioApp',
-        'id',
-        'payLoadTypeSelect',
-        'requestTypeSelect',
-        'wsConnector',
-        'payLoadWsKeyValueList',
-        'headerWsKeyValueList',
-        'version',
-        'wsUrl',
-        'description',
-        'repeatIf',
-        'callIf',
-        'parameterWsKeyValueList',
+        "name",
+        "studioApp",
+        "id",
+        "payLoadTypeSelect",
+        "requestTypeSelect",
+        "wsConnector",
+        "payLoadWsKeyValueList",
+        "headerWsKeyValueList",
+        "version",
+        "wsUrl",
+        "description",
+        "repeatIf",
+        "callIf",
+        "parameterWsKeyValueList",
       ],
     });
     removeElement();
@@ -794,38 +809,38 @@ function WebServiceEditor() {
     let payloads;
     let parameters;
     headers =
-      res.headerWsKeyValueList?.length !== 0 ?
-        (headers = await getkeys(res.headerWsKeyValueList)) :
-        [];
+      res.headerWsKeyValueList?.length !== 0
+        ? (headers = await getkeys(res.headerWsKeyValueList))
+        : [];
     payloads =
-      res.payLoadWsKeyValueList?.length !== 0 ?
-        (payloads = await getkeys(res.payLoadWsKeyValueList)) :
-        [];
+      res.payLoadWsKeyValueList?.length !== 0
+        ? (payloads = await getkeys(res.payLoadWsKeyValueList))
+        : [];
     parameters =
-      res.parameterWsKeyValueList?.length !== 0 ?
-        (parameters = await getkeys(res.parameterWsKeyValueList)) :
-        [];
+      res.parameterWsKeyValueList?.length !== 0
+        ? (parameters = await getkeys(res.parameterWsKeyValueList))
+        : [];
     dispatch(updateHeader(headers));
     const list =
       payloads?.length === 0 ? [] : await fromPayloadsToPayloads(payloads);
     dispatch(
       updateModelPayload(
-        list.length === 0 ? [] : [{ model: '', payloads: list }],
-      ),
+        list.length === 0 ? [] : [{ model: "", payloads: list }]
+      )
     );
     dispatch(
       updateModelParam(
-        parameters?.length !== 0 ?
-          [{ id: 1, model: {}, parameters: [...parameters] }] :
-          [],
-      ),
+        parameters?.length !== 0
+          ? [{ id: 1, model: {}, parameters: [...parameters] }]
+          : []
+      )
     );
     req.parameterWsKeyValueList =
-      parameters?.length !== 0 ?
-        [{ id: 1, model: {}, parameters: [...parameters] }] :
-        [];
+      parameters?.length !== 0
+        ? [{ id: 1, model: {}, parameters: [...parameters] }]
+        : [];
     req.payLoadWsKeyValueList =
-      list.length === 0 ? [] : [{ model: '', payloads: list }];
+      list.length === 0 ? [] : [{ model: "", payloads: list }];
     req.headerWsKeyValueList = headers;
     setRequest(req);
   };
@@ -842,12 +857,12 @@ function WebServiceEditor() {
     } else {
       setAlert({
         state: true,
-        action: 'onChange',
+        action: "onChange",
         data: e,
         alertConfig: {
           alertMessage:
-            'Current changes will be lost. Do you really want to proceed?',
-          alertTitle: 'New',
+            "Current changes will be lost. Do you really want to proceed?",
+          alertTitle: "New",
         },
       });
       return;
@@ -867,7 +882,7 @@ function WebServiceEditor() {
           wsValue: getGroovyBasicPayload(
             payload.transformations,
             model,
-            payload?.wsValue,
+            payload?.wsValue
           ),
         };
         list.push(resultPay);
@@ -880,7 +895,7 @@ function WebServiceEditor() {
           wsValue: getGroovyBasicPayload(
             payload.transformations,
             model?.model,
-            payload?.wsValue,
+            payload?.wsValue
           ),
         };
         list.push(resultPay);
@@ -915,11 +930,11 @@ function WebServiceEditor() {
 
   const saveRequest = async () => {
     let req = {};
-    if (element.type === 'bpmn:Participant') {
+    if (element.type === "bpmn:Participant") {
       req = element?.businessObject;
-    } else if (element?.type === 'bpmn:Lane') {
+    } else if (element?.type === "bpmn:Lane") {
       req = element?.parent?.businessObject;
-    } else if (element?.type === 'bpmn:Collaboration') {
+    } else if (element?.type === "bpmn:Collaboration") {
       req = element.children[0].businessObject;
     } else return;
     if (!verificationFieldsRequest(req)) return;
@@ -936,7 +951,7 @@ function WebServiceEditor() {
         ...buildPay(modelPayload.payloads, modelPayload.model),
       ];
     });
-    const url = '';
+    const url = "";
     const parameters = [];
     modelParamStore.forEach((param) => {
       param.parameters.forEach((p) => {
@@ -946,7 +961,7 @@ function WebServiceEditor() {
           wsValue: getGroovyBasicPayload(
             p.transformations,
             param.model,
-            p.wsValue?.name ? p.wsValue?.name : p.wsValue,
+            p.wsValue?.name ? p.wsValue?.name : p.wsValue
           ),
         };
         parameters.push(p);
@@ -975,16 +990,22 @@ function WebServiceEditor() {
 
   const verifyHeadersChanges = () => {
     if (
-      request !== {} &&
-      request?.headerWsKeyValueList?.length !== 0 &&
-      headersStore?.length === request?.headerWsKeyValueList?.length
+      request &&
+      request.headerWsKeyValueList?.length !== 0 &&
+      headersStore?.length === request.headerWsKeyValueList?.length
     ) {
       var res = true;
-      for (let index = 0; index < request.headerWsKeyValueList.length; index++) {
+      for (
+        let index = 0;
+        index < request.headerWsKeyValueList.length;
+        index++
+      ) {
         if (
           !(
-            request.headerWsKeyValueList[index].wsKey === headersStore[index].wsKey &&
-            request.headerWsKeyValueList[index].wsValue === headersStore[index].wsValue
+            request.headerWsKeyValueList[index].wsKey ===
+              headersStore[index].wsKey &&
+            request.headerWsKeyValueList[index].wsValue ===
+              headersStore[index].wsValue
           )
         ) {
           res = false;
@@ -1000,22 +1021,36 @@ function WebServiceEditor() {
 
   const verifyParamsChanges = () => {
     if (
-      modelParamStore?.length === (request?.parameterWsKeyValueList?.length ? request?.parameterWsKeyValueList?.length : 0)
+      modelParamStore?.length ===
+      (request?.parameterWsKeyValueList?.length
+        ? request?.parameterWsKeyValueList?.length
+        : 0)
     ) {
       let res = true;
-      for (let index = 0; index < request?.parameterWsKeyValueList.length; index++) {
+      for (
+        let index = 0;
+        index < request?.parameterWsKeyValueList.length;
+        index++
+      ) {
         if (
-          request?.parameterWsKeyValueList[index].model?.name !== modelParamStore[index].model?.name ||
+          request?.parameterWsKeyValueList[index].model?.name !==
+            modelParamStore[index].model?.name ||
           request?.parameterWsKeyValueList[index].parameters?.length !==
-          modelParamStore[index].parameters?.length
+            modelParamStore[index].parameters?.length
         ) {
           res = false;
           break;
         }
-        for (let i = 0; i < request?.parameterWsKeyValueList[index].parameters.length; i++) {
+        for (
+          let i = 0;
+          i < request?.parameterWsKeyValueList[index].parameters.length;
+          i++
+        ) {
           if (
-            request?.parameterWsKeyValueList[index].parameters[i].wsKey !== modelParamStore[index].parameters[i].wsKey ||
-            request?.parameterWsKeyValueList[index].parameters[i].wsValue !== modelParamStore[index].parameters[i].wsValue
+            request?.parameterWsKeyValueList[index].parameters[i].wsKey !==
+              modelParamStore[index].parameters[i].wsKey ||
+            request?.parameterWsKeyValueList[index].parameters[i].wsValue !==
+              modelParamStore[index].parameters[i].wsValue
           ) {
             res = false;
             break;
@@ -1025,8 +1060,7 @@ function WebServiceEditor() {
       return res;
     }
     return false;
-
-  }
+  };
 
   const verifyPayloadsChanges = () => {
     if (
@@ -1038,7 +1072,7 @@ function WebServiceEditor() {
         if (
           modelPayload.model?.name !== modelParamStore[index].model?.name ||
           modelPayload.parameters?.length !==
-          modelParamStore[index].parameters?.length
+            modelParamStore[index].parameters?.length
         ) {
           return false;
         }
@@ -1067,13 +1101,13 @@ function WebServiceEditor() {
 
   const verifySaveRequest = () => {
     let ele = null;
-    if (element.type === 'bpmn:Participant') ele = element?.businessObject;
-    else if (element?.type === 'bpmn:Lane') {
+    if (element.type === "bpmn:Participant") ele = element?.businessObject;
+    else if (element?.type === "bpmn:Lane") {
       ele = element?.parent?.businessObject;
-    } else if (element?.type === 'bpmn:Collaboration') {
+    } else if (element?.type === "bpmn:Collaboration") {
       ele = element.children[0].businessObject;
     }
-    if (request !== null && JSON.stringify(request) !== '{}') {
+    if (request !== null && JSON.stringify(request) !== "{}") {
       if (
         ele.name === request.name &&
         ele.url === request.wsUrl &&
@@ -1082,11 +1116,10 @@ function WebServiceEditor() {
         verifyHeadersChanges()
         //  verifyPayloadsChanges()
       ) {
-        return true;   // true means the verification is valid => nothing change
+        return true; // true means the verification is valid => nothing change
       }
-      return false;    // false means the verification is failed => there is  changes in the request
-    }
-    else if (
+      return false; // false means the verification is failed => there is  changes in the request
+    } else if (
       ele.name ||
       ele.url ||
       ele.type ||
@@ -1107,13 +1140,13 @@ function WebServiceEditor() {
     var res = true;
     if (connector !== null) {
       const ele =
-        element.type === 'bpmn:Process-action' ? element : element.parent;
+        element.type === "bpmn:Process-action" ? element : element.parent;
       var children = ele.children.filter((child) => is(child, "bpmn:Mapper"));
       if (
         ele.businessObject.name === connector.name &&
         connector.baseUrl === ele.businessObject.baseUrl &&
         ele.businessObject?.defaultWsAuthenticator?.id ===
-        connector.defaultWsAuthenticator?.id
+          connector.defaultWsAuthenticator?.id
       ) {
         for (let index = 0; index < connector.wsRequestList.length; index++) {
           if (
@@ -1124,8 +1157,7 @@ function WebServiceEditor() {
             break;
           }
         }
-      }
-      else res = false;
+      } else res = false;
     }
     return res;
   };
@@ -1133,20 +1165,20 @@ function WebServiceEditor() {
   const getConnector = async (id) => {
     let res = await getConnectorById(id, {
       fields: [
-        'defaultWsAuthenticator',
-        'name',
-        'studioApp',
-        'id',
-        'wsRequestList',
-        'baseUrl',
-        'version',
-        'wsConnector',
+        "defaultWsAuthenticator",
+        "name",
+        "studioApp",
+        "id",
+        "wsRequestList",
+        "baseUrl",
+        "version",
+        "wsConnector",
       ],
       related: {
-        wsRequestList: ['name', 'requestTypeSelect', 'id'],
+        wsRequestList: ["name", "requestTypeSelect", "id"],
       },
     });
-    let ele =  removeElement();
+    let ele = removeElement();
     ele.businessObject.baseUrl = res.baseUrl;
     ele.businessObject.name = res.name;
     ele.businessObject.studioApp = res.studioApp;
@@ -1166,11 +1198,11 @@ function WebServiceEditor() {
       setAlert({
         state: true,
         data: e,
-        action: 'onChange',
+        action: "onChange",
         alertConfig: {
           alertMessage:
-            'Current changes will be lost. Do you really want to proceed?',
-          alertTitle: 'New',
+            "Current changes will be lost. Do you really want to proceed?",
+          alertTitle: "New",
         },
       });
     } else {
@@ -1180,73 +1212,66 @@ function WebServiceEditor() {
 
   const verificationFieldsConnector = () => {
     const ele =
-      element.type === 'bpmn:Process-action' ? element : element.parent;
+      element.type === "bpmn:Process-action" ? element : element.parent;
     if (!ele.businessObject.name) {
       handleSnackbarClick(
-        'error',
-        !ele.businessObject.name ? 'Name is required !' : '',
+        "error",
+        !ele.businessObject.name ? "Name is required !" : ""
       );
       return false;
     }
     return true;
   };
   const verificationFieldsRequest = (ele) => {
-    if (
-      !ele.name &&
-      !ele.url &&
-      !ele.type
-    ) {
+    if (!ele.name && !ele.url && !ele.type) {
       handleSnackbarClick(
-        'error',
+        "error",
         `<b>Les champs suivants sont invalides</b>: <li>Name</li>
             <li>Url</li>
-            <li>Type</li>`,
+            <li>Type</li>`
       );
       return false;
-    }
-    else if ((!ele.name &&
-      !ele.url) || (!ele.name && !ele.type) || (!ele.url && !ele.type)
+    } else if (
+      (!ele.name && !ele.url) ||
+      (!ele.name && !ele.type) ||
+      (!ele.url && !ele.type)
     ) {
       handleSnackbarClick(
-        'error',
-        !ele.name &&
-          !ele.url ?
-          'Name and Url  are required !' :
-          !ele.name && !ele.type ?
-            'Name and Type  are required !' :
-            !ele.url && !ele.type ?
-              'Url and Type  are required !' :
-              '',
+        "error",
+        !ele.name && !ele.url
+          ? "Name and Url  are required !"
+          : !ele.name && !ele.type
+          ? "Name and Type  are required !"
+          : !ele.url && !ele.type
+          ? "Url and Type  are required !"
+          : ""
       );
       return false;
-    }
-    else if (ele.name && ele.url && ele.type) {
+    } else if (ele.name && ele.url && ele.type) {
       return true;
-    }
-    else {
+    } else {
       handleSnackbarClick(
-        'error',
-        !ele.name ?
-          'Name is  required !' :
-          !ele.type ?
-            'Type is required !' :
-            !ele.url ?
-              'Url is required !' :
-              '',
+        "error",
+        !ele.name
+          ? "Name is  required !"
+          : !ele.type
+          ? "Type is required !"
+          : !ele.url
+          ? "Url is required !"
+          : ""
       );
       return false;
     }
-
   };
 
   const saveConnector = async () => {
     const ele =
-      element.type === 'bpmn:Process-action' ? element : element.parent;
+      element.type === "bpmn:Process-action" ? element : element.parent;
     if (!verificationFieldsConnector()) return;
     const requests = [];
     ele?.children.forEach((child) => {
       if (
-        child.type === 'bpmn:Mapper' &&
+        child.type === "bpmn:Mapper" &&
         child.businessObject.authRequest != null
       ) {
         requests.push(child.businessObject.authRequest);
@@ -1272,7 +1297,7 @@ function WebServiceEditor() {
 
   const createNewConnector = async () => {
     let ele;
-    if (element.type === 'bpmn:Process-action') ele = element;
+    if (element.type === "bpmn:Process-action") ele = element;
     else ele = element.parent;
     ele.businessObject.name = null;
     ele.businessObject.studioApp = null;
@@ -1289,8 +1314,8 @@ function WebServiceEditor() {
 
   const changeRequestAuth = async (e) => {
     if (!e) {
-      if (model === CONNECTOR && element.type === 'bpmn:Mapper') {
-        const modeling = bpmnModelerConnector.get('modeling');
+      if (model === CONNECTOR && element.type === "bpmn:Mapper") {
+        const modeling = bpmnModelerConnector.get("modeling");
         modeling.updateProperties(element, {
           name: null,
           requestTypeSelect: null,
@@ -1301,16 +1326,16 @@ function WebServiceEditor() {
     } else {
       e = await getRequestById(e.id, {
         fields: [
-          'name',
-          'id',
-          'payLoadTypeSelect',
-          'requestTypeSelect',
-          'wsConnector',
-          'version',
+          "name",
+          "id",
+          "payLoadTypeSelect",
+          "requestTypeSelect",
+          "wsConnector",
+          "version",
         ],
       });
-      if (model === CONNECTOR && element.type === 'bpmn:Mapper') {
-        const modeling = bpmnModelerConnector.get('modeling');
+      if (model === CONNECTOR && element.type === "bpmn:Mapper") {
+        const modeling = bpmnModelerConnector.get("modeling");
         modeling.updateProperties(element, {
           name: e.name,
           requestTypeSelect: e.requestTypeSelect,
@@ -1343,15 +1368,14 @@ function WebServiceEditor() {
     ele.businessObject.name = res?.name;
     ele.businessObject.studioApp = res?.studioApp;
     ele.businessObject.isAuthenticated = res?.isAuthenticated;
-    ele.businessObject.Standard = (res.authWsRequest != null ? "false" : "true" )
+    ele.businessObject.Standard = res.authWsRequest != null ? "false" : "true";
 
-    if (res?.authTypeSelect === 'oauth2') {
+    if (res?.authTypeSelect === "oauth2") {
       createMapper(res);
       createMapperQauth(res);
-    } else if(res.authWsRequest != null ){
+    } else if (res.authWsRequest != null) {
       createMapper(res);
-    }
-    else{
+    } else {
       createMapperStandard(res);
     }
     setAuthRequest(res);
@@ -1369,11 +1393,11 @@ function WebServiceEditor() {
       setAlert({
         state: true,
         data: e,
-        action: 'onChange',
+        action: "onChange",
         alertConfig: {
           alertMessage:
-            'Current changes will be lost. Do you really want to proceed?',
-          alertTitle: 'New',
+            "Current changes will be lost. Do you really want to proceed?",
+          alertTitle: "New",
         },
       });
     } else {
@@ -1384,44 +1408,44 @@ function WebServiceEditor() {
   const verifySaveAuth = () => {
     if (authRequest != null) {
       const ele =
-        element.type === 'bpmn:Process-action' ? element : element.parent;
+        element.type === "bpmn:Process-action" ? element : element.parent;
       switch (ele.businessObject.type) {
-        case 'basic':
-          if(ele.businessObject.Standard === "false"){
-          if (
-            ele.businessObject.type === authRequest.authTypeSelect &&
-            ele.children[0].businessObject.authRequest?.id ===
-            authRequest.authWsRequest?.id &&
-            ele.businessObject.name === authRequest.name &&
-            ele.businessObject.isAuthenticated === authRequest.isAuthenticated
-          ) {
-            return true;
+        case "basic":
+          if (ele.businessObject.Standard === "false") {
+            if (
+              ele.businessObject.type === authRequest.authTypeSelect &&
+              ele.children[0].businessObject.authRequest?.id ===
+                authRequest.authWsRequest?.id &&
+              ele.businessObject.name === authRequest.name &&
+              ele.businessObject.isAuthenticated === authRequest.isAuthenticated
+            ) {
+              return true;
+            }
+            return false;
+          } else {
+            if (
+              ele.children[0].businessObject.expression ===
+                authRequest.username &&
+              ele.children[1].businessObject.expression ===
+                authRequest.password &&
+              ele.businessObject.name === authRequest.name
+            ) {
+              return true;
+            }
+            return false;
           }
-          return false;
-        }
-        else{
-          if (
-            ele.children[0].businessObject.expression ===
-            authRequest.username &&
-            ele.children[1].businessObject.expression === authRequest.password &&
-            ele.businessObject.name === authRequest.name
-          ) {
-            return true;
-          }
-          return false;
-        };
-        case 'oauth2':
+        case "oauth2":
           if (
             ele.businessObject?.type === authRequest.authTypeSelect &&
             ele.children[0].businessObject?.authRequest?.id ===
-            authRequest.authWsRequest?.id &&
+              authRequest.authWsRequest?.id &&
             ele.businessObject.name === authRequest.name &&
             ele.businessObject.isAuthenticated ===
-            authRequest.isAuthenticated &&
+              authRequest.isAuthenticated &&
             ele.children[1].businessObject?.authRequest?.id ===
-            authRequest.tokenWsRequest?.id &&
+              authRequest.tokenWsRequest?.id &&
             ele.children[2].businessObject.authRequest?.id ===
-            authRequest.refreshTokenWsRequest?.id
+              authRequest.refreshTokenWsRequest?.id
           ) {
             return true;
           }
@@ -1435,35 +1459,32 @@ function WebServiceEditor() {
 
   const verificationFieldsAuth = () => {
     const ele =
-      element.type === 'bpmn:Process-action' ? element : element.parent;
-    if (ele.businessObject.type === 'basic') {
-      if(ele.businessObject.Standard === "false") {
-      if (
-        !ele.businessObject.name ||
-        !ele.children[0].businessObject.authRequest
-      ) {
-        handleSnackbarClick(
-          'error',
-          !ele.businessObject.name &&
-            !ele.children[0].businessObject.authRequest ?
-            'Name and auth Request are required !' :
-            !ele.businessObject.name ?
-              'Name is required !' :
-              !ele.children[0].businessObject.authRequest ?
-                'Auth request is required !' :
-                '',
-        );
+      element.type === "bpmn:Process-action" ? element : element.parent;
+    if (ele.businessObject.type === "basic") {
+      if (ele.businessObject.Standard === "false") {
+        if (
+          !ele.businessObject.name ||
+          !ele.children[0].businessObject.authRequest
+        ) {
+          handleSnackbarClick(
+            "error",
+            !ele.businessObject.name &&
+              !ele.children[0].businessObject.authRequest
+              ? "Name and auth Request are required !"
+              : !ele.businessObject.name
+              ? "Name is required !"
+              : !ele.children[0].businessObject.authRequest
+              ? "Auth request is required !"
+              : ""
+          );
+          return false;
+        }
+        return true;
+      } else if (!ele.businessObject.name) {
+        handleSnackbarClick("error", "Name is required !");
         return false;
       }
       return true;
-    }
-    else if(!ele.businessObject.name){
-      handleSnackbarClick(
-        'error','Name is required !'
-      );
-      return false;
-    }
-    return true;
     } else {
       if (
         !ele.businessObject.name ||
@@ -1472,49 +1493,68 @@ function WebServiceEditor() {
         !ele.children[2].businessObject.authRequest
       ) {
         handleSnackbarClick(
-          'error',
-          `<b>Les champs suivants sont invalides</b>: ${!ele.businessObject.name ? '<li>Name</li>' : ''
-          }${!ele.children[0].businessObject.authRequest ?
-            '<li>auth Request</li>' :
-            ''
+          "error",
+          `<b>Les champs suivants sont invalides</b>: ${
+            !ele.businessObject.name ? "<li>Name</li>" : ""
+          }${
+            !ele.children[0].businessObject.authRequest
+              ? "<li>auth Request</li>"
+              : ""
           }
-        ${!ele.children[1].businessObject.authRequest ?
-            '<li>Token request</li>' :
-            ''
-          }${!ele.children[2].businessObject.authRequest ?
-            '<li>Refresh token request</li>' :
-            ''
-          } `,
+        ${
+          !ele.children[1].businessObject.authRequest
+            ? "<li>Token request</li>"
+            : ""
+        }${
+            !ele.children[2].businessObject.authRequest
+              ? "<li>Refresh token request</li>"
+              : ""
+          } `
         );
         return false;
       }
-      return true
+      return true;
     }
   };
 
   const saveAuthentification = async (transition) => {
     if (!verificationFieldsAuth()) return;
     const ele =
-      element.type === 'bpmn:Process-action' ? element : element.parent;
+      element.type === "bpmn:Process-action" ? element : element.parent;
     const result = await addAuth({
       name: ele.businessObject.name,
       studioApp: ele.businessObject.studioApp,
-      authWsRequest: ele.businessObject.Standard === "false" ?  ele.children[0].businessObject.authRequest : null,
+      authWsRequest:
+        ele.businessObject.Standard === "false"
+          ? ele.children[0].businessObject.authRequest
+          : null,
       tokenWsRequest:
-        ele.businessObject.type !== 'basic' ?
-          ele.children[1].businessObject.authRequest :
-          null,
+        ele.businessObject.type !== "basic"
+          ? ele.children[1].businessObject.authRequest
+          : null,
       refreshTokenWsRequest:
-        ele.businessObject.type !== 'basic' ?
-          ele.children[2].businessObject.authRequest :
-          null,
+        ele.businessObject.type !== "basic"
+          ? ele.children[2].businessObject.authRequest
+          : null,
       authTypeSelect: ele.businessObject.type,
       id: authRequest?.id ? authRequest.id : null,
       version: authRequest?.version != null ? authRequest?.version : null,
-      username: ele.businessObject.Standard === "true" ? ele.children[0].businessObject.expression : null,
-      password: ele.businessObject.Standard === "true" ? ele.children[1].businessObject.expression : null,
-      responseType: ele.businessObject.Standard === "false" ?  ele.children[0].businessObject.responseType : null,
-      tokenName : ele.businessObject.Standard === "false" ?  ele.children[0].businessObject.tokenName : null,
+      username:
+        ele.businessObject.Standard === "true"
+          ? ele.children[0].businessObject.expression
+          : null,
+      password:
+        ele.businessObject.Standard === "true"
+          ? ele.children[1].businessObject.expression
+          : null,
+      responseType:
+        ele.businessObject.Standard === "false"
+          ? ele.children[0].businessObject.responseType
+          : null,
+      tokenName:
+        ele.businessObject.Standard === "false"
+          ? ele.children[0].businessObject.tokenName
+          : null,
       isAuthenticated: ele.businessObject.isAuthenticated,
     });
     setConsole(result);
@@ -1528,12 +1568,12 @@ function WebServiceEditor() {
 
   const createNewAuth = async () => {
     let ele;
-    element.type === 'bpmn:Process-action' ?
-      (ele = element) :
-      (ele = element.parent);
+    element.type === "bpmn:Process-action"
+      ? (ele = element)
+      : (ele = element.parent);
     ele.businessObject.name = null;
     ele.businessObject.studioApp = null;
-    ele.businessObject.type = 'basic';
+    ele.businessObject.type = "basic";
     ele.businessObject.isAuthenticated = false;
     removeElement(ele.children);
     await createMapper();
@@ -1547,11 +1587,11 @@ function WebServiceEditor() {
     switch (model) {
       case REQUEST:
         let req = {};
-        if (element.type === 'bpmn:Participant') {
+        if (element.type === "bpmn:Participant") {
           req = element?.businessObject;
-        } else if (element?.type === 'bpmn:Lane') {
+        } else if (element?.type === "bpmn:Lane") {
           req = element?.parent?.businessObject;
-        } else if (element?.type === 'bpmn:Collaboration') {
+        } else if (element?.type === "bpmn:Collaboration") {
           req = element.children[0].businessObject;
         } else return;
         const headers = [];
@@ -1565,22 +1605,40 @@ function WebServiceEditor() {
         });
         if (criteriaQuery?.expression) {
           let id = null;
-          const found = payloads.some((el, index) => { id = index; return el.wsKey === "data" });
+          const found = payloads.some((el, index) => {
+            id = index;
+            return el.wsKey === "data";
+          });
           if (found) {
-            if (!payloads[id].subWsKeyValueList.some((ele) => ele.wsKey === "_domain"))
-              payloads[id].subWsKeyValueList.push({ wsKey: "_domain", wsValue: criteriaQuery?.expression?.split(', ')[1], isList: false, id: null })
-          }
-          else {
+            if (
+              !payloads[id].subWsKeyValueList.some(
+                (ele) => ele.wsKey === "_domain"
+              )
+            )
+              payloads[id].subWsKeyValueList.push({
+                wsKey: "_domain",
+                wsValue: criteriaQuery?.expression?.split(", ")[1],
+                isList: false,
+                id: null,
+              });
+          } else {
             payloads.push({
               wsKey: "data",
               wsValue: null,
               isList: false,
               $version: null,
-              subWsKeyValueList: [{ wsKey: "_domain", wsValue: criteriaQuery?.expression?.split(', ')[1], isList: false, id: null }]
-            })
+              subWsKeyValueList: [
+                {
+                  wsKey: "_domain",
+                  wsValue: criteriaQuery?.expression?.split(", ")[1],
+                  isList: false,
+                  id: null,
+                },
+              ],
+            });
           }
         }
-        const url = '';
+        const url = "";
         const parameters = [];
         modelParamStore.forEach((param) => {
           param.parameters.forEach((p) => {
@@ -1590,7 +1648,7 @@ function WebServiceEditor() {
               wsValue: getGroovyBasicPayload(
                 p.transformations,
                 param.model,
-                p.wsValue?.name ? p.wsValue?.name : p.wsValue,
+                p.wsValue?.name ? p.wsValue?.name : p.wsValue
               ),
             };
             parameters.push(p);
@@ -1614,10 +1672,10 @@ function WebServiceEditor() {
         setValue(2);
         break;
       case CONNECTOR:
-        ele = element.type === 'bpmn:Process-action' ? element : element.parent;
+        ele = element.type === "bpmn:Process-action" ? element : element.parent;
         const requests = [];
         ele.children.forEach((child) => {
-          if (child.type === 'bpmn:Mapper') {
+          if (child.type === "bpmn:Mapper") {
             requests.push(child.businessObject.authRequest);
           }
         });
@@ -1633,18 +1691,18 @@ function WebServiceEditor() {
         setValue(2);
         break;
       case AUTHENTICATION:
-        ele = element.type === 'bpmn:Process-action' ? element : element.parent;
+        ele = element.type === "bpmn:Process-action" ? element : element.parent;
         result = {
           name: ele.businessObject.name,
           authWsRequest: ele.children[0].businessObject.authRequest,
           tokenWsRequest:
-            ele.businessObject.type !== 'basic' ?
-              ele.children[1].businessObject.authRequest :
-              null,
+            ele.businessObject.type !== "basic"
+              ? ele.children[1].businessObject.authRequest
+              : null,
           refreshTokenWsRequest:
-            ele.businessObject.type !== 'basic' ?
-              ele.children[2].businessObject.authRequest :
-              null,
+            ele.businessObject.type !== "basic"
+              ? ele.children[2].businessObject.authRequest
+              : null,
           authTypeSelect: ele.businessObject.type,
           id: authRequest?.id ? authRequest.id : null,
           version: authRequest?.version != null ? authRequest?.version : null,
@@ -1660,9 +1718,9 @@ function WebServiceEditor() {
 
   const toolBarButtons = [
     {
-      name: 'New',
-      icon: <AddBox className={classes.icon} style={{ color: 'green' }} />,
-      tooltipText: 'New',
+      name: "New",
+      icon: <AddBox className={classes.icon} style={{ color: "green" }} />,
+      tooltipText: "New",
       onClick: async () => {
         switch (model) {
           case REQUEST:
@@ -1671,11 +1729,11 @@ function WebServiceEditor() {
             } else {
               setAlert({
                 state: true,
-                action: 'new',
+                action: "new",
                 alertConfig: {
                   alertMessage:
-                    'Current changes will be lost. Do you really want to proceed?',
-                  alertTitle: 'New',
+                    "Current changes will be lost. Do you really want to proceed?",
+                  alertTitle: "New",
                 },
               });
               return;
@@ -1685,11 +1743,11 @@ function WebServiceEditor() {
             if (!verifySaveConnector()) {
               setAlert({
                 state: true,
-                action: 'new',
+                action: "new",
                 alertConfig: {
                   alertMessage:
-                    'Current changes will be lost. Do you really want to proceed?',
-                  alertTitle: 'New',
+                    "Current changes will be lost. Do you really want to proceed?",
+                  alertTitle: "New",
                 },
               });
             } else {
@@ -1700,11 +1758,11 @@ function WebServiceEditor() {
             if (!verifySaveAuth()) {
               setAlert({
                 state: true,
-                action: 'new',
+                action: "new",
                 alertConfig: {
                   alertMessage:
-                    'Current changes will be lost. Do you really want to proceed?',
-                  alertTitle: 'New',
+                    "Current changes will be lost. Do you really want to proceed?",
+                  alertTitle: "New",
                 },
               });
             } else {
@@ -1717,9 +1775,9 @@ function WebServiceEditor() {
       },
     },
     {
-      name: 'Save',
-      icon: <Save className={classes.icon} style={{ color: '#4DB6AC ' }} />,
-      tooltipText: 'Save',
+      name: "Save",
+      icon: <Save className={classes.icon} style={{ color: "#4DB6AC " }} />,
+      tooltipText: "Save",
       onClick: () => {
         switch (model) {
           case REQUEST:
@@ -1734,19 +1792,24 @@ function WebServiceEditor() {
       },
     },
     {
-      name: 'Delete',
-      icon: <i className={classNames("fa fa-trash-o", classes.icon)} style={{ fontSize: 18, color: "red" }}></i>,
-      tooltipText: 'Delete',
+      name: "Delete",
+      icon: (
+        <i
+          className={classNames("fa fa-trash-o", classes.icon)}
+          style={{ fontSize: 18, color: "red" }}
+        ></i>
+      ),
+      tooltipText: "Delete",
       onClick: async () => {
         switch (model) {
           case REQUEST:
             if (request != null) {
               setAlert({
                 state: true,
-                action: 'delete',
+                action: "delete",
                 alertConfig: {
-                  alertMessage: 'Are you sure you want to delete this record ?',
-                  alertTitle: 'Warning',
+                  alertMessage: "Are you sure you want to delete this record ?",
+                  alertTitle: "Warning",
                 },
               });
               return;
@@ -1756,10 +1819,10 @@ function WebServiceEditor() {
             if (connector != null) {
               setAlert({
                 state: true,
-                action: 'delete',
+                action: "delete",
                 alertConfig: {
-                  alertMessage: 'Are you sure you want to delete this record ?',
-                  alertTitle: 'Warning',
+                  alertMessage: "Are you sure you want to delete this record ?",
+                  alertTitle: "Warning",
                 },
               });
             }
@@ -1768,10 +1831,10 @@ function WebServiceEditor() {
             if (authRequest != null) {
               setAlert({
                 state: true,
-                action: 'delete',
+                action: "delete",
                 alertConfig: {
-                  alertMessage: 'Are you sure you want to delete this record ?',
-                  alertTitle: 'Warning',
+                  alertMessage: "Are you sure you want to delete this record ?",
+                  alertTitle: "Warning",
                 },
               });
             }
@@ -1782,22 +1845,22 @@ function WebServiceEditor() {
       },
     },
     {
-      name: 'Run test',
+      name: "Run test",
       icon: (
         <PlayCircleFilled
           className={classes.icon}
-          style={{ color: '#007BC5' }}
+          style={{ color: "#007BC5" }}
         />
       ),
-      tooltipText: 'Run test',
+      tooltipText: "Run test",
       onClick: () => {
         runTest();
       },
     },
     {
-      name: 'Parametres',
-      icon: <Menu className={classes.icon} style={{ color: 'black' }} />,
-      tooltipText: 'Context',
+      name: "Parametres",
+      icon: <Menu className={classes.icon} style={{ color: "black" }} />,
+      tooltipText: "Context",
       onClick: () => {
         showParametersMenu(true);
       },
@@ -1806,52 +1869,55 @@ function WebServiceEditor() {
 
   const getProperties = useCallback(() => {
     const tab =
-      model === REQUEST ?
-        tabProperty :
-        model === CONNECTOR ?
-          tabPropertyConnector :
-          tabPropertyAuth;
+      model === REQUEST
+        ? tabProperty
+        : model === CONNECTOR
+        ? tabPropertyConnector
+        : tabPropertyAuth;
     const ele = tab.find((p) => p.type === (element && element.type));
     if (!ele) return [];
     if (ele.properties) {
       // create logic when some of proprieties has been changed
-      if(model === AUTHENTICATION && element.businessObject.Standard === 'true'  ){
+      if (
+        model === AUTHENTICATION &&
+        element.businessObject.Standard === "true"
+      ) {
         //return []
-        // la logic içi 
+        // la logic içi
       }
       return ele.properties;
     }
-    
+
     return []; // add this default return statement
   }, [element, model]);
 
   const onChange = () => {
     switch (model) {
       case REQUEST:
-        if (element?.businessObject.classic === 'true') {
+        if (element?.businessObject.classic === "true") {
           ReactDOM.render(
             <Provider store={store}>
-              <CustomizedTables type={'payloads'} />
+              <CustomizedTables type={"payloads"} />
             </Provider>,
-            document.getElementById(element.children[2].id),
+            document.getElementById(element.children[2].id)
           );
-        } else if (element?.businessObject.auth === 'true') {
+        } else if (element?.businessObject.auth === "true") {
           dispatch(
             updateModelPayload([
-              { id: 1, wsKey: 'username', wsValue: '' },
-              { id: 2, wsKey: 'password', wsValue: '' },
-            ]),
+              { id: 1, wsKey: "username", wsValue: "" },
+              { id: 2, wsKey: "password", wsValue: "" },
+            ])
           );
-          const elementFactory = bpmnModeler.get('elementFactory');
-          const modeling = bpmnModeler.get('modeling');
+          const elementFactory = bpmnModeler.get("elementFactory");
+          const modeling = bpmnModeler.get("modeling");
           const mapper = elementFactory.createParticipantShape({
-            type: 'bpmn:Task',
+            type: "bpmn:Task",
           });
           const mapper2 = elementFactory.createParticipantShape({
-            type: 'bpmn:Task',
+            type: "bpmn:Task",
           });
-          mapper.businessObject.name = 'Username';
-          mapper2.businessObject.name = 'Password';
+          mapper.businessObject.name = "Username";
+          mapper2.businessObject.name = "Password";
           modeling.createShape(
             mapper,
             {
@@ -1860,13 +1926,13 @@ function WebServiceEditor() {
               width: 130,
               height: 120,
             },
-            element,
+            element
           );
           const colors = {};
-          colors.stroke = '#009688';
-          colors.fill = '#B2DFDB';
-          mapper.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
-          mapper.businessObject.di.set('fill', FILL_COLORS['bpmn:Task']);
+          colors.stroke = "#009688";
+          colors.fill = "#B2DFDB";
+          mapper.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
+          mapper.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
           modeling.createShape(
             mapper2,
             {
@@ -1875,29 +1941,36 @@ function WebServiceEditor() {
               width: 130,
               height: 120,
             },
-            element,
+            element
           );
-          colors.stroke = '#009688';
-          colors.fill = '#B2DFDB';
-          mapper2.businessObject.di.set('stroke', STROKE_COLORS['bpmn:Task']);
-          mapper2.businessObject.di.set('fill', FILL_COLORS['bpmn:Task']);
+          colors.stroke = "#009688";
+          colors.fill = "#B2DFDB";
+          mapper2.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
+          mapper2.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
           modeling.setColor(mapper, colors);
           modeling.setColor(mapper2, colors);
         }
         break;
       case AUTHENTICATION:
-        if (element?.businessObject.type === 'oauth2' && element.type === 'bpmn:Process-action') {
+        if (
+          element?.businessObject.type === "oauth2" &&
+          element.type === "bpmn:Process-action"
+        ) {
           createMapperQauth();
           setElement(element);
-        } else if(element?.businessObject.type === 'basic' && element.type === 'bpmn:Process-action'){
+        } else if (
+          element?.businessObject.type === "basic" &&
+          element.type === "bpmn:Process-action"
+        ) {
           removeElement([element.children[1], element.children[2]]);
-        }
-        else if(element?.type === 'bpmn:Task'){
-          if(element?.businessObject?.responseType === "cookie" && renderComponent === 1 ){
-           setRenderComponent(0)
-          }
-          else{
-          setRenderComponent(1);
+        } else if (element?.type === "bpmn:Task") {
+          if (
+            element?.businessObject?.responseType === "cookie" &&
+            renderComponent === 1
+          ) {
+            setRenderComponent(0);
+          } else {
+            setRenderComponent(1);
           }
         }
         break;
@@ -1915,16 +1988,18 @@ function WebServiceEditor() {
       if (!requestAuth) return false;
     } else requestAuth = authRequest;
     const actionRequest = {
-      model: 'com.axelor.studio.db.WsAuthenticator',
-      action: 'action-studio-ws-authenticator-authenticate',
+      model: "com.axelor.studio.db.WsAuthenticator",
+      action: "action-studio-ws-authenticator-authenticate",
       data: { context: requestAuth },
     };
     const res = await autheticate(actionRequest);
     if (res?.status === 0) {
       if (res?.data[0]?.view) {
-        window.open(res.data[0]?.view?.views[0]?.name, res.data[0]?.view?.params?.target);
-      }
-      else {
+        window.open(
+          res.data[0]?.view?.views[0]?.name,
+          res.data[0]?.view?.params?.target
+        );
+      } else {
         const result = await getAuthById(requestAuth?.id);
         setAuthRequest(result);
         return result?.isAuthenticated;
@@ -1933,25 +2008,25 @@ function WebServiceEditor() {
     return false;
   };
 
-  const changeCheckBoxValue =  (checked) => {
+  const changeCheckBoxValue = (checked) => {
     removeElement();
     if (checked) {
-       createMapperStandard();
-       setRenderComponent(1);
-       //setElement(element);
+      createMapperStandard();
+      setRenderComponent(1);
+      //setElement(element);
     } else {
       createMapper();
-      if(renderComponent === 1) setRenderComponent(0);
-     // setElement(element);
+      if (renderComponent === 1) setRenderComponent(0);
+      // setElement(element);
       //removeElement();
     }
-  }
+  };
 
   const RenderComponent = (entry) => {
-    if(entry.name ==="type");
+    if (entry.name === "type");
     if (!entry && entry.widget) return [];
     switch (entry.widget) {
-      case 'expression':
+      case "expression":
         return (
           <Expression
             entry={entry}
@@ -1959,12 +2034,16 @@ function WebServiceEditor() {
             bpmnModeler={bpmnModelerGlobal}
           />
         );
-      case 'textField':
-        if(model === AUTHENTICATION && element?.type === 'bpmn:Task' && element.businessObject.responseType === "cookie" && entry.name === "tokenName"){
-          entry = {...entry,hidden : true};
-        }
-        else{
-          entry = {...entry,hidden : false};
+      case "textField":
+        if (
+          model === AUTHENTICATION &&
+          element?.type === "bpmn:Task" &&
+          element.businessObject.responseType === "cookie" &&
+          entry.name === "tokenName"
+        ) {
+          entry = { ...entry, hidden: true };
+        } else {
+          entry = { ...entry, hidden: false };
         }
         return (
           <TextField
@@ -1975,7 +2054,7 @@ function WebServiceEditor() {
             readOnly={entry.readOnly}
           />
         );
-      case 'textBox':
+      case "textBox":
         return (
           <Textbox
             entry={entry}
@@ -1983,7 +2062,7 @@ function WebServiceEditor() {
             element={element}
           />
         );
-      case 'button':
+      case "button":
         return (
           <Button
             entry={entry}
@@ -1994,17 +2073,22 @@ function WebServiceEditor() {
             Authentificated
           </Button>
         );
-      case 'selectBox':
+      case "selectBox":
         return (
           <SelectBox
             onChange={onChange}
-            disabled={model === AUTHENTICATION && element.businessObject.Standard === "true" ? true : false}
+            disabled={
+              model === AUTHENTICATION &&
+              element.businessObject.Standard === "true"
+                ? true
+                : false
+            }
             entry={entry}
             element={element}
             bpmnModeler={bpmnModelerGlobal}
           />
         );
-      case 'authentificationAction':
+      case "authentificationAction":
         return (
           <AuthentificationAction
             bpmnModeler={bpmnModelerGlobal}
@@ -2015,7 +2099,7 @@ function WebServiceEditor() {
             label="Authentificated"
           />
         );
-      case 'authField':
+      case "authField":
         return (
           <AuthentificationField
             entry={entry}
@@ -2023,7 +2107,7 @@ function WebServiceEditor() {
             element={element}
           />
         );
-      case 'testConnector':
+      case "testConnector":
         return (
           <TestConnector
             entry={entry}
@@ -2032,7 +2116,7 @@ function WebServiceEditor() {
             connector={connector}
           />
         );
-      case 'checkbox':
+      case "checkbox":
         return (
           <Checkbox
             entry={entry}
@@ -2041,7 +2125,7 @@ function WebServiceEditor() {
             onChange={changeCheckBoxValue}
           />
         );
-      case 'checkBoxs':
+      case "checkBoxs":
         return (
           <Checkboxs
             entry={entry}
@@ -2050,45 +2134,48 @@ function WebServiceEditor() {
             onChange={onChange}
           />
         );
-      case 'many-to-one':
+      case "many-to-one":
         return (
           <NewSelect
             entry={entry}
             element={element}
             bpmnModeler={bpmnModelerGlobal}
-            onChange={changeRequestAuth} addButton={addButton} editButton={editButton} />
+            onChange={changeRequestAuth}
+            addButton={addButton}
+            editButton={editButton}
+          />
         );
-      case 'scriptBox':
+      case "scriptBox":
         return (
           <ScriptBox
             entry={entry}
             element={element}
             bpmnModeler={bpmnModelerGlobal}
             bpmnFactory={
-              bpmnModelerGlobal && bpmnModelerGlobal.get('bpmnFactory')
+              bpmnModelerGlobal && bpmnModelerGlobal.get("bpmnFactory")
             }
             readOnly={element.businessObject[entry.name]?.expression?.value}
           />
         );
-      case 'textFieldMapper':
+      case "textFieldMapper":
         return (
           <TextFieldMapper
             entry={entry}
             element={element}
             bpmnModeler={bpmnModelerGlobal}
             bpmnFactory={
-              bpmnModelerGlobal && bpmnModelerGlobal.get('bpmnFactory')
+              bpmnModelerGlobal && bpmnModelerGlobal.get("bpmnFactory")
             }
           />
         );
-      case 'parameterTable':
+      case "parameterTable":
         return (
           <ParameterTable
             entry={entry}
             element={element}
             bpmnModeler={bpmnModelerGlobal}
             bpmnFactory={
-              bpmnModelerGlobal && bpmnModelerGlobal.get('bpmnFactory')
+              bpmnModelerGlobal && bpmnModelerGlobal.get("bpmnFactory")
             }
           />
         );
@@ -2110,85 +2197,93 @@ function WebServiceEditor() {
 
   function a11yProps(index) {
     return {
-      'id': `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
+      id: `simple-tab-${index}`,
+      "aria-controls": `simple-tabpanel-${index}`,
     };
   }
-  const openDiagramImage = useCallback(async (bamlXml) => {
-    let canvas;
-    let element;
-    const id = new URLSearchParams(window.location.search).get('id');
-    const modelFromUrl = new URLSearchParams(window.location.search).get('model');
-    switch (model) {
-      case REQUEST:
-        canvas = bpmnModeler.get('canvas');
-        element = canvas.getRootElement();
-        if (element.type === 'bpmn:Collaboration') {
-          setElement(element.children[0]);
-        } else {
-          bpmnModeler.importXML(bamlXml, (err) => {
-            if (err) {
-              return console.error('could not import BPMN 2.0 diagram', err);
-            }
-            const canvas = bpmnModeler.get('canvas');
-            canvas.zoom('fit-viewport');
-            const element = canvas.getRootElement();
-           if(id !== null && parseInt(modelFromUrl) === REQUEST) {return };
-           setElement(element);
-           createParticipant();
-          });
-        }
-        break;
-      case CONNECTOR:
-        canvas = bpmnModelerConnector.get('canvas');
-        element = canvas.getRootElement();
-        if (element.type === 'bpmn:Process-action') {
-          setElement(element);
-        } else {
-          bpmnModelerConnector.importXML(bamlXml, (err) => {
-            if (err) {
-              return console.error('could not import BPMN 2.0 diagram', err);
-            }
-            const canvas = bpmnModelerConnector.get('canvas');
-            canvas.zoom('fit-viewport');
-            const element = canvas.getRootElement();
-            createConnectorMapper();
+  const openDiagramImage = useCallback(
+    async (bamlXml) => {
+      let canvas;
+      let element;
+      const id = new URLSearchParams(window.location.search).get("id");
+      const modelFromUrl = new URLSearchParams(window.location.search).get(
+        "model"
+      );
+      switch (model) {
+        case REQUEST:
+          canvas = bpmnModeler.get("canvas");
+          element = canvas.getRootElement();
+          if (element.type === "bpmn:Collaboration") {
+            setElement(element.children[0]);
+          } else {
+            bpmnModeler.importXML(bamlXml, (err) => {
+              if (err) {
+                return console.error("could not import BPMN 2.0 diagram", err);
+              }
+              const canvas = bpmnModeler.get("canvas");
+              canvas.zoom("fit-viewport");
+              const element = canvas.getRootElement();
+              if (id !== null && parseInt(modelFromUrl) === REQUEST) {
+                return;
+              }
+              setElement(element);
+              createParticipant();
+            });
+          }
+          break;
+        case CONNECTOR:
+          canvas = bpmnModelerConnector.get("canvas");
+          element = canvas.getRootElement();
+          if (element.type === "bpmn:Process-action") {
             setElement(element);
-          });
-        }
-        break;
-      case AUTHENTICATION:
-        canvas = bpmnModelerAuth.get('canvas');
-        element = canvas.getRootElement();
-        if (element.type === 'bpmn:Process-action') {
-          setElement(element);
-        } else {
-          bpmnModelerAuth.importXML(bamlXml, (err) => {
-            if (err) {
-              return console.error('could not import BPMN 2.0 diagram', err);
-            }
-            const canvas = bpmnModelerAuth.get('canvas');
-            canvas.zoom('fit-viewport');
-            const element = canvas.getRootElement();
-            element.businessObject.type = 'basic';
-            element.businessObject.isAuthenticated = false;
-            if(id !== null && parseInt(modelFromUrl) === AUTHENTICATION) return;
-            createMapper();
+          } else {
+            bpmnModelerConnector.importXML(bamlXml, (err) => {
+              if (err) {
+                return console.error("could not import BPMN 2.0 diagram", err);
+              }
+              const canvas = bpmnModelerConnector.get("canvas");
+              canvas.zoom("fit-viewport");
+              const element = canvas.getRootElement();
+              createConnectorMapper();
+              setElement(element);
+            });
+          }
+          break;
+        case AUTHENTICATION:
+          canvas = bpmnModelerAuth.get("canvas");
+          element = canvas.getRootElement();
+          if (element.type === "bpmn:Process-action") {
             setElement(element);
-          });
-        }
-        break;
-      default:
-        return;
-    }
-  }, [model]);
+          } else {
+            bpmnModelerAuth.importXML(bamlXml, (err) => {
+              if (err) {
+                return console.error("could not import BPMN 2.0 diagram", err);
+              }
+              const canvas = bpmnModelerAuth.get("canvas");
+              canvas.zoom("fit-viewport");
+              const element = canvas.getRootElement();
+              element.businessObject.type = "basic";
+              element.businessObject.isAuthenticated = false;
+              if (id !== null && parseInt(modelFromUrl) === AUTHENTICATION)
+                return;
+              createMapper();
+              setElement(element);
+            });
+          }
+          break;
+        default:
+          return;
+      }
+    },
+    [model]
+  );
   const fetchDiagram = React.useCallback(
     async function fetchDiagram(id) {
       if (model === REQUEST) openDiagramImage(REQUEST_XML);
       if (model === CONNECTOR) openDiagramImage(CONNECTOR_XML);
       if (model === AUTHENTICATION) openDiagramImage(AUTH_XML);
     },
-    [model, openDiagramImage],
+    [model, openDiagramImage]
   );
 
   useEffect(() => {
@@ -2196,7 +2291,7 @@ function WebServiceEditor() {
       case REQUEST:
         if (!bpmnModeler) {
           bpmnModeler = new BpmnModeler({
-            container: '#bpmnview',
+            container: "#bpmnview",
             additionalModules: [customControlsModuleRequest],
           });
         }
@@ -2206,7 +2301,7 @@ function WebServiceEditor() {
       case CONNECTOR:
         if (!bpmnModelerConnector) {
           bpmnModelerConnector = new BpmnModeler({
-            container: '#bpmnview2',
+            container: "#bpmnview2",
             additionalModules: [customControlsModuleAuth],
           });
         }
@@ -2216,7 +2311,7 @@ function WebServiceEditor() {
       case AUTHENTICATION:
         if (!bpmnModelerAuth) {
           bpmnModelerAuth = new BpmnModeler({
-            container: '#bpmnview3',
+            container: "#bpmnview3",
             additionalModules: [customControlsModuleRequest],
           });
         }
@@ -2228,56 +2323,59 @@ function WebServiceEditor() {
     }
   }, [fetchDiagram, model]);
 
-  const setColors = useCallback((element, forceUpdate = false) => {
-    if (
-      element.businessObject &&
-      element.businessObject.di &&
-      (element.businessObject.di.stroke || element.businessObject.di.fill) &&
-      !forceUpdate
-    ) {
-      return;
-    }
-    const modeling = bpmnModelerGlobal.get('modeling');
-    const colors = {};
-    if (is(element, ['bpmn:Mapper'])) {
-      colors.stroke = STROKE_COLORS['bpmn:Task'];
-      colors.fill = FILL_COLORS['bpmn:Task'];
-    } else {
-      colors.stroke = STROKE_COLORS[element.type];
-    }
-    modeling.setColor(element, colors);
-    if (model === CONNECTOR) {
-      if (element.type === 'bpmn:Mapper') {
-        modeling.resizeShape(element, {
-          x: element.x,
-          y: element.y - (130 - 110),
-          width: 130,
-          height: 120,
-        });
+  const setColors = useCallback(
+    (element, forceUpdate = false) => {
+      if (
+        element.businessObject &&
+        element.businessObject.di &&
+        (element.businessObject.di.stroke || element.businessObject.di.fill) &&
+        !forceUpdate
+      ) {
+        return;
       }
-    }
-  }, [model])
+      const modeling = bpmnModelerGlobal.get("modeling");
+      const colors = {};
+      if (is(element, ["bpmn:Mapper"])) {
+        colors.stroke = STROKE_COLORS["bpmn:Task"];
+        colors.fill = FILL_COLORS["bpmn:Task"];
+      } else {
+        colors.stroke = STROKE_COLORS[element.type];
+      }
+      modeling.setColor(element, colors);
+      if (model === CONNECTOR) {
+        if (element.type === "bpmn:Mapper") {
+          modeling.resizeShape(element, {
+            x: element.x,
+            y: element.y - (130 - 110),
+            width: 130,
+            height: 120,
+          });
+        }
+      }
+    },
+    [model]
+  );
 
   useEffect(() => {
     formatter.current = new JSONFormatter(
-      consoleResponse != null ? consoleResponse : 'No data',
+      consoleResponse != null ? consoleResponse : "No data",
       Infinity,
       {
         hoverPreviewEnabled: false,
         hoverPreviewArrayCount: 100,
         hoverPreviewFieldCount: 5,
-        theme: 'dark',
+        theme: "dark",
         animateOpen: true,
         animateClose: true,
         useToJSON: true,
-      },
+      }
     );
     if (value === 2) {
-      if (document.getElementById('console') != null) {
-        document.getElementById('console').innerHTML = '';
+      if (document.getElementById("console") != null) {
+        document.getElementById("console").innerHTML = "";
       }
       document
-        .getElementById('console')
+        .getElementById("console")
         ?.appendChild(formatter.current.render());
     }
   }, [consoleResponse, value]);
@@ -2286,47 +2384,50 @@ function WebServiceEditor() {
     switch (model) {
       case REQUEST:
         bpmnModelerGlobal = bpmnModeler;
-        document.getElementById('bpmnview2').style.display = 'none';
-        document.getElementById('bpmnview3').style.display = 'none';
-        document.getElementById('bpmnview').style.display = 'block';
+        document.getElementById("bpmnview2").style.display = "none";
+        document.getElementById("bpmnview3").style.display = "none";
+        document.getElementById("bpmnview").style.display = "block";
         break;
       case CONNECTOR:
         bpmnModelerGlobal = bpmnModelerConnector;
-        document.getElementById('bpmnview').style.display = 'none';
-        document.getElementById('bpmnview3').style.display = 'none';
-        document.getElementById('bpmnview2').style.display = 'block';
+        document.getElementById("bpmnview").style.display = "none";
+        document.getElementById("bpmnview3").style.display = "none";
+        document.getElementById("bpmnview2").style.display = "block";
         break;
       case AUTHENTICATION:
         bpmnModelerGlobal = bpmnModelerAuth;
-        document.getElementById('bpmnview').style.display = 'none';
-        document.getElementById('bpmnview2').style.display = 'none';
-        document.getElementById('bpmnview3').style.display = 'block';
+        document.getElementById("bpmnview").style.display = "none";
+        document.getElementById("bpmnview2").style.display = "none";
+        document.getElementById("bpmnview3").style.display = "block";
         break;
       default:
         break;
     }
-    bpmnModelerGlobal.on('element.click', (event) => {
+    bpmnModelerGlobal.on("element.click", (event) => {
       setElement(event.element);
       setValue(0);
     });
-    bpmnModelerGlobal.on('commandStack.shape.create.postExecuted', (event) => {
+    bpmnModelerGlobal.on("commandStack.shape.create.postExecuted", (event) => {
       setColors(event && event.context && event.context.shape);
     });
-    bpmnModelerGlobal.on('shape.changed', (event) => {
-     // setElement(event.element);
+    bpmnModelerGlobal.on("shape.changed", (event) => {
+      // setElement(event.element);
     });
-    bpmnModelerGlobal.on('resize.end', 1500, (event) => {
+    bpmnModelerGlobal.on("resize.end", 1500, (event) => {
       if (is(event.shape, "bpmn:Participant") || is(event.shape, "bpmn:Lane")) {
         let shape = null;
         if (is(event.shape, "bpmn:Participant")) shape = event.shape;
         else shape = event.shape.parent;
-        shape.children.forEach(element => {
-          document.getElementById(element.id).style.width = `${document.getElementById(element.id).getBoundingClientRect().width + event.dx}px`
+        shape.children.forEach((element) => {
+          document.getElementById(element.id).style.width = `${
+            document.getElementById(element.id).getBoundingClientRect().width +
+            event.dx
+          }px`;
         });
       }
     });
-    bpmnModelerGlobal.on('shape.removed', () => {
-      const elementRegistry = bpmnModelerGlobal.get('elementRegistry');
+    bpmnModelerGlobal.on("shape.removed", () => {
+      const elementRegistry = bpmnModelerGlobal.get("elementRegistry");
       const definitions = bpmnModelerGlobal.getDefinitions();
       const element =
         definitions && definitions.rootElements && definitions.rootElements[0];
@@ -2351,31 +2452,28 @@ function WebServiceEditor() {
         {true && (
           <div id="bpmnview">
             <div className={classes.header}>
-                {toolBarButtons.map((btn) => (
-                  <div key={btn.name} className={classes.btnContainer}>
-                    <Tooltip
-                      title={btn.tooltipText}
-                      className={classes.toolTip}
+              {toolBarButtons.map((btn) => (
+                <div key={btn.name} className={classes.btnContainer}>
+                  <Tooltip title={btn.tooltipText} className={classes.toolTip}>
+                    <div
+                      className={
+                        btn.tooltipText === "Parametres"
+                          ? [classes.toolTip, classes.active]
+                          : classes.toolTip
+                      }
                     >
-                      <div
-                        className={
-                          btn.tooltipText === 'Parametres' ?
-                            [classes.toolTip, classes.active] :
-                            classes.toolTip
-                        }
+                      <IconButton
+                        fontSize="large"
+                        onClick={btn.onClick}
+                        className={classes.iconButton}
                       >
-                        <IconButton
-                          fontSize="large"
-                          onClick={btn.onClick}
-                          className={classes.iconButton}
-                        >
-                          {btn.icon}
-                        </IconButton>
-                        <p className={classes.toolTipFont}>{btn.tooltipText}</p>
-                      </div>
-                    </Tooltip>
-                  </div>
-                ))}
+                        {btn.icon}
+                      </IconButton>
+                      <p className={classes.toolTipFont}>{btn.tooltipText}</p>
+                    </div>
+                  </Tooltip>
+                </div>
+              ))}
               <Selection
                 name="name"
                 title="Model"
@@ -2386,10 +2484,10 @@ function WebServiceEditor() {
                 value={MODELS[REQUEST - 1]}
                 onChange={(e) => {
                   switch (e.name) {
-                    case 'Connector':
+                    case "Connector":
                       setModel(CONNECTOR);
                       break;
-                    case 'Authentification':
+                    case "Authentification":
                       setModel(AUTHENTICATION);
                       break;
                     default:
@@ -2414,7 +2512,7 @@ function WebServiceEditor() {
               <Dialog
                 open={openAlert.state}
                 onClose={(e, reason) => {
-                  if (reason !== 'backdropClick') {
+                  if (reason !== "backdropClick") {
                     setAlert(false);
                   }
                 }}
@@ -2436,14 +2534,14 @@ function WebServiceEditor() {
                   <Button
                     onClick={() => {
                       switch (openAlert.action) {
-                        case 'new':
+                        case "new":
                           createNewRequest();
                           break;
-                        case 'delete':
+                        case "delete":
                           createNewRequest();
                           removeRequest();
                           break;
-                        case 'onChange':
+                        case "onChange":
                           getRequest(openAlert?.data?.id);
                           break;
                         default:
@@ -2463,7 +2561,7 @@ function WebServiceEditor() {
                     }}
                     color="primary"
                     autoFocus
-                    style={{ textTransform: 'none' }}
+                    style={{ textTransform: "none" }}
                     className={classes.save}
                   >
                     Cancel
@@ -2476,31 +2574,28 @@ function WebServiceEditor() {
         {true && (
           <div id="bpmnview3">
             <div className={classes.header}>
-            {toolBarButtons.map((btn) => (
-                  <div key={btn.name} className={classes.btnContainer}>
-                    <Tooltip
-                      title={btn.tooltipText}
-                      className={classes.toolTip}
+              {toolBarButtons.map((btn) => (
+                <div key={btn.name} className={classes.btnContainer}>
+                  <Tooltip title={btn.tooltipText} className={classes.toolTip}>
+                    <div
+                      className={
+                        btn.tooltipText === "Parametres"
+                          ? [classes.toolTip, classes.active]
+                          : classes.toolTip
+                      }
                     >
-                      <div
-                        className={
-                          btn.tooltipText === 'Parametres' ?
-                            [classes.toolTip, classes.active] :
-                            classes.toolTip
-                        }
+                      <IconButton
+                        fontSize="large"
+                        onClick={btn.onClick}
+                        className={classes.iconButton}
                       >
-                        <IconButton
-                          fontSize="large"
-                          onClick={btn.onClick}
-                          className={classes.iconButton}
-                        >
-                          {btn.icon}
-                        </IconButton>
-                        <p className={classes.toolTipFont}>{btn.tooltipText}</p>
-                      </div>
-                    </Tooltip>
-                  </div>
-                ))}
+                        {btn.icon}
+                      </IconButton>
+                      <p className={classes.toolTipFont}>{btn.tooltipText}</p>
+                    </div>
+                  </Tooltip>
+                </div>
+              ))}
               <Selection
                 name="name"
                 title="Model"
@@ -2511,10 +2606,10 @@ function WebServiceEditor() {
                 value={MODELS[AUTHENTICATION - 1]}
                 onChange={(e) => {
                   switch (e.name) {
-                    case 'Request':
+                    case "Request":
                       setModel(REQUEST);
                       break;
-                    case 'Connector':
+                    case "Connector":
                       setModel(CONNECTOR);
                       break;
                     default:
@@ -2540,7 +2635,7 @@ function WebServiceEditor() {
               <Dialog
                 open={openAlert.state}
                 onClose={(e, reason) => {
-                  if (reason !== 'backdropClick') {
+                  if (reason !== "backdropClick") {
                     setAlert(false);
                   }
                 }}
@@ -2562,14 +2657,14 @@ function WebServiceEditor() {
                   <Button
                     onClick={() => {
                       switch (openAlert.action) {
-                        case 'new':
+                        case "new":
                           createNewAuth();
                           break;
-                        case 'delete':
+                        case "delete":
                           createNewAuth();
                           removeAuth();
                           break;
-                        case 'onChange':
+                        case "onChange":
                           getAuth(openAlert.data.id);
                           break;
                         default:
@@ -2589,7 +2684,7 @@ function WebServiceEditor() {
                     }}
                     color="primary"
                     autoFocus
-                    style={{ textTransform: 'none' }}
+                    style={{ textTransform: "none" }}
                     className={classes.save}
                   >
                     Cancel
@@ -2602,31 +2697,28 @@ function WebServiceEditor() {
         {true && (
           <div id="bpmnview2">
             <div className={classes.header}>
-            {toolBarButtons.map((btn) => (
-                  <div key={btn.name} className={classes.btnContainer}>
-                    <Tooltip
-                      title={btn.tooltipText}
-                      className={classes.toolTip}
+              {toolBarButtons.map((btn) => (
+                <div key={btn.name} className={classes.btnContainer}>
+                  <Tooltip title={btn.tooltipText} className={classes.toolTip}>
+                    <div
+                      className={
+                        btn.tooltipText === "Parametres"
+                          ? [classes.toolTip, classes.active]
+                          : classes.toolTip
+                      }
                     >
-                      <div
-                        className={
-                          btn.tooltipText === 'Parametres' ?
-                            [classes.toolTip, classes.active] :
-                            classes.toolTip
-                        }
+                      <IconButton
+                        fontSize="large"
+                        onClick={btn.onClick}
+                        className={classes.iconButton}
                       >
-                        <IconButton
-                          fontSize="large"
-                          onClick={btn.onClick}
-                          className={classes.iconButton}
-                        >
-                          {btn.icon}
-                        </IconButton>
-                        <p className={classes.toolTipFont}>{btn.tooltipText}</p>
-                      </div>
-                    </Tooltip>
-                  </div>
-                ))}
+                        {btn.icon}
+                      </IconButton>
+                      <p className={classes.toolTipFont}>{btn.tooltipText}</p>
+                    </div>
+                  </Tooltip>
+                </div>
+              ))}
               <Selection
                 name="name"
                 title="Model"
@@ -2637,10 +2729,10 @@ function WebServiceEditor() {
                 value={MODELS[CONNECTOR - 1]}
                 onChange={(e) => {
                   switch (e.name) {
-                    case 'Authentification':
+                    case "Authentification":
                       setModel(AUTHENTICATION);
                       break;
-                    case 'Request':
+                    case "Request":
                       setModel(REQUEST);
                       break;
                     default:
@@ -2665,7 +2757,7 @@ function WebServiceEditor() {
               <Dialog
                 open={openAlert.state}
                 onClose={(e, reason) => {
-                  if (reason !== 'backdropClick') {
+                  if (reason !== "backdropClick") {
                     setAlert(false);
                   }
                 }}
@@ -2687,14 +2779,14 @@ function WebServiceEditor() {
                   <Button
                     onClick={() => {
                       switch (openAlert.action) {
-                        case 'new':
+                        case "new":
                           createNewConnector();
                           break;
-                        case 'delete':
+                        case "delete":
                           createNewConnector();
                           removeConnector();
                           break;
-                        case 'onChange':
+                        case "onChange":
                           getConnector(openAlert.data?.id);
                           break;
                         default:
@@ -2714,7 +2806,7 @@ function WebServiceEditor() {
                     }}
                     color="primary"
                     autoFocus
-                    style={{ textTransform: 'none' }}
+                    style={{ textTransform: "none" }}
                     className={classes.save}
                   >
                     Cancel
@@ -2775,16 +2867,19 @@ function WebServiceEditor() {
                   </Tabs>
                 </Box>
                 <TabPanel className={classes.tabPanel} value={"0"} index={0}>
-                  {getProperties().map((t, index) => { 
+                  {getProperties().map((t, index) => {
                     return (
-                      <div className={classes.property} key={index} >
-                        <RenderComponent  {...t} renderComponent={renderComponent}/>
+                      <div className={classes.property} key={index}>
+                        <RenderComponent
+                          {...t}
+                          renderComponent={renderComponent}
+                        />
                       </div>
-                    )
+                    );
                   })}
                 </TabPanel>
                 <TabPanel className={classes.tabPanel} value={"1"} index={1}>
-                  <Description desciption={'Description'} element={element} />
+                  <Description desciption={"Description"} element={element} />
                 </TabPanel>
                 <TabPanel
                   className={classes.tabPanelConsole}
@@ -2800,12 +2895,14 @@ function WebServiceEditor() {
                     )}
                   {(consoleResponse?.ok === false ||
                     consoleResponse?.status === -1) && (
-                      <div className={classes.messageResponseError}>
-                        Error , something went wrong !
-                      </div>
-                    )}
+                    <div className={classes.messageResponseError}>
+                      Error , something went wrong !
+                    </div>
+                  )}
                   <div className={classes.consoleHeader}>
-                    <h3 style={{ color: 'white', margin: 0, padding: 10 }}>Result</h3>
+                    <h3 style={{ color: "white", margin: 0, padding: 10 }}>
+                      Result
+                    </h3>
                     <Button
                       className={classes.copy}
                       title="Copy result as Json"
@@ -2828,10 +2925,7 @@ function WebServiceEditor() {
             Properties panel
           </div>
         </Resizable>
-        <div
-          className="properties-panel-parent"
-          id="js-properties-panel"
-        ></div>
+        <div className="properties-panel-parent" id="js-properties-panel"></div>
       </div>
       {openSnackbar.open && (
         <Snackbar
@@ -2844,7 +2938,7 @@ function WebServiceEditor() {
             variant="filled"
             onClose={handleSnackbarClose}
             className="snackbarAlert"
-            style={{ alignItems: 'flex-start' }}
+            style={{ alignItems: "flex-start" }}
             severity={openSnackbar.messageType}
           >
             <div
