@@ -60,8 +60,7 @@ import "bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
 import { useKeyPress } from "../../custom-hooks/useKeyPress";
-
-const Ids = require("ids").default;
+import Ids from "ids";
 
 const resizeStyle = {
   display: "flex",

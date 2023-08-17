@@ -36,8 +36,8 @@ import {
   NUM_ATTRIBUTES,
   ALL_ATTRIBUTES,
 } from "./constants";
+import Ids from "ids";
 
-const Ids = require("ids").default;
 
 const valueObj = {
   model: null,

@@ -1,5 +1,5 @@
 import services from './Service';
-import { uniqBy } from 'loadsh';
+import { uniqBy } from 'lodash';
 import { getFormName } from '../expression-builder/utils';
 import { getItemsByType, sortBy } from '../utils';
 import { ALLOWED_TYPES, QUERY_CUSTOM_TYPES } from '../constants';

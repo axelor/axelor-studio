@@ -5,9 +5,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Chip from '@material-ui/core/Chip';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/styles';
-import _uniqueId from 'lodash/uniqueId';
-
 import { translate, useDebounce } from '../utils';
+import { uniqueId } from 'lodash';
 
 const useStyles = makeStyles(theme => ({
   listbox: {
@@ -157,7 +156,7 @@ export default function AutoComplete(props) {
       }}
       className={className}
       loading={loading}
-      id={_uniqueId('select-widget')}
+      id={uniqueId('select-widget')}
       open={open}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}

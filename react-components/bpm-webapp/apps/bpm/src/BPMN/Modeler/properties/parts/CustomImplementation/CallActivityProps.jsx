@@ -34,8 +34,7 @@ import {
   fetchModels,
 } from "../../../../../services/api";
 import { openWebApp } from "./utils";
-
-const Ids = require("ids").default;
+import Ids from "ids";
 
 function nextId() {
   let ids = new Ids([32, 32, 1]);

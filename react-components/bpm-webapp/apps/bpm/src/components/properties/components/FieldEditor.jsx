@@ -5,7 +5,7 @@ import { Close, ArrowForward } from "@material-ui/icons";
 import { IconButton, Tooltip } from "@material-ui/core";
 
 import { translate } from "../../../utils";
-import { Selection } from "../../../components/expression-builder/components";
+import { Selection } from "../../expression-builder/components";
 import { getSubMetaField } from "../../../services/api";
 import { UI_TYPES } from "../../../DMN/constants";
 

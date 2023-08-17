@@ -12,8 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import produce from 'immer';
 import moment from 'moment';
-import flattenDeep from 'lodash/flattenDeep';
-import isEmpty from 'lodash/isEmpty';
+import { flattenDeep, isEmpty } from 'lodash';
 
 import ExpressionComponent from './expression-builder';
 import { Timeline, Button, Select } from '../components';

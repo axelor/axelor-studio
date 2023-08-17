@@ -11,6 +11,7 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "start": "pnpm --filter bpmnjs run start",
-    "build": "pnpm --filter bpmnjs run build"
+    "build": "pnpm --filter bpmnjs run build",
+    "preview": "pnpm --filter bpmnjs run preview"
   }
 }

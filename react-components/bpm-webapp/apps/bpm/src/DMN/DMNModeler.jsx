@@ -62,10 +62,9 @@ import "dmn-js/dist/assets/dmn-js-shared.css";
 import "dmn-js/dist/assets/diagram-js.css";
 
 import "./css/dmnModeler.css";
-
+import Ids from "ids";
 let dmnModeler = null;
 const drawerWidth = 380;
-const Ids = require("ids").default;
 
 const resizeStyle = {
   display: "flex",
