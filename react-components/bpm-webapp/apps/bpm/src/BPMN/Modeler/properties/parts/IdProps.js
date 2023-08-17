@@ -18,6 +18,7 @@ export default function IdProps(
     description: description && translate(description),
     modelProperty: "id",
     widget: "textField",
+    isProcess: element?.type === "bpmn:Process",
     getProperty: function (element) {
       return getBusinessObject(element).id;
     },
