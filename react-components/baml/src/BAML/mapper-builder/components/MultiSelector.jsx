@@ -52,6 +52,7 @@ function MultiSelector(props) {
     isProcessContext = false,
     element,
     isM2o = false,
+    containerClassName = "",
     ...rest
   } = props;
   const classes = useStyles();
@@ -125,7 +126,7 @@ function MultiSelector(props) {
       : "";
   };
   return (
-    <div className={rest.containerClassName}>
+    <div className={containerClassName}>
       <Selection
         title={props.title}
         isMulti={true}

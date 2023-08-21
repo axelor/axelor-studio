@@ -135,7 +135,7 @@ export default function Textbox({
           isError && classes.error,
           readOnly && classes.readOnly
         )}
-        rowsMin={rows}
+        minRows={rows}
         onBlur={(e) => {
           if (!readOnly) {
             updateProperty(e.target.value);

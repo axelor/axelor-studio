@@ -741,7 +741,7 @@ function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
                 <Grid container className={classes.topView}>
                   <Grid
                     container
-                    justify="space-between"
+                    justifyContent="space-between"
                     style={{ marginBottom: 10 }}
                   >
                     <Grid item className={classes.metaFieldGrid}>

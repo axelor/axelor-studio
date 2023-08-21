@@ -688,7 +688,6 @@ function DataTable(props) {
         <IconButton
           variant="contained"
           color="primary"
-          startIcon={<AddRounded />}
           className={classes.addFieldButton}
           onClick={manageFieldClick}
           title={translate("Manage fields")}
