@@ -590,7 +590,7 @@ export default function Definition({
             variant="contained"
             className={classes.save}
             color="primary"
-            onClick={addNewVersion}
+            onClick={() => addNewVersion(wkf)}
           >
             {translate("New version")}
           </Button>
