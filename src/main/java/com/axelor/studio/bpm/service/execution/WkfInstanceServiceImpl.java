@@ -32,6 +32,8 @@ import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
+import com.axelor.studio.db.WkfInstanceMigrationHistory;
+import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
@@ -47,6 +49,7 @@ import com.google.inject.persist.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +58,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -366,22 +370,15 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
 
     List<String> processInstanceIds =
-        processInstanceQuery
-            .processDefinitionId(processId)
-            .activeActivityIdIn(nodeKey)
-            .unfinished()
-            .list()
-            .stream()
+        processInstanceQuery.processDefinitionId(processId).activeActivityIdIn(nodeKey).unfinished()
+            .list().stream()
             .map(it -> it.getId())
             .collect(Collectors.toList());
 
     if (permanent) {
       processInstanceQuery =
           engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
-      processInstanceQuery
-          .processDefinitionId(processId)
-          .executedActivityIdIn(nodeKey)
-          .list()
+      processInstanceQuery.processDefinitionId(processId).executedActivityIdIn(nodeKey).list()
           .stream()
           .forEach(it -> processInstanceIds.add(it.getId()));
     }
@@ -727,11 +724,36 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     if (instance == null) {
       return;
     }
+
+    WkfModel previousModel = instance.getWkfProcess().getWkfModel();
+    boolean isSameModel = previousModel.equals(process.getWkfModel());
+    instance.addWkfInstanceMigrationHistory(
+        createMigrationHistory(instance, previousModel, isSameModel));
+
     instance.setMigrationStatusSelect(migrationStatus);
     if (process != null) {
       instance.setWkfProcess(process);
       instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
     }
     wkfInstanceRepository.save(instance);
+  }
+
+  protected WkfInstanceMigrationHistory createMigrationHistory(
+      WkfInstance instance, WkfModel previousModel, boolean isSameModel) {
+    WkfInstanceMigrationHistory migrationHistory =
+        CollectionUtils.isEmpty(instance.getWkfInstanceMigrationHistory())
+            ? null
+            : instance.getWkfInstanceMigrationHistory().get(0);
+
+    if (migrationHistory != null && isSameModel) {
+      migrationHistory.setMigartionHistoryUpdatedOn(LocalDateTime.now());
+    } else {
+      migrationHistory = new WkfInstanceMigrationHistory();
+      migrationHistory.setWkfInstnace(instance);
+      migrationHistory.setVersionCode(previousModel.getCode());
+      migrationHistory.setVersionId(previousModel.getId());
+    }
+
+    return migrationHistory;
   }
 }

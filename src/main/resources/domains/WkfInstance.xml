@@ -15,6 +15,9 @@
     <long name="modelId"/>
     <string name="modelName"/>
     <many-to-one name="wkfProcess" ref="WkfProcess"/>
+    <one-to-many ref="com.axelor.studio.db.WkfInstanceMigrationHistory"
+      name="wkfInstanceMigrationHistory" title="Migration History" mappedBy="wkfInstnace"
+      orderBy="-createdOn"/>
 
     <finder-method name="findByInstanceId" using="instanceId"/>
 

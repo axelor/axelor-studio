@@ -35,4 +35,8 @@
     <option value="3">Migration error</option>
   </selection>
 
+  <selection name="wkf.instance.migration.related.to.select">
+    <option value="com.axelor.studio.db.WkfModel">WkfModel</option>
+  </selection>
+
 </object-views>
