@@ -1,4 +1,0 @@
----
-title : "BPM Timer: Fix @RequestScoped and JPA context on timer call "
-type : fix
-
