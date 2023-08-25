@@ -24,8 +24,10 @@ import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
@@ -46,6 +48,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.HistoryService;
@@ -87,6 +92,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected WkfEmailService wkfEmailService;
 
   protected WkfUserActionService wkfUserActionService;
+  
+  protected BpmErrorMessageService bpmErrorMessageService;
 
   @Inject
   public WkfInstanceServiceImpl(
@@ -97,7 +104,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfTaskConfigRepository wkfTaskConfigRepository,
       WkfTaskService wkfTaskService,
       WkfEmailService wkfEmailService,
-      WkfUserActionService wkfUserActionService) {
+      WkfUserActionService wkfUserActionService, 
+      BpmErrorMessageService bpmErrorMessageService) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -106,6 +114,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.wkfTaskService = wkfTaskService;
     this.wkfEmailService = wkfEmailService;
     this.wkfUserActionService = wkfUserActionService;
+    this.bpmErrorMessageService = bpmErrorMessageService;
   }
 
   @Override
@@ -116,32 +125,56 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     String helpText = null;
 
-    if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
-      checkSubProcess(model);
-    }
-
-    if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
-      addRelatedProcessInstanceId(model);
-      log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
-    }
-
-    if (!Strings.isNullOrEmpty(model.getProcessInstanceId())) {
-
-      ProcessEngine engine = engineService.getEngine();
-
-      WkfInstance wkfInstance =
-          wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
-
-      if (wkfInstance == null) {
-        return helpText;
+    try {
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+        checkSubProcess(model);
       }
 
-      ProcessInstance processInstance =
-          findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
-
-      if (processInstance != null && wkfInstance != null && !processInstance.isEnded()) {
-        helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal);
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+        addRelatedProcessInstanceId(model);
+        log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
       }
+
+      if (!Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+
+        ProcessEngine engine = engineService.getEngine();
+
+        WkfInstance wkfInstance =
+            wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
+
+        if (wkfInstance == null) {
+          return helpText;
+        }
+
+        ProcessInstance processInstance =
+            findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
+
+        if (processInstance != null && wkfInstance != null && !processInstance.isEnded()) {
+          helpText =
+              wkfTaskService
+                  .runTasks(engine, wkfInstance, processInstance, signal);
+        }
+      }
+    } catch (Exception e) {
+      if (!(e instanceof AxelorScriptEngineException)) {
+        WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
+        String processInstanceId = model.getProcessInstanceId();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(
+            new Callable<Boolean>() {
+              @Override
+              public Boolean call() throws Exception {
+                bpmErrorMessageService
+                    .sendBpmErrorMessage(
+                        null,
+                        e.getMessage(),
+                        EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
+                        processInstanceId);
+                return true;
+              }
+            });
+      }
+      throw e;
     }
 
     return helpText;
