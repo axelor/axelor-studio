@@ -1,3 +1,10 @@
+## 1.2.3 (2023-08-25)
+
+#### Fixed
+
+* BPM Timer: Fix @RequestScoped and JPA context on timer call
+* BPM : Error in error notification message
+
 ## 1.2.2 (2023-07-24)
 
 #### Fixed

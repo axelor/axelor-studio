@@ -134,10 +134,9 @@ public class WkfCommonServiceImpl implements WkfCommonService {
     bindings.put("__date__", LocalDate.now());
     bindings.put("__datetime__", LocalDateTime.now());
     Object result = null;
-    try {
-      result = helper.eval(expr);
-    } catch (Exception e) {
-    }
+
+    result = helper.eval(expr);
+
     log.debug("Eval expr: {}, result: {}", expr, result);
     return result;
   }

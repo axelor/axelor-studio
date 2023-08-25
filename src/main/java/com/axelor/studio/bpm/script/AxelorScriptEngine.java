@@ -22,12 +22,15 @@ import com.axelor.inject.Beans;
 import com.axelor.meta.db.repo.MetaJsonRecordRepository;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
-import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.context.FullContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -62,10 +65,18 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
     try {
       object = new GroovyScriptHelper(bindings).eval(script);
     } catch (Exception e) {
-      ExceptionTool.trace(e);
-
       PvmExecutionImpl execution = (PvmExecutionImpl) bindings.get("execution");
-      Beans.get(BpmErrorMessageService.class).sendBpmErrorMessage(execution, e.getMessage());
+      ExecutorService executor = Executors.newCachedThreadPool();
+      executor.submit(
+          new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+              Beans.get(BpmErrorMessageService.class)
+                  .sendBpmErrorMessage(execution, e.getMessage(), null, null);
+              return true;
+            }
+          });
+      throw new AxelorScriptEngineException(e);
     }
     return object;
   }
