@@ -49,7 +49,7 @@ dependencies {
 		api project(":modules:axelor-utils")
 	}
 	else {
-		api "com.axelor.addons:axelor-utils:1.2.0"
+		api "com.axelor.addons:axelor-utils:1.2.1"
 	}
 
 	api "org.camunda.bpm:camunda-engine:7.17.0"
