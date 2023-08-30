@@ -52,7 +52,7 @@
   </action-view>
   <menuitem name="studio-apps-transformation-transformation" title="Transformation"
     order="50" parent="ws-app-studio-component" action="studio.web.service.transformation"/>
-  <action-view name="studio.web.service.transformation" title="Request"
+  <action-view name="studio.web.service.transformation" title="Transformation"
     model="com.axelor.studio.db.Transformation">
     <view type="grid" name="transformation-grid"/>
     <view type="form" name="transformation-form"/>
