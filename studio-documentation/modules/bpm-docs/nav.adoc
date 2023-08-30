@@ -1,0 +1,5 @@
+* xref:index.adoc[Axelor BPM]
+** xref:/introduction/index.adoc[Introduction de BPM Studio]
+*** xref:/introduction/barOutil.adoc[La barre d’outil horizontale]
+*** xref:/introduction/panel-proprity.adoc[Le panel de propriétés]
+*** xref:/introduction/zoneTravail.adoc[La zone de travail]

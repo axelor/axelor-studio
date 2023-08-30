@@ -1,0 +1,50 @@
+=   Axelor Instance
+:toc-title:
+:page-pagination:
+
+You can refer to the axelor documentation in the official site for creating your requests and connecting to axelor **Rest API** .
+
+
+
+== How to get A specif Product in axelor instance .
+
+In this example we want to retrieve a product data by sending a request to an axelor instance.
+It is a connector with one request of type ‘GET’. It will fetch the product by a specific ID .
+
+== Authentication
+
+We have to create an authentication to connect with an axelor instance .
+it's a custom authentication used , we need to provide a username and a password to be authenticated .
+the request of authentication is :
+
+image::axelorAuth.png[auth axelor]
+
+The authentication is e basic and the token is sored in the cookies , so we chose the cookie option .
+By click on authenticate button , you can check if the authentication is correct or not .
+
+image::auth-axelor.png[auth axelor]
+
+== Get product request
+
+To get a product by id ,  you can send a request to :
+----
+GET :  baseUrl/com.axelor.apps.db.Product/{productID}
+----
+
+image::getProduct.png[get product request]
+
+TIP: you can provide the product id via a context , by passing the product context in the BPM Connector script .
+every dynamic value must donate by ${} , it is processed by a groovy template .
+
+== Get product connector
+
+Here we specify the requests to execute , we have only one ( Get product ), also we need to define the base url used .
+
+image::connectorGetProduct.png[get product request]
+
+NOTE: You can pass the product context via the connector script in the axelor BPM
+
+
+
+
+

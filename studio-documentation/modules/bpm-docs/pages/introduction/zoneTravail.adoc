@@ -1,0 +1,37 @@
+= La zone de travail
+:toc-title:
+:page-pagination:
+
+== La zone de travail
+
+La zone restante est la zone de travail. C’est sur cette zone que va se passer la conception de notre processus.
+
+
+Pour positionner des objets dessus, nous allons utiliser la barre verticale située sur la gauche.
+
+
+=== **Les outils de travail**
+
+Sur la partie supérieure de cette barre, se trouve des icônes qui permettent de changer de mode d’édition.
+
+La main  permet de déplacer la caméra librement pour se positionner ou l’on souhaite au niveau du processus.
+
+La sélection de zone permet de sélectionner une portion de la zone de travail et de pouvoir la déplacer dans son intégralité.
+
+Le déplacement latéral  permet de déplacer un ensemble d'éléments du modèle horizontalement ou verticalement sans avoir à les sélectionner.
+
+Le lien entre entité  permet de dessiner les différents liens existants dans la norme.
+
+=== **Les objets de la norme BPM**
+Sur la partie inférieure de la barre verticale, se trouvent les objets de la norme BPMN 2.0.
+
+image::normeBPM.png[Norme BPM image]
+
+Ils se placent sur la zone de travail en glissé-déposé.
+Toutes les icônes encadrées en rouge n’ont aucun impact fonctionnel sur la modélisation, elles ne servent qu’à rendre le tout plus compréhensible.
+
+== Icône liée aux objets sur l’espace de modélisation
+
+Sur l’espace de modélisation, lorsque l’on clique sur un objet, des icônes apparaissent sur la droite de celui-ci.
+
+image::espceModelisation.png[Espace modelisation BPM image]

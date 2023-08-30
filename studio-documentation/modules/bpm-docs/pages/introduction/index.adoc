@@ -1,0 +1,11 @@
+= Introduction de BPM Studio
+
+Pour pouvoir accéder au BPM Studio, vous devez trouver l’onglet Constructeur d’application dans le menu gauche de l’application AOS. A partir d’ici, vous pourrez le dérouler et cliquer sur “BPM Studio” pour accéder à celui-ci.
+
+image::menu.png[alt text,align="left"]
+
+Vous accédez ainsi au studio BPM. Un onglet s’est ouvert et vous devriez avoir un visuel similaire.
+
+image::BPM.png[alt text]
+
+Nous allons décortiquer chaque objet visible à l’écran.
