@@ -135,7 +135,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         ctx.put("_" + count, null);
       }
 
-      WsRequest wsRequest = (new ArrayList<>(wsConnector.getWsRequestList())).get(count - 1);
+      WsRequest wsRequest = wsConnector.getWsRequestList().get(count - 1).getWsRequest();
       String repeatIf = wsRequest.getRepeatIf();
 
       String callIf = wsRequest.getCallIf();

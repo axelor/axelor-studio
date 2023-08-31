@@ -591,7 +591,6 @@ function WebServiceEditor() {
       mapper.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
     }
     modeling.setColor(mapper, colors);
-    //setElement(mapper)
   };
 
   const createConnectorMapper = async (connector) => {
@@ -606,9 +605,11 @@ function WebServiceEditor() {
           mapper = elementFactory.createParticipantShape({
             type: "bpmn:Mapper",
           });
-          mapper.businessObject.name = request.name;
-          mapper.businessObject.requestTypeSelect = request.requestTypeSelect;
-          mapper.businessObject.authRequest = request;
+          console.log(request);
+          mapper.businessObject.name = request?.wsRequest?.name;
+          mapper.businessObject.requestTypeSelect = request?.wsRequest?.requestTypeSelect;
+          mapper.businessObject.authRequest = request?.wsRequest;
+          mapper.businessObject.requestList = request;
           modeling.createShape(
             mapper,
             { x: 220 + id * 180, y: 80, width: 130, height: 120 },
@@ -627,6 +628,7 @@ function WebServiceEditor() {
         mapper.businessObject.name = null;
         mapper.businessObject.requestTypeSelect = null;
         mapper.businessObject.authRequest = null;
+        mapper.businessObject.requestList = null;
         modeling.createShape(
           mapper,
           { x: 220, y: 80, width: 130, height: 120 },
@@ -640,6 +642,7 @@ function WebServiceEditor() {
       mapper.businessObject.name = null;
       mapper.businessObject.requestTypeSelect = null;
       mapper.businessObject.authRequest = null;
+      mapper.businessObject.requestList = null;
       modeling.createShape(
         mapper,
         { x: 220, y: 80, width: 130, height: 120 },
@@ -1175,7 +1178,11 @@ function WebServiceEditor() {
         "wsConnector",
       ],
       related: {
+<<<<<<< HEAD:react-components/webservices-builder/src/WEB-SERVICE/index.jsx
         wsRequestList: ["name", "requestTypeSelect", "id"],
+=======
+        wsRequestList: ['sequence', 'wsRequest', 'id','version'],
+>>>>>>> apply changes in the back end to ws builder:react-components/webservices-builder/src/WEB-SERVICE/index.js
       },
     });
     let ele = removeElement();
@@ -1274,7 +1281,7 @@ function WebServiceEditor() {
         child.type === "bpmn:Mapper" &&
         child.businessObject.authRequest != null
       ) {
-        requests.push(child.businessObject.authRequest);
+        requests.push({...child.businessObject.requestList,wsRequest:child.businessObject.authRequest});
       }
     });
     const result = await addConnector({
