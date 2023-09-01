@@ -80,14 +80,15 @@ export default function ConnectorBuilder({
     if (requestIds.length) {
       criteria.push({ fieldName: "id", operator: "IN", value: requestIds });
     }
-    const res = await Service.search("com.axelor.studio.db.WsRequest", {
+    else return [];
+    const res = await Service.search("com.axelor.studio.db.WsRequestList", {
       data: {
         criteria,
       },
       sortBy: ["sequence"],
     });
     const { data = [] } = res || {};
-    const newData = data && data.map((v, i) => ({ ...v, index: i + 1 }));
+    const newData = data && data.map((v, i) => ({ ...v?.wsRequest, index: i + 1 }));
     return newData || [];
   };
 
