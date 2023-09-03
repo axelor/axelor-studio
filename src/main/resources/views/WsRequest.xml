@@ -8,7 +8,6 @@
     <field name="wsUrl"/>
     <field name="requestTypeSelect"/>
     <field name="studioApp"/>
-    <field name="sequence" hidden="true"/>
   </grid>
 
   <form name="ws-request-form" model="com.axelor.studio.db.WsRequest" title="Request"

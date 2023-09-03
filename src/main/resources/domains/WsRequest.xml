@@ -17,7 +17,6 @@
       ref="WsKeyValueSelectionHeader" mappedBy="wsHeader"/>
     <one-to-many name="payLoadWsKeyValueList" title="Payload" ref="WsKeyValue"
       mappedBy="wsRequest"/>
-    <integer name="sequence" title="Sequence"/>
     <string name="repeatIf" title="Repeat if"/>
     <string name="callIf" title="Call if"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>

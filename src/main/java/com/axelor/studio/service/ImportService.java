@@ -29,26 +29,8 @@ import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.meta.loader.ViewGenerator;
-import com.axelor.studio.db.AppLoader;
-import com.axelor.studio.db.StudioAction;
-import com.axelor.studio.db.StudioApp;
-import com.axelor.studio.db.StudioChart;
-import com.axelor.studio.db.StudioDashboard;
-import com.axelor.studio.db.StudioMenu;
-import com.axelor.studio.db.StudioSelection;
-import com.axelor.studio.db.WsAuthenticator;
-import com.axelor.studio.db.WsConnector;
-import com.axelor.studio.db.WsRequest;
-import com.axelor.studio.db.repo.AppLoaderRepository;
-import com.axelor.studio.db.repo.StudioActionRepository;
-import com.axelor.studio.db.repo.StudioAppRepository;
-import com.axelor.studio.db.repo.StudioChartRepository;
-import com.axelor.studio.db.repo.StudioDashboardRepository;
-import com.axelor.studio.db.repo.StudioMenuRepository;
-import com.axelor.studio.db.repo.StudioSelectionRepository;
-import com.axelor.studio.db.repo.WsAuthenticatorRepository;
-import com.axelor.studio.db.repo.WsConnectorRepository;
-import com.axelor.studio.db.repo.WsRequestRepository;
+import com.axelor.studio.db.*;
+import com.axelor.studio.db.repo.*;
 import com.axelor.utils.ExceptionTool;
 import com.google.inject.Inject;
 import java.io.ByteArrayInputStream;
@@ -92,6 +74,8 @@ public class ImportService {
 
   protected WsAuthenticatorRepository wsAuthenticatorRepo;
 
+  protected WsRequestListRepository wsRequestListRepo;
+
   protected WsConnectorRepository wsConnectorRepo;
 
   protected ViewGenerator viewGenerator;
@@ -114,6 +98,7 @@ public class ImportService {
       WsRequestRepository wsRequestRepo,
       WsAuthenticatorRepository wsAuthenticatorRepo,
       WsConnectorRepository wsConnectorRepo,
+      WsRequestListRepository wsRequestListRepo,
       ViewGenerator viewGenerator,
       MetaViewRepository metaViewRepo) {
 
@@ -131,6 +116,7 @@ public class ImportService {
     this.wsRequestRepo = wsRequestRepo;
     this.wsAuthenticatorRepo = wsAuthenticatorRepo;
     this.wsConnectorRepo = wsConnectorRepo;
+    this.wsRequestListRepo = wsRequestListRepo;
     this.viewGenerator = viewGenerator;
     this.metaViewRepo = metaViewRepo;
   }
@@ -358,6 +344,13 @@ public class ImportService {
     assert bean instanceof WsAuthenticator;
 
     return wsAuthenticatorRepo.save((WsAuthenticator) bean);
+  }
+
+  public Object importWsRequestList(Object bean, Map<String, Object> values) {
+
+    assert bean instanceof WsRequestList;
+
+    return wsRequestListRepo.save((WsRequestList) bean);
   }
 
   public Object importWsConnector(Object bean, Map<String, Object> values) {

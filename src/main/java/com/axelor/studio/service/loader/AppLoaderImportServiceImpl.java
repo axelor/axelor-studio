@@ -60,6 +60,7 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
         "studio-action.xml",
         "studio-menu.xml",
         "ws-request.xml",
+        "ws-request-list.xml",
         "ws-authenticator.xml",
         "ws-connector.xml",
         "meta-view.xml"

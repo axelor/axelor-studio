@@ -3,21 +3,19 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
-  <grid name="ws-request-grid" model="com.axelor.studio.db.WsRequest" title="Request">
+  <grid name="ws-request-list-grid" model="com.axelor.studio.db.WsRequestList" title="Request">
+    <field name="name"/>
     <field name="wsRequest"/>
     <field name="studioApp"/>
     <field name="sequence" hidden="true"/>
   </grid>
 
-  <form name="ws-request-list-form" model="com.axelor.studio.db.WsRequestList" title="Request"
-    onNew="action-ws-request-attrs-onnew" onLoad="action-ws-request-attrs-onnew">
+  <form name="ws-request-list-form" model="com.axelor.studio.db.WsRequestList" title="Request">
     <panel name="mainPanel">
+      <field name="studioApp"/>
+      <field name="name"/>
       <field name="wsRequest"/>
     </panel>
   </form>
-
-  <action-attrs name="action-ws-request-attrs-onnew">
-    <attribute name="hidden" for="studioApp" expr="eval: __parent__ != null"/>
-  </action-attrs>
 
 </object-views>
