@@ -354,6 +354,17 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       return null;
     }
 
+    // order the payload list by sequence
+
+    Collections.sort(
+        payLoadList,
+        new Comparator<WsKeyValue>() {
+          @Override
+          public int compare(WsKeyValue wsKeyValue, WsKeyValue t1) {
+            return Integer.compare(wsKeyValue.getSequence(), t1.getSequence());
+          }
+        });
+
     Entity<?> entity = null;
     Object obj = null;
     String key = payLoadList.get(0).getWsKey();
@@ -451,6 +462,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     }
 
     var rootName = wsKeyValues.get(0).getWsKey();
+
     var payload = createPayload(templates, ctx, wsKeyValues.get(0));
 
     try {
@@ -465,7 +477,14 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
   private Object createPayload(
       Templates templates, Map<String, Object> ctx, WsKeyValue wsKeyValue) {
-
+    Collections.sort(
+        wsKeyValue.getSubWsKeyValueList(),
+        new Comparator<WsKeyValue>() {
+          @Override
+          public int compare(WsKeyValue wsKeyValue, WsKeyValue t1) {
+            return Integer.compare(wsKeyValue.getSequence(), t1.getSequence());
+          }
+        });
     Object jsonVal;
     if (wsKeyValue.getWsValue() == null) {
       if (wsKeyValue.getIsList()) {
