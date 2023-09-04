@@ -490,14 +490,14 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             }
             subPayLoad.add(jsonSubVal);
           } else {
-            Map<String, Object> subMap = new HashMap<>();
+            Map<String, Object> subMap = new LinkedHashMap<>();
             subMap.put(subKeyValue.getWsKey(), createPayload(templates, ctx, subKeyValue));
             subPayLoad.add(subMap);
           }
         }
         jsonVal = subPayLoad;
       } else {
-        Map<String, Object> subPayLoad = new HashMap<>();
+        Map<String, Object> subPayLoad = new LinkedHashMap<>();
         for (WsKeyValue subKeyValue : wsKeyValue.getSubWsKeyValueList()) {
           subPayLoad.put(subKeyValue.getWsKey(), createPayload(templates, ctx, subKeyValue));
         }
