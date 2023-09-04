@@ -9,14 +9,14 @@
 
     <typeSelect>3</typeSelect>
 
-    <model>com.axelor.apps.account.db.Budget</model>
+    <model>com.axelor.apps.budget.db.Budget</model>
 
     <targetModel></targetModel>
 
     <lines>
       <line>
         <target>null</target>
-        <source>com.axelor.apps.account.db.Budget</source>
+        <source>com.axelor.apps.budget.db.Budget</source>
         <metaJsonField></metaJsonField>
         <metaField></metaField>
         <valueJson></valueJson>
@@ -33,7 +33,7 @@
       </line>
       <line>
         <target>null</target>
-        <source>com.axelor.apps.account.db.Budget</source>
+        <source>com.axelor.apps.budget.db.Budget</source>
         <metaJsonField></metaJsonField>
         <metaField></metaField>
         <valueJson></valueJson>
