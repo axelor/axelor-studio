@@ -6,8 +6,8 @@
   <module name="studio" package="com.axelor.studio.db"/>
 
   <entity name="WsRequestList" cacheable="true">
-    <string name="name" title="name" required="true" unique="true"/>
-    <many-to-one name="wsRequest" ref="WsRequest" title="Request"/>
+    <string name="name" title="name" readonly="true"/>
+    <many-to-one name="wsRequest" ref="WsRequest" required="true" title="Request"/>
     <integer name="sequence" title="Sequence"/>
     <many-to-one name="wsConnector" ref="WsConnector" title="Connector"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>

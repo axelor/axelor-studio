@@ -120,6 +120,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
     while (count < wsConnector.getWsRequestList().size() + 1) {
 
+
       ctx.put("_repeatIndex", repeatIndex);
 
       if (lastRepeatIf != null

@@ -16,11 +16,12 @@
   </input>
 
   <input file="ws-request-list.xml" root="ws-request-lists">
-    <bind node="ws-request-list" type="com.axelor.studio.db.WsRequestList" search="self.name = :name"
-          update="true" create="false" call="com.axelor.studio.service.ImportService:importWsRequestList">
+    <bind node="ws-request-list" type="com.axelor.studio.db.WsRequestList"
+      search="self.name = :name" update="true" create="false"
+      call="com.axelor.studio.service.ImportService:importWsRequestList">
       <bind node="name" to="name"/>
       <bind node="wsConnector" to="wsConnector" search="self.name = :wsConnector"
-            create="false"/>
+        create="false"/>
     </bind>
   </input>
 

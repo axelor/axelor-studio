@@ -13,9 +13,13 @@
   <form name="ws-request-list-form" model="com.axelor.studio.db.WsRequestList" title="Request">
     <panel name="mainPanel">
       <field name="studioApp"/>
-      <field name="name"/>
-      <field name="wsRequest"/>
+      <field name="wsRequest"
+        onChange="action-studio-web-service-attrs-request-list-change-name"/>
     </panel>
   </form>
+
+  <action-attrs name="action-studio-web-service-methode-request-list-change-name">
+    <attribute for="name" name="value" expr="eval: wsRequest?.name"/>
+  </action-attrs>
 
 </object-views>

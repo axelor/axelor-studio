@@ -600,6 +600,7 @@ function WebServiceEditor() {
     const process = elementRegistry.get("ProcessAction_2");
     if (connector) {
       let mapper = null;
+      connector?.wsRequestList?.sort((a, b) => a.sequence - b.sequence);
       if (connector?.wsRequestList && connector?.wsRequestList?.length > 0) {
        for(let i = 0;i < connector.wsRequestList.length ; i++){
         let wsRequestList = connector.wsRequestList[i];
@@ -783,6 +784,7 @@ function WebServiceEditor() {
   };
 
   // Request Model
+
   const getRequest = async (id) => {
     let res = await getRequestById(id, {
       fields: [
@@ -1188,11 +1190,11 @@ function WebServiceEditor() {
         wsRequestList: ['sequence', 'wsRequest', 'id','version'],
       },
     });
-    let ele = removeElement();
-    ele.businessObject.baseUrl = res.baseUrl;
-    ele.businessObject.name = res.name;
-    ele.businessObject.studioApp = res.studioApp;
-    ele.businessObject.defaultWsAuthenticator = res.defaultWsAuthenticator;
+    let ele =  removeElement();
+    ele.businessObject.baseUrl = res?.baseUrl;
+    ele.businessObject.name = res?.name;
+    ele.businessObject.studioApp = res?.studioApp;
+    ele.businessObject.defaultWsAuthenticator = res?.defaultWsAuthenticator;
     await createConnectorMapper(res);
     setConnector(res);
     setElement(ele);
@@ -1280,6 +1282,7 @@ function WebServiceEditor() {
     if (!verificationFieldsConnector()) return;
     const requests = [];
     let sequence = 0;
+    console.log(ele.children)
     ele?.children.forEach((child) => {
       if (
         child.type === "bpmn:Mapper" &&
@@ -1354,6 +1357,7 @@ function WebServiceEditor() {
           requestTypeSelect: e.requestTypeSelect,
         });
         element.businessObject.requestTypeSelect = e.requestTypeSelect;
+        element.businessObject.requestList = { ...element.businessObject.requestList , name:e.name }
         if (
           e?.wsConnector?.id != null &&
           connector &&
