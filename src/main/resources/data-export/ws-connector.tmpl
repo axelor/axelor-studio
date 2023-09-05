@@ -9,7 +9,6 @@
 	wsConnectors = ""
 	query.fetch().each({
 		wsConnector ->
-		println(wsConnector)
 		        requests = com.axelor.studio.service.ExportService.exportRequests(wsConnector.wsRequestList, 4, 'request')
 
 				wsConnectors += """\n\t\t<ws-connector>

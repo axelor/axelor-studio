@@ -118,8 +118,16 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     int count = 1;
     int repeatIndex = 0;
 
-    while (count < wsConnector.getWsRequestList().size() + 1) {
+    Collections.sort(
+        wsConnector.getWsRequestList(),
+        new Comparator<WsRequestList>() {
+          @Override
+          public int compare(WsRequestList wsRequestList, WsRequestList t1) {
+            return Integer.compare(wsRequestList.getSequence(), t1.getSequence());
+          }
+        });
 
+    while (count < wsConnector.getWsRequestList().size() + 1) {
 
       ctx.put("_repeatIndex", repeatIndex);
 

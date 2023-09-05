@@ -10,12 +10,9 @@
 	query.fetch().each({
 		wsRequestList ->
 
-		println("request --------------------------------------")
-		println(wsRequestList)
-
 				wsRequestLists += """\n\t\t<ws-request-list>
 				\n\t\t\t<name>${wsRequestList.name}</name>
-				\n\t\t\t<Sequence>${wsRequestList.sequence}</Sequence>
+				\n\t\t\t<sequence>${wsRequestList.sequence}</sequence>
 				\n\t\t\t<wsRequest>${wsRequestList?.wsRequest?.name}</wsRequest>
 				\n\t\t\t<wsConnector>${wsRequestList?.wsConnector?.name}</wsConnector>
 				\n\t\t\t<studioApp>${wsRequestList.studioApp?.code}</studioApp>
@@ -23,7 +20,6 @@
 	})
 
 	if (!wsRequestLists.isEmpty()) {
-	println("emty list -----------------")
 		wsRequestLists = """<ws-request-lists>\n""" +  wsRequestLists + """\n</ws-request-lists>"""
 	}
 

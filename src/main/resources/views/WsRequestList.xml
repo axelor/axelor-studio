@@ -3,6 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
 
+
   <grid name="ws-request-list-grid" model="com.axelor.studio.db.WsRequestList" title="Request">
     <field name="name"/>
     <field name="wsRequest"/>
@@ -15,10 +16,11 @@
       <field name="studioApp"/>
       <field name="wsRequest"
         onChange="action-studio-web-service-attrs-request-list-change-name"/>
+      <field name="name" hidden="true"/>
     </panel>
   </form>
 
-  <action-attrs name="action-studio-web-service-methode-request-list-change-name">
+  <action-attrs name="action-studio-web-service-attrs-request-list-change-name">
     <attribute for="name" name="value" expr="eval: wsRequest?.name"/>
   </action-attrs>
 
