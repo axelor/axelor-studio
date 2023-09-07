@@ -272,7 +272,6 @@ public class StudioMetaServiceImpl {
     menu.setConditionToCheck(condition);
     menu.setModuleToCheck(studioMenu.getModuleToCheck());
     menu.setLeft(studioMenu.getLeft());
-    menu.setTop(studioMenu.getTop());
     menu.setHidden(studioMenu.getHidden());
     menu.setMobile(studioMenu.getMobile());
 

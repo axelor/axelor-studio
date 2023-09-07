@@ -75,7 +75,6 @@ public class StudioMenuController {
     values.put("tagCount", menu.getTagCount());
     values.put("tagStyle", menu.getTagStyle());
     values.put("groups", menu.getGroups());
-    values.put("top", menu.getTop());
     values.put("roles", menu.getRoles());
     values.put("conditionTocheck", menu.getConditionToCheck());
     values.put("link", menu.getLink());
@@ -111,7 +110,6 @@ public class StudioMenuController {
     values.put("tagCount", null);
     values.put("tagStyle", null);
     values.put("groups", null);
-    values.put("top", null);
     values.put("roles", null);
     values.put("conditionTocheck", null);
     values.put("link", null);
