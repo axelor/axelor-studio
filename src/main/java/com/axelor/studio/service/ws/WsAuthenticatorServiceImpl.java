@@ -58,7 +58,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public void authenticate(WsAuthenticator wsAuthenticator) {
+  public void authenticate(WsAuthenticator wsAuthenticator) throws Exception {
 
     String authType = wsAuthenticator.getAuthTypeSelect();
     Map<String, Object> ctx = new HashMap<>();
@@ -125,7 +125,8 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       WsAuthenticator wsAuthenticator,
       Client client,
       GroovyTemplates templates,
-      Map<String, Object> ctx) {
+      Map<String, Object> ctx)
+      throws Exception {
 
     if (wsAuthenticator.getAuthResponse() == null) {
       return null;
@@ -164,7 +165,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public Response refereshToken(WsAuthenticator wsAuthenticator) {
+  public Response refereshToken(WsAuthenticator wsAuthenticator) throws Exception {
 
     String tokenResponse = wsAuthenticator.getTokenResponse();
 

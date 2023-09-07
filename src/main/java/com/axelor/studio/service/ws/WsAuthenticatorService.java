@@ -24,7 +24,7 @@ public interface WsAuthenticatorService {
 
   public String generatAuthUrl(WsAuthenticator wsAuthenticator);
 
-  public void authenticate(WsAuthenticator wsAuthenticator);
+  public void authenticate(WsAuthenticator wsAuthenticator) throws Exception;
 
-  public Response refereshToken(WsAuthenticator wsAuthenticator);
+  public Response refereshToken(WsAuthenticator wsAuthenticator) throws Exception;
 }
