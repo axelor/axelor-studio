@@ -471,17 +471,22 @@ const Rule = React.memo(function Rule(props) {
     return fetchField(elseMetaModal, type);
   }, [elseMetaModal, type]);
 
-  const fetchContextModels = React.useCallback(async () => {
-    let data = fetchModels ? await fetchModels() : await fetchMetaModels();
-    if (isBPMN && !isBPMQuery(parentType)) {
-      const obj = {
-        title: translate('Built In Variables'),
-        name: 'Built In Variables',
-      };
-      data = [obj, ...(data || [])];
-    }
-    return data || [];
-  }, [fetchMetaModels, fetchModels, isBPMN, parentType]);
+  const fetchContextModels = React.useCallback(
+    async ({ search }) => {
+      let data = fetchModels
+        ? await fetchModels()
+        : await fetchMetaModels({ search });
+      if (isBPMN && !isBPMQuery(parentType)) {
+        const obj = {
+          title: translate('Built In Variables'),
+          name: 'Built In Variables',
+        };
+        data = [obj, ...(data || [])];
+      }
+      return data || [];
+    },
+    [fetchMetaModels, fetchModels, isBPMN, parentType]
+  );
 
   useEffect(() => {
     setIsParameter(isParameterShow);
