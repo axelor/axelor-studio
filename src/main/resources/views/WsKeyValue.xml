@@ -13,8 +13,13 @@
       <field name="wsKey" hideIf="isList"/>
       <field name="wsValue" hideIf="isList"/>
       <field name="isList"/>
-      <field name="subWsKeyValueList" colSpan="12"/>
     </panel>
+    <panel-related field="subWsKeyValueList" colSpan="12" canMove="true"
+      orderBy="sequence">
+      <field name="wsKey"/>
+      <field name="wsValue"/>
+      <field name="sequence"/>
+    </panel-related>
   </form>
 
 </object-views>

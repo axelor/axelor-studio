@@ -3506,7 +3506,7 @@
 
     <showIf></showIf>
 
-    <targetModel>com.axelor.apps.account.db.Budget</targetModel>
+    <targetModel>com.axelor.apps.budget.db.Budget</targetModel>
 
     <widget></widget>
 

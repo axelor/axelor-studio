@@ -33,4 +33,19 @@ public final class BpmExceptionMessage {
       "Output columns can't be empty in import file" /*)*/;
 
   public static final String NO_WKF_MODEL_IMPORTED = /*$$(*/ "No wkf model was imported." /*)*/;
+
+  public static final String NODE_IDS = /*$$(*/ "Node ids" /*)*/;
+
+  public static final String BPM_MODEL = /*$$(*/ "BPM model" /*)*/;
+
+  public static final String PROCESS_INSTANCE_ID = /*$$(*/ "Process instance id" /*)*/;
+
+  public static final String BPM_ERROR = /*$$(*/ "BPM error" /*)*/;
+
+  public static final String MIGRATION_DONE = /*$$(*/ "Migration done successfully" /*)*/;
+
+  public static final String MIGRATION_ERR = /*$$(*/ "Migration error" /*)*/;
+
+  public static final String CANT_RESTART_INACTIVE_PROCESS = /*$$(*/
+      "Can't restart inactive process" /*)*/;
 }

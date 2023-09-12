@@ -15,15 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.bpm.service.deployment;
+package com.axelor.studio.bpm.exception;
 
-import com.axelor.studio.db.WkfModel;
-import com.google.inject.persist.Transactional;
-import java.util.Map;
+@SuppressWarnings("serial")
+public class AxelorScriptEngineException extends RuntimeException {
 
-public interface BpmDeploymentService {
-
-  @Transactional
-  public void deploy(
-      WkfModel sourceModel, WkfModel targetModel, Map<String, Map<String, String>> migrationMap);
+  public AxelorScriptEngineException(Exception e) {
+    super(e);
+  }
 }

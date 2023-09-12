@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_6.0.xsd">
+
+  <module name="studio" package="com.axelor.studio.db"/>
+
+  <entity name="WkfMigration" cacheable="true">
+
+    <many-to-one name="sourceVersion" ref="com.axelor.studio.db.WkfModel"
+      title="Source version"/>
+    <many-to-one name="targetVersion" ref="com.axelor.studio.db.WkfModel"
+      title="Target version"/>
+    <string name="mapping" title="Mapping" large="true"/>
+    <boolean name="removeOldVersionMenu" title="Remove old version menu" default="false"/>
+
+  </entity>
+
+</domain-models>

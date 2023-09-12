@@ -15,15 +15,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.bpm.service.deployment;
+package com.axelor.studio.bpm.service.init;
 
-import com.axelor.studio.db.WkfModel;
-import com.google.inject.persist.Transactional;
-import java.util.Map;
+import java.util.List;
+import org.camunda.bpm.engine.impl.ProcessEngineImpl;
+import org.camunda.bpm.engine.impl.jobexecutor.DefaultJobExecutor;
 
-public interface BpmDeploymentService {
+public class WkfJobExecutor extends DefaultJobExecutor {
 
-  @Transactional
-  public void deploy(
-      WkfModel sourceModel, WkfModel targetModel, Map<String, Map<String, String>> migrationMap);
+  @Override
+  public Runnable getExecuteJobsRunnable(List<String> jobIds, ProcessEngineImpl processEngine) {
+
+    return new WkfExecuteJobsRunnable(jobIds, processEngine);
+  }
 }

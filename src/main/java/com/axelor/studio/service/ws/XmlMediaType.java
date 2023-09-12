@@ -1,19 +1,19 @@
 package com.axelor.studio.service.ws;
 
 import com.axelor.utils.ExceptionTool;
-import javax.ws.rs.core.Response;
-import org.json.JSONObject;
-import org.json.XML;
-
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
+import javax.ws.rs.core.Response;
+import org.json.JSONObject;
+import org.json.XML;
 
 public class XmlMediaType implements MediaType {
   @Override
   public Object parseResponse(Response wsResponse) {
     try {
-      if (wsResponse.getHeaderString("Content-Encoding") != null && wsResponse.getHeaderString("Content-Encoding").equalsIgnoreCase("gzip")) {
+      if (wsResponse.getHeaderString("Content-Encoding") != null
+          && wsResponse.getHeaderString("Content-Encoding").equalsIgnoreCase("gzip")) {
         InputStream inputStream = wsResponse.readEntity(InputStream.class);
         GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
         StringBuilder uncompressedResponse = new StringBuilder();

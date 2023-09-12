@@ -35,12 +35,15 @@ import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
+import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
+import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.MapTools;
@@ -73,11 +76,15 @@ public class WkfModelController {
 
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-      Beans.get(BpmDeploymentService.class).deploy(wkfModel, migrationMap);
+      Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap);
 
       response.setReload(true);
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
+      WkfModel model = request.getContext().asType(WkfModel.class);
+      Beans.get(BpmErrorMessageService.class)
+          .sendBpmErrorMessage(
+              null, e.getMessage(), Beans.get(WkfModelRepository.class).find(model.getId()), null);
     }
   }
 
@@ -100,7 +107,7 @@ public class WkfModelController {
 
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
 
-      Beans.get(WkfModelService.class).start(wkfModel);
+      Beans.get(WkfModelService.class).start(null, wkfModel);
 
       response.setReload(true);
     } catch (Exception e) {
@@ -230,9 +237,16 @@ public class WkfModelController {
 
       String processInstanceId = (String) context.get("processInstanceId");
       String activityId = (String) context.get("activityId");
+      String processName = (String) context.get("processId");
 
-      if (processInstanceId != null && activityId != null) {
-        Beans.get(WkfInstanceService.class).restart(processInstanceId, activityId);
+      if (processInstanceId != null && activityId != null && processName != null) {
+        Beans.get(WkfInstanceService.class).restart(processInstanceId, processName, activityId);
+
+        String updatedUrl =
+            Beans.get(WkfDisplayService.class)
+                .getInstanceUrl(
+                    Beans.get(WkfInstanceRepository.class).findByInstanceId(processInstanceId));
+        response.setValue("updatedUrl", updatedUrl);
       }
 
       response.setInfo(I18n.get("Instance Restarted"));

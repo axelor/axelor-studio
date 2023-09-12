@@ -20,13 +20,19 @@ package com.axelor.studio.bpm.service.execution;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
+import com.axelor.i18n.I18n;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
+import com.axelor.studio.db.WkfInstanceMigrationHistory;
+import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
@@ -42,11 +48,16 @@ import com.google.inject.persist.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -55,6 +66,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
+import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.camunda.bpm.engine.variable.Variables;
@@ -88,6 +100,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   protected WkfUserActionService wkfUserActionService;
 
+  protected BpmErrorMessageService bpmErrorMessageService;
+
   @Inject
   public WkfInstanceServiceImpl(
       ProcessEngineServiceImpl engineService,
@@ -97,7 +111,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfTaskConfigRepository wkfTaskConfigRepository,
       WkfTaskService wkfTaskService,
       WkfEmailService wkfEmailService,
-      WkfUserActionService wkfUserActionService) {
+      WkfUserActionService wkfUserActionService,
+      BpmErrorMessageService bpmErrorMessageService) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -106,6 +121,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.wkfTaskService = wkfTaskService;
     this.wkfEmailService = wkfEmailService;
     this.wkfUserActionService = wkfUserActionService;
+    this.bpmErrorMessageService = bpmErrorMessageService;
   }
 
   @Override
@@ -116,32 +132,56 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     String helpText = null;
 
-    if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
-      checkSubProcess(model);
-    }
-
-    if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
-      addRelatedProcessInstanceId(model);
-      log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
-    }
-
-    if (!Strings.isNullOrEmpty(model.getProcessInstanceId())) {
-
-      ProcessEngine engine = engineService.getEngine();
-
-      WkfInstance wkfInstance =
-          wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
-
-      if (wkfInstance == null) {
-        return helpText;
+    try {
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+        checkSubProcess(model);
       }
 
-      ProcessInstance processInstance =
-          findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
-
-      if (processInstance != null && wkfInstance != null && !processInstance.isEnded()) {
-        helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal);
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+        addRelatedProcessInstanceId(model);
+        log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
       }
+
+      if (!Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+
+        ProcessEngine engine = engineService.getEngine();
+
+        WkfInstance wkfInstance =
+            wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
+
+        if (wkfInstance == null) {
+          return helpText;
+        }
+
+        ProcessInstance processInstance =
+            findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
+
+        if (processInstance != null && wkfInstance != null && !processInstance.isEnded()) {
+          helpText =
+              wkfTaskService
+                  .runTasks(engine, wkfInstance, processInstance, signal);
+        }
+      }
+    } catch (Exception e) {
+      if (!(e instanceof AxelorScriptEngineException)) {
+        WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
+        String processInstanceId = model.getProcessInstanceId();
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(
+            new Callable<Boolean>() {
+              @Override
+              public Boolean call() throws Exception {
+                bpmErrorMessageService
+                    .sendBpmErrorMessage(
+                        null,
+                        e.getMessage(),
+                        EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
+                        processInstanceId);
+                return true;
+              }
+            });
+      }
+      throw e;
     }
 
     return helpText;
@@ -491,9 +531,39 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Override
-  public void restart(String processInstanceId, String activityId) {
+  public void restart(String processInstanceId, String processName, String activityId) {
+
+    WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
+
+    if (!wkfInstance.getWkfProcess().getName().equals(processName)) {
+      HistoricVariableInstance relatedProcessId =
+          engineService
+              .getEngine()
+              .getHistoryService()
+              .createHistoricVariableInstanceQuery()
+              .processInstanceId(processInstanceId)
+              .variableName(processName)
+              .singleResult();
+
+      if (relatedProcessId == null) {
+        throw new IllegalStateException(
+            I18n.get(BpmExceptionMessage.CANT_RESTART_INACTIVE_PROCESS));
+      }
+      processInstanceId = (String) relatedProcessId.getValue();
+    }
 
     RuntimeService runtimeService = engineService.getEngine().getRuntimeService();
+
+    long count =
+        runtimeService
+            .createProcessInstanceQuery()
+            .active()
+            .processInstanceId(processInstanceId)
+            .count();
+
+    if (count == 0) {
+      throw new IllegalStateException(I18n.get(BpmExceptionMessage.CANT_RESTART_INACTIVE_PROCESS));
+    }
 
     runtimeService
         .createProcessInstanceModification(processInstanceId)
@@ -678,12 +748,43 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   @Transactional
   @Override
-  public void updateProcessInstance(String processInstanceId, int migrationStatus) {
+  public void updateProcessInstance(
+      WkfProcess process, String processInstanceId, int migrationStatus) {
+
     WkfInstance instance = wkfInstanceRepository.findByInstanceId(processInstanceId);
     if (instance == null) {
       return;
     }
+
+    WkfModel previousModel = instance.getWkfProcess().getWkfModel();
+    boolean isSameModel = previousModel.equals(process.getWkfModel());
+    instance.addWkfInstanceMigrationHistory(
+        createMigrationHistory(instance, previousModel, isSameModel));
+
     instance.setMigrationStatusSelect(migrationStatus);
+    if (process != null) {
+      instance.setWkfProcess(process);
+      instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
+    }
     wkfInstanceRepository.save(instance);
+  }
+
+  protected WkfInstanceMigrationHistory createMigrationHistory(
+      WkfInstance instance, WkfModel previousModel, boolean isSameModel) {
+    WkfInstanceMigrationHistory migrationHistory =
+        CollectionUtils.isEmpty(instance.getWkfInstanceMigrationHistory())
+            ? null
+            : instance.getWkfInstanceMigrationHistory().get(0);
+
+    if (migrationHistory != null && isSameModel) {
+      migrationHistory.setMigartionHistoryUpdatedOn(LocalDateTime.now());
+    } else {
+      migrationHistory = new WkfInstanceMigrationHistory();
+      migrationHistory.setWkfInstnace(instance);
+      migrationHistory.setVersionCode(previousModel.getCode());
+      migrationHistory.setVersionId(previousModel.getId());
+    }
+
+    return migrationHistory;
   }
 }

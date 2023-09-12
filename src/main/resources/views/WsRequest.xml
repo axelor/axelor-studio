@@ -22,8 +22,13 @@
       <field name="callIf"/>
       <field name="repeatIf"/>
       <field name="headerWsKeyValueList" colSpan="12"/>
-      <field name="payLoadWsKeyValueList" colSpan="12"/>
     </panel>
+    <panel-related field="payLoadWsKeyValueList" colSpan="12" canMove="true"
+      orderBy="sequence">
+      <field name="wsKey"/>
+      <field name="wsValue"/>
+      <field name="sequence"/>
+    </panel-related>
   </form>
 
   <action-attrs name="action-ws-request-attrs-onnew">
