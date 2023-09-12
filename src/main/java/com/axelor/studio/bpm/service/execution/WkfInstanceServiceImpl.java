@@ -20,12 +20,14 @@ package com.axelor.studio.bpm.service.execution;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
+import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
@@ -62,6 +64,7 @@ import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
+import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.camunda.bpm.engine.variable.Variables;
@@ -503,9 +506,39 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Override
-  public void restart(String processInstanceId, String activityId) {
+  public void restart(String processInstanceId, String processName, String activityId) {
+
+    WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
+
+    if (!wkfInstance.getWkfProcess().getName().equals(processName)) {
+      HistoricVariableInstance relatedProcessId =
+          engineService
+              .getEngine()
+              .getHistoryService()
+              .createHistoricVariableInstanceQuery()
+              .processInstanceId(processInstanceId)
+              .variableName(processName)
+              .singleResult();
+
+      if (relatedProcessId == null) {
+        throw new IllegalStateException(
+            I18n.get(BpmExceptionMessage.CANT_RESTART_INACTIVE_PROCESS));
+      }
+      processInstanceId = (String) relatedProcessId.getValue();
+    }
 
     RuntimeService runtimeService = engineService.getEngine().getRuntimeService();
+
+    long count =
+        runtimeService
+            .createProcessInstanceQuery()
+            .active()
+            .processInstanceId(processInstanceId)
+            .count();
+
+    if (count == 0) {
+      throw new IllegalStateException(I18n.get(BpmExceptionMessage.CANT_RESTART_INACTIVE_PROCESS));
+    }
 
     runtimeService
         .createProcessInstanceModification(processInstanceId)

@@ -10,6 +10,7 @@ import readOnlyModule from "./custom/readonly";
 import { download, getBool, translate } from "../../utils";
 import { getInfo, getTranslations } from "../../services/api";
 import { Logo } from "../../components/Logo";
+import { getElements } from "../Modeler/extra";
 
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
@@ -101,13 +102,13 @@ const updateTranslations = async (nodes) => {
     });
 };
 
-const fetchId = (isInstance) => {
+const fetchId = (isInstance, propUrl) => {
   const regexBPMN = /[?&]id=([^&#]*)/g; // ?id=1
   const regexBPMNTask = /[?&]taskIds=([^&#]*)/g; // ?id=1&taskIds=1,2
   const regexBPMNActivityCounts = /[?&]activityCount=([^&#]*)/g; // ?id=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1
   const regexBPMNInstanceId = /[?&]instanceId=([^&#]*)/g; // ?instanceId=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1
 
-  const url = window.location.href;
+  const url = propUrl || window.location.href;
   let matchBPMNId,
     matchBPMNTasksId,
     matchActivityCounts,
@@ -212,7 +213,7 @@ const openDiagramImage = (taskIds, diagramXml, activityCounts) => {
       }
     });
 
-    const activities = (activityCounts && activityCounts.split(",")) || [];
+    const activities = activityCounts?.split(",") || [];
     const overlayActivies = [];
     const nodeKeys = Object.keys(nodes) || [];
     if (nodeKeys.length < 1) return;
@@ -264,6 +265,7 @@ function BpmnViewerComponent({ isInstance }) {
   const [activityIds, setActivityIds] = useState(null);
   const [taskIds, setTaskIds] = useState(null);
   const [activityCounts, setActivityCounts] = useState(null);
+  const [activeProcessId, setActiveProcessId] = useState(null);
 
   const saveSVG = () => {
     bpmnViewer.saveSVG({ format: true }, async function (err, svg) {
@@ -332,18 +334,26 @@ function BpmnViewerComponent({ isInstance }) {
           _model: "com.axelor.studio.db.WkfModel",
           processInstanceId: id,
           activityId: node && node.id,
+          processId: activeProcessId,
         },
       },
     });
-    if (actionRes && actionRes.status === 0) {
+    if (
+      actionRes &&
+      actionRes.status === 0 &&
+      actionRes?.data &&
+      !actionRes?.data[0]?.error
+    ) {
       handleSnackbarClick("success", "Restarted successfully");
+      const { updatedUrl } = actionRes?.data[0]?.values || {};
+      const { taskIds, activityCounts } = fetchId(true, updatedUrl);
       fetchInstanceDiagram(id, taskIds, activityCounts);
     } else {
       handleSnackbarClick(
         "error",
-        (actionRes &&
-          actionRes.data &&
-          (actionRes.data.message || actionRes.data.title)) ||
+        (actionRes?.data && actionRes?.data[0]?.error?.message) ||
+          actionRes?.data?.message ||
+          actionRes?.data?.title ||
           "Error"
       );
     }
@@ -360,6 +370,7 @@ function BpmnViewerComponent({ isInstance }) {
           _model: "com.axelor.studio.db.WkfModel",
           processInstanceId: id,
           activityId: node && node.id,
+          processId: activeProcessId,
         },
       },
     });
@@ -390,11 +401,12 @@ function BpmnViewerComponent({ isInstance }) {
     if (isInstance) {
       const activities = (activityCounts && activityCounts.split(",")) || [];
       const ids = [];
-      activities &&
-        activities.forEach((activity) => {
-          let taskActivity = activity.split(":");
+      activities?.forEach((activity) => {
+        let taskActivity = activity?.split(":");
+        if (taskActivity) {
           ids.push(taskActivity[0]);
-        });
+        }
+      });
       setActivityIds(ids);
       fetchInstanceDiagram(id, taskIds, activityCounts);
     } else {
@@ -408,6 +420,17 @@ function BpmnViewerComponent({ isInstance }) {
       bpmnViewer.on("element.click", (event) => {
         const { element } = event || {};
         setNode(element);
+
+        /** Find node process id */
+        const elements = getElements(bpmnViewer);
+        let processId;
+        Object.entries(elements).forEach(([key, value], index) => {
+          if (value?.elements?.find((v) => v?.id === element?.id)) {
+            processId = key;
+            return;
+          }
+        });
+        setActiveProcessId(processId);
       });
     }
     bpmnViewer.on("shape.changed", (event) => {
@@ -423,7 +446,7 @@ function BpmnViewerComponent({ isInstance }) {
         }
       }
     });
-  }, [isInstance, taskIds]);
+  }, [isInstance, taskIds, activityCounts]);
 
   return (
     <React.Fragment>
@@ -442,14 +465,16 @@ function BpmnViewerComponent({ isInstance }) {
         ))}
         {isInstance && (
           <React.Fragment>
-            <Tooltip
-              title="Restart"
-              children={
-                <button onClick={restartBefore} className="restart-button">
-                  {translate("Restart")}
-                </button>
-              }
-            />
+            {node && activityIds?.includes(node?.id) && (
+              <Tooltip
+                title="Restart"
+                children={
+                  <button onClick={restartBefore} className="restart-button">
+                    {translate("Restart")}
+                  </button>
+                }
+              />
+            )}
             {node && taskIds && taskIds.includes(node.id) && (
               <Tooltip
                 title="Cancel Node"
