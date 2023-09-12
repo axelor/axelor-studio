@@ -200,7 +200,7 @@
           <text>"Thomas LAMY"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0u0tc8d">
-          <text>needPO</text>
+          <text>true</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_19u225u">
@@ -220,7 +220,7 @@
           <text>"William ANDRE"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1d22q80">
-          <text>needPO</text>
+          <text>false</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0bka7md">
@@ -240,7 +240,7 @@
           <text>"David MAURIN"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_11hhaio">
-          <text>needPO</text>
+          <text>false</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0xi0nqa">
@@ -260,7 +260,7 @@
           <text>"Daniel SILVA"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_16cqybv">
-          <text>needPO</text>
+          <text>true</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0ng7yyt">
@@ -280,7 +280,7 @@
           <text>"Dimitri GEOFFROY"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_1sziqyd">
-          <text>needPO</text>
+          <text>false</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0lm1cjh">
@@ -300,7 +300,7 @@
           <text>"Lucas RICHARD"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_123sjok">
-          <text>needPO</text>
+          <text>true</text>
         </outputEntry>
       </rule>
     </decisionTable>

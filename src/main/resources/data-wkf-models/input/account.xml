@@ -16,7 +16,7 @@
   <bpmn2:process id="BudgetProcess" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="Budget" isStartModel="true" model="com.axelor.apps.account.db.Budget" />
+        <camunda:processConfigurationParameter metaModel="Budget" isStartModel="true" model="com.axelor.apps.budget.db.Budget" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="BudgetStart">
