@@ -1,7 +1,6 @@
 #!/bin/bash
 #
 # Script to release app : `./release --help`
-# Pierre Belloy - 06/10/2020
 #
 
 set -e
