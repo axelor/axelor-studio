@@ -19,7 +19,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 
 import Select from "../../../components/Select";
-import { translate } from "../../../utils";
+import { translate, getBool } from "../../../utils";
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#0275d8",
     borderColor: "#0267bf",
     color: "white",
+    textTransform: "none",
     "&:hover": {
       backgroundColor: "#025aa5",
       borderColor: "#014682",
@@ -66,6 +67,7 @@ export default function DeployDialog({
   onOk,
   wkf,
   element,
+  getNewVersionInfo,
 }) {
   const { oldElements, currentElements } = ids || {};
   const [wkfMigrationMap, setWkfMigrationMap] = useState({});
@@ -157,7 +159,8 @@ export default function DeployDialog({
         <strong>{translate("Node mapping")}</strong>
       </DialogTitle>
       <DialogContent>
-        {wkf?.statusSelect === 1 && oldElements && (
+        {(wkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
+            oldElements && (
           <FormControlLabel
             control={
               <Switch

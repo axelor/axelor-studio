@@ -44,7 +44,7 @@ export class Service {
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
     headers.append("X-CSRF-Token", readCookie("CSRF-TOKEN"));
-    this.baseURL = process.env.NODE_ENV === "production" ? ".." : "axelor-erp";
+    this.baseURL = process.env.NODE_ENV === "production" ? ".." : "open-platform-demo";
     this.headers = headers;
   }
 

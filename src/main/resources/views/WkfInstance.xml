@@ -22,10 +22,15 @@
       <button name="openDashboardBtn" title="Dashboard"
         onClick="save,action-wkf-instance-view-dashboard" colSpan="3"/>
       <field name="$imageUrl" colSpan="12" hidden="true"/>
+    </panel>
+    <panel-tabs name="mainPanelTabs">
       <panel-dashlet name="wkfInstanceDashlet"
         action="action-wkf-instance-display-instance-state" colSpan="12" height="600"
-        showIf="$imageUrl != null" readonly="true"/>
-    </panel>
+        showIf="$imageUrl != null" readonly="true" title="BPM Instance State"/>
+      <panel name="migrationHistoryPanel" title="Migration History">
+        <field name="wkfInstanceMigrationHistory" readonly="true" widget="editor" colSpan="12"/>
+      </panel>
+    </panel-tabs>
   </form>
 
   <action-view name="action-wkf-instance-display-instance-state"
