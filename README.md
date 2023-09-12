@@ -12,11 +12,7 @@ implementation 'com.axelor.addons:axelor-studio:x.y.z'
 
 ## Installation on a project as a git submodule
 
-Firstly, clone the project as a submodule using this command:
-
-```bash
-git clone git@git.axelor.com:aop/addons/axelor-public/axelor-studio.git
-```
+Firstly, clone the project in your webapp's modules.
 
 Then, add the following lines to the settings.gradle file of your project:
 
