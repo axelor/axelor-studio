@@ -243,6 +243,16 @@
     <view type="form" name="wkf-instance-form"/>
   </action-view>
 
+  <menuitem title="BPM Migration" name="menu-wkf-migration-all"
+    parent="bpm-app-technical-monitoring" action="wkf.migration.all"
+    if="__config__.app?.isApp('bpm')"/>
+
+  <action-view name="wkf.migration.all" title="BPM Migration"
+    model="com.axelor.studio.db.WkfMigration">
+    <view type="grid" name="wkf-migration-grid"/>
+    <view type="form" name="wkf-migration-form"/>
+  </action-view>
+
   <menuitem title="DMNs" name="menu-wkf-dmn-model" parent="bpm-app-bpm-components"
     action="wkf.dmn.model.all" order="51" if="__config__.app?.isApp('bpm')"/>
 

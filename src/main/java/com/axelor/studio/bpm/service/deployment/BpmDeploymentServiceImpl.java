@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.service.deployment;
 
+import com.axelor.common.ObjectUtils;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
@@ -24,6 +25,7 @@ import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
@@ -81,25 +83,27 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   @Inject protected WkfModelRepository wkfModelRepo;
 
-  protected WkfModel wkfModel;
+  protected WkfModel sourceModel;
+  protected WkfModel targetModel;
 
   protected Map<String, Map<String, String>> migrationMap;
 
-  @Override
-  public void deploy(WkfModel wkfModel, Map<String, Map<String, String>> migrationMap) {
+  public void deploy(
+      WkfModel sourceModel, WkfModel targetModel, Map<String, Map<String, String>> migrationMap) {
 
-    if (wkfModel.getDiagramXml() == null) {
+    if (targetModel.getDiagramXml() == null) {
       return;
     }
 
-    this.wkfModel = wkfModel;
+    this.sourceModel = ObjectUtils.isEmpty(sourceModel) ? targetModel : sourceModel;
+    this.targetModel = targetModel;
     this.migrationMap = migrationMap;
 
     ProcessEngine engine = Beans.get(ProcessEngineService.class).getEngine();
 
-    String key = wkfModel.getId() + ".bpmn";
+    String key = targetModel.getId() + ".bpmn";
     BpmnModelInstance bpmInstance =
-        Bpmn.readModelFromStream(new ByteArrayInputStream(wkfModel.getDiagramXml().getBytes()));
+        Bpmn.readModelFromStream(new ByteArrayInputStream(targetModel.getDiagramXml().getBytes()));
 
     DeploymentBuilder deploymentBuilder =
         engine
@@ -108,7 +112,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .addModelInstance(key, bpmInstance)
             .source(key);
 
-    Set<MetaFile> dmnFiles = wkfModel.getDmnFileSet();
+    Set<MetaFile> dmnFiles = targetModel.getDmnFileSet();
     if (dmnFiles != null) {
       addDmn(deploymentBuilder, dmnFiles);
     }
@@ -116,11 +120,11 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     Map<String, String> processMap = deployProcess(engine, deploymentBuilder, bpmInstance);
 
     List<MetaAttrs> metaAttrsList =
-        Beans.get(WkfNodeService.class).extractNodes(wkfModel, bpmInstance, processMap);
+        Beans.get(WkfNodeService.class).extractNodes(targetModel, bpmInstance, processMap);
 
-    saveWkfModel(wkfModel);
+    saveWkfModel(targetModel);
 
-    metaAttrsService.saveMetaAttrs(metaAttrsList, wkfModel.getId());
+    metaAttrsService.saveMetaAttrs(metaAttrsList, targetModel.getId());
   }
 
   @Transactional
@@ -142,11 +146,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .deploymentId(deployment.getId())
             .list();
 
-    if (wkfModel.getDeploymentId() != null && migrationMap != null) {
-      migrateRunningInstances(wkfModel.getDeploymentId(), engine, definitions);
-    }
-
-    wkfModel.setDeploymentId(deployment.getId());
+    Map<String, WkfProcess> migrationProcessMap = new HashMap<String, WkfProcess>();
 
     log.debug("Definitions deployed: {}", definitions.size());
     for (ProcessDefinition definition : definitions) {
@@ -155,12 +155,14 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
           wkfProcessRepository
               .all()
               .filter(
-                  "self.name = ? and self.wkfModel.id = ?", definition.getKey(), wkfModel.getId())
+                  "self.name = ? and self.wkfModel.id = ?",
+                  definition.getKey(),
+                  targetModel.getId())
               .fetchOne();
 
       if (process == null) {
         process = new WkfProcess();
-        wkfModel.addWkfProcessListItem(process);
+        targetModel.addWkfProcessListItem(process);
       }
 
       process.setName(definition.getKey());
@@ -171,7 +173,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       addDisplayProperties(bpmInstance, process);
 
       processMap.put(definition.getKey(), definition.getId());
+      migrationProcessMap.put(definition.getId(), process);
     }
+
+    if (sourceModel.getDeploymentId() != null && migrationMap != null) {
+      migrateRunningInstances(
+          sourceModel.getDeploymentId(), engine, definitions, migrationProcessMap);
+    }
+
+    targetModel.setDeploymentId(deployment.getId());
 
     engine
         .getManagementService()
@@ -182,7 +192,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   protected void migrateRunningInstances(
-      String oldDeploymentId, ProcessEngine engine, List<ProcessDefinition> definitions) {
+      String oldDeploymentId,
+      ProcessEngine engine,
+      List<ProcessDefinition> definitions,
+      Map<String, WkfProcess> migrationProcessMap) {
 
     List<ProcessDefinition> oldDefinitions =
         engine
@@ -192,56 +205,80 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .list();
 
     boolean isMigrationError = false;
+
     log.debug("Old definition size " + oldDefinitions.size());
+
     for (ProcessDefinition oldDefinition : oldDefinitions) {
       for (ProcessDefinition newDefinition : definitions) {
-        if (oldDefinition.getKey().equals(newDefinition.getKey())) {
-          log.debug(
-              "Migrating from old defintion: {}, to new definition: {}",
-              oldDefinition.getKey(),
-              newDefinition.getKey());
 
-          MigrationPlan plan = createMigrationPlan(engine, oldDefinition, newDefinition);
-
-          if (plan == null) {
-            continue;
-          }
-
-          ProcessInstanceQuery query =
-              engine
-                  .getRuntimeService()
-                  .createProcessInstanceQuery()
-                  .processDefinitionId(oldDefinition.getId());
-
-          long nbInstances = query.count();
-          log.debug("Process instances to migrate: {}", nbInstances);
-
-          if (nbInstances > 0) {
-            List<ProcessInstance> processInstances = query.list();
-            for (ProcessInstance instance : processInstances) {
-              try {
-                engine
-                    .getRuntimeService()
-                    .newMigration(plan)
-                    .processInstanceIds(instance.getId())
-                    .execute();
-
-                wkfInstanceService.updateProcessInstance(
-                    instance.getId(), WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
-
-              } catch (Exception e) {
-                isMigrationError = true;
-                wkfInstanceService.updateProcessInstance(
-                    instance.getId(), WkfInstanceRepository.STATUS_MIGRATION_ERROR);
-              }
-            }
-          }
+        if (!oldDefinition.getKey().equals(newDefinition.getKey())) {
+          continue;
         }
+
+        log.debug(
+            "Migrating from old defintion: {}, to new definition: {}",
+            oldDefinition.getKey(),
+            newDefinition.getKey());
+
+        MigrationPlan plan = createMigrationPlan(engine, oldDefinition, newDefinition);
+
+        if (plan == null) {
+          continue;
+        }
+
+        isMigrationError =
+            computeMigrationInstances(
+                engine, oldDefinition, newDefinition, plan, migrationProcessMap, isMigrationError);
       }
     }
     if (isMigrationError) {
-      throw new IllegalStateException(I18n.get("Migration error"));
+      throw new IllegalStateException(I18n.get(BpmExceptionMessage.MIGRATION_ERR));
     }
+  }
+
+  private boolean computeMigrationInstances(
+      ProcessEngine engine,
+      ProcessDefinition oldDefinition,
+      ProcessDefinition newDefinition,
+      MigrationPlan plan,
+      Map<String, WkfProcess> migrationProcessMap,
+      boolean isMigrationError) {
+
+    ProcessInstanceQuery query =
+        engine
+            .getRuntimeService()
+            .createProcessInstanceQuery()
+            .processDefinitionId(oldDefinition.getId());
+
+    long nbInstances = query.count();
+    log.debug("Process instances to migrate: {}", nbInstances);
+
+    if (nbInstances < 1) {
+      return isMigrationError;
+    }
+
+    WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
+
+    List<ProcessInstance> processInstances = query.list();
+
+    for (ProcessInstance instance : processInstances) {
+      try {
+        engine
+            .getRuntimeService()
+            .newMigration(plan)
+            .processInstanceIds(instance.getId())
+            .execute();
+
+        wkfInstanceService.updateProcessInstance(
+            targetProcess, instance.getId(), WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+
+      } catch (Exception e) {
+        isMigrationError = true;
+        wkfInstanceService.updateProcessInstance(
+            null, instance.getId(), WkfInstanceRepository.STATUS_MIGRATION_ERROR);
+      }
+    }
+    return isMigrationError;
   }
 
   private MigrationPlan createMigrationPlan(

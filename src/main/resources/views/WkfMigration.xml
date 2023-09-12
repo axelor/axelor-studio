@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.0.xsd">
+
+  <grid title="BPM Migration" name="wkf-migration-grid"
+    model="com.axelor.studio.db.WkfMigration">
+    <field name="sourceVersion"/>
+    <field name="targetVersion"/>
+  </grid>
+
+  <form title="BPM Migration" name="wkf-migration-form"
+    model="com.axelor.studio.db.WkfMigration" width="large">
+    <panel name="mainPanel">
+      <field name="sourceVersion" required="true"
+        onChange="action-wkf-migration-attrs-unset-target-version,action-wkf-migration-attrs-unset-mapping"/>
+      <field name="targetVersion" onSelect="action-wkf-migration-method-target-version-domain"
+        requiredIf="sourceVersion" onChange="action-wkf-migration-attrs-unset-mapping"/>
+      <button name="generateNodeMappingBtn" title="Generate Node Mapping"
+        onClick="save,action-wkf-migration-method-generate-node-map,save" colSpan="4"
+        showIf="sourceVersion &amp;&amp; targetVersion"/>
+
+      <panel-dashlet name="mappingPanelDashlet" title="Node mapping"
+        action="action-wkf-migration-view-mapping" colSpan="12" hideIf="!mapping" height="500"/>
+
+      <field name="mapping" colSpan="12" hidden="true"/>
+    </panel>
+  </form>
+
+  <custom name="wkf-migration-mapping-custom" title="Node mapping">
+    <dataset type="rpc"><![CDATA[ com.axelor.studio.bpm.web.WkfMigrationController:getNodeMap ]]></dataset>
+    <template>
+  		<![CDATA[
+  			<style>
+  				th {
+  					text-align: center;
+  				}
+				table, tr {
+				  	border: 1px solid lightgrey;
+				  	text-align: center;
+				}
+				h4 {
+				  	margin: 20px;
+				}
+			</style>
+  			<span ng-repeat="(key, values) in data">
+  				<span ng-repeat="value in values">
+  					<h4>{{value.processId}}</strong></h4>
+  					<table style="width:40%;border-bottom: 3px solid lightgrey;">
+  						<thead>
+	  						<tr>
+								<th>Source node</td>
+	  							<th>Target node</td>
+							</tr>
+						</thead>
+  						<tbody>
+							<tr ng-repeat="node in value.nodes">
+								<td>{{node.nodeName}}</td>
+								<td>
+									<select ng-model="node.selected" ng-options="option as option.nodeName for option in node.options track by option.nodeId" style="margin:5px;width:90%">
+										<option value=""/>
+									</select>
+								</td>
+	 						</tr>
+	 					</tbody>
+  					</table>
+  					</span>
+  				</spna>
+  			</span>
+  			</br>
+  			<a ng-if="data.values.length &gt; 0" class="btn btn-medium btn-primary" href="" ui-action-context="data" ui-action-click="action-wkf-migration-method-migrate" x-translate>Migrate</a>
+  		]]>
+    </template>
+  </custom>
+
+  <action-method name="action-wkf-migration-method-generate-node-map">
+    <call class="com.axelor.studio.bpm.web.WkfMigrationController" method="generateNodeMap"/>
+  </action-method>
+
+  <action-method name="action-wkf-migration-method-target-version-domain">
+    <call class="com.axelor.studio.bpm.web.WkfMigrationController"
+      method="setTargetVersionDomain"/>
+  </action-method>
+
+  <action-method name="action-wkf-migration-method-migrate">
+    <call class="com.axelor.studio.bpm.web.WkfMigrationController" method="migrate"/>
+  </action-method>
+
+  <action-view name="action-wkf-migration-view-mapping" title="Node mapping"
+    model="com.axelor.studio.db.WkfMigration">
+    <view type="custom" name="wkf-migration-mapping-custom"/>
+  </action-view>
+
+  <action-attrs name="action-wkf-migration-attrs-unset-target-version">
+    <attribute name="value" for="targetVersion" expr="eval: null" if="targetVersion"/>
+  </action-attrs>
+
+  <action-attrs name="action-wkf-migration-attrs-unset-mapping">
+    <attribute name="value" for="mapping" expr="eval: null"/>
+  </action-attrs>
+
+  <action-attrs name="action-wkf-migration-attrs-mapping-dashlet-show">
+    <attribute name="hidden" for="mappingPanelDashlet" expr="eval: false"/>
+  </action-attrs>
+
+</object-views>

@@ -161,10 +161,10 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
                   <TableHead>
                     <TableRow>
                       <TableCell className={classes.tableHead} align="center">
-                        {translate("Old node")}
+                        {translate("Source node")}
                       </TableCell>
                       <TableCell className={classes.tableHead} align="center">
-                        {translate("Current node")}
+                        {translate("Target node")}
                       </TableCell>
                     </TableRow>
                   </TableHead>
