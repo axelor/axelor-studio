@@ -55,15 +55,15 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
     Client client = ClientBuilder.newClient();
 
     Response response = null;
-    if(wsAuthenticator.getAuthWsRequest() != null) {
+    if (wsAuthenticator.getAuthWsRequest() != null) {
       if (authType.equals("basic")) {
         response =
-                wsConnectorService.callRequest(
-                        wsAuthenticator.getAuthWsRequest(),
-                        wsAuthenticator.getAuthWsRequest().getWsUrl(),
-                        client,
-                        templates,
-                        ctx);
+            wsConnectorService.callRequest(
+                wsAuthenticator.getAuthWsRequest(),
+                wsAuthenticator.getAuthWsRequest().getWsUrl(),
+                client,
+                templates,
+                ctx);
 
       } else {
         response = performOAuth2(wsAuthenticator, client, templates, ctx);

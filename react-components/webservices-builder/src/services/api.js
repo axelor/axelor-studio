@@ -504,7 +504,7 @@ export async function getkeys(elements) {
       'id',
       'subWsKeyValueList',
     ],
-    sortBy: null,
+    sortBy: ["sequence"],
     data: {
       _domain: 'self.id in (:_field_ids)',
       _domainContext: {
