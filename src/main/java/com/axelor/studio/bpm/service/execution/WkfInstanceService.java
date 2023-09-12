@@ -58,11 +58,12 @@ public interface WkfInstanceService {
 
   public boolean isActivatedModelTask(Model model, String taskId);
 
-  public void restart(String processInstanceId, String activityId);
+  public void restart(String processInstanceId, String processName, String activityId);
 
   public List<String> getNodes(String processInstanceId);
 
   public void cancelNode(String processInstanceId, String activityId);
 
-  public void updateProcessInstance(String processInstanceId, int migrationStatus);
+  public void updateProcessInstance(
+      WkfProcess process, String processInstanceId, int migrationStatus);
 }

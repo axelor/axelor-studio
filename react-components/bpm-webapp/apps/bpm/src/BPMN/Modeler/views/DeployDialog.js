@@ -19,7 +19,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 
 import Select from "../../../components/Select";
-import { translate } from "../../../utils";
+import { translate, getBool } from "../../../utils";
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#0275d8",
     borderColor: "#0267bf",
     color: "white",
+    textTransform: "none",
     "&:hover": {
       backgroundColor: "#025aa5",
       borderColor: "#014682",
@@ -59,11 +60,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
+export default function DeployDialog({
+  open,
+  onClose,
+  ids,
+  onOk,
+  wkf,
+  element,
+  getNewVersionInfo,
+}) {
   const { oldElements, currentElements } = ids || {};
   const [wkfMigrationMap, setWkfMigrationMap] = useState({});
   const [isMigrateOld, setIsMigrateOld] = useState(false);
+  const [removeOldVersionMenu, setRemoveOldVersionMenu] = useState(false);
   const classes = useStyles();
+
+  const getProperty = React.useCallback(
+    (name) => {
+      let propertyName = `camunda:${name}`;
+      return (element?.$attrs && element.$attrs[propertyName]) || "";
+    },
+    [element]
+  );
 
   const handleAdd = (oldEle, newEle, processId) => {
     const cloneWkfMigrationMap = { ...wkfMigrationMap };
@@ -75,7 +93,13 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
   };
 
   const onConfirm = () => {
-    onOk(wkfMigrationMap, isMigrateOld);
+    onOk(
+      {
+        ...wkfMigrationMap,
+        props: { removeOldVersionMenu: JSON.stringify(removeOldVersionMenu) },
+      },
+      isMigrateOld
+    );
   };
 
   const getCurrentElements = (processId, elementType) => {
@@ -135,7 +159,8 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
         <strong>{translate("Node mapping")}</strong>
       </DialogTitle>
       <DialogContent>
-        {wkf && wkf.statusSelect === 1 && oldElements && (
+        {(wkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
+            oldElements && (
           <FormControlLabel
             control={
               <Switch
@@ -150,6 +175,23 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
             label={translate("Migrate previous version records?")}
           />
         )}
+        {(wkf?.statusSelect === 1 || getProperty("newVersionOnDeploy")) && (
+          <FormControlLabel
+            control={
+              <Switch
+                checked={removeOldVersionMenu}
+                onChange={() => {
+                  setRemoveOldVersionMenu(
+                    (removeOldVersionMenu) => !removeOldVersionMenu
+                  );
+                }}
+                color="primary"
+                name="removeOldVersionMenu"
+              />
+            }
+            label={translate("Remove old version menu")}
+          />
+        )}
         {oldElements &&
           Object.entries(oldElements).map(([key, value]) => (
             <div key={key} className={classes.process}>
@@ -161,10 +203,10 @@ export default function DeployDialog({ open, onClose, ids, onOk, wkf }) {
                   <TableHead>
                     <TableRow>
                       <TableCell className={classes.tableHead} align="center">
-                        {translate("Old node")}
+                        {translate("Source node")}
                       </TableCell>
                       <TableCell className={classes.tableHead} align="center">
-                        {translate("Current node")}
+                        {translate("Target node")}
                       </TableCell>
                     </TableRow>
                   </TableHead>

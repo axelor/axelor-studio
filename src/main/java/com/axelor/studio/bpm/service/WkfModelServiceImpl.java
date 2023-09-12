@@ -115,17 +115,24 @@ public class WkfModelServiceImpl implements WkfModelService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public WkfModel start(WkfModel wkfModel) {
+  public WkfModel start(WkfModel sourceModel, WkfModel targetModel) {
 
-    wkfModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
+    targetModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
 
-    if (wkfModel.getPreviousVersion() != null) {
-      WkfModel previousVersion = wkfModel.getPreviousVersion();
+    if (!ObjectUtils.isEmpty(sourceModel)) {
+      updatePreviousVersion(targetModel, sourceModel);
+    } else {
+      updatePreviousVersion(targetModel, targetModel.getPreviousVersion());
+    }
+
+    return wkfModelRepository.save(targetModel);
+  }
+
+  private void updatePreviousVersion(WkfModel wkfModel, WkfModel previousVersion) {
+    if (previousVersion != null) {
       previousVersion.setIsActive(false);
       wkfModel.setPreviousVersion(terminate(previousVersion));
     }
-
-    return wkfModelRepository.save(wkfModel);
   }
 
   @Override
@@ -216,7 +223,7 @@ public class WkfModelServiceImpl implements WkfModelService {
           @Override
           public void imported(Model arg0) {
             WkfModel wkfModel = (WkfModel) arg0;
-            bpmDeploymentService.deploy(wkfModel, null);
+            bpmDeploymentService.deploy(null, wkfModel, null);
             wkfModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
           }
 

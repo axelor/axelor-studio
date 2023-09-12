@@ -363,6 +363,17 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       return null;
     }
 
+    // order the payload list by sequence
+
+    Collections.sort(
+        payLoadList,
+        new Comparator<WsKeyValue>() {
+          @Override
+          public int compare(WsKeyValue wsKeyValue, WsKeyValue t1) {
+            return Integer.compare(wsKeyValue.getSequence(), t1.getSequence());
+          }
+        });
+
     Entity<?> entity = null;
     Object obj = null;
     String key = payLoadList.get(0).getWsKey();
@@ -460,6 +471,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     }
 
     var rootName = wsKeyValues.get(0).getWsKey();
+
     var payload = createPayload(templates, ctx, wsKeyValues.get(0));
 
     try {
@@ -474,7 +486,14 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
   protected Object createPayload(
       Templates templates, Map<String, Object> ctx, WsKeyValue wsKeyValue) {
-
+    Collections.sort(
+        wsKeyValue.getSubWsKeyValueList(),
+        new Comparator<WsKeyValue>() {
+          @Override
+          public int compare(WsKeyValue wsKeyValue, WsKeyValue t1) {
+            return Integer.compare(wsKeyValue.getSequence(), t1.getSequence());
+          }
+        });
     Object jsonVal;
     if (wsKeyValue.getWsValue() == null) {
       if (wsKeyValue.getIsList()) {
@@ -499,14 +518,14 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             }
             subPayLoad.add(jsonSubVal);
           } else {
-            Map<String, Object> subMap = new HashMap<>();
+            Map<String, Object> subMap = new LinkedHashMap<>();
             subMap.put(subKeyValue.getWsKey(), createPayload(templates, ctx, subKeyValue));
             subPayLoad.add(subMap);
           }
         }
         jsonVal = subPayLoad;
       } else {
-        Map<String, Object> subPayLoad = new HashMap<>();
+        Map<String, Object> subPayLoad = new LinkedHashMap<>();
         for (WsKeyValue subKeyValue : wsKeyValue.getSubWsKeyValueList()) {
           subPayLoad.put(subKeyValue.getWsKey(), createPayload(templates, ctx, subKeyValue));
         }

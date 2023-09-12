@@ -422,13 +422,13 @@ function BpmnModelerComponent() {
       <bpmn2:definitions 
         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
         xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" 
-        camunda:newVersionOnDeploy="false"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
         xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" 
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
         xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
-        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">
+        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" 
+        camunda:newVersionOnDeploy="false">
         <bpmn2:process id="${processId}" isExecutable="true">
           <bpmn2:startEvent id="StartEvent_1" />
         </bpmn2:process>
@@ -832,9 +832,11 @@ function BpmnModelerComponent() {
           let res = await fetchWkf(latestWkf?.id);
           setWkf(res);
           setId(res.id);
+          addDiagramProperties(res);
         } else {
           setWkf(res.data[0]);
           setId(res.data[0].id);
+          addDiagramProperties(res.data[0]);
         }
         handleSnackbarClick("success", "Saved Successfully");
       } else {
@@ -995,10 +997,10 @@ function BpmnModelerComponent() {
     return { status: 0 };
   };
 
-  const addNewVersion = async () => {
+  const addNewVersion = async (wkf) => {
     let actionRes = await Service.action({
       model: "com.axelor.studio.db.WkfModel",
-      action: " action-wkf-model-method-create-new-version",
+      action: "action-wkf-model-method-create-new-version",
       data: {
         context: {
           _model: "com.axelor.studio.db.WkfModel",
@@ -1033,12 +1035,7 @@ function BpmnModelerComponent() {
         },
       },
     });
-    if (
-      actionRes &&
-      actionRes.data &&
-      actionRes.data[0] &&
-      actionRes.data[0].reload
-    ) {
+    if (actionRes?.data && actionRes?.data[0] && actionRes?.data[0]?.reload) {
       if (newWkf && newWkf.statusSelect !== 1) {
         await addImage(newWkf?.id);
         handleSnackbarClick("success", "Deployed Successfully");
@@ -1047,15 +1044,19 @@ function BpmnModelerComponent() {
     } else {
       handleSnackbarClick(
         "error",
-        (actionRes &&
-          actionRes.data &&
-          (actionRes.data.message || actionRes.data.title)) ||
+        (actionRes?.data && actionRes?.data[0]?.error?.message) ||
+          actionRes?.data?.title ||
           "Error"
       );
     }
   };
 
-  const startAction = async (newWkf, wkfMigrationMap, isDeploy = false) => {
+  const startAction = async (
+    newWkf,
+    wkfMigrationMap,
+    isDeploy = false,
+    isMigrateOld
+  ) => {
     let actionStart = await Service.action({
       model: "com.axelor.studio.db.WkfModel",
       action: "action-wkf-model-method-start",
@@ -1072,7 +1073,7 @@ function BpmnModelerComponent() {
           {
             _model: "com.axelor.studio.db.WkfModel",
             ...newWkf,
-            isMigrateOld: false,
+            isMigrateOld,
             wkfMigrationMap,
           },
           newWkf
@@ -1088,6 +1089,12 @@ function BpmnModelerComponent() {
       );
     }
   };
+
+  const getNewVersionInfo = React.useCallback(() => {
+    let attrs = bpmnModeler?._definitions?.$attrs;
+    if (!attrs) return false;
+    return attrs["camunda:newVersionOnDeploy"];
+  }, []);
 
   const getDefinitionProperties = () => {
     let attrs = bpmnModeler?._definitions?.$attrs;
@@ -1115,39 +1122,49 @@ function BpmnModelerComponent() {
     newBpmnDiagram(diagramXml, true, id, wkfModel);
   };
 
+  const saveBeforeDeploy = async (wkfMigrationMap, isMigrateOld, newWkf) => {
+    const { xml } = await bpmnModeler.saveXML({ format: true });
+    diagramXmlRef.current = xml;
+    let res = await Service.add("com.axelor.studio.db.WkfModel", {
+      ...newWkf,
+      ...(getDefinitionProperties() || {}),
+      diagramXml: xml,
+    });
+    if (res?.data && res?.data[0]) {
+      setWkf({ ...res.data[0] });
+      let context = {
+        _model: "com.axelor.studio.db.WkfModel",
+        ...res.data[0],
+        wkfMigrationMap,
+      };
+      if (
+        (newWkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
+        newWkf?.oldNodes
+      ) {
+        context.isMigrateOld = isMigrateOld;
+      }
+      return { context, res };
+    } else {
+      handleSnackbarClick(
+        "error",
+        res?.data?.message || res?.data?.title || "Error"
+      );
+    }
+  };
+
   const deploy = async (wkfMigrationMap, isMigrateOld, newWkf = wkf) => {
     try {
-      const { xml } = await bpmnModeler.saveXML({ format: true });
-      diagramXmlRef.current = xml;
-      let res = await Service.add("com.axelor.studio.db.WkfModel", {
-        ...newWkf,
-        ...(getDefinitionProperties() || {}),
-        diagramXml: xml,
-      });
-      if (res && res.data && res.data[0]) {
-        setWkf({ ...res.data[0] });
-        let context = {
-          _model: "com.axelor.studio.db.WkfModel",
-          ...res.data[0],
-          wkfMigrationMap,
-        };
-        if (newWkf && newWkf.statusSelect === 1 && newWkf.oldNodes) {
-          context.isMigrateOld = isMigrateOld;
-        }
-        await deployAction(context, newWkf);
-      } else {
-        handleSnackbarClick(
-          "error",
-          (res && res.data && (res.data.message || res.data.title)) || "Error"
-        );
-      }
-      if (newWkf && newWkf.newVersionOnDeploy && newWkf.statusSelect === 2) {
-        let newVersionWkf = await addNewVersion();
+      const { context, res } =
+        (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
+      if (newWkf?.newVersionOnDeploy && newWkf?.statusSelect === 2) {
+        let newVersionWkf = await addNewVersion(newWkf);
         if (newVersionWkf && newVersionWkf.statusSelect === 1) {
-          startAction(newVersionWkf, wkfMigrationMap, true);
+          startAction(newVersionWkf, wkfMigrationMap, true, isMigrateOld);
         }
+      } else {
+        await deployAction(context, newWkf);
       }
-      if (newWkf && newWkf.statusSelect === 1) {
+      if (newWkf?.statusSelect === 1) {
         startAction(res.data[0]);
       }
     } catch (err) {
@@ -1293,11 +1310,11 @@ function BpmnModelerComponent() {
     }
   };
 
-  const addDiagramProperties = () => {
+  const addDiagramProperties = (wkfParam = wkf) => {
     const definitions = bpmnModeler._definitions;
     let attrs = definitions && definitions.$attrs;
     if (attrs) {
-      if (wkf) {
+      if (wkfParam) {
         [
           "code",
           "name",
@@ -1307,11 +1324,11 @@ function BpmnModelerComponent() {
           "wkfStatusColor",
         ].forEach((key) => {
           if (key === "name") {
-            setProperty("diagramName", wkf[key]);
+            setProperty("diagramName", wkfParam[key]);
           } else if (key === "studioApp") {
-            setProperty("studioApp", wkf[key] && wkf[key].code);
+            setProperty("studioApp", wkfParam[key] && wkfParam[key].code);
           } else {
-            setProperty(key, wkf[key]);
+            setProperty(key, wkfParam[key]);
           }
         });
       }
@@ -1955,9 +1972,11 @@ function BpmnModelerComponent() {
             open={openDelopyDialog}
             onClose={() => setDelopyDialog(false)}
             ids={ids}
+            getNewVersionInfo={getNewVersionInfo}
             onOk={(wkfMigrationMap, isMigrateOld) =>
               handleOk(wkfMigrationMap, isMigrateOld)
             }
+            element={selectedElement}
             wkf={wkf}
           />
         )}

@@ -15,6 +15,7 @@
     <one-to-many name="subWsKeyValueList" title="Sub key values" ref="WsKeyValue"
       mappedBy="parentWsKeyValue"/>
     <boolean name="isList" title="List"/>
+    <integer name="sequence" title="sequence"/>
   </entity>
 
 </domain-models>
