@@ -216,6 +216,11 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
     if (targetModel.getStatusSelect() < WkfModelRepository.STATUS_ON_GOING) {
       wkfModelService.start(sourceModel, targetModel);
     }
+
+    Map<String, String> propsMap = new HashMap<>();
+    propsMap.put("removeOldVersionMenu", migration.getRemoveOldVersionMenu().toString());
+    migrationMap.put("props", propsMap);
+
     bpmDeploymentService.deploy(sourceModel, targetModel, migrationMap);
 
     try {

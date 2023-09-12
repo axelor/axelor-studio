@@ -33,9 +33,13 @@ import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
+import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.studio.db.WkfTaskMenu;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessRepository;
+import com.axelor.studio.db.repo.WkfTaskConfigRepository;
+import com.axelor.studio.db.repo.WkfTaskMenuRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
@@ -44,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.collections.CollectionUtils;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.migration.MigrationPlan;
@@ -78,6 +83,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   @Inject protected MetaAttrsService metaAttrsService;
 
   @Inject protected WkfCommonService wkfService;
+
+  @Inject protected WkfTaskConfigRepository taskConfigRepo;
+
+  @Inject protected WkfTaskMenuRepository taskMenuRepo;
 
   @Inject protected WkfInstanceService wkfInstanceService;
 
@@ -125,6 +134,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     saveWkfModel(targetModel);
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, targetModel.getId());
+
+    if (migrationMap == null) {
+      return;
+    }
+
+    String isRemove = migrationMap.get("props").get("removeOldVersionMenu");
+    if (isRemove.equals("true") && targetModel.getPreviousVersion() != null) {
+      removePreviousVersionMenus(targetModel.getPreviousVersion());
+    }
   }
 
   @Transactional
@@ -432,5 +450,18 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
 
     return new WkfProcessConfig();
+  }
+
+  @Transactional
+  protected void removePreviousVersionMenus(WkfModel wkfModel) {
+    List<WkfTaskConfig> taskConfigs =
+        taskConfigRepo.all().filter("self.wkfModel = ?1", wkfModel).fetch();
+
+    if (CollectionUtils.isNotEmpty(taskConfigs)) {
+      List<WkfTaskMenu> taskMenus =
+          taskMenuRepo.all().filter("self.wkfTaskConfig IN (?)", taskConfigs).fetch();
+
+      taskMenus.forEach(taskMenu -> taskMenuRepo.remove(taskMenu));
+    }
   }
 }
