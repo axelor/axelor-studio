@@ -75,14 +75,6 @@ export default function DeployDialog({
   const [removeOldVersionMenu, setRemoveOldVersionMenu] = useState(false);
   const classes = useStyles();
 
-  const getProperty = React.useCallback(
-    (name) => {
-      let propertyName = `camunda:${name}`;
-      return (element?.$attrs && element.$attrs[propertyName]) || "";
-    },
-    [element]
-  );
-
   const handleAdd = (oldEle, newEle, processId) => {
     const cloneWkfMigrationMap = { ...wkfMigrationMap };
     cloneWkfMigrationMap[processId] = {
@@ -160,38 +152,38 @@ export default function DeployDialog({
       </DialogTitle>
       <DialogContent>
         {(wkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
-            oldElements && (
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isMigrateOld}
-                onChange={() => {
-                  setIsMigrateOld((isMigrateOld) => !isMigrateOld);
-                }}
-                color="primary"
-                name="isMigrateOld"
+          oldElements && (
+            <>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isMigrateOld}
+                    onChange={() => {
+                      setIsMigrateOld((isMigrateOld) => !isMigrateOld);
+                    }}
+                    color="primary"
+                    name="isMigrateOld"
+                  />
+                }
+                label={translate("Migrate previous version records?")}
               />
-            }
-            label={translate("Migrate previous version records?")}
-          />
-        )}
-        {(wkf?.statusSelect === 1 || getProperty("newVersionOnDeploy")) && (
-          <FormControlLabel
-            control={
-              <Switch
-                checked={removeOldVersionMenu}
-                onChange={() => {
-                  setRemoveOldVersionMenu(
-                    (removeOldVersionMenu) => !removeOldVersionMenu
-                  );
-                }}
-                color="primary"
-                name="removeOldVersionMenu"
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={removeOldVersionMenu}
+                    onChange={() => {
+                      setRemoveOldVersionMenu(
+                        (removeOldVersionMenu) => !removeOldVersionMenu
+                      );
+                    }}
+                    color="primary"
+                    name="removeOldVersionMenu"
+                  />
+                }
+                label={translate("Remove old version menu")}
               />
-            }
-            label={translate("Remove old version menu")}
-          />
-        )}
+            </>
+          )}
         {oldElements &&
           Object.entries(oldElements).map(([key, value]) => (
             <div key={key} className={classes.process}>
