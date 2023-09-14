@@ -1,3 +1,20 @@
+## 1.3.0 (2023-09-14)
+
+#### Features
+
+* STUDIO-65999 : WkfInstance: Migration history
+* Web service: Add possibility to order request payloads
+* BPM: Add a field 'Migration status' in WkfInstance
+* Feature #65782 : WkfInstance: Restart from selected node
+* WkfModel: Add a boolean 'New version on deploy'
+* BPM: Add a new object 'WkfMigration'
+
+#### Fixed
+
+* Demo data: Fix Purchase Request demo data
+* Wkf Deployment: Manage old menu removal
+* Fix AOP version to 6.1.5
+
 ## 1.2.3 (2023-08-25)
 
 #### Fixed

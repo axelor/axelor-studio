@@ -1,7 +1,7 @@
 import com.axelor.gradle.tasks.GenerateChangelog
 
 buildscript {
-	ext.aopVersion = '6.1.+'
+	ext.aopVersion = '6.1.5'
 	ext.repos = {
 		mavenCentral() {
 			content { excludeGroupByRegex "com\\.axelor.*" }
@@ -43,13 +43,13 @@ dependencies {
 		api project(":modules:axelor-message")
 	}
 	else {
-		api "com.axelor.addons:axelor-message:1.2.0"
+		api "com.axelor.addons:axelor-message:1.2.1"
 	}
 	if (findProject(":modules:axelor-utils") != null) {
 		api project(":modules:axelor-utils")
 	}
 	else {
-		api "com.axelor.addons:axelor-utils:1.3.0"
+		api "com.axelor.addons:axelor-utils:1.3.1"
 	}
 
 	api "org.camunda.bpm:camunda-engine:7.17.0"

@@ -117,8 +117,3 @@ tasks.register("reactClean", Delete) {
             "apps/bpm/build", "apps/bpm/node_modules",
             "apps/mapper/build", "apps/mapper/node_modules"
 }
-
-clean {
-    dependsOn "reactClean"
-    mustRunAfter "reactClean"
-}
