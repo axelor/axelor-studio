@@ -77,8 +77,3 @@ tasks.register("reactBuild", GradleBuild) {
 tasks.register("reactClean", Delete) {
     delete "build", "node_modules"
 }
-
-clean {
-    dependsOn "reactClean"
-    mustRunAfter "reactClean"
-}

@@ -1,4 +1,4 @@
-@import "../font-awesome/css/font-awesome.min.css";
+@import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 
 :root {
   --token-simulation-green-base-44: #3ecf8e;

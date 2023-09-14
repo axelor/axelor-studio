@@ -1,5 +1,5 @@
 import services from './Service';
-import { uniqBy } from 'loadsh';
+import { uniqBy } from 'lodash';
 import { getFormName } from '../expression-builder/utils';
 import { getItemsByType, sortBy } from '../utils';
 import { ALLOWED_TYPES, QUERY_CUSTOM_TYPES } from '../constants';
@@ -217,7 +217,7 @@ export async function getSubMetaField(
   isM2OField = false,
   isContextValue,
   isAllowButtons = false,
-  targetField= {},
+  targetField = {}
 ) {
   const isJsonModel =
     model === 'com.axelor.meta.db.MetaJsonRecord' && relationJsonModel;
@@ -228,14 +228,13 @@ export async function getSubMetaField(
   let result =
     getResultedFields(res, isQuery, isM2OField, isContextValue) || [];
   if (!result) return [];
-  if (
-    isQuery &&
-    !isContextValue &&
-    ALLOWED_TYPES.includes(targetField?.type)
-  ) {
-    return result.filter(val =>
-      ['id', targetField?.targetName].includes(val.name)
-    );
+  if (isQuery && !isContextValue && ALLOWED_TYPES.includes(targetField?.type)) {
+    return [
+      ...(result.filter(
+        val => val?.nameField || val?.name === targetField?.targetName
+      ) || []),
+      { name: 'id', title: 'Id', type: 'long' },
+    ];
   }
   result = result.filter(
     a =>
