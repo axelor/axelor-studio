@@ -8,6 +8,7 @@
 
     <panel name="mainPanel">
       <field name="enableStudioApp" widget="Boolean-switch"/>
+      <field name="enableTrackWebServiceCall" title="Enable track web services"/>
     </panel>
 
     <panel-mail name="mailPanel">

@@ -19,11 +19,13 @@ package com.axelor.studio.service.ws;
 
 import com.axelor.common.StringUtils;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
+import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.*;
+import com.axelor.studio.db.repo.AppStudioRepository;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.text.Templates;
 import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.file.FileTool;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,14 +64,18 @@ public class WsConnectoServiceImpl implements WsConnectorService {
   protected GroovyTemplates templates;
   protected SessionType sessionType = null;
 
+  protected final MetaFiles metaFiles;
+
   @Inject
   public WsConnectoServiceImpl(
       SessionTypeFactory sessionTypeFactory,
       WsAuthenticatorService wsAuthenticatorService,
-      GroovyTemplates templates) {
+      GroovyTemplates templates,
+      MetaFiles metaFiles) {
     this.sessionTypeFactory = sessionTypeFactory;
     this.wsAuthenticatorService = wsAuthenticatorService;
     this.templates = templates;
+    this.metaFiles = metaFiles;
   }
 
   private void authenticationVerify(
@@ -116,6 +122,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
     Client client = ClientBuilder.newClient();
 
+    HashMap<String, Object> resultContext = new HashMap<>();
+
     ctx.putAll(createContext(wsConnector, authenticator));
 
     // verify authentication and extract cookies
@@ -125,6 +133,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     int repeatRequestCount = 0;
     int count = 1;
     int repeatIndex = 0;
+
+    WsRequest wsRequest = null;
 
     Collections.sort(
         wsConnector.getWsRequestList(),
@@ -136,14 +146,14 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         });
 
     while (count < wsConnector.getWsRequestList().size() + 1) {
-
+      Response wsResponse = null;
       try {
         ctx.put("_repeatIndex", repeatIndex);
 
         if (lastRepeatIf != null
-                && !Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
+            && !Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
           lastRepeatIf =
-                  null; // here is a problem here , will skip the next request if the repeat  is false
+              null; // here is a problem here , will skip the next request if the repeat  is false
           count++;
           repeatIndex = 0;
           continue;
@@ -153,7 +163,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           ctx.put("_" + count, null);
         }
 
-      WsRequest wsRequest = wsConnector.getWsRequestList().get(count - 1).getWsRequest();
+      wsRequest = wsConnector.getWsRequestList().get(count - 1).getWsRequest();
       String repeatIf = wsRequest.getRepeatIf();
 
         String callIf = wsRequest.getCallIf();
@@ -167,7 +177,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
         String url = wsConnector.getBaseUrl() + "/" + wsRequest.getWsUrl();
 
-        Response wsResponse = null;
+        wsResponse = null;
 
         wsResponse = callRequest(wsRequest, url, client, templates, ctx);
 
@@ -182,40 +192,55 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
           if (wsResponse == null || wsResponse.getStatus() == 401) {
             throw new IllegalArgumentException(
-                    String.format(
-                            I18n.get("Error in authorization of connector: %s"), wsConnector.getName()));
+                String.format(
+                    I18n.get("Error in authorization of connector: %s"), wsConnector.getName()));
           }
         }
 
 
         // byte[] responseByte = wsResponse.readEntity(byte[].class);
         ArrayList<Object> responseData = new ArrayList<>();
-        if (wsResponse.getMediaType() != null) {
-          MediaType mediaType =
-                  new MediaTypeFactory().get(wsResponse.getMediaType().getSubtype());
+        HashMap res = new HashMap<String, Object>();
+        res.put("response type", wsResponse.getMediaType());
+        if ((wsResponse.getMediaType() != null)
+            && (new MediaTypeFactory().get(wsResponse.getMediaType().getSubtype()) != null)) {
+          MediaType mediaType = new MediaTypeFactory().get(wsResponse.getMediaType().getSubtype());
 
           if (repeatIndex == 1) {
             responseData.add(ctx.get("_" + count));
             responseData.add(mediaType.parseResponse(wsResponse));
+            res.put("body", responseData);
             ctx.put("_" + count, responseData);
+            resultContext.put("_" + count, res);
           } else if (repeatIndex != 0) {
             responseData = (ArrayList) ctx.get("_" + count);
             responseData.add(mediaType.parseResponse(wsResponse));
+            res.put("body", responseData);
             ctx.put("_" + count, responseData);
+            resultContext.put("_" + count, res);
           } else {
-            ctx.put("_" + count, mediaType.parseResponse(wsResponse));
+            Object parsedResponse = mediaType.parseResponse(wsResponse);
+            res.put("body", parsedResponse);
+            ctx.put("_" + count, parsedResponse);
+            resultContext.put("_" + count, res);
           }
 
         } else {
           if (repeatIndex == 1) {
             responseData.add(ctx.get("_" + count));
             ctx.put("_" + count, responseData.add(wsResponse.readEntity(byte[].class)));
+            res.put("body", responseData);
+            resultContext.put("_" + count, res);
           } else if (repeatIndex != 0) {
             responseData = (ArrayList) ctx.get("_" + count);
             responseData.add(wsResponse.readEntity(byte[].class));
+            res.put("body", responseData);
             ctx.put("_" + count, responseData);
+            resultContext.put("_" + count, res);
           } else {
             ctx.put("_" + count, wsResponse.readEntity(byte[].class));
+            res.put("body", wsResponse.readEntity(byte[].class));
+            resultContext.put("_" + count, res);
           }
         }
 
@@ -231,7 +256,6 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           lastRepeatIf = repeatIf;
           repeatRequestCount = count;
         }
-
         count++;
 
         if (count == (wsConnector.getWsRequestList().size() + 1) && lastRepeatIf != null) {
@@ -240,14 +264,17 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             repeatIndex++;
           }
         }
-
       } catch (Exception e) {
-        writeLogsFile(ctx, count, e);
+        if (Beans.get(AppStudioRepository.class).all().fetchOne().getEnableTrackWebServiceCall()) {
+          addAttachement(resultContext, wsRequest, wsResponse, wsConnector, e);
+        }
         throw new Exception(e.getMessage());
       }
     }
     // success
-    writeLogsFile(ctx, count);
+    if (Beans.get(AppStudioRepository.class).all().fetchOne().getEnableTrackWebServiceCall()) {
+      addAttachement(resultContext, wsConnector);
+    }
     return ctx;
   }
 
@@ -340,7 +367,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
   }
 
   @Override
-  public Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator) {
+  public Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator)
+      throws Exception {
 
     Map<String, Object> ctx = new HashMap<>();
 
@@ -370,6 +398,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                             : it.getValue().asText())));
       } catch (IOException e) {
         log.error(e.getMessage(), e);
+        throw new Exception(e);
       }
     }
 
@@ -506,28 +535,83 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     }
   }
 
-  protected void writeLogsFile(Map<String, Object> ctx, int count, Exception e) throws IOException {
-    File logFile = FileTool.create("Web_Service_Logs", "logFile.log");
-    logFile.setWritable(true);
-    List<String> result = new ArrayList();
-    if (count > 1) {
-      for (int i = 1; i < count; i++) {
-        result.add(ctx.get("_" + i).toString());
-      }
-      result.add("Request " + count + " Error : " + "{" + e.toString() + "}\r\n");
-      FileTool.writer(logFile.getParent(), logFile.getName(), result);
+  @Override
+  public void addAttachement(Map<String, Object> ctx, WsConnector wsConnector) {
+    try {
+      StringBuilder result = new StringBuilder();
+      ctx.entrySet().stream()
+          .filter(entry -> entry.getKey().startsWith("_") && !entry.getKey().equals("_beans"))
+          .forEach(
+              entry -> {
+                var key = entry.getKey();
+                var value = entry.getValue();
+                result.append(key).append(":\n");
+                if (value instanceof byte[]) {
+                  result.append(new String((byte[]) value)).append("\n\n");
+                } else {
+                  result.append(value).append("\n\n");
+                }
+              });
+      byte[] bytes = result.toString().getBytes();
+
+      // Create an InputStream from the byte array
+      InputStream inputStream = new ByteArrayInputStream(bytes);
+
+      metaFiles.deleteAttachments(wsConnector);
+      metaFiles.attach(inputStream, "Log_File", wsConnector);
+    } catch (IOException io) {
+      ExceptionTool.trace(io);
     }
   }
-  @Override
-  public void writeLogsFile(Map<String, Object> ctx, int count) throws IOException {
-    File logFile = FileTool.create("Web_Service_Logs", "logFile.log");
-    logFile.setWritable(true);
-    List<String> result = new ArrayList();
-    if (count > 1) {
-      for (int i = 1; i < count; i++) {
-        result.add(ctx.get("_" + i).toString());
+
+  public void addAttachement(
+      Map<String, Object> ctx,
+      WsRequest wsRequest,
+      Response wsResponse,
+      WsConnector wsConnector,
+      Exception e) {
+
+    try {
+      StringBuilder result = new StringBuilder();
+      ctx.entrySet().stream()
+          .filter(entry -> entry.getKey().startsWith("_") && !entry.getKey().equals("_beans"))
+          .forEach(
+              entry -> {
+                var key = entry.getKey();
+                var value = entry.getValue();
+                result.append(key).append(":\n");
+                if (value instanceof byte[]) {
+                  result.append(new String((byte[]) value)).append("\n\n");
+                } else {
+                  result.append(value).append("\n\n");
+                }
+              });
+      result.append("\nError log : \nConnector : " + wsConnector.getName() + "\n");
+      result.append(
+          "Request "
+              + "( "
+              + wsRequest.getName()
+              + " )"
+              + " Error : "
+              + "{"
+              + e.toString()
+              + "}\n");
+      if (wsResponse != null) {
+        result.append(
+            "Response type: "
+                + wsResponse.getMediaType()
+                + "\n"
+                + "Response Body : "
+                + wsResponse.readEntity(Object.class));
       }
-      FileTool.writer(logFile.getParent(), logFile.getName(), result);
+
+      byte[] bytes = result.toString().getBytes();
+      // Create an InputStream from the byte array
+      InputStream inputStream = new ByteArrayInputStream(bytes);
+      metaFiles.deleteAttachments(wsConnector);
+      metaFiles.attach(inputStream, "Log_File", wsConnector);
+    } catch (IOException io) {
+      ExceptionTool.trace(io);
     }
   }
 

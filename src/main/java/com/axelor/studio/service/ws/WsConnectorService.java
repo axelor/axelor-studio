@@ -21,8 +21,6 @@ import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.WsRequest;
 import com.axelor.text.Templates;
-
-import java.io.IOException;
 import java.util.Map;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -34,7 +32,8 @@ public interface WsConnectorService {
       WsConnector wsConnector, WsAuthenticator authenticator, Map<String, Object> ctx)
       throws Exception;
 
-  Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator);
+  Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator)
+      throws Exception;
 
   public Entity<?> createEntity(WsRequest wsRequest, Templates templates, Map<String, Object> ctx);
 
@@ -42,5 +41,12 @@ public interface WsConnectorService {
       WsRequest wsRequest, String url, Client client, Templates templates, Map<String, Object> ctx)
       throws Exception;
 
-  void writeLogsFile(Map<String, Object> ctx, int count) throws IOException;
+  void addAttachement(
+      Map<String, Object> ctx,
+      WsRequest wsRequest,
+      Response response,
+      WsConnector wsConnector,
+      Exception e);
+
+  void addAttachement(Map<String, Object> ctx, WsConnector wsConnector);
 }

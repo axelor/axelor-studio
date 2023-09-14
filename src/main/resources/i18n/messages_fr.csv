@@ -2011,3 +2011,4 @@
 "wkf.terminate.btn","Bouton d’arrêt du wkf",,
 "yellow","jaune",,
 "{{$fmt('name')}}",,,
+"Enable track web services","Activer la trace du web services",,

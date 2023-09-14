@@ -1989,3 +1989,4 @@
 "wkf.terminate.btn","Terminate",,
 "yellow",,,
 "{{$fmt('name')}}",,,
+"Enable track web services",,,

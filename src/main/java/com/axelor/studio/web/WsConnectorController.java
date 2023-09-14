@@ -30,8 +30,6 @@ import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.service.ws.WsConnectorService;
 import com.axelor.utils.ExceptionTool;
 import com.axelor.utils.StringTool;
-
-import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
