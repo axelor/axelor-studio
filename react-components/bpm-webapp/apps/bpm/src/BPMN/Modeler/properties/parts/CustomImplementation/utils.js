@@ -2,7 +2,7 @@ import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { camelCase } from "lodash";
 import { getAxelorScope, translate } from "../../../../../utils";
-const Ids = require("ids").default;
+import Ids from "ids";
 
 export function nextId(prefix) {
   let ids = new Ids([32, 32, 1]);
