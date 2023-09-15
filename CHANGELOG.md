@@ -1,3 +1,20 @@
+## 1.3.1 (2023-09-15)
+
+#### Fixed
+
+* Fix app config not initializing
+
+  <details>
+  
+  If an app configuration contains required fields with default values, the configuration record 
+  was not initialized leading to a no configuration popup message despite a configuration record
+  existing.
+  
+  This has been fixed by also checking if all required fields have a non-null value.
+  
+  </details>
+
+
 ## 1.3.0 (2023-09-14)
 
 #### Features
