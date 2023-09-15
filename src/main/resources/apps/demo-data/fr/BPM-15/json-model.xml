@@ -27,8 +27,6 @@
 
     <menuOrder>0</menuOrder>
 
-    <menuTop>false</menuTop>
-
     <menuParent></menuParent>
 
     <studioApp>BPM-15</studioApp>
@@ -90,8 +88,6 @@
     <menuBackground></menuBackground>
 
     <menuOrder>2</menuOrder>
-
-    <menuTop>false</menuTop>
 
     <menuParent></menuParent>
 

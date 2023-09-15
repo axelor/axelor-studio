@@ -64,7 +64,6 @@
       <panel name="detailPanel" colSpan="12" title="Extra" canCollapse="true">
         <field name="conditionToCheck"/>
         <field name="moduleToCheck"/>
-        <field name="top"/>
         <field name="left"/>
         <field name="mobile"/>
         <field name="hidden"/>

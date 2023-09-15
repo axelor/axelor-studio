@@ -23,8 +23,6 @@
 
     <tagStyle></tagStyle>
 
-    <top>false</top>
-
     <left>true</left>
 
     <mobile>false</mobile>
@@ -75,8 +73,6 @@
     <tagCount>false</tagCount>
 
     <tagStyle></tagStyle>
-
-    <top>false</top>
 
     <left>true</left>
 
@@ -129,8 +125,6 @@
 
     <tagStyle></tagStyle>
 
-    <top>false</top>
-
     <left>true</left>
 
     <mobile>false</mobile>
@@ -181,8 +175,6 @@
     <tagCount>false</tagCount>
 
     <tagStyle></tagStyle>
-
-    <top>false</top>
 
     <left>true</left>
 
@@ -235,8 +227,6 @@
 
     <tagStyle></tagStyle>
 
-    <top>false</top>
-
     <left>true</left>
 
     <mobile>false</mobile>
@@ -287,8 +277,6 @@
     <tagCount>false</tagCount>
 
     <tagStyle></tagStyle>
-
-    <top>false</top>
 
     <left>true</left>
 
