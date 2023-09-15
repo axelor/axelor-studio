@@ -7,7 +7,7 @@
 
   <entity name="WsConnector" cacheable="true">
     <string name="name" title="Name"/>
-    <string name="baseUrl" title="Base URL"/>
+    <string name="baseUrl" title="Base URL" large="true"/>
     <one-to-many name="wsRequestList" ref="com.axelor.studio.db.WsRequestList"
       title="Requests" mappedBy="wsConnector"/>
     <string name="authCallToken" title="Auth call token"/>

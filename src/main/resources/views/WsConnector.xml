@@ -16,7 +16,7 @@
       <spacer/>
       <field name="name"/>
       <field name="defaultWsAuthenticator"/>
-      <field name="baseUrl" colSpan="12"/>
+      <field name="baseUrl" colSpan="12" widget="String"/>
       <panel-related field="wsRequestList" colSpan="12" canMove="true"
         orderBy="sequence">
         <field name="wsRequest"/>
