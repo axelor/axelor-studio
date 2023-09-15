@@ -382,4 +382,16 @@ public class StudioMetaServiceImpl {
 
     trackingFields(metaModel, metaJsonField.getName(), "Field added");
   }
+
+  public String computeStudioBuilderUrl(String model, String viewName, boolean isJson) {
+
+    String url = "studio/custom-model/?json=" + isJson + "&model=" + model;
+
+    if (isJson) {
+      return url;
+    }
+    url += "&view=" + viewName + "&customField=attrs";
+
+    return url;
+  }
 }
