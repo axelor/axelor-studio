@@ -17,7 +17,6 @@
  */
 package com.axelor.studio.bpm.service;
 
-import com.axelor.auth.AuthUtils;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
@@ -29,6 +28,7 @@ import com.axelor.rpc.Context;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.script.AxelorBindingsHelper;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessConfigRepository;
@@ -37,8 +37,6 @@ import com.axelor.utils.StringTool;
 import com.axelor.utils.context.FullContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -144,10 +142,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
       helper = new GroovyScriptHelper(simpleBindings);
     }
     Bindings bindings = helper.getBindings();
-    bindings.put("$ctx", WkfContextHelper.class);
-    bindings.put("__user__", AuthUtils.getUser());
-    bindings.put("__date__", LocalDate.now());
-    bindings.put("__datetime__", LocalDateTime.now());
+    bindings = AxelorBindingsHelper.getBindings(bindings);
     Object result = null;
 
     result = helper.eval(expr);
@@ -162,7 +157,6 @@ public class WkfCommonServiceImpl implements WkfCommonService {
     Map<String, Object> varMap = new HashMap<>();
     modelMap.forEach(
         (key, value) -> {
-
           if (value == null) {
             varMap.put(key, Variables.objectValue(null, true).create());
             return;

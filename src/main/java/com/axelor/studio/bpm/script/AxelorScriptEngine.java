@@ -17,9 +17,7 @@
  */
 package com.axelor.studio.bpm.script;
 
-import com.axelor.auth.AuthUtils;
 import com.axelor.inject.Beans;
-import com.axelor.meta.db.repo.MetaJsonRecordRepository;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
@@ -31,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import com.axelor.utils.ExceptionTool;
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -51,16 +50,7 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
   @Override
   public Object eval(String script, ScriptContext ctx) {
     Bindings bindings = ctx.getBindings(ctx.getScopes().get(0));
-    bindings.put("$json", Beans.get(MetaJsonRecordRepository.class));
-    bindings.put("$ctx", WkfContextHelper.class);
-    bindings.put("$beans", Beans.class);
-    bindings.put(
-        "__user__",
-        new FullContext(
-            AuthUtils.getUser() != null ? AuthUtils.getUser() : AuthUtils.getUser("admin")));
-    bindings.put("__date__", LocalDate.now());
-    bindings.put("__datetime__", LocalDateTime.now());
-    bindings.put("$transform", WkfTransformationHelper.class);
+    bindings = AxelorBindingsHelper.getBindings(bindings);
     Object object = null;
     try {
       object = new GroovyScriptHelper(bindings).eval(script);

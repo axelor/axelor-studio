@@ -52,4 +52,8 @@
     <field name="isCustom" expr="eval: true" if="_fromStudio"/>
   </action-record>
 
+  <action-method name="action-studio-method-open-studio-builder">
+    <call class="com.axelor.studio.web.StudioBuilderController" method="openStudioBuilder"/>
+  </action-method>
+
 </object-views>

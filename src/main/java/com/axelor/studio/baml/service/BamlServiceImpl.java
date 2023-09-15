@@ -25,7 +25,7 @@ import com.axelor.inject.Beans;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.baml.xml.ProcessActionNode;
 import com.axelor.studio.baml.xml.ProcessActionRootNode;
-import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.script.AxelorBindingsHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.BamlModel;
 import com.axelor.utils.ExceptionTool;
@@ -147,13 +147,12 @@ public class BamlServiceImpl implements BamlService {
   public Model execute(BamlModel bamlModel, Model entity) {
 
     Bindings bindings = new SimpleBindings();
+    bindings = AxelorBindingsHelper.getBindings(bindings);
 
     if (entity != null) {
       String varName = wkfCommonService.getVarName(entity);
       bindings.put(varName, entity);
     }
-
-    bindings.put("$ctx", WkfContextHelper.class);
 
     GroovyScriptHelper helper = new GroovyScriptHelper(bindings);
     Object object = helper.eval(bamlModel.getResultScript());

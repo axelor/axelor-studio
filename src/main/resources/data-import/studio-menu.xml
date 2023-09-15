@@ -17,7 +17,6 @@
       <bind node="tag" to="tag"/>
       <bind node="tagCount" to="tagCount"/>
       <bind node="tagStyle" to="tagStyle"/>
-      <bind node="top" to="top"/>
       <bind node="left" to="left"/>
       <bind node="mobile" to="mobile"/>
       <bind node="hidden" to="hidden"/>

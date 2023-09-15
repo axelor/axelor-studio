@@ -272,7 +272,6 @@ public class StudioMetaServiceImpl {
     menu.setConditionToCheck(condition);
     menu.setModuleToCheck(studioMenu.getModuleToCheck());
     menu.setLeft(studioMenu.getLeft());
-    menu.setTop(studioMenu.getTop());
     menu.setHidden(studioMenu.getHidden());
     menu.setMobile(studioMenu.getMobile());
 
@@ -382,5 +381,17 @@ public class StudioMetaServiceImpl {
         metaModelRepo.all().filter("self.fullName = ?1", metaJsonField.getModel()).fetchOne();
 
     trackingFields(metaModel, metaJsonField.getName(), "Field added");
+  }
+
+  public String computeStudioBuilderUrl(String model, String viewName, boolean isJson) {
+
+    String url = "studio/custom-model/?json=" + isJson + "&model=" + model;
+
+    if (isJson) {
+      return url;
+    }
+    url += "&view=" + viewName + "&customField=attrs";
+
+    return url;
   }
 }
