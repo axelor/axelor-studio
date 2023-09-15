@@ -557,15 +557,18 @@ public class AppServiceImpl implements AppService {
 
     Mapper mapper = Mapper.of(klass);
     List<Property> properties = Arrays.asList(mapper.getProperties());
-    boolean isRequiredProp = properties.stream().anyMatch(prop -> prop.isRequired());
-    if (isRequiredProp) {
-      return;
-    }
 
     Map<String, Object> _map = new HashMap<>();
     _map.put("app", app);
 
     Model bean = repo.create(_map);
+
+    var isRequiredPropNull = properties.stream()
+        .anyMatch(prop -> prop.isRequired() && prop.get(bean) == null);
+    if (isRequiredPropNull) {
+      return;
+    }
+
     repo.save(bean);
   }
 
