@@ -64,7 +64,7 @@ public class ValueMapperController {
 
       if (result != null
           && result instanceof FullContext
-          && mapper.getScript().startsWith("def rec = $ctx.create(")) {
+          && mapper.getScript().startsWith("def rec = __ctx__.create(")) {
         FullContext fullContext = (FullContext) result;
         Object object = fullContext.getTarget();
         String title = object.getClass().getSimpleName();

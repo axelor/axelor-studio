@@ -132,12 +132,12 @@ public class MapperRecord {
   public StringBuilder addTarget() {
 
     if (newRecord) {
-      scriptBuilder.append("def " + targetVariable + " = $ctx.create('" + targetModel + "')\n");
+      scriptBuilder.append("def " + targetVariable + " = __ctx__.create('" + targetModel + "')\n");
     } else if (savedRecord) {
       scriptBuilder.append(
           "def "
               + targetVariable
-              + " = $ctx.find('"
+              + " = __ctx__.find('"
               + targetModel
               + "',"
               + StringTool.toFirstLower(targetModel)
@@ -158,7 +158,7 @@ public class MapperRecord {
 
   public void addReturn() {
 
-    String saveStr = "$ctx.save(" + targetVariable + ")";
+    String saveStr = "__ctx__.save(" + targetVariable + ")";
     if (!save) {
       saveStr = targetVariable;
     }

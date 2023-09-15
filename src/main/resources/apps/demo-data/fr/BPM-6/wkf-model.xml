@@ -15,7 +15,7 @@
   <bpmn2:process id="Event_Proc" name="Event Message Process" isExecutable="true">
     <bpmn2:extensionElements>
       <camunda:processConfiguration>
-        <camunda:processConfigurationParameter metaModel="Event" metaModelLabel="Event (Events)" isStartModel="true" model="com.axelor.apps.crm.db.Event" metaModelFullName="com.axelor.apps.crm.db.Event" title="Event" />
+        <camunda:processConfigurationParameter metaModel="Event" isStartModel="true" model="com.axelor.apps.crm.db.Event" metaModelFullName="com.axelor.apps.crm.db.Event" title="Event" metaModelLabel="Event (Events)" />
       </camunda:processConfiguration>
     </bpmn2:extensionElements>
     <bpmn2:sequenceFlow id="Flow_105n6xj" sourceRef="StartEvent_1" targetRef="Activity_0vzdwak" />
@@ -23,13 +23,13 @@
     <bpmn2:startEvent id="StartEvent_1" name="Start">
       <bpmn2:extensionElements>
         <camunda:executionListener event="end">
-          <camunda:script scriptFormat="axelor">event = $ctx.create('Event');
-event.lead = $ctx.find('Lead',$ctx.getVariable(Lead_Message_Process, 'leadId'))?.getTarget()
+          <camunda:script scriptFormat="axelor">event = __ctx__.create('Event');
+event.lead = __ctx__.find('Lead',__ctx__.getVariable(Lead_Message_Process, 'leadId'))?.getTarget()
 event.subject = 'Event From LEAD: ' + event.lead.fullName
 event.startDateTime = LocalDateTime.now()
 event.endDateTime = LocalDateTime.now().plusHours(1)
-$ctx.createVariable(event,execution)
-$ctx.save(event)</camunda:script>
+__ctx__.createVariable(event,execution)
+__ctx__.save(event)</camunda:script>
         </camunda:executionListener>
       </bpmn2:extensionElements>
       <bpmn2:outgoing>Flow_105n6xj</bpmn2:outgoing>
@@ -60,13 +60,13 @@ $ctx.save(event)</camunda:script>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_1tdaxc6_di" bpmnElement="StartEvent_1" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
         <dc:Bounds x="212" y="212" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ccecc6">
           <dc:Bounds x="218" y="255" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_10m7orw_di" bpmnElement="Event_0s42f4m" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
         <dc:Bounds x="452" y="212" width="36" height="36" />
-        <bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel color:color="#ffd4c7">
           <dc:Bounds x="460" y="255" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>

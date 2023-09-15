@@ -110,9 +110,9 @@ public class MapperValue {
       model = "'" + model + "'";
 
       if (value != null) {
-        stb.append("$ctx.filterOne(" + model + "," + prepareQuery(targetJsonModel, value) + ")");
+        stb.append("__ctx__.filterOne(" + model + "," + prepareQuery(targetJsonModel, value) + ")");
       } else {
-        stb.append("$ctx.create(" + model + ")");
+        stb.append("__ctx__.create(" + model + ")");
       }
 
       stb.append("?.getTarget()");
@@ -178,7 +178,7 @@ public class MapperValue {
       if (value != null && !value.endsWith(".id") && !value.equals("__id__")) {
         value += "?.id";
       }
-      stb.append("$ctx.find('" + parentField.getTarget() + "'," + value + ")?.getTarget()");
+      stb.append("__ctx__.find('" + parentField.getTarget() + "'," + value + ")?.getTarget()");
     } else {
       stb.append(value);
     }
@@ -189,7 +189,7 @@ public class MapperValue {
     String value = getSelectedScript();
 
     if (value != null) {
-      stb.append("$ctx.filterOne" + value + "");
+      stb.append("__ctx__.filterOne" + value + "");
       stb.append("?.getTarget()");
 
     } else {
@@ -209,7 +209,8 @@ public class MapperValue {
       if (selected.equals("src.SOURCE")) {
         selected = "src";
       }
-      stb.append("$ctx.find('" + parentField.getTarget() + "'," + selected + "?.id)?.getTarget()");
+      stb.append(
+          "__ctx__.find('" + parentField.getTarget() + "'," + selected + "?.id)?.getTarget()");
     } else {
       stb.append(selected);
     }
