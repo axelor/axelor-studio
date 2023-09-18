@@ -1164,7 +1164,7 @@ function BpmnModelerComponent() {
         await deployAction(context, newWkf);
       }
       if (newWkf?.statusSelect === 1) {
-        startAction(res.data[0]);
+        startAction(res?.data[0]);
       }
     } catch (err) {
       console.error(err);

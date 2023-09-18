@@ -124,12 +124,7 @@ function getCallableType(bo) {
   return callActivityType;
 }
 
-export default function CallActivityProps({
-  element,
-  index,
-  label,
-  bpmnModeler,
-}) {
+export default function CallActivityProps({ element, index, label }) {
   const [isVisible, setVisible] = useState(false);
   const [custom, setCustom] = useState(false);
   const [callActivityType, setCallActivityType] = useState("bpmn");
@@ -840,14 +835,26 @@ export default function CallActivityProps({
                 update={(value) => {
                   if (!value) return;
                   setWkfModel({
+                    ...value,
                     id: value.wkfModel.id,
-                    name: `${value.wkfModel.name} (${value.name})`,
                     processId: value.name,
                   });
                 }}
                 name="wkfModel"
                 isLabel={true}
-                fetchMethod={(options) => getBPMNModels(options)}
+                fetchMethod={() =>
+                  getBPMNModels({
+                    data: {
+                      criteria: [
+                        {
+                          fieldName: "wkfModel.statusSelect",
+                          operator: "!=",
+                          value: 3,
+                        },
+                      ],
+                    },
+                  })
+                }
               />
             </DialogContent>
             <DialogActions>
