@@ -1,20 +1,9 @@
-import React, { useEffect, useState } from "react";
-import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
-import { TextField, Chip } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import React, { useEffect, useState } from "react"
+import classnames from "classnames"
+import { TextField, Chip } from "@mui/material"
+import Autocomplete from "@mui/material/Autocomplete"
 
-import { translate } from "../../utils";
-
-const useStyles = makeStyles(() => ({
-	select: {
-		width: "100%",
-		background: "white",
-	},
-	input: {
-		fontSize: 13,
-	},
-}));
+import { translate } from "../../utils"
 
 export default function StaticSelect({
 	value,
@@ -27,17 +16,16 @@ export default function StaticSelect({
 	name,
 	title,
 }) {
-	const classes = useStyles();
-	const [val, setVal] = useState(value[optionValue] || value || "");
+	const [val, setVal] = useState(value[optionValue] || value || "")
 
 	const onSelectUpdate = (e, value) => {
-		onChange(value, e);
-		setVal(value);
-	};
+		onChange(value, e)
+		setVal(value)
+	}
 
 	const renderChip = (value) => {
-		let option = options.find((option) => option[optionValue] === value);
-		if (!option) return <React.Fragment>{value}</React.Fragment>;
+		let option = options.find((option) => option[optionValue] === value)
+		if (!option) return <React.Fragment>{value}</React.Fragment>
 		return (
 			<Chip
 				label={translate(option[optionLabel])}
@@ -47,42 +35,41 @@ export default function StaticSelect({
 					color: (option && option.border) || "white",
 				}}
 			/>
-		);
-	};
+		)
+	}
 
 	useEffect(() => {
 		if (optionValue) {
-			setVal(value[optionValue]);
+			setVal(value[optionValue])
 		} else {
-			setVal(value);
+			setVal(value)
 		}
-	}, [optionValue, value]);
+	}, [optionValue, value])
 
 	return (
 		<Autocomplete
-			className={classnames(classes.select, className)}
+			className={classnames(className)}
+			componentsProps={{
+				paper: { sx: { background: "#ffffff" } },
+			}}
 			value={val || ""}
 			onChange={onSelectUpdate}
 			renderValue={renderChip}
-			classes={{
-				select: selectClassName,
-				input: classes.input,
-			}}
 			options={options}
 			getOptionLabel={(option) =>
 				typeof option === "object" ? option[optionValue] : option
 			}
 			label={translate(title)}
-			renderOption={(option) => {
+			renderOption={(props, option) => {
 				return !optionValue && option ? (
-					<div>
+					<li {...props}>
 						{name === "icon" && (
 							<i className={`fa ${option}`} style={{ marginRight: 4 }} />
 						)}
 						{option}
-					</div>
+					</li>
 				) : (
-					<div>
+					<li {...props}>
 						<Chip
 							key={option[optionValue]}
 							label={translate(option[optionLabel])}
@@ -92,17 +79,23 @@ export default function StaticSelect({
 								color: (option && option.border) || "white",
 							}}
 						/>
-					</div>
-				);
+					</li>
+				)
 			}}
 			renderInput={(params) => (
-				<TextField {...params} label={translate(title)} autoComplete="off" />
+				<TextField
+					{...params}
+					label={translate(title)}
+					autoComplete="off"
+					variant="standard"
+					sx={{ "& .MuiInputBase-input": { fontSize: 13 } }}
+				/>
 			)}
 		/>
-	);
+	)
 }
 
 StaticSelect.defaultProps = {
 	value: {},
 	onChange: () => {},
-};
+}

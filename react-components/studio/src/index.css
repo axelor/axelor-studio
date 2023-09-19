@@ -109,6 +109,10 @@ code {
 	width: 100%;
 }
 
+.field-container:not(.dump) {
+	z-index: 1;
+}
+
 .field-container textarea {
 	max-width: 100%;
 	min-width: 100%;
@@ -162,7 +166,12 @@ code {
 }
 
 .form-layout-design .widget.edit {
-	border: 2px dotted #666666 !important;
+	border: 2px dashed #666666 !important;
+}
+
+.form-layout-design .widget.edit.error-field,
+.form-layout-design .widget.edit.error-field.panel-field {
+	border: 2px dashed red !important;
 }
 
 .widget:not(.form-field) {

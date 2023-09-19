@@ -785,6 +785,6 @@ const fontAwesome = [
 	"fa-youtube",
 	"fa-youtube-play",
 	"fa-youtube-square",
-];
+]
 
-export default fontAwesome;
+export default fontAwesome

@@ -1,26 +1,16 @@
-import React, { useState } from "react";
-import Checkbox from "@material-ui/core/Checkbox";
-import { makeStyles } from "@material-ui/core";
+import React, { useState } from "react"
+import Checkbox from "@mui/material/Checkbox"
 
 import {
 	camleCaseString,
 	translate,
 	getProperty,
 	getPropertyValue,
-} from "../../utils";
-import DialogConfirmation from "../../Toolbar/DeleteConfirmation";
-
-const useStyles = makeStyles(() => ({
-	root: {
-		color: "#0275d8 !important",
-		"&$checked": {
-			color: "#0275d8 !important",
-		},
-	},
-}));
+} from "../../utils"
+import DialogConfirmation from "../../Toolbar/DeleteConfirmation"
 
 export default function CheckboxField(_props) {
-	const [openAlert, setAlertOpen] = useState(false);
+	const [openAlert, setAlertOpen] = useState(false)
 	let {
 		name,
 		title,
@@ -29,15 +19,14 @@ export default function CheckboxField(_props) {
 		uncheckDialog,
 		alertMessage,
 		...rest
-	} = _props.field;
+	} = _props.field
 	const {
 		props,
 		classNames,
 		handleDialogOk,
 		isHistoryGenerated,
 		markHistoryGenerated,
-	} = _props;
-	const classes = useStyles();
+	} = _props
 	const {
 		propertyList,
 		setPropertyList,
@@ -45,32 +34,32 @@ export default function CheckboxField(_props) {
 		modelType,
 		editWidgetType,
 		metaFieldStore,
-	} = props;
+	} = props
 	let _value = getPropertyValue(
 		propertyList,
 		name,
 		parentField,
 		defaultValue,
 		!(modelType !== rest.modelType) || editWidgetType === "customField"
-	);
-	let fieldValue = Boolean(_value ? !(_value === "false") : _value);
+	)
+	let fieldValue = Boolean(_value ? !(_value === "false") : _value)
 	if (rest.getValue) {
-		fieldValue = rest.getValue(propertyList);
+		fieldValue = rest.getValue(propertyList)
 	}
-	let disabled = false;
+	let disabled = false
 	if (rest.isDisabled) {
 		disabled = rest.isDisabled({
 			properties: propertyList,
 			metaFieldStore,
 			editWidgetType,
 			modelType,
-		});
+		})
 	}
-	title = translate(camleCaseString(title || name));
+	title = translate(camleCaseString(title || name))
 
 	const handleOnChange = () => {
 		if (uncheckDialog) {
-			setAlertOpen(false);
+			setAlertOpen(false)
 		}
 		setPropertyList({
 			...propertyList,
@@ -82,7 +71,7 @@ export default function CheckboxField(_props) {
 				propertyList[parentField],
 				!(modelType !== rest.modelType) || editWidgetType === "customField"
 			),
-		});
+		})
 		onChange(
 			{
 				...propertyList,
@@ -97,10 +86,10 @@ export default function CheckboxField(_props) {
 			},
 			name,
 			isHistoryGenerated
-		);
-		markHistoryGenerated();
-		handleDialogOk();
-	};
+		)
+		markHistoryGenerated()
+		handleDialogOk()
+	}
 
 	return (
 		<React.Fragment>
@@ -108,9 +97,6 @@ export default function CheckboxField(_props) {
 				className={classNames}
 				checked={fieldValue}
 				disabled={disabled}
-				classes={{
-					root: classes.root,
-				}}
 				onChange={() => {
 					if (
 						uncheckDialog &&
@@ -118,10 +104,10 @@ export default function CheckboxField(_props) {
 						propertyList &&
 						propertyList.selectionText
 					) {
-						setAlertOpen(true);
-						return;
+						setAlertOpen(true)
+						return
 					}
-					handleOnChange();
+					handleOnChange()
 				}}
 				value={propertyList[name]}
 			/>
@@ -135,5 +121,5 @@ export default function CheckboxField(_props) {
 				/>
 			)}
 		</React.Fragment>
-	);
+	)
 }

@@ -3,8 +3,7 @@ $columns: 12;
 $spacer-width: 14;
 $spacer-width-in-px: $spacer-width * 1px;
 
-$gridWidth: percentage(math.div(100,12));
-
+$gridWidth: percentage(math.div(100, 12));
 
 @for $i from 1 through $columns {
 	@if $i== 12 {

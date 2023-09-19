@@ -1,5 +1,5 @@
-import Utils from "./../utils";
-import { MODEL_TYPE, TYPE } from "./../constants";
+import { getWidgetAttrs } from "./../utils"
+import { MODEL_TYPE, TYPE } from "./../constants"
 
 const exemptedAttrs = [
 	"items",
@@ -21,78 +21,10 @@ const exemptedAttrs = [
 	"massUpdate",
 	"xPath",
 	"tz",
-];
-
-export function getExtensionAttribute(patchList, target, keyName) {
-	let extend;
-	for (let i = 0; i < patchList.length; i++) {
-		const { elements = [], attributes: patchAttributes } = patchList[i];
-		const element = elements[0];
-		if (element.name === "attribute" && patchAttributes.target === target) {
-			const attributes = element.attributes || {};
-			if (attributes.name === keyName) {
-				extend = { ...patchList[i] };
-				break;
-			}
-		}
-	}
-	return extend;
-}
-
-function checkTarget(target, string, check) {
-	const splitTarget = Utils.exploreTarget(target);
-	if (check) {
-		const newTarget = splitTarget[check];
-		if (newTarget && newTarget === string) {
-			return true;
-		}
-		return false;
-	}
-	return target === string;
-}
-
-export function isExtensionRemove(patchList, target, check) {
-	let flag = false;
-	for (let i = 0; i < patchList.length; i++) {
-		const { attributes, elements = [] } = patchList[i];
-		const element = elements[0];
-		if (
-			element.name === "replace" &&
-			attributes &&
-			checkTarget(attributes.target, target, check)
-		) {
-			flag = true;
-			break;
-		}
-	}
-	return flag;
-}
-
-export function isExtensionMove(patchList, widget, parentWidget) {
-	let flag = false;
-	for (let i = 0; i < patchList.length; i++) {
-		const { elements = [] } = patchList[i];
-		const element = elements[0];
-		let sourceName = `/${Utils.getWidgetType(widget)}[@name='${widget.name}']`;
-		if (parentWidget && parentWidget.name) {
-			sourceName = `//${Utils.getWidgetType(parentWidget)}[@name='${
-				parentWidget.name
-			}']${sourceName}`;
-		}
-		if (
-			element.name === "move" &&
-			element.attributes &&
-			element.attributes.source === sourceName
-		) {
-			flag = true;
-			break;
-		}
-	}
-	return flag;
-}
+]
 
 function getWidgetAttrsObject(widget, modelType = MODEL_TYPE.BASE) {
-	return getWidgetObject(widget, [], null, modelType);
+	return getWidgetObject(widget, [], null, modelType)
 }
 
 export function getExtendJson2({
@@ -106,17 +38,17 @@ export function getExtendJson2({
 	itemSource,
 	...rest
 }) {
-	const attributes = { target };
-	let elements = [];
+	const attributes = { target }
+	let elements = []
 	if (widgetAttrs && !["replace", "attribute", "move"].includes(type)) {
 		if (Array.isArray(widgetAttrs)) {
 			elements = widgetAttrs
 				.map((widget) => {
-					return getWidgetAttrsObject(widget);
+					return getWidgetAttrsObject(widget)
 				})
-				.filter((e) => e);
+				.filter((e) => e)
 		} else {
-			elements.push(getWidgetAttrsObject(widgetAttrs));
+			elements.push(getWidgetAttrsObject(widgetAttrs))
 		}
 	}
 	if (elements.length || ["replace", "attribute", "move"].includes(type)) {
@@ -137,14 +69,14 @@ export function getExtendJson2({
 					elements,
 				},
 			],
-		};
-		return JSON.parse(JSON.stringify(object));
+		}
+		return JSON.parse(JSON.stringify(object))
 	}
-	return;
+	return
 }
 
 export function getWidgetObject(widget, other = [], view, modelType) {
-	const { id, image, elements = [], ...attributes } = widget;
+	const { id, image, elements = [], ...attributes } = widget
 	const uiFields = [
 		"panel",
 		"panel-related",
@@ -161,62 +93,62 @@ export function getWidgetObject(widget, other = [], view, modelType) {
 		"toolbar",
 		"menubar",
 		"divider",
-	];
-	let exempt = [...exemptedAttrs];
-	let field = uiFields.includes(attributes.type) ? attributes.type : "field";
+	]
+	let exempt = [...exemptedAttrs]
+	let field = uiFields.includes(attributes.type) ? attributes.type : "field"
 	field = uiFields.includes(attributes.serverType)
 		? attributes.serverType
-		: field;
-	field = widget.tab ? "panel-tabs" : field;
+		: field
+	field = widget.tab ? "panel-tabs" : field
 	if (attributes.type === TYPE.panelInclude) {
-		exempt = [...exempt, "title", "colSpan"];
+		exempt = [...exempt, "title", "colSpan"]
 	}
 	if (field === TYPE.tabs) {
-		exempt = [...exempt, "tab", "title"];
+		exempt = [...exempt, "tab", "title"]
 	}
 	if (field === "spacer") {
-		exempt = [...exempt, "title", "isDummy"];
+		exempt = [...exempt, "title", "isDummy"]
 	}
 	if (field === TYPE.panelInclude) {
-		exempt = [...exempt, "module", "name"];
+		exempt = [...exempt, "module", "name"]
 	}
 	if ([TYPE.menu, TYPE.menuItem, TYPE.toolbar, TYPE.menubar].includes(field)) {
-		exempt = [...exempt, "colSpan"];
+		exempt = [...exempt, "colSpan"]
 	}
 	if ([TYPE.toolbar, TYPE.menubar].includes(field)) {
-		exempt = [...exempt, "colSpan", "name", "title"];
+		exempt = [...exempt, "colSpan", "name", "title"]
 	}
 	if ([TYPE.divider].includes(field)) {
-		exempt = [...exempt, "colSpan", "title"];
+		exempt = [...exempt, "colSpan", "title"]
 	}
-	let object = {};
+	let object = {}
 	object = {
 		attributes: {
-			...Utils.getWidgetAttrs(attributes, exempt, modelType),
+			...getWidgetAttrs(attributes, exempt, modelType),
 		},
 		type: "element",
 		name: field,
 		elements: [...other, ...elements],
-	};
-	return object;
+	}
+	return object
 }
 
 export function generateView(widgets, items, modelType) {
-	let view = {};
-	let elements = [];
+	let view = {}
+	let elements = []
 	if (items.length) {
 		items.forEach((item) => {
-			const widget = widgets[item];
-			let subViews = [];
+			const widget = widgets[item]
+			let subViews = []
 			if (widget) {
 				if (widget.items && widget.items.length) {
-					subViews = generateView(widgets, widget.items, modelType);
+					subViews = generateView(widgets, widget.items, modelType)
 				}
 				elements.push({
 					...getWidgetObject(widget, subViews, view, modelType),
-				});
+				})
 			}
-		});
+		})
 	}
-	return elements;
+	return elements
 }

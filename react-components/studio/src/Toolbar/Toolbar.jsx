@@ -1,90 +1,99 @@
-import React, { useCallback, useState } from "react";
-import { IconButton } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import classnames from "classnames";
-import ViewSelection from "./ViewSelection";
-import { MODEL_TYPE, TYPE } from "../constants";
-import { useKeyPress } from "../custom-hooks/useKeyPress";
-import { useComponentVisible } from "../custom-hooks/useComponentVisible";
-import { translate } from "../utils";
+import React, { useCallback, useState } from "react"
+import { IconButton } from "@mui/material"
+import { styled } from "@mui/material/styles"
+import classnames from "classnames"
+import ViewSelection from "./ViewSelection"
+import { HISTORY, MODEL_TYPE, TYPE } from "../constants"
+import { useKeyPress } from "../custom-hooks/useKeyPress"
+import { useComponentVisible } from "../custom-hooks/useComponentVisible"
+import { getWidgetElementId, translate } from "../utils"
 
-import Select from "./Select";
-import { useStore } from "../store/context";
+import Select from "./Select"
+import { useStore } from "../store/context"
 
-const useStyles = makeStyles({
-	toolbarContainer: {
-		display: "flex",
-		flexWrap: "wrap",
-		width: "100%",
-		height: "inherit",
-		backgroundColor: "rgb(41, 56, 70)",
-		padding: "0.5rem 0.75rem",
-		".modern-dark &": {
-			backgroundColor: "#323232",
-		},
+const ToolbarContainer = styled("div")(() => ({
+	display: "flex",
+	flexWrap: "wrap",
+	justifyContent: "space-between",
+	width: "100%",
+	height: "inherit",
+	backgroundColor: "rgb(41, 56, 70)",
+	padding: "0.5rem 0.75rem",
+	[`&.modern-dark`]: {
+		backgroundColor: "#323232",
 	},
-	toolItemView: {
-		color: "#fff",
-		padding: "5px 10px",
-	},
-	crudIcon: {
-		height: "1em",
-		width: "1em",
-		fontSize: 14,
-		cursor: "pointer",
-	},
-	selectionContainer: {
-		flex: 1,
-		display: "flex",
-		alignItems: "center",
-		flexWrap: "wrap",
-	},
-	toolbarActions: {
-		display: "flex",
-		alignItems: "center",
-	},
-	disableBtn: {
-		color: "#555 !important",
-	},
-	searchContainer: {
-		width: 300,
-	},
-});
+}))
+const SelectionContainer = styled("div")(() => ({
+	display: "flex",
+	alignItems: "center",
+	flexWrap: "wrap",
+}))
+const ViewContainer = styled("div")(() => ({
+	display: "flex",
+	flex: 1,
+	alignItems: "center",
+	flexWrap: "wrap",
+}))
+const ToolbarActions = styled("div")(() => ({
+	justifyContent: "space-between",
+	display: "flex",
+	alignItems: "center",
+}))
+const CrudIcon = styled("i")(() => ({
+	height: "1em !important",
+	width: "1em !important",
+	cursor: "pointer",
+	fontSize: "0.5em !important",
+}))
 
 function isStudioView(view) {
 	if (view && view.xmlId && view.xmlId.indexOf("studio-") === 0) {
-		return true;
+		return true
 	}
-	return false;
+	return false
 }
 
 function ToolbarButton(props) {
-	const classes = useStyles();
 	return (
 		<IconButton
-			className={classes.toolItemView}
-			classes={{ disabled: classes.disableBtn }}
+			sx={{
+				color: "#fff",
+				padding: "5px 10px",
+				"&[disabled] > i": {
+					color: "#555",
+				},
+			}}
 			{...props}
+			size="large"
 		/>
-	);
+	)
 }
 
 const getOptionLabel = (option) => {
 	if (option.title === null) {
-		return `${option?.type} (${option?.name})`;
+		return `${option?.type} (${option?.name})`
 	} else if (!option.name) {
-		return `${option?.title} `;
+		return `${option?.title} `
 	}
-	return `${option?.title} (${option?.name})`;
-};
+	return `${option?.title} (${option?.name})`
+}
 
 const getOptionSelected = (option, value) => {
 	if (option && option.name) {
-		return option?.name === value?.name;
+		return option?.name === value?.name
 	} else {
-		return option?.title === value?.title;
+		return option?.title === value?.title
 	}
-};
+}
+
+const getError = (errorList) => {
+	let [widgetId, error] = Object.entries(errorList || {})[0] ?? []
+	if (widgetId != null && error) {
+		const message = Object.values(error)[0]
+		return [widgetId, message]
+	}
+	return []
+}
 
 function Toolbar({
 	update,
@@ -97,9 +106,9 @@ function Toolbar({
 	onSelect,
 	isStudioLite,
 	onWidgetChange,
+	changeCurrentTab,
 	...props
 }) {
-	const classes = useStyles();
 	const {
 		state: {
 			extensionView,
@@ -107,295 +116,281 @@ function Toolbar({
 			modelType,
 			customModel,
 			widgets,
+			items,
 			customFieldWidgets,
+			customFieldItems,
 			highlightedOption,
 			selectedView,
-			errorList,
+			widgetErrorList,
+			customErrorList,
 			past,
 			future,
 			modelField,
 			entityType,
 			metaFieldStore,
-			tabPanelItems = [],
-			baseHasChanges,
-			customFieldHasChanges,
+			loader,
 		},
-	} = useStore();
+	} = useStore()
 
 	const { isComponentVisible, setIsComponentVisible } =
-		useComponentVisible(false);
+		useComponentVisible(false)
 
-	const isRemoveDisabled = !(
-		extensionView ||
-		isStudioView(selectedView) ||
-		(modelType === MODEL_TYPE.CUSTOM && Boolean(customModel))
-	);
-	const isNewDisabled = modelType === MODEL_TYPE.BASE && !model;
-	const isSaveDisabled = Object.keys(errorList).length > 0;
+	const isRemoveDisabled =
+		!(
+			extensionView ||
+			isStudioView(selectedView) ||
+			(modelType === MODEL_TYPE.CUSTOM && Boolean(customModel))
+		) || loader
+	const isNewDisabled = (modelType === MODEL_TYPE.BASE && !model) || loader
 
-	const getValue = (obj) => Object.values(obj || {});
+	const getSearchOptions = useCallback((widgets, items, isCustomField) => {
+		const options = generateOptions({ items })
+		return options
+
+		function generateOptions({
+			options = [],
+			items,
+			tabsPanelId,
+			ancestralTabsInfo,
+		}) {
+			;(items || []).forEach((id) => {
+				const widget = widgets[id]
+				if (widget) {
+					const { name, title, type, autoTitle = "", items } = widget
+					let tabsInfo = ancestralTabsInfo
+					if ((name || title) && type !== TYPE.tabs) {
+						const option = {
+							id: id || null,
+							name,
+							title: title || autoTitle || null,
+							type,
+							isCustomField,
+						}
+						if (tabsPanelId) {
+							// NOTE: Although this supports nested tabs-panels, backend doesn't.
+							// so tabsInfo array practically only contains 1 element
+							tabsInfo = [
+								...(ancestralTabsInfo || []),
+								{ tabsPanelId: tabsPanelId, current: id },
+							]
+						}
+						if (tabsInfo) {
+							option.tabsInfo = tabsInfo
+						}
+						options.push(option)
+					}
+					if (items?.length) {
+						generateOptions({
+							options,
+							items,
+							tabsPanelId: type === TYPE.tabs && id,
+							ancestralTabsInfo: tabsInfo,
+						})
+					}
+				}
+			})
+			return options
+		}
+	}, [])
+
+	const showError = React.useCallback(
+		(id, message, isCustomField) => {
+			const element = document.getElementById(getWidgetElementId(id))
+			if (element) {
+				showAlert(message, null, () => {
+					element.scrollIntoView({ behaviour: "instant", block: "center" })
+					onSelect({ id, type: isCustomField ? "customField" : null })
+				})
+				return
+			}
+			// if element with error is not in the DOM, it is in a non activeTab
+			// so we switch to the whatever tab that element is in.
+			// BUG: If the element is in closed collapsible menu, it won't be scrolledTo
+			const _widgets = isCustomField ? customFieldWidgets : widgets
+			const _items = isCustomField ? customFieldItems : items
+			//TODO: we use getSearchOptions but the we only need tabsInfo for the widget with error
+			//so this could be improved
+			const options = getSearchOptions(_widgets, _items, isCustomField)
+			const { tabsInfo } = options.find((o) => o.id === id)
+			if (tabsInfo) {
+				// NOTE: Although this supports nested tabs-panels, backend doesn't.
+				// so tabsInfo array practically only contains 1 element
+				tabsInfo.forEach(({ tabsPanelId, current }) => {
+					changeCurrentTab({
+						id: tabsPanelId,
+						current,
+						isCustomField,
+						skipSelect: true,
+					})
+				})
+				showAlert(message, null, () => {
+					const element = document.getElementById(getWidgetElementId(id))
+					if (element) {
+						element.scrollIntoView({ behaviour: "instant", block: "center" })
+						onSelect({ id, type: isCustomField ? "customField" : null })
+					}
+				})
+			}
+			return
+		},
+		[
+			onSelect,
+			showAlert,
+			changeCurrentTab,
+			customFieldItems,
+			items,
+			customFieldWidgets,
+			widgets,
+			getSearchOptions,
+		]
+	)
 
 	const save = React.useCallback(() => {
-		if (isSaveDisabled) {
-			showAlert((getValue((getValue(errorList) || [])[0]) || [])[0]);
-			return;
+		let isCustomField = false
+		let [id, errorMessage] = getError(widgetErrorList)
+		if (id == null || !errorMessage) {
+			;[id, errorMessage] = getError(customErrorList)
+			isCustomField = true
 		}
-		saveView();
+		if (id != null && errorMessage) {
+			showError(id, errorMessage, isCustomField)
+			return
+		}
+		saveView()
 		if (modelType === MODEL_TYPE.BASE) {
-			saveCustomFieldView();
+			saveCustomFieldView()
 		}
-		onSelect({ id: -1 });
+		onSelect({ id: -1 })
 	}, [
+		showError,
 		saveView,
 		saveCustomFieldView,
 		modelType,
-		isSaveDisabled,
-		showAlert,
-		errorList,
+		customErrorList,
+		widgetErrorList,
 		onSelect,
-	]);
-	const [options, setOptions] = useState([]);
-
-	const getSearchOptions = useCallback((widgets) => {
-		const options = [];
-		Object.keys(widgets || {}).forEach((widget) => {
-			const { name, title, type, autoTitle = "" } = widgets[widget];
-
-			if ((name || title) && !["form", "panel-tabs"].includes(type)) {
-				let option = {
-					id: widget || null,
-					name,
-					title: title || autoTitle || null,
-					type,
-					isTab: type === "panel" && true,
-				};
-				options.push(option);
-			}
-		});
-		return options;
-	}, []);
+	])
+	const [options, setOptions] = useState([])
 
 	const handleSearch = useCallback(
 		(event) => {
 			if (modelType === MODEL_TYPE.BASE && !model) {
-				return;
+				return
 			} else if (
 				modelType === MODEL_TYPE.BASE &&
 				!widgets &&
 				!customFieldWidgets
 			) {
-				return;
+				return
 			}
-			setIsComponentVisible(true);
-			update((draft) => {
-				draft.editWidget = -1;
-			});
+			setIsComponentVisible(true)
+			onSelect({ id: -1 })
 
-			const allOptions = [];
-			let options = getSearchOptions(widgets);
-			allOptions.push(...options);
+			const allOptions = []
+			let options = getSearchOptions(widgets, items, false)
+			allOptions.push(...options)
 			if (customFieldWidgets) {
-				let options = getSearchOptions(customFieldWidgets);
-				allOptions.push(...options);
+				let options = getSearchOptions(
+					customFieldWidgets,
+					customFieldItems,
+					true
+				)
+				allOptions.push(...options)
 			}
-			setOptions(allOptions);
+			setOptions(allOptions)
 		},
 		[
 			model,
 			modelType,
 			setIsComponentVisible,
-			update,
+			onSelect,
 			getSearchOptions,
 			widgets,
 			customFieldWidgets,
+			items,
+			customFieldItems,
 		]
-	);
+	)
 
-	useKeyPress("s", save);
+	useKeyPress("s", save)
 
-	useKeyPress("f", handleSearch);
+	useKeyPress("f", handleSearch)
 
 	const handleOutsideClick = useCallback(
 		(status) => {
-			setIsComponentVisible(status);
-			update((draft) => {
-				draft.highlightedOption = null;
-				draft.editWidget = -1;
-			});
+			setIsComponentVisible(status)
+			onSelect({ id: -1 })
 		},
-		[setIsComponentVisible, update]
-	);
+		[setIsComponentVisible, onSelect]
+	)
 
 	const handleChange = useCallback(
 		(option) => {
-			update((draft) => {
-				draft.highlightedOption = null;
-				draft.editWidget = option?.id;
-			});
-			setIsComponentVisible(false);
+			onSelect({
+				id: option?.id,
+				type: option?.isCustomField ? "customField" : null,
+			})
+			setIsComponentVisible(false)
 		},
-		[setIsComponentVisible, update]
-	);
+		[setIsComponentVisible, onSelect]
+	)
 
 	const handleHighlightChange = useCallback(
 		(option) => {
-			const parentId = Object.keys(widgets || {}).find(
-				(x) => (widgets[x].items || []).indexOf(option?.id) > -1
-			);
-			const customParentId = Object.keys(customFieldWidgets || {})?.find(
-				(x) => (customFieldWidgets[x].items || []).indexOf(option?.id) > -1
-			);
-			const tabId = Object.keys(widgets || {})?.find(
-				(key) => widgets[key]?.type === TYPE.tabs
-			);
-			const customTabId = Object.keys(customFieldWidgets || {})?.find(
-				(key) => customFieldWidgets[key]?.type === TYPE.tabs
-			);
-
 			if (option) {
+				const { tabsInfo, isCustomField } = option
 				update((draft) => {
-					draft.highlightedOption = option;
-				});
-
-				if (modelType === MODEL_TYPE.CUSTOM) {
-					update((draft) => {
-						draft.editWidgetType = -1;
-					});
-					if (option?.isTab && tabId === parentId && (tabId || parentId)) {
-						onWidgetChange({
-							id: parentId,
-							props: {
-								current: option && option.id,
-								_type: null,
-							},
-							skipGenerateHistory: true,
-						});
-					} else {
-						onWidgetChange({
-							id: tabId,
-							props: {
-								current: parentId,
-								_type: null,
-							},
-							skipGenerateHistory: true,
-						});
+					draft.highlightedOption = option
+					if (tabsInfo) {
+						// NOTE: Although this supports nested tabs-panels, backend doesn't.
+						// so tabsInfo array practically only contains 1 element
+						tabsInfo.forEach(({ tabsPanelId, current }) => {
+							changeCurrentTab(
+								{ id: tabsPanelId, current, isCustomField, skipSelect: true },
+								draft
+							)
+						})
 					}
-				} else if (modelType === MODEL_TYPE.BASE) {
-					if (customFieldWidgets && customParentId) {
-						update((draft) => {
-							draft.editWidgetType = "customField";
-						});
-						onWidgetChange({
-							id: option?.isTab ? customParentId : customTabId,
-							props: {
-								current: option?.isTab ? option?.id : customParentId,
-								_type: "customField",
-							},
-							skipGenerateHistory: true,
-						});
-					} else if (
-						!option?.isTab &&
-						parentId &&
-						tabId &&
-						(!customParentId || !customTabId)
-					) {
-						update((draft) => {
-							draft.editWidgetType = null;
-						});
-						if (!tabPanelItems?.includes(parentId)) {
-							Object.keys(widgets || {}).forEach((widget) => {
-								if (
-									widgets[widget].type === "panel" &&
-									widgets[widget].items?.includes(option?.id)
-								) {
-									let string = widgets[widget]?.xPath.split("/panel")[1];
-									let panelName = string?.substring(8, string.length - 2);
-									Object.keys(widgets || {}).forEach((widget) => {
-										if (widgets[widget].name === panelName) {
-											onWidgetChange({
-												id: tabId,
-												props: {
-													current: widget,
-													_type: null,
-												},
-												skipGenerateHistory: true,
-											});
-										}
-									});
-								}
-							});
-						} else {
-							onWidgetChange({
-								id: tabId,
-								props: {
-									current: parentId,
-									_type: null,
-								},
-								skipGenerateHistory: true,
-							});
-						}
-					} else if (
-						option?.isTab &&
-						parentId &&
-						tabId &&
-						(!customParentId || !customTabId)
-					) {
-						update((draft) => {
-							draft.editWidgetType = null;
-						});
-						onWidgetChange({
-							id: tabId === parentId ? parentId : tabId,
-							props: {
-								current: tabId === parentId ? option?.id : parentId,
-								_type: null,
-							},
-							skipGenerateHistory: true,
-						});
-					}
-				}
+				})
 			}
 		},
-		[
-			widgets,
-			customFieldWidgets,
-			update,
-			modelType,
-			onWidgetChange,
-			tabPanelItems,
-		]
-	);
+		[update, changeCurrentTab]
+	)
 
 	const handleClose = useCallback(() => {
 		update((draft) => {
-			draft.editWidget = draft.highlightedOption?.id
-				? draft.highlightedOption?.id
-				: -1;
-			draft.highlightedOption = null;
-		});
-	}, [update]);
+			onSelect(
+				{
+					id: draft.highlightedOption?.id,
+					type: draft.highlightedOption?.isCustomField ? "customField" : null,
+				},
+				draft
+			)
+		})
+	}, [update, onSelect])
 
-	const handleHighlightChangeRef = React.useRef(handleHighlightChange);
-	const timerRef = React.useRef(null);
+	const handleHighlightChangeRef = React.useRef(handleHighlightChange)
+	const timerRef = React.useRef(null)
 
 	React.useEffect(() => {
-		handleHighlightChangeRef.current = handleHighlightChange;
-	}, [highlightedOption, handleHighlightChange]);
+		handleHighlightChangeRef.current = handleHighlightChange
+	}, [highlightedOption, handleHighlightChange])
 
 	const onHighlightChange = React.useCallback((event, option) => {
-		clearTimeout(timerRef.current);
+		clearTimeout(timerRef.current)
 		timerRef.current = setTimeout(
 			() => {
-				option && handleHighlightChangeRef.current(option);
+				option && handleHighlightChangeRef.current(option)
 			},
 			event ? 100 : 200
-		);
-	}, []);
+		)
+	}, [])
 
 	React.useEffect(() => {
 		return () => {
-			clearTimeout(timerRef.current);
-		};
-	}, []);
+			clearTimeout(timerRef.current)
+		}
+	}, [])
 
 	const showConfirmation = React.useCallback(
 		(onOK) => {
@@ -406,72 +401,91 @@ function Toolbar({
 				title: translate("Question"),
 				onOK,
 				type: "confirm",
-			};
+			}
 			update((draft) => {
-				draft.loader = false;
-				draft.dialog = dialog;
-			});
+				draft.loader = false
+				draft.dialog = dialog
+			})
 		},
 		[update]
-	);
+	)
 
-	const isDirty =
-		past.length > 0 ||
-		future.length > 0 ||
-		baseHasChanges ||
-		customFieldHasChanges;
+	const isCustomDirty =
+		past.some((e) => e.id === HISTORY.CUSTOM) ||
+		future.some((e) => e.id === HISTORY.CUSTOM)
+	const isWidgetDirty =
+		past.some((e) => e.id === HISTORY.WIDGET) ||
+		future.some((e) => e.id === HISTORY.WIDGET)
 
+	/**
+	 * Provides ability to display a confirmation alert before executing the provided function.
+	 *
+	 * @param {function} fn - Any function that needs to show an alert.
+	 * @param {string} [type] - Optional. The type of history to be considered as dirty.
+	 *     Possible values are HISTORY.CUSTOM or HISTORY.WIDGET.
+	 *     If not provided, all history is considered to be dirty.
+	 * @returns {function} - The function with alert.
+	 * @example
+	 * const wrappedFunction = React.useMemo(()=>runIfConfirmed(myFunction, HISTORY.CUSTOM),[myFunction]);
+	 *
+	 *  Now, wrappedFunction will display an alert and execute myFunction only if the custom history is not dirty.
+	 *
+	 */
 	const runIfConfirmed = React.useCallback(
-		(fn, skipConfirm) =>
+		(fn, type) =>
 			(...args) => {
-				if (isDirty && !skipConfirm) {
-					showConfirmation(() => fn(...args));
-				} else fn(...args);
+				const isDirty =
+					type === HISTORY.WIDGET
+						? isWidgetDirty
+						: type === HISTORY.CUSTOM
+						? isCustomDirty
+						: isWidgetDirty || isCustomDirty
+				if (isDirty) {
+					showConfirmation(() => fn(...args))
+				} else fn(...args)
 			},
-		[showConfirmation, isDirty]
-	);
+		[showConfirmation, isCustomDirty, isWidgetDirty]
+	)
 
 	const onNewWithConfirmation = React.useMemo(
 		() => runIfConfirmed(onNew),
 		[onNew, runIfConfirmed]
-	);
+	)
 
 	const handleRefreshWithConfirmation = React.useMemo(
 		() => runIfConfirmed(props.refresh),
 		[props.refresh, runIfConfirmed]
-	);
+	)
 
 	return (
-		<div className={classes.toolbarContainer}>
-			<div className={classes.toolbarActions}>
+		<ToolbarContainer>
+			<SelectionContainer
+				sx={{
+					display: "flex",
+					alignItems: "center",
+					flexWrap: "wrap",
+				}}
+			>
 				{modelType !== MODEL_TYPE.BASE && (
 					<ToolbarButton
-						className={classes.toolItemView}
 						onClick={onNewWithConfirmation}
 						disabled={isNewDisabled}
 					>
-						<i className={classnames("fa fa-plus", classes.crudIcon)} />
+						<CrudIcon className={classnames("fa fa-plus")}></CrudIcon>
 					</ToolbarButton>
 				)}
-				<ToolbarButton
-					className={classes.toolItemView}
-					onClick={save}
-					disabled={isSaveDisabled}
-				>
-					<i className={classnames("fa fa-floppy-o", classes.crudIcon)} />
+				<ToolbarButton onClick={save} disabled={loader}>
+					{" "}
+					<CrudIcon className={classnames("fa fa-floppy-o")}></CrudIcon>
 				</ToolbarButton>
 				{modelType === MODEL_TYPE.CUSTOM && (
-					<ToolbarButton
-						className={classes.toolItemView}
-						onClick={removeView}
-						disabled={isRemoveDisabled}
-					>
-						<i className={classnames("fa fa-trash-o", classes.crudIcon)} />
+					<ToolbarButton onClick={removeView} disabled={isRemoveDisabled}>
+						<CrudIcon className={classnames("fa fa-trash-o")}></CrudIcon>
 					</ToolbarButton>
 				)}
-			</div>
+			</SelectionContainer>
 			{!isStudioLite && (
-				<div className={classes.selectionContainer}>
+				<ViewContainer>
 					<ViewSelection
 						model={model}
 						update={update}
@@ -482,17 +496,14 @@ function Toolbar({
 						entityType={entityType}
 						metaFieldStore={metaFieldStore}
 						runIfConfirmed={runIfConfirmed}
-						baseHasChanges={baseHasChanges}
-						customFieldHasChanges={customFieldHasChanges}
 						{...props}
 					/>
-				</div>
+				</ViewContainer>
 			)}
-			<div className={classes.toolbarActions}>
+			<ToolbarActions>
 				{isComponentVisible ? (
 					<Select
 						options={options}
-						className={classes.searchContainer}
 						autoHighlight={true}
 						open={true}
 						autoFocus={true}
@@ -501,48 +512,44 @@ function Toolbar({
 						onHighlightChange={onHighlightChange}
 						handleOutsideClick={handleOutsideClick}
 						getOptionLabel={getOptionLabel}
-						getOptionSelected={getOptionSelected}
+						isOptionEqualToValue={getOptionSelected}
 					/>
 				) : (
 					<ToolbarButton
-						className={classes.toolItemView}
 						onClick={handleSearch}
 						disabled={
-							modelType === MODEL_TYPE.BASE && !model
+							loader ||
+							(modelType === MODEL_TYPE.BASE && !model
 								? true
 								: modelType === MODEL_TYPE.BASE &&
 								  !widgets &&
 								  !customFieldWidgets
 								? true
-								: false
+								: false)
 						}
 					>
-						<i className={classnames("fa fa-search", classes.crudIcon)} />
+						{" "}
+						<CrudIcon className={classnames("fa fa-search")}></CrudIcon>
 					</ToolbarButton>
 				)}
 				<ToolbarButton
-					className={classes.toolItemView}
 					onClick={handleRefreshWithConfirmation}
-					disabled={!customModel && !model}
+					disabled={loader || (!customModel && !model)}
 				>
-					<i className={classnames("fa fa-refresh", classes.crudIcon)} />
+					<CrudIcon className={classnames("fa fa-refresh")}></CrudIcon>
 				</ToolbarButton>
-				<ToolbarButton
-					className={classes.toolItemView}
-					onClick={() => props.undo()}
-					disabled={past.length <= 0}
-				>
-					<i className={classnames("fa fa-reply", classes.crudIcon)} />
+				<ToolbarButton onClick={() => props.undo()} disabled={past.length <= 0}>
+					<CrudIcon className={classnames("fa fa-reply")}></CrudIcon>
 				</ToolbarButton>
 				<ToolbarButton
 					onClick={() => props.redo()}
 					disabled={future.length <= 0}
 				>
-					<i className={classnames("fa fa-share", classes.crudIcon)} />
+					<CrudIcon className={classnames("fa fa-share")}></CrudIcon>
 				</ToolbarButton>
-			</div>
-		</div>
-	);
+			</ToolbarActions>
+		</ToolbarContainer>
+	)
 }
 
-export default React.memo(Toolbar);
+export default React.memo(Toolbar)

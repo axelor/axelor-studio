@@ -5,10 +5,10 @@ import {
 	SelectField,
 	StaticSelectField,
 	BooleanField,
-} from "./fieldTypes";
-import widgetList from "./widgetList";
-import { MODEL_TYPE, DataTypes, relationalFields, TYPE } from "../constants";
-import { getMenuBuilderTitle } from "./properties.helper";
+} from "./fieldTypes"
+import widgetList from "./widgetList"
+import { MODEL_TYPE, DataTypes, relationalFields, TYPE } from "../constants"
+import { getMenuBuilderTitle } from "./properties.helper"
 
 const canCollapse = {
 	name: "canCollapse",
@@ -18,13 +18,13 @@ const canCollapse = {
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
 	isDisabled: ({ properties }) => {
-		const widgetAttrs = properties?.widgetAttrs;
-		const isTab = JSON.parse(widgetAttrs || "{}").tab;
+		const widgetAttrs = properties?.widgetAttrs
+		const isTab = widgetAttrs?.tab
 		if (JSON.parse(isTab || "false")) {
-			return true;
+			return true
 		}
 	},
-};
+}
 const collapseIf = {
 	name: "collapseIf",
 	title: "Collapse If",
@@ -33,19 +33,19 @@ const collapseIf = {
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
 	isDisabled: ({ properties }) => {
-		const widgetAttrs = properties?.widgetAttrs;
-		const isTab = JSON.parse(widgetAttrs || "{}").tab;
+		const widgetAttrs = properties?.widgetAttrs
+		const isTab = widgetAttrs?.tab
 		if (JSON.parse(isTab || "false")) {
-			return true;
+			return true
 		}
 	},
-};
+}
 
 const isGenerateMenu = {
 	name: "isGenerateMenu",
 	title: "Generate menu",
 	type: "boolean",
-};
+}
 
 const isTab = {
 	name: "tab",
@@ -53,7 +53,13 @@ const isTab = {
 	parentField: "widgetAttrs",
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
-};
+}
+
+const isSelectionField = {
+	name: "isSelectionField",
+	type: "boolean",
+	title: "isSelectionField",
+}
 
 /** Overview Fields */
 export const Name = ({ ...props } = {}) =>
@@ -73,7 +79,7 @@ export const Name = ({ ...props } = {}) =>
 			isStudioLite,
 		}) => {
 			if (modelType === MODEL_TYPE.BASE && editWidgetType !== "customField") {
-				return true;
+				return true
 			}
 			if (
 				modelType === MODEL_TYPE.CUSTOM &&
@@ -81,9 +87,9 @@ export const Name = ({ ...props } = {}) =>
 				(properties.id || isStudioLite) &&
 				properties.type === "form"
 			) {
-				return true;
+				return true
 			}
-			return false;
+			return false
 		},
 		requiredFor: [
 			"button",
@@ -110,7 +116,7 @@ export const Name = ({ ...props } = {}) =>
 			"hilite",
 		],
 		...props,
-	});
+	})
 
 export const Type = StringField({
 	name: "type",
@@ -121,15 +127,15 @@ export const Type = StringField({
 	readOnly: "true",
 	formatter: (value, properties) => {
 		if (properties.tab) {
-			return "panel-tabs";
+			return "panel-tabs"
 		}
-		const entityIndex = value.indexOf("entity");
+		const entityIndex = value.indexOf("entity")
 		if (entityIndex !== -1) {
-			return value.substring(0, entityIndex);
+			return value.substring(0, entityIndex)
 		}
-		return value;
+		return value
 	},
-});
+})
 
 export const SelectableType = StaticSelectField({
 	name: "type",
@@ -141,52 +147,52 @@ export const SelectableType = StaticSelectField({
 	disableClearable: true,
 	isDisabled: ({ properties, metaFieldStore, editWidgetType, modelType }) => {
 		if (modelType === MODEL_TYPE.BASE && editWidgetType !== "customField") {
-			return true;
+			return true
 		}
 	},
-});
+})
 
 export const DummyType = StaticSelectField({
 	name: "dummyType",
 	title: "Type",
 	data: [...DataTypes],
-});
+})
 
-export const CanCollapse = BooleanField(canCollapse);
+export const CanCollapse = BooleanField(canCollapse)
 
-export const CollapseIf = StringField(collapseIf);
+export const CollapseIf = StringField(collapseIf)
 
 export const Title = StringField({
 	name: "title",
 	title: "Title",
-	translationView: false,
 	requiredWhen: [canCollapse, collapseIf, isTab],
-});
+	requiredFor: ["label"],
+})
 
 export const DefaultValue = StringField({
 	name: "defaultValue",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	title: "Default value",
-});
+})
 
 export const StudioApp = ObjectSelectionField({
 	name: "studioApp",
 	title: "App name",
 	ref: "com.axelor.studio.db.StudioApp",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const Help = StringField({
 	name: "help",
 	title: "Help",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const Sequence = IntegerField({
 	name: "sequence",
 	title: "Sequence",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 /** Roles Fields */
 export const Roles = ObjectSelectionField({
@@ -195,7 +201,7 @@ export const Roles = ObjectSelectionField({
 	ref: "com.axelor.auth.db.Role",
 	multiple: true,
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 /** ValueExpr Fields */
 export const ValueExpression = {
@@ -203,7 +209,7 @@ export const ValueExpression = {
 	title: "Value expr",
 	type: "text",
 	dependModelType: MODEL_TYPE.CUSTOM,
-};
+}
 
 /** Field Options Fields */
 export const Selection = SelectField({
@@ -213,14 +219,15 @@ export const Selection = SelectField({
 	valueField: "name",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	type: "selection",
-});
+	requiredWhen: [isSelectionField],
+})
 
 export const Widget = StaticSelectField({
 	name: "widget",
 	data: widgetList,
 	title: "Widget",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const OnChange = SelectField({
 	name: "onChange",
@@ -230,7 +237,7 @@ export const OnChange = SelectField({
 	multiple: true,
 	canAddNew: true,
 	commaSeparated: true,
-});
+})
 
 export const OnNew = SelectField({
 	title: "On new",
@@ -240,7 +247,7 @@ export const OnNew = SelectField({
 	multiple: true,
 	commaSeparated: true,
 	canAddNew: true,
-});
+})
 
 export const OnLoad = SelectField({
 	title: "On load",
@@ -249,7 +256,7 @@ export const OnLoad = SelectField({
 	multiple: true,
 	commaSeparated: true,
 	canAddNew: true,
-});
+})
 
 export const OnSave = SelectField({
 	name: "onSave",
@@ -258,104 +265,104 @@ export const OnSave = SelectField({
 	commaSeparated: true,
 	title: "On save",
 	canAddNew: true,
-});
+})
 
 export const Min = IntegerField({
 	name: "minSize",
 	title: "Min",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const Max = IntegerField({
 	name: "maxSize",
 	title: "Max",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const JsonRelationalField = BooleanField({
 	name: "isJsonRelationalField",
 	title: "Is json relational field",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	getValue: (properties) => {
-		const type = properties["type"];
+		const type = properties["type"]
 		if (type) {
-			const hasJSONField = type.indexOf("json") === 0;
+			const hasJSONField = type.indexOf("json") === 0
 			if (hasJSONField) {
-				return true;
+				return true
 			}
 		}
-		return false;
+		return false
 	},
 	change: (value, properties) => {
-		const type = properties["type"];
+		const type = properties["type"]
 		if (value === true) {
-			const has = type.indexOf("json") === 0;
+			const has = type.indexOf("json") === 0
 			if (!has) {
-				const _type = `json-${type}`;
+				const _type = `json-${type}`
 				return {
 					type: _type,
 					serverType: _type,
-				};
+				}
 			}
 		} else if (value === false) {
-			const has = type.indexOf("json") === 0;
+			const has = type.indexOf("json") === 0
 			if (has) {
-				const _type = type.substring("json-".length);
+				const _type = type.substring("json-".length)
 				return {
 					type: _type,
 					serverType: _type,
-				};
+				}
 			}
 		}
-		return {};
+		return {}
 	},
-});
+})
 
 export const Domain = StringField({
 	name: "domain",
 	title: "Domain",
-});
+})
 
 export const Prompt = StringField({
 	name: "prompt",
 	title: "Prompt",
 	parentField: "widgetAttrs",
-});
+})
 
 export const SelectionIn = StringField({
 	name: "selection-in",
 	dependModelType: MODEL_TYPE.BASE,
 	showInCustomField: false,
 	title: "Selection in",
-});
+})
 
 export const Value = StringField({
 	name: "value",
 	title: "Value",
 	dependModelType: MODEL_TYPE.BASE,
 	showInCustomField: false,
-});
+})
 
 export const ValueAdd = StringField({
 	name: "value:add",
 	title: "Value:add",
 	dependModelType: MODEL_TYPE.BASE,
 	showInCustomField: false,
-});
+})
 
 export const ValueDel = StringField({
 	name: "value:del",
 	title: "Value:del",
 	dependModelType: MODEL_TYPE.BASE,
 	showInCustomField: false,
-});
+})
 
 export const Refresh = BooleanField({
 	name: "refresh",
 	title: "Refresh",
 	dependModelType: MODEL_TYPE.BASE,
 	showInCustomField: false,
-});
+})
 
 export const Active = BooleanField({
 	name: "active",
@@ -363,9 +370,9 @@ export const Active = BooleanField({
 	dependModelType: MODEL_TYPE.BASE,
 	showInCustomField: false,
 	shouldRender: (list) => {
-		return list.xPath && list.xPath.includes("panel-tabs");
+		return list.xPath && list.xPath.includes("panel-tabs")
 	},
-});
+})
 
 export const TargetJsonModel = ObjectSelectionField({
 	name: "targetJsonModel",
@@ -374,7 +381,7 @@ export const TargetJsonModel = ObjectSelectionField({
 	displayField: "title",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	title: "Target json model",
-});
+})
 
 export const TargetModel = SelectField({
 	name: "targetModel",
@@ -388,9 +395,9 @@ export const TargetModel = SelectField({
 			editWidgetType !== "customField" &&
 			property.serverType !== "field" &&
 			modelType !== MODEL_TYPE.CUSTOM
-		);
+		)
 	},
-});
+})
 
 export const GridView = SelectField({
 	name: "gridView",
@@ -403,7 +410,10 @@ export const GridView = SelectField({
 		relationalFields.ManyToMany,
 		relationalFields.ManyToOne,
 	],
-});
+	isDisabled: ({ targetModel }) => {
+		return !targetModel
+	},
+})
 
 export const FormView = SelectField({
 	name: "formView",
@@ -416,7 +426,10 @@ export const FormView = SelectField({
 		relationalFields.ManyToMany,
 		relationalFields.ManyToOne,
 	],
-});
+	isDisabled: ({ targetModel }) => {
+		return !targetModel
+	},
+})
 
 /** Ui options fields */
 export const Required = BooleanField({
@@ -426,18 +439,18 @@ export const Required = BooleanField({
 	isDisabled: ({ properties, metaFieldStore, editWidgetType, modelType }) => {
 		if (modelType === MODEL_TYPE.BASE && editWidgetType !== "customField") {
 			if (properties["requiredIf"] && properties["requiredIf"].length) {
-				return true;
+				return true
 			}
 		}
-		return false;
+		return false
 	},
-});
+})
 
 export const ColumnSequence = IntegerField({
 	name: "columnSequence",
 	title: "Column sequence",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const ReadOnly = BooleanField({
 	name: "readonly",
@@ -445,53 +458,53 @@ export const ReadOnly = BooleanField({
 	isDisabled: ({ properties, metaFieldStore, editWidgetType, modelType }) => {
 		if (modelType === MODEL_TYPE.BASE && editWidgetType !== "customField") {
 			if (properties["readonlyIf"] && properties["readonlyIf"].length) {
-				return true;
+				return true
 			}
 		}
-		return false;
+		return false
 	},
-});
+})
 
 export const Hidden = BooleanField({
 	name: "hidden",
 	title: "Hidden",
 	isDisabled: ({ properties }) => {
 		if (properties["hideIf"] && properties["hideIf"].length) {
-			return true;
+			return true
 		}
-		return false;
+		return false
 	},
-});
+})
 
 export const VisibleInGrid = BooleanField({
 	name: "visibleInGrid",
 	title: "Visible in grid",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 /** Conditions Fields*/
 export const ShowIf = StringField({
 	name: "showIf",
 	title: "Show if",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const HideIf = StringField({
 	name: "hideIf",
 	title: "Hide if",
 	isDisabled: ({ properties }) => {
 		if (properties["hidden"]) {
-			return true;
+			return true
 		}
-		return false;
+		return false
 	},
-});
+})
 
 export const If = StringField({
 	name: "if",
 	title: "If",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const RequiredIf = StringField({
 	name: "requiredIf",
@@ -499,12 +512,12 @@ export const RequiredIf = StringField({
 	isDisabled: ({ properties, metaFieldStore, editWidgetType, modelType }) => {
 		if (modelType === MODEL_TYPE.BASE && editWidgetType !== "customField") {
 			if (properties["required"]) {
-				return true;
+				return true
 			}
 		}
-		return false;
+		return false
 	},
-});
+})
 
 export const ReadOnlyIf = StringField({
 	name: "readonlyIf",
@@ -512,18 +525,18 @@ export const ReadOnlyIf = StringField({
 	isDisabled: ({ properties, metaFieldStore, editWidgetType, modelType }) => {
 		if (modelType === MODEL_TYPE.BASE && editWidgetType !== "customField") {
 			if (properties["readonly"]) {
-				return true;
+				return true
 			}
 		}
-		return false;
+		return false
 	},
-});
+})
 
 export const IncludeIf = StringField({
 	name: "includeIf",
 	title: "Include if",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const ValidIf = StringField({
 	name: "validIf",
@@ -531,8 +544,11 @@ export const ValidIf = StringField({
 	parentField: "widgetAttrs",
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
+/* TODO: Error implementation in OnlyIf is wrong,
+ * currently no errors are shown, so it's fine as of now.
+ */
 export const OnlyIf = SelectField({
 	name: "contextField",
 	title: "Only if",
@@ -543,26 +559,26 @@ export const OnlyIf = SelectField({
 		"self.name not in ('createdBy', 'updatedBy') and self.relationship = 'ManyToOne' and self.metaModel.fullName = :model",
 	dependModelType: MODEL_TYPE.BASE,
 	showInBaseView: false,
-});
+})
 
 export const CanSave = StringField({
 	name: "canSave",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	title: "Can save",
-});
+})
 
 export const Css = StringField({
 	name: "css",
 	title: "Css",
 	parentField: "widgetAttrs",
 	modelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const Editable = BooleanField({
 	name: "editable",
 	title: "Editable",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 /** Widget Fields*/
 export const ColSpan = StaticSelectField({
@@ -578,17 +594,17 @@ export const ColSpan = StaticSelectField({
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
 	getOptionLabel: (option) => {
-		return option ? option.toString() : "";
+		return option ? option.toString() : ""
 	},
 	isDisabled: ({ properties, parentPanel }) => {
 		if (parentPanel) {
 			if ([TYPE.toolbar, TYPE.menubar].includes(parentPanel.serverType)) {
-				return true;
+				return true
 			}
 		}
-		return false;
+		return false
 	},
-});
+})
 
 export const ItemSpan = StaticSelectField({
 	name: "itemSpan",
@@ -603,20 +619,20 @@ export const ItemSpan = StaticSelectField({
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
 	getOptionLabel: (option) => {
-		return option ? option.toString() : "";
+		return option ? option.toString() : ""
 	},
 	isDisabled: ({ properties, parentPanel }) => {
 		if (
 			parentPanel &&
 			[TYPE.toolbar, TYPE.menubar].includes(parentPanel.serverType)
 		) {
-			return true;
+			return true
 		}
-		return false;
+		return false
 	},
-});
+})
 
-export const IsGenerateMenu = BooleanField(isGenerateMenu);
+export const IsGenerateMenu = BooleanField(isGenerateMenu)
 
 export const MenuBuilderTitle = StringField({
 	name: "menuBuilderTitle",
@@ -624,7 +640,7 @@ export const MenuBuilderTitle = StringField({
 	depends: "isGenerateMenu",
 	dependValue: true,
 	requiredWhen: [isGenerateMenu],
-});
+})
 
 export const MenuBuilderParent = ObjectSelectionField({
 	name: "menuBuilderParent",
@@ -637,9 +653,9 @@ export const MenuBuilderParent = ObjectSelectionField({
 	shouldFetchInStart: true,
 	limit: null,
 	getOptionLabel: (option, data) => {
-		return getMenuBuilderTitle(option, data);
+		return getMenuBuilderTitle(option, data)
 	},
-});
+})
 
 export const ShowTitle = BooleanField({
 	name: "showTitle",
@@ -648,24 +664,31 @@ export const ShowTitle = BooleanField({
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
 	title: "Show title",
-});
+	isDisabled: ({ properties, fieldValue }) => {
+		if (!fieldValue) return false
+		const canCollapse = properties?.widgetAttrs?.canCollapse
+		const collapseIf = properties?.widgetAttrs?.collapseIf
+		return canCollapse || collapseIf
+	},
+	// TODO: Hide when it is property of the tab
+})
 
 export const CanSearch = BooleanField({
 	name: "canSearch",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	title: "Can search",
-});
+})
 
 export const IfModule = StringField({
 	name: "if-module",
 	title: "If-module",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const Height = StringField({
 	name: "height",
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const Action = SelectField({
 	name: "action",
@@ -676,7 +699,7 @@ export const Action = SelectField({
 	multiple: true,
 	commaSeparated: true,
 	canAddNew: true,
-});
+})
 
 export const Field = StringField({
 	name: "field",
@@ -684,19 +707,19 @@ export const Field = StringField({
 	required: true,
 	requiredFor: ["panel-related"],
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const CanMove = BooleanField({
 	name: "canMove",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	title: "Can move",
-});
+})
 
 export const OrderBy = StringField({
 	name: "orderBy",
 	dependModelType: MODEL_TYPE.CUSTOM,
 	title: "Order by",
-});
+})
 
 export const IncludeView = SelectField({
 	name: "view",
@@ -705,12 +728,12 @@ export const IncludeView = SelectField({
 	valueField: "name",
 	requiredFor: ["panel-include"],
 	dependModelType: MODEL_TYPE.CUSTOM,
-});
+})
 
 export const IncludeFrom = StringField({
 	name: "from",
 	title: "From",
-});
+})
 
 export const Sidebar = BooleanField({
 	name: "sidebar",
@@ -719,18 +742,18 @@ export const Sidebar = BooleanField({
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
 	showInCustomField: false,
-	isDisabled: ({ mainItems, id }) => {
-		return mainItems.length === 1 && mainItems[0] === id;
+	isDisabled: ({ hasOnlyOneNonSidebarItem, fieldValue }) => {
+		return hasOnlyOneNonSidebarItem && !fieldValue
 	},
 	isHidden: ({ parentPanel }) => {
-		return parentPanel ? true : false;
+		return parentPanel ? true : false
 	},
-});
+})
 
 export const Password = BooleanField({
 	name: "password",
 	title: "Password",
-});
+})
 
 export const Model = SelectField({
 	name: "model",
@@ -738,86 +761,22 @@ export const Model = SelectField({
 	required: true,
 	ref: "com.axelor.meta.db.MetaModel",
 	valueField: "fullName",
-});
+})
 
 export const Color = StaticSelectField({
 	name: "color",
 	title: "Color",
 	data: ["default", "primary", "warning", "success", "danger", "info"],
-});
+})
 
 export const Background = StaticSelectField({
 	name: "background",
 	title: "Background",
 	data: ["default", "primary", "warning", "success", "danger", "info"],
-});
+})
 
 export const Strong = BooleanField({
 	name: "strong",
 	title: "Strong",
 	dependModelType: MODEL_TYPE.BASE,
-});
-
-const PropertyFields = {
-	Name,
-	Type,
-	Title,
-	DefaultValue,
-	StudioApp,
-	Help,
-	Sequence,
-	Roles,
-	ValueExpression,
-	Selection,
-	Widget,
-	OnChange,
-	Min,
-	Max,
-	JsonRelationalField,
-	Domain,
-	TargetJsonModel,
-	TargetModel,
-	GridView,
-	FormView,
-	Required,
-	ColumnSequence,
-	ReadOnly,
-	Hidden,
-	VisibleInGrid,
-	ShowIf,
-	HideIf,
-	RequiredIf,
-	ReadOnlyIf,
-	IncludeIf,
-	ValidIf,
-	OnlyIf,
-	ColSpan,
-	ShowTitle,
-	OnNew,
-	OnLoad,
-	OnSave,
-	Editable,
-	DummyType,
-	IfModule,
-	Action,
-	Height,
-	CanSearch,
-	Field,
-	CanMove,
-	OrderBy,
-	IncludeFrom,
-	IncludeView,
-	Password,
-	Image,
-	IsGenerateMenu,
-	MenuBuilderParent,
-	MenuBuilderTitle,
-	Model,
-	Color,
-	Strong,
-	Background,
-	ItemSpan,
-	Css,
-};
-
-export default PropertyFields;
+})
