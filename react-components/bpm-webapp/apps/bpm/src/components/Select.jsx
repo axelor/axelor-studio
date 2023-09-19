@@ -242,9 +242,7 @@ export default function SelectComponent({
               ? "name"
               : "name";
           } else if (name === "wkfModel") {
-            optionName = `${
-              option["wkfModel"] && option["wkfModel"]["name"]
-            } (${option["name"]})`;
+            return option[name] === val[name];
           } else if (name === "multiSelect") {
             return option === val;
           } else {
@@ -352,9 +350,9 @@ export default function SelectComponent({
           } else if (name === "dmnModel") {
             optionName = `${option["name"]} (${option["decisionId"]})`;
           } else if (name === "wkfModel") {
-            optionName = `${
-              option["wkfModel"] && option["wkfModel"]["name"]
-            } (${option["name"]})`;
+            optionName = option["wkfModel"]
+              ? `${option["wkfModel"]["name"]} (${option["name"]})`
+              : "";
           } else {
             optionName =
               option[optionLabel] && option[optionLabelSecondary]

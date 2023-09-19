@@ -630,6 +630,7 @@ export async function getBPMNModels(options = {}) {
   const res = await Service.search("com.axelor.studio.db.WkfProcess", {
     ...options,
     limit: 40,
+    fields: ["name", "wkfModel"],
   });
   const { data = [] } = res || {};
   return data;
