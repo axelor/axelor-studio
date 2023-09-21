@@ -23,16 +23,20 @@
         onClick="save,action-wkf-instance-view-dashboard" colSpan="3"/>
       <field name="$imageUrl" colSpan="12" hidden="true"/>
     </panel>
-    <panel-tabs name="mainPanelTabs">
-      <panel-dashlet name="wkfInstanceDashlet"
+    <panel-tabs name="mainPanelTabs" showIf="$imageUrl != null">
+     <panel-dashlet name="wkfInstanceDashlet"
         action="action-wkf-instance-display-instance-state" colSpan="12" height="600"
         showIf="$imageUrl != null" readonly="true" title="BPM Instance State"/>
       <panel name="migrationHistoryPanel" title="Migration History">
         <field name="wkfInstanceMigrationHistory" readonly="true" widget="editor" colSpan="12"/>
       </panel>
+      <panel title="Log">
+      	 <button name="clearLogBtn" title="Clear log" onClick="action-wkf-instance-method-clear-log" colSpan="3"/>
+         <field name="logText" colSpan="12" showTitle="false" />
+       </panel>  	
     </panel-tabs>
   </form>
-
+  
   <action-view name="action-wkf-instance-display-instance-state"
     title="BPM Instance State">
     <view type="html" name="{{$imageUrl}}"/>
@@ -68,6 +72,10 @@
 
   <action-method name="action-wkf-instance-method-cancel-node">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="cancelNode"/>
+  </action-method>
+  
+  <action-method name="action-wkf-instance-method-clear-log">
+  	<call class="com.axelor.studio.bpm.web.WkfModelController" method="clearInstanceLog"/>
   </action-method>
 
 </object-views>

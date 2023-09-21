@@ -29,6 +29,7 @@ import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceMigrationHistory;
@@ -45,6 +46,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.OutputStreamAppender;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -102,6 +107,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   protected BpmErrorMessageService bpmErrorMessageService;
 
+  protected WkfLogService wkfLogService;
+
   @Inject
   public WkfInstanceServiceImpl(
       ProcessEngineService engineService,
@@ -112,7 +119,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfTaskService wkfTaskService,
       WkfEmailService wkfEmailService,
       WkfUserActionService wkfUserActionService,
-      BpmErrorMessageService bpmErrorMessageService) {
+      BpmErrorMessageService bpmErrorMessageService,
+      WkfLogService wkfLogService) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -122,6 +130,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.wkfEmailService = wkfEmailService;
     this.wkfUserActionService = wkfUserActionService;
     this.bpmErrorMessageService = bpmErrorMessageService;
+    this.wkfLogService = wkfLogService;
   }
 
   @Override
@@ -132,6 +141,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     String helpText = null;
 
+    OutputStreamAppender<ILoggingEvent> appender = null;
+    String procesInstanceId = null;
     try {
       if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
         checkSubProcess(model);
@@ -157,6 +168,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
             findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
 
         if (processInstance != null && wkfInstance != null && !processInstance.isEnded()) {
+          procesInstanceId	= processInstance.getId();
+          appender = wkfLogService.createOrAttachAppender(procesInstanceId);
           helpText =
               wkfTaskService
                   .runTasks(engine, wkfInstance, processInstance, signal);
@@ -182,7 +195,12 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
             });
       }
       throw e;
+    } finally {
+    	if (appender != null) {
+    		wkfLogService.writeLog(procesInstanceId);
+    	}
     }
+
 
     return helpText;
   }

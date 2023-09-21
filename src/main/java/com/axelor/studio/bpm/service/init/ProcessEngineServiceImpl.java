@@ -22,9 +22,11 @@ import com.axelor.db.tenants.TenantConfigProvider;
 import com.axelor.inject.Beans;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
+import com.axelor.studio.bpm.service.log.WkfLoggerInitServiceImpl;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -40,13 +42,17 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
       new ConcurrentHashMap<String, ProcessEngine>();
 
   protected final AppSettingsStudioService appSettingsStudioService;
-
+  
+  protected final WkfLoggerInitServiceImpl wkfLoggerInitService ;
+  
   @Inject
-  public ProcessEngineServiceImpl(AppSettingsStudioService appSettingsStudioService) {
+  public ProcessEngineServiceImpl(AppSettingsStudioService appSettingsStudioService, 
+		  WkfLoggerInitServiceImpl wkfLoggerInitService) {
     this.appSettingsStudioService = appSettingsStudioService;
-
+    this.wkfLoggerInitService = wkfLoggerInitService;
     addEngine(BpmTools.getCurentTenant());
-
+    
+    
     WkfCache.initWkfModelCache();
     WkfCache.initWkfButttonCache();
   }
@@ -61,6 +67,10 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
     }
 
     boolean multiTeant = appSettingsStudioService.multiTenancy();
+    
+    if (multiTeant == false) {
+    	wkfLoggerInitService.initLogger();
+    }
 
     ProcessEngineConfigurationImpl configImpl = Beans.get(WkfProcessEngineConfigurationImpl.class);
 
@@ -124,4 +134,6 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
   public String getWkfViewerUrl() {
     return "wkf-editor/?%s&taskIds=%s&activityCount=%s";
   }
+  
+  
 }

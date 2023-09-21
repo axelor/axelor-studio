@@ -66,6 +66,9 @@ dependencies {
 	implementation 'org.jboss.resteasy:resteasy-jaxb-provider:4.7.7.Final'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
 	implementation 'org.json:json:20210307'
+	implementation "ch.qos.logback:logback-core:1.2.11"
+    implementation "ch.qos.logback:logback-classic:1.2.11"
+	
 
 	testCompileOnly 'org.projectlombok:lombok:1.18.24'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'

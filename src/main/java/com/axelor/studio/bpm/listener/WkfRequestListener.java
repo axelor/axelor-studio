@@ -35,7 +35,6 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.persist.Transactional;
 import java.util.HashSet;

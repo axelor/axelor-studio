@@ -15,23 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.db.repo;
+package com.axelor.studio.bpm.service.log;
 
-import com.axelor.inject.Beans;
-import com.axelor.studio.bpm.service.execution.WkfInstanceService;
-import com.axelor.studio.bpm.service.log.WkfLoggerInitServiceImpl;
-import com.axelor.studio.db.WkfInstance;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.OutputStreamAppender;
 
-public class BpmWkfInstanceRepository extends WkfInstanceRepository {
+public interface WkfLogService {
 
-  @Override
-  public void remove(WkfInstance instance) {
-    if (instance.getInstanceId() != null) {
-      Beans.get(WkfInstanceService.class).deleteProcessInstance(instance.getInstanceId());
-      Beans.get(WkfLoggerInitServiceImpl.class).remove(instance.getInstanceId());
-    }
+  OutputStreamAppender<ILoggingEvent> createOrAttachAppender(String processInstnaceId);
 
-    super.remove(instance);
-    
-  }
+  void writeLog(String processInstanceId);
+
+  void clearLog(String instanceId);
 }

@@ -21,6 +21,7 @@ import com.axelor.inject.Beans;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
+import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
 import com.axelor.utils.context.FullContext;
@@ -56,6 +57,7 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
       object = new GroovyScriptHelper(bindings).eval(script);
     } catch (Exception e) {
       PvmExecutionImpl execution = (PvmExecutionImpl) bindings.get("execution");
+      Beans.get(WkfLogService.class).writeLog(execution.getProcessInstanceId());
       ExecutorService executor = Executors.newCachedThreadPool();
       executor.submit(
           new Callable<Boolean>() {
