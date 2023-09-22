@@ -34,10 +34,9 @@ public class AxelorBindingsHelper {
   public static Bindings getBindings(Bindings bindings) {
     bindings.put("__ctx__", WkfContextHelper.class);
     bindings.put("__beans__", Beans.class);
-    bindings.put(
-        "__studiouser__",
-        new FullContext(
-            AuthUtils.getUser() != null ? AuthUtils.getUser() : AuthUtils.getUser("admin")));
+    if (AuthUtils.getUser() != null) {
+      bindings.put("__studiouser__", new FullContext(AuthUtils.getUser()));
+    }
     bindings.put("__date__", LocalDate.now());
     bindings.put("__time__", LocalTime.now());
     bindings.put("__datetime__", LocalDateTime.now());
