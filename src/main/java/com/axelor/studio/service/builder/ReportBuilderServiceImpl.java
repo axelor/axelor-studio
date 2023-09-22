@@ -208,7 +208,7 @@ public class ReportBuilderServiceImpl {
     String value = "<td><b>" + title + "</b> : $" + name + "$</td>";
     String colSpan = "6";
 
-    if (field.getColSpan() != null && field.getColSpan() == 12) {
+    if (Strings.isNullOrEmpty(field.getColSpan()) && field.getColSpan().equals("12")) {
       colSpan = "12";
       value = "<td colSpan=\"2\"><b>" + title + "</b> : $" + name + "$</td>";
     } else {

@@ -112,7 +112,7 @@ public class StudioDashboardServiceImpl {
                 colSpan = 6;
               }
 
-              dashlet.setColSpan(colSpan);
+              dashlet.setColSpan(colSpan.toString());
               dashlets.add(dashlet);
             });
 
