@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.listener;
 
+import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfInstance;
@@ -65,6 +66,13 @@ public class WkfExecutionListener implements ExecutionListener {
   public void notify(DelegateExecution execution) throws Exception {
 
     String eventName = execution.getEventName();
+
+    if (execution.getTenantId() != null) {
+      String tenantId = execution.getTenantId();
+      String host = tenantId.substring(tenantId.indexOf(":") + 1);
+      tenantId = tenantId.substring(0, tenantId.indexOf(":"));
+      TenantResolver.setCurrentTenant(tenantId, host);
+    }
 
     if (eventName.equals(EVENTNAME_START)) {
 
@@ -176,6 +184,10 @@ public class WkfExecutionListener implements ExecutionListener {
 
     MessageCorrelationBuilder msgBuilder =
         execution.getProcessEngineServices().getRuntimeService().createMessageCorrelation(message);
+
+    if (execution.getTenantId() != null) {
+      msgBuilder = msgBuilder.tenantId(execution.getTenantId());
+    }
 
     String processKey = getProcessKey(execution, execution.getProcessDefinitionId());
     log.debug("Process key: {}", processKey);
