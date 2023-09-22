@@ -115,7 +115,7 @@ Build results of axeolr-studio react apps will be copied in the webapp of your p
 
 Some variables are available to be used with groovy script expressions in BPM. This includes:
 
-* `__studiouser__` - current user
+* `__studiouser__` - current user or admin if no user
 * `__date__` - current date as `LocalDate`
 * `__datetime__` - current datetime as `LocalDateTime`
 * `__time__` - current time as `LocalTime`

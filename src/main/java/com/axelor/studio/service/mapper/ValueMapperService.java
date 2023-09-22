@@ -48,7 +48,9 @@ public class ValueMapperService {
     bindings.put(modelName + "Id", model.getId());
     bindings.put("__time__", LocalDateTime.now());
     bindings.put("__datetime__", ZonedDateTime.now());
-    bindings.put("__studiouser__", AuthUtils.getUser());
+    bindings.put(
+        "__studiouser__",
+        AuthUtils.getUser() != null ? AuthUtils.getUser() : AuthUtils.getUser("admin"));
     bindings.put("__this__", new FullContext(model));
     bindings.put("__self__", model);
     bindings.put("__parent__", new FullContext(model).getParent());
