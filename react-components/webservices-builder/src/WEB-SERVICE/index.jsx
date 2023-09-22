@@ -79,6 +79,7 @@ import {
   getAllRequest,
   getAuthById,
   getConnectorById,
+  getHeaderskeys,
   getkeys,
   getRequestById,
 } from "../services/api";
@@ -820,10 +821,12 @@ function WebServiceEditor() {
     let headers;
     let payloads;
     let parameters;
+    console.log(res);
     headers =
       res.headerWsKeyValueList?.length !== 0
-        ? (headers = await getkeys(res.headerWsKeyValueList))
+        ? (headers = await getHeaderskeys(res.headerWsKeyValueList))
         : [];
+        console.log(headers);
     payloads =
       res.payLoadWsKeyValueList?.length !== 0
         ? (payloads = await getkeys(res.payLoadWsKeyValueList))
@@ -1004,20 +1007,20 @@ function WebServiceEditor() {
     if (
       request &&
       request.headerWsKeyValueList?.length !== 0 &&
-      headersStore?.length === request.headerWsKeyValueList?.length
+      headersStore?.length === request?.headerWsKeyValueList?.length
     ) {
       var res = true;
       for (
         let index = 0;
-        index < request.headerWsKeyValueList.length;
+        index < request?.headerWsKeyValueList?.length;
         index++
       ) {
         if (
           !(
-            request.headerWsKeyValueList[index].wsKey ===
-              headersStore[index].wsKey &&
-            request.headerWsKeyValueList[index].wsValue ===
-              headersStore[index].wsValue
+            request.headerWsKeyValueList[index]?.wsKey ===
+              headersStore[index]?.wsKey &&
+            request.headerWsKeyValueList[index]?.wsValue ===
+              headersStore[index]?.wsValue
           )
         ) {
           res = false;
