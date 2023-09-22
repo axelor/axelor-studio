@@ -91,7 +91,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       } else if (this.sessionType != null) {
         Response wsResponse = callRequest(wsRequest, wsRequest.getWsUrl(), client, templates, ctx);
         if (wsResponse.getStatus() == 401) {
-          throw new IllegalArgumentException(I18n.get("Error in authorization"));
+          throw new IllegalStateException(I18n.get("Error in authorization"));
         } else {
           this.sessionType.extractSessionData(wsResponse, authenticator);
         }
@@ -260,11 +260,11 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             repeatIndex++;
           }
         }
-      } catch (Exception e) {
+      } catch (IllegalArgumentException e) {
         if (Beans.get(AppStudioRepository.class).all().fetchOne().getEnableTrackWebServiceCall()) {
           addAttachement(resultContext, wsRequest, wsResponse, wsConnector, e);
         }
-        throw new Exception(e.getMessage());
+        throw new IllegalArgumentException(e.getMessage());
       }
     }
     // success
@@ -392,9 +392,9 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                         (it.getValue().isArray()
                             ? it.getValue().get(0).asText()
                             : it.getValue().asText())));
-      } catch (IOException e) {
+      } catch (IllegalStateException e) {
         log.error(e.getMessage(), e);
-        throw new Exception(e);
+        throw new IllegalStateException(e);
       }
     }
 
