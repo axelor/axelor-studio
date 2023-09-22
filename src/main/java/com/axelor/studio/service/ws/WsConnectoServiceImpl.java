@@ -160,8 +160,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           ctx.put("_" + count, null);
         }
 
-      wsRequest = wsConnector.getWsRequestList().get(count - 1).getWsRequest();
-      String repeatIf = wsRequest.getRepeatIf();
+        wsRequest = wsConnector.getWsRequestList().get(count - 1).getWsRequest();
+        String repeatIf = wsRequest.getRepeatIf();
 
         String callIf = wsRequest.getCallIf();
         if (callIf != null) {
@@ -193,7 +193,6 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                     I18n.get("Error in authorization of connector: %s"), wsConnector.getName()));
           }
         }
-
 
         // byte[] responseByte = wsResponse.readEntity(byte[].class);
         ArrayList<Object> responseData = new ArrayList<>();

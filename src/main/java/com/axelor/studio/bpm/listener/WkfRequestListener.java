@@ -91,7 +91,6 @@ public class WkfRequestListener {
         wkfInstanceService.evalInstance(model, null);
       }
     }
-
   }
 
   @SuppressWarnings("unchecked")
@@ -142,8 +141,7 @@ public class WkfRequestListener {
         Object res = postAction.getResult();
         log.trace("Wkf button cache: {}", WkfCache.WKF_BUTTON_CACHE);
         log.trace("Eval wkf from button model: {}, id: {}", model.getName(), id);
-        String helpText =
-            wkfInstanceService.evalInstance(JPA.find(model, id), signal);
+        String helpText = wkfInstanceService.evalInstance(JPA.find(model, id), signal);
 
         if (res instanceof ActionResponse && helpText != null) {
           ((ActionResponse) res).setAlert(helpText);
@@ -186,8 +184,7 @@ public class WkfRequestListener {
 
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
         log.trace("Remove wkf instance of deleted model: {}, id: {}", modelName, model.getId());
-        WkfInstance wkfInstance =
-            wkfInstanceRepo.findByInstanceId(model.getProcessInstanceId());
+        WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(model.getProcessInstanceId());
         if (wkfInstance != null
             && wkfInstance.getWkfProcess().getWkfProcessConfigList().size() == 1) {
           wkfInstanceRepo.remove(wkfInstance);
