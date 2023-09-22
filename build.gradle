@@ -1,7 +1,6 @@
 import com.axelor.gradle.tasks.GenerateChangelog
 
 buildscript {
-	ext.aopVersion = '6.1.5'
 	ext.repos = {
 		mavenCentral() {
 			content { excludeGroupByRegex "com\\.axelor.*" }
@@ -12,6 +11,7 @@ buildscript {
 		}
 		maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
 	}
+	ext.aopVersion = '7.0.+'
 	repositories repos
 	dependencies {
 		classpath "com.axelor:axelor-gradle:${aopVersion}"
