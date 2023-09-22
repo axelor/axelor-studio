@@ -48,12 +48,3 @@ export const tabProperty = [
     ],
   },
 ];
-
-/* {
-  name: "typeRequest", label: "Type of Request", widget: "checkBoxs",
-  boxs: [
-    { name: "classic", label: "Classic", widget: "checkbox" },
-    { name: "auth", label: "Authentification", widget: "checkbox" },
-    { name: "encryptData", label: "Encrypt data", widget: "checkbox" },
-  ]
-},*/

@@ -157,7 +157,6 @@ function HeaderBuilder({ handleClose, open, action }) {
           <div className={classes.addHeader}>
             <div className={classes.scrollDiv}>
               {headers.map((header, index) => {
-                console.log(header)
                 return (
                   <Header
                     handleChange={handleChange}

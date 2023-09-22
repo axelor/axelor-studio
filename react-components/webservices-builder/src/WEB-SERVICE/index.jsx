@@ -53,7 +53,7 @@ import Checkboxs from "./components/CheckBoxs";
 import CustomizedTables from "./components/Table";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { getChildLanes } from "./main/baml-js/lib/features/modeling/util/LaneUtil";
-import ReactDOM from "react-dom";
+import ReactDOM, { render } from "react-dom";
 import { store } from "./store";
 import { Selection } from "./components";
 import { tabPropertyAuth } from "./tabPropertyAuth";
@@ -630,6 +630,7 @@ function WebServiceEditor() {
           if (i === mappers.length - 1) return;
           modeling.connect(mappers[i], mappers[i + 1]);
         }
+        setElement(mapper)
       } else {
         const mapper = elementFactory.createParticipantShape({
           type: "bpmn:Mapper",
@@ -643,6 +644,7 @@ function WebServiceEditor() {
           { x: 220, y: 80, width: 130, height: 120 },
           process
         );
+        setElement(mapper)
       }
     } else {
       const mapper = elementFactory.createParticipantShape({
@@ -657,6 +659,7 @@ function WebServiceEditor() {
         { x: 220, y: 80, width: 130, height: 120 },
         process
       );
+      setElement(mapper)
     }
   };
 
@@ -746,7 +749,7 @@ function WebServiceEditor() {
     }
     modeling.setColor(mapper, colors);
     modeling.setColor(mapper2, colors);
-    // setElement(mapper);
+    setElement(mapper);
   };
 
   // from connector / authentification => Request
@@ -784,8 +787,6 @@ function WebServiceEditor() {
       );
   };
 
-  // Request Model
-
   const getRequest = async (id) => {
     let res = await getRequestById(id, {
       fields: [
@@ -821,12 +822,11 @@ function WebServiceEditor() {
     let headers;
     let payloads;
     let parameters;
-    console.log(res);
+
     headers =
       res.headerWsKeyValueList?.length !== 0
         ? (headers = await getHeaderskeys(res.headerWsKeyValueList))
         : [];
-        console.log(headers);
     payloads =
       res.payLoadWsKeyValueList?.length !== 0
         ? (payloads = await getkeys(res.payLoadWsKeyValueList))
@@ -1222,6 +1222,7 @@ function WebServiceEditor() {
       });
     } else {
       getConnector(e?.id);
+      //setRenderComponent((last)=>last + 1)
     }
   };
 
@@ -1384,11 +1385,12 @@ function WebServiceEditor() {
   const getAuth = async (id) => {
     let res = await getAuthById(id);
     const ele = removeElement();
+   // setElement(ele)
     ele.businessObject.type = res?.authTypeSelect;
     ele.businessObject.name = res?.name;
     ele.businessObject.studioApp = res?.studioApp;
     ele.businessObject.isAuthenticated = res?.isAuthenticated;
-    ele.businessObject.Standard = res.authWsRequest != null ? "false" : "true";
+    ele.businessObject.Standard = res.authWsRequest != null ? false : true;
 
     if (res?.authTypeSelect === "oauth2") {
       createMapper(res);
@@ -1399,7 +1401,7 @@ function WebServiceEditor() {
       createMapperStandard(res);
     }
     setAuthRequest(res);
-    setElement(ele);
+   setElement(ele);
   };
 
   const removeAuth = async () => {
@@ -1431,7 +1433,7 @@ function WebServiceEditor() {
         element.type === "bpmn:Process-action" ? element : element.parent;
       switch (ele.businessObject.type) {
         case "basic":
-          if (ele.businessObject.Standard === "false") {
+          if (ele.businessObject.Standard === false) {
             if (
               ele.businessObject.type === authRequest.authTypeSelect &&
               ele.children[0].businessObject.authRequest?.id ===
@@ -1481,7 +1483,7 @@ function WebServiceEditor() {
     const ele =
       element.type === "bpmn:Process-action" ? element : element.parent;
     if (ele.businessObject.type === "basic") {
-      if (ele.businessObject.Standard === "false") {
+      if (ele.businessObject.Standard === false) {
         if (
           !ele.businessObject.name ||
           !ele.children[0].businessObject.authRequest
@@ -1545,7 +1547,7 @@ function WebServiceEditor() {
       name: ele.businessObject.name,
       studioApp: ele.businessObject.studioApp,
       authWsRequest:
-        ele.businessObject.Standard === "false"
+        ele.businessObject.Standard === false
           ? ele.children[0].businessObject.authRequest
           : null,
       tokenWsRequest:
@@ -1560,19 +1562,19 @@ function WebServiceEditor() {
       id: authRequest?.id ? authRequest.id : null,
       version: authRequest?.version != null ? authRequest?.version : null,
       username:
-        ele.businessObject.Standard === "true"
+        ele.businessObject.Standard === true
           ? ele.children[0].businessObject.expression
           : null,
       password:
-        ele.businessObject.Standard === "true"
+        ele.businessObject.Standard === true
           ? ele.children[1].businessObject.expression
           : null,
       responseType:
-        ele.businessObject.Standard === "false"
+        ele.businessObject.Standard === false
           ? ele.children[0].businessObject.responseType
           : null,
       tokenName:
-        ele.businessObject.Standard === "false"
+        ele.businessObject.Standard === false
           ? ele.children[0].businessObject.tokenName
           : null,
       isAuthenticated: ele.businessObject.isAuthenticated,
@@ -1900,7 +1902,7 @@ function WebServiceEditor() {
       // create logic when some of proprieties has been changed
       if (
         model === AUTHENTICATION &&
-        element.businessObject.Standard === "true"
+        element.businessObject.Standard === true
       ) {
         //return []
         // la logic içi
@@ -1913,64 +1915,6 @@ function WebServiceEditor() {
 
   const onChange = () => {
     switch (model) {
-      case REQUEST:
-        if (element?.businessObject.classic === "true") {
-          ReactDOM.render(
-            <Provider store={store}>
-              <CustomizedTables type={"payloads"} />
-            </Provider>,
-            document.getElementById(element.children[2].id)
-          );
-        } else if (element?.businessObject.auth === "true") {
-          dispatch(
-            updateModelPayload([
-              { id: 1, wsKey: "username", wsValue: "" },
-              { id: 2, wsKey: "password", wsValue: "" },
-            ])
-          );
-          const elementFactory = bpmnModeler.get("elementFactory");
-          const modeling = bpmnModeler.get("modeling");
-          const mapper = elementFactory.createParticipantShape({
-            type: "bpmn:Task",
-          });
-          const mapper2 = elementFactory.createParticipantShape({
-            type: "bpmn:Task",
-          });
-          mapper.businessObject.name = "Username";
-          mapper2.businessObject.name = "Password";
-          modeling.createShape(
-            mapper,
-            {
-              x: element.children[2].x + 190,
-              y: element.children[2].y + 45,
-              width: 130,
-              height: 120,
-            },
-            element
-          );
-          const colors = {};
-          colors.stroke = "#009688";
-          colors.fill = "#B2DFDB";
-          mapper.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
-          mapper.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
-          modeling.createShape(
-            mapper2,
-            {
-              x: element.children[2].x + 390,
-              y: element.children[2].y + 45,
-              width: 130,
-              height: 120,
-            },
-            element
-          );
-          colors.stroke = "#009688";
-          colors.fill = "#B2DFDB";
-          mapper2.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Task"]);
-          mapper2.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
-          modeling.setColor(mapper, colors);
-          modeling.setColor(mapper2, colors);
-        }
-        break;
       case AUTHENTICATION:
         if (
           element?.businessObject.type === "oauth2" &&
@@ -1993,8 +1937,6 @@ function WebServiceEditor() {
             setRenderComponent(1);
           }
         }
-        break;
-      case CONNECTOR:
         break;
       default:
     }
@@ -2032,12 +1974,11 @@ function WebServiceEditor() {
     removeElement();
     if (checked) {
       createMapperStandard();
-      setRenderComponent(1);
-      //setElement(element);
+     // setRenderComponent(1);
+      setElement(element);
     } else {
       createMapper();
-      if (renderComponent === 1) setRenderComponent(0);
-      // setElement(element);
+      setElement(element);
       //removeElement();
     }
   };
@@ -2099,7 +2040,7 @@ function WebServiceEditor() {
             onChange={onChange}
             disabled={
               model === AUTHENTICATION &&
-              element.businessObject.Standard === "true"
+              element.businessObject.Standard === true
                 ? true
                 : false
             }
@@ -2116,6 +2057,7 @@ function WebServiceEditor() {
             requestAuth={authRequest}
             entry={entry}
             action={autheticateAction}
+            render={setRenderComponent}
             label="Authentificated"
           />
         );
@@ -2890,10 +2832,7 @@ function WebServiceEditor() {
                   {getProperties().map((t, index) => {
                     return (
                       <div className={classes.property} key={index}>
-                        <RenderComponent
-                          {...t}
-                          renderComponent={renderComponent}
-                        />
+                        {RenderComponent(t)}
                       </div>
                     );
                   })}

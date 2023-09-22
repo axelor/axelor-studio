@@ -74,37 +74,36 @@ export default function AuthentificationAction({
   bpmnModeler,
   entry,
   action,
+  render
 }) {
   const classes = useStyles();
   const [error, setError] = useState(false);
   const [isAuth, setAuth] = useState(element.businessObject.isAuthenticated);
   const {name} = entry || {};
 
+
   return (
     <div className={classes.root}>
       {!isAuth && (
         <Button
-          className={classes.btn}
-          onClick={() => {
-            Promise.resolve(action())
-            .then((res)=> {
-              if (res === false) {
-                setError(true);
-                setTimeout(() => {
-                  setError(false);
-                }, 3000);
-              } else {
-                setAuth(true);
-                const modeling = bpmnModeler.get('modeling');
-                modeling.updateProperties(element, {
-                  [name]: true,
-                });
-                element.businessObject[name] = true;
-              }
+        className={classes.btn}
+        onClick={async () => {
+          const res = await action();
+          if (res === false) {
+            setError(true);
+            setTimeout(() => {
+              setError(false);
+            }, 3000);
+          } else {
+            const modeling = bpmnModeler.get('modeling');
+            modeling.updateProperties(element, {
+              [name]: true,
+            });
+            element.businessObject[name] = true;
+            setAuth(true);
+          }
+        }}
 
-            })
-            
-          }}
         >
           Authentificate
         </Button>
