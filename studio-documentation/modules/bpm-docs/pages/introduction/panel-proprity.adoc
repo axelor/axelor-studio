@@ -57,6 +57,8 @@ de l’affichage des étapes du processus sur les formulaires pour lequel ce der
 
 image::statutCouleur.png[statut Couleur image]
 
+image::indicateContact.png[statut Couleur image]
+
 === **Description**
 Ce champ permet de renseigner une description complète du modèle.
 

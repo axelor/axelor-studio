@@ -35,3 +35,29 @@ Toutes les icônes encadrées en rouge n’ont aucun impact fonctionnel sur la m
 Sur l’espace de modélisation, lorsque l’on clique sur un objet, des icônes apparaissent sur la droite de celui-ci.
 
 image::espceModelisation.png[Espace modelisation BPM image]
+
+=== Supression
+
+L'icône permet de supprimer l’objet sélectionné.
+
+=== Annotation
+
+L’icône permet de créer une note liée à l’objet et visible depuis l’espace de travail.
+
+image::anotation.png[Annotation]
+
+=== Lier à un autre objet
+
+L’icône permet de relier l’objet sélectionné vers un autre objet.
+
+=== Changement de type
+
+L’icône  permet de changer le type de l’objet sélectionné.
+
+image::changeType.png[nnotation]
+
+=== Autres icônes
+
+Les autres icônes disponibles sont spécifiques à l'élément sélectionné et décrites plus tard dans cette documentation.
+Lorsque vous cliquez sur ces derniers, cela va appliquer l’action.
+

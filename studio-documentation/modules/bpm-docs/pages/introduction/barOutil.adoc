@@ -59,3 +59,4 @@ Le panel s’affiche à sa place habituelle, à droite de l’écran.
 
 A droite de la barre horizontale présentée précédemment, se trouve un champ déroulant qui permet de choisir le modèle sur lequel on souhaite travailler.
 
+image::chooseModel.png[connector form]

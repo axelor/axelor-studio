@@ -3,3 +3,5 @@
 *** xref:/introduction/barOutil.adoc[La barre d’outil horizontale]
 *** xref:/introduction/panel-proprity.adoc[Le panel de propriétés]
 *** xref:/introduction/zoneTravail.adoc[La zone de travail]
+** xref:/tutorial/index.adoc[Découverte par l’exemple]
+*** xref:/
