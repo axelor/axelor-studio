@@ -35,7 +35,7 @@ import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
-import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
@@ -48,24 +48,25 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class StudioMenuServiceImpl {
+public class StudioMenuServiceImpl implements StudioMenuService {
 
-  protected StudioActionServiceImpl studioActionService;
+  protected StudioActionService studioActionService;
 
-  protected StudioMetaServiceImpl metaService;
+  protected StudioMetaService metaService;
 
   protected StudioMenuRepo studioMenuRepo;
 
   @Inject
   public StudioMenuServiceImpl(
-      StudioActionServiceImpl studioActionService,
-      StudioMetaServiceImpl metaService,
+      StudioActionService studioActionService,
+      StudioMetaService metaService,
       StudioMenuRepo studioMenuRepo) {
     this.studioActionService = studioActionService;
     this.metaService = metaService;
     this.studioMenuRepo = studioMenuRepo;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public MetaMenu build(StudioMenu studioMenu) {
 
@@ -87,6 +88,7 @@ public class StudioMenuServiceImpl {
     return menu;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public Optional<StudioAction> createStudioAction(MetaAction metaAction) {
 
@@ -159,6 +161,7 @@ public class StudioMenuServiceImpl {
     return Optional.empty();
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public StudioMenu updateStudioMenu(
       StudioMenu studioMenu,
@@ -199,7 +202,8 @@ public class StudioMenuServiceImpl {
     return studioMenuRepo.save(studioMenu);
   }
 
-  protected void addActionViews(
+  @Override
+  public void addActionViews(
       StudioAction studioAction, Boolean isJson, String objectName, String objectClass) {
 
     List<StudioActionView> views = studioAction.getStudioActionViews();
@@ -218,7 +222,8 @@ public class StudioMenuServiceImpl {
     this.setStudioActionView("form", viewName + "-form", studioAction);
   }
 
-  protected void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
+  @Override
+  public void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
 
     StudioActionView studioActionView = new StudioActionView();
     studioActionView.setViewType(viewType);
@@ -226,10 +231,12 @@ public class StudioMenuServiceImpl {
     studioAction.addStudioActionView(studioActionView);
   }
 
+  @Override
   public String generateStudioMenuName(String name) {
     return "studio-menu-" + name.toLowerCase().replaceAll("[ ]+", "-");
   }
 
+  @Override
   @CallMethod
   public String checkAndGenerateName(String name) {
     if (name == null) return "";

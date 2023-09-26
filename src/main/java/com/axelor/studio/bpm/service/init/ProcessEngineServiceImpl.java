@@ -34,7 +34,7 @@ import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.variable.Variables;
 
 @Singleton
-public class ProcessEngineServiceImpl {
+public class ProcessEngineServiceImpl implements ProcessEngineService {
 
   protected static final Map<String, ProcessEngine> engineMap =
       new ConcurrentHashMap<String, ProcessEngine>();
@@ -51,6 +51,7 @@ public class ProcessEngineServiceImpl {
     WkfCache.initWkfButttonCache();
   }
 
+  @Override
   public void addEngine(String tenantId) {
 
     TenantConfig tenantConfig = Beans.get(TenantConfigProvider.class).find(tenantId);
@@ -95,6 +96,7 @@ public class ProcessEngineServiceImpl {
     engineMap.put(tenantId, engine);
   }
 
+  @Override
   public ProcessEngine getEngine() {
 
     String tenantId = BpmTools.getCurentTenant();
@@ -106,6 +108,7 @@ public class ProcessEngineServiceImpl {
     return engineMap.get(tenantId);
   }
 
+  @Override
   public void removeEngine(String tenantId) {
     ProcessEngine engine = engineMap.get(tenantId);
     if (engine != null) {
@@ -117,6 +120,7 @@ public class ProcessEngineServiceImpl {
     WkfCache.WKF_MODEL_CACHE.remove(tenantId);
   }
 
+  @Override
   public String getWkfViewerUrl() {
     return "wkf-editor/?%s&taskIds=%s&activityCount=%s";
   }

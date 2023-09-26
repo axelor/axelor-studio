@@ -23,7 +23,7 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
-import com.axelor.studio.service.builder.StudioMenuServiceImpl;
+import com.axelor.studio.service.builder.StudioMenuService;
 
 public class MetaJsonModelRepo extends MetaJsonModelRepository {
 
@@ -46,7 +46,7 @@ public class MetaJsonModelRepo extends MetaJsonModelRepository {
       StudioMenu studioMenu = jsonModel.getStudioMenu();
       if (studioMenu != null) {
         studioMenu =
-            Beans.get(StudioMenuServiceImpl.class)
+            Beans.get(StudioMenuService.class)
                 .updateStudioMenu(
                     studioMenu,
                     jsonModel.getName(),

@@ -79,7 +79,7 @@
   <action-record name="action-studio-meta-json-model-record-name"
     model="com.axelor.meta.db.MetaJsonModel">
     <field name="name"
-      expr="call:com.axelor.studio.service.JsonFieldServiceImpl:checkName(name, false)"/>
+      expr="call:com.axelor.studio.service.JsonFieldService:checkName(name, false)"/>
   </action-record>
 
   <action-condition name="action-studio-meta-json-model-name-onchange-record">

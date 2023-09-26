@@ -103,12 +103,12 @@
 
   <action-attrs name="action-studio-menu-attrs-check-generate-name">
     <attribute name="value" for="name"
-      expr="call:com.axelor.studio.service.builder.StudioMenuServiceImpl:checkAndGenerateName(name)"/>
+      expr="call:com.axelor.studio.service.builder.StudioMenuService:checkAndGenerateName(name)"/>
   </action-attrs>
 
   <action-attrs name="action-studio-menu-attrs-check-generate-id">
     <attribute name="value" for="xmlId"
-      expr="call:com.axelor.studio.service.builder.StudioMenuServiceImpl:checkAndGenerateName(xmlId)"/>
+      expr="call:com.axelor.studio.service.builder.StudioMenuService:checkAndGenerateName(xmlId)"/>
   </action-attrs>
 
 </object-views>

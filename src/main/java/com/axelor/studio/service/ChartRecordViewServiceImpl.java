@@ -45,7 +45,7 @@ import com.axelor.script.ScriptBindings;
 import com.axelor.studio.db.Filter;
 import com.axelor.studio.db.StudioChart;
 import com.axelor.studio.db.repo.StudioChartRepository;
-import com.axelor.studio.service.filter.FilterSqlServiceImpl;
+import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.math.BigInteger;
@@ -210,7 +210,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
 
     final String tableName = getTableName(studioChart);
     String sqlFilters =
-        Beans.get(FilterSqlServiceImpl.class).getSqlFilters(filterList, joins, true);
+        Beans.get(FilterSqlService.class).getSqlFilters(filterList, joins, true);
     if (sqlFilters != null) {
       return String.format(
           "select self.id from %s self %s where %s",

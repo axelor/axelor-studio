@@ -39,11 +39,11 @@ import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilterSqlServiceImpl {
+public class FilterSqlServiceImpl implements FilterSqlService {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected FilterCommonServiceImpl filterCommonService;
+  protected FilterCommonService filterCommonService;
 
   protected MetaFieldRepository metaFieldRepo;
 
@@ -53,7 +53,7 @@ public class FilterSqlServiceImpl {
 
   @Inject
   public FilterSqlServiceImpl(
-      FilterCommonServiceImpl filterCommonService,
+      FilterCommonService filterCommonService,
       MetaModelRepository metaModelRepo,
       MetaJsonFieldRepository metaJsonFieldRepo,
       MetaFieldRepository metaFieldRepo) {
@@ -63,6 +63,7 @@ public class FilterSqlServiceImpl {
     this.metaFieldRepo = metaFieldRepo;
   }
 
+  @Override
   public String getColumn(String model, String field) {
 
     SessionImpl sessionImpl = (SessionImpl) JPA.em().getDelegate();
@@ -78,11 +79,13 @@ public class FilterSqlServiceImpl {
     return null;
   }
 
+  @Override
   public String getColumn(MetaField metaField) {
 
     return getColumn(metaField.getMetaModel().getFullName(), metaField.getName());
   }
 
+  @Override
   public String getSqlType(String type) {
 
     switch (type) {
@@ -101,6 +104,7 @@ public class FilterSqlServiceImpl {
     return type;
   }
 
+  @Override
   public String getSqlFilters(List<Filter> filterList, List<String> joins, boolean checkJson) {
 
     String filters = null;
@@ -133,7 +137,8 @@ public class FilterSqlServiceImpl {
     return filters;
   }
 
-  protected String checkDateTime(String[] fields) {
+  @Override
+  public String checkDateTime(String[] fields) {
     switch (fields[1]) {
       case "LocalDateTime":
         return "(cast(to_char("
@@ -144,6 +149,7 @@ public class FilterSqlServiceImpl {
     return fields[0];
   }
 
+  @Override
   public String[] getSqlField(Object target, String source, List<String> joins) {
 
     String field = null;
@@ -214,7 +220,8 @@ public class FilterSqlServiceImpl {
     return new String[] {field, type};
   }
 
-  protected String getParam(boolean isParam, String value, Long filterId, String type) {
+  @Override
+  public String getParam(boolean isParam, String value, Long filterId, String type) {
 
     if (isParam) {
       String sqlType = getSqlType(type);
@@ -228,6 +235,7 @@ public class FilterSqlServiceImpl {
     return value;
   }
 
+  @Override
   public String[] getDefaultTarget(String fieldName, String modelName) {
 
     MetaModel targetModel = null;
@@ -265,6 +273,7 @@ public class FilterSqlServiceImpl {
     return new String[] {fieldName, null};
   }
 
+  @Override
   public String[] getDefaultTargetJson(String fieldName, MetaJsonModel targetModel) {
 
     String name = targetModel.getNameField();
@@ -288,6 +297,7 @@ public class FilterSqlServiceImpl {
     return new String[] {fieldName + "." + name, "string"};
   }
 
+  @Override
   public Object getTargetField(
       StringBuilder parent, Filter filter, List<String> joins, boolean checkJson) {
 
@@ -303,6 +313,7 @@ public class FilterSqlServiceImpl {
     return target;
   }
 
+  @Override
   public String getTargetType(Object target) {
 
     String targetType = null;
@@ -325,6 +336,7 @@ public class FilterSqlServiceImpl {
     return targetType;
   }
 
+  @Override
   public Object parseMetaField(
       MetaField field, String target, List<String> joins, StringBuilder parent, boolean checkJson) {
 
@@ -363,6 +375,7 @@ public class FilterSqlServiceImpl {
         String.format("No sub field found field: %s model: %s ", targetName, model.getFullName()));
   }
 
+  @Override
   public Object parseJsonField(
       MetaJsonField field, String target, List<String> joins, StringBuilder parent) {
 
@@ -416,6 +429,7 @@ public class FilterSqlServiceImpl {
     }
   }
 
+  @Override
   public MetaField findMetaField(String name, String model) {
 
     return metaFieldRepo
@@ -424,6 +438,7 @@ public class FilterSqlServiceImpl {
         .fetchOne();
   }
 
+  @Override
   public MetaJsonField findJsonField(String name, String model) {
 
     return metaJsonFieldRepo
@@ -432,7 +447,8 @@ public class FilterSqlServiceImpl {
         .fetchOne();
   }
 
-  protected void addJoin(MetaField field, List<String> joins, StringBuilder parent) {
+  @Override
+  public void addJoin(MetaField field, List<String> joins, StringBuilder parent) {
 
     MetaModel metaModel = metaModelRepo.findByName(field.getTypeName());
     String parentField = getColumn(field);
@@ -453,7 +469,8 @@ public class FilterSqlServiceImpl {
     parent.replace(0, parent.length(), "obj" + (joins.size() - 1));
   }
 
-  protected void addJoin(MetaJsonField field, List<String> joins, StringBuilder parent) {
+  @Override
+  public void addJoin(MetaJsonField field, List<String> joins, StringBuilder parent) {
 
     String targetModel = null;
     if (field.getTargetModel() != null) {

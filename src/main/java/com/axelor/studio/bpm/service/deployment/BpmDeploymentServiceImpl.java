@@ -21,7 +21,6 @@ import com.axelor.common.ObjectUtils;
 import com.axelor.db.tenants.TenantModule;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
@@ -30,7 +29,7 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
-import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
@@ -45,7 +44,6 @@ import com.axelor.studio.db.repo.WkfTaskMenuRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -87,9 +85,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfCommonService wkfService;
   protected MetaFileRepository metaFileRepo;
   protected WkfProcessApplication wkfProcessApplication;
-  protected WkfNodeServiceImpl wkfNodeService;
+  protected WkfNodeService wkfNodeService;
   protected WkfModelRepository wkfModelRepository;
-  protected ProcessEngineServiceImpl processEngineService;
+  protected ProcessEngineService processEngineService;
 
   @Inject protected WkfTaskConfigRepository taskConfigRepo;
 
@@ -112,9 +110,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfCommonService wkfService,
       MetaFileRepository metaFileRepo,
       WkfProcessApplication wkfProcessApplication,
-      WkfNodeServiceImpl wkfNodeService,
+      WkfNodeService wkfNodeService,
       WkfModelRepository wkfModelRepository,
-      ProcessEngineServiceImpl processEngineService) {
+      ProcessEngineService processEngineService) {
 
     this.wkfProcessRepository = wkfProcessRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;

@@ -25,7 +25,8 @@ import com.axelor.meta.db.repo.MetaFieldRepository;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.Filter;
-import com.axelor.studio.service.filter.FilterSqlServiceImpl;
+import com.axelor.studio.service.filter.FilterSqlService;
+import com.axelor.studio.service.filter.FilterSqlService;
 import com.axelor.utils.ExceptionTool;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class FilterController {
   public void updateTargetType(ActionRequest request, ActionResponse response) {
     try {
       Filter filter = request.getContext().asType(Filter.class);
-      FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
+      FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
       if (filter.getTargetField() == null) return;
 

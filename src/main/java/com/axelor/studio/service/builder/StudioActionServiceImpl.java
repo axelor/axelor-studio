@@ -31,26 +31,27 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioActionServiceImpl {
+public class StudioActionServiceImpl implements StudioActionService {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected StudioActionViewServiceImpl studioActionViewService;
+  protected StudioActionViewService studioActionViewService;
 
   protected StudioActionScriptServiceImpl studioActionScriptService;
 
-  protected StudioActionEmailServiceImpl studioActionEmailService;
+  protected StudioActionEmailService studioActionEmailService;
 
   @Inject
   public StudioActionServiceImpl(
-      StudioActionViewServiceImpl studioActionViewService,
+      StudioActionViewService studioActionViewService,
       StudioActionScriptServiceImpl studioActionScriptService,
-      StudioActionEmailServiceImpl studioActionEmailService) {
+      StudioActionEmailService studioActionEmailService) {
     this.studioActionViewService = studioActionViewService;
     this.studioActionEmailService = studioActionEmailService;
     this.studioActionScriptService = studioActionScriptService;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public MetaAction build(StudioAction studioAction) {
 
@@ -100,6 +101,7 @@ public class StudioActionServiceImpl {
     return metaAction;
   }
 
+  @Override
   public StudioAction setStudioActionViews(
       StudioAction studioAction, String modelName, String formViewName, String gridViewName) {
     if (studioAction.getStudioActionViews() == null) {
@@ -117,7 +119,8 @@ public class StudioActionServiceImpl {
     return studioAction;
   }
 
-  protected void setStudioActionView(
+  @Override
+  public void setStudioActionView(
       String viewType, String viewName, List<StudioActionView> studioActionViews) {
     StudioActionView studioActionView = new StudioActionView();
     studioActionView.setViewType(viewType);

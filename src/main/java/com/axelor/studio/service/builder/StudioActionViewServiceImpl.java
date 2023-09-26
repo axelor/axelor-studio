@@ -23,23 +23,24 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioActionLine;
 import com.axelor.studio.db.StudioActionView;
-import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
 
-public class StudioActionViewServiceImpl {
+public class StudioActionViewServiceImpl implements StudioActionViewService {
 
   protected static final String INDENT = "\t";
 
-  protected StudioMetaServiceImpl metaService;
+  protected StudioMetaService metaService;
 
   @Inject
-  public StudioActionViewServiceImpl(StudioMetaServiceImpl metaService) {
+  public StudioActionViewServiceImpl(StudioMetaService metaService) {
     this.metaService = metaService;
   }
 
+  @Override
   public MetaAction build(StudioAction studioAction) {
 
     if (studioAction == null) {
@@ -71,7 +72,8 @@ public class StudioActionViewServiceImpl {
         studioAction.getName(), "action-view", xml.toString(), model, studioAction.getXmlId());
   }
 
-  protected void appendParams(List<StudioActionLine> params, StringBuilder xml) {
+  @Override
+  public void appendParams(List<StudioActionLine> params, StringBuilder xml) {
 
     if (params == null) {
       return;
@@ -84,7 +86,8 @@ public class StudioActionViewServiceImpl {
         });
   }
 
-  protected void appendContext(StudioAction studioAction, StringBuilder xml) {
+  @Override
+  public void appendContext(StudioAction studioAction, StringBuilder xml) {
     boolean addJsonCtx = true;
     if (studioAction.getLines() != null) {
       for (StudioActionLine context : studioAction.getLines()) {
@@ -111,7 +114,8 @@ public class StudioActionViewServiceImpl {
     }
   }
 
-  protected void appendDomain(String domain, Boolean isJson, StringBuilder xml) {
+  @Override
+  public void appendDomain(String domain, Boolean isJson, StringBuilder xml) {
 
     if (isJson) {
       String jsonDomain = "self.jsonModel = :jsonModel";
@@ -127,7 +131,8 @@ public class StudioActionViewServiceImpl {
     }
   }
 
-  protected void appendViews(List<StudioActionView> views, StringBuilder xml) {
+  @Override
+  public void appendViews(List<StudioActionView> views, StringBuilder xml) {
 
     views.sort((action1, action2) -> action1.getSequence().compareTo(action2.getSequence()));
     for (StudioActionView view : views) {
@@ -141,7 +146,8 @@ public class StudioActionViewServiceImpl {
     }
   }
 
-  protected String appendBasic(StudioAction studioAction, StringBuilder xml) {
+  @Override
+  public String appendBasic(StudioAction studioAction, StringBuilder xml) {
 
     xml.append("<action-view name=\"" + studioAction.getName() + "\" ");
     xml.append("title=\"" + studioAction.getTitle() + "\" ");

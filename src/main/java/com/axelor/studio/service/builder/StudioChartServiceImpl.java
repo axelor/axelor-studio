@@ -36,9 +36,10 @@ import com.axelor.meta.schema.ObjectViews;
 import com.axelor.studio.db.Filter;
 import com.axelor.studio.db.StudioChart;
 import com.axelor.studio.exception.StudioExceptionMessage;
-import com.axelor.studio.service.StudioMetaServiceImpl;
-import com.axelor.studio.service.filter.FilterCommonServiceImpl;
-import com.axelor.studio.service.filter.FilterSqlServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.filter.FilterCommonService;
+import com.axelor.studio.service.filter.FilterSqlService;
+import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * adding query, search fields , onInit actions..etc. All filters with parameter checked will be
  * used as search fields.
  */
-public class StudioChartServiceImpl {
+public class StudioChartServiceImpl implements StudioChartService {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -77,15 +78,15 @@ public class StudioChartServiceImpl {
 
   protected MetaModelRepository metaModelRepo;
 
-  protected FilterCommonServiceImpl filterCommonService;
+  protected FilterCommonService filterCommonService;
 
-  protected StudioMetaServiceImpl metaService;
+  protected StudioMetaService metaService;
 
   @Inject
   public StudioChartServiceImpl(
       MetaModelRepository metaModelRepo,
-      FilterCommonServiceImpl filterCommonService,
-      StudioMetaServiceImpl metaService) {
+      FilterCommonService filterCommonService,
+      StudioMetaService metaService) {
     this.metaModelRepo = metaModelRepo;
     this.filterCommonService = filterCommonService;
     this.metaService = metaService;
@@ -94,10 +95,10 @@ public class StudioChartServiceImpl {
   /**
    * Root Method to access the service it generate AbstractView from ViewBuilder.
    *
-   * @param viewBuilder ViewBuilder object of type chart.
-   * @return AbstractView from meta schema.
+   * @param studioChart StudioChart object.
    * @throws JAXBException
    */
+  @Override
   public void build(StudioChart studioChart) throws JAXBException {
 
     if (studioChart.getName().contains(" ")) {
@@ -125,7 +126,8 @@ public class StudioChartServiceImpl {
     }
   }
 
-  protected String createXml(StudioChart studioChart, String[] queryString) {
+  @Override
+  public String createXml(StudioChart studioChart, String[] queryString) {
 
     String xml =
         "<chart name=\"" + studioChart.getName() + "\" title=\"" + studioChart.getTitle() + "\" ";
@@ -184,10 +186,11 @@ public class StudioChartServiceImpl {
   /**
    * Method create query from chart filters added in chart builder.
    *
-   * @param viewBuilder ViewBuilder of type chart
+   * @param studioChart StudioChart to use.
    * @return StringArray with first element as query string and second as aggregate field name.
    */
-  protected String[] prepareQuery(StudioChart studioChart) {
+  @Override
+  public String[] prepareQuery(StudioChart studioChart) {
 
     String query =
         createSumQuery(
@@ -218,7 +221,7 @@ public class StudioChartServiceImpl {
     }
 
     String filters =
-        Beans.get(FilterSqlServiceImpl.class)
+        Beans.get(FilterSqlService.class)
             .getSqlFilters(studioChart.getFilterList(), joins, true);
     addSearchField(studioChart.getFilterList());
     String model = studioChart.getModel();
@@ -252,10 +255,11 @@ public class StudioChartServiceImpl {
     return new String[] {query, null};
   }
 
-  protected String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
+  @Override
+  public String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
 
     String sumField = null;
-    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     if (isJson) {
       String sqlType = filterSqlService.getSqlType(jsonField.getType());
@@ -274,7 +278,8 @@ public class StudioChartServiceImpl {
     return "SELECT" + Tab3 + "SUM(" + sumField + ") AS sum_field," + Tab3;
   }
 
-  protected String getGroup(
+  @Override
+  public String getGroup(
       boolean isJson,
       MetaField metaField,
       MetaJsonField jsonField,
@@ -285,7 +290,7 @@ public class StudioChartServiceImpl {
       return null;
     }
 
-    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     String typeName = null;
     String group = null;
@@ -320,7 +325,8 @@ public class StudioChartServiceImpl {
     return group;
   }
 
-  protected String getDateTypeGroup(String dateType, String typeName, String group) {
+  @Override
+  public String getDateTypeGroup(String dateType, String typeName, String group) {
 
     switch (dateType) {
       case "year":
@@ -341,7 +347,8 @@ public class StudioChartServiceImpl {
    *
    * @return
    */
-  protected String getSearchFields() {
+  @Override
+  public String getSearchFields() {
 
     String search = "<search-fields>";
 
@@ -359,72 +366,14 @@ public class StudioChartServiceImpl {
     return search;
   }
 
-  /**
-   * Method set default value for search-fields(parameters). It will add field and expression in
-   * onNew for chart.
-   *
-   * @param fieldName Name of field of search-field.
-   * @param typeName Type of field.
-   * @param defaultValue Default value input in chart filter.
-   * @param modelField It is for relational field. String array with first element as Model name and
-   *     second as its field.
-   */
-  //	private void setDefaultValue(String fieldName, String typeName,
-  //			String defaultValue, String[] modelField) {
-  //
-  //		if (defaultValue == null) {
-  //			return;
-  //		}
-  //
-  //		RecordField field = new RecordField();
-  //		field.setName(fieldName);
-  //
-  //		defaultValue = filterCommonService.getTagValue(defaultValue, false);
-  //
-  //		if (modelField != null) {
-  //			if (typeName.equals("STRING")) {
-  //				defaultValue = "__repo__(" + modelField[0]
-  //						+ ").all().filter(\"LOWER(" + modelField[1] + ") LIKE "
-  //						+ defaultValue + "\").fetchOne()";
-  //			} else {
-  //				defaultValue = "__repo__(" + modelField[0]
-  //						+ ").all().filter(\"" + modelField[1] + " = "
-  //						+ defaultValue + "\").fetchOne()";
-  //			}
-  //
-  //		}
-  //
-  //		log.debug("Default value: {}", defaultValue);
-  //
-  //		field.setExpression("eval:" + defaultValue);
-  //
-  //		onNewFields.add(field);
-  //	}
-
-  /**
-   * It will create onNew action from onNew fields.
-   *
-   * @param viewBuilder ViewBuilder use to get model name also used in onNew action name creation.
-   * @throws Exception
-   */
-  //	private void setOnNewAction(StudioChart studioChart) {
-  //
-  //		if (!onNewFields.isEmpty()) {
-  //			onNewAction = new ActionRecord();
-  //			onNewAction.setName("action-" + studioChart.getName() + "-default");
-  //			onNewAction.setModel(studioChart.getModel());
-  //			onNewAction.setFields(onNewFields);
-  //		}
-  //
-  //	}
-
-  protected void addSearchField(List<Filter> filters) {
+  @Override
+  public void addSearchField(List<Filter> filters) {
 
     if (filters == null) {
       return;
     }
 
-    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     filters.stream()
         .filter(filter -> filter.getIsParameter())
@@ -454,7 +403,8 @@ public class StudioChartServiceImpl {
             });
   }
 
-  protected String getMetaSearchField(String fieldStr, MetaField field) {
+  @Override
+  public String getMetaSearchField(String fieldStr, MetaField field) {
 
     fieldStr = "<field name=\"" + fieldStr + "\" title=\"" + field.getLabel();
 
@@ -463,7 +413,7 @@ public class StudioChartServiceImpl {
       fieldStr += "\" type=\"" + fieldType;
     } else {
       String[] targetRef =
-          Beans.get(FilterSqlServiceImpl.class)
+          Beans.get(FilterSqlService.class)
               .getDefaultTarget(field.getName(), field.getTypeName());
       String[] nameField = targetRef[0].split("\\.");
       fieldStr +=
@@ -478,9 +428,10 @@ public class StudioChartServiceImpl {
     return fieldStr;
   }
 
-  protected String getJsonSearchField(String fieldStr, MetaJsonField field) {
+  @Override
+  public String getJsonSearchField(String fieldStr, MetaJsonField field) {
 
-    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     fieldStr = "<field name=\"" + fieldStr + "\" title=\"" + field.getTitle();
 
@@ -517,7 +468,8 @@ public class StudioChartServiceImpl {
     return fieldStr;
   }
 
-  protected String getTable(String model) {
+  @Override
+  public String getTable(String model) {
 
     String[] models = model.split("\\.");
     MetaModel metaModel = metaModelRepo.findByName(models[models.length - 1]);
@@ -529,6 +481,7 @@ public class StudioChartServiceImpl {
     return null;
   }
 
+  @Override
   @CallMethod
   public String getDefaultTarget(MetaField metaField) {
 
@@ -536,10 +489,11 @@ public class StudioChartServiceImpl {
       return metaField.getName();
     }
 
-    return Beans.get(FilterSqlServiceImpl.class)
+    return Beans.get(FilterSqlService.class)
         .getDefaultTarget(metaField.getName(), metaField.getTypeName())[0];
   }
 
+  @Override
   @CallMethod
   public String getDefaultTarget(MetaJsonField metaJsonField) {
 
@@ -548,7 +502,7 @@ public class StudioChartServiceImpl {
       return metaJsonField.getName();
     }
 
-    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     if (metaJsonField.getTargetJsonModel() != null) {
       return filterSqlService
@@ -563,6 +517,7 @@ public class StudioChartServiceImpl {
         .getDefaultTarget(metaJsonField.getName(), metaJsonField.getTargetModel())[0];
   }
 
+  @Override
   @CallMethod
   public String getTargetType(Object object, String target) {
 
@@ -572,7 +527,7 @@ public class StudioChartServiceImpl {
     }
 
     Object targetField = null;
-    FilterSqlServiceImpl filterSqlService = Beans.get(FilterSqlServiceImpl.class);
+    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
     try {
       if (object instanceof MetaJsonField) {
         targetField = filterSqlService.parseJsonField((MetaJsonField) object, target, null, null);

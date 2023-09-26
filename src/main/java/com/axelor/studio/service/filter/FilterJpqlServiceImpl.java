@@ -31,17 +31,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author axelor
  */
-public class FilterJpqlServiceImpl {
+public class FilterJpqlServiceImpl implements FilterJpqlService {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected FilterCommonServiceImpl filterCommonService;
+  protected FilterCommonService filterCommonService;
 
   @Inject
-  public FilterJpqlServiceImpl(FilterCommonServiceImpl filterCommonService) {
+  public FilterJpqlServiceImpl(FilterCommonService filterCommonService) {
     this.filterCommonService = filterCommonService;
   }
 
+  @Override
   public String getJpqlFilters(List<Filter> filterList) {
 
     String filters = null;
@@ -90,6 +91,7 @@ public class FilterJpqlServiceImpl {
     return filters;
   }
 
+  @Override
   public String getJsonJpql(MetaJsonField jsonField) {
 
     switch (jsonField.getType()) {

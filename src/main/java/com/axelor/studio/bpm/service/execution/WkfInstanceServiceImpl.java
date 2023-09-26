@@ -28,7 +28,7 @@ import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
-import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceMigrationHistory;
@@ -84,7 +84,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         BpmnModelConstants.BPMN_ELEMENT_USER_TASK, BpmnModelConstants.BPMN_ELEMENT_RECEIVE_TASK
       };
 
-  protected ProcessEngineServiceImpl engineService;
+  protected ProcessEngineService engineService;
 
   protected WkfInstanceRepository wkfInstanceRepository;
 
@@ -104,7 +104,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   @Inject
   public WkfInstanceServiceImpl(
-      ProcessEngineServiceImpl engineService,
+      ProcessEngineService engineService,
       WkfInstanceRepository wkfInstanceRepository,
       WkfCommonService wkfService,
       MetaFiles metaFiles,

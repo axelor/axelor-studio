@@ -20,7 +20,7 @@ package com.axelor.studio.service.filter;
 import com.axelor.meta.db.MetaField;
 import java.util.Arrays;
 
-public class FilterCommonServiceImpl {
+public class FilterCommonServiceImpl implements FilterCommonService {
 
   /**
    * It will return value of tag used by filter 'value'.
@@ -28,6 +28,7 @@ public class FilterCommonServiceImpl {
    * @param value Value of chart filter.
    * @return Context variable to use instead of tag.
    */
+  @Override
   public String getTagValue(String value, boolean addColon) {
 
     if (value != null) {
@@ -53,6 +54,7 @@ public class FilterCommonServiceImpl {
    * @param isLike boolean to check if condition is like or notLike
    * @return String condition.
    */
+  @Override
   public String getLikeCondition(String conditionField, String value, boolean isLike) {
 
     String likeCondition = null;
@@ -83,6 +85,7 @@ public class FilterCommonServiceImpl {
    * @param metaField MetaField to check for typeName.
    * @return Simple field type.
    */
+  @Override
   public String getFieldType(MetaField metaField) {
 
     String relationship = metaField.getRelationship();
@@ -101,6 +104,7 @@ public class FilterCommonServiceImpl {
     return getFieldType(metaField.getTypeName());
   }
 
+  @Override
   public String getFieldType(String type) {
 
     switch (type) {
@@ -127,6 +131,7 @@ public class FilterCommonServiceImpl {
     }
   }
 
+  @Override
   public String getCondition(String conditionField, String operator, String value) {
 
     value = getTagValue(value, true);

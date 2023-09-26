@@ -23,7 +23,7 @@ import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
-import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
 import com.axelor.utils.ExceptionTool;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,7 +39,7 @@ public class StudioBuilderController {
               : StringUtils.substringAfterLast((String) context.get("_model"), ".");
       String viewName = (String) context.get("_viewName");
       String url =
-          Beans.get(StudioMetaServiceImpl.class).computeStudioBuilderUrl(model, viewName, isJson);
+          Beans.get(StudioMetaService.class).computeStudioBuilderUrl(model, viewName, isJson);
 
       response.setView(ActionView.define(I18n.get("Studio")).add("html", url).map());
     } catch (Exception e) {

@@ -24,7 +24,7 @@ import com.axelor.db.Model;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
-import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
@@ -58,7 +58,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
 
   protected static final Logger log = LoggerFactory.getLogger(WkfDisplayServiceImpl.class);
 
-  protected ProcessEngineServiceImpl engineService;
+  protected ProcessEngineService engineService;
 
   protected WkfInstanceService wkfInstanceService;
 
@@ -68,7 +68,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
 
   @Inject
   public WkfDisplayServiceImpl(
-      ProcessEngineServiceImpl engineService,
+      ProcessEngineService engineService,
       WkfInstanceService wkfInstanceService,
       WkfTaskConfigRepository wkfTaskConfigRepository,
       WkfInstanceRepository wkfInstanceRepo) {

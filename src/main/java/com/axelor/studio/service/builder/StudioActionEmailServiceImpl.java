@@ -33,17 +33,17 @@ import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioAction;
-import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
 import com.google.inject.Inject;
 import javax.mail.MessagingException;
 
-public class StudioActionEmailServiceImpl {
+public class StudioActionEmailServiceImpl implements StudioActionEmailService {
 
   protected MetaModelRepository metaModelRepo;
 
   protected MetaJsonModelRepository metaJsonModelRepo;
 
-  protected StudioMetaServiceImpl studioMetaService;
+  protected StudioMetaService studioMetaService;
 
   protected TemplateRepository templateRepo;
 
@@ -55,7 +55,7 @@ public class StudioActionEmailServiceImpl {
   public StudioActionEmailServiceImpl(
       MetaModelRepository metaModelRepo,
       MetaJsonModelRepository metaJsonModelRepo,
-      StudioMetaServiceImpl studioMetaService,
+      StudioMetaService studioMetaService,
       TemplateRepository templateRepo,
       TemplateMessageService templateMessageService,
       MessageService messageService) {
@@ -67,6 +67,7 @@ public class StudioActionEmailServiceImpl {
     this.messageService = messageService;
   }
 
+  @Override
   public MetaAction build(StudioAction studioAction) {
     String name = studioAction.getName();
     Object model =
@@ -83,7 +84,7 @@ public class StudioActionEmailServiceImpl {
             + "\" id=\""
             + studioAction.getXmlId()
             + "\">\n\t"
-            + "<call class=\"com.axelor.studio.service.builder.StudioActionEmailServiceImpl\" method=\"sendEmail(id, '"
+            + "<call class=\"com.axelor.studio.service.builder.StudioActionEmailService\" method=\"sendEmail(id, '"
             + (studioAction.getIsJson()
                 ? ((MetaJsonModel) model).getName()
                 : ((MetaModel) model).getFullName())
@@ -103,6 +104,7 @@ public class StudioActionEmailServiceImpl {
         name, "action-method", xml, null, studioAction.getXmlId());
   }
 
+  @Override
   @CallMethod
   public ActionResponse sendEmail(
       Long objectId, String model, String tag, Long templateId, int sendOption)

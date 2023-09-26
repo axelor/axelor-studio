@@ -19,23 +19,22 @@ package com.axelor.studio.service;
 
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonField;
-import com.axelor.studio.service.builder.StudioSelectionServiceImpl;
+import com.axelor.studio.service.builder.StudioSelectionService;
 import com.axelor.utils.ModelTool;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 
-public class JsonFieldServiceImpl {
+public class JsonFieldServiceImpl implements JsonFieldService {
 
-  public static final String SELECTION_PREFIX = "custom-json-select-";
-
-  protected StudioSelectionServiceImpl studioSelectionService;
+  protected StudioSelectionService studioSelectionService;
 
   @Inject
-  public JsonFieldServiceImpl(StudioSelectionServiceImpl studioSelectionService) {
+  public JsonFieldServiceImpl(StudioSelectionService studioSelectionService) {
     this.studioSelectionService = studioSelectionService;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void updateSelection(MetaJsonField metaJsonField) {
 
@@ -58,6 +57,7 @@ public class JsonFieldServiceImpl {
             .getName());
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeSelection(MetaJsonField metaJsonField) {
 
@@ -68,11 +68,13 @@ public class JsonFieldServiceImpl {
     }
   }
 
+  @Override
   @CallMethod
   public String checkName(String name, boolean isFieldName) {
     return ModelTool.normalizeKeyword(name, isFieldName);
   }
 
+  @Override
   public String getSelectionName(MetaJsonField metaJsonField) {
 
     String model =

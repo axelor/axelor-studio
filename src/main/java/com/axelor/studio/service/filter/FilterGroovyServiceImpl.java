@@ -30,24 +30,24 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilterGroovyServiceImpl {
+public class FilterGroovyServiceImpl implements FilterGroovyService {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected FilterCommonServiceImpl filterCommonService;
+  protected FilterCommonService filterCommonService;
 
   protected MetaModelRepository metaModelRepo;
 
   protected MetaJsonFieldRepository metaJsonFieldRepo;
 
-  protected FilterSqlServiceImpl filterSqlService;
+  protected FilterSqlService filterSqlService;
 
   @Inject
   public FilterGroovyServiceImpl(
-      FilterCommonServiceImpl filterCommonService,
+      FilterCommonService filterCommonService,
       MetaModelRepository metaModelRepo,
       MetaJsonFieldRepository metaJsonFieldRepo,
-      FilterSqlServiceImpl filterSqlService) {
+      FilterSqlService filterSqlService) {
     this.filterCommonService = filterCommonService;
     this.metaModelRepo = metaModelRepo;
     this.metaJsonFieldRepo = metaJsonFieldRepo;
@@ -62,6 +62,7 @@ public class FilterGroovyServiceImpl {
    * @param parentField Field that represent parent.
    * @return Groovy expression string.
    */
+  @Override
   public String getGroovyFilters(
       List<Filter> conditions, String parentField, boolean isButton, boolean isField) {
 
@@ -94,11 +95,12 @@ public class FilterGroovyServiceImpl {
   /**
    * Method to generate groovy expression for a single chart filter.
    *
-   * @param chartFilter Chart filter to use .
+   * @param filter Filter to use.
    * @param parentField Parent field.
    * @return Groovy expression string.
    */
-  protected String createGroovyFilter(
+  @Override
+  public String createGroovyFilter(
       Filter filter, String parentField, boolean isButton, boolean isField) {
 
     String fieldType = null;
@@ -137,7 +139,8 @@ public class FilterGroovyServiceImpl {
     return getConditionExpr(operator, targetField, fieldType, value, isButton);
   }
 
-  protected String getJsonFieldType(MetaJsonField jsonField, String targetField) {
+  @Override
+  public String getJsonFieldType(MetaJsonField jsonField, String targetField) {
 
     if (targetField == null || !targetField.contains(".")) {
       return jsonField.getType();
@@ -177,7 +180,8 @@ public class FilterGroovyServiceImpl {
     }
   }
 
-  protected String getMetaFieldType(MetaField field, String targetField, boolean isJson) {
+  @Override
+  public String getMetaFieldType(MetaField field, String targetField, boolean isJson) {
 
     if (targetField == null || !targetField.contains(".")) {
       return field.getTypeName();
@@ -207,7 +211,8 @@ public class FilterGroovyServiceImpl {
         String.format("No sub field found field: %s model: %s ", targetName, model.getFullName()));
   }
 
-  protected String processValue(Filter filter) {
+  @Override
+  public String processValue(Filter filter) {
 
     String value = filter.getValue();
     if (value == null) {
@@ -219,7 +224,8 @@ public class FilterGroovyServiceImpl {
     return filterCommonService.getTagValue(value, false);
   }
 
-  protected String getConditionExpr(
+  @Override
+  public String getConditionExpr(
       String operator, String field, String fieldType, String value, boolean isButton) {
 
     switch (operator) {

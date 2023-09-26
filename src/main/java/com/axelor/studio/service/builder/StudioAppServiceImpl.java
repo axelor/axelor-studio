@@ -71,7 +71,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioAppServiceImpl {
+public class StudioAppServiceImpl implements StudioAppService {
 
   protected JpaSecurity jpaSecurity;
 
@@ -97,6 +97,7 @@ public class StudioAppServiceImpl {
 
   protected final Logger log = LoggerFactory.getLogger(StudioAppServiceImpl.class);
 
+  @Override
   public StudioApp build(StudioApp studioApp) {
 
     checkCode(studioApp);
@@ -128,7 +129,8 @@ public class StudioAppServiceImpl {
     return studioApp;
   }
 
-  protected void checkCode(StudioApp studioApp) {
+  @Override
+  public void checkCode(StudioApp studioApp) {
 
     App app = appRepo.findByCode(studioApp.getCode());
 
@@ -138,6 +140,7 @@ public class StudioAppServiceImpl {
     }
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void clean(StudioApp studioApp) {
 
@@ -147,11 +150,13 @@ public class StudioAppServiceImpl {
     }
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void deleteApp(StudioApp studioApp) {
     Beans.get(StudioAppRepository.class).remove(studioApp);
   }
 
+  @Override
   public MetaFile importApp(Map<String, Object> dataFileMap) {
 
     File dataDir = null;
@@ -201,7 +206,8 @@ public class StudioAppServiceImpl {
     return null;
   }
 
-  protected void extractImportZip(File dataDir, File zipFile) {
+  @Override
+  public void extractImportZip(File dataDir, File zipFile) {
 
     if (zipFile == null) {
       return;
@@ -224,6 +230,7 @@ public class StudioAppServiceImpl {
     }
   }
 
+  @Override
   public MetaFile exportApps(List<Integer> studioAppIds, boolean isExportData) {
 
     MetaFile exportFile = null;
@@ -246,6 +253,7 @@ public class StudioAppServiceImpl {
     return exportFile;
   }
 
+  @Override
   public MetaFile exportApp(StudioApp studioApp, boolean isExportData) {
 
     MetaFile exportFile = null;
@@ -267,7 +275,8 @@ public class StudioAppServiceImpl {
     return exportFile;
   }
 
-  protected void generateExportFile(File exportDir, boolean isExportData, int... studioAppIds) {
+  @Override
+  public void generateExportFile(File exportDir, boolean isExportData, int... studioAppIds) {
 
     try {
       generateMetaDataFile(exportDir, studioAppIds);
@@ -309,7 +318,8 @@ public class StudioAppServiceImpl {
     }
   }
 
-  protected void generateMetaDataFile(File parentFile, int... studioAppIds) {
+  @Override
+  public void generateMetaDataFile(File parentFile, int... studioAppIds) {
 
     Map<String, InputStream> templateISmap = appLoaderExportService.getExportTemplateResources();
     GroovyTemplates templates = new GroovyTemplates();
@@ -342,7 +352,8 @@ public class StudioAppServiceImpl {
         });
   }
 
-  protected void deleteEmptyFile(File file) {
+  @Override
+  public void deleteEmptyFile(File file) {
 
     try {
       if (file == null) return;
@@ -360,7 +371,8 @@ public class StudioAppServiceImpl {
     }
   }
 
-  protected XMLInput createXMLInput(
+  @Override
+  public XMLInput createXMLInput(
       MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput) {
 
     XMLInput xmlInput = new XMLInput();
@@ -387,7 +399,8 @@ public class StudioAppServiceImpl {
     return xmlInput;
   }
 
-  protected List<XMLBind> getFieldBinding(
+  @Override
+  public List<XMLBind> getFieldBinding(
       MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput) {
 
     List<XMLBind> fieldBindings = new ArrayList<>();
@@ -427,8 +440,9 @@ public class StudioAppServiceImpl {
     return fieldBindings;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
-  protected void generateModelDataFiles(
+  public void generateModelDataFiles(
       MetaJsonModel jsonModel,
       File parentDir,
       Map<String, Object> jsonFieldMap,
