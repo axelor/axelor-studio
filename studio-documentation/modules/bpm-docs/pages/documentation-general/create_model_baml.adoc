@@ -6,7 +6,7 @@ Les modèles BAML permettent de créer des scripts d’analyse et de calcul sur 
 
 image::app_builder_dmn.png[event process]
 
-Lorsque vous cliquez sur le bouton dans le menu, vous accédez à une liste de tous vos modèles BAML existants. Vous pouvez cliquer sur un modèle déjà existant pour le consulter et le modifier, ou bien en créer un nouveau en cliquant sur le bouton
+Lorsque vous cliquez sur le bouton dans le menu, vous accédez à une liste de tous vos modèles BAML existants. Vous pouvez cliquer sur un modèle déjà existant pour le consulter et le modifier, ou bien en créer un nouveau en cliquant sur le bouton image:plus-icon.png[gateway icon]
 En créant un nouveau modèle, vous allez arriver sur l’interface suivante :
 
 image::baml_diagram.png[event process]
@@ -19,13 +19,13 @@ Cliquer sur le bouton “Ouvrir l’éditeur” va faire apparaître la fenêtre
 
 image::baml_bpm.png[event process]
 
-* Les boutons  permettent de télécharger notre modèle ou d’en appliquer un sur l’édition.
+* Les boutons image:baml-icon-1.png[baml icon] permettent de télécharger notre modèle ou d’en appliquer un sur l’édition.
 
-* Le bouton  permet d’enregistrer le modèle en cours.
+* Le bouton  image:baml-icon-2.png[baml icon]  permet d’enregistrer le modèle en cours.
 
-* Le bouton permet de le télécharger en modèle SVG (image simple)
+* Le bouton image:baml-icon-3.png[baml icon]  permet de le télécharger en modèle SVG (image simple)
 
-* Le bouton  permet de générer le code qui correspond au modèle visible dans la zone d’édition.
+* Le bouton  image:baml-icon-4.png[baml icon]  permet de générer le code qui correspond au modèle visible dans la zone d’édition.
 
 * Dans le panel de propriété situé sur la droite, on peut nommer le processus (la bonne pratique veut qu’il possède le même nom que celui du modèle) et choisir le modèle cible de ce que l’on va récupérer et le modèle source.
 
@@ -33,11 +33,11 @@ image::process_baml.png[event process]
 
 Ici on va effectuer une action sur les inventaires, en partant des familles de produits.
 
-Il y a 4 actions possibles sur les modèles BAML, elles sont regroupées dans la barre d’action verticale à gauche :
+Il y a 4 actions possibles sur les modèles BAML, elles sont regroupées dans la barre d’action verticale à gauche : image:baml-icons.png[baml icon]
 
-Le symbole  permet de récupérer un ensemble de données.
+Le symbole image:baml-sym-icon-1.png[baml icon]  permet de récupérer un ensemble de données.
 
-Il est nécessaire de choisir un modèle sur lequel effectuer la requête à l’aide du champ suivant :
+Il est nécessaire de choisir un modèle sur lequel effectuer la requête à l’aide du champ suivant : image:model-baml.png[baml icon]
 
 Ce champ permet de définir si on ne veut récupérer qu'une ou plusieurs données. Si la demande renvoie plusieurs données et que l’on stipule un retour unique, celui-ci va renvoyer le premier trouvé .
 
@@ -47,28 +47,24 @@ Ce résultat sera stocké dans une variable nommé comme l’utilisateur l’aur
 
 image::var_stock_location.png[event process]
 
-Il est possible de choisir si on veut garder le résultat sous la forme d’un objet ou d’un JSON en cliquant sur la case suivante :
+Il est possible de choisir si on veut garder le résultat sous la forme d’un objet ou d’un JSON en cliquant sur la case suivante : image:isJson-icon.png[baml icon]
 
-La requête se rédige avec le query builder  :
+La requête se rédige avec le query builder  : image:baml-query.png[baml icon]
 
 image::query_baml.png[event process]
 
-Le symbole  permet de créer de nouvelles données. L’utilisateur doit désigner le type d’objet qu’il veut créer :
+Le symbole image:mapper-baml.png[baml icon]  permet de créer de nouvelles données. L’utilisateur doit désigner le type d’objet qu’il veut créer : image:target_baml.png[baml icon]
 
 image::target_field_baml.png[event process]
 
 et les informations qu’il veut lui assigner avec un script builder
 
 
-Le symbole permet d’ajouter une condition avant d’effectuer une action, cette action peut être généré avec le builder de condition :
+Le symbole image:toggle-icon.png[baml icon]  permet d’ajouter une condition avant d’effectuer une action, cette action peut être généré avec le builder de condition :
 
-image::expression_baml.png[event process]
+Le symbole image:boucle-icon.png[boucle icon] permet de créer une boucle qui va s’effectuer sur un objet précis.
 
-Le symbole permet de créer une boucle qui va s’effectuer sur un objet précis.
-
-Cette condition se définit ici :
-
-image::expresion_baml_2.png[event process]
+Cette condition se définit ici : image:expresion_baml_2.png[event process]
 
 Tant qu’il y a un produit dans l’ensemble, on effectue l’action de création de données.
 

@@ -2,7 +2,8 @@
 :toc-title:
 :page-pagination:
 
-ymbolisé par , il ne peut être placé uniquement que dans un sous processus. Quand il est atteint, il envoie un signal qui sera capté par
+ymbolisé par image:cancel-icon-1.png[cancel icon], il ne peut être placé uniquement que dans un sous processus. Quand il est atteint, il envoie un signal qui sera capté par
+image:cancel-icon-2.png[cancel icon]
 
-WARNING: Il ne peut y avoir qu’un seul par sous processus.
+WARNING: Il ne peut y avoir qu’un seul image:cancel-icon-2.png[cancel icon] par sous processus.
 

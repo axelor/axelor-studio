@@ -2,19 +2,19 @@
 :toc-title:
 :page-pagination:
 
-Les task possèdent un onglet nommé “listeners”  Celui-ci permet d’effectuer des scripts groovys lors de situations précises.
+Les task possèdent un onglet nommé “listeners” image:listeners-icon.png[receive icon]  Celui-ci permet d’effectuer des scripts groovys lors de situations précises.
 
 == Execution listener
 
 Un execution listener se crée en appuyant sur le bouton plus dans la liste des listener
 
-concernés dans l’onglet
+concernés dans l’onglet image:executable-icon.png[execution icon]
 
 Celui-ci applique son script groovy au début ou à la fin (selon le choix fait par l’utilisateur) de la task. Le script peut être rédigé ou non via le script builder.
 
 == Task listener
 
-Une task listener se crée en appuyant sur le bouton pus dans la liste des listener concernés dans l’onglet
+Une task listener se crée en appuyant sur le bouton pus dans la liste des listener concernés dans l’onglet image:task-listener-icon.png[task listener icon]
 
 Aujourd’hui, il n’y a pas de script builder disponible pour rédiger le script d’une task listener, il faut donc le rédiger manuellement.
 

@@ -13,7 +13,8 @@ et également un panel pour le modèle dans sa globalité. C’est par celui-ci 
 C’est grâce à lui que chaque modèle à son identité propre, que l’on peut voir si le processus est déployé ou non,
 la version du processus, etc.
 
-image::panel.png[panel image,rotate=180]
+image::panel.png[panel image,rotate=90]
+
 === **Avancement du processus**
 Cette zone permet de voir les différents états possibles pour le processus.
 

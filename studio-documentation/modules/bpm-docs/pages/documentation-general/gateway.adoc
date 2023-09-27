@@ -4,6 +4,6 @@
 
 == Gateway
 
-Symbolisé par ,,, et  ces objets ne se configurent pas. Les gateways suivent leur comportement classique. Pour une gateway exclusive par exemple, pour savoir quel chemin doit être suivi, on configure les flèches en indiquant un script. Les flèches sont des objets dits “flow”.
+Symbolisé par image:gateway-icon-1.png[gateway icon],image:gateway-icon-2.png[gateway icon],image:gateway-icon-3.png[gateway icon],image:gateway-icon-4.png[gateway icon] et image:gateway-icon-5.png[gateway icon] ces objets ne se configurent pas. Les gateways suivent leur comportement classique. Pour une gateway exclusive par exemple, pour savoir quel chemin doit être suivi, on configure les flèches en indiquant un script. Les flèches sont des objets dits “flow”.
 
 image::gateway.png[event process]

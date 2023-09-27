@@ -1,5 +1,5 @@
 site:
-  title: WS builder Docs
+  title: Studio Documentation
   start_page: ws::index.adoc
 content:
   sources:

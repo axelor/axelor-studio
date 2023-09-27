@@ -20,23 +20,23 @@ image::app_builder_menu.png[event process]
 
 Il faudra renseigner un nom qui est obligatoire. Il est possible de renseigner une description qui explicite ce que fait le modèle DMN. On peut renseigner un modèle qui sera utilisé si le DMN n’est pas lié à un modèle BPM.
 
-Pour accéder à l’éditeur du DMN, il faut cliquer sur le bouton suivant  Ce qui va amener à l’écran suivant.
+Pour accéder à l’éditeur du DMN, il faut cliquer sur le bouton suivant image:open-editor-icon.png[editor  icon]  Ce qui va amener à l’écran suivant
 
 image::dmn_diagram.png[event process]
 
-La vue de l’éditeur est similaire à celle que l’on a sur le BPM. sur le côté gauche, il y a une barre verticale avec toutes les possibilités sur le graphique
+La vue de l’éditeur est similaire à celle que l’on a sur le BPM. sur le côté gauche, il y a une barre verticale avec toutes les possibilités sur le graphique image:dmn-menu.png[gateway icon]
 
 Nous allons expliquer l’utilisation de chaque bouton ici :
 
-Le  bouton permet d’activer l’outil lasso qui permet de sélectionner et déplacer plusieurs éléments à la fois
+Le  bouton image:dmn-btn-1.png[dmn icon] permet d’activer l’outil lasso qui permet de sélectionner et déplacer plusieurs éléments à la fois
 
-le bouton permet de placer une nouvelle table de décision ou une expression de décision.
+le bouton image:dmn-btn-2.png[gateway icon] permet de placer une nouvelle table de décision ou une expression de décision.
 
-Le boutonpermet d’indiquer les données requises pour exécuter la décision (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
+Le bouton image:dmn-btn-3.png[gateway icon] permet d’indiquer les données requises pour exécuter la décision (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
 
-Le bouton permet d'indiquer la source de connaissance utilisée pour prendre la décision (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
+Le bouton image:dmn-btn-4.png[gateway icon] permet d'indiquer la source de connaissance utilisée pour prendre la décision (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
 
-Le bouton  (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
+Le bouton image:dmn-btn-5.png[gateway icon] (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
 
 Sur la droite, nous avons le panneau des propriétés, qui donne par défaut celle du DRD
 

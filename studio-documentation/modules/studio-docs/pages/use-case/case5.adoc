@@ -1,3 +1,0 @@
-= Step 5: Recursion request
-:toc-title:
-:page-pagination:

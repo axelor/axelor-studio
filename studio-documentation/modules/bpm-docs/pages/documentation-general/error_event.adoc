@@ -2,7 +2,7 @@
 :toc-title:
 :page-pagination:
 
-Symbolisé par Il est déclenché à la réception d’un signal “Error”. Cet événement ne peut être utilisé que pour déclencher un sous-processus d'événement - il ne peut pas être utilisé pour démarrer une instance de processus.
+Symbolisé par image:error-icon-1.png[error icon] Il est déclenché à la réception d’un signal “Error”. Cet événement ne peut être utilisé que pour déclencher un sous-processus d'événement - il ne peut pas être utilisé pour démarrer une instance de processus.
 
 image::error_event.png[event process]
 
@@ -10,7 +10,7 @@ image::error_event.png[event process]
 <2> Le Error Code contiendra le code d’erreur qui sera spécifié avec celle-ci.
 <3> Le Error Message contiendra le message d’erreur qui sera spécifié avec celle-ci.
 
-Symbolisé par Il est déclenché à la réception d’un signal “Error”
+Symbolisé par mage:error-icon-2.png[error icon] Il est déclenché à la réception d’un signal “Error”
 
 image::error_event_2.png[event process]
 
@@ -19,10 +19,10 @@ image::error_event_2.png[event process]
 <3> Si un Error Code Variable est renseigné, on pourra récupérer le code d’erreur de l’événement via celui-ci.
 <4> Si un Error Message Variable est renseigné, on pourra récupérer le message d’erreur de l’événement via celui-ci.
 
-Symbolisé par Il permet d’envoyer un signal “Error”
+Symbolisé par mage:error-icon-3.png[error icon] Il permet d’envoyer un signal “Error”
 
 image::error_event_3.png[event process]
 
 Toutes les configurations nécessite de donner un code à l’erreur
 
-Cliquer sur le bouton permet de créer un nouveau signal “Error”. Un Error Name sera automatiquement généré, mais il est conseillé de le changer pour le rendre plus compréhensible.
+Cliquer sur le bouton image:signal-icon-plus.png[signal icon] permet de créer un nouveau signal “Error”. Un Error Name sera automatiquement généré, mais il est conseillé de le changer pour le rendre plus compréhensible.

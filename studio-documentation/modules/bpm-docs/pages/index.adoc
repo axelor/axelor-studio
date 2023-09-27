@@ -1,4 +1,4 @@
-= {page-component-title} {page-component-version} Documentation
+= Axelor BPM Documentation
 :toc:
 :toc-title:
 

@@ -1,5 +1,0 @@
-* xref:index.adoc[Getting Started]
-** xref:install.adoc[Installation]
-** xref:eclipse.adoc[Eclipse]
-** xref:idea.adoc[IntelliJ IDEA]
-** xref:closing.adoc[What's Next?]
