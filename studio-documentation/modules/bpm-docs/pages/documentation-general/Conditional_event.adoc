@@ -1,0 +1,7 @@
+=  Conditional Event
+:toc-title:
+:page-pagination:
+
+Symbolisé par ,,Il est déclenché suite à la réalisation d’une condition. Cette condition peut être générée via le mapper completed if.
+
+image::conditional_event.png[event process]

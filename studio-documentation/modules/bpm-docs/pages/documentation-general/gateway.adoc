@@ -1,0 +1,9 @@
+=  Gateway
+:toc-title:
+:page-pagination:
+
+== Gateway
+
+Symbolisé par ,,, et  ces objets ne se configurent pas. Les gateways suivent leur comportement classique. Pour une gateway exclusive par exemple, pour savoir quel chemin doit être suivi, on configure les flèches en indiquant un script. Les flèches sont des objets dits “flow”.
+
+image::gateway.png[event process]

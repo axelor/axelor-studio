@@ -1,0 +1,94 @@
+= Tâche utilisateur
+:toc-title:
+:page-pagination:
+
+== Validation via une condition
+
+Reprenons, l’énoncé  : “ Nous allons effectuer un processus qui vérifie que l’utilisateur a renseigné un contact fournisseur pour sa demande”
+
+Pour cela, nous allons ajouter une tâche utilisateur image:task-user-icon.png[task image] qui va se charger de vérifier si la commande possède un fournisseur. Pour insérer une tâche utilisateur, il faut d’abord insérer une tâche non typées image:mapper-icon.png[mapper image]  puis cliquer dessus, sélectionner la clé à molette et sélectionner la tâche utilisateur.
+
+Dans un premier temps, la bonne pratique consiste à nommer la tâche, par exemple : “Compléter le champ contact fournisseur”.  Pour cela cliquez sur la tâche et remplissez le champ “Nom”.
+Nous allons ensuite cliquer sur le crayon pour ouvrir le “Completed if builder”.
+
+Vous devriez avoir ceci :
+
+image::user_task.png[User task script]
+
+Il va falloir renseigner un modèle. Celui-ci correspond à l’objet sur lequel nous allons faire une vérification. Nous voulons nous assurer qu’un fournisseur est présent, pour ce faire, il faut mettre contact fournisseur dans “nom du champ” et non nul dans "opérateur".
+
+Une fois que vous avez effectué cela, cliquez sur ok et la pop-up va disparaître. Le champ “Completed if” qui était vide s’est rempli automatiquement grâce au builder, ce qui donne le
+
+script suivant : image:completedIf.png[completed if  expression]
+
+Ainsi le processus ne pourra avancer que si l’utilisateur a rempli le bon champ.
+
+Il est à noter que les expressions que l’on construit avec le builder peuvent être complexes, on peut ajouter des expressions, des groupes, des règles, transformer les “ET” en “OU”... Il est également possible d’accéder à des champs pointés. Je vous invite à jouer avec l’expression builder pour prendre conscience des possibilités qu’il offre.
+
+Nous allons également cocher la case “Afficher status” et sélectionner la demande d’achat pour le champ “Display on models”.
+
+Vous devriez avoir un processus comme ceci :
+
+image::insertUserTaskBPM.png[BPM user task]
+
+Déployez le puis créez une demande d’achat et sauvegardez là. Vous devriez voir ce message apparaître en haut de votre demande d’achat :
+
+image::completetheField.png[Message complete field]
+
+NOTE: si le message n'apparaît pas, vérifiez que vous avez bien coché la case “Afficher statut” sur la piscine et sur la tâche utilisateur.
+
+
+
+== Validation via un bouton
+
+Reprenons l'énoncé : “Nous allons effectuer un processus qui :
+
+<1> vérifie que l’utilisateur a renseigné un contact fournisseur pour sa demande ;
+<2> vérifie que l’utilisateur appuie sur le bouton “Requête” ou “Annuler” avant de continuer
+<3> ....
+
+La première étape est déjà réalisée passons à la suivante.
+
+Commençons par ajouter une tâche utilisateur (exemple de nom : “Appuyer sur un bouton”) à la suite de la première. Cette tâche ne sera pas validée par une condition comme ci-dessus mais par le clique d’un bouton.
+Pour cela, il faut cliquer sur la tâche et remplir le champ “Buttons” sur l’onglet à droite de l’écran avec les boutons “Requête” et “Annuler” :
+
+image::user_task_click_on_btn.png[User task click on button]
+
+Nous pouvons insérer autant de boutons que l’on souhaite sur  ce champ et le comportement sera le suivant : la tâche est validée dès lors que l’utilisateur clique sur un des boutons.
+
+Le processus devrait ressembler à ceci :
+
+image::Bpm_user_tasl_click.png[BPM User task click on button]
+
+Tester ce processus en visualisant l’instance de processus associée.
+
+== Validation via une condition et un bouton
+
+Nous avons fait deux tâches différentes pour compléter le champ contact fournisseur et appuyer sur un bouton. Nous pouvons réunir ces deux tâches en une. Remplacer les deux tâches utilisateur par une seule qui se nomme : “Renseigné la première étape”.
+
+Sur cette tâche utilisateur nous allons renseigner le champ “Completed If” et le champ “Buttons”  :
+
+image::validate_condition.png[Validate User task click on button]
+
+Le comportement est le suivant : pour valider la tâche, il faut renseigner un contact fournisseur puis appuyer sur un des deux boutons “Requête” ou “Annuler”. Le nom de notre tâche “Renseigner la première étape” n’est pas très parlant. Donc même si on affiche le statut, ça n’aidera pas beaucoup l’utilisateur. Il existe une autre manière d’indiquer de l’aide qui n’est autre que le champ “Aide”.
+
+Renseigner l’aide suivante :
+
+image::re-assign-contract.png[assign a contact]
+
+Déployer le processus puis tester le scénario suivant. Créer une demande d’achat et appuyer sur “Annuler” ou “Requête”, vous devriez avoir le message suivant qui s’affiche :
+
+image::warning.png[Warning]
+
+== Attributs de vues
+
+Nous avons à présent une tâche qui vérifie que le champ “contact fournisseur” est renseigné avant de passer à la suite.
+Seulement, une fois que le processus a terminé cette tâche, l’utilisateur peut vider ce champ et poursuivre : il n’est pas requis. Nous allons nous intéresser à l’onglet “View attributes” de la tâche utilisateur.
+Vous pouvez cliquez sur le symbol + et renseigner les champs comme suit :
+
+image::view_attribute.png[View attribute panel]
+
+Nous indiquons ici que le fournisseur est requis de façon permanente. Si la n’est pas coché, le champ serait requis uniquement lors de l’activation de la taĉhe. Avec la case cochée, il est requis dès lors que la case a été activée.
+Il existe d’autres attributs de vue, certains permettent de masquer des champs d’autres de restreindre la valeur des champs… Vous pouvez tester en utilisant le menu déroulant du champ “Nom”.
+Une fois l’attribut de vue renseigné, déployez et testez.
+

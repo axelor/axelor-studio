@@ -1,0 +1,8 @@
+=  Cancel Event
+:toc-title:
+:page-pagination:
+
+ymbolisé par , il ne peut être placé uniquement que dans un sous processus. Quand il est atteint, il envoie un signal qui sera capté par
+
+WARNING: Il ne peut y avoir qu’un seul par sous processus.
+

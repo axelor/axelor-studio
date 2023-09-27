@@ -1,7 +1,6 @@
 = Découverte par l’exemple
-// page:page-id.adoc#whats-a-page-id == What's a page ID?
-// page:page-id.adoc#important == Why are page IDs important?
-//[#whats-a-cross-reference]
+:toc-title:
+:page-pagination:
 
 Nous allons nous intéresser à différents exercices que nous résoudrons pas à pas.
 
@@ -29,7 +28,9 @@ Même exercice que l'exercice 1 mais cette fois-ci l’utilisateur doit pouvoir 
 
 == Exercice 3 : sous processus événementiel non interruptif, événement frontière
 Nous allons partir sur un scénario sur les contrats (VehicleContract) du menu Parc automobile>Contrat. Le processus devra demander à l’utilisateur de renseigner le contractant puis le Type, le Coûts d'activation, la Fréquence de récurrence du coût et le fournisseur.
+
 À tout moment si l’utilisateur renseigne la “Date de facturation” on renseignera automatiquement la “Date de début du contrat” un jour après.
+
 De plus, après avoir renseigné le contractant  si au bout d’une semaine, l’utilisateur n’a pas renseigné  le Type, le Coûts d'activation, la Fréquence de récurrence du coût et le fournisseur, un mail de rappel est envoyé au contractant.
 
 == Exercice 4 : requête, sous processus séquentiel multi instance
@@ -46,9 +47,9 @@ Demandez à l'utilisateur de renseigner la date de réception estimée de la com
 
 Nous allons nous intéresser aux produits et à l’API dummyjson : https://dummyjson.com/docs/products.
 
-Création d’un produit : Sur la vue formulaire des produits ajoutez un bouton “Envoyer”. Lorsque l’on clique sur ce bouton, on doit faire appel à l’api : https://dummyjson.com/products/add  qui simule l’enregistrement du produit sur le serveur et renvoie un identifiant. Stocker cet identifiant dans la description du produit.
+<1> Création d’un produit : Sur la vue formulaire des produits ajoutez un bouton “Envoyer”. Lorsque l’on clique sur ce bouton, on doit faire appel à l’api : https://dummyjson.com/products/add  qui simule l’enregistrement du produit sur le serveur et renvoie un identifiant. Stocker cet identifiant dans la description du produit.
 
-Mise à jour des produits : Ajouter un bouton “Mettre à jour” sur la vue formulaire des produits. Lorsque l’on clique sur ce bouton cela doit avoir pour effet :
+<2> Mise à jour des produits : Ajouter un bouton “Mettre à jour” sur la vue formulaire des produits. Lorsque l’on clique sur ce bouton cela doit avoir pour effet :
 L’appel à l’api : https://dummyjson.com/products
 La création de tous les produits retournés par l’API
 L’archivage des produits existant dans l’application axelor mais non présent dans le retour de l’API

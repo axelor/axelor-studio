@@ -1,0 +1,8 @@
+=  Link Event
+:toc-title:
+:page-pagination:
+
+Symbolisé par  et , il sert de porte "allez vers” dans le même sous processus
+Il suffit de remplir le nom du lien pour permettre le lien entre  et
+
+image::link_event.png[event process]

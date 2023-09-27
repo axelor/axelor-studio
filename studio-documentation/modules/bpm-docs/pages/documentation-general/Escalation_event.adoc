@@ -1,0 +1,11 @@
+=  Escalation Event
+:toc-title:
+:page-pagination:
+
+Symbolisé par ,Il permet d’envoyer un signal “Escalation”.
+
+Symbolisé par,, ,Il est déclenché à la réception d’un signal “Escalation”
+
+image::escalation_event.png[event process]
+
+Cliquer sur le bouton permet de créer un nouveau signal “Escalation”. Un Escalation Name sera automatiquement généré, mais il est conseillé de le changer pour le rendre plus compréhensible.

@@ -14,13 +14,13 @@ Pour positionner des objets dessus, nous allons utiliser la barre verticale situ
 
 Sur la partie supérieure de cette barre, se trouve des icônes qui permettent de changer de mode d’édition.
 
-La main  permet de déplacer la caméra librement pour se positionner ou l’on souhaite au niveau du processus.
+La main image:hand-icon.png[hand image] permet de déplacer la caméra librement pour se positionner ou l’on souhaite au niveau du processus.
 
-La sélection de zone permet de sélectionner une portion de la zone de travail et de pouvoir la déplacer dans son intégralité.
+La sélection de zone image:select-icon.png[select image] permet de sélectionner une portion de la zone de travail et de pouvoir la déplacer dans son intégralité.
 
-Le déplacement latéral  permet de déplacer un ensemble d'éléments du modèle horizontalement ou verticalement sans avoir à les sélectionner.
+Le déplacement latéral image:deplace-icon.png[deplace image]  permet de déplacer un ensemble d'éléments du modèle horizontalement ou verticalement sans avoir à les sélectionner.
 
-Le lien entre entité  permet de dessiner les différents liens existants dans la norme.
+Le lien entre entité image:link-icon.png[link image]  permet de dessiner les différents liens existants dans la norme.
 
 === **Les objets de la norme BPM**
 Sur la partie inférieure de la barre verticale, se trouvent les objets de la norme BPMN 2.0.
@@ -38,21 +38,21 @@ image::espceModelisation.png[Espace modelisation BPM image]
 
 === Supression
 
-L'icône permet de supprimer l’objet sélectionné.
+L'icône image:delete-icon-2.png[delete image] permet de supprimer l’objet sélectionné.
 
 === Annotation
 
-L’icône permet de créer une note liée à l’objet et visible depuis l’espace de travail.
+L’icône image:note-icon.png[note image] permet de créer une note liée à l’objet et visible depuis l’espace de travail.
 
 image::anotation.png[Annotation]
 
 === Lier à un autre objet
 
-L’icône permet de relier l’objet sélectionné vers un autre objet.
+L’icône image:select-icon-2.png[select image] permet de relier l’objet sélectionné vers un autre objet.
 
 === Changement de type
 
-L’icône  permet de changer le type de l’objet sélectionné.
+L’icône image:params-icon.png[params image]  permet de changer le type de l’objet sélectionné.
 
 image::changeType.png[nnotation]
 
