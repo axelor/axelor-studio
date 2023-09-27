@@ -24,19 +24,20 @@
       <field name="$imageUrl" colSpan="12" hidden="true"/>
     </panel>
     <panel-tabs name="mainPanelTabs" showIf="$imageUrl != null">
-     <panel-dashlet name="wkfInstanceDashlet"
+      <panel-dashlet name="wkfInstanceDashlet"
         action="action-wkf-instance-display-instance-state" colSpan="12" height="600"
         showIf="$imageUrl != null" readonly="true" title="BPM Instance State"/>
       <panel name="migrationHistoryPanel" title="Migration History">
-        <field name="wkfInstanceMigrationHistory" readonly="true" widget="editor" colSpan="12"/>
+        <field name="wkfInstanceMigrationHistory" readonly="true" colSpan="12"/>
       </panel>
-      <panel title="Log">
-      	 <button name="clearLogBtn" title="Clear log" onClick="action-wkf-instance-method-clear-log" colSpan="3"/>
-         <field name="logText" colSpan="12" showTitle="false" />
-       </panel>  	
+      <panel name="logPanel" title="Log" hidden="true">
+        <button name="clearLogBtn" title="Clear log" onClick="action-wkf-instance-method-clear-log"
+          colSpan="3"/>
+        <field name="logText" colSpan="12" showTitle="false" widget="code-editor"/>
+      </panel>
     </panel-tabs>
   </form>
-  
+
   <action-view name="action-wkf-instance-display-instance-state"
     title="BPM Instance State">
     <view type="html" name="{{$imageUrl}}"/>
@@ -45,6 +46,8 @@
   <action-attrs name="action-wkf-attrs-refresh-instance-state">
     <attribute name="value" for="$imageUrl"
       expr="call:com.axelor.studio.bpm.service.WkfDisplayService:getInstanceUrl(__self__)"/>
+    <attribute for="logPanel" name="hidden"
+      expr="eval: !com.axelor.inject.Beans.get(com.axelor.studio.service.AppSettingsStudioService).isAddBpmLog()"/>
   </action-attrs>
 
   <action-view name="wkf-instance-view-from-record" title="BPM Instance"
@@ -73,9 +76,9 @@
   <action-method name="action-wkf-instance-method-cancel-node">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="cancelNode"/>
   </action-method>
-  
+
   <action-method name="action-wkf-instance-method-clear-log">
-  	<call class="com.axelor.studio.bpm.web.WkfModelController" method="clearInstanceLog"/>
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="clearInstanceLog"/>
   </action-method>
 
 </object-views>

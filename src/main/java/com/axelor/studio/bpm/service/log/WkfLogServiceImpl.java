@@ -22,6 +22,7 @@ import ch.qos.logback.core.OutputStreamAppender;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
+import com.axelor.utils.ExceptionTool;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +30,7 @@ import java.io.IOException;
 
 public class WkfLogServiceImpl implements WkfLogService {
 
-  protected WkfLoggerInitServiceImpl wkfLoggerInitServiceImpl;
+  protected WkfLoggerInitService wkfLoggerInitServiceImpl;
 
   protected WkfInstanceRepository wkfInstanceRepository;
 
@@ -37,7 +38,7 @@ public class WkfLogServiceImpl implements WkfLogService {
 
   @Inject
   public WkfLogServiceImpl(
-      WkfLoggerInitServiceImpl wkfLoggerInitServiceImpl,
+      WkfLoggerInitService wkfLoggerInitServiceImpl,
       WkfInstanceRepository wkfInstanceRepository,
       AppSettingsStudioService appSettingsService) {
     this.wkfLoggerInitServiceImpl = wkfLoggerInitServiceImpl;
@@ -46,22 +47,22 @@ public class WkfLogServiceImpl implements WkfLogService {
   }
 
   @Override
-  public OutputStreamAppender<ILoggingEvent> createOrAttachAppender(String processInstnaceId) {
+  public OutputStreamAppender<ILoggingEvent> createOrAttachAppender(String processInstanceId) {
 
     OutputStreamAppender<ILoggingEvent> appender =
-        wkfLoggerInitServiceImpl.getAppender(processInstnaceId);
+        wkfLoggerInitServiceImpl.getAppender(processInstanceId);
     if (appender != null) {
       wkfLoggerInitServiceImpl.attachAppender(appender);
     } else {
-      appender = new OutputStreamAppender<ILoggingEvent>();
+      appender = new OutputStreamAppender<>();
       appender.setContext(wkfLoggerInitServiceImpl.getLoggerContext());
       ByteArrayOutputStream logStream = new ByteArrayOutputStream();
       appender.setOutputStream(logStream);
-      appender.setName(processInstnaceId);
+      appender.setName(processInstanceId);
       appender.setEncoder(wkfLoggerInitServiceImpl.getEncoder());
       appender.start();
       wkfLoggerInitServiceImpl.attachAppender(appender);
-      wkfLoggerInitServiceImpl.addAppender(processInstnaceId, appender);
+      wkfLoggerInitServiceImpl.addAppender(processInstanceId, appender);
     }
 
     return appender;
@@ -71,24 +72,23 @@ public class WkfLogServiceImpl implements WkfLogService {
   public void writeLog(String processInstanceId) {
     OutputStreamAppender<ILoggingEvent> appender =
         wkfLoggerInitServiceImpl.getAppender(processInstanceId);
-    Boolean isLog = appSettingsService.isAddBpmLog();
+    boolean isLog = appSettingsService.isAddBpmLog();
     if (appender == null || !isLog) {
       return;
     }
 
-    try {
-      ByteArrayOutputStream outStream = (ByteArrayOutputStream) appender.getOutputStream();
+    try (ByteArrayOutputStream outStream = (ByteArrayOutputStream) appender.getOutputStream()) {
       if (outStream.size() > 0) {
         updateProcessInstanceLog(processInstanceId, outStream);
       }
-      outStream.close();
     } catch (IOException e) {
+      ExceptionTool.trace(e);
     }
     appender.setOutputStream(new ByteArrayOutputStream());
     wkfLoggerInitServiceImpl.detachAppender(appender);
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   protected void updateProcessInstanceLog(
       String processInstanceId, ByteArrayOutputStream outStream) {
     WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
@@ -98,14 +98,12 @@ public class WkfLogServiceImpl implements WkfLogService {
       if (logText == null) {
         logText = "";
       }
-      StringBuilder logTextBuilder = new StringBuilder(logText);
-      logTextBuilder.append(new String(outStream.toByteArray()));
-      wkfInstance.setLogText(logTextBuilder.toString());
+      wkfInstance.setLogText(logText + outStream.toString());
       wkfInstanceRepository.save(wkfInstance);
     }
   }
 
-  @Transactional
+  @Transactional(rollbackOn = Exception.class)
   public void clearLog(String processInstanceId) {
     WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
 

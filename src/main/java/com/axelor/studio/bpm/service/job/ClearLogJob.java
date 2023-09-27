@@ -29,8 +29,14 @@ import org.quartz.JobExecutionException;
 
 public class ClearLogJob implements Job {
 
-  @Inject protected WkfInstanceRepository wkfInstanceRepo;
-  @Inject protected WkfLogService logService;
+  protected WkfInstanceRepository wkfInstanceRepo;
+  protected WkfLogService logService;
+
+  @Inject
+  public ClearLogJob(WkfInstanceRepository wkfInstanceRepo, WkfLogService logService) {
+    this.wkfInstanceRepo = wkfInstanceRepo;
+    this.logService = logService;
+  }
 
   protected static final int FETCH_LIMIT = 10;
 

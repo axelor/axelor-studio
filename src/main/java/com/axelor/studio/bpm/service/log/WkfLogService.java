@@ -22,7 +22,7 @@ import ch.qos.logback.core.OutputStreamAppender;
 
 public interface WkfLogService {
 
-  OutputStreamAppender<ILoggingEvent> createOrAttachAppender(String processInstnaceId);
+  OutputStreamAppender<ILoggingEvent> createOrAttachAppender(String processInstanceId);
 
   void writeLog(String processInstanceId);
 

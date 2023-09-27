@@ -29,7 +29,7 @@ import com.axelor.common.logging.LoggerConfiguration;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +37,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class WkfLoggerInitServiceImpl {
+public class WkfLoggerInitServiceImpl implements WkfLoggerInitService {
 
-  private List<Logger> loggers = new ArrayList<Logger>();
+  private final List<Logger> loggers = new ArrayList<>();
 
   private PatternLayoutEncoder encoder;
 
@@ -62,6 +62,7 @@ public class WkfLoggerInitServiceImpl {
     this.appSettingsStudioService = appSettingsStudioService;
   }
 
+  @Override
   public void initLogger() {
     context = (LoggerContext) LoggerFactory.getILoggerFactory();
     context.putObject(LoggerConfiguration.class.getName(), true);
@@ -71,18 +72,22 @@ public class WkfLoggerInitServiceImpl {
     addEncoder();
   }
 
+  @Override
   public PatternLayoutEncoder getEncoder() {
     return encoder;
   }
 
+  @Override
   public LoggerContext getLoggerContext() {
     return context;
   }
 
+  @Override
   public void addAppender(String instanceId, OutputStreamAppender<ILoggingEvent> appender) {
     appenderMap.put(instanceId, appender);
   }
 
+  @Override
   public void remove(String instanceId) {
     if (appenderMap.containsKey(instanceId)) {
       OutputStreamAppender<ILoggingEvent> appender = appenderMap.get(instanceId);
@@ -92,10 +97,12 @@ public class WkfLoggerInitServiceImpl {
     }
   }
 
+  @Override
   public OutputStreamAppender<ILoggingEvent> getAppender(String instanceId) {
     return appenderMap.get(instanceId);
   }
 
+  @Override
   public void attachAppender(OutputStreamAppender<ILoggingEvent> appender) {
 
     for (Logger logger : loggers) {
@@ -105,6 +112,7 @@ public class WkfLoggerInitServiceImpl {
     }
   }
 
+  @Override
   public void detachAppender(OutputStreamAppender<ILoggingEvent> appender) {
 
     for (Logger logger : loggers) {
@@ -135,7 +143,7 @@ public class WkfLoggerInitServiceImpl {
   private void addEncoder() {
     encoder = new PatternLayoutEncoder();
     encoder.setPattern(OptionHelper.substVars(ANSI_LOG_PATTERN, context));
-    encoder.setCharset(Charset.forName("UTF-8"));
+    encoder.setCharset(StandardCharsets.UTF_8);
     encoder.setContext(context);
     encoder.start();
   }

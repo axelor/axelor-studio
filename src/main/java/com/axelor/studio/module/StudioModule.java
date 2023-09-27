@@ -75,6 +75,8 @@ import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.log.WkfLogServiceImpl;
+import com.axelor.studio.bpm.service.log.WkfLoggerInitService;
+import com.axelor.studio.bpm.service.log.WkfLoggerInitServiceImpl;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageServiceImpl;
 import com.axelor.studio.bpm.service.migration.WkfMigrationService;
@@ -245,5 +247,6 @@ public class StudioModule extends AxelorModule {
     bind(WkfNodeService.class).to(WkfNodeServiceImpl.class);
     bind(WkfMenuService.class).to(WkfMenuServiceImpl.class);
     bind(WkfLogService.class).to(WkfLogServiceImpl.class);
+    bind(WkfLoggerInitService.class).to(WkfLoggerInitServiceImpl.class);
   }
 }

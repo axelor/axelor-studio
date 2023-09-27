@@ -20,7 +20,6 @@ package com.axelor.studio.bpm.listener;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
-import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
@@ -30,11 +29,11 @@ import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-
 import java.util.Collection;
-
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -52,23 +51,20 @@ public class WkfExecutionListener implements ExecutionListener {
   protected WkfInstanceService wkfInstanceService;
   protected WkfProcessRepository wkfProcessRepo;
   protected WkfTaskConfigRepository wkfTaskConfigRepo;
-  protected ProcessEngineServiceImpl engineServiceImpl;
   protected WkfLogService wkfLogService;
-  
+
   @Inject
   public WkfExecutionListener(
       WkfInstanceRepository wkfInstanceRepo,
       WkfInstanceService wkfInstanceService,
       WkfProcessRepository wkfProcessRepo,
-      WkfTaskConfigRepository wkfTaskConfigRepo, 
-      ProcessEngineServiceImpl engineServiceImpl, 
+      WkfTaskConfigRepository wkfTaskConfigRepo,
       WkfLogService wkfLogService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
     this.wkfProcessRepo = wkfProcessRepo;
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
-    this.engineServiceImpl = engineServiceImpl;
     this.wkfLogService = wkfLogService;
   }
 
@@ -76,6 +72,7 @@ public class WkfExecutionListener implements ExecutionListener {
   public void notify(DelegateExecution execution) throws Exception {
 
     String eventName = execution.getEventName();
+    var executionEntity = (ExecutionEntity) execution;
 
     if (execution.getTenantId() != null) {
       String tenantId = execution.getTenantId();
@@ -85,7 +82,7 @@ public class WkfExecutionListener implements ExecutionListener {
     }
 
     if (eventName.equals(EVENTNAME_START)) {
-    	
+
       if (execution.getProcessInstance().getActivityInstanceId() == null) {
         createWkfInstance(execution);
       } else {
@@ -94,6 +91,10 @@ public class WkfExecutionListener implements ExecutionListener {
 
     } else if (eventName.equals(EVENTNAME_END)) {
       processNodeEnd(execution);
+
+      if (executionEntity.getEventSource() instanceof ProcessDefinitionEntity) {
+        wkfLogService.clearLog(execution.getProcessInstanceId());
+      }
     }
   }
 
@@ -128,9 +129,7 @@ public class WkfExecutionListener implements ExecutionListener {
           getProcessKey(execution, execution.getProcessDefinitionId()),
           execution.getProcessInstanceId());
       wkfInstance = createWkfInstance(execution, instanceId, wkfInstanceRepo);
-      
     }
-    
   }
 
   protected void processNodeStart(DelegateExecution execution) {
@@ -141,10 +140,10 @@ public class WkfExecutionListener implements ExecutionListener {
     }
 
     String type = flowElement.getElementType().getTypeName();
-    
+
     boolean blocking = blockingNode(type);
     String instanceId = execution.getProcessInstanceId();
-    
+
     log.debug("Executing: id={},name={}", flowElement.getId(), flowElement.getName());
     if (!blocking) {
       wkfLogService.createOrAttachAppender(instanceId);
@@ -157,7 +156,6 @@ public class WkfExecutionListener implements ExecutionListener {
       wkfLogService.writeLog(instanceId);
       if (type.equals(BpmnModelConstants.BPMN_ELEMENT_END_EVENT)) {
         sendMessage(flowElement, execution);
-        wkfLogService.clearLog(instanceId);
       }
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
       wkfInstanceService.onNodeActivation(wkfTaskConfig, execution);
@@ -177,7 +175,6 @@ public class WkfExecutionListener implements ExecutionListener {
       checkDMNValue(execution);
 
     } else if (blockingNode(type)) {
-
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
       wkfInstanceService.onNodeDeactivation(wkfTaskConfig, execution);
     }
@@ -289,5 +286,4 @@ public class WkfExecutionListener implements ExecutionListener {
 
     return blockinNode;
   }
-  
 }
