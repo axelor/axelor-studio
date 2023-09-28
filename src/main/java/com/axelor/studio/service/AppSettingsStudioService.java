@@ -19,4 +19,8 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   String surveyPublicUser();
 
   String surveyPublicPassword();
+
+  String getLoggers();
+
+  public boolean isAddBpmLog();
 }

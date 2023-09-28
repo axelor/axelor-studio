@@ -17,6 +17,8 @@
  */
 package com.axelor.studio.bpm.service.execution;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.OutputStreamAppender;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
@@ -29,6 +31,7 @@ import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceMigrationHistory;
@@ -53,7 +56,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -79,11 +81,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   protected static final Logger log = LoggerFactory.getLogger(WkfInstanceServiceImpl.class);
 
-  protected static final String[] WAITING_NODES =
-      new String[] {
-        BpmnModelConstants.BPMN_ELEMENT_USER_TASK, BpmnModelConstants.BPMN_ELEMENT_RECEIVE_TASK
-      };
-
   protected ProcessEngineService engineService;
 
   protected WkfInstanceRepository wkfInstanceRepository;
@@ -102,6 +99,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   protected BpmErrorMessageService bpmErrorMessageService;
 
+  protected WkfLogService wkfLogService;
+
   @Inject
   public WkfInstanceServiceImpl(
       ProcessEngineService engineService,
@@ -112,7 +111,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfTaskService wkfTaskService,
       WkfEmailService wkfEmailService,
       WkfUserActionService wkfUserActionService,
-      BpmErrorMessageService bpmErrorMessageService) {
+      BpmErrorMessageService bpmErrorMessageService,
+      WkfLogService wkfLogService) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -122,6 +122,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.wkfEmailService = wkfEmailService;
     this.wkfUserActionService = wkfUserActionService;
     this.bpmErrorMessageService = bpmErrorMessageService;
+    this.wkfLogService = wkfLogService;
   }
 
   @Override
@@ -132,6 +133,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     String helpText = null;
 
+    OutputStreamAppender<ILoggingEvent> appender = null;
+    String processInstanceId = null;
     try {
       if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
         checkSubProcess(model);
@@ -156,32 +159,32 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         ProcessInstance processInstance =
             findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
 
-        if (processInstance != null && wkfInstance != null && !processInstance.isEnded()) {
-          helpText =
-              wkfTaskService
-                  .runTasks(engine, wkfInstance, processInstance, signal);
+        if (processInstance != null && !processInstance.isEnded()) {
+          processInstanceId = processInstance.getId();
+          appender = wkfLogService.createOrAttachAppender(processInstanceId);
+          helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal);
         }
       }
     } catch (Exception e) {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
-        String processInstanceId = model.getProcessInstanceId();
+        final String finalProcessInstanceId = model.getProcessInstanceId();
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(
-            new Callable<Boolean>() {
-              @Override
-              public Boolean call() throws Exception {
-                bpmErrorMessageService
-                    .sendBpmErrorMessage(
-                        null,
-                        e.getMessage(),
-                        EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                        processInstanceId);
-                return true;
-              }
+            () -> {
+              bpmErrorMessageService.sendBpmErrorMessage(
+                  null,
+                  e.getMessage(),
+                  EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
+                  finalProcessInstanceId);
+              return true;
             });
       }
       throw e;
+    } finally {
+      if (appender != null) {
+        wkfLogService.writeLog(processInstanceId);
+      }
     }
 
     return helpText;
@@ -264,7 +267,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     Object object = wkfService.findRelatedRecord(model, wkfProcessConfig.getProcessPath());
 
-    if (object != null && object instanceof FullContext) {
+    if (object instanceof FullContext) {
       FullContext relatedModel = (FullContext) object;
       log.debug(
           "Related instance found with processInstanceId: {}",
@@ -284,14 +287,10 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   protected ProcessInstance findProcessInstance(
       String processInstanceId, RuntimeService runTimeService) {
-
-    ProcessInstance processInstance =
-        runTimeService
-            .createProcessInstanceQuery()
-            .processInstanceId(processInstanceId)
-            .singleResult();
-
-    return processInstance;
+    return runTimeService
+        .createProcessInstanceQuery()
+        .processInstanceId(processInstanceId)
+        .singleResult();
   }
 
   @Override
@@ -396,16 +395,22 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
 
     List<String> processInstanceIds =
-        processInstanceQuery.processDefinitionId(processId).activeActivityIdIn(nodeKey).unfinished()
-            .list().stream()
-            .map(it -> it.getId())
+        processInstanceQuery
+            .processDefinitionId(processId)
+            .activeActivityIdIn(nodeKey)
+            .unfinished()
+            .list()
+            .stream()
+            .map(HistoricProcessInstance::getId)
             .collect(Collectors.toList());
 
     if (permanent) {
       processInstanceQuery =
           engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
-      processInstanceQuery.processDefinitionId(processId).executedActivityIdIn(nodeKey).list()
-          .stream()
+      processInstanceQuery
+          .processDefinitionId(processId)
+          .executedActivityIdIn(nodeKey)
+          .list()
           .forEach(it -> processInstanceIds.add(it.getId()));
     }
 
@@ -678,7 +683,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       }
 
       Object parentModel = modelCtx.get(taskConfig.getCallLink());
-      if (parentModel != null && parentModel instanceof FullContext) {
+      if (parentModel instanceof FullContext) {
         Model parent = (Model) ((FullContext) parentModel).getTarget();
         if (!Strings.isNullOrEmpty(parent.getProcessInstanceId())) {
           addChildProcessInstanceId(parent.getProcessInstanceId(), modelCtx, ctxMap);
@@ -738,9 +743,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     if (condition != null) {
       Object evalCondition = wkfService.evalExpression(ctxMap, condition);
-      if (evalCondition == null || !evalCondition.equals(Boolean.TRUE)) {
-        return false;
-      }
+      return evalCondition != null && evalCondition.equals(Boolean.TRUE);
     }
 
     return true;
@@ -762,10 +765,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         createMigrationHistory(instance, previousModel, isSameModel));
 
     instance.setMigrationStatusSelect(migrationStatus);
-    if (process != null) {
-      instance.setWkfProcess(process);
-      instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
-    }
+    instance.setWkfProcess(process);
+    instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
     wkfInstanceRepository.save(instance);
   }
 

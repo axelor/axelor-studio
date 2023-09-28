@@ -40,7 +40,9 @@ import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
+import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
@@ -471,6 +473,17 @@ public class WkfModelController {
     try {
       this.openRecordView(request, response, null, "modelName", "lateTaskIds");
 
+    } catch (Exception e) {
+      ExceptionTool.trace(response, e);
+    }
+  }
+
+  public void clearInstanceLog(ActionRequest request, ActionResponse response) {
+    try {
+      WkfInstance instance = request.getContext().asType(WkfInstance.class);
+      instance = Beans.get(WkfInstanceRepository.class).find(instance.getId());
+      Beans.get(WkfLogService.class).clearLog(instance.getInstanceId());
+      response.setReload(true);
     } catch (Exception e) {
       ExceptionTool.trace(response, e);
     }

@@ -20,6 +20,7 @@ package com.axelor.studio.bpm.listener;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfTaskConfig;
@@ -31,6 +32,8 @@ import com.google.inject.persist.Transactional;
 import java.util.Collection;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -48,24 +51,28 @@ public class WkfExecutionListener implements ExecutionListener {
   protected WkfInstanceService wkfInstanceService;
   protected WkfProcessRepository wkfProcessRepo;
   protected WkfTaskConfigRepository wkfTaskConfigRepo;
+  protected WkfLogService wkfLogService;
 
   @Inject
   public WkfExecutionListener(
       WkfInstanceRepository wkfInstanceRepo,
       WkfInstanceService wkfInstanceService,
       WkfProcessRepository wkfProcessRepo,
-      WkfTaskConfigRepository wkfTaskConfigRepo) {
+      WkfTaskConfigRepository wkfTaskConfigRepo,
+      WkfLogService wkfLogService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
     this.wkfProcessRepo = wkfProcessRepo;
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
+    this.wkfLogService = wkfLogService;
   }
 
   @Override
   public void notify(DelegateExecution execution) throws Exception {
 
     String eventName = execution.getEventName();
+    var executionEntity = (ExecutionEntity) execution;
 
     if (execution.getTenantId() != null) {
       String tenantId = execution.getTenantId();
@@ -84,6 +91,10 @@ public class WkfExecutionListener implements ExecutionListener {
 
     } else if (eventName.equals(EVENTNAME_END)) {
       processNodeEnd(execution);
+
+      if (executionEntity.getEventSource() instanceof ProcessDefinitionEntity) {
+        wkfLogService.clearLog(execution.getProcessInstanceId());
+      }
     }
   }
 
@@ -117,7 +128,7 @@ public class WkfExecutionListener implements ExecutionListener {
       execution.setVariable(
           getProcessKey(execution, execution.getProcessDefinitionId()),
           execution.getProcessInstanceId());
-      createWkfInstance(execution, instanceId, wkfInstanceRepo);
+      wkfInstance = createWkfInstance(execution, instanceId, wkfInstanceRepo);
     }
   }
 
@@ -130,14 +141,22 @@ public class WkfExecutionListener implements ExecutionListener {
 
     String type = flowElement.getElementType().getTypeName();
 
+    boolean blocking = blockingNode(type);
+    String instanceId = execution.getProcessInstanceId();
+
+    log.debug("Executing: id={},name={}", flowElement.getId(), flowElement.getName());
+    if (!blocking) {
+      wkfLogService.createOrAttachAppender(instanceId);
+    }
+
     if (type.equals(BpmnModelConstants.BPMN_ELEMENT_INTERMEDIATE_THROW_EVENT)) {
       sendMessage(flowElement, execution);
 
-    } else if (blockingNode(type)) {
+    } else if (blocking) {
+      wkfLogService.writeLog(instanceId);
       if (type.equals(BpmnModelConstants.BPMN_ELEMENT_END_EVENT)) {
         sendMessage(flowElement, execution);
       }
-
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
       wkfInstanceService.onNodeActivation(wkfTaskConfig, execution);
     }
@@ -156,7 +175,6 @@ public class WkfExecutionListener implements ExecutionListener {
       checkDMNValue(execution);
 
     } else if (blockingNode(type)) {
-
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
       wkfInstanceService.onNodeDeactivation(wkfTaskConfig, execution);
     }
@@ -219,7 +237,7 @@ public class WkfExecutionListener implements ExecutionListener {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  public void createWkfInstance(
+  public WkfInstance createWkfInstance(
       DelegateExecution execution, String instanceId, WkfInstanceRepository instanceRepo) {
 
     WkfInstance wkfInstance;
@@ -232,7 +250,7 @@ public class WkfExecutionListener implements ExecutionListener {
             .fetchOne();
     wkfInstance.setName(wkfProcess.getProcessId() + " : " + instanceId);
     wkfInstance.setWkfProcess(wkfProcess);
-    instanceRepo.save(wkfInstance);
+    return instanceRepo.save(wkfInstance);
   }
 
   protected WkfTaskConfig getWkfTaskConfig(DelegateExecution execution) {

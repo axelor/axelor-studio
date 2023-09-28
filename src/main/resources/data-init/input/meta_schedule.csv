@@ -1,0 +1,2 @@
+active;name;job;cron
+false;Clear logs every day at midnight ;com.axelor.studio.bpm.service.job.ClearLogJob;0 0 0 * * ?
