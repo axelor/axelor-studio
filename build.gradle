@@ -23,6 +23,12 @@ repositories repos
 apply from: "version.gradle"
 apply plugin: "com.axelor.app"
 
+try {
+	tasks.named("spotlessCheck")
+} catch (UnknownTaskException ignored) {
+	apply from: './gradle/style.gradle'
+}
+
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
@@ -43,13 +49,13 @@ dependencies {
 		api project(":modules:axelor-message")
 	}
 	else {
-		api "com.axelor.addons:axelor-message:1.2.1"
+		api "com.axelor.addons:axelor-message:2.0.+"
 	}
 	if (findProject(":modules:axelor-utils") != null) {
 		api project(":modules:axelor-utils")
 	}
 	else {
-		api "com.axelor.addons:axelor-utils:1.3.1"
+		api "com.axelor.addons:axelor-utils:2.0.+"
 	}
 
 	api "org.camunda.bpm:camunda-engine:7.17.0"

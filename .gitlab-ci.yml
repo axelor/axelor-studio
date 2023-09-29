@@ -1,6 +1,7 @@
 # Stages (ie phases) that can be used by jobs
 stages:
   - build
+  - test
   - publish
 
 image: axelor/app-builder:6.1
@@ -14,19 +15,39 @@ before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
 # Add wrapper and caches folders in cache
-cache:
+.global_cache: &global_cache
   paths:
     - .gradle/wrapper
     - .gradle/caches
+  policy: pull-push
+
+.global_cache_pull: &global_cache_pull
+  <<: *global_cache
+  policy: pull
 
 # Build artifacts
 build:
   stage: build
+  cache:
+    - *global_cache
+  allow_failure: false
   script:
     - ./gradlew -xtest clean build --refresh-dependencies
   interruptible: true
   rules:
     - if: $CI_PIPELINE_SOURCE != "schedule"
+
+# Check code formatting
+spotless:
+  stage: test
+  cache:
+    - *global_cache_pull
+  allow_failure: true
+  script:
+    - ./gradlew spotlessCheck
+  interruptible: true
+  only:
+    - branches
 
 .publish_template: &publish_configuration
   stage: publish
@@ -50,7 +71,8 @@ publish release:
 create release:
   stage: publish
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  cache: []
+  cache:
+    - *global_cache_pull
   allow_failure: true
   only:
     - tags
