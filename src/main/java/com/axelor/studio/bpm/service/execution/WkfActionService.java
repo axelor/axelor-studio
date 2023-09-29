@@ -24,21 +24,25 @@ import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.schema.actions.Action;
-import com.axelor.studio.bpm.service.action.WkfActionGroup;
+import com.axelor.meta.schema.actions.Action.Element;
+import com.axelor.meta.schema.actions.ActionGroup;
+import com.axelor.meta.schema.actions.ActionGroup.ActionItem;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.service.ActionService;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.model.bpmn.instance.BpmnModelElementInstance;
 
 public class WkfActionService implements JavaDelegate {
-
-  @Inject protected WkfActionGroup wkfActionGroup;
 
   @Override
   public void execute(DelegateExecution execution) {
@@ -53,16 +57,21 @@ public class WkfActionService implements JavaDelegate {
       return;
     }
 
-    WkfProcessConfig processConfig =
+    var processConfigOpt =
         process.getWkfProcessConfigList().stream()
-            .filter(config -> config.getIsStartModel())
-            .findAny()
-            .get();
+            .filter(WkfProcessConfig::getIsStartModel)
+            .findAny();
+
+    if (processConfigOpt.isEmpty()) {
+      return;
+    }
+
+    var processConfig = processConfigOpt.get();
 
     MetaModel metaModel = processConfig.getMetaModel();
     MetaJsonModel jsonModel = processConfig.getMetaJsonModel();
 
-    FullContext fullContext = null;
+    FullContext fullContext;
     if (jsonModel != null) {
       fullContext = (FullContext) execution.getVariable(jsonModel.getName().toLowerCase());
     } else {
@@ -78,21 +87,36 @@ public class WkfActionService implements JavaDelegate {
     executeActions(fullContext, actions);
   }
 
-  protected FullContext executeActions(FullContext fullContext, String[] actions) {
+  protected void executeActions(FullContext fullContext, String[] actions) {
 
-    if (fullContext == null || actions == null) {
-      return fullContext;
+    if (fullContext == null
+        || actions == null
+        || fullContext.getTarget() == null
+        || !(fullContext.getTarget() instanceof Model)) {
+      return;
     }
 
-    for (String actionName : actions) {
+    var actionService = Beans.get(ActionService.class);
+
+    var actionList = List.of(actions);
+
+    actionList = actionList.stream().map(this::extractActions).flatMap(List::stream).collect(Collectors.toList());
+
+    for (String actionName : actionList) {
       Action action = MetaStore.getAction(actionName);
       if (action != null) {
-        Model model = (Model) fullContext.getTarget();
-
-        Beans.get(ActionService.class).applyActions(actionName, model);
+        actionService.applyActions(actionName, fullContext);
       }
     }
+  }
 
-    return fullContext;
+  protected List<String> extractActions(String actionName) {
+    var action = MetaStore.getAction(actionName);
+    if (action instanceof ActionGroup) {
+      return ((ActionGroup) action).getActions().stream().map(Element::getName)
+          .collect(Collectors.toList());
+    } else {
+      return Collections.singletonList(actionName);
+    }
   }
 }

@@ -94,7 +94,11 @@ public class WkfTaskServiceImpl implements WkfTaskService {
 
   @Override
   public String runTasks(
-      ProcessEngine engine, WkfInstance instance, ProcessInstance processInstance, String signal)
+      ProcessEngine engine,
+      WkfInstance instance,
+      ProcessInstance processInstance,
+      String signal,
+      Model model)
       throws ClassNotFoundException {
 
     WkfProcess wkfProcess = instance.getWkfProcess();
@@ -104,7 +108,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
     boolean taskExecuted = false;
     String helpText = null;
 
-    Map<String, Object> context = getContext(instance);
+    Map<String, Object> context = getContext(instance, model);
     // TODO: Check if its required both variables from context and from processInstance, if
     Map<String, Object> processVariables =
         engine.getRuntimeService().getVariables(processInstance.getId());
@@ -201,7 +205,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
         && wkfInstanceService.isActiveProcessInstance(
             processInstance.getId(), engine.getRuntimeService())) {
       log.debug("Check tasks again");
-      runTasks(engine, instance, processInstance, signal);
+      runTasks(engine, instance, processInstance, signal, model);
     }
 
     return helpText;
@@ -221,19 +225,16 @@ public class WkfTaskServiceImpl implements WkfTaskService {
   }
 
   protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
-
-    List<Task> tasks =
-        engine
-            .getTaskService()
-            .createTaskQuery()
-            .active()
-            .processInstanceId(processInstanceId)
-            .list();
-
-    return tasks;
+    return engine
+        .getTaskService()
+        .createTaskQuery()
+        .active()
+        .processInstanceId(processInstanceId)
+        .list();
   }
 
-  protected Map<String, Object> getContext(WkfInstance instance) throws ClassNotFoundException {
+  protected Map<String, Object> getContext(WkfInstance instance, Model model)
+      throws ClassNotFoundException {
 
     WkfProcess wkfProcess = instance.getWkfProcess();
 
@@ -241,7 +242,6 @@ public class WkfTaskServiceImpl implements WkfTaskService {
 
     for (WkfProcessConfig processConfig : wkfProcess.getWkfProcessConfigList()) {
 
-      Model model = null;
       String klassName;
       if (processConfig.getMetaJsonModel() != null) {
         klassName = MetaJsonRecord.class.getName();
@@ -255,13 +255,15 @@ public class WkfTaskServiceImpl implements WkfTaskService {
         query += " AND self.jsonModel = '" + processConfig.getMetaJsonModel().getName() + "'";
       }
 
-      if (model == null)
+      if (model == null) {
         model =
             JpaRepository.of(klass)
                 .all()
                 .filter(query, instance.getInstanceId())
                 .order("-id")
+                .autoFlush(false)
                 .fetchOne();
+      }
       if (model != null) {
         model = EntityHelper.getEntity(model);
         String name = wkfService.getVarName(model);
