@@ -34,44 +34,44 @@
     <dataset type="rpc"><![CDATA[ com.axelor.studio.bpm.web.WkfMigrationController:getNodeMap ]]></dataset>
     <template>
   		<![CDATA[
-  			<style>
-  				th {
-  					text-align: center;
-  				}
-				table, tr {
-				  	border: 1px solid lightgrey;
-				  	text-align: center;
-				}
-				h4 {
-				  	margin: 20px;
-				}
-			</style>
-  			<span ng-repeat="(key, values) in data">
-  				<span ng-repeat="value in values">
-  					<h4>{{value.processId}}</strong></h4>
-  					<table style="width:40%;border-bottom: 3px solid lightgrey;">
-  						<thead>
-	  						<tr>
-								<th>Source node</td>
-	  							<th>Target node</td>
-							</tr>
-						</thead>
-  						<tbody>
-							<tr ng-repeat="node in value.nodes">
-								<td>{{node.nodeName}}</td>
-								<td>
-									<select ng-model="node.selected" ng-options="option as option.nodeName for option in node.options track by option.nodeId" style="margin:5px;width:90%">
-										<option value=""/>
-									</select>
-								</td>
-	 						</tr>
-	 					</tbody>
-  					</table>
-  					</span>
-  				</spna>
-  			</span>
-  			</br>
-  			<a ng-if="data.values.length &gt; 0" class="btn btn-medium btn-primary" href="" ui-action-context="data" ui-action-click="action-wkf-migration-method-migrate" x-translate>Migrate</a>
+			<>
+  	<div style={{ display: 'flex', flexDirection: 'column' }}>
+    {data?.values?.map((value) => (
+      <div key={value.processId}>
+        <h4 style={{padding: "10px"}}>{value.processId}</h4>
+        <Table>
+          <TableRow >
+          <TableCell style={{textAlign:"center"}}><b>Source node</b></TableCell>
+          <TableCell style={{textAlign:"center"}}><b>Target node</b></TableCell>
+        </TableRow >
+		  <TableBody>
+            {value?.nodes?.map((node) => (
+              <TableRow key={node.nodeId}>
+                <TableCell>{node.nodeName}</TableCell>
+                <TableCell>
+                  <Box as="select" m={1} style={{ width: "90%" }}>
+                    <option value=""></option>
+                    {node?.options?.map((option) => (
+                      <option key={option.nodeId} value={option.nodeId} selected={option.nodeId === node?.selected?.nodeId}>
+                        {option.nodeName}
+                      </option>
+                    ))}
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    ))}
+    <br />
+    {data?.values?.length > 0 && (
+      <Button variant="primary" m={1} onClick={() => $execute("action-wkf-migration-method-migrate")}>
+        Migrate
+      </Button>
+    )}
+  </div>
+			</>
   		]]>
     </template>
   </custom>
