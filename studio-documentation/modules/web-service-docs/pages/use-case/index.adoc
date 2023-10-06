@@ -1,0 +1,13 @@
+= Web Service Builder Examples.
+
+With the API connector you can create and define your requests and execute its ., there is a large ways how we can create a request , it's depends on the type of request and type of payloads and another stuffs.
+
+In this section,  we provide a bunch of example to inspire you with your cases .
+
+
+** xref:/use-case/index.adoc[Use cases]
+*** xref:/use-case/case1.adoc[Case 1: Connecting to an axelor instance using the web service]
+*** xref:/use-case/case2.adoc[Case 2: Connecting to google services ( use of an Oauth2 authentication ) ]
+*** xref:/use-case/case3.adoc[Step 3: XML request exchange ]
+*** xref:/use-case/case4.adoc[Step 4: Use case for a Basic authentication]
+*** xref:/use-case/case5.adoc[Step 5: recursive execution of multiple request]

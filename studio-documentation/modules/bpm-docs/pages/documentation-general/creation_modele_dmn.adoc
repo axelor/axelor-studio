@@ -1,0 +1,47 @@
+=  Généralité sur les task
+:toc-title:
+:page-pagination:
+
+Le DMN fournit des moyens d'effectuer efficacement la prise de décision sur un ensemble d'entrées. Il permet de modifier les entrées selon le format requis, par exemple, si l'entrée est au format chaîne mais pour prendre une décision il est requis en décimal c'est possible via le DMN. De nombreux types de langages d'expression sont pris en charge pour le traitement des entrées et la création de sorties, les langages sont comme FEEL, JEEL, GROOVY..etc.
+
+Les tables de décision ou les expressions littérales peuvent être utilisées pour créer une décision, c'est-à-dire que chacune d'elles représente une décision. Le diagramme peut avoir une ou plusieurs décisions. Une décision peut être utilisée comme une contribution aux autres décisions. Le diagramme complet est connu sous le nom d'exigences de décision Diagramme (DRD).
+
+En dehors des tables de décision et des expressions littérales, il existe d'autres notations telles que "Données d'entrée", “Source de connaissances”... etc sont utilisés pour rendre les diagrammes plus lisibles.
+
+Le DMN peut être utilisé avec BPM ou indépendamment. Seule la référence de la décision (et non la référence de DRD) est utilisée sur les tâches de type Règle Métier du BPM.
+
+Pour accéder à la création d’un modèle BPM, il faut cliquer sur le menu suivant disponible dans l’onglet “Constructeur d’application”
+
+image::app_builder.png[event process]
+
+Cela va ouvrir l’onglet et le visuel suivant :
+
+image::app_builder_menu.png[event process]
+
+Il faudra renseigner un nom qui est obligatoire. Il est possible de renseigner une description qui explicite ce que fait le modèle DMN. On peut renseigner un modèle qui sera utilisé si le DMN n’est pas lié à un modèle BPM.
+
+Pour accéder à l’éditeur du DMN, il faut cliquer sur le bouton suivant image:open-editor-icon.png[editor  icon]  Ce qui va amener à l’écran suivant
+
+image::dmn_diagram.png[event process]
+
+La vue de l’éditeur est similaire à celle que l’on a sur le BPM. sur le côté gauche, il y a une barre verticale avec toutes les possibilités sur le graphique image:dmn-menu.png[gateway icon]
+
+Nous allons expliquer l’utilisation de chaque bouton ici :
+
+Le  bouton image:dmn-btn-1.png[dmn icon] permet d’activer l’outil lasso qui permet de sélectionner et déplacer plusieurs éléments à la fois
+
+le bouton image:dmn-btn-2.png[gateway icon] permet de placer une nouvelle table de décision ou une expression de décision.
+
+Le bouton image:dmn-btn-3.png[gateway icon] permet d’indiquer les données requises pour exécuter la décision (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
+
+Le bouton image:dmn-btn-4.png[gateway icon] permet d'indiquer la source de connaissance utilisée pour prendre la décision (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
+
+Le bouton image:dmn-btn-5.png[gateway icon] (aucune utilité fonctionnelle, il s’agit uniquement de rendre le diagramme plus lisible)
+
+Sur la droite, nous avons le panneau des propriétés, qui donne par défaut celle du DRD
+
+image::diagram_table.png[event process]
+
+image::general_dmn.png[event process]
+image::general_dmn_2.png[event process]
+image::genral_dmn_2.png[event process]

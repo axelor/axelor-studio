@@ -1,0 +1,15 @@
+= Création d’un nouveau  modèle
+:toc-title:
+:page-pagination:
+
+Pour démarrer, nous allons créer un nouveau modèle de processus en cliquant sur le bouton image:plus-icon.png[plus image] de la barre d’outil horizontal.
+Nous allons ensuite renseigner les information général de notre modèle sur le panel qui apparaît à gauche de l’écran :
+
+image::new_module.png[connector form]
+
+Si vous perdez ce panel (en cliquant sur l’espace de travail par exemple), vous pouvez le retrouver en cliquant sur le l’icone image:toggle-icon.png[params image]
+
+Donnons un code et un nom à notre modèle, par exemple :
+
+<1> Nom : Demande d’achat
+<2> Code : DEMANDE_ACHAT

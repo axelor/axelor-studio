@@ -1,0 +1,26 @@
+=  Événement frontière
+:toc-title:
+:page-pagination:
+
+“De plus, après avoir renseigné le contractant  si au bout d’une semaine, l’utilisateur n’a pas renseigné  le Type, le Coûts d'activation, la Fréquence de récurrence du coût et le fournisseur, un mail de rappel est envoyé au contractant. ”
+
+
+Pour cette partie de l’exercice, nous allons introduire plusieurs notions nouvelles. Tout d’abord le timer : image:timer-icon.png[timer icon] Pour en savoir plus sur le timer, je vous invite à consulter la section “TimeEvent” de la partie sur la “Documentation générale”.
+
+Nous allons modifier légèrement notre modèle en rassemblant certaines tâches dans un sous processus :
+
+image::event-front-bpm.png[event process]
+
+Vous pouvez tester : le comportement est le même que précédemment.  Nous allons voir la notion d’événement frontière. Il est possible de placer un événement à la frontière d’une tâche ou d’un sous processus. Tant que la tâche ou le sous-processus est actif, l’événement peut se déclencher. Ici nous allons placer un timer en frontière du sous-processus :
+
+image::assign_info_event_front.png[event process]
+
+Les événements frontières peuvent être interruptifs (traits pleins) ou non interruptifs (traits pointillés). Ici, nous voulons envoyer un mail de rappel sans interrompre les tâches utilisateurs du sous-processus.
+
+Essayez de paramétrer le timer en vous aidant de la documentation de la section “TimeEvent” de la “Documentation générale”.
+
+Voici la correction. Dans le champ “Timer definition type”, sélectionnez “Durée”. Et dans le champ “Timer definition” indiquez : “P7D”. Ainsi, le timer se déclenche toute les semaines tant que le sous-processus est actif. Pour tester, je vous conseille d’indiquer “PT30S” pour que le timer se déclenche toutes les 30s.
+
+Je vous laisse configurer la tâche d’envoie de mail et tester.
+
+NOTE: Ici pour répondre au besoin de l’exercice, nous avons placé l’événement frontière sur un sous processus. En effet, il fallait envoyer un mail tant qu’un **ensemble** de tâche était en cours. Il est tout à fait possible de le placer sur une tâche.

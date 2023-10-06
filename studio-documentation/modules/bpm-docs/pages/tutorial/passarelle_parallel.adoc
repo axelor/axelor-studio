@@ -1,0 +1,28 @@
+= Passerelle parallel
+:toc-title:
+:page-pagination:
+
+Intéressons nous à la suite de l’énoncé :
+
+*** si l’utilisateur appuie sur “Annuler” le processus se termine,
+*** si il appuie sur “Requête” on renseigne automatiquement une description et la société ,
+
+Modifions un peu notre schéma, nous l’expliquerons ensuite :
+
+
+image::passarelle_process.png[passarelle_process]
+
+Dans le cas où l’utilisateur appuie sur “Annuler”, le processus se termine. Si l’utilisateur appuie sur “Requête”, le processus effectue deux tâches en parallèle : “Renseigner une description” et “Renseigner la société”. Pour indiquer que l’on effectue deux tâches en parallèle, on utilise la passerelle parallel image:paralelle-icon.png[parallele icon] . Le comportement est le suivant : toutes les branches qui sortent de la passerelle parallèle sont empruntées, lors de la fusion des branches, le processus attend que toutes les branches soient terminées avant de poursuivre. Nous paramétrerons les tâches “Renseigner une description” et “Renseigner la société” dans la section suivante.
+
+
+
+image::process_paralelle-exclusif.png[BPM Paralelle execlusif]
+
+
+Il reste à paramétrer les conditions. Pour cela cliquez sur la branche du haut puis  cliquez sur le crayon pour ouvrir l’expression builder.
+
+Nous allons renseigné la condition suivante :
+
+image::parellele_gateway_expression.png[expression BPM Paralelle execlusif]
+
+Je vous  laisse compléter la condition de la branche du bas : “Annuler”.
