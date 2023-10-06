@@ -1,68 +1,12 @@
-import React from "react";
-import TextField from "@material-ui/core/TextField";
-import AutoComplete from "@material-ui/lab/Autocomplete";
-import { makeStyles } from "@material-ui/core/styles";
-import { camleCaseString, translate, getProperty } from "../../utils";
-import { typeReplacer } from "../../constants";
-import { TYPE } from "../../constants";
-import { MODEL_TYPE } from "../../constants";
-
-const useStyles = makeStyles({
-	selection: {
-		color: "#ffffff",
-		backgroundColor: "#293846",
-		".modern-dark &": {
-			backgroundColor: "#323232",
-		},
-	},
-	autoComplete: {
-		width: "100%",
-		marginTop: 15,
-		backgroundColor: "#293846",
-		"& > div > label": {
-			color: "#ffffff !important",
-			fontSize: 13,
-		},
-		".modern-dark &": {
-			backgroundColor: "#323232",
-		},
-	},
-	autoCompleteInput: {
-		color: "#ffffff",
-		fontSize: 13,
-	},
-	autoCompleteOption: {
-		fontSize: 13,
-		"& ul, .MuiAutocomplete-noOptions": {
-			backgroundColor: "rgb(41, 56, 70) !important",
-			".modern-dark &": {
-				backgroundColor: "#1b1b1b !important",
-			},
-		},
-		"& li, .MuiAutocomplete-noOptions": {
-			color: "#ffffff !important",
-			backgroundColor: "rgb(41, 56, 70) !important",
-			".modern-dark &": {
-				backgroundColor: "#1b1b1b !important",
-			},
-		},
-		"& li:hover, .MuiAutocomplete-noOptions": {
-			color: "#ffffff !important",
-			backgroundColor: "#2f4050 !important",
-			".modern-dark &": {
-				backgroundColor: "#323232 !important",
-			},
-		},
-	},
-
-	disabled: {
-		color: "#a3a3a3 !important",
-		fontSize: 12,
-	},
-});
+import React from "react"
+import TextField from "@mui/material/TextField"
+import Autocomplete from "@mui/material/Autocomplete"
+import { camleCaseString, translate, getProperty } from "../../utils"
+import { typeReplacer } from "../../constants"
+import { TYPE } from "../../constants"
+import { MODEL_TYPE } from "../../constants"
 
 export default function StaticSelection(_props) {
-	const { index } = _props;
 	let {
 		name,
 		required,
@@ -75,8 +19,8 @@ export default function StaticSelection(_props) {
 		parentPanel,
 		getOptionLabel,
 		...rest
-	} = _props.field;
-	const { props } = _props;
+	} = _props.field
+	const { props } = _props
 	const {
 		propertyList,
 		setPropertyList,
@@ -85,35 +29,32 @@ export default function StaticSelection(_props) {
 		modelType,
 		metaFieldStore,
 		editWidgetType,
-	} = props || {};
-	const classes = useStyles();
+	} = props || {}
 
 	if (typeof data === "object" && !Array.isArray(data)) {
-		data = data[(typeReplacer[type] || type).toLowerCase()] || [];
+		data = data[(typeReplacer[type] || type).toLowerCase()] || []
 	}
-	title = translate(camleCaseString(title || name));
+	title = translate(camleCaseString(title || name))
 
 	const ColorTag = ({ color }) => (
 		<div style={{ width: 15, height: 15, backgroundColor: color }}></div>
-	);
-	let value = propertyList[name] || "";
+	)
+	let value = propertyList[name] || ""
 	if (
 		(modelType === rest.modelType || props.editWidgetType === "customField") &&
 		parentField
 	) {
-		const field = propertyList[parentField]
-			? JSON.parse(propertyList[parentField])
-			: {};
-		value = field[name] || "";
+		const field = propertyList[parentField] ? propertyList[parentField] : {}
+		value = field[name] || ""
 	}
-	let disabled = false;
+	let disabled = false
 	if (rest.isDisabled) {
 		disabled = rest.isDisabled({
 			properties: propertyList,
 			metaFieldStore,
 			editWidgetType,
 			modelType,
-		});
+		})
 	}
 
 	if (
@@ -121,24 +62,78 @@ export default function StaticSelection(_props) {
 		modelType === MODEL_TYPE.CUSTOM &&
 		name === "colSpan"
 	) {
-		return null;
+		return null
 	}
 	return (
-		<AutoComplete
-			options={data}
-			classes={{
-				root: classes.selection,
-				inputFocused: disabled ? classes.disabled : classes.autoCompleteInput,
-				clearIndicator: classes.autoCompleteInput,
-				popupIndicator: disabled ? classes.disabled : classes.autoCompleteInput,
-				option: classes.autoCompleteOption,
-				groupLabel: classes.autoCompleteOption,
-				popper: classes.autoCompleteOption,
-				noOptions: classes.autoCompleteOption,
+		<Autocomplete
+			sx={{
+				width: "100%",
+				marginTop: "15px",
+				backgroundColor: "#293846",
+				"& > .MuiFormControl-root > .MuiFormLabel-root": {
+					color: "#ffffff !important",
+					fontSize: 13,
+				},
+				...(disabled
+					? {}
+					: {
+							"&:hover .MuiInputBase-root .MuiOutlinedInput-notchedOutline": {
+								borderColor: "white",
+							},
+					  }),
+				"& .MuiInputBase-input": {
+					color: "#ffffff",
+					fontSize: 13,
+				},
+				"& .MuiSvgIcon-root": {
+					color: "#ffffff",
+				},
+				"& .Mui-disabled": {
+					WebkitTextFillColor: "#a3a3a3 !important",
+					fontSize: 12,
+				},
+				"& .Mui-disabled .MuiSvgIcon-root": {
+					color: "#a3a3a3",
+				},
 			}}
+			componentsProps={{
+				paper: {
+					sx: {
+						fontSize: 13,
+						backgroundColor: "rgb(41, 56, 70)",
+						WebkitTextFillColor: "#e7eaec !important",
+						"& ul, .MuiAutocomplete-Options": {
+							backgroundColor: "rgb(41, 56, 70) !important",
+							".modern-dark &": {
+								backgroundColor: "#1b1b1b !important",
+							},
+						},
+						"& li, .MuiAutocomplete-Options": {
+							color: "#ffffff !important",
+							backgroundColor: "rgb(41, 56, 70) !important",
+							".modern-dark &": {
+								backgroundColor: "#1b1b1b !important",
+							},
+						},
+						"& li:hover, .MuiAutocomplete-Options": {
+							color: "#ffffff !important",
+							backgroundColor: "#2f4050 !important",
+							".modern-dark &": {
+								backgroundColor: "#323232 !important",
+							},
+						},
+						"& .Mui-focused": {
+							backgroundColor: "#2f4050 !important",
+							".modern-dark &": {
+								backgroundColor: "#323232 !important",
+							},
+						},
+					},
+				},
+			}}
+			options={data}
 			disableClearable={disableClearable}
 			size="small"
-			className={classes.autoComplete}
 			autoHighlight
 			disabled={disabled}
 			onChange={(e, _value) => {
@@ -152,12 +147,12 @@ export default function StaticSelection(_props) {
 						modelType === rest.modelType ||
 							props.editWidgetType === "customField"
 					),
-				};
-				if (name === "colSpan") {
-					value.colSpan = _value;
 				}
-				setPropertyList(value);
-				onChange(value, name);
+				if (name === "colSpan") {
+					value.colSpan = _value
+				}
+				setPropertyList(value)
+				onChange(value, name)
 			}}
 			getOptionLabel={(option) =>
 				getOptionLabel
@@ -166,18 +161,18 @@ export default function StaticSelection(_props) {
 					? option.text
 					: option
 			}
-			renderOption={(option) =>
+			renderOption={(props, option) =>
 				typeof option === "object" ? (
-					<div key={index} value={option.value}>
+					<li {...props} value={option.value}>
 						<i className={`fa ${option}`} style={{ marginRight: 4 }} />
 						{translate(option.text)}
-					</div>
+					</li>
 				) : (
-					<div key={index} value={option}>
+					<li {...props} value={option}>
 						{color && <ColorTag color={option} />}
 						<i className={`fa ${option}`} style={{ marginRight: 4 }} />
 						<span>{translate(option)}</span>
-					</div>
+					</li>
 				)
 			}
 			value={value}
@@ -186,9 +181,6 @@ export default function StaticSelection(_props) {
 					{...params}
 					label={translate(camleCaseString(title || name))}
 					variant="outlined"
-					classes={{
-						root: classes.selection,
-					}}
 					autoComplete="off"
 					inputProps={{
 						...params.inputProps,
@@ -197,5 +189,5 @@ export default function StaticSelection(_props) {
 				/>
 			)}
 		/>
-	);
+	)
 }

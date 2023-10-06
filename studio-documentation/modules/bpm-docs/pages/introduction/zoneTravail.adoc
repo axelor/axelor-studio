@@ -1,0 +1,62 @@
+= La zone de travail
+:toc-title:
+:page-pagination:
+
+== La zone de travail
+
+La zone restante est la zone de travail. C’est sur cette zone que va se passer la conception de notre processus.
+
+
+Pour positionner des objets dessus, nous allons utiliser la barre verticale située sur la gauche.
+
+
+=== **Les outils de travail**
+
+Sur la partie supérieure de cette barre, se trouve des icônes qui permettent de changer de mode d’édition.
+
+La main image:hand-icon.png[hand image] permet de déplacer la caméra librement pour se positionner ou l’on souhaite au niveau du processus.
+
+La sélection de zone image:select-icon.png[select image] permet de sélectionner une portion de la zone de travail et de pouvoir la déplacer dans son intégralité.
+
+Le déplacement latéral image:deplace-icon.png[deplace image]  permet de déplacer un ensemble d'éléments du modèle horizontalement ou verticalement sans avoir à les sélectionner.
+
+Le lien entre entité image:link-icon.png[link image]  permet de dessiner les différents liens existants dans la norme.
+
+=== **Les objets de la norme BPM**
+Sur la partie inférieure de la barre verticale, se trouvent les objets de la norme BPMN 2.0.
+
+image::normeBPM.png[Norme BPM image]
+
+Ils se placent sur la zone de travail en glissé-déposé.
+Toutes les icônes encadrées en rouge n’ont aucun impact fonctionnel sur la modélisation, elles ne servent qu’à rendre le tout plus compréhensible.
+
+== Icône liée aux objets sur l’espace de modélisation
+
+Sur l’espace de modélisation, lorsque l’on clique sur un objet, des icônes apparaissent sur la droite de celui-ci.
+
+image::espceModelisation.png[Espace modelisation BPM image]
+
+=== Supression
+
+L'icône image:delete-icon-2.png[delete image] permet de supprimer l’objet sélectionné.
+
+=== Annotation
+
+L’icône image:note-icon.png[note image] permet de créer une note liée à l’objet et visible depuis l’espace de travail.
+
+image::anotation.png[Annotation]
+
+=== Lier à un autre objet
+
+L’icône image:select-icon-2.png[select image] permet de relier l’objet sélectionné vers un autre objet.
+
+=== Changement de type
+
+L’icône image:params-icon.png[params image]  permet de changer le type de l’objet sélectionné.
+
+image::changeType.png[nnotation]
+
+=== Autres icônes
+
+Les autres icônes disponibles sont spécifiques à l'élément sélectionné et décrites plus tard dans cette documentation.
+Lorsque vous cliquez sur ces derniers, cela va appliquer l’action.

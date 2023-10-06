@@ -1,32 +1,32 @@
-import React from "react";
-import classNames from "classnames";
-import Grid from "./Grid";
-import { translate } from "../utils";
-import { useStore } from "../store/context";
+import React from "react"
+import classNames from "classnames"
+import Grid from "./Grid"
+import { translate } from "../utils"
+import { useStore } from "../store/context"
 
 /**
  * Menu Component
  * Used As Container to group Field Component like form group
  */
 function MenuComponent({ id, attrs, design, isTab = true, ...rest }) {
-	const errors = rest.errorList[id] || {};
-	const [openMenu, setOpenMenu] = React.useState(false);
+	const errors = rest.customErrorList[id] || rest.widgetErrorList[id] || {}
+	const [openMenu, setOpenMenu] = React.useState(false)
 
-	const { state } = useStore();
+	const { state } = useStore()
 
 	const handleToggleMenu = React.useCallback((e) => {
-		e.stopPropagation();
-		setOpenMenu((m) => !m);
-	}, []);
+		e.stopPropagation()
+		setOpenMenu((m) => !m)
+	}, [])
 
 	React.useEffect(() => {
-		const { highlightedOption } = state;
+		const { highlightedOption } = state
 		if (["menu", "item"].includes(highlightedOption?.type)) {
-			setOpenMenu(true);
+			setOpenMenu(true)
 		}
-	}, [state]);
+	}, [state])
 
-	const arrow = openMenu ? "down" : "up";
+	const arrow = openMenu ? "down" : "up"
 	return (
 		<React.Fragment>
 			<div
@@ -53,12 +53,13 @@ function MenuComponent({ id, attrs, design, isTab = true, ...rest }) {
 					attrs={attrs}
 					panelId={id}
 					_type={rest._type}
-					errorList={rest.errorList}
+					customErrorList={rest.customErrorList}
+					widgetErrorList={rest.widgetErrorList}
 					canRemove={rest.canRemove}
 				/>
 			)}
 		</React.Fragment>
-	);
+	)
 }
 
-export default React.memo(MenuComponent);
+export default React.memo(MenuComponent)

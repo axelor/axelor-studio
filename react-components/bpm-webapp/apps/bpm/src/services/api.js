@@ -797,22 +797,31 @@ export async function getExpressionValues(model, options) {
   }
 }
 
-export async function getActions(models) {
+export async function getActions(criteria = []) {
   const entity = `com.axelor.meta.db.MetaAction`;
   const payload = {
     data: {
       _domainContext: { _id: null, _model: entity },
       criteria: [
+        ...criteria,
+        // these actions are not supported by backend
         {
-          fieldName: "model",
-          operator: "IN",
-          value: models,
+          fieldName: "type",
+          operator: "NOT IN",
+          value: [
+            "action-validate",
+            "action-conditions",
+            "action-export",
+            "action-view",
+          ],
         },
       ],
+      operator: "and",
     },
     fields: ["module", "name", "type", "priority"],
-    limit: 20,
+    limit: 40,
   };
   const res = await Service.search(entity, payload);
-  return res.data || [];
+  const { data = [] } = res || {};
+  return data;
 }

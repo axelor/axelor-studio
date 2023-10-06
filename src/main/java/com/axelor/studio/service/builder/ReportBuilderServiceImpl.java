@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author axelor
  */
-public class ReportBuilderServiceImpl {
+public class ReportBuilderServiceImpl implements ReportBuilderService {
 
   protected Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -91,6 +91,7 @@ public class ReportBuilderServiceImpl {
    * @param metaView MetaView to process
    * @return Html template generated.
    */
+  @Override
   public String generateTemplate(MetaView metaView) {
 
     panels = new ArrayList<String[]>();
@@ -119,7 +120,8 @@ public class ReportBuilderServiceImpl {
    * @param xml View xml passed.
    * @throws JAXBException Xml parsing exception.
    */
-  protected void processView(String xml) throws JAXBException {
+  @Override
+  public void processView(String xml) throws JAXBException {
 
     ObjectViews objectViews = XMLViews.fromXML(xml);
     AbstractView view = objectViews.getViews().get(0);
@@ -146,7 +148,8 @@ public class ReportBuilderServiceImpl {
    * @param widget AbstractWidget to process
    * @param sidePanel Boolean to check if widget is sidePanel.
    */
-  protected void processAbstractWidget(AbstractWidget widget, Boolean sidePanel) {
+  @Override
+  public void processAbstractWidget(AbstractWidget widget, Boolean sidePanel) {
 
     if (widget instanceof Panel) {
       processPanel((Panel) widget, sidePanel);
@@ -166,7 +169,8 @@ public class ReportBuilderServiceImpl {
    * @param panel Panels to process.
    * @param sidePanel Boolean to check if panel is sidePanel.
    */
-  protected void processPanel(Panel panel, Boolean sidePanel) {
+  @Override
+  public void processPanel(Panel panel, Boolean sidePanel) {
 
     sidePanel = sidePanel != null && sidePanel ? sidePanel : panel.getSidebar();
 
@@ -190,9 +194,9 @@ public class ReportBuilderServiceImpl {
    *
    * @param field PanelField to process.
    * @param sidePanel Boolean to check if field is in sidePanel.
-   * @param colSpan Colspan of field.
    */
-  protected void processField(PanelField field, Boolean sidePanel) {
+  @Override
+  public void processField(PanelField field, Boolean sidePanel) {
 
     String title = field.getTitle();
     String name = field.getName();
@@ -208,7 +212,7 @@ public class ReportBuilderServiceImpl {
     String value = "<td><b>" + title + "</b> : $" + name + "$</td>";
     String colSpan = "6";
 
-    if (field.getColSpan() != null && field.getColSpan() == 12) {
+    if (Strings.isNullOrEmpty(field.getColSpan()) && field.getColSpan().equals("12")) {
       colSpan = "12";
       value = "<td colSpan=\"2\"><b>" + title + "</b> : $" + name + "$</td>";
     } else {
@@ -230,7 +234,8 @@ public class ReportBuilderServiceImpl {
    * @param metaField MetaField to process.
    * @return Template friendly string created for relational field.
    */
-  protected String processRelational(String name, MetaField metaField) {
+  @Override
+  public String processRelational(String name, MetaField metaField) {
 
     if (metaField == null) {
       return name;
@@ -257,7 +262,8 @@ public class ReportBuilderServiceImpl {
    * @param metaField MetaField to check.
    * @return Name column of field.
    */
-  protected String getNameColumn(String name, MetaField metaField) {
+  @Override
+  public String getNameColumn(String name, MetaField metaField) {
 
     String refModel = getRefModel(metaField.getTypeName());
     try {
@@ -293,7 +299,8 @@ public class ReportBuilderServiceImpl {
    *
    * @param sidePanel Boolean to check which panel list to process.
    */
-  protected void generateHtml(boolean sidePanel) {
+  @Override
+  public void generateHtml(boolean sidePanel) {
 
     List<String[]> panelList = sidePanel ? sidePanels : panels;
 
@@ -343,7 +350,8 @@ public class ReportBuilderServiceImpl {
    * @param metaField MetaField to process.
    * @return Title of field.
    */
-  protected String getFieldTitle(String name, MetaField metaField) {
+  @Override
+  public String getFieldTitle(String name, MetaField metaField) {
 
     log.debug("Meta field for name : {}, metaField: {}", name, metaField);
 
@@ -364,7 +372,8 @@ public class ReportBuilderServiceImpl {
    * @param modelName Model of field.
    * @return Return MetaField found.
    */
-  protected MetaField getMetaField(String name, String modelName) {
+  @Override
+  public MetaField getMetaField(String name, String modelName) {
 
     MetaField metaField =
         metaFieldRepo
@@ -383,6 +392,7 @@ public class ReportBuilderServiceImpl {
    * @param sidePanel Boolean to check if panelRelated is sidePanel.
    * @param colSpan Colspan to add in panel lists.
    */
+  @Override
   public void processPanelRelated(PanelRelated panelRelated, Boolean sidePanel, String colSpan) {
 
     String title = panelRelated.getTitle();
@@ -420,7 +430,8 @@ public class ReportBuilderServiceImpl {
    * @param refModel Name of model refer by panelRelated.
    * @return Html table string created.
    */
-  protected String createTable(PanelRelated panelRelated, String refModel) {
+  @Override
+  public String createTable(PanelRelated panelRelated, String refModel) {
 
     List<AbstractWidget> items = panelRelated.getItems();
     if (items != null && !items.isEmpty()) {
@@ -453,7 +464,8 @@ public class ReportBuilderServiceImpl {
    * @param refModel Name of reference model.
    * @return Html table created.
    */
-  protected String getHtmlTable(String fieldName, List<AbstractWidget> widgets, String refModel) {
+  @Override
+  public String getHtmlTable(String fieldName, List<AbstractWidget> widgets, String refModel) {
 
     String header = "";
     String row = "";
@@ -496,7 +508,8 @@ public class ReportBuilderServiceImpl {
    * @param refModel Model of grid view.
    * @return MetaView record searched.
    */
-  protected MetaView findGridView(String gridName, String refModel) {
+  @Override
+  public MetaView findGridView(String gridName, String refModel) {
 
     MetaView gridView = null;
 
@@ -518,7 +531,8 @@ public class ReportBuilderServiceImpl {
    * @param refModel Name of reference model.
    * @return FullName of Model
    */
-  protected String getRefModel(String refModel) {
+  @Override
+  public String getRefModel(String refModel) {
 
     MetaModel metaModel = metaModelRepo.findByName(refModel);
     if (metaModel != null) {

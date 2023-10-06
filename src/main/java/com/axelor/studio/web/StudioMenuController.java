@@ -32,7 +32,7 @@ import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioMenu;
-import com.axelor.studio.service.builder.StudioMenuServiceImpl;
+import com.axelor.studio.service.builder.StudioMenuService;
 import com.axelor.utils.ExceptionTool;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +84,7 @@ public class StudioMenuController {
 
     if (menu.getAction() != null && menu.getAction().getType().contentEquals("action-view")) {
       Optional<StudioAction> studioActionOpt =
-          Beans.get(StudioMenuServiceImpl.class).createStudioAction(menu.getAction());
+          Beans.get(StudioMenuService.class).createStudioAction(menu.getAction());
       studioActionOpt.ifPresent(
           studioAction -> {
             values.put("studioAction", studioAction);

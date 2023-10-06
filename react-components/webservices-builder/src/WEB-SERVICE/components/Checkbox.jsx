@@ -33,9 +33,7 @@ export default function Checkbox({entry, element, className, onChange}) {
 
   const setProperty = React.useCallback(
       (value) => {
-        if (value && element?.businessObject?.auth !== 'true') {
-          element.businessObject[name] = value.toString();
-        }
+          element.businessObject[name] = value;
       },
       [element.businessObject, name],
   );

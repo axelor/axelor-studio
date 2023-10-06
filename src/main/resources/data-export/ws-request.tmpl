@@ -16,8 +16,6 @@
 
 				parameters = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.parameterWsKeyValueList, 4, 'parameter')
 
-				connectors = com.axelor.studio.service.ExportService.exportConnectors(request.wsConnector, 4, 'connector')
-
 				wsRequests += """\n\t\t<ws-request>
 				\n\t\t\t<name>${request.name}</name>
 				\n\t\t\t<wsUrl>${request.wsUrl}</wsUrl>
@@ -31,8 +29,6 @@
 				\n\t\t\t</headers>
 				\n\t\t\t<payloads>$payloads
 				\n\t\t\t</payloads>
-				\n\t\t\t<connectors>$connectors
-				\n\t\t\t</connectors>
 				\n\t\t\t<studioApp>${request.studioApp?.code}</studioApp>
 				\n\t\t</ws-request>"""
 	})

@@ -58,7 +58,7 @@ import javax.persistence.NoResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioMetaServiceImpl {
+public class StudioMetaServiceImpl implements StudioMetaService {
 
   protected final Logger log = LoggerFactory.getLogger(StudioMetaServiceImpl.class);
 
@@ -89,8 +89,9 @@ public class StudioMetaServiceImpl {
   /**
    * Removes MetaActions from comma separated names in string.
    *
-   * @param actionNames Comma separated string of action names.
+   * @param xmlIds Comma separated string of action xml id.
    */
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeMetaActions(String xmlIds) {
 
@@ -120,6 +121,7 @@ public class StudioMetaServiceImpl {
         });
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public MetaAction updateMetaAction(
       String name, String actionType, String xml, String model, String xmlId) {
@@ -142,8 +144,9 @@ public class StudioMetaServiceImpl {
   /**
    * Creates or Updates metaView from AbstractView.
    *
-   * @param viewIterator ViewBuilder iterator
+   * @param view AbstractView definition
    */
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public MetaView generateMetaView(AbstractView view) {
 
@@ -194,6 +197,7 @@ public class StudioMetaServiceImpl {
     return metaViewRepo.save(metaView);
   }
 
+  @Override
   public String updateAction(String oldAction, String newAction, boolean remove) {
 
     if (oldAction == null) {
@@ -217,6 +221,7 @@ public class StudioMetaServiceImpl {
     return oldAction;
   }
 
+  @Override
   public MetaMenu createMenu(StudioMenu studioMenu) {
     //    String xmlId = XML_ID_PREFIX + studioMenu.getName();
     String xmlId = studioMenu.getXmlId();
@@ -288,6 +293,7 @@ public class StudioMetaServiceImpl {
     return menu;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeMetaMenu(MetaMenu metaMenu) {
     Preconditions.checkNotNull(metaMenu, "metaMenu cannot be null.");
@@ -305,7 +311,8 @@ public class StudioMetaServiceImpl {
     metaMenuRepo.remove(metaMenu);
   }
 
-  protected Integer getPriority(String object, String name) {
+  @Override
+  public Integer getPriority(String object, String name) {
     String query =
         String.format("SELECT MAX(obj.priority) FROM %s obj WHERE obj.name = :name", object);
 
@@ -322,6 +329,7 @@ public class StudioMetaServiceImpl {
     }
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void trackJsonField(MetaJsonModel jsonModel) {
 
@@ -355,6 +363,7 @@ public class StudioMetaServiceImpl {
     }
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void trackingFields(
       AuditableModel auditableModel, String messageBody, String messageSubject) {
@@ -374,6 +383,7 @@ public class StudioMetaServiceImpl {
     Beans.get(MailMessageRepository.class).save(message);
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void trackJsonField(MetaJsonField metaJsonField) {
 
@@ -383,6 +393,7 @@ public class StudioMetaServiceImpl {
     trackingFields(metaModel, metaJsonField.getName(), "Field added");
   }
 
+  @Override
   public String computeStudioBuilderUrl(String model, String viewName, boolean isJson) {
 
     String url = "studio/custom-model/?json=" + isJson + "&model=" + model;

@@ -19,17 +19,11 @@ package com.axelor.studio.bpm.script;
 
 import com.axelor.inject.Beans;
 import com.axelor.script.GroovyScriptHelper;
-import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
+import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
-import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
-import com.axelor.utils.context.FullContext;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import com.axelor.utils.ExceptionTool;
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -41,30 +35,30 @@ import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl;
 public class AxelorScriptEngine extends GroovyScriptEngineImpl {
 
   protected volatile AxelorScriptEngineFactory factory;
+  protected final WkfLogService wkfLogService;
+  protected final BpmErrorMessageService bpmErrorMessageService;
 
   AxelorScriptEngine(AxelorScriptEngineFactory factory) {
     super();
     this.factory = factory;
+    this.wkfLogService = Beans.get(WkfLogService.class);
+    this.bpmErrorMessageService = Beans.get(BpmErrorMessageService.class);
   }
 
   @Override
   public Object eval(String script, ScriptContext ctx) {
-    Bindings bindings = ctx.getBindings(ctx.getScopes().get(0));
-    bindings = AxelorBindingsHelper.getBindings(bindings);
-    Object object = null;
+    Bindings bindings = AxelorBindingsHelper.getBindings(ctx.getBindings(ctx.getScopes().get(0)));
+    Object object;
     try {
       object = new GroovyScriptHelper(bindings).eval(script);
     } catch (Exception e) {
       PvmExecutionImpl execution = (PvmExecutionImpl) bindings.get("execution");
+      wkfLogService.writeLog(execution.getProcessInstanceId());
       ExecutorService executor = Executors.newCachedThreadPool();
       executor.submit(
-          new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-              Beans.get(BpmErrorMessageService.class)
-                  .sendBpmErrorMessage(execution, e.getMessage(), null, null);
-              return true;
-            }
+          () -> {
+            bpmErrorMessageService.sendBpmErrorMessage(execution, e.getMessage(), null, null);
+            return true;
           });
       throw new AxelorScriptEngineException(e);
     }

@@ -17,13 +17,18 @@
  */
 package com.axelor.studio.bpm.service.execution;
 
+import com.axelor.db.Model;
 import com.axelor.studio.db.WkfInstance;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 public interface WkfTaskService {
 
-  public String runTasks(
-      ProcessEngine engine, WkfInstance instance, ProcessInstance processInstance, String signal)
+  String runTasks(
+      ProcessEngine engine,
+      WkfInstance instance,
+      ProcessInstance processInstance,
+      String signal,
+      Model model)
       throws ClassNotFoundException;
 }

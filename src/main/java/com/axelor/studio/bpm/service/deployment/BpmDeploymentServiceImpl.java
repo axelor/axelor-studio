@@ -18,8 +18,9 @@
 package com.axelor.studio.bpm.service.deployment;
 
 import com.axelor.common.ObjectUtils;
+import com.axelor.db.tenants.TenantModule;
+import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
@@ -28,7 +29,7 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
-import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
@@ -43,7 +44,6 @@ import com.axelor.studio.db.repo.WkfTaskMenuRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +58,7 @@ import org.camunda.bpm.engine.migration.MigrationPlanBuilder;
 import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.camunda.bpm.model.bpmn.Bpmn;
@@ -84,9 +85,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfCommonService wkfService;
   protected MetaFileRepository metaFileRepo;
   protected WkfProcessApplication wkfProcessApplication;
-  protected WkfNodeServiceImpl wkfNodeService;
+  protected WkfNodeService wkfNodeService;
   protected WkfModelRepository wkfModelRepository;
-  protected ProcessEngineServiceImpl processEngineService;
+  protected ProcessEngineService processEngineService;
 
   @Inject protected WkfTaskConfigRepository taskConfigRepo;
 
@@ -109,9 +110,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfCommonService wkfService,
       MetaFileRepository metaFileRepo,
       WkfProcessApplication wkfProcessApplication,
-      WkfNodeServiceImpl wkfNodeService,
+      WkfNodeService wkfNodeService,
       WkfModelRepository wkfModelRepository,
-      ProcessEngineServiceImpl processEngineService) {
+      ProcessEngineService processEngineService) {
 
     this.wkfProcessRepository = wkfProcessRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;
@@ -149,14 +150,23 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .addModelInstance(key, bpmInstance)
             .source(key);
 
+    String tenantId = null;
+    if (TenantModule.isEnabled()) {
+      tenantId =
+          TenantResolver.currentTenantIdentifier() + ":" + TenantResolver.currentTenantHost();
+      deploymentBuilder = deploymentBuilder.tenantId(tenantId);
+    }
+
     Set<MetaFile> dmnFiles = targetModel.getDmnFileSet();
     if (dmnFiles != null) {
       addDmn(deploymentBuilder, dmnFiles);
     }
 
-    Map<String, String> processMap = deployProcess(engine, deploymentBuilder, bpmInstance);
+    Map<String, String> processMap =
+        deployProcess(engine, deploymentBuilder, bpmInstance, tenantId);
 
-    List<MetaAttrs> metaAttrsList = wkfNodeService.extractNodes(targetModel, bpmInstance, processMap);
+    List<MetaAttrs> metaAttrsList =
+        wkfNodeService.extractNodes(targetModel, bpmInstance, processMap);
 
     saveWkfModel(targetModel);
 
@@ -178,18 +188,25 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   protected Map<String, String> deployProcess(
-      ProcessEngine engine, DeploymentBuilder deploymentBuilder, BpmnModelInstance bpmInstance) {
+      ProcessEngine engine,
+      DeploymentBuilder deploymentBuilder,
+      BpmnModelInstance bpmInstance,
+      String tenantId) {
 
     Deployment deployment = deploymentBuilder.deploy();
 
     Map<String, String> processMap = new HashMap<String, String>();
 
-    List<ProcessDefinition> definitions =
+    ProcessDefinitionQuery query =
         engine
             .getRepositoryService()
             .createProcessDefinitionQuery()
-            .deploymentId(deployment.getId())
-            .list();
+            .deploymentId(deployment.getId());
+
+    if (tenantId != null) {
+      query.tenantIdIn(tenantId);
+    }
+    List<ProcessDefinition> definitions = query.list();
 
     Map<String, WkfProcess> migrationProcessMap = new HashMap<String, WkfProcess>();
 
@@ -269,7 +286,12 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
                       }
 
                       computeMigrationInstances(
-                          engine, oldDefinition, newDefinition, plan, migrationProcessMap, isMigrationError);
+                          engine,
+                          oldDefinition,
+                          newDefinition,
+                          plan,
+                          migrationProcessMap,
+                          isMigrationError);
                     }));
     if (isMigrationError.get()) {
       throw new IllegalStateException(I18n.get(BpmExceptionMessage.MIGRATION_ERR));

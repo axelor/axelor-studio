@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import AddIcon from "@material-ui/icons/Add";
@@ -17,7 +17,6 @@ import {
   getDMNModel,
   getDMNModels,
   getBamlModels,
-  fetchModels,
   getActions,
 } from "../../../../../services/api";
 import { getBool } from "../../../../../utils";
@@ -319,25 +318,6 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
     } else {
       setVisible(false);
     }
-  }, [element]);
-
-  const fetchActions = useCallback(async () => {
-    const models = await fetchModels(element);
-    if (!models.length) return;
-    let metaModels = [],
-      metaJsonModels = [];
-    (models || []).forEach((m) => {
-      if (m.type === "metaModel") {
-        metaModels.push(m);
-      } else {
-        metaJsonModels.push(m);
-      }
-    });
-    const modelNames = [
-      metaJsonModels.length ? "com.axelor.meta.db.MetaJsonRecord" : null,
-      ...metaModels.map((m) => m.fullName),
-    ];
-    return await getActions(modelNames);
   }, [element]);
 
   return (
@@ -938,7 +918,9 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                   }}
                   value={actions || []}
                   multiple={true}
-                  fetchMethod={fetchActions}
+                  optionLabel="name"
+                  optionLabelSecondary="title"
+                  fetchMethod={({ criteria }) => getActions(criteria)}
                 />
               </div>
             )}

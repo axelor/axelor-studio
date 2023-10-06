@@ -26,7 +26,7 @@ import com.axelor.meta.schema.views.Dashboard;
 import com.axelor.meta.schema.views.Dashlet;
 import com.axelor.studio.db.StudioDashboard;
 import com.axelor.studio.db.StudioDashlet;
-import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -40,23 +40,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author axelor
  */
-public class StudioDashboardServiceImpl {
+public class StudioDashboardServiceImpl implements StudioDashboardService {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  protected StudioMetaServiceImpl metaService;
+  protected StudioMetaService metaService;
 
   @Inject
-  public StudioDashboardServiceImpl(StudioMetaServiceImpl metaService) {
+  public StudioDashboardServiceImpl(StudioMetaService metaService) {
     this.metaService = metaService;
   }
 
   /**
-   * Method to generate Dashboard (meta schema) from View Builder.
+   * Method to generate Dashboard (meta schema) from a StudioDashboard.
    *
-   * @param viewBuilder ViewBuilder of type dashboard.
-   * @return Dashboard.
+   * @param studioDashboard the StudioDashboard to use.
+   * @return MetaView.
    */
+  @Override
   public MetaView build(StudioDashboard studioDashboard) {
 
     log.debug("Processing dashboard: {}", studioDashboard.getName());
@@ -112,7 +113,7 @@ public class StudioDashboardServiceImpl {
                 colSpan = 6;
               }
 
-              dashlet.setColSpan(colSpan);
+              dashlet.setColSpan(colSpan.toString());
               dashlets.add(dashlet);
             });
 
@@ -130,12 +131,14 @@ public class StudioDashboardServiceImpl {
   /**
    * Method to generate action-view for a chart
    *
-   * @param dashboard Dashboard in which chart to be used.
-   * @param actions
-   * @param chart Chart to open from action-view.
+   * @param dashboard name in which chart to be used.
+   * @param name view name
+   * @param model Chart to open from action-view.
+   * @param studioDashlet to use.
    * @return Name of action-view.
    */
-  protected MetaAction getAction(
+  @Override
+  public MetaAction getAction(
       String dashboard, String name, String model, StudioDashlet studioDashlet) {
 
     String actionName = "action-" + (dashboard + "-" + name).replace(".", "-");

@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
     background: "gray",
     color: "white",
     borderRadius: 25,
-    marginRight: 5
+    marginRight: 5,
   },
   entryLabel: {
     padding: "0px 10px",
@@ -740,10 +740,17 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
               label: translate("Result variable"),
               modelProperty: "scriptResultVariable",
               get: function () {
-                return { scriptResultVariable: getProperty("resultVariable") };
+                /** Don't use getProperty as this is direct bo property */
+                let bo = getBusinessObject(element);
+                let boResultVariable = bo && bo.get("camunda:resultVariable");
+                return { scriptResultVariable: boResultVariable };
               },
               set: function (e, values) {
-                setProperty("resultVariable", values?.scriptResultVariable);
+                /** Don't use setProperty as this is direct bo property */
+                if (element?.businessObject) {
+                  element.businessObject.resultVariable =
+                    values?.scriptResultVariable || undefined;
+                }
               },
               validate: function (e, values) {
                 if (!values?.scriptResultVariable && type === "request") {

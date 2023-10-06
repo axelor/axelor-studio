@@ -564,8 +564,8 @@ public class AppServiceImpl implements AppService {
 
     Model bean = repo.create(_map);
 
-    var isRequiredPropNull = properties.stream()
-        .anyMatch(prop -> prop.isRequired() && prop.get(bean) == null);
+    var isRequiredPropNull =
+        properties.stream().anyMatch(prop -> prop.isRequired() && prop.get(bean) == null);
     if (isRequiredPropNull) {
       return;
     }

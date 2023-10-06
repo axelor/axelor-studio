@@ -19,14 +19,14 @@ package com.axelor.studio.db.repo;
 
 import com.axelor.inject.Beans;
 import com.axelor.studio.db.StudioSelection;
-import com.axelor.studio.service.builder.StudioSelectionServiceImpl;
+import com.axelor.studio.service.builder.StudioSelectionService;
 
 public class StudioSelectionRepo extends StudioSelectionRepository {
 
   @Override
   public StudioSelection save(StudioSelection studioSelection) {
 
-    Beans.get(StudioSelectionServiceImpl.class).build(studioSelection);
+    Beans.get(StudioSelectionService.class).build(studioSelection);
 
     return super.save(studioSelection);
   }
@@ -34,11 +34,10 @@ public class StudioSelectionRepo extends StudioSelectionRepository {
   @Override
   public void remove(StudioSelection studioSelection) {
 
-    Beans.get(StudioSelectionServiceImpl.class)
+    Beans.get(StudioSelectionService.class)
         .removeSelection(
             null,
-            StudioSelectionServiceImpl.SELECTION_PREFIX
-                + studioSelection.getName().replace(" ", "-"));
+            StudioSelectionService.SELECTION_PREFIX + studioSelection.getName().replace(" ", "-"));
 
     super.remove(studioSelection);
   }

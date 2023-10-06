@@ -1,0 +1,8 @@
+= Web service Documentation
+:toc:
+:toc-title:
+
+Welcome to the Web service Documentation. Here you will find information
+and resources to help you learn about Web service solution .
+The web service project is a connector used by Axelor BPM to fetch any internal or external request from any API .
+This solution improve the abilities  of the BPM .

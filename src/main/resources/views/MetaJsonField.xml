@@ -138,6 +138,6 @@
   <action-record name="action-studio-meta-json-field-record-name"
     model="com.axelor.meta.db.MetaJsonField">
     <field name="name"
-      expr="call:com.axelor.studio.service.JsonFieldServiceImpl:checkName(name, true)"/>
+      expr="call:com.axelor.studio.service.JsonFieldService:checkName(name, true)"/>
   </action-record>
 </object-views>

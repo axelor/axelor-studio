@@ -1,8 +1,8 @@
-import React from "react";
-import classNames from "classnames";
-import { IDS, FIELD_TYPE, TYPE } from "../constants";
-import RelationalFieldGridView from "./RelationalFieldGridView";
-import { translate } from "../utils";
+import React from "react"
+import classNames from "classnames"
+import { IDS, FIELD_TYPE, TYPE } from "../constants"
+import RelationalFieldGridView from "./RelationalFieldGridView"
+import { translate } from "../utils"
 
 // filter html(tags) compatible attributes
 const filterInputProps = (props) => {
@@ -16,37 +16,37 @@ const filterInputProps = (props) => {
 		"disabled",
 		"rows",
 		"required",
-	];
+	]
 	// return valid object with values
 	return allowed.reduce((obj, attr) => {
-		if (props[attr] !== undefined) obj[attr] = props[attr];
+		if (props[attr] !== undefined) obj[attr] = props[attr]
 		if (attr === "required") {
-			obj[attr] = props[attr] === "true";
+			obj[attr] = props[attr] === "true"
 		}
-		return obj;
-	}, {});
-};
+		return obj
+	}, {})
+}
 
 // Plain Textbox
 export const TextInput = (props) => {
 	return (
 		<input type="text" autoComplete="off" {...props} className="text-input" />
-	);
-};
+	)
+}
 
 // Multiline Textbox i.e. Textarea
 export const MultiTextInput = (props) => {
-	return <textarea rows={6} {...props} />;
-};
+	return <textarea rows={6} {...props} />
+}
 
 // Blank Spacer to fill up space between two cells of Grid
-export const Spacer = (props) => <div className="spacer" />;
+export const Spacer = (props) => <div className="spacer" />
 
 export const Separator = (props) => (
 	<div className="spacer">
 		<hr className="separator-field" />
 	</div>
-);
+)
 
 export const Boolean = ({ inputProps, ...props }) => (
 	<div className="boolean-wrapper">
@@ -55,7 +55,7 @@ export const Boolean = ({ inputProps, ...props }) => (
 			{translate(props.title || props.name)}
 		</span>
 	</div>
-);
+)
 
 // Button component
 export const Button = ({ title, ...props }) => (
@@ -64,11 +64,11 @@ export const Button = ({ title, ...props }) => (
 			{translate(title)}
 		</button>
 	</div>
-);
+)
 
 export const MenuItem = ({ title, ...props }) => (
 	<div className="menu-item-container">{translate(title)}</div>
-);
+)
 
 export const Hilite = ({ color, background, strong }) => {
 	return (
@@ -80,8 +80,8 @@ export const Hilite = ({ color, background, strong }) => {
 		>
 			{translate("hilite")}
 		</div>
-	);
-};
+	)
+}
 
 /**
  * Form "Field" Component
@@ -90,13 +90,13 @@ export const Hilite = ({ color, background, strong }) => {
 function FieldComponent({ id, attrs }) {
 	// check for dump field for empty panels
 	if (id === IDS.dumpField) {
-		return <div className="dump-field" />;
+		return <div className="dump-field" />
 	}
 
-	const { name, title, serverType, multiline, type, autoTitle, widget } = attrs;
-	const inputProps = filterInputProps(attrs);
+	const { name, title, serverType, multiline, type, autoTitle, widget } = attrs
+	const inputProps = filterInputProps(attrs)
 	let _type =
-		serverType && serverType !== "field" ? serverType.toLowerCase() : type;
+		serverType && serverType !== "field" ? serverType.toLowerCase() : type
 	const DefaultWidget = () => (
 		<React.Fragment>
 			{
@@ -122,7 +122,7 @@ function FieldComponent({ id, attrs }) {
 				/>
 			)}
 		</React.Fragment>
-	);
+	)
 
 	switch (_type?.toLowerCase()) {
 		case FIELD_TYPE.boolean:
@@ -132,37 +132,37 @@ function FieldComponent({ id, attrs }) {
 					name={name}
 					inputProps={inputProps}
 				/>
-			);
+			)
 		case FIELD_TYPE.spacer:
-			return <Spacer />;
+			return <Spacer />
 		case FIELD_TYPE.hilite:
-			return <Hilite {...attrs} />;
+			return <Hilite {...attrs} />
 		case FIELD_TYPE.separator:
 		case TYPE.divider:
-			return <Separator />;
+			return <Separator />
 		case TYPE.menuItem:
-			return <MenuItem title={title} />;
+			return <MenuItem title={title} />
 		case FIELD_TYPE.button:
-			return <Button {...inputProps} title={title || name} />;
+			return <Button {...inputProps} title={title || name} />
 		case "selection":
 		case "label": {
-			return <span dangerouslySetInnerHTML={{ __html: title }} />;
+			return <span dangerouslySetInnerHTML={{ __html: title }} />
 		}
 		case "panel-dashlet":
 		case "panel-related":
 		case "one-to-many":
 		case "json-one-to-many":
-			return <RelationalFieldGridView attrs={attrs} id={id} />;
+			return <RelationalFieldGridView attrs={attrs} id={id} />
 		case "many-to-many":
 		case "json-many-to-many":
 			return widget !== "TagSelect" ? (
 				<RelationalFieldGridView attrs={attrs} id={id} />
 			) : (
 				<DefaultWidget />
-			);
+			)
 		default:
-			return <DefaultWidget />;
+			return <DefaultWidget />
 	}
 }
 
-export default FieldComponent;
+export default FieldComponent

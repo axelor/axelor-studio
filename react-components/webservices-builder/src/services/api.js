@@ -131,7 +131,7 @@ export async function getRecords(metaModel) {
 }
 
 export async function getSubFields(){
-  
+
 }
 
 export async function getModels(data = {}, metaModalType, dmnModels) {
@@ -516,6 +516,33 @@ export async function getkeys(elements) {
     translate: true,
   };
   const res = await Service.search('com.axelor.studio.db.WsKeyValue', options);
+  return res.data;
+}
+export async function getHeaderskeys(elements) {
+  const idFields = [];
+  elements?.forEach((element) => {
+    idFields.push(element.id);
+  });
+  const options = {
+    fields: [
+      'wsKey',
+      'wsValue',
+      'isList',
+      'version',
+      'id',
+      'subWsKeyValueList',
+    ],
+    data: {
+      _domain: 'self.id in (:_field_ids)',
+      _domainContext: {
+        _field_ids: idFields,
+      },
+      _archived: true,
+    },
+    limit: -1,
+    translate: true,
+  };
+  const res = await Service.search('com.axelor.studio.db.WsKeyValueSelectionHeader', options);
   return res.data;
 }
 export async function getLabraries(data) {

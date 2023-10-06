@@ -1,34 +1,32 @@
-import React from "react";
+import React from "react"
 
-import AxelorService from "../services/axelor.rest";
-import {
-  generateCustomModelSchema,
-  translate,
-} from "../utils";
-import Select from "./Select";
-import { relationalFields, MODEL_TYPE, PANEL_PROPS } from "./../constants";
-import { getEnableAppBuilder, fetchViews, fetchCustomFields } from "./api";
-import { modelSearch } from "./customModelSearch";
-import { generateXpath } from "../store/xpathGenerator";
-import convert from "xml-js";
-import _ from "lodash";
+import AxelorService from "../services/axelor.rest"
+import { generateCustomModelSchema, translate } from "../utils"
+import { validateWidgets } from "../store/validation"
+import Select from "./Select"
+import { relationalFields, MODEL_TYPE, HISTORY } from "../constants"
+import { getEnableAppBuilder, fetchViews, fetchCustomFields } from "./api"
+import { modelSearch } from "./customModelSearch"
+import { generateXpath } from "../store/xpathGenerator"
+import convert from "xml-js"
+import _ from "lodash"
 
 import {
 	fetchJSONFields,
 	getAttrsData,
 	getSchemaData,
-	getTranslationsData,
 	metaFieldFilter,
-} from "../helpers/helpers";
+} from "../helpers/helpers"
+import { getPanel } from "../fields"
 
 const metaViewService = new AxelorService({
 	model: "com.axelor.meta.db.MetaView",
-});
+})
 
 const modelTypes = [
 	{ name: translate("View"), value: MODEL_TYPE.BASE },
 	{ name: translate("Custom"), value: MODEL_TYPE.CUSTOM },
-];
+]
 
 function ViewSelection({
 	model,
@@ -42,53 +40,46 @@ function ViewSelection({
 	reset,
 	selectedView,
 	runIfConfirmed,
-	baseHasChanges,
-	customFieldHasChanges,
 }) {
 	const modelName = `com.axelor.meta.db.${
 		modelType !== MODEL_TYPE.CUSTOM ? "MetaModel" : "MetaJsonModel"
-	}`;
+	}`
 
 	const handleModelSelect = React.useMemo(
 		() =>
 			runIfConfirmed(async (model) => {
-				const metaModelService = new AxelorService({ model: modelName });
+				const metaModelService = new AxelorService({ model: modelName })
+
 				if (!model) {
 					if (modelType === MODEL_TYPE.CUSTOM) {
-						reset((draft) => clearHistory(draft));
-						return;
+						reset((draft) => clearHistory(draft))
+						return
 					}
 					update((draft) => {
-						clearHistory(draft);
-						draft.model = null;
-						draft.customModel = null;
-						draft.items = [];
-						draft.exView = null;
-						draft.view = null;
-						draft.widgets = null;
-						draft.initialItems = null;
-						draft.initialWidgets = null;
-						draft.customFieldWidgets = null;
-						draft.customFieldItems = null;
-						draft.customFields = [];
-						draft.modelField = null;
-						draft.extensionXML = null;
-						draft.extensionView = null;
-						draft.originalXML = null;
-						draft.selectedView = null;
-						draft.metaFields = [];
-						draft.metaFieldStore = [];
-						draft.extensionMoves = [];
-						draft.errorList = {};
-						draft.attrsList = [];
-						draft.translationList = [];
-						draft.initialTranslationList = [];
-						draft.removedTranslationList = [];
-						draft.baseHasChanges = false;
-						draft.customFieldHasChanges = false;
-						draft.highlightedOption = null;
-					});
-					return;
+						clearHistory(draft)
+						draft.model = null
+						draft.customModel = null
+						draft.items = []
+						draft.exView = null
+						draft.view = null
+						draft.widgets = null
+						draft.customFieldWidgets = null
+						draft.customFieldItems = []
+						draft.customFields = []
+						draft.modelField = null
+						draft.extensionXML = null
+						draft.extensionView = null
+						draft.originalXML = null
+						draft.selectedView = null
+						draft.metaFields = []
+						draft.metaFieldStore = []
+						draft.extensionMoves = []
+						draft.widgetErrorList = {}
+						draft.customErrorList = {}
+						draft.attrsList = []
+						draft.highlightedOption = null
+					})
+					return
 				}
 				let data = {
 					fields: ["metaFields", "packageName", "name", "fullName"],
@@ -102,54 +93,50 @@ function ViewSelection({
 							"packageName",
 						],
 					},
-				};
+				}
 				if (modelType === MODEL_TYPE.CUSTOM) {
 					update((draft) => {
-						draft.loader = true;
-					});
+						draft.loader = true
+					})
 					data = {
 						related: {
 							studioMenu: ["title", "parentMenu"],
 						},
-					};
+					}
 				}
 
 				// update selection(model) immediately
-				update(draft=>{ draft.model= model})
+				update((draft) => {
+					draft.model = model
+				})
 
 				metaModelService.fetch(model.id, data).then((res) => {
 					if (res.data) {
-						const record = res.data[0];
-						const { fields = [], ...rest } = record;
+						const record = res.data[0]
+						const { fields = [], ...rest } = record
 						update((draft) => {
-							clearHistory(draft);
-							draft.model = model;
-							draft.entityType = model.entityType;
-							draft.widgets = null;
-							draft.initialWidgets = null;
-							draft.items = [];
-							draft.initialItems = null;
-							draft.view = null;
-							draft.exView = null;
-							draft.modelField = null;
-							draft.customFields = [];
-							draft.customFieldWidgets = null;
-							draft.originalXML = null;
-							draft.extensionXML = null;
-							draft.extensionView = null;
-							draft.extensionMoves = [];
-							draft.errorList = {};
-							draft.attrsList = [];
-							draft.translationList = [];
-							draft.initialTranslationList = [];
-							draft.removedTranslationList = [];
-							draft.selectedView = null;
-							draft.editWidget = -1;
-							draft.editWidgetType = null;
-							draft.tabIndex = 0;
-							draft.baseHasChanges = false;
-							draft.customFieldHasChanges = false;
-							draft.highlightedOption = null;
+							clearHistory(draft)
+							draft.model = model
+							draft.entityType = model.entityType
+							draft.widgets = null
+							draft.items = []
+							draft.view = null
+							draft.exView = null
+							draft.modelField = null
+							draft.customFields = []
+							draft.customFieldWidgets = null
+							draft.customFieldItems = []
+							draft.originalXML = null
+							draft.extensionXML = null
+							draft.extensionView = null
+							draft.extensionMoves = []
+							draft.widgetErrorList = {}
+							draft.customErrorList = {}
+							draft.attrsList = []
+							draft.selectedView = null
+							draft.editWidget = -1
+							draft.editWidgetType = null
+							draft.highlightedOption = null
 							const _fields = (record.metaFields || []).map((f) => {
 								return JSON.parse(
 									JSON.stringify({
@@ -162,64 +149,58 @@ function ViewSelection({
 										}),
 										packageName: undefined,
 									})
-								);
-							});
+								)
+							})
 							if (modelType === MODEL_TYPE.BASE) {
-								draft.metaFieldStore = [..._fields];
-								draft.metaFields = [..._fields];
+								draft.metaFieldStore = [..._fields]
+								draft.metaFields = [..._fields]
 							} else {
 								fetchJSONFields(
 									fields.map((f) => f.id),
 									rest,
 									update
-								);
-								draft.customModel = record;
+								)
+								draft.customModel = record
 							}
-						});
+						})
 					}
-				});
+				})
 			}),
 		[update, modelName, modelType, clearHistory, reset, runIfConfirmed]
-	);
+	)
 
-	const doesViewExists = !!selectedView;
 	const handleViewSelect = React.useMemo(
 		() =>
 			runIfConfirmed(async (view) => {
-				startLoader();
+				startLoader()
 				if (!view) {
 					update((draft) => {
-						doesViewExists && clearHistory(draft);
-						draft.items = [];
-						draft.exView = null;
-						draft.view = null;
-						draft.widgets = null;
-						draft.initialItems = null;
-						draft.initialWidgets = null;
-						draft.extensionXML = null;
-						draft.extensionView = null;
-						draft.originalXML = null;
-						draft.loader = false;
-						draft.metaFields = draft.metaFieldStore;
-						draft.selectedView = null;
-						draft.extensionMoves = [];
-						draft.errorList = {};
-						draft.attrsList = [];
-						draft.translationList = [];
-						draft.initialTranslationList = [];
-						draft.removedTranslationList = [];
-						draft.baseHasChanges = false;
-					});
-					return;
+						clearHistory(draft, HISTORY.WIDGET)
+						draft.items = []
+						draft.exView = null
+						draft.view = null
+						draft.widgets = null
+						draft.extensionXML = null
+						draft.extensionView = null
+						draft.originalXML = null
+						draft.loader = false
+						draft.metaFields = draft.metaFieldStore
+						draft.selectedView = null
+						draft.extensionMoves = []
+						draft.widgetErrorList = {}
+						draft.attrsList = []
+					})
+					return
 				}
 
-					// update selection(view) immediately
-					update(draft => {draft.selectedView = view})
+				// update selection(view) immediately
+				update((draft) => {
+					draft.selectedView = view
+				})
 
-				const views = await fetchViews(view);
-				const attrsList = await getAttrsData(model, view);
-				const schema = getSchemaData(views, metaFieldStore, attrsList);
-				const translationList = await getTranslationsData(schema);
+				const views = await fetchViews(view)
+				const attrsList = await getAttrsData(model, view)
+				const schema = getSchemaData(views, metaFieldStore, attrsList)
 				const originalViewData = {
 					operator: "and",
 					criteria: [
@@ -239,9 +220,9 @@ function ViewSelection({
 						},
 						{ fieldName: "name", operator: "=", value: `${view.name}` },
 					],
-				};
+				}
 				metaViewService.search({ data: originalViewData }).then((res) => {
-					const { data = [] } = res;
+					const { data = [] } = res
 					if (data[0]) {
 						update((draft) => {
 							draft.originalXML = JSON.parse(
@@ -249,72 +230,59 @@ function ViewSelection({
 									compact: false,
 									fullTagEmptyElement: false,
 								})
-							);
-						});
+							)
+						})
 					}
-				});
+				})
 				// fetch studio extension view
 				const _viewSearch = {
 					_domain: `self.xmlId = 'studio-${view.name}' and self.extension = true`,
-				};
-				const res = await metaViewService.search({ data: _viewSearch });
-				const { data: resData = [] } = res;
-				const record = resData[0];
+				}
+				const res = await metaViewService.search({ data: _viewSearch })
+				const { data: resData = [] } = res
+				const record = resData[0]
 				if (record) {
 					update((draft) => {
-						draft.extensionView = record;
+						draft.extensionView = record
 						draft.extensionXML = JSON.parse(
 							convert.xml2json(record.xml, {
 								compact: false,
 								fullTagEmptyElement: false,
 							})
-						);
-					});
+						)
+					})
 				}
 				update((draft) => {
-					doesViewExists && clearHistory(draft);
-					draft.attrsList = attrsList;
-					draft.translationList = translationList;
-					draft.initialTranslationList = translationList;
-					draft.removedTranslationList = [];
+					clearHistory(draft, HISTORY.WIDGET)
+					draft.attrsList = attrsList
+					draft.selectedView = view
+					if (views.view) {
+						draft.view = { fields: draft.metaFields, view: views.view }
+						draft.exView = views.view
+					}
+					draft.loader = false
+					draft.extensionMoves = []
+					draft.widgetErrorList = {}
+					draft.customErrorList = {}
 					if (schema) {
-						draft.widgets = schema.widgets;
-						draft.initialWidgets = schema.widgets;
-						draft.items = schema.items;
-						draft.initialItems = schema.items;
+						draft.widgets = schema.widgets
+						draft.items = schema.items
 						draft.metaFields = [...(draft.metaFieldStore || [])]?.filter(
 							(field) =>
 								schema.fieldList.findIndex((f) => f.name === field.name) === -1
-						);
+						)
+						validateWidgets(draft, schema.widgets, false)
 					}
-					draft.selectedView = view;
-					if (views.view) {
-						draft.view = { fields: draft.metaFields, view: views.view };
-						draft.exView = views.view;
-					}
-					draft.loader = false;
-					draft.extensionMoves = [];
-					draft.errorList = {};
-					draft.baseHasChanges = false;
-					generateXpath(draft);
-				});
-			}, !doesViewExists || !baseHasChanges),
-		[
-			update,
-			startLoader,
-			metaFieldStore,
-			clearHistory,
-			model,
-			runIfConfirmed,
-			doesViewExists,
-			baseHasChanges,
-		]
-	);
+					generateXpath(draft)
+				})
+			}, HISTORY.WIDGET),
+		[update, startLoader, metaFieldStore, clearHistory, model, runIfConfirmed]
+	)
 
 	const viewFilter = React.useCallback(() => {
-		let _domain = `self.type='form'`;
-		let _model = `${model ? model.fullName : ""}`;
-		_domain = `${_domain} and self.model='${_model}' and (self.computed = true OR self.name NOT IN (select meta.name from MetaView meta where meta.computed = true))`;
+		let _domain = `self.type='form'`
+		let _model = `${model ? model.fullName : ""}`
+		_domain = `${_domain} and self.model='${_model}' and (self.computed = true OR self.name NOT IN (select meta.name from MetaView meta where meta.computed = true))`
 		return {
 			_domain,
 			fields: [
@@ -327,157 +295,143 @@ function ViewSelection({
 				"computed",
 				"xml",
 			],
-		};
-	}, [model]);
+		}
+	}, [model])
 
 	const modelFilter = React.useCallback(() => {
 		return {
 			fields: ["name", "fullName", "packageName"],
-		};
-	}, []);
+		}
+	}, [])
 
-	const doesModelFieldExists = !!modelField;
 	const handleMetaField = React.useMemo(
 		() =>
 			runIfConfirmed((field) => {
 				if (field) {
-
 					// update selection(field) immediately
-					update(draft => {draft.modelField = field})
+					update((draft) => {
+						draft.modelField = field
+					})
 
 					fetchCustomFields(field, model).then((res) => {
-						const { data = [] } = res;
+						const { data = [] } = res
 						const schema = generateCustomModelSchema(
 							data,
 							undefined,
 							"",
 							"customForm"
-						);
+						)
 						update((draft) => {
-							doesModelFieldExists && clearHistory(draft);
-							const newId = _.uniqueId();
+							clearHistory(draft, HISTORY.CUSTOM)
+							const newId = _.uniqueId()
 							draft.customFieldWidgets =
 								Object.keys(schema.widgets)?.length > 2
 									? schema.widgets
 									: {
 											...schema.widgets,
-											[newId]: {
+											[newId]: getPanel(MODEL_TYPE.BASE, {
 												name: `panel${newId}`,
-												...PANEL_PROPS,
 												model: draft.model.fullName,
-											},
-									  };
+											}),
+									  }
 							draft.customFieldItems =
-								schema.items?.length > 0 ? schema.items : [`${newId}`];
-							draft.customFields = data;
-							draft.modelField = field;
-							draft.customFieldHasChanges = false;
-						});
-					});
+								schema.items?.length > 0 ? schema.items : [`${newId}`]
+							draft.customFields = data
+							draft.modelField = field
+							draft.customErrorList = {}
+							validateWidgets(draft, schema.widgets, true)
+						})
+					})
 				} else {
 					update((draft) => {
-						doesModelFieldExists && clearHistory(draft);
-						draft.customFieldWidgets = null;
-						draft.customFieldItems = null;
-						draft.customFields = [];
-						draft.modelField = field;
-						draft.customFieldHasChanges = false;
-					});
+						clearHistory(draft, HISTORY.CUSTOM)
+						draft.customFieldWidgets = null
+						draft.customFieldItems = []
+						draft.customFields = []
+						draft.modelField = field
+						draft.customErrorList = {}
+					})
 				}
-			}, !doesModelFieldExists || !customFieldHasChanges),
-		[
-			clearHistory,
-			customFieldHasChanges,
-			doesModelFieldExists,
-			model,
-			runIfConfirmed,
-			update,
-		]
-	);
+			}, HISTORY.CUSTOM),
+		[model, update, runIfConfirmed, clearHistory]
+	)
 
 	const handleMetaFieldFilter = React.useCallback(
 		() => metaFieldFilter(model),
 		[model]
-	);
+	)
 
 	const handleTypeSelect = React.useMemo(
 		() =>
 			runIfConfirmed((type) => {
-				const { value } = type;
+				const { value } = type
 				if ([MODEL_TYPE.CUSTOM, MODEL_TYPE.BASE].includes(value)) {
 					getEnableAppBuilder().then((res) => {
 						update((draft) => {
-							draft.enableStudioApp = res;
-						});
-					});
+							draft.enableStudioApp = res
+						})
+					})
 				}
 				const updater = (draft) => {
-					draft.modelType = type ? type.value : null;
-					draft.entityType = null;
-					draft.initialWidgets = null;
-					draft.initialItems = null;
-					draft.modelField = null;
-					draft.customFields = [];
-					draft.customFieldWidgets = null;
-					draft.metaFieldStore = [];
-					draft.extensionMoves = [];
-					draft.removedTranslationList = [];
-					draft.baseHasChanges = false;
-					draft.customFieldHasChanges = false;
-					clearHistory(draft);
-				};
+					draft.modelType = type ? type.value : null
+					draft.entityType = null
+					draft.modelField = null
+					draft.customFields = []
+					draft.customFieldWidgets = null
+					draft.customFieldItems = []
+					draft.metaFieldStore = []
+					draft.extensionMoves = []
+					clearHistory(draft)
+				}
 				if (value === MODEL_TYPE.CUSTOM) {
-					reset(updater);
-					return;
+					reset(updater)
+					return
 				}
 				update((draft) => {
-					clearHistory(draft);
-					updater(draft);
-					draft.model = null;
-					draft.customModel = null;
-					draft.widgets = null;
-					draft.items = [];
-					draft.view = null;
-					draft.exView = null;
-					draft.metaFields = [];
-					draft.metaFields = [];
-					draft.selectedView = null;
-					draft.errorList = {};
-					draft.attrsList = [];
-					draft.translationList = [];
-					draft.initialTranslationList = [];
-					draft.baseHasChanges = false;
-					draft.customFieldHasChanges = false;
-				});
+					clearHistory(draft)
+					updater(draft)
+					draft.model = null
+					draft.customModel = null
+					draft.widgets = null
+					draft.items = []
+					draft.view = null
+					draft.exView = null
+					draft.metaFields = []
+					draft.metaFields = []
+					draft.selectedView = null
+					draft.widgetErrorList = {}
+					draft.customErrorList = {}
+					draft.attrsList = []
+				})
 			}),
 		[update, reset, clearHistory, runIfConfirmed]
-	);
+	)
 
 	const handleViewFilterData = React.useCallback((list) => {
 		const newList = list.filter((view) => {
 			if (!view.computed) {
-				const index = list.findIndex((e) => e.name === view.name && e.computed);
+				const index = list.findIndex((e) => e.name === view.name && e.computed)
 				if (index !== -1) {
-					return false;
+					return false
 				}
 			}
 			if (view.extension === true) {
-				return false;
+				return false
 			}
-			return true;
-		});
-		return newList;
-	}, []);
+			return true
+		})
+		return newList
+	}, [])
 
 	const getOptionLabel = (option) => {
 		if (option.extension === true) {
-			return `${option.name} (${translate("Extension")})`;
+			return `${option.name} (${translate("Extension")})`
 		}
 		if (option.computed === true) {
-			return `${option.name} (${translate("Computed")})`;
+			return `${option.name} (${translate("Computed")})`
 		}
-		return option.name;
-	};
+		return option.name
+	}
 	return (
 		<>
 			<Select
@@ -519,7 +473,7 @@ function ViewSelection({
 				</React.Fragment>
 			)}
 		</>
-	);
+	)
 }
 
-export default React.memo(ViewSelection);
+export default React.memo(ViewSelection)

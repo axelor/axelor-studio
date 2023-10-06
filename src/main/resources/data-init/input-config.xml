@@ -11,15 +11,21 @@
     <bind to="canRemove" eval="can_remove == 'x' ? 'true' : 'false'"/>
     <bind to="canExport" eval="can_export == 'x' ? 'true' : 'false'"/>
   </input>
+
   <input file="meta_metaMenu.csv" separator=";" type="com.axelor.meta.db.MetaMenu"
     search="self.name = :name" update="true"/>
+
   <input file="library.csv" separator=";" type="com.axelor.studio.db.Library"/>
+
   <input file="transformation.csv" separator=";" type="com.axelor.studio.db.Transformation">
     <bind to="library" column="library" search="self.importId= :library" update="true"/>
   </input>
+
   <input file="parameter.csv" separator=";" type="com.axelor.studio.db.Parameter">
     <bind to="transformation" column="transformation" search="self.importId = :transformation"
       update="true"/>
   </input>
+
+  <input file="meta_schedule.csv" separator=";" type="com.axelor.meta.db.MetaSchedule"/>
 
 </csv-inputs>

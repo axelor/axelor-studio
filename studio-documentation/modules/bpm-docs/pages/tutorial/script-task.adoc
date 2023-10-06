@@ -1,0 +1,36 @@
+=  Tâche script
+:toc-title:
+:page-pagination:
+
+Il reste à paramétrer les tâches script pour renseigner automatiquement une description et la société.
+Comme nous souhaitons un comportement automatique, nous allons utiliser une tâche script. Pour définir une tâche script, cliquez sur la tâche, puis sélectionnez la clé à molette, puis sélectionnez la tâche script.
+Le modèle de processus devrait ressembler à ça :
+
+image::task_script_process.png[Task script process]
+
+Dans le mapper, renseignez le “Modèle cible” avec  le modèle de la demande d’achat (PurchaseRequest). Vous pouvez ensuite cliquer sur “Add fields” et venir sélectionner le champ qui nous intéresse : “Société”, pour venir lui affecter une valeur, par exemple “Axelor”. Il existe plusieurs manières de récupérer des valeurs avec le mapper. Ici nous avons sélectionné “Valeur” pour le champ “Value from”, ce qui permet de récupérer une valeur directement. Intéressons nous au script qui a été généré :
+
+image::script_result.png[Script Result]
+
+La méthode $ctx.filterOne est utilisée pour rechercher une société dont le nom est égal à “Axelor”, puis le résultat est récupéré avec getTarget() et sauvegardé avec $ctx.save.
+
+Passons à présent à la deuxième tâche script : **Renseigner une description**. Il serait intéressant d’avoir dans la description quelque chose comme : “Cette demande a pour fournisseur
+----
+${nom du fournisseur}.”
+----
+
+Pour cela, nous allons commencer par remplir le mapper comme suit :
+
+image::script_task_2.png[Script task]
+
+À présent, nous allons modifier le script généré. Pour cela cliquer sur le symbole image:cancel-icon-script.png[cancel icon] et modifié le de la manière suivante  :
+
+image::modify-script.png[Script modification]
+
+**${...}** permet d’insérer une valeur dans une chaîne de caractères. Ici, on vient chercher le nom du fournisseur à l’intérieur de la demande d’achat.
+
+Déployez et testez le processus.
+
+NOTE: il se peut que vous ayez un message d’erreur indiquant “L'enregistrement a été modifié ou supprimé par une autre action.”.Cela vient du fait qu’une action sur le bouton met à jour le statut et qu’avec le BPM, nous modifions également le formulaire. Il suffit d’actualiser le formulaire pour avoir le comportement attendu.
+
+TIP: Une autre possibilité si vous voulez enlevez le message d’erreur et de venir modifier la vue en ajoutant un “save” et un “action-refresh-record” dans les premières actions du bouton “Request”.

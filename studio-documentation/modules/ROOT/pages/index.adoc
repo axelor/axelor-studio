@@ -1,0 +1,12 @@
+= {page-component-title} {page-component-version} Documentation
+:toc:
+:toc-title:
+
+Welcome to the {page-component-title} Documentation. Here you will find information
+and resources to help you learn about {page-component-title}.
+
+xref:web-service-docs:index.adoc[Web Service]::
+This tutorial will quickly introduce you to the {page-component-title} and guide you
+to create your first application.
+xref:bpm-docs:index.adoc[Axelor  BPM]::
+These topics describe how to use {page-component-title} as a developer.

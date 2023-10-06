@@ -36,7 +36,7 @@ import SnappingModule from "./features/snapping";
 import SearchModule from "./features/search";
 
 const initialDiagram = `<?xml version="1.0" encoding="UTF-8"?>
-  <process-Actions 
+  <process-Actions
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"

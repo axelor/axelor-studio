@@ -1,0 +1,12 @@
+site:
+  title: Studio Documentation
+  start_page: ws::index.adoc
+content:
+  sources:
+    - url:  ../../..
+      branches: HEAD
+      start_path: modules/axelor-studio/studio-documentation
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true

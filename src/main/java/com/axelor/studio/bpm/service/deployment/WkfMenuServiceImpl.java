@@ -51,10 +51,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class WkfMenuServiceImpl {
-
-  public static final String MENU_PREFIX = "wkf-node-menu-";
-  public static final String USER_MENU_PREFIX = "wkf-node-user-menu-";
+public class WkfMenuServiceImpl implements WkfMenuService {
 
   protected MetaMenuRepository metaMenuRepository;
 
@@ -78,6 +75,7 @@ public class WkfMenuServiceImpl {
 
   protected Inflector inflector = Inflector.getInstance();
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void createOrUpdateMenu(WkfTaskConfig wkfTaskConfig) {
 
@@ -123,7 +121,8 @@ public class WkfMenuServiceImpl {
     }
   }
 
-  protected MetaMenu findOrCreateMenu(String name) {
+  @Override
+  public MetaMenu findOrCreateMenu(String name) {
 
     MetaMenu menu = metaMenuRepository.findByName(name);
     if (menu == null) {
@@ -132,6 +131,7 @@ public class WkfMenuServiceImpl {
     return menu;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public MetaAction createOrUpdateAction(
       MetaMenu metaMenu, WkfTaskConfig wkfTaskConfig, WkfTaskMenu taskMenu) {
@@ -219,7 +219,8 @@ public class WkfMenuServiceImpl {
     return metaActionRepository.save(metaAction);
   }
 
-  protected Map<String, String> getViewNames(
+  @Override
+  public Map<String, String> getViewNames(
       WkfTaskConfig wkfTaskConfig, WkfTaskMenu taskMenu, boolean isJson) {
     String viewPrefix = getViewPrefix(wkfTaskConfig, isJson);
 
@@ -240,7 +241,8 @@ public class WkfMenuServiceImpl {
     return viewMap;
   }
 
-  protected String createQuery(
+  @Override
+  public String createQuery(
       WkfTaskConfig wkfTaskConfig, WkfTaskMenu taskMenu, boolean userMenu, boolean isJson) {
 
     Property property = null;
@@ -282,7 +284,8 @@ public class WkfMenuServiceImpl {
     return query;
   }
 
-  protected String getViewPrefix(WkfTaskConfig wkfTaskConfig, boolean isJson) {
+  @Override
+  public String getViewPrefix(WkfTaskConfig wkfTaskConfig, boolean isJson) {
 
     if (isJson) {
       return "custom-model-" + wkfTaskConfig.getJsonModelName();
@@ -291,6 +294,7 @@ public class WkfMenuServiceImpl {
     return inflector.dasherize(wkfTaskConfig.getModelName());
   }
 
+  @Override
   public String getModelName(WkfTaskConfig wkfTaskConfig) {
 
     if (wkfTaskConfig.getModelName() != null) {
@@ -305,6 +309,7 @@ public class WkfMenuServiceImpl {
     return null;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeMenu(WkfTaskConfig wkfTaskConfig) {
 
@@ -325,6 +330,7 @@ public class WkfMenuServiceImpl {
     }
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeMenu(WkfTaskMenu taskMenu) {
     String name = taskMenu.getMenuId();
@@ -337,6 +343,7 @@ public class WkfMenuServiceImpl {
     removeAction(name);
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeAction(String menuName) {
 
@@ -347,6 +354,7 @@ public class WkfMenuServiceImpl {
     }
   }
 
+  @Override
   @CallMethod
   public List<Long> getTeamIds(User user) {
     List<Long> teamIds = new ArrayList<>();

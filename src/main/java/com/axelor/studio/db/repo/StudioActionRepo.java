@@ -19,19 +19,18 @@ package com.axelor.studio.db.repo;
 
 import com.axelor.meta.MetaStore;
 import com.axelor.studio.db.StudioAction;
-import com.axelor.studio.service.StudioMetaServiceImpl;
-import com.axelor.studio.service.builder.StudioActionServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.builder.StudioActionService;
 import com.google.inject.Inject;
 
 public class StudioActionRepo extends StudioActionRepository {
 
-  protected StudioMetaServiceImpl metaService;
+  protected StudioMetaService metaService;
 
-  protected StudioActionServiceImpl studioActionService;
+  protected StudioActionService studioActionService;
 
   @Inject
-  public StudioActionRepo(
-      StudioMetaServiceImpl metaService, StudioActionServiceImpl studioActionService) {
+  public StudioActionRepo(StudioMetaService metaService, StudioActionService studioActionService) {
     this.metaService = metaService;
     this.studioActionService = studioActionService;
   }

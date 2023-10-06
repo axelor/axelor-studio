@@ -1,0 +1,60 @@
+buildscript {
+  repositories repos
+  dependencies {
+    classpath "com.diffplug.spotless:spotless-plugin-gradle:3.27.1"
+  }
+}
+
+apply plugin: com.diffplug.gradle.spotless.SpotlessPlugin
+
+spotless {
+  format 'misc', {
+    target fileTree(projectDir) {
+      include '**/.gitignore'
+      include '**/*.gradle'
+      include '**/*.adoc'
+      include '**/*.sh'
+      //include '**/*.html'
+      include '**/*.js'
+      include '**/*.css'
+      include '**/*.xsd'
+      exclude '**/webapp/*'
+      exclude '**/.gradle/*'
+    }
+    indentWithSpaces(2)
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
+
+  format 'markdown', {
+    target fileTree(projectDir) {
+      include '**/*.md'
+      exclude 'CHANGELOG.md'
+    }
+    indentWithSpaces(2)
+    endWithNewline()
+  }
+
+  java {
+    target fileTree(projectDir) {
+      include '**/*.java'
+      exclude '**/build/**'
+    }
+    googleJavaFormat()
+  }
+
+  xml {
+    target fileTree(projectDir) {
+      include '**/*.xml'
+      exclude '**/build/**'
+      exclude '**/bolt-module/src/main/resources/configurators/**'
+      exclude '.idea/**'
+    }
+    eclipseWtp('xml').configFile("${project.rootDir}/gradle/spotless.xml.prefs")
+    trimTrailingWhitespace()
+  }
+}
+
+task formatCode(dependsOn: ['licenseFormat', 'spotlessApply'])
+
+build.dependsOn 'spotlessApply'

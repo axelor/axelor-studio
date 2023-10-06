@@ -1,2 +1,0 @@
-* xref:index.adoc[Welcome]
-* xref:news.adoc[What's New?]

@@ -1,50 +1,52 @@
 .container {
-	width: 100%;
+  width: 100%;
 }
-.sidebar-panel{
-	width: calc(100% - 14px) !important;
+.sidebar-panel {
+  width: calc(100% - 14px) !important;
 }
 .row {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 10px 0px;
-	text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 0px;
+  text-align: center;
 }
 
 .resize-column {
-	height: 100%;
-	display: flex;
-	position: relative;
+  height: 100%;
+  display: flex;
+  position: relative;
 }
 
 .column {
-	height: inherit;
-	position: relative;
+  height: inherit;
+  position: relative;
 }
 .column-content {
-	height: 100%;
-	width: 100%;
+  height: 100%;
+  width: 100%;
 }
 .column.col-0 {
-	width: 0%;
+  width: 0%;
 }
 
 .resizer {
-	position: absolute;
-	width: 5px;
-	height: 100%;
-	bottom: 0;
-	right: 0;
-	cursor: ew-resize;
+  position: absolute;
+  width: 5px;
+  height: 100%;
+  bottom: 0;
+  right: 0;
+  cursor: ew-resize;
+  /* z index for widget (not dump) is 1 */
+  z-index: 2;
 }
 
 .resizer::after {
-	content: "";
-	position: absolute;
-	right: 3px;
-	bottom: 3px;
-	width: 5px;
-	height: 100%;
-	border-right: 2px solid rgba(0,0,0,0);
-	border-bottom: 2px solid rgba(0,0,0,0);
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 5px;
+  height: 100%;
+  border-right: 2px solid rgba(0, 0, 0, 0);
+  border-bottom: 2px solid rgba(0, 0, 0, 0);
 }

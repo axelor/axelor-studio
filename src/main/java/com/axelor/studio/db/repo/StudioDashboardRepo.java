@@ -20,18 +20,18 @@ package com.axelor.studio.db.repo;
 import com.axelor.meta.db.MetaView;
 import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.studio.db.StudioDashboard;
-import com.axelor.studio.service.builder.StudioDashboardServiceImpl;
+import com.axelor.studio.service.builder.StudioDashboardService;
 import com.google.inject.Inject;
 
 public class StudioDashboardRepo extends StudioDashboardRepository {
 
-  protected StudioDashboardServiceImpl studioDashboardService;
+  protected StudioDashboardService studioDashboardService;
 
   protected MetaViewRepository metaViewRepo;
 
   @Inject
   public StudioDashboardRepo(
-      StudioDashboardServiceImpl studioDashboardService, MetaViewRepository metaViewRepo) {
+      StudioDashboardService studioDashboardService, MetaViewRepository metaViewRepo) {
     this.studioDashboardService = studioDashboardService;
     this.metaViewRepo = metaViewRepo;
   }

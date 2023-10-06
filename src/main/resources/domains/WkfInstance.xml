@@ -14,6 +14,7 @@
     <string name="currentStatus" large="true" title="Current status"/>
     <long name="modelId"/>
     <string name="modelName"/>
+    <string name="logText" title="Log" large="true"/>
     <many-to-one name="wkfProcess" ref="WkfProcess"/>
     <one-to-many ref="com.axelor.studio.db.WkfInstanceMigrationHistory"
       name="wkfInstanceMigrationHistory" title="Migration History" mappedBy="wkfInstnace"

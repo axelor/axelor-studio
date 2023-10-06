@@ -22,6 +22,7 @@ import com.axelor.db.tenants.TenantConfigProvider;
 import com.axelor.inject.Beans;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
+import com.axelor.studio.bpm.service.log.WkfLoggerInitService;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -34,23 +35,27 @@ import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.variable.Variables;
 
 @Singleton
-public class ProcessEngineServiceImpl {
+public class ProcessEngineServiceImpl implements ProcessEngineService {
 
-  protected static final Map<String, ProcessEngine> engineMap =
-      new ConcurrentHashMap<String, ProcessEngine>();
+  protected static final Map<String, ProcessEngine> engineMap = new ConcurrentHashMap<>();
 
   protected final AppSettingsStudioService appSettingsStudioService;
 
-  @Inject
-  public ProcessEngineServiceImpl(AppSettingsStudioService appSettingsStudioService) {
-    this.appSettingsStudioService = appSettingsStudioService;
+  protected final WkfLoggerInitService wkfLoggerInitService;
 
+  @Inject
+  public ProcessEngineServiceImpl(
+      AppSettingsStudioService appSettingsStudioService,
+      WkfLoggerInitService wkfLoggerInitService) {
+    this.appSettingsStudioService = appSettingsStudioService;
+    this.wkfLoggerInitService = wkfLoggerInitService;
     addEngine(BpmTools.getCurentTenant());
 
     WkfCache.initWkfModelCache();
     WkfCache.initWkfButttonCache();
   }
 
+  @Override
   public void addEngine(String tenantId) {
 
     TenantConfig tenantConfig = Beans.get(TenantConfigProvider.class).find(tenantId);
@@ -59,7 +64,11 @@ public class ProcessEngineServiceImpl {
       return;
     }
 
-    boolean multiTeant = appSettingsStudioService.multiTenancy();
+    boolean multiTenant = appSettingsStudioService.multiTenancy();
+
+    if (!multiTenant) {
+      wkfLoggerInitService.initLogger();
+    }
 
     ProcessEngineConfigurationImpl configImpl = Beans.get(WkfProcessEngineConfigurationImpl.class);
 
@@ -71,7 +80,7 @@ public class ProcessEngineServiceImpl {
             .setJdbcPassword(tenantConfig.getJdbcPassword())
             .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE)
             .setHistory(ProcessEngineConfiguration.HISTORY_AUDIT)
-            .setJobExecutorActivate(!multiTeant)
+            .setJobExecutorActivate(!multiTenant)
             .setMetricsEnabled(false)
             .setJobExecutor(Beans.get(WkfJobExecutor.class))
             .setDefaultSerializationFormat(Variables.SerializationDataFormats.JAVA.name())
@@ -95,6 +104,7 @@ public class ProcessEngineServiceImpl {
     engineMap.put(tenantId, engine);
   }
 
+  @Override
   public ProcessEngine getEngine() {
 
     String tenantId = BpmTools.getCurentTenant();
@@ -106,6 +116,7 @@ public class ProcessEngineServiceImpl {
     return engineMap.get(tenantId);
   }
 
+  @Override
   public void removeEngine(String tenantId) {
     ProcessEngine engine = engineMap.get(tenantId);
     if (engine != null) {
@@ -117,6 +128,7 @@ public class ProcessEngineServiceImpl {
     WkfCache.WKF_MODEL_CACHE.remove(tenantId);
   }
 
+  @Override
   public String getWkfViewerUrl() {
     return "wkf-editor/?%s&taskIds=%s&activityCount=%s";
   }

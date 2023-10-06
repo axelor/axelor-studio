@@ -1,0 +1,9 @@
+name: ws
+title: Studio Documentation
+version: "2.0.0"
+start_page: ROOT:index.adoc
+nav:
+  - modules/ROOT/nav.adoc
+  - modules/web-service-docs/nav.adoc
+  - modules/studio-docs/nav.adoc
+  - modules/bpm-docs/nav.adoc

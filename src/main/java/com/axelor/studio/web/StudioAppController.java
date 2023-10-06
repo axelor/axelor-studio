@@ -30,7 +30,7 @@ import com.axelor.studio.db.App;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.repo.StudioAppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
-import com.axelor.studio.service.builder.StudioAppServiceImpl;
+import com.axelor.studio.service.builder.StudioAppService;
 import com.axelor.utils.ExceptionTool;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class StudioAppController {
 
       @SuppressWarnings("unchecked")
       Map<String, Object> dataFileMap = (Map<String, Object>) request.getContext().get("dataFile");
-      MetaFile logFile = Beans.get(StudioAppServiceImpl.class).importApp(dataFileMap);
+      MetaFile logFile = Beans.get(StudioAppService.class).importApp(dataFileMap);
       if (logFile == null) {
         response.setCanClose(true);
         response.setNotify(I18n.get(StudioExceptionMessage.SUCCESS_STUDIO_APP_IMPORT));
@@ -121,10 +121,10 @@ public class StudioAppController {
 
       if (ids.getClass().isAssignableFrom(ArrayList.class)) {
         exportFile =
-            Beans.get(StudioAppServiceImpl.class).exportApps((List<Integer>) ids, isExportData);
+            Beans.get(StudioAppService.class).exportApps((List<Integer>) ids, isExportData);
       } else if (ids.getClass().isAssignableFrom(Integer.class)) {
         StudioApp studioApp = Beans.get(StudioAppRepository.class).find(Long.parseLong(ids + ""));
-        exportFile = Beans.get(StudioAppServiceImpl.class).exportApp(studioApp, isExportData);
+        exportFile = Beans.get(StudioAppService.class).exportApp(studioApp, isExportData);
       }
 
       if (exportFile == null) {
@@ -153,7 +153,7 @@ public class StudioAppController {
     try {
       StudioApp studioApp = request.getContext().asType(StudioApp.class);
       studioApp = Beans.get(StudioAppRepository.class).find(studioApp.getId());
-      Beans.get(StudioAppServiceImpl.class).deleteApp(studioApp);
+      Beans.get(StudioAppService.class).deleteApp(studioApp);
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
       ExceptionTool.trace(response, I18n.get(StudioExceptionMessage.STUDIO_APP_IN_REF));

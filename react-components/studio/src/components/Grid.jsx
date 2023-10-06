@@ -1,33 +1,27 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
-import classNames from "classnames";
-import { GRID_SIZE, PANEL_TYPE, TYPE, FIELD_TYPE } from "../constants";
-import { useStore } from "../store/context";
-import ResizeColumn, { Table, Row, Column } from "./resize/Resize";
+import React, { useCallback, useEffect, useState, useRef } from "react"
+import classNames from "classnames"
+import { PANEL_TYPE, TYPE, IDS } from "../constants"
+import { useStore } from "../store/context"
+import ResizeColumn, { Table, Row, Column } from "./resize/Resize"
+import { isMaxWidget, isWidgetOfType } from "../utils"
+import { useDragLayer } from "react-dnd"
 
 const DEFAULTS = {
 	ITEM_COLSPAN: 1,
 	MAX_SIZE: 12,
 	PARENT_ITEM_SPAN: 6,
-};
+}
 
 const getColSpan = (col, parentItemSpan) => {
-	const widgetAttrs = col.widgetAttrs ? JSON.parse(col.widgetAttrs) : {};
+	const widgetAttrs = col.widgetAttrs ? col.widgetAttrs : {}
 	if (widgetAttrs.colSpan) {
-		return Number(widgetAttrs.colSpan);
+		return Number(widgetAttrs.colSpan)
 	} else {
-		if (col.type === FIELD_TYPE.separator) return DEFAULTS.MAX_SIZE;
-		return Number(parentItemSpan) || DEFAULTS.PARENT_ITEM_SPAN;
+		if (!isWidgetOfType(col, TYPE.panel) && isMaxWidget(col))
+			return DEFAULTS.MAX_SIZE
+		return Number(parentItemSpan) || DEFAULTS.PARENT_ITEM_SPAN
 	}
-};
-
-// get Column cell CSS according to colSpan and Container size
-export const getColumnCss = (columns, colSpan) => {
-	const [n, span] = [Number(columns), Number(colSpan)];
-	if (n > GRID_SIZE.max) return "";
-	return `col-span col-${
-		span > n ? GRID_SIZE.max : Math.floor((GRID_SIZE.max * span) / n)
-	}`;
-};
+}
 
 const getFullGrid = (
 	items,
@@ -35,83 +29,83 @@ const getFullGrid = (
 	isStackLayout,
 	parentItemSpan,
 	draggedWidgetAttrsColSpan,
-	isSeparator
+	isMaxDragWidget
 ) => {
-	const grid = [];
-	const isStack = size === 1 || isStackLayout;
-	const gridSize = isStack ? DEFAULTS.MAX_SIZE : size;
-	const _parentItemSpan = parentItemSpan || DEFAULTS.PARENT_ITEM_SPAN;
-	let row = [];
-	let span = 0;
+	const grid = []
+	const isStack = size === 1 || isStackLayout
+	const gridSize = isStack ? DEFAULTS.MAX_SIZE : size
+	const _parentItemSpan = parentItemSpan || DEFAULTS.PARENT_ITEM_SPAN
+	let row = []
+	let span = 0
 
 	const getItemColspan = (colSpan) => {
-		return Number(colSpan);
-	};
+		return Number(colSpan)
+	}
 
 	if (!items.length) {
-		let remainingSpan = gridSize;
-		const row = [];
-		const $cell = { id: 0, separator: true };
+		let remainingSpan = gridSize
+		const row = []
+		const $cell = { id: 0, separator: true }
 
 		while (remainingSpan > 0) {
-			row.push($cell);
+			row.push($cell)
 			const colSpan = isStack
 				? gridSize
 				: remainingSpan <
 				  (draggedWidgetAttrsColSpan ||
-						(isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan))
+						(isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan))
 				? remainingSpan
 				: draggedWidgetAttrsColSpan ||
-				  (isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan);
+				  (isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan)
 			row.push({
 				id: 0,
 				dummy: true,
 				dummyPanel: true,
 				colSpan: Number(colSpan),
-			});
-			remainingSpan -= colSpan;
+			})
+			remainingSpan -= colSpan
 			if (remainingSpan <= 0) {
-				row.push($cell);
+				row.push($cell)
 			}
 		}
 
-		return [row];
+		return [row]
 	}
 
 	const addRow = ({ item, overflow = false } = {}) => {
 		if (overflow) {
-			let fillColspan = gridSize - (span - getItemColspan(item.colSpan));
+			let fillColspan = gridSize - (span - getItemColspan(item.colSpan))
 			while (fillColspan > 0) {
 				if (
 					fillColspan >
 					(draggedWidgetAttrsColSpan ||
-						(isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan))
+						(isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan))
 				) {
 					row.push({
 						id: 0,
 						dummy: true,
 						colSpan:
 							draggedWidgetAttrsColSpan ||
-							(isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan),
-					});
+							(isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan),
+					})
 				} else {
 					row.push({
 						id: 0,
 						dummy: true,
 						colSpan: fillColspan,
-					});
+					})
 				}
 				fillColspan -=
 					draggedWidgetAttrsColSpan ||
-					(isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan);
+					(isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan)
 			}
 		}
-		grid.push(row);
-		row = [];
-		span = 0;
-	};
+		grid.push(row)
+		row = []
+		span = 0
+	}
 
-	const addItem = (item) => row.push(item);
+	const addItem = (item) => row.push(item)
 
 	for (let i = 0; i < items.length; i++) {
 		const item = Object.assign(
@@ -119,75 +113,75 @@ const getFullGrid = (
 			isStack
 				? { colSpan: DEFAULTS.MAX_SIZE }
 				: { colSpan: getItemColspan(getColSpan(items[i], parentItemSpan)) }
-		);
-		const { colSpan: itemSpan = DEFAULTS.ITEM_COLSPAN } = item;
-		const isLastItem = i === items.length - 1;
-		span += getItemColspan(itemSpan);
+		)
+		const { colSpan: itemSpan = DEFAULTS.ITEM_COLSPAN } = item
+		const isLastItem = i === items.length - 1
+		span += getItemColspan(itemSpan)
 		if (span > gridSize) {
-			addRow({ item, overflow: true });
-			span = itemSpan;
-			addItem(item);
+			addRow({ item, overflow: true })
+			span = itemSpan
+			addItem(item)
 		} else if (span === gridSize) {
-			row.push(item);
-			addRow({ item });
+			row.push(item)
+			addRow({ item })
 		} else {
-			row.push(item);
+			row.push(item)
 		}
 
 		if (isLastItem && row.length) {
 			const occupiedSpan = row.reduce(
 				(total, { colSpan = DEFAULTS.ITEM_COLSPAN }) => total + colSpan,
 				0
-			);
-			let remainSpan = gridSize - occupiedSpan;
+			)
+			let remainSpan = gridSize - occupiedSpan
 			while (remainSpan > 0) {
 				if (
 					remainSpan <=
 					(draggedWidgetAttrsColSpan ||
-						(isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan))
+						(isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan))
 				) {
 					row.push({
 						id: 0,
 						dummy: true,
 						colSpan: remainSpan,
-					});
+					})
 				} else {
 					row.push({
 						id: 0,
 						dummy: true,
 						colSpan: Number(
 							draggedWidgetAttrsColSpan ||
-								(isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan)
+								(isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan)
 						),
-					});
+					})
 				}
 				remainSpan -=
 					draggedWidgetAttrsColSpan ||
-					(isSeparator ? DEFAULTS.MAX_SIZE : _parentItemSpan);
+					(isMaxDragWidget ? DEFAULTS.MAX_SIZE : _parentItemSpan)
 			}
-			grid.push(row);
+			grid.push(row)
 		}
 	}
 
-	const fullGrid = [];
+	const fullGrid = []
 	for (let i = 0; i < grid.length; i++) {
-		const row = grid[i];
-		const { widgetAttrs, type } = row[0];
-		const { sidebar } = type === "panel" && JSON.parse(widgetAttrs || "{}");
-		const isSidePanelDummy = JSON.parse(sidebar || "false");
-		const draggable = ![TYPE.menubar, TYPE.toolbar].includes(row[0]?.type);
-		const upRow = [];
-		const midRow = [];
+		const row = grid[i]
+		const { widgetAttrs, type } = row[0]
+		const sidebar = type === "panel" && widgetAttrs?.sidebar
+		const isSidePanelDummy = JSON.parse(sidebar || "false")
+		const draggable = ![TYPE.menubar, TYPE.toolbar].includes(row[0]?.type)
+		const upRow = []
+		const midRow = []
 		const addCell = ($row, options = { separator: true }) =>
 			$row.push({
 				id: 0,
 				colSpan: 1,
 				...options,
-			});
+			})
 		!isSidePanelDummy &&
 			addCell(upRow, {
 				separator: true,
-			});
+			})
 
 		// remove starting separator when side panel is true
 		if (!isSidePanelDummy) {
@@ -195,13 +189,13 @@ const getFullGrid = (
 				addCell(midRow, {
 					relatedColSpan: getColSpan(row[0], parentItemSpan),
 					separator: true,
-				});
+				})
 		}
 
 		for (let j = 0; j < row.length; j++) {
-			const col = row[j];
-			const colSpan = getColSpan(col, parentItemSpan);
-			addCell(midRow, col);
+			const col = row[j]
+			const colSpan = getColSpan(col, parentItemSpan)
+			addCell(midRow, col)
 
 			// remove end separator when side panel is true
 			if (!isSidePanelDummy) {
@@ -209,11 +203,11 @@ const getFullGrid = (
 					addCell(midRow, {
 						relatedColSpan: colSpan,
 						separator: true,
-					});
+					})
 			}
 		}
 		if (row.length) {
-			let totalSpan = gridSize;
+			let totalSpan = gridSize
 			while (totalSpan > 0) {
 				addCell(upRow, {
 					dummy: true,
@@ -221,38 +215,38 @@ const getFullGrid = (
 					colSpan: Number(
 						totalSpan <=
 							(draggedWidgetAttrsColSpan ||
-								(isSeparator || isSidePanelDummy
+								(isMaxDragWidget || isSidePanelDummy
 									? DEFAULTS.MAX_SIZE
 									: _parentItemSpan))
 							? totalSpan
 							: draggedWidgetAttrsColSpan ||
-									(isSeparator || isSidePanelDummy
+									(isMaxDragWidget || isSidePanelDummy
 										? DEFAULTS.MAX_SIZE
 										: _parentItemSpan)
 					),
-				});
+				})
 				!isSidePanelDummy &&
 					addCell(upRow, {
 						relatedColSpan: Number(_parentItemSpan),
 						separator: true,
-					});
+					})
 				totalSpan -=
 					draggedWidgetAttrsColSpan ||
-					(isSeparator || isSidePanelDummy
+					(isMaxDragWidget || isSidePanelDummy
 						? DEFAULTS.MAX_SIZE
-						: _parentItemSpan);
+						: _parentItemSpan)
 			}
 		}
 
-		draggable ? fullGrid.push(upRow) : fullGrid.push([]);
-		fullGrid.push(midRow);
+		draggable ? fullGrid.push(upRow) : fullGrid.push([])
+		fullGrid.push(midRow)
 
 		if (i === grid.length - 1) {
-			fullGrid.push(upRow);
+			fullGrid.push(upRow)
 		}
 	}
-	return fullGrid;
-};
+	return fullGrid
+}
 
 // Grid Container embeds grid cell
 export const GridContainer = ({ className, attrs, children, ...rest }) => (
@@ -265,83 +259,79 @@ export const GridContainer = ({ className, attrs, children, ...rest }) => (
 	>
 		{children}
 	</div>
-);
+)
 
+// NOTE: This hook is used to prevent error due circular dependency.
+// Widget => Panel => Grid => Widget
 export function useGridWidget() {
-	const [WidgetComponent, setWidgetComponent] = React.useState(() => null);
+	const [WidgetComponent, setWidgetComponent] = React.useState(() => null)
 
 	React.useEffect(() => {
 		import("./Widget").then((module) =>
 			setWidgetComponent(() => module.default)
-		);
-	}, []);
+		)
+	}, [])
 
-	return WidgetComponent;
+	return WidgetComponent
 }
 
 /**
  * Grid Component handle layout of Container Components like panels
  */
 function Grid(props) {
-	const WidgetComponent = useGridWidget();
+	const WidgetComponent = useGridWidget()
 	const {
 		state: {
 			widgets: _widgets,
 			customFieldWidgets,
-			dragWidgetProps,
 			highlightedOption,
-			modelType,
 			drawerOpen,
 			propertiesPanelWidth,
 			editWidget,
 		},
 		onWidgetChange,
-		onSelect,
-	} = useStore();
+	} = useStore()
+	const { dragWidget } = useDragLayer((monitor) => ({
+		dragWidget: monitor.getItem(),
+	}))
+	const { className, items, attrs = {}, panelId, design, panelType } = props
+	const { sidebar, itemSpan: span } = attrs.widgetAttrs || {}
+	const widgets = props._type === "customField" ? customFieldWidgets : _widgets
+	const panelWidget = widgets[panelId]?.widgetAttrs
 
-	const draggedWidgetAttrsColSpan =
-		typeof dragWidgetProps?.id === "symbol" &&
-		["one-to-many", "many-to-many"].includes(dragWidgetProps?.attrs?.serverType)
-			? undefined //Tempory fix for AOP issue
-			: JSON.parse(dragWidgetProps?.attrs?.widgetAttrs || "{}").colSpan ||
-			  ([TYPE.panel, TYPE.tabs].includes(dragWidgetProps?.attrs?.type) &&
-					dragWidgetProps?.attrs?.colSpan);
+	const draggedWidgetAttrsColSpan = dragWidget?.attrs?.widgetAttrs?.colSpan
 
-	const isSeparator = dragWidgetProps?.attrs?.type === FIELD_TYPE.separator;
-	const { className, items, attrs = {}, panelId, design, panelType } = props;
-
-	const tableRow = useRef(0);
+	const isMaxDragWidget = isMaxWidget(dragWidget?.attrs)
+	const tableRow = useRef(0)
 	const [tableRowWidth, setTableRowWidth] = useState(
 		tableRow.current?.offsetWidth
-	);
+	)
 
-	let widgets = props._type === "customField" ? customFieldWidgets : _widgets;
-	const widgetAttrs = JSON.parse(attrs.widgetAttrs || "{}");
-	const { sidebar, itemSpan: span } = widgetAttrs;
-	const gridSize = Number(attrs.cols || 1);
-	const columns = gridSize * 2 + 1;
-	const isStackLayout = attrs.layout === PANEL_TYPE.stack;
-	const itemSpan = sidebar && !span ? 12 : span;
-	const rows = React.useMemo(() => {
-		let cellIndice = 0;
+	const gridSize = Number(attrs.cols || 1)
+	const columns = gridSize * 2 + 1
+	const isStackLayout = attrs.layout === PANEL_TYPE.stack
+	const itemSpan = sidebar && !span ? 12 : span
+	const [rows, gridRows] = React.useMemo(() => {
+		let cellIndice = 0
 		const childs = items.map((x) =>
 			Object.assign({}, widgets[x] || {}, { id: x })
-		);
-		return getFullGrid(
+		)
+		const rows = getFullGrid(
 			childs,
 			gridSize,
 			isStackLayout,
 			itemSpan,
 			draggedWidgetAttrsColSpan,
-			isSeparator
+			isMaxDragWidget
 		).map((columns, rowIndex) => {
-			let span = 0;
+			let span = 0
 			return columns.map((c) => {
-				let columnIndex = span;
-				span += c.separator ? 0 : Number(c.colSpan || 1);
-				return { ...c, rowIndex, columnIndex, cellIndice: cellIndice++ };
-			});
-		});
+				let columnIndex = span
+				span += c.separator ? 0 : Number(c.colSpan || 1)
+				return { ...c, rowIndex, columnIndex, cellIndice: cellIndice++ }
+			})
+		})
+		return [rows, rows.flat()]
 	}, [
 		items,
 		widgets,
@@ -349,59 +339,57 @@ function Grid(props) {
 		isStackLayout,
 		itemSpan,
 		draggedWidgetAttrsColSpan,
-		isSeparator,
-	]);
+		isMaxDragWidget,
+	])
 
-	const gridRows = rows.reduce((arr, row) => arr.concat(row), []);
-
-	const panelWidget = JSON.parse(widgets[panelId]?.widgetAttrs || "{}");
-	const isPanelSidebar = JSON.parse(panelWidget?.sidebar || "false");
+	const isPanelSidebar = JSON.parse(panelWidget?.sidebar || "false")
 
 	const getHighlightedOptionStatus = React.useCallback(
 		(name, title) => {
 			if (name) {
-				return true;
+				return true
 			} else if (title) {
 				if (highlightedOption?.title === title) {
-					return true;
+					return true
 				}
 			}
 		},
 		[highlightedOption]
-	);
+	)
 	const handleGridChange = useCallback(
 		(span, id) => {
-			const widgetAttrs = JSON.stringify({ colSpan: span });
+			const widgetAttrs = widgets[id].widgetAttrs
 			onWidgetChange({
 				id,
 				props: {
-					widgetAttrs,
+					widgetAttrs: {
+						...widgetAttrs,
+						colSpan: span,
+					},
 				},
-			});
-
-			onSelect({ id, type: modelType === "BASE" && "customField" });
+			})
 		},
-		[onWidgetChange, onSelect, modelType]
-	);
+		[onWidgetChange, widgets]
+	)
 
-	const canResize = (rowIndex, separator, type, id) => {
-		return (
-			props.canRemove !== false &&
-			//TODO: for attrs widgets , canRemove is undefined. It should have beeen true.
-			//once this is done. change canRemove logic
-			!separator &&
-			id !== 0 &&
-			rowIndex % 2 !== 0 &&
-			![TYPE.panel, TYPE.tabs].includes(type) &&
-			![-1, -2, undefined, null].includes(editWidget) &&
-			editWidget === id
-		);
-	};
+	const canResize = (id) => editWidget != null && editWidget === id
+
+	const nonResizableWidgets =
+		props._type === "customField"
+			? [TYPE.tabs, TYPE.form]
+			: [TYPE.panel, TYPE.tabs, TYPE.form]
+
+	const isResizable = (id, type) =>
+		id !== IDS.dumpField &&
+		!nonResizableWidgets.includes(type) &&
+		props.canRemove !== false
+	//TODO: for attrs widgets , canRemove is undefined. It should have beeen true.
+	//once this is done. change canRemove logic
 
 	useEffect(() => {
-		const width = tableRow.current?.offsetWidth - 28;
-		if (!isNaN(width)) setTableRowWidth(width);
-	}, [tableRowWidth, drawerOpen, propertiesPanelWidth, rows]);
+		const width = tableRow.current?.offsetWidth - 28
+		if (!isNaN(width)) setTableRowWidth(width)
+	}, [tableRowWidth, drawerOpen, propertiesPanelWidth, rows])
 
 	return (
 		<GridContainer {...{ attrs, className }} style={{ width: "100%" }}>
@@ -457,18 +445,20 @@ function Grid(props) {
 										index={indice}
 										panelColumns={attrs.cols}
 										_type={props._type}
-										errorList={props.errorList}
+										widgetErrorList={props.widgetErrorList}
+										customErrorList={props.customErrorList}
 										canRemove={props.canRemove}
 										highlightedOption={highlightedOption}
 										isBase={props.isBase}
 										isPanelSidebar={isPanelSidebar}
 										panelType={panelType}
 									/>
-								);
-								return canResize(rowIndex, separator, type, id) ? (
+								)
+								return isResizable(id, type) ? (
 									<ResizeColumn
 										key={id ? id : "" + id + indice}
 										id={id}
+										canResize={canResize(id)}
 										colSpan={colSpan}
 										onResize={handleGridChange}
 										maxwidth={tableRowWidth}
@@ -487,14 +477,14 @@ function Grid(props) {
 									>
 										{Widget}
 									</Column>
-								);
+								)
 							}
 						)}
 					</Row>
 				))}
 			</Table>
 		</GridContainer>
-	);
+	)
 }
 
-export default Grid;
+export default Grid

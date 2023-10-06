@@ -1,18 +1,13 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import classNames from "classnames";
+import React from "react"
+import { styled } from "@mui/material/styles"
+import classNames from "classnames"
 
-const useStyles = makeStyles((theme) => ({
-	field: {
-		[theme.breakpoints.down("sm")]: {
-			width: "100%",
-		},
+const StyledField = styled("div")(({ theme }) => ({
+	[theme.breakpoints.down("md")]: {
+		width: "100%",
 	},
-}));
+}))
 
 export default function Field(props) {
-	const classes = useStyles();
-	return (
-		<div {...props} className={classNames(classes.field, props.className)} />
-	);
+	return <StyledField {...props} className={classNames(props.className)} />
 }

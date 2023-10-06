@@ -23,7 +23,7 @@ import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioSelection;
 import com.axelor.studio.db.repo.StudioSelectionRepository;
-import com.axelor.studio.service.builder.StudioSelectionServiceImpl;
+import com.axelor.studio.service.builder.StudioSelectionService;
 import com.axelor.utils.ExceptionTool;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +40,10 @@ public class StudioSelectionController {
       if (metaSelect != null) {
         String name = metaSelect.getName();
         List<Map<String, String>> selectOptions =
-            Beans.get(StudioSelectionServiceImpl.class).createSelectionText(name);
+            Beans.get(StudioSelectionService.class).createSelectionText(name);
 
         String selectionText =
-            Beans.get(StudioSelectionServiceImpl.class).generateSelectionText(selectOptions);
+            Beans.get(StudioSelectionService.class).generateSelectionText(selectOptions);
 
         response.setValue(SELECTION_TEXT, selectionText);
         response.setValue(SELECTION_OPTION_LIST, selectOptions);
@@ -65,7 +65,7 @@ public class StudioSelectionController {
           (List<Map<String, String>>) request.getContext().get("selectOptionList");
 
       String selectionText =
-          Beans.get(StudioSelectionServiceImpl.class).generateSelectionText(selectOptions);
+          Beans.get(StudioSelectionService.class).generateSelectionText(selectOptions);
 
       response.setValue(SELECTION_TEXT, selectionText);
 
@@ -82,7 +82,7 @@ public class StudioSelectionController {
       }
 
       List<Map<String, String>> selectOptions =
-          Beans.get(StudioSelectionServiceImpl.class)
+          Beans.get(StudioSelectionService.class)
               .getSelectOptions(studioSelection.getSelectionText());
 
       response.setValue(SELECTION_OPTION_LIST, selectOptions);

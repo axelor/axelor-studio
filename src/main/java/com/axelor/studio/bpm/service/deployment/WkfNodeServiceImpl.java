@@ -53,13 +53,13 @@ import org.camunda.bpm.model.xml.impl.ModelBuilderImpl;
 import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 import org.camunda.bpm.model.xml.type.ModelElementType;
 
-public class WkfNodeServiceImpl {
+public class WkfNodeServiceImpl implements WkfNodeService {
 
   protected MetaAttrsService metaAttrsService;
 
   protected WkfTaskConfigRepository wkfConfigRepository;
 
-  protected WkfMenuServiceImpl wkfMenuService;
+  protected WkfMenuService wkfMenuService;
 
   @Inject protected WkfTaskMenuRepository wkfTaskMenuRepo;
 
@@ -67,7 +67,7 @@ public class WkfNodeServiceImpl {
   public WkfNodeServiceImpl(
       MetaAttrsService metaAttrsService,
       WkfTaskConfigRepository wkfConfigRepository,
-      WkfMenuServiceImpl wkfMenuService) {
+      WkfMenuService wkfMenuService) {
     this.metaAttrsService = metaAttrsService;
     this.wkfConfigRepository = wkfConfigRepository;
     this.wkfMenuService = wkfMenuService;
@@ -77,6 +77,7 @@ public class WkfNodeServiceImpl {
 
   @Inject protected WkfTaskMenuContextRepository taskMenuContextRepo;
 
+  @Override
   public List<MetaAttrs> extractNodes(
       WkfModel wkfModel, BpmnModelInstance bpmInstance, Map<String, String> processMap) {
 
@@ -113,7 +114,8 @@ public class WkfNodeServiceImpl {
     return metaAttrsList;
   }
 
-  protected Process findProcess(FlowNode activity) {
+  @Override
+  public Process findProcess(FlowNode activity) {
 
     ModelElementInstance modelElementInstance = activity.getParentElement();
 
@@ -127,6 +129,7 @@ public class WkfNodeServiceImpl {
     return null;
   }
 
+  @Override
   @Transactional
   public WkfTaskConfig updateTaskConfig(
       WkfModel wkfModel,
@@ -178,7 +181,8 @@ public class WkfNodeServiceImpl {
     return config;
   }
 
-  protected void computeTaskMenu(ExtensionElements extensionElements, WkfTaskConfig config) {
+  @Override
+  public void computeTaskMenu(ExtensionElements extensionElements, WkfTaskConfig config) {
 
     Map<String, WkfTaskMenu> menuMap = new HashMap<>();
     if (CollectionUtils.isNotEmpty(config.getWkfTaskMenuList())) {
@@ -211,7 +215,8 @@ public class WkfNodeServiceImpl {
     }
   }
 
-  protected WkfTaskMenu updateTaskMenu(
+  @Override
+  public WkfTaskMenu updateTaskMenu(
       ModelElementInstance menu, Map<String, WkfTaskMenu> menuMap, ModelBuilderImpl builderImpl) {
 
     WkfTaskMenu taskMenu;
@@ -224,8 +229,8 @@ public class WkfNodeServiceImpl {
         StringUtils.isNotEmpty(menuId)
                 && StringUtils.isNotEmpty(isUserMenu)
                 && isUserMenu.equals("true")
-            ? WkfMenuServiceImpl.USER_MENU_PREFIX + menuId
-            : WkfMenuServiceImpl.MENU_PREFIX + menuId;
+            ? WkfMenuService.USER_MENU_PREFIX + menuId
+            : WkfMenuService.MENU_PREFIX + menuId;
 
     if (menuMap.containsKey(menuId)) {
       taskMenu = menuMap.get(menuId);
@@ -263,7 +268,8 @@ public class WkfNodeServiceImpl {
     return taskMenu;
   }
 
-  protected void computeMenuContext(
+  @Override
+  public void computeMenuContext(
       ModelElementInstance menu, WkfTaskMenu taskMenu, ModelBuilderImpl builderImpl) {
 
     Map<String, WkfTaskMenuContext> contextMap = new HashMap<>();
@@ -291,7 +297,8 @@ public class WkfNodeServiceImpl {
     }
   }
 
-  protected WkfTaskMenuContext updateMenuContext(
+  @Override
+  public WkfTaskMenuContext updateMenuContext(
       ModelElementInstance context, Map<String, WkfTaskMenuContext> contextMap) {
     WkfTaskMenuContext menuContext = null;
 
@@ -311,7 +318,8 @@ public class WkfNodeServiceImpl {
     return menuContext;
   }
 
-  protected void updateMenus(WkfTaskConfig taskConfig, boolean remove) {
+  @Override
+  public void updateMenus(WkfTaskConfig taskConfig, boolean remove) {
 
     if (!remove) {
       wkfMenuService.createOrUpdateMenu(taskConfig);

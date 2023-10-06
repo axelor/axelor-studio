@@ -36,14 +36,12 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class StudioSelectionServiceImpl {
+public class StudioSelectionServiceImpl implements StudioSelectionService {
 
   protected static final String TITLE = "title";
   protected static final String VALUE = "value";
   protected static final String COLOR = "color";
   protected static final String ICON = "icon";
-
-  public static final String SELECTION_PREFIX = "custom-studio-selection-";
 
   protected MetaSelectRepository metaSelectRepository;
 
@@ -56,6 +54,7 @@ public class StudioSelectionServiceImpl {
     this.studioSelectionRepo = studioSelectionRepo;
   }
 
+  @Override
   public List<Map<String, String>> createSelectionText(String selectionName) {
     List<Map<String, String>> optionMapList = new ArrayList<>();
 
@@ -87,6 +86,7 @@ public class StudioSelectionServiceImpl {
     return optionMapList;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeStudioSelection(String name) {
     if (name == null) {
@@ -100,6 +100,7 @@ public class StudioSelectionServiceImpl {
     }
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeSelection(String name, String xmlId) {
 
@@ -114,6 +115,7 @@ public class StudioSelectionServiceImpl {
     }
   }
 
+  @Override
   public void build(StudioSelection studioSelection) {
 
     String xmlId = SELECTION_PREFIX + studioSelection.getName().replace(" ", "-");
@@ -125,6 +127,7 @@ public class StudioSelectionServiceImpl {
         xmlId);
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public String updateMetaSelectFromText(
       String selectionText, String name, StudioApp studioApp, String xmlId) {
@@ -152,7 +155,8 @@ public class StudioSelectionServiceImpl {
     return name;
   }
 
-  protected MetaSelect updateSelectItems(String selectionText, String name, String xmlId) {
+  @Override
+  public MetaSelect updateSelectItems(String selectionText, String name, String xmlId) {
 
     MetaSelect metaSelect = xmlId != null ? findMetaSelectById(xmlId) : findMetaSelectByName(name);
 
@@ -176,7 +180,8 @@ public class StudioSelectionServiceImpl {
     return metaSelect;
   }
 
-  protected MetaSelectItem updateItem(
+  @Override
+  public MetaSelectItem updateItem(
       Map<String, MetaSelectItem> itemMap, int order, Map<String, String> optionMap) {
 
     String title = null;
@@ -205,7 +210,8 @@ public class StudioSelectionServiceImpl {
     return metaSelectItem;
   }
 
-  protected MetaSelect findMetaSelectByName(String name) {
+  @Override
+  public MetaSelect findMetaSelectByName(String name) {
 
     return metaSelectRepository
         .all()
@@ -213,7 +219,8 @@ public class StudioSelectionServiceImpl {
         .fetchOne();
   }
 
-  protected MetaSelect findMetaSelectById(String xmlId) {
+  @Override
+  public MetaSelect findMetaSelectById(String xmlId) {
 
     return metaSelectRepository
         .all()
@@ -221,7 +228,8 @@ public class StudioSelectionServiceImpl {
         .fetchOne();
   }
 
-  protected Integer getPriority(String name, String xmlId) {
+  @Override
+  public Integer getPriority(String name, String xmlId) {
 
     MetaSelect metaSelect =
         metaSelectRepository
@@ -236,6 +244,7 @@ public class StudioSelectionServiceImpl {
     return null;
   }
 
+  @Override
   public String generateSelectionText(List<Map<String, String>> selectOptions) {
     List<String> options = new ArrayList<>();
 
@@ -264,6 +273,7 @@ public class StudioSelectionServiceImpl {
     return Joiner.on("\n").join(options);
   }
 
+  @Override
   public List<Map<String, String>> getSelectOptions(String selectionText) {
     List<Map<String, String>> optionMapList = new ArrayList<>();
 
@@ -304,6 +314,7 @@ public class StudioSelectionServiceImpl {
     return optionMapList;
   }
 
+  @Override
   @Transactional(rollbackOn = Exception.class)
   public StudioSelection createStudioSelection(
       String selectionText, String name, StudioApp studioApp) {

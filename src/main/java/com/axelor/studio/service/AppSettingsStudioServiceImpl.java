@@ -54,4 +54,14 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public String surveyPublicPassword() {
     return appSettings.get("survey.public.password");
   }
+
+  @Override
+  public String getLoggers() {
+    return appSettings.get("bpm.loggers");
+  }
+
+  @Override
+  public boolean isAddBpmLog() {
+    return appSettings.getBoolean("studio.bpm.logging", false);
+  }
 }

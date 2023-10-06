@@ -35,8 +35,8 @@ import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioActionLine;
 import com.axelor.studio.db.repo.StudioActionLineRepository;
 import com.axelor.studio.db.repo.StudioActionRepository;
-import com.axelor.studio.service.StudioMetaServiceImpl;
-import com.axelor.studio.service.filter.FilterSqlServiceImpl;
+import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.filter.FilterSqlService;
 import com.axelor.utils.ExceptionTool;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StudioActionScriptServiceImpl {
+public class StudioActionScriptServiceImpl implements StudioActionScriptService {
 
   protected static final String INDENT = "\t";
 
@@ -68,15 +68,16 @@ public class StudioActionScriptServiceImpl {
 
   protected StudioActionLineRepository studioActionLineRepo;
 
-  protected StudioMetaServiceImpl metaService;
+  protected StudioMetaService metaService;
 
   @Inject
   public StudioActionScriptServiceImpl(
-      StudioActionLineRepository studioActionLineRepo, StudioMetaServiceImpl metaService) {
+      StudioActionLineRepository studioActionLineRepo, StudioMetaService metaService) {
     this.studioActionLineRepo = studioActionLineRepo;
     this.metaService = metaService;
   }
 
+  @Override
   public MetaAction build(StudioAction studioAction) {
 
     String name = studioAction.getName();
@@ -117,7 +118,8 @@ public class StudioActionScriptServiceImpl {
         studioAction.getName(), "action-script", xml, null, studioAction.getXmlId());
   }
 
-  protected String generateScriptCode(StudioAction studioAction) {
+  @Override
+  public String generateScriptCode(StudioAction studioAction) {
 
     StringBuilder stb = new StringBuilder();
     fbuilder = new ArrayList<>();
@@ -159,7 +161,8 @@ public class StudioActionScriptServiceImpl {
     return stb.toString();
   }
 
-  protected void addCreateCode(boolean isJson, StringBuilder stb, int level, String targetModel) {
+  @Override
+  public void addCreateCode(boolean isJson, StringBuilder stb, int level, String targetModel) {
 
     if (isJson) {
       stb.append(format("var target = $json.create('" + targetModel + "');", level));
@@ -172,7 +175,8 @@ public class StudioActionScriptServiceImpl {
     }
   }
 
-  protected void addOpenRecord(boolean isJson, StringBuilder stb, int level, String targetModel) {
+  @Override
+  public void addOpenRecord(boolean isJson, StringBuilder stb, int level, String targetModel) {
 
     stb.append("\n");
 
@@ -203,7 +207,8 @@ public class StudioActionScriptServiceImpl {
     }
   }
 
-  protected void addUpdateCode(boolean isJson, StringBuilder stb, int level, String targetModel) {
+  @Override
+  public void addUpdateCode(boolean isJson, StringBuilder stb, int level, String targetModel) {
 
     if (isJson) {
       stb.append(format("var target = {};", level));
@@ -215,7 +220,8 @@ public class StudioActionScriptServiceImpl {
     stb.append(format("$response.setValues(target);", level));
   }
 
-  protected void addRootFunction(StudioAction studioAction, StringBuilder stb, int level) {
+  @Override
+  public void addRootFunction(StudioAction studioAction, StringBuilder stb, int level) {
     List<StudioActionLine> lines = studioAction.getLines();
     boolean isJsonField = lines.stream().anyMatch(l -> l.getIsTargetJson());
     stb.append(format("function setVar0($$, $, _$){", level));
@@ -225,12 +231,14 @@ public class StudioActionScriptServiceImpl {
     stb.append(format("}", level));
   }
 
-  protected String format(String line, int level) {
+  @Override
+  public String format(String line, int level) {
 
     return "\n" + Strings.repeat(INDENT, level) + line;
   }
 
-  protected String addFieldsBinding(
+  @Override
+  public String addFieldsBinding(
       String target, List<StudioActionLine> lines, int level, boolean json) {
 
     StringBuilder stb = new StringBuilder();
@@ -327,7 +335,8 @@ public class StudioActionScriptServiceImpl {
     return stb.toString();
   }
 
-  protected void computeAttrsField(
+  @Override
+  public void computeAttrsField(
       String target, int level, List<StudioActionLine> lines, StringBuilder stb) {
 
     Set<String> attrsFields = getAttrsFields(lines);
@@ -343,14 +352,16 @@ public class StudioActionScriptServiceImpl {
         });
   }
 
-  protected Set<String> getAttrsFields(List<StudioActionLine> lines) {
+  @Override
+  public Set<String> getAttrsFields(List<StudioActionLine> lines) {
     return lines.stream()
         .filter(l -> l.getIsTargetJson())
         .map(l -> l.getMetaJsonField().getModelField())
         .collect(Collectors.toSet());
   }
 
-  protected String addRelationalBinding(StudioActionLine line, String target, boolean json) {
+  @Override
+  public String addRelationalBinding(StudioActionLine line, String target, boolean json) {
 
     line = studioActionLineRepo.find(line.getId());
     String subCode = null;
@@ -389,7 +400,8 @@ public class StudioActionScriptServiceImpl {
     return subCode + "($," + line.getValue() + ", _$)";
   }
 
-  protected String getTargetModel(StudioActionLine line) {
+  @Override
+  public String getTargetModel(StudioActionLine line) {
 
     MetaJsonField jsonField = line.getMetaJsonField();
 
@@ -406,7 +418,8 @@ public class StudioActionScriptServiceImpl {
     return targetModel;
   }
 
-  protected String getTargetJsonModel(StudioActionLine line) {
+  @Override
+  public String getTargetJsonModel(StudioActionLine line) {
 
     MetaJsonField jsonField = line.getMetaJsonField();
 
@@ -417,7 +430,8 @@ public class StudioActionScriptServiceImpl {
     return "";
   }
 
-  protected String getRootSourceModel(StudioActionLine line) {
+  @Override
+  public String getRootSourceModel(StudioActionLine line) {
 
     if (line.getStudioAction() != null) {
       return line.getStudioAction().getModel();
@@ -426,7 +440,8 @@ public class StudioActionScriptServiceImpl {
     return null;
   }
 
-  protected String getSourceModel(StudioActionLine line) {
+  @Override
+  public String getSourceModel(StudioActionLine line) {
 
     MetaJsonField jsonField = line.getValueJson();
 
@@ -437,7 +452,7 @@ public class StudioActionScriptServiceImpl {
       if (jsonField != null && jsonField.getTargetModel() != null) {
         if (line.getValue() != null && !line.getValue().contentEquals("$." + jsonField.getName())) {
           targetObject =
-              Beans.get(FilterSqlServiceImpl.class)
+              Beans.get(FilterSqlService.class)
                   .parseJsonField(jsonField, line.getValue().replace("$.", ""), null, null);
         } else {
           sourceModel = jsonField.getTargetModel();
@@ -448,7 +463,7 @@ public class StudioActionScriptServiceImpl {
       if (field != null && field.getTypeName() != null) {
         if (line.getValue() != null && !line.getValue().contentEquals("$." + field.getName())) {
           targetObject =
-              Beans.get(FilterSqlServiceImpl.class)
+              Beans.get(FilterSqlService.class)
                   .parseMetaField(field, line.getValue().replace("$.", ""), null, null, false);
         } else {
           sourceModel = field.getTypeName();
@@ -477,7 +492,8 @@ public class StudioActionScriptServiceImpl {
     return sourceModel;
   }
 
-  protected void addObjToJson() {
+  @Override
+  public void addObjToJson() {
     if (isObjToJson) {
       return;
     }
@@ -495,8 +511,8 @@ public class StudioActionScriptServiceImpl {
     stb.append(format("}", 1));
   }
 
-  protected String addM2OBinding(
-      StudioActionLine line, boolean search, boolean filter, boolean json) {
+  @Override
+  public String addM2OBinding(StudioActionLine line, boolean search, boolean filter, boolean json) {
 
     String fname = "setVar" + varCount;
     varCount += 1;
@@ -555,7 +571,8 @@ public class StudioActionScriptServiceImpl {
     return fname;
   }
 
-  protected String addM2MBinding(StudioActionLine line, boolean json) {
+  @Override
+  public String addM2MBinding(StudioActionLine line, boolean json) {
 
     String fname = "setVar" + varCount;
     varCount += 1;
@@ -582,7 +599,8 @@ public class StudioActionScriptServiceImpl {
     return fname;
   }
 
-  protected String addO2MBinding(StudioActionLine line, String target, boolean json) {
+  @Override
+  public String addO2MBinding(StudioActionLine line, String target, boolean json) {
 
     String fname = "setVar" + varCount;
     varCount += 1;
@@ -605,7 +623,8 @@ public class StudioActionScriptServiceImpl {
     return fname;
   }
 
-  protected String addJsonM2OBinding(
+  @Override
+  public String addJsonM2OBinding(
       StudioActionLine line, boolean search, boolean filter, boolean json) {
 
     String fname = "setVar" + varCount;
@@ -652,7 +671,8 @@ public class StudioActionScriptServiceImpl {
     return fname;
   }
 
-  protected String addJsonM2MBinding(StudioActionLine line) {
+  @Override
+  public String addJsonM2MBinding(StudioActionLine line) {
 
     String fname = "setVar" + varCount;
     varCount += 1;
@@ -677,7 +697,8 @@ public class StudioActionScriptServiceImpl {
     return fname;
   }
 
-  protected String addJsonO2MBinding(StudioActionLine line) {
+  @Override
+  public String addJsonO2MBinding(StudioActionLine line) {
 
     String fname = "setVar" + varCount;
     varCount += 1;
@@ -697,7 +718,8 @@ public class StudioActionScriptServiceImpl {
     return fname;
   }
 
-  protected String getQuery(String model, String filter, boolean json, boolean all) {
+  @Override
+  public String getQuery(String model, String filter, boolean json, boolean all) {
 
     if (model.contains(".")) {
       model = model.substring(model.lastIndexOf('.') + 1);
@@ -725,7 +747,8 @@ public class StudioActionScriptServiceImpl {
     return query;
   }
 
-  protected String getSum(String value, String filter) {
+  @Override
+  public String getSum(String value, String filter) {
 
     value = value.substring(0, value.length() - 1);
     String[] expr = value.split("\\.sum\\(");

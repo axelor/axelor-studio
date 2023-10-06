@@ -11,12 +11,19 @@
       <bind node="defaultWsAuthenticator" to="defaultWsAuthenticator"
         search="self.name = :defaultWsAuthenticator" create="false"/>
       <bind node="baseUrl" to="baseUrl"/>
-      <bind node="requests/request" to="wsRequestList" search="self.name = :_name"
-        create="false" update="true">
-        <bind node="name" to="name" alias="_name"/>
-      </bind>
       <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
     </bind>
   </input>
+
+  <input file="ws-request-list.xml" root="ws-request-lists">
+    <bind node="ws-request-list" type="com.axelor.studio.db.WsRequestList"
+      search="self.name = :name" update="true" create="false"
+      call="com.axelor.studio.service.ImportService:importWsRequestList">
+      <bind node="name" to="name"/>
+      <bind node="wsConnector" to="wsConnector" search="self.name = :wsConnector"
+        create="false"/>
+    </bind>
+  </input>
+
 
 </xml-inputs>

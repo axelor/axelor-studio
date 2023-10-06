@@ -1,8 +1,8 @@
-import React from "react";
-import SelectComponent from "../../components/SelectComponent";
+import React from "react"
+import SelectComponent from "../../components/SelectComponent"
 
 function OnlyIf({ field, error, props }) {
-	const { contextFieldTarget, contextFieldTargetName } = props.propertyList;
+	const { contextFieldTarget, contextFieldTargetName } = props.propertyList
 	return (
 		<>
 			<SelectComponent field={field} props={props} error={error} />
@@ -20,7 +20,7 @@ function OnlyIf({ field, error, props }) {
 				/>
 			)}
 		</>
-	);
+	)
 }
 
-export default OnlyIf;
+export default OnlyIf

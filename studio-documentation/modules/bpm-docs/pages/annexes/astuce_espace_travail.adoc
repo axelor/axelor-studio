@@ -1,0 +1,23 @@
+=  Astuces sur l’espace de travail
+
+:toc-title:
+:page-pagination:
+
+== Raccourcis clavier
+
+Le studio possède un certain nombre de raccourcis qui permettent de simplifier le travail.
+Voici la liste de ceux-ci.
+
+* Retour en arrière : ctrl + Z
+* Annuler un retour en arrière : ctrl + maj + Z
+* Tout sélectionner : ctrl + A
+* Chercher un objet par son nom : ctrl + F
+
+image::anexes_clavier.png[event process]
+
+* Zoom/Dezoom : ctrl + Scrolling
+* Scrolling (Horizontal): ctrl + maj + Scrolling
+* Modifier le nom de l’objet sur lequel se situe le curseur : E
+* Activer l’outil main : H
+* Activer l’outil lasso : L
+* Activer l’outil déplacement latéral  : S
