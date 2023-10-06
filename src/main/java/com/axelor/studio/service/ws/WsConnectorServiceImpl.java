@@ -33,17 +33,27 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.base.Strings;
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -53,7 +63,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WsConnectoServiceImpl implements WsConnectorService {
+public class WsConnectorServiceImpl implements WsConnectorService {
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   protected final SessionTypeFactory sessionTypeFactory;
@@ -64,7 +74,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
   protected final MetaFiles metaFiles;
 
   @Inject
-  public WsConnectoServiceImpl(
+  public WsConnectorServiceImpl(
       SessionTypeFactory sessionTypeFactory,
       WsAuthenticatorService wsAuthenticatorService,
       GroovyTemplates templates,
@@ -76,16 +86,17 @@ public class WsConnectoServiceImpl implements WsConnectorService {
   }
 
   private void authenticationVerify(
-      WsAuthenticator authenticator, Client client, Map<String, Object> ctx) throws Exception {
+      WsAuthenticator authenticator, Client client, Map<String, Object> ctx) {
     if (authenticator != null && authenticator.getAuthTypeSelect().equals("basic")) {
       WsRequest wsRequest = authenticator.getAuthWsRequest();
+      var defaultType = authenticator.getUsername() != null && authenticator.getPassword() != null
+          ? "Standard"
+          : null;
       this.sessionType =
           this.sessionTypeFactory.get(
               wsRequest != null
                   ? authenticator.getResponseType()
-                  : (authenticator.getUsername() != null && authenticator.getPassword() != null)
-                      ? "Standard"
-                      : null);
+                  : defaultType);
       if (wsRequest == null && this.sessionType != null) {
         this.sessionType.extractSessionData(null, authenticator);
       } else if (this.sessionType != null) {
@@ -101,9 +112,9 @@ public class WsConnectoServiceImpl implements WsConnectorService {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public Map<String, Object> callConnector(
-      WsConnector wsConnector, WsAuthenticator authenticator, Map<String, Object> ctx)
-      throws Exception {
+      WsConnector wsConnector, WsAuthenticator authenticator, Map<String, Object> ctx) {
 
     if (wsConnector == null) {
       return ctx;
@@ -133,14 +144,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
     WsRequest wsRequest = null;
 
-    Collections.sort(
-        wsConnector.getWsRequestList(),
-        new Comparator<WsRequestList>() {
-          @Override
-          public int compare(WsRequestList wsRequestList, WsRequestList t1) {
-            return Integer.compare(wsRequestList.getSequence(), t1.getSequence());
-          }
-        });
+    wsConnector.getWsRequestList().sort(Comparator.comparingInt(WsRequestList::getSequence));
 
     while (count < wsConnector.getWsRequestList().size() + 1) {
       Response wsResponse = null;
@@ -174,14 +178,12 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
         String url = wsConnector.getBaseUrl() + "/" + wsRequest.getWsUrl();
 
-        wsResponse = null;
-
         wsResponse = callRequest(wsRequest, url, client, templates, ctx);
 
         if (wsResponse.getStatus() == 401) {
 
           if (authenticator != null && authenticator.getAuthTypeSelect().equals("oauth2")) {
-            wsAuthenticatorService.refereshToken(authenticator);
+            wsAuthenticatorService.refereshToken(authenticator).close();
             ctx.putAll(createContext(wsConnector, authenticator));
             wsResponse.close();
             wsResponse = callRequest(wsRequest, url, client, templates, ctx);
@@ -194,9 +196,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           }
         }
 
-        // byte[] responseByte = wsResponse.readEntity(byte[].class);
         ArrayList<Object> responseData = new ArrayList<>();
-        HashMap res = new HashMap<String, Object>();
+        HashMap<String, Object> res = new HashMap<>();
         res.put("response type", wsResponse.getMediaType());
         if ((wsResponse.getMediaType() != null)
             && (new MediaTypeFactory().get(wsResponse.getMediaType().getSubtype()) != null)) {
@@ -209,7 +210,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             ctx.put("_" + count, responseData);
             resultContext.put("_" + count, res);
           } else if (repeatIndex != 0) {
-            responseData = (ArrayList) ctx.get("_" + count);
+            responseData = (ArrayList<Object>) ctx.get("_" + count);
             responseData.add(mediaType.parseResponse(wsResponse));
             res.put("body", responseData);
             ctx.put("_" + count, responseData);
@@ -228,7 +229,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
             res.put("body", responseData);
             resultContext.put("_" + count, res);
           } else if (repeatIndex != 0) {
-            responseData = (ArrayList) ctx.get("_" + count);
+            responseData = (ArrayList<Object>) ctx.get("_" + count);
             responseData.add(wsResponse.readEntity(byte[].class));
             res.put("body", responseData);
             ctx.put("_" + count, responseData);
@@ -242,11 +243,11 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
         log.debug("Request{}: {} ", count, ctx.get("_" + count));
 
-        if (lastRepeatIf != null && (!lastRepeatIf.equals(repeatIf))) {
-          if (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
-            count = repeatRequestCount;
-            repeatIndex++;
-          }
+        if (lastRepeatIf != null && (!lastRepeatIf.equals(repeatIf)) && (Boolean.parseBoolean(
+            templates.fromText(lastRepeatIf).make(ctx).render()))) {
+          count = repeatRequestCount;
+          repeatIndex++;
+
         }
         if (lastRepeatIf == null) {
           lastRepeatIf = repeatIf;
@@ -254,14 +255,15 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         }
         count++;
 
-        if (count == (wsConnector.getWsRequestList().size() + 1) && lastRepeatIf != null) {
-          if (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render())) {
-            count = repeatRequestCount;
-            repeatIndex++;
-          }
+        if (count == (wsConnector.getWsRequestList().size() + 1) && lastRepeatIf != null
+            && (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render()))) {
+          count = repeatRequestCount;
+          repeatIndex++;
+
         }
-      } catch (IllegalArgumentException e) {
-        if (Beans.get(AppStudioRepository.class).all().fetchOne().getEnableTrackWebServiceCall()) {
+      } catch (Exception e) {
+        if (wsRequest != null && Beans.get(AppStudioRepository.class).all().fetchOne()
+            .getEnableTrackWebServiceCall()) {
           addAttachement(resultContext, wsRequest, wsResponse, wsConnector, e);
         }
         throw new IllegalArgumentException(e.getMessage());
@@ -276,8 +278,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
   @Override
   public Response callRequest(
-      WsRequest wsRequest, String url, Client client, Templates templates, Map<String, Object> ctx)
-      throws Exception {
+      WsRequest wsRequest, String url, Client client, Templates templates,
+      Map<String, Object> ctx) {
 
     url = templates.fromText(url).make(ctx).render();
     url = UrlEscapers.urlFragmentEscaper().escape(url);
@@ -326,7 +328,6 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           String value = wsKeyValue.getWsValue();
           if (value != null) {
             if (value.startsWith("_encode:")) {
-              value = value.split("_encode:")[1];
               uriBuilder.addParameter(
                   wsKeyValue.getWsKey(),
                   new String(
@@ -363,14 +364,13 @@ public class WsConnectoServiceImpl implements WsConnectorService {
   }
 
   @Override
-  public Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator)
-      throws Exception {
+  public Map<String, Object> createContext(WsConnector wsConnector, WsAuthenticator authenticator) {
 
     Map<String, Object> ctx = new HashMap<>();
 
     if (authenticator == null
         || !authenticator.getAuthTypeSelect().equals("oauth2")
-        || !authenticator.getIsAuthenticated()) {
+        || !Boolean.TRUE.equals(authenticator.getIsAuthenticated())) {
       return ctx;
     }
 
@@ -392,8 +392,8 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                         (it.getValue().isArray()
                             ? it.getValue().get(0).asText()
                             : it.getValue().asText())));
-      } catch (IllegalStateException e) {
-        log.error(e.getMessage(), e);
+      } catch (Exception e) {
+        ExceptionTool.trace(e);
         throw new IllegalStateException(e);
       }
     }
@@ -411,15 +411,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     }
 
     // order the payload list by sequence
-
-    Collections.sort(
-        payLoadList,
-        new Comparator<WsKeyValue>() {
-          @Override
-          public int compare(WsKeyValue wsKeyValue, WsKeyValue t1) {
-            return Integer.compare(wsKeyValue.getSequence(), t1.getSequence());
-          }
-        });
+    payLoadList.sort(Comparator.comparingInt(WsKeyValue::getSequence));
 
     Entity<?> entity = null;
     Object obj = null;
@@ -450,7 +442,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           entity =
               text == null
                   ? null
-                  : Entity.entity(new FileInputStream(text), "application/octet-stream");
+                  : Entity.entity(new FileInputStream(text), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
 
         } catch (FileNotFoundException e) {
           log.error(e.getMessage(), e);
@@ -461,7 +453,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
           entity =
               text == null
                   ? null
-                  : Entity.entity(new URL(text).openStream(), "application/octet-stream");
+                  : Entity.entity(new URL(text).openStream(), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         } catch (IOException e) {
           log.error(e.getMessage(), e);
         }
@@ -477,13 +469,13 @@ public class WsConnectoServiceImpl implements WsConnectorService {
         entity =
             bytes == null
                 ? null
-                : Entity.entity(new ByteArrayInputStream(bytes), "application/octet-stream");
+                : Entity.entity(new ByteArrayInputStream(bytes), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         break;
       case "stream":
         entity =
             obj == null
                 ? null
-                : Entity.entity(new ByteArrayInputStream((byte[]) obj), "application/octet-stream");
+                : Entity.entity(new ByteArrayInputStream((byte[]) obj), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         break;
       default:
         break;
@@ -492,7 +484,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     return entity;
   }
 
-  protected Entity<?> getJsonEntity(
+  protected Entity<Map<String, Object>> getJsonEntity(
       WsRequest wsRequest, Templates templates, Map<String, Object> ctx) {
 
     Map<String, Object> payLoads = new HashMap<>();
@@ -504,7 +496,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     return Entity.json(payLoads);
   }
 
-  protected Entity<?> getXmlEntity(
+  protected Entity<String> getXmlEntity(
       WsRequest wsRequest, Templates templates, Map<String, Object> ctx) {
 
     var wsKeyValues = wsRequest.getPayLoadWsKeyValueList();
@@ -565,7 +557,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
       WsRequest wsRequest,
       Response wsResponse,
       WsConnector wsConnector,
-      Exception e) {
+      Throwable throwable) {
 
     try {
       StringBuilder result = new StringBuilder();
@@ -582,23 +574,12 @@ public class WsConnectoServiceImpl implements WsConnectorService {
                   result.append(value).append("\n\n");
                 }
               });
-      result.append("\nError log : \nConnector : " + wsConnector.getName() + "\n");
-      result.append(
-          "Request "
-              + "( "
-              + wsRequest.getName()
-              + " )"
-              + " Error : "
-              + "{"
-              + e.toString()
-              + "}\n");
+      result.append("\nError log : \nConnector : ").append(wsConnector.getName()).append("\n");
+      result.append("Request " + "( ").append(wsRequest.getName()).append(" )").append(" Error : ")
+          .append("{").append(throwable.toString()).append("}\n");
       if (wsResponse != null) {
-        result.append(
-            "Response type: "
-                + wsResponse.getMediaType()
-                + "\n"
-                + "Response Body : "
-                + wsResponse.readEntity(Object.class));
+        result.append("Response type: ").append(wsResponse.getMediaType()).append("\n")
+            .append("Response Body : ").append(wsResponse.readEntity(Object.class));
       }
 
       byte[] bytes = result.toString().getBytes();
@@ -613,17 +594,10 @@ public class WsConnectoServiceImpl implements WsConnectorService {
 
   protected Object createPayload(
       Templates templates, Map<String, Object> ctx, WsKeyValue wsKeyValue) {
-    Collections.sort(
-        wsKeyValue.getSubWsKeyValueList(),
-        new Comparator<WsKeyValue>() {
-          @Override
-          public int compare(WsKeyValue wsKeyValue, WsKeyValue t1) {
-            return Integer.compare(wsKeyValue.getSequence(), t1.getSequence());
-          }
-        });
+    wsKeyValue.getSubWsKeyValueList().sort(Comparator.comparingInt(WsKeyValue::getSequence));
     Object jsonVal;
     if (wsKeyValue.getWsValue() == null) {
-      if (wsKeyValue.getIsList()) {
+      if (Boolean.TRUE.equals(wsKeyValue.getIsList())) {
         List<Object> subPayLoad = new ArrayList<>();
         for (WsKeyValue subKeyValue : wsKeyValue.getSubWsKeyValueList()) {
           if (subKeyValue.getWsKey() == null && subKeyValue.getWsValue() == null) {
@@ -678,7 +652,7 @@ public class WsConnectoServiceImpl implements WsConnectorService {
     return jsonVal;
   }
 
-  protected Entity<?> getFormEntity(
+  protected Entity<Form> getFormEntity(
       WsRequest wsRequest, Templates templates, Map<String, Object> ctx) {
 
     MultivaluedHashMap<String, String> payLoads = new MultivaluedHashMap<>();

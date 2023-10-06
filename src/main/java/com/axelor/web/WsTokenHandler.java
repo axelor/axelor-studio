@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.persist.Transactional;
 import java.net.URI;
+import java.net.URISyntaxException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -40,7 +41,7 @@ public class WsTokenHandler {
   @GET
   @Path("/token")
   @Transactional(rollbackOn = {Exception.class})
-  public Response read(@Context UriInfo uri) throws Exception {
+  public Response read(@Context UriInfo uri) throws URISyntaxException {
 
     MultivaluedMap<String, String> paramMap = uri.getQueryParameters();
 

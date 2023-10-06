@@ -58,7 +58,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public void authenticate(WsAuthenticator wsAuthenticator) throws Exception {
+  public void authenticate(WsAuthenticator wsAuthenticator) {
 
     String authType = wsAuthenticator.getAuthTypeSelect();
     Map<String, Object> ctx = new HashMap<>();
@@ -80,10 +80,13 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       }
     }
 
-    if (response != null && response.getStatus() == 200) {
-      wsAuthenticator.setIsAuthenticated(true);
-      wsAuthenticator.setRefreshTokenResponse(null);
-      wsAuthenticatorRepository.save(wsAuthenticator);
+    if (response != null) {
+      if (response.getStatus() == 200) {
+        wsAuthenticator.setIsAuthenticated(true);
+        wsAuthenticator.setRefreshTokenResponse(null);
+        wsAuthenticatorRepository.save(wsAuthenticator);
+      }
+      response.close();
     }
   }
 
@@ -125,8 +128,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       WsAuthenticator wsAuthenticator,
       Client client,
       GroovyTemplates templates,
-      Map<String, Object> ctx)
-      throws Exception {
+      Map<String, Object> ctx) {
 
     if (wsAuthenticator.getAuthResponse() == null) {
       return null;
@@ -146,6 +148,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
+      ExceptionTool.trace(e);
     }
 
     Response response =
@@ -165,7 +168,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public Response refereshToken(WsAuthenticator wsAuthenticator) throws Exception {
+  public Response refereshToken(WsAuthenticator wsAuthenticator) {
 
     String tokenResponse = wsAuthenticator.getTokenResponse();
 
@@ -189,6 +192,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
+      ExceptionTool.trace(e);
     }
 
     Response response =
