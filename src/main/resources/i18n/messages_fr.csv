@@ -64,6 +64,7 @@
 "App name","Nom de l'application",,
 "App studio",,,
 "Append","Annexer",,
+"Requests","Requêtes",,
 "Append mapper","Annexer le mappeur",,
 "Append query","Annexer la requête",,
 "Apps","Applications",,
@@ -2011,3 +2012,5 @@
 "wkf.terminate.btn","Bouton d’arrêt du wkf",,
 "yellow","jaune",,
 "{{$fmt('name')}}",,,
+"Enable track web services","Activer la trace du web services",,
+"Context","Contexte",,

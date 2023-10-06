@@ -81,6 +81,7 @@ public class WsConnectorController {
               });
       response.setValue("$result", result.toString());
     } catch (Exception e) {
+      response.setStatus(-1);
       ExceptionTool.trace(response, e);
     }
   }

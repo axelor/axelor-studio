@@ -67,8 +67,6 @@
           </bind>
         </bind>
       </bind>
-      <bind node="wsConnector" to="wsConnector" search="self.name = :wsConnector"
-        create="false"/>
       <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
     </bind>
   </input>

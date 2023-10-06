@@ -180,7 +180,7 @@ public class StudioModule extends AxelorModule {
     bind(AppSettingsStudioService.class).to(AppSettingsStudioServiceImpl.class);
     bind(AppSettingsMessageServiceImpl.class).to(AppSettingsStudioServiceImpl.class);
 
-    bind(WsConnectorService.class).to(WsConnectoServiceImpl.class);
+    bind(WsConnectorService.class).to(WsConnectorServiceImpl.class);
     bind(WsAuthenticatorService.class).to(WsAuthenticatorServiceImpl.class);
     bind(WsConnectorRepository.class).to(WsConnectorRepo.class);
     bind(WsAuthenticatorRepository.class).to(WsAuthenticatorRepo.class);

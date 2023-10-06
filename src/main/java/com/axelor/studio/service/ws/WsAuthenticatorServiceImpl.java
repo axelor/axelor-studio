@@ -80,10 +80,13 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       }
     }
 
-    if (response != null && response.getStatus() == 200) {
-      wsAuthenticator.setIsAuthenticated(true);
-      wsAuthenticator.setRefreshTokenResponse(null);
-      wsAuthenticatorRepository.save(wsAuthenticator);
+    if (response != null) {
+      if (response.getStatus() == 200) {
+        wsAuthenticator.setIsAuthenticated(true);
+        wsAuthenticator.setRefreshTokenResponse(null);
+        wsAuthenticatorRepository.save(wsAuthenticator);
+      }
+      response.close();
     }
   }
 
@@ -145,6 +148,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
+      ExceptionTool.trace(e);
     }
 
     Response response =
@@ -188,6 +192,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
+      ExceptionTool.trace(e);
     }
 
     Response response =

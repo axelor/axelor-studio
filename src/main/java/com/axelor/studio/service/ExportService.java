@@ -28,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -239,13 +238,13 @@ public class ExportService {
     return StringEscapeUtils.unescapeXml(xml);
   }
 
-  public static String exportRequests(Set<WsRequest> wsRequests, int count, String type) {
+  public static String exportRequests(List<WsRequestList> wsRequests, int count, String type) {
     String xml = "";
 
     String indent = "\n" + Strings.repeat("\t", count);
     String indentPlus = "\n" + Strings.repeat("\t", count + 1);
 
-    for (WsRequest wsRequest : wsRequests) {
+    for (WsRequestList wsRequest : wsRequests) {
       xml +=
           indent
               + "<"
@@ -264,7 +263,7 @@ public class ExportService {
     return StringEscapeUtils.unescapeXml(xml);
   }
 
-  public static String exportConnectors(Set<WsConnector> wsConnectors, int count, String type) {
+  public static String exportConnectors(List<WsConnector> wsConnectors, int count, String type) {
     String xml = "";
 
     String indent = "\n" + Strings.repeat("\t", count);

@@ -10,6 +10,7 @@
 
   <form name="ws-connector-form" model="com.axelor.studio.db.WsConnector" title="Ws Connector"
     width="large">
+
     <panel name="mainPanel">
       <field name="studioApp"/>
       <spacer/>
@@ -18,10 +19,8 @@
       <field name="baseUrl" colSpan="12"/>
       <panel-related field="wsRequestList" colSpan="12" canMove="true"
         orderBy="sequence">
-        <field name="name"/>
-        <field name="wsUrl"/>
-        <field name="requestTypeSelect"/>
-        <field name="sequence" hidden="true"/>
+        <field name="wsRequest"/>
+        <field name="sequence" hidden="false"/>
       </panel-related>
       <panel-related field="contextWsKeyValueList" colSpan="12" canMove="true">
         <field name="wsKey"/>

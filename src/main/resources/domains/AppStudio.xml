@@ -10,6 +10,8 @@
     <one-to-one ref="com.axelor.studio.db.App" name="app"/>
 
     <boolean name="enableStudioApp" title="Enable app" default="true"/>
+    <boolean name="enableTrackWebServiceCall" title="Enable track web services"
+      default="false"/>
   </entity>
 
 </domain-models>

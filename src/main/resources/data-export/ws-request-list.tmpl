@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<%
+	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsRequestListRepository' as Class).all()
+
+	if(__ids__ != null) {
+		query = query.filter('self.studioApp.id in ?1',__ids__)
+	}
+
+	wsRequestLists = ""
+	query.fetch().each({
+		wsRequestList ->
+
+				wsRequestLists += """\n\t\t<ws-request-list>
+				\n\t\t\t<name>${wsRequestList.name}</name>
+				\n\t\t\t<sequence>${wsRequestList.sequence}</sequence>
+				\n\t\t\t<wsRequest>${wsRequestList?.wsRequest?.name}</wsRequest>
+				\n\t\t\t<wsConnector>${wsRequestList?.wsConnector?.name}</wsConnector>
+				\n\t\t\t<studioApp>${wsRequestList.studioApp?.code}</studioApp>
+				\n\t\t</ws-request-list>"""
+	})
+
+	if (!wsRequestLists.isEmpty()) {
+		wsRequestLists = """<ws-request-lists>\n""" +  wsRequestLists + """\n</ws-request-lists>"""
+	}
+
+	out << """$wsRequestLists"""
+%>

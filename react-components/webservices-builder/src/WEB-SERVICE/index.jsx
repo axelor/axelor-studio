@@ -591,7 +591,6 @@ function WebServiceEditor() {
       mapper.businessObject.di.set("fill", FILL_COLORS["bpmn:Task"]);
     }
     modeling.setColor(mapper, colors);
-    //setElement(mapper)
   };
 
   const createConnectorMapper = async (connector) => {
@@ -601,20 +600,30 @@ function WebServiceEditor() {
     const process = elementRegistry.get("ProcessAction_2");
     if (connector) {
       let mapper = null;
+      connector?.wsRequestList?.sort((a, b) => a.sequence - b.sequence);
       if (connector?.wsRequestList && connector?.wsRequestList?.length > 0) {
-        connector.wsRequestList.forEach((request, id) => {
+       for(let i = 0;i < connector.wsRequestList.length ; i++){
+        let wsRequestList = connector.wsRequestList[i];
           mapper = elementFactory.createParticipantShape({
             type: "bpmn:Mapper",
           });
-          mapper.businessObject.name = request.name;
-          mapper.businessObject.requestTypeSelect = request.requestTypeSelect;
-          mapper.businessObject.authRequest = request;
+         let typeRequest = await getRequestById(wsRequestList.wsRequest.id,{
+          fields: [
+            'name',
+            'requestTypeSelect',
+            'id',
+          ]
+        })
+          mapper.businessObject.name = wsRequestList?.wsRequest?.name;
+          mapper.businessObject.requestTypeSelect = typeRequest?.requestTypeSelect;
+          mapper.businessObject.authRequest = wsRequestList?.wsRequest;
+          mapper.businessObject.requestList = wsRequestList;
           modeling.createShape(
             mapper,
-            { x: 220 + id * 180, y: 80, width: 130, height: 120 },
-            process
+            { x: 220 + i * 180, y: 80, width: 130, height: 120 },
+            process,
           );
-        });
+        }
         let mappers = [...process.children];
         for (let i = 0; i < mappers.length; i++) {
           if (i === mappers.length - 1) return;
@@ -627,6 +636,7 @@ function WebServiceEditor() {
         mapper.businessObject.name = null;
         mapper.businessObject.requestTypeSelect = null;
         mapper.businessObject.authRequest = null;
+        mapper.businessObject.requestList = null;
         modeling.createShape(
           mapper,
           { x: 220, y: 80, width: 130, height: 120 },
@@ -640,6 +650,7 @@ function WebServiceEditor() {
       mapper.businessObject.name = null;
       mapper.businessObject.requestTypeSelect = null;
       mapper.businessObject.authRequest = null;
+      mapper.businessObject.requestList = null;
       modeling.createShape(
         mapper,
         { x: 220, y: 80, width: 130, height: 120 },
@@ -773,6 +784,7 @@ function WebServiceEditor() {
   };
 
   // Request Model
+
   const getRequest = async (id) => {
     let res = await getRequestById(id, {
       fields: [
@@ -1175,14 +1187,14 @@ function WebServiceEditor() {
         "wsConnector",
       ],
       related: {
-        wsRequestList: ["name", "requestTypeSelect", "id"],
+        wsRequestList: ['sequence', 'wsRequest', 'id','version'],
       },
     });
-    let ele = removeElement();
-    ele.businessObject.baseUrl = res.baseUrl;
-    ele.businessObject.name = res.name;
-    ele.businessObject.studioApp = res.studioApp;
-    ele.businessObject.defaultWsAuthenticator = res.defaultWsAuthenticator;
+    let ele =  removeElement();
+    ele.businessObject.baseUrl = res?.baseUrl;
+    ele.businessObject.name = res?.name;
+    ele.businessObject.studioApp = res?.studioApp;
+    ele.businessObject.defaultWsAuthenticator = res?.defaultWsAuthenticator;
     await createConnectorMapper(res);
     setConnector(res);
     setElement(ele);
@@ -1269,12 +1281,15 @@ function WebServiceEditor() {
       element.type === "bpmn:Process-action" ? element : element.parent;
     if (!verificationFieldsConnector()) return;
     const requests = [];
+    let sequence = 0;
+    console.log(ele.children)
     ele?.children.forEach((child) => {
       if (
         child.type === "bpmn:Mapper" &&
         child.businessObject.authRequest != null
       ) {
-        requests.push(child.businessObject.authRequest);
+        requests.push({...child.businessObject.requestList,sequence:sequence ,wsRequest:child.businessObject.authRequest});
+        sequence ++;
       }
     });
     const result = await addConnector({
@@ -1282,7 +1297,7 @@ function WebServiceEditor() {
       studioApp: ele.businessObject.studioApp,
       baseUrl: ele.businessObject.baseUrl,
       defaultWsAuthenticator: ele.businessObject.defaultWsAuthenticator,
-      wsRequestList: requests,
+      wsRequestList: requests.length !== 0 ? requests : null,
       id: connector?.id ? connector?.id : null,
       version: connector?.version != null ? connector?.version : null,
     });
@@ -1304,6 +1319,7 @@ function WebServiceEditor() {
     ele.businessObject.baseUrl = null;
     ele.businessObject.defaultWsAuthenticator = null;
     ele.businessObject.authRequest = null;
+    ele.businessObject.requestList = null;
     removeElement(ele.children);
     await createConnectorMapper();
     setConnector(null);
@@ -1341,6 +1357,7 @@ function WebServiceEditor() {
           requestTypeSelect: e.requestTypeSelect,
         });
         element.businessObject.requestTypeSelect = e.requestTypeSelect;
+        element.businessObject.requestList = { ...element.businessObject.requestList , name:e.name }
         if (
           e?.wsConnector?.id != null &&
           connector &&
