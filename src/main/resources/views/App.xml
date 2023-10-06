@@ -24,7 +24,6 @@
         <field name="languageSelect" selection-in="['en','fr']" colSpan="5"/>
         <field name="demoDataLoaded" readonly="true"
           if="com.axelor.app.AppSettings.get().get('application.mode') != 'prod'" colSpan="4"/>
-        <field name="isExperimental" colSpan="3" hideIf="$readonly()"/>
       </panel>
       <panel name="tagsPanel" colSpan="4">
         <field name="$tagFields" showTitle="false" readonly="true" colSpan="12">
@@ -51,6 +50,7 @@
       <field name="code" hidden="true"/>
       <field name="active" hidden="true"/>
       <field name="isRolesImported" hidden="true"/>
+      <field name="isExperimental" hidden="true"/>
     </panel>
     <panel itemSpan="12" sidebar="true" name="actionPanel">
       <button name="installBtn" title="Install"
