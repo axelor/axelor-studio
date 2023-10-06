@@ -1,3 +1,9 @@
+## 1.1.1 (2023-10-06)
+
+#### Fixed
+
+* Anomaly #70007: Fix apps images duplicating at each server startup
+
 ## 1.1.0 (2023-06-02)
 
 #### Features
@@ -19,6 +25,10 @@
 * Unable to use hideIf, showIf and requiredIf as view attributes
 * Replace deprecated classes from org.apache.commons.lang3 by org.apache.commons.text
 * BPM: Fix wrong evaluation of IN operator in case of selection on expression builder
+
+## 1.0.3
+
+* Anomaly #70007: Fix apps images duplicating at each server startup
 
 ## 1.0.2
 
