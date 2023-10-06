@@ -33,6 +33,7 @@ import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.MetaModule;
+import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.db.repo.MetaModuleRepository;
 import com.axelor.studio.db.App;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -105,6 +107,7 @@ public class AppServiceImpl implements AppService {
   protected final MetaModelRepository metaModelRepo;
   protected final AppSettingsStudioService appSettingsService;
   protected final MetaModuleRepository metaModuleRepo;
+  protected final MetaFileRepository metaFileRepo;
 
   @Inject
   public AppServiceImpl(
@@ -113,13 +116,15 @@ public class AppServiceImpl implements AppService {
       AppVersionService appVersionService,
       MetaModelRepository metaModelRepo,
       AppSettingsStudioService appSettingsService,
-      MetaModuleRepository metaModuleRepo) {
+      MetaModuleRepository metaModuleRepo,
+      MetaFileRepository metaFileRepo) {
     this.appRepo = appRepo;
     this.metaFiles = metaFiles;
     this.appVersionService = appVersionService;
     this.metaModelRepo = metaModelRepo;
     this.appSettingsService = appSettingsService;
     this.metaModuleRepo = metaModuleRepo;
+    this.metaFileRepo = metaFileRepo;
   }
 
   @Override
@@ -592,15 +597,25 @@ public class AppServiceImpl implements AppService {
         });
   }
 
+  protected MetaFile find(String image) {
+    return Optional.ofNullable(
+            metaFileRepo
+                .all()
+                .filter("self.fileName = :image AND self.filePath = :image")
+                .bind(APP_IMAGE, image)
+                .fetchOne())
+        .orElse(new MetaFile());
+  }
+
   protected void importAppImage(
       App app, Mapper mapper, Property property, String image, File dataFile) {
 
+    final MetaFile metaFile = find(image);
     final Path path = Paths.get(dataFile.getParent());
     try {
       final File imageFile = path.resolve(Paths.get("img", image)).toFile();
       if (imageFile.exists()) {
-        final MetaFile metaFile = metaFiles.upload(imageFile);
-        mapper.set(app, property.getName(), metaFile);
+        mapper.set(app, property.getName(), metaFiles.upload(imageFile, metaFile));
       }
     } catch (Exception e) {
       log.warn("Can't load image {} for app {}", image, app.getName());
