@@ -32,8 +32,7 @@ public class StudioChartRepo extends StudioChartRepository {
   protected StudioChartService studioChartService;
 
   @Inject
-  public StudioChartRepo(
-      MetaViewRepository metaViewRepo, StudioChartService studioChartService) {
+  public StudioChartRepo(MetaViewRepository metaViewRepo, StudioChartService studioChartService) {
     this.metaViewRepo = metaViewRepo;
     this.studioChartService = studioChartService;
   }

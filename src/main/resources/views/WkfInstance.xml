@@ -31,8 +31,8 @@
         <field name="wkfInstanceMigrationHistory" readonly="true" colSpan="12"/>
       </panel>
       <panel name="logPanel" title="Log" hidden="true">
-        <button name="clearLogBtn" title="Clear log" onClick="action-wkf-instance-method-clear-log"
-          colSpan="3"/>
+        <button name="clearLogBtn" title="Clear log"
+          onClick="action-wkf-instance-method-clear-log" colSpan="3"/>
         <field name="logText" colSpan="12" showTitle="false" widget="code-editor"/>
       </panel>
     </panel-tabs>

@@ -512,8 +512,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
   }
 
   @Override
-  public String addM2OBinding(
-      StudioActionLine line, boolean search, boolean filter, boolean json) {
+  public String addM2OBinding(StudioActionLine line, boolean search, boolean filter, boolean json) {
 
     String fname = "setVar" + varCount;
     varCount += 1;

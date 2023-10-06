@@ -170,11 +170,11 @@ let types = [
         type: "String",
       },
       {
-				name: "laneSets",
-				isMany: true,
-				replaces: "FlowElementsContainer#laneSets",
-				type: "LaneSet"
-			},
+        name: "laneSets",
+        isMany: true,
+        replaces: "FlowElementsContainer#laneSets",
+        type: "LaneSet"
+      },
       // {
       //   name: "staticCompile",
       //   isAttr: true,
@@ -184,59 +184,59 @@ let types = [
     ],
   },
   {
-		name: "LaneSet",
-		superClass: [
-			"BaseElement"
-		],
-		properties: [
-			{
-				name: "lanes",
-				type: "Lane",
-				isMany: true
-			},
-			{
-				name: "name",
-				isAttr: true,
-				type: "String"
-			}
-		]
-	},
+    name: "LaneSet",
+    superClass: [
+      "BaseElement"
+    ],
+    properties: [
+      {
+        name: "lanes",
+        type: "Lane",
+        isMany: true
+      },
+      {
+        name: "name",
+        isAttr: true,
+        type: "String"
+      }
+    ]
+  },
   {
-		name: "Lane",
-		superClass: [
-			"BaseElement"
-		],
-		properties: [
-			{
-				name: "name",
-				isAttr: true,
-				type: "String"
-			},
-			{
-				name: "partitionElementRef",
-				type: "BaseElement",
-				isAttr: true,
-				isReference: true
-			},
-			{
-				name: "partitionElement",
-				type: "BaseElement"
-			},
-			{
-				name: "flowNodeRef",
-				type: "FlowNode",
-				isMany: true,
-				isReference: true
-			},
-			{
-				name: "childLaneSet",
-				type: "LaneSet",
-				xml: {
-					serialize: "xsi:type"
-				}
-			}
-		]
-	},
+    name: "Lane",
+    superClass: [
+      "BaseElement"
+    ],
+    properties: [
+      {
+        name: "name",
+        isAttr: true,
+        type: "String"
+      },
+      {
+        name: "partitionElementRef",
+        type: "BaseElement",
+        isAttr: true,
+        isReference: true
+      },
+      {
+        name: "partitionElement",
+        type: "BaseElement"
+      },
+      {
+        name: "flowNodeRef",
+        type: "FlowNode",
+        isMany: true,
+        isReference: true
+      },
+      {
+        name: "childLaneSet",
+        type: "LaneSet",
+        xml: {
+          serialize: "xsi:type"
+        }
+      }
+    ]
+  },
   {
     name: "Gateway",
     isAbstract: true,
@@ -1334,7 +1334,7 @@ let types = [
         isMany: true,
       },
       {
-        name: "exporterVersion", 
+        name: "exporterVersion",
         isAttr: true,
         type: "String",
       },

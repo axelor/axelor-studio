@@ -112,12 +112,12 @@ Sur l’événement conditionnel nous pouvons indiquer le script suivant :
 ----
 def rec = $ctx.find('VehicleContract',vehicleContractId)
 if (rec?.attrs==null){
-	false
+  false
 }
 else {
-	def slurped = new groovy.json.JsonSlurper().parseText(rec?.attrs)
-	def builder = new groovy.json.JsonBuilder(slurped)
- 	builder.content.invoiceDate[0]!=rec.invoiceDate
+  def slurped = new groovy.json.JsonSlurper().parseText(rec?.attrs)
+  def builder = new groovy.json.JsonBuilder(slurped)
+   builder.content.invoiceDate[0]!=rec.invoiceDate
 }
 ----
 Et sur la tâche script **"Mettre à jour champ de test"** :
@@ -133,4 +133,3 @@ return $ctx.save(rec)
 ----
 
 Vous pouvez tester le processus. Il se peut que l’on passe 2 fois dans le sous-processus événementiel lors du renseignement de la date mais, nous ne passons plus dans le sous processus lorsque l’on met à jour un autre champ du contrat.
-

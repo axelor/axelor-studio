@@ -36,4 +36,3 @@ The main highlights are :
 * Add parser for Xml and Json and Text types of responses
 * Improve UI for react App
 * create documentation with antora for web service project
-

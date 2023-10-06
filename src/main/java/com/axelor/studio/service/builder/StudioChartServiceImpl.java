@@ -39,7 +39,6 @@ import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.filter.FilterCommonService;
 import com.axelor.studio.service.filter.FilterSqlService;
-import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
@@ -221,8 +220,7 @@ public class StudioChartServiceImpl implements StudioChartService {
     }
 
     String filters =
-        Beans.get(FilterSqlService.class)
-            .getSqlFilters(studioChart.getFilterList(), joins, true);
+        Beans.get(FilterSqlService.class).getSqlFilters(studioChart.getFilterList(), joins, true);
     addSearchField(studioChart.getFilterList());
     String model = studioChart.getModel();
 
@@ -413,8 +411,7 @@ public class StudioChartServiceImpl implements StudioChartService {
       fieldStr += "\" type=\"" + fieldType;
     } else {
       String[] targetRef =
-          Beans.get(FilterSqlService.class)
-              .getDefaultTarget(field.getName(), field.getTypeName());
+          Beans.get(FilterSqlService.class).getDefaultTarget(field.getName(), field.getTypeName());
       String[] nameField = targetRef[0].split("\\.");
       fieldStr +=
           "\" widget=\"ref-text\" type=\""

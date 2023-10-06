@@ -26,8 +26,7 @@ public interface FilterSqlService {
 
   String[] getDefaultTargetJson(String fieldName, MetaJsonModel targetModel);
 
-  Object getTargetField(
-      StringBuilder parent, Filter filter, List<String> joins, boolean checkJson);
+  Object getTargetField(StringBuilder parent, Filter filter, List<String> joins, boolean checkJson);
 
   String getTargetType(Object target);
 

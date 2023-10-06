@@ -91,4 +91,3 @@ image::view_attribute.png[View attribute panel]
 Nous indiquons ici que le fournisseur est requis de façon permanente. Si la n’est pas coché, le champ serait requis uniquement lors de l’activation de la taĉhe. Avec la case cochée, il est requis dès lors que la case a été activée.
 Il existe d’autres attributs de vue, certains permettent de masquer des champs d’autres de restreindre la valeur des champs… Vous pouvez tester en utilisant le menu déroulant du champ “Nom”.
 Une fois l’attribut de vue renseigné, déployez et testez.
-

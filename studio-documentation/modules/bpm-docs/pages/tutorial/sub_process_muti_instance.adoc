@@ -51,8 +51,3 @@ image::script_result_sub_process.png[event process]
 Et voici la mise à jour du champ total (“Renseigner total”), vous pouvez renseigner cette tâche depuis le mapper :
 
 image::update_total_sub_process.png[event process]
-
-
-
-
-

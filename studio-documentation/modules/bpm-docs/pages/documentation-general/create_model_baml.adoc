@@ -81,4 +81,3 @@ A l’aide de cette variable, je crée un inventaire qui reprend des valeurs sp�
 Après cela, je filtre des produits respectants certaines données (la logique voudrait que l’on filtre les produits stocké dans le stock location)
 
 Pour chacun de ses produits(la boucle) je crée une ligne d’inventaire lié à mon inventaire nouvellement créé.
-

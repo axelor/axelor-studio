@@ -20,7 +20,6 @@ package com.axelor.studio.db.repo;
 import com.axelor.inject.Beans;
 import com.axelor.studio.db.StudioSelection;
 import com.axelor.studio.service.builder.StudioSelectionService;
-import com.axelor.studio.service.builder.StudioSelectionService;
 
 public class StudioSelectionRepo extends StudioSelectionRepository {
 
@@ -38,8 +37,7 @@ public class StudioSelectionRepo extends StudioSelectionRepository {
     Beans.get(StudioSelectionService.class)
         .removeSelection(
             null,
-            StudioSelectionService.SELECTION_PREFIX
-                + studioSelection.getName().replace(" ", "-"));
+            StudioSelectionService.SELECTION_PREFIX + studioSelection.getName().replace(" ", "-"));
 
     super.remove(studioSelection);
   }

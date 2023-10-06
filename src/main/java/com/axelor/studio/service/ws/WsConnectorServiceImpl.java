@@ -89,14 +89,13 @@ public class WsConnectorServiceImpl implements WsConnectorService {
       WsAuthenticator authenticator, Client client, Map<String, Object> ctx) {
     if (authenticator != null && authenticator.getAuthTypeSelect().equals("basic")) {
       WsRequest wsRequest = authenticator.getAuthWsRequest();
-      var defaultType = authenticator.getUsername() != null && authenticator.getPassword() != null
-          ? "Standard"
-          : null;
+      var defaultType =
+          authenticator.getUsername() != null && authenticator.getPassword() != null
+              ? "Standard"
+              : null;
       this.sessionType =
           this.sessionTypeFactory.get(
-              wsRequest != null
-                  ? authenticator.getResponseType()
-                  : defaultType);
+              wsRequest != null ? authenticator.getResponseType() : defaultType);
       if (wsRequest == null && this.sessionType != null) {
         this.sessionType.extractSessionData(null, authenticator);
       } else if (this.sessionType != null) {
@@ -243,11 +242,11 @@ public class WsConnectorServiceImpl implements WsConnectorService {
 
         log.debug("Request{}: {} ", count, ctx.get("_" + count));
 
-        if (lastRepeatIf != null && (!lastRepeatIf.equals(repeatIf)) && (Boolean.parseBoolean(
-            templates.fromText(lastRepeatIf).make(ctx).render()))) {
+        if (lastRepeatIf != null
+            && (!lastRepeatIf.equals(repeatIf))
+            && (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render()))) {
           count = repeatRequestCount;
           repeatIndex++;
-
         }
         if (lastRepeatIf == null) {
           lastRepeatIf = repeatIf;
@@ -255,15 +254,18 @@ public class WsConnectorServiceImpl implements WsConnectorService {
         }
         count++;
 
-        if (count == (wsConnector.getWsRequestList().size() + 1) && lastRepeatIf != null
+        if (count == (wsConnector.getWsRequestList().size() + 1)
+            && lastRepeatIf != null
             && (Boolean.parseBoolean(templates.fromText(lastRepeatIf).make(ctx).render()))) {
           count = repeatRequestCount;
           repeatIndex++;
-
         }
       } catch (Exception e) {
-        if (wsRequest != null && Beans.get(AppStudioRepository.class).all().fetchOne()
-            .getEnableTrackWebServiceCall()) {
+        if (wsRequest != null
+            && Beans.get(AppStudioRepository.class)
+                .all()
+                .fetchOne()
+                .getEnableTrackWebServiceCall()) {
           addAttachement(resultContext, wsRequest, wsResponse, wsConnector, e);
         }
         throw new IllegalArgumentException(e.getMessage());
@@ -278,7 +280,10 @@ public class WsConnectorServiceImpl implements WsConnectorService {
 
   @Override
   public Response callRequest(
-      WsRequest wsRequest, String url, Client client, Templates templates,
+      WsRequest wsRequest,
+      String url,
+      Client client,
+      Templates templates,
       Map<String, Object> ctx) {
 
     url = templates.fromText(url).make(ctx).render();
@@ -442,7 +447,9 @@ public class WsConnectorServiceImpl implements WsConnectorService {
           entity =
               text == null
                   ? null
-                  : Entity.entity(new FileInputStream(text), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                  : Entity.entity(
+                      new FileInputStream(text),
+                      javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
 
         } catch (FileNotFoundException e) {
           log.error(e.getMessage(), e);
@@ -453,7 +460,9 @@ public class WsConnectorServiceImpl implements WsConnectorService {
           entity =
               text == null
                   ? null
-                  : Entity.entity(new URL(text).openStream(), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                  : Entity.entity(
+                      new URL(text).openStream(),
+                      javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         } catch (IOException e) {
           log.error(e.getMessage(), e);
         }
@@ -469,13 +478,17 @@ public class WsConnectorServiceImpl implements WsConnectorService {
         entity =
             bytes == null
                 ? null
-                : Entity.entity(new ByteArrayInputStream(bytes), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                : Entity.entity(
+                    new ByteArrayInputStream(bytes),
+                    javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         break;
       case "stream":
         entity =
             obj == null
                 ? null
-                : Entity.entity(new ByteArrayInputStream((byte[]) obj), javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                : Entity.entity(
+                    new ByteArrayInputStream((byte[]) obj),
+                    javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         break;
       default:
         break;
@@ -575,11 +588,21 @@ public class WsConnectorServiceImpl implements WsConnectorService {
                 }
               });
       result.append("\nError log : \nConnector : ").append(wsConnector.getName()).append("\n");
-      result.append("Request " + "( ").append(wsRequest.getName()).append(" )").append(" Error : ")
-          .append("{").append(throwable.toString()).append("}\n");
+      result
+          .append("Request " + "( ")
+          .append(wsRequest.getName())
+          .append(" )")
+          .append(" Error : ")
+          .append("{")
+          .append(throwable.toString())
+          .append("}\n");
       if (wsResponse != null) {
-        result.append("Response type: ").append(wsResponse.getMediaType()).append("\n")
-            .append("Response Body : ").append(wsResponse.readEntity(Object.class));
+        result
+            .append("Response type: ")
+            .append(wsResponse.getMediaType())
+            .append("\n")
+            .append("Response Body : ")
+            .append(wsResponse.readEntity(Object.class));
       }
 
       byte[] bytes = result.toString().getBytes();

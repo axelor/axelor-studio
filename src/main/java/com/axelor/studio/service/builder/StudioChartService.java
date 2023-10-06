@@ -19,11 +19,7 @@ public interface StudioChartService {
   String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField);
 
   String getGroup(
-      boolean isJson,
-      MetaField metaField,
-      MetaJsonField jsonField,
-      String dateType,
-      String target);
+      boolean isJson, MetaField metaField, MetaJsonField jsonField, String dateType, String target);
 
   String getDateTypeGroup(String dateType, String typeName, String group);
 

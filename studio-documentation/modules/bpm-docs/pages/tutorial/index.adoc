@@ -53,4 +53,3 @@ Nous allons nous intéresser aux produits et à l’API dummyjson : https://dumm
 L’appel à l’api : https://dummyjson.com/products
 La création de tous les produits retournés par l’API
 L’archivage des produits existant dans l’application axelor mais non présent dans le retour de l’API
-

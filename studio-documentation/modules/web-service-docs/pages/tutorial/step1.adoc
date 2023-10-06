@@ -44,4 +44,3 @@ TIP: The requests defined are executed one after one with the same order  how de
 List of context data that can be passed to the Connector , you can pass any static value or a dynamic data .
 
 NOTE: The context data is shared also with all elements of the  connector , so all Requests in the connector and the default authentication can be use the context data defined in the connector container .
-

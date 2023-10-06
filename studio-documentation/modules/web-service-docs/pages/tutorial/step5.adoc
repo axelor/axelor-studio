@@ -23,10 +23,3 @@ image::connectorInterface.png[Connector Interface]
 <6> **Payload :** Multiple payloads can be added here as per need from the connector. Here it is required to specify payloads for all requests from the connector as it will call a full connector and not just a single request. Variables (including context objects) available in bpm context can be used here in the value field. The checkbox ‘Expression’ should be checked if value is variable from bpm context else it will consider static value.
 
 NOTE: By select the request field , that's mean you will get the result of the execution' request selected . if you want to get all the result of the connector you can deselect this field.
-
-
-
-
-
-
-

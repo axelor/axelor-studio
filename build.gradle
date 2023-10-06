@@ -1,21 +1,21 @@
 import com.axelor.gradle.tasks.GenerateChangelog
 
 buildscript {
-	ext.repos = {
-		mavenCentral() {
-			content { excludeGroupByRegex "com\\.axelor.*" }
-		}
-		maven {
-			url 'https://plugins.gradle.org/m2/'
-			content { excludeGroupByRegex "com\\.axelor.*" }
-		}
-		maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
-	}
-	ext.aopVersion = '7.0.+'
-	repositories repos
-	dependencies {
-		classpath "com.axelor:axelor-gradle:${aopVersion}"
-	}
+  ext.repos = {
+    mavenCentral() {
+      content { excludeGroupByRegex "com\\.axelor.*" }
+    }
+    maven {
+      url 'https://plugins.gradle.org/m2/'
+      content { excludeGroupByRegex "com\\.axelor.*" }
+    }
+    maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
+  }
+  ext.aopVersion = '7.0.+'
+  repositories repos
+  dependencies {
+    classpath "com.axelor:axelor-gradle:${aopVersion}"
+  }
 }
 
 repositories repos
@@ -24,9 +24,9 @@ apply from: "version.gradle"
 apply plugin: "com.axelor.app"
 
 try {
-	tasks.named("spotlessCheck")
+  tasks.named("spotlessCheck")
 } catch (UnknownTaskException ignored) {
-	apply from: './gradle/style.gradle'
+  apply from: './gradle/style.gradle'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -36,91 +36,91 @@ group = "com.axelor.addons"
 description "Axelor Studio Module"
 
 axelor {
-	title "Axelor Studio"
-	description "Axelor Studio Module"
+  title "Axelor Studio"
+  description "Axelor Studio Module"
 }
 
 test {
-	exclude "com/axelor/apps/baml/test/**"
+  exclude "com/axelor/apps/baml/test/**"
 }
 
 dependencies {
-	if (findProject(":modules:axelor-message") != null) {
-		api project(":modules:axelor-message")
-	}
-	else {
-		api "com.axelor.addons:axelor-message:2.0.+"
-	}
-	if (findProject(":modules:axelor-utils") != null) {
-		api project(":modules:axelor-utils")
-	}
-	else {
-		api "com.axelor.addons:axelor-utils:2.0.+"
-	}
+  if (findProject(":modules:axelor-message") != null) {
+    api project(":modules:axelor-message")
+  }
+  else {
+    api "com.axelor.addons:axelor-message:2.0.+"
+  }
+  if (findProject(":modules:axelor-utils") != null) {
+    api project(":modules:axelor-utils")
+  }
+  else {
+    api "com.axelor.addons:axelor-utils:2.0.+"
+  }
 
-	api "org.camunda.bpm:camunda-engine:7.17.0"
-	api "org.camunda.bpm:camunda-engine-plugin-spin:7.17.0"
-	api "org.camunda.spin:camunda-spin-dataformat-json-jackson:1.17.0"
+  api "org.camunda.bpm:camunda-engine:7.17.0"
+  api "org.camunda.bpm:camunda-engine-plugin-spin:7.17.0"
+  api "org.camunda.spin:camunda-spin-dataformat-json-jackson:1.17.0"
 
-	api "org.apache.commons:commons-lang3:3.2"
-	api "com.opencsv:opencsv:4.6"
+  api "org.apache.commons:commons-lang3:3.2"
+  api "com.opencsv:opencsv:4.6"
 
-	implementation "org.codehaus.groovy:groovy-all:3.0.9"
-	implementation "org.eclipse.birt.runtime.3_7_1:Tidy:1"
-	implementation "org.apache.commons:commons-exec:1.2"
-	implementation "org.apache.commons:commons-text:1.9"
-	implementation 'org.jboss.resteasy:resteasy-jaxb-provider:4.7.7.Final'
-	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
-	implementation 'org.json:json:20210307'
-	implementation "ch.qos.logback:logback-core:1.2.11"
+  implementation "org.codehaus.groovy:groovy-all:3.0.9"
+  implementation "org.eclipse.birt.runtime.3_7_1:Tidy:1"
+  implementation "org.apache.commons:commons-exec:1.2"
+  implementation "org.apache.commons:commons-text:1.9"
+  implementation 'org.jboss.resteasy:resteasy-jaxb-provider:4.7.7.Final'
+  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
+  implementation 'org.json:json:20210307'
+  implementation "ch.qos.logback:logback-core:1.2.11"
     implementation "ch.qos.logback:logback-classic:1.2.11"
-	
 
-	testCompileOnly 'org.projectlombok:lombok:1.18.24'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+  testCompileOnly 'org.projectlombok:lombok:1.18.24'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 tasks.register('generateChangelog', GenerateChangelog) {
-	description "Generate changelog from unreleased entries."
-	group "Axelor"
-	files = fileTree(projectDir) {
-		include 'changelogs/unreleased/*.yml'
-		include 'changelogs/unreleased/*.yaml'
-	}
+  description "Generate changelog from unreleased entries."
+  group "Axelor"
+  files = fileTree(projectDir) {
+    include 'changelogs/unreleased/*.yml'
+    include 'changelogs/unreleased/*.yaml'
+  }
 }
 
 if (providers.systemProperty("include.react").getOrNull() != null) {
-	for (int i = 0; i < gradle.ext.reactComponents?.size() - 1; i++) {
-		tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i).name}:reactBuild").finalizedBy(tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i + 1).name}:reactBuild"))
-	}
+  for (int i = 0; i < gradle.ext.reactComponents?.size() - 1; i++) {
+    tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i).name}:reactBuild").finalizedBy(tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i + 1).name}:reactBuild"))
+  }
 
-	jar {
-		gradle.ext.reactComponents?.each {
-			dependsOn ":react-components:${it.name}:reactBuild"
-		}
+  jar {
+    gradle.ext.reactComponents?.each {
+      dependsOn ":react-components:${it.name}:reactBuild"
+    }
 
-		gradle.ext.componentPaths.each { paths ->
-			into("${paths.to}") {
-			from "$projectDir/${paths.from}"
-			}
-		}
-	}
+    gradle.ext.componentPaths.each { paths ->
+      into("${paths.to}") {
+      from "$projectDir/${paths.from}"
+      }
+    }
+  }
 
-	tasks.register('reactCopy', Copy) {
-		description = 'Copy Studio React into webapp'
+  tasks.register('reactCopy', Copy) {
+    description = 'Copy Studio React into webapp'
 
-		gradle.ext.reactComponents?.each {
-			dependsOn ":react-components:${it.name}:reactBuild"
-		}
+    gradle.ext.reactComponents?.each {
+      dependsOn ":react-components:${it.name}:reactBuild"
+    }
 
-		destinationDir = file(rootProject.buildDir)
+    destinationDir = file(rootProject.buildDir)
 
-		gradle.ext.componentPaths.each { paths ->
-			into("${paths.to}") {
-				from "$projectDir/${paths.from}"
-			}
-		}
-	}
+    gradle.ext.componentPaths.each { paths ->
+      into("${paths.to}") {
+        from "$projectDir/${paths.from}"
+      }
+    }
+  }
 }
 
 
@@ -131,22 +131,22 @@ if (providers.systemProperty("include.react").getOrNull() != null) {
 apply plugin: 'maven-publish'
 
 ext {
-	mavenUsername = project.findProperty("addonsMavenUsername")
-	mavenPassword = project.findProperty("addonsMavenPassword")
+  mavenUsername = project.findProperty("addonsMavenUsername")
+  mavenPassword = project.findProperty("addonsMavenPassword")
 }
 
 publishing {
-	repositories {
-		maven {
-			def repoPath = project.hasProperty("finalRelease")
-					? "maven-releases"
-					: "maven-snapshots"
-			name = "maven"
-			url = "https://repository.axelor.com/nexus/repository/" + repoPath
-			credentials {
-				username = project.mavenUsername
-				password = project.mavenPassword
-			}
-		}
-	}
+  repositories {
+    maven {
+      def repoPath = project.hasProperty("finalRelease")
+          ? "maven-releases"
+          : "maven-snapshots"
+      name = "maven"
+      url = "https://repository.axelor.com/nexus/repository/" + repoPath
+      credentials {
+        username = project.mavenUsername
+        password = project.mavenPassword
+      }
+    }
+  }
 }

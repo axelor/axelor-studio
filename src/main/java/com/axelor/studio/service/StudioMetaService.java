@@ -35,8 +35,7 @@ public interface StudioMetaService {
   void trackJsonField(MetaJsonModel jsonModel);
 
   @Transactional(rollbackOn = Exception.class)
-  void trackingFields(
-      AuditableModel auditableModel, String messageBody, String messageSubject);
+  void trackingFields(AuditableModel auditableModel, String messageBody, String messageSubject);
 
   @Transactional(rollbackOn = Exception.class)
   void trackJsonField(MetaJsonField metaJsonField);

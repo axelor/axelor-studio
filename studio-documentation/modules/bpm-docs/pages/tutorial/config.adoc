@@ -67,5 +67,3 @@ Cet onglet permet d’ajouter des listner en java sur ces objets.
 == Comments
 
 On retrouve également l’onglet comments sur différents objets que l’on peut insérer sur le modèle de processus (sur les activités, les événements, les gateway, les flux de connections…). Cet onglet permet à différents acteurs d’échanger sur le processus.
-
-

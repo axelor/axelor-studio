@@ -26,7 +26,6 @@ import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.Filter;
 import com.axelor.studio.service.filter.FilterSqlService;
-import com.axelor.studio.service.filter.FilterSqlService;
 import com.axelor.utils.ExceptionTool;
 import java.util.Map;
 

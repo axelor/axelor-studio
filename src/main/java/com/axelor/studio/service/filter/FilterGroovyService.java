@@ -10,8 +10,7 @@ public interface FilterGroovyService {
   String getGroovyFilters(
       List<Filter> conditions, String parentField, boolean isButton, boolean isField);
 
-  String createGroovyFilter(
-      Filter filter, String parentField, boolean isButton, boolean isField);
+  String createGroovyFilter(Filter filter, String parentField, boolean isButton, boolean isField);
 
   String getJsonFieldType(MetaJsonField jsonField, String targetField);
 

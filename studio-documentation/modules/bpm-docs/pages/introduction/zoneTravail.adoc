@@ -60,4 +60,3 @@ image::changeType.png[nnotation]
 
 Les autres icônes disponibles sont spécifiques à l'élément sélectionné et décrites plus tard dans cette documentation.
 Lorsque vous cliquez sur ces derniers, cela va appliquer l’action.
-

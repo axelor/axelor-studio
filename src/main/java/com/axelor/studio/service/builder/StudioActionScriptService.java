@@ -22,11 +22,9 @@ public interface StudioActionScriptService {
 
   String format(String line, int level);
 
-  String addFieldsBinding(
-      String target, List<StudioActionLine> lines, int level, boolean json);
+  String addFieldsBinding(String target, List<StudioActionLine> lines, int level, boolean json);
 
-  void computeAttrsField(
-      String target, int level, List<StudioActionLine> lines, StringBuilder stb);
+  void computeAttrsField(String target, int level, List<StudioActionLine> lines, StringBuilder stb);
 
   Set<String> getAttrsFields(List<StudioActionLine> lines);
 
@@ -42,15 +40,13 @@ public interface StudioActionScriptService {
 
   void addObjToJson();
 
-  String addM2OBinding(
-      StudioActionLine line, boolean search, boolean filter, boolean json);
+  String addM2OBinding(StudioActionLine line, boolean search, boolean filter, boolean json);
 
   String addM2MBinding(StudioActionLine line, boolean json);
 
   String addO2MBinding(StudioActionLine line, String target, boolean json);
 
-  String addJsonM2OBinding(
-      StudioActionLine line, boolean search, boolean filter, boolean json);
+  String addJsonM2OBinding(StudioActionLine line, boolean search, boolean filter, boolean json);
 
   String addJsonM2MBinding(StudioActionLine line);
 

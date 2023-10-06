@@ -79,4 +79,3 @@ L’utilisation d’une expression déléguée
 image::implementation_service_4.png[event process]
 
 Plus d’informations disponibles içi : https://docs.camunda.org/get-started/spring/service-task/
-

@@ -42,6 +42,5 @@ public interface StudioSelectionService {
   List<Map<String, String>> getSelectOptions(String selectionText);
 
   @Transactional(rollbackOn = Exception.class)
-  StudioSelection createStudioSelection(
-      String selectionText, String name, StudioApp studioApp);
+  StudioSelection createStudioSelection(String selectionText, String name, StudioApp studioApp);
 }

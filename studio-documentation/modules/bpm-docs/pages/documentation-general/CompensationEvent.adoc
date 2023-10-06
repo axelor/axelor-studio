@@ -3,4 +3,3 @@
 :page-pagination:
 
 Symbolisé par image:compensation-icon-1.png[compensation icon],image:compensation-icon-2.png[compensation icon],image:compensation-icon-3.png[compensation icon],image:compensation-icon-4.png[compensation icon]
-

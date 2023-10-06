@@ -209,8 +209,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     filterList.addAll(filterForAggregations);
 
     final String tableName = getTableName(studioChart);
-    String sqlFilters =
-        Beans.get(FilterSqlService.class).getSqlFilters(filterList, joins, true);
+    String sqlFilters = Beans.get(FilterSqlService.class).getSqlFilters(filterList, joins, true);
     if (sqlFilters != null) {
       return String.format(
           "select self.id from %s self %s where %s",

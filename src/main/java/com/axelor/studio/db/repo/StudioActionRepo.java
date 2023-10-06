@@ -30,8 +30,7 @@ public class StudioActionRepo extends StudioActionRepository {
   protected StudioActionService studioActionService;
 
   @Inject
-  public StudioActionRepo(
-      StudioMetaService metaService, StudioActionService studioActionService) {
+  public StudioActionRepo(StudioMetaService metaService, StudioActionService studioActionService) {
     this.metaService = metaService;
     this.studioActionService = studioActionService;
   }

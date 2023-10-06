@@ -9,6 +9,5 @@ public interface StudioDashboardService {
 
   MetaView build(StudioDashboard studioDashboard);
 
-  MetaAction getAction(
-      String dashboard, String name, String model, StudioDashlet studioDashlet);
+  MetaAction getAction(String dashboard, String name, String model, StudioDashlet studioDashlet);
 }

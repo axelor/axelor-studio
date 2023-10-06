@@ -16,4 +16,3 @@ On recherche les lignes de demande d’achat dont l’identifiant de la demande 
 Nous stockons le résultat de cette requête dans une variable grâce au champ “Result variable”:
 
 image::result_var_add_object.png[event process]
-

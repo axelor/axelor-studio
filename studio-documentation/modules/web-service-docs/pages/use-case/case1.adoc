@@ -43,8 +43,3 @@ Here we specify the requests to execute , we have only one ( Get product ), also
 image::connectorGetProduct.png[get product request]
 
 NOTE: You can pass the product context via the connector script in the axelor BPM
-
-
-
-
-

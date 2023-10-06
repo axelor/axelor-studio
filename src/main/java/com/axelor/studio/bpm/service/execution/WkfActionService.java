@@ -26,17 +26,14 @@ import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.schema.actions.Action;
 import com.axelor.meta.schema.actions.Action.Element;
 import com.axelor.meta.schema.actions.ActionGroup;
-import com.axelor.meta.schema.actions.ActionGroup.ActionItem;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.utils.context.FullContext;
 import com.axelor.utils.service.ActionService;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.collections.CollectionUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
@@ -100,7 +97,11 @@ public class WkfActionService implements JavaDelegate {
 
     var actionList = List.of(actions);
 
-    actionList = actionList.stream().map(this::extractActions).flatMap(List::stream).collect(Collectors.toList());
+    actionList =
+        actionList.stream()
+            .map(this::extractActions)
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
 
     for (String actionName : actionList) {
       Action action = MetaStore.getAction(actionName);
@@ -113,8 +114,8 @@ public class WkfActionService implements JavaDelegate {
   protected List<String> extractActions(String actionName) {
     var action = MetaStore.getAction(actionName);
     if (action instanceof ActionGroup) {
-      return ((ActionGroup) action).getActions().stream().map(Element::getName)
-          .collect(Collectors.toList());
+      return ((ActionGroup) action)
+          .getActions().stream().map(Element::getName).collect(Collectors.toList());
     } else {
       return Collections.singletonList(actionName);
     }

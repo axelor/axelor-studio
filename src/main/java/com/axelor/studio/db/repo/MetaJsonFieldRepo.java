@@ -33,8 +33,7 @@ public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
   protected JsonFieldService jsonFieldService;
 
   @Inject
-  public MetaJsonFieldRepo(
-      MetaModelRepository metaModelRepo, JsonFieldService jsonFieldService) {
+  public MetaJsonFieldRepo(MetaModelRepository metaModelRepo, JsonFieldService jsonFieldService) {
     this.metaModelRepo = metaModelRepo;
     this.jsonFieldService = jsonFieldService;
   }

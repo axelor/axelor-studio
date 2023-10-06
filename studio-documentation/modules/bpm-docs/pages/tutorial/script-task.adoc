@@ -34,7 +34,3 @@ Déployez et testez le processus.
 NOTE: il se peut que vous ayez un message d’erreur indiquant “L'enregistrement a été modifié ou supprimé par une autre action.”.Cela vient du fait qu’une action sur le bouton met à jour le statut et qu’avec le BPM, nous modifions également le formulaire. Il suffit d’actualiser le formulaire pour avoir le comportement attendu.
 
 TIP: Une autre possibilité si vous voulez enlevez le message d’erreur et de venir modifier la vue en ajoutant un “save” et un “action-refresh-record” dans les premières actions du bouton “Request”.
-
-
-
-

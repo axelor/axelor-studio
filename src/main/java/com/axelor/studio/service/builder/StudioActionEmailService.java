@@ -11,7 +11,6 @@ public interface StudioActionEmailService {
   MetaAction build(StudioAction studioAction);
 
   @CallMethod
-  ActionResponse sendEmail(
-      Long objectId, String model, String tag, Long templateId, int sendOption)
+  ActionResponse sendEmail(Long objectId, String model, String tag, Long templateId, int sendOption)
       throws ClassNotFoundException, MessagingException;
 }
