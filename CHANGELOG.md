@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+## 1.0.3
+
 * Anomaly #70007: Fix apps images duplicating at each server startup
 
 ## 1.0.2
