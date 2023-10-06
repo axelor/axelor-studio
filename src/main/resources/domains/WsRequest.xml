@@ -7,7 +7,7 @@
 
   <entity name="WsRequest" cacheable="true">
     <string name="name" title="Name"/>
-    <string name="wsUrl" title="URL"/>
+    <string name="wsUrl" title="URL" large="true"/>
     <string name="requestTypeSelect" title="Type" selection="studio.ws.request.type"/>
     <string name="payLoadTypeSelect" title="PayLoad type"
       selection="studio.ws.request.payload.type"/>
