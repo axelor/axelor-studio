@@ -23,10 +23,11 @@ import com.axelor.auth.db.ViewCustomizationPermission;
 import com.axelor.auth.db.repo.UserRepository;
 import com.axelor.meta.schema.views.Button;
 import com.axelor.meta.schema.views.FormView;
-import com.axelor.meta.schema.views.GridView;
 import com.axelor.meta.service.MetaService;
 import com.axelor.rpc.Response;
+import com.axelor.utils.ExceptionTool;
 import com.google.inject.Inject;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,8 +56,6 @@ public class CustomMetaService extends MetaService {
 
     if (response.getData() instanceof FormView) {
       addOpenStudioButton((FormView) response.getData());
-    } else if (response.getData() instanceof GridView) {
-      addOpenStudioButton((GridView) response.getData());
     }
     return response;
   }
@@ -69,21 +68,25 @@ public class CustomMetaService extends MetaService {
     formView.setToolbar(addOpenStudioButton(formView.getToolbar()));
   }
 
-  protected void addOpenStudioButton(GridView gridView) {
-    if (gridView.getToolbar() == null) {
-      gridView.setToolbar(new ArrayList<>());
-    }
-
-    gridView.setToolbar(addOpenStudioButton(gridView.getToolbar()));
-  }
-
   protected List<Button> addOpenStudioButton(List<Button> toolBar) {
-    Button openStudioBtn = new Button();
-    openStudioBtn.setTitle("Open studio");
-    openStudioBtn.setName("openStudioBtn");
-    openStudioBtn.setOnClick("action-studio-method-open-studio-builder");
-    toolBar.add(openStudioBtn);
+    try {
+      Button openStudioBtn = new Button();
+      Class<?> btnClass = Class.forName("com.axelor.meta.schema.views.Button");
+      Field iconField = btnClass.getDeclaredField("icon");
+      iconField.setAccessible(true);
+      iconField.set(openStudioBtn, "fa fa-magic");
+      iconField.setAccessible(false);
 
+      openStudioBtn.setName("openStudioBtn");
+      openStudioBtn.setOnClick("action-studio-method-open-studio-builder");
+      toolBar.add(openStudioBtn);
+    } catch (ClassNotFoundException
+        | NoSuchFieldException
+        | SecurityException
+        | IllegalArgumentException
+        | IllegalAccessException e) {
+      ExceptionTool.trace(e);
+    }
     return toolBar;
   }
 }
