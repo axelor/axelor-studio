@@ -73,8 +73,11 @@ dependencies {
   implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
   implementation 'org.json:json:20210307'
   implementation "ch.qos.logback:logback-core:1.2.11"
-    implementation "ch.qos.logback:logback-classic:1.2.11"
+  implementation "ch.qos.logback:logback-classic:1.2.11"
 
+
+  compileOnly 'org.projectlombok:lombok:1.18.24'
+  annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
   testCompileOnly 'org.projectlombok:lombok:1.18.24'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
