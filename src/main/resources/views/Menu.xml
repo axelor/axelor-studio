@@ -93,8 +93,8 @@
   <menuitem name="studio-app-config" title="Configuration" parent="studio-app-root"
     order="100" if="__config__.app?.isApp('studio')"/>
 
-  <menuitem name="menu-studio-app-studio-apps" title="Apps"
-    parent="studio-app-studio-components" order="5" action="action.studio.apps.view"
+  <menuitem name="menu-studio-app-studio-apps" title="Apps" parent="studio-app-config"
+    order="5" action="action.studio.apps.view"
     if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
 
   <action-view name="action.studio.apps.view" title="Apps"
@@ -177,8 +177,8 @@
     <view type="form" name="value-mapper-form"/>
   </action-view>
 
-  <menuitem name="studio-app-app-loaders" title="App Loaders"
-    parent="bpm-app-bpm-components" order="54" action="action.app.loaders.view"
+  <menuitem name="studio-app-app-loaders" title="App Loaders" parent="studio-app-config"
+    order="54" action="action.app.loaders.view"
     if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
 
   <action-view name="action.app.loaders.view" title="App Loaders"
