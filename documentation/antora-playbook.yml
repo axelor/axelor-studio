@@ -1,6 +1,6 @@
 site:
   title: WS builder Docs
-  start_page: ws::index.adoc
+  start_page: studio::index.adoc
 content:
   sources:
     - url:  ../
