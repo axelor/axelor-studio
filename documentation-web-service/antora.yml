@@ -1,6 +1,6 @@
-name: ws
+name: studio
 title: Web Service Builder
-version: "1.2.0"
+version: "1.2"
 start_page: ROOT:index.adoc
 nav:
   - modules/ROOT/nav.adoc
