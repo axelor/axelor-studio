@@ -5,7 +5,7 @@ content:
   sources:
     - url:  ../
       branches: HEAD
-      start_path: documentation-web-service
+      start_path: documentation
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
