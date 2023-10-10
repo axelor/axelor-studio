@@ -18,8 +18,10 @@ spotless {
       include '**/*.js'
       include '**/*.css'
       include '**/*.xsd'
-      exclude '**/webapp/*'
-      exclude '**/.gradle/*'
+      exclude '**/webapp/**'
+      exclude '**/.gradle/**'
+      exclude '**/build/**'
+      exclude '**/node_modules/**'
     }
     indentWithSpaces(2)
     trimTrailingWhitespace()
@@ -30,6 +32,8 @@ spotless {
     target fileTree(projectDir) {
       include '**/*.md'
       exclude 'CHANGELOG.md'
+      exclude '**/build/**'
+      exclude '**/node_modules/**'
     }
     indentWithSpaces(2)
     endWithNewline()
@@ -39,6 +43,7 @@ spotless {
     target fileTree(projectDir) {
       include '**/*.java'
       exclude '**/build/**'
+      exclude '**/node_modules/**'
     }
     googleJavaFormat()
   }
@@ -47,6 +52,7 @@ spotless {
     target fileTree(projectDir) {
       include '**/*.xml'
       exclude '**/build/**'
+      exclude '**/node_modules/**'
       exclude '**/bolt-module/src/main/resources/configurators/**'
       exclude '.idea/**'
     }
