@@ -11,10 +11,11 @@ import {
   Button,
   Tooltip,
 } from "@material-ui/core";
-import { Edit, NotInterested } from "@material-ui/icons";
+import { Edit } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 import QueryBuilder from "../../../../../components/QueryBuilder";
+import AlertDialog from "../../../../../components/AlertDialog";
 import {
   TextField,
   Textbox,
@@ -63,6 +64,11 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
   },
+  scriptDialog: {
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+  },
 }));
 
 export default function ConditionalEventProps({
@@ -77,6 +83,8 @@ export default function ConditionalEventProps({
   const [alertMessage, setAlertMessage] = useState(null);
   const [readOnly, setReadOnly] = useState(false);
   const [variableEventValue, setVariableEventValue] = useState("");
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
   const classes = useStyles();
 
   const getter = () => {
@@ -199,8 +207,7 @@ export default function ConditionalEventProps({
           setValue("checked")(element, { checked });
         }
       } else {
-        element.businessObject.conditionExpression =
-          conditionOrConditionExpression;
+        element.businessObject.conditionExpression = conditionOrConditionExpression;
       }
     }
   };
@@ -260,10 +267,7 @@ export default function ConditionalEventProps({
             optionLabelSecondary="title"
             isLabel={false}
             validate={function (values) {
-              if (
-                !values?.multiSelect?.length &&
-                conditionType === "script"
-              ) {
+              if (!values?.multiSelect?.length && conditionType === "script") {
                 return { multiSelect: translate("Must provide a value") };
               }
             }}
@@ -296,8 +300,9 @@ export default function ConditionalEventProps({
         {conditionalEventDefinition && (
           <div className={classes.new}>
             <Tooltip title="Enable" aria-label="enable">
-              <NotInterested
-                className={classes.newIcon}
+              <i
+                className="fa fa-code"
+                style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
                 onClick={() => {
                   if (readOnly) {
                     setAlertMessage(
@@ -305,9 +310,12 @@ export default function ConditionalEventProps({
                     );
                     setAlertTitle("Warning");
                     setAlert(true);
+                  } else {
+                    setScript(getCondition()?.script);
+                    setOpenScriptDialog(true);
                   }
                 }}
-              />
+              ></i>
             </Tooltip>
             <Edit className={classes.newIcon} onClick={handleClickOpen} />
             {open && (
@@ -323,6 +331,40 @@ export default function ConditionalEventProps({
           </div>
         )}
       </div>
+      {openScriptDialog && (
+        <AlertDialog
+          className={classes.scriptDialog}
+          openAlert={openScriptDialog}
+          alertClose={() => {
+            setScript(getCondition()?.script);
+            setOpenScriptDialog(false);
+          }}
+          handleAlertOk={() => {
+            setCondition(undefined, { script });
+            setOpenScriptDialog(false);
+          }}
+          title={translate("Add expression")}
+          children={
+            <Textbox
+              element={element}
+              className={classes.textbox}
+              showLabel={false}
+              defaultHeight={window?.innerHeight - 205}
+              entry={{
+                id: "script",
+                label: translate("Script"),
+                modelProperty: "script",
+                get: function () {
+                  return getCondition();
+                },
+                set: function (e, values) {
+                  setScript(values?.script);
+                },
+              }}
+            />
+          }
+        />
+      )}
       {openAlert && (
         <Dialog
           open={openAlert}
@@ -354,6 +396,8 @@ export default function ConditionalEventProps({
                 setReadOnly(false);
                 setValue("scriptValue")(element, { scriptValue: undefined });
                 setValue("combinator")(element, { combinator: undefined });
+                setScript(getCondition()?.script);
+                setOpenScriptDialog(true);
               }}
               color="primary"
               className={classes.save}
