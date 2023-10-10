@@ -17,7 +17,7 @@ usage() {
   printf "This script does following steps :\n"
   printf "   * Update CHANGELOG.md\n"
   printf "   * Create commit release and tag\n"
-  printf "   * Merge into stable (x.y-stable) branch\n\n"
+  printf "   * Merge into stable (x.y) branch\n\n"
   printf "Options :\n"
   printf "\t-b <branch> : Default branch to work on (default to 'main').\n"
   printf "\t-h          : Display this help.\n"
@@ -62,7 +62,7 @@ then
   exit 0
 fi
 
-stable_branch=$(echo "$tag" | sed -Ene's#(0|[1-9][0-9]*)\.(0|[1-9][0-9]*).*#\1.\2-stable#p')
+stable_branch=$(echo "$tag" | sed -Ene's#(0|[1-9][0-9]*)\.(0|[1-9][0-9]*).*#\1.\2#p')
 repo_url=$(echo "$($git_path remote -v | grep -m1 '^origin')" | sed -Ene's#.*(git@[^[:space:]]*).*#\1#p' | sed -Ene's#git@(.*):(.*).git#https://\1/\2#p')
 
 ensure_on_target_branch() {
