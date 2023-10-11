@@ -6,11 +6,11 @@
   <module name="studio" package="com.axelor.studio.db"/>
 
   <entity name="WkfInstanceMigrationHistory" cacheable="true">
-    <many-to-one ref="com.axelor.studio.db.WkfInstance" name="wkfInstnace"
+    <many-to-one ref="com.axelor.studio.db.WkfInstance" name="wkfInstance"
       title="Wkf instance"/>
     <string name="versionCode" title="Version"/>
     <long name="versionId" title="Version id"/>
-    <datetime name="migartionHistoryUpdatedOn" title="Updated on"/>
+    <datetime name="migrationHistoryUpdatedOn" title="Updated on"/>
   </entity>
 
 </domain-models>
