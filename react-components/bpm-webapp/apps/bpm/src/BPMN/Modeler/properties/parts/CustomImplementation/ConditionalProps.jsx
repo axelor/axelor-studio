@@ -4,7 +4,7 @@ import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
-import { Edit, NotInterested } from "@material-ui/icons";
+import { Edit } from "@material-ui/icons";
 import {
   Dialog,
   DialogTitle,
@@ -15,6 +15,7 @@ import {
   Tooltip,
 } from "@material-ui/core";
 
+import AlertDialog from "../../../../../components/AlertDialog";
 import { Textbox } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
 import QueryBuilder from "../../../../../components/QueryBuilder";
@@ -64,6 +65,11 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
   },
+  scriptDialog: {
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+  },
 }));
 
 let CONDITIONAL_SOURCES = [
@@ -92,6 +98,9 @@ export default function ConditionalProps({
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [readOnly, setReadOnly] = useState(false);
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
+
   const classes = useStyles();
 
   const handleClickOpen = () => {
@@ -120,6 +129,7 @@ export default function ConditionalProps({
     const { expression: valExpression, value, combinator, checked } = val;
     if (value) {
       setProperty("camunda:conditionValue", value);
+      setReadOnly(true);
     }
     if (combinator) {
       setProperty("camunda:conditionCombinator", combinator);
@@ -153,6 +163,18 @@ export default function ConditionalProps({
     }
   };
 
+  const getScript = () => {
+    let bo = getBusinessObject(element);
+    if (bo && bo.conditionExpression && bo.conditionExpression.body) {
+      return {
+        script: bo.conditionExpression.body.replace(
+          /[\u200B-\u200D\uFEFF]/g,
+          ""
+        ),
+      };
+    }
+  };
+
   const setValue = (valExpression) => {
     let expression =
       valExpression && valExpression.replace(/[\u200B-\u200D\uFEFF]/g, "");
@@ -165,8 +187,9 @@ export default function ConditionalProps({
       element.businessObject.conditionExpression.resource = undefined;
       element.businessObject.conditionExpression.language = "axelor";
       let conditionOrConditionExpression;
-      let conditionalEventDefinition =
-        eventDefinitionHelper.getConditionalEventDefinition(element);
+      let conditionalEventDefinition = eventDefinitionHelper.getConditionalEventDefinition(
+        element
+      );
       if (conditionalEventDefinition) {
         element.businessObject.condition = conditionOrConditionExpression;
       } else {
@@ -182,8 +205,7 @@ export default function ConditionalProps({
           conditionalEventDefinition || bo,
           bpmnFactory
         );
-        element.businessObject.conditionExpression =
-          conditionOrConditionExpression;
+        element.businessObject.conditionExpression = conditionOrConditionExpression;
         if (conditionOrConditionExpression) {
           element.businessObject.conditionExpression.body = expression;
           element.businessObject.conditionExpression.resource = undefined;
@@ -204,13 +226,15 @@ export default function ConditionalProps({
       if (CONDITIONAL_SOURCES.includes(bo.sourceRef.$type)) return;
       modeling &&
         modeling.updateProperties(shape, {
-          [conditionalEventDefinition ? "condition" : "conditionExpression"]:
-            conditionOrConditionExpression,
+          [conditionalEventDefinition
+            ? "condition"
+            : "conditionExpression"]: conditionOrConditionExpression,
         });
     } else {
       let conditionOrConditionExpression;
-      let conditionalEventDefinition =
-        eventDefinitionHelper.getConditionalEventDefinition(element);
+      let conditionalEventDefinition = eventDefinitionHelper.getConditionalEventDefinition(
+        element
+      );
       let bo = getBusinessObject(element);
       if (expression && expression !== "" && conditionType) {
         const conditionProps = {
@@ -236,8 +260,7 @@ export default function ConditionalProps({
       if (conditionalEventDefinition) {
         element.businessObject.condition = conditionOrConditionExpression;
       } else {
-        element.businessObject.conditionExpression =
-          conditionOrConditionExpression;
+        element.businessObject.conditionExpression = conditionOrConditionExpression;
         if (conditionOrConditionExpression) {
           element.businessObject.conditionExpression.body = expression;
           element.businessObject.conditionExpression.resource = undefined;
@@ -258,8 +281,9 @@ export default function ConditionalProps({
       if (CONDITIONAL_SOURCES.includes(bo.sourceRef.$type)) return;
       modeling &&
         modeling.updateProperties(shape, {
-          [conditionalEventDefinition ? "condition" : "conditionExpression"]:
-            conditionOrConditionExpression,
+          [conditionalEventDefinition
+            ? "condition"
+            : "conditionExpression"]: conditionOrConditionExpression,
         });
     }
   };
@@ -298,39 +322,31 @@ export default function ConditionalProps({
               label: translate("Script"),
               modelProperty: "script",
               get: function () {
-                let bo = getBusinessObject(element);
-                if (
-                  bo &&
-                  bo.conditionExpression &&
-                  bo.conditionExpression.body
-                ) {
-                  return {
-                    script: bo.conditionExpression.body.replace(
-                      /[\u200B-\u200D\uFEFF]/g,
-                      ""
-                    ),
-                  };
-                }
+                return getScript();
               },
               set: function (e, values) {
-                setValue(values && values.script);
+                setValue(values?.script);
               },
             }}
           />
           <div className={classes.new}>
             <Tooltip title="Enable" aria-label="enable">
-              <NotInterested
-                className={classes.newIcon}
+              <i
+                className="fa fa-code"
+                style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
                 onClick={() => {
                   if (readOnly) {
                     setAlertMessage(
-                      "Script can't be managed using builder once changed manually."
+                      "Expression can't be managed using builder once changed manually."
                     );
                     setAlertTitle("Warning");
                     setAlert(true);
+                  } else {
+                    setScript(getScript()?.script);
+                    setOpenScriptDialog(true);
                   }
                 }}
-              />
+              ></i>
             </Tooltip>
             <Edit className={classes.newIcon} onClick={handleClickOpen} />
             {open && (
@@ -344,6 +360,40 @@ export default function ConditionalProps({
               />
             )}
           </div>
+          {openScriptDialog && (
+            <AlertDialog
+              className={classes.scriptDialog}
+              openAlert={openScriptDialog}
+              alertClose={() => {
+                setScript(getScript()?.script);
+                setOpenScriptDialog(false);
+              }}
+              handleAlertOk={() => {
+                setValue(script);
+                setOpenScriptDialog(false);
+              }}
+              title={translate("Add expression")}
+              children={
+                <Textbox
+                  element={element}
+                  className={classes.textbox}
+                  showLabel={false}
+                  defaultHeight={window?.innerHeight - 205}
+                  entry={{
+                    id: "script",
+                    label: translate("Script"),
+                    modelProperty: "script",
+                    get: function () {
+                      return getScript();
+                    },
+                    set: function (e, values) {
+                      setScript(values?.script);
+                    },
+                  }}
+                />
+              }
+            />
+          )}
           {openAlert && (
             <Dialog
               open={openAlert}
@@ -375,6 +425,8 @@ export default function ConditionalProps({
                     setReadOnly(false);
                     setProperty("camunda:conditionValue", undefined);
                     setProperty("camunda:conditionCombinator", undefined);
+                    setScript(getScript()?.script);
+                    setOpenScriptDialog(true);
                   }}
                   color="primary"
                   className={classes.save}

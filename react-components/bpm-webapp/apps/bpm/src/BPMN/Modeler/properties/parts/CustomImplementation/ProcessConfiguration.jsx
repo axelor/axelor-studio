@@ -16,20 +16,16 @@ import {
   Card,
   CardContent,
 } from "@material-ui/core";
-import {
-  Add,
-  Edit,
-  Close,
-  ReportProblem,
-  NotInterested,
-} from "@material-ui/icons";
+import { Add, Edit, Close, ReportProblem } from "@material-ui/icons";
 
 import Select from "../../../../../components/Select";
+import AlertDialog from "../../../../../components/AlertDialog";
 import ProcessConfigTitleTranslation from "./ProcessConfigTitleTranslation";
 import {
   TextField,
   Checkbox,
   FieldEditor,
+  Textbox,
 } from "../../../../../components/properties/components";
 import {
   getMetaModels,
@@ -151,6 +147,11 @@ const useStyles = makeStyles((theme) => ({
   checkboxLabel: {
     width: "100%",
   },
+  scriptDialog: {
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+  },
 }));
 
 const initialProcessConfigList = {
@@ -173,7 +174,6 @@ export default function ProcessConfiguration({
   index,
   label,
   bpmnFactory,
-  bpmnModeler,
 }) {
   const classes = useStyles();
   const [processConfigList, setProcessConfigList] = useState(null);
@@ -190,6 +190,8 @@ export default function ProcessConfiguration({
   const [openTranslationDialog, setTranslationDialog] = useState(false);
   const [translations, setTranslations] = useState(null);
   const [removedTranslations, setRemovedTranslations] = useState(null);
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState(null);
 
   const handleExpressionBuilder = () => {
     setExpressionBuilder(false);
@@ -830,22 +832,30 @@ export default function ProcessConfiguration({
                                         title="Enable"
                                         aria-label="enable"
                                       >
-                                        <NotInterested
-                                          className={classes.newIcon}
+                                        <i
+                                          className="fa fa-code"
+                                          style={{
+                                            fontSize: 18,
+                                            color: "#58B423",
+                                            marginLeft: 5,
+                                            cursor: "pointer",
+                                          }}
                                           onClick={() => {
+                                            setPathCondition({
+                                              key,
+                                              processConfig,
+                                            });
                                             if (
                                               processConfig &&
                                               processConfig.pathConditionValue
                                             ) {
-                                              setPathCondition({
-                                                key,
-                                                processConfig,
-                                              });
                                               setErrorMessage(
                                                 "Path condition can't be managed using builder once changed manually."
                                               );
                                               setErrorTitle("Warning");
                                               setExpressionAlert(true);
+                                            } else {
+                                              setOpenScriptDialog(true);
                                             }
                                           }}
                                         />
@@ -1035,6 +1045,44 @@ export default function ProcessConfiguration({
           fetchModels={() => fetchModels(element, processConfigs)}
         />
       )}
+      {openScriptDialog && (
+        <AlertDialog
+          className={classes.scriptDialog}
+          openAlert={openScriptDialog}
+          alertClose={() => setOpenScriptDialog(false)}
+          handleAlertOk={() => {
+            updateValue(
+              script === "" ? undefined : script,
+              "pathCondition",
+              undefined,
+              pathCondition?.key
+            );
+            setOpenScriptDialog(false);
+          }}
+          title={translate("Add expression")}
+          children={
+            <Textbox
+              element={element}
+              className={classes.textbox}
+              showLabel={false}
+              defaultHeight={window?.innerHeight - 205}
+              entry={{
+                id: "script",
+                label: translate("Condition"),
+                modelProperty: "script",
+                get: function () {
+                  return {
+                    script: pathCondition?.processConfig?.pathCondition || "",
+                  };
+                },
+                set: function (e, values) {
+                  setScript(values?.script);
+                },
+              }}
+            />
+          }
+        />
+      )}
       {openExpressionAlert && (
         <Dialog
           open={openExpressionAlert}
@@ -1064,17 +1112,15 @@ export default function ProcessConfiguration({
                 setExpressionAlert(false);
                 setErrorMessage(null);
                 setErrorTitle(null);
-                const pathValue =
-                  pathCondition &&
-                  pathCondition.processConfig &&
-                  pathCondition.processConfig.pathCondition;
                 updateValue(
-                  pathValue === "" ? undefined : pathValue,
+                  pathCondition?.processConfig?.pathCondition,
                   "pathCondition",
                   undefined,
-                  pathCondition && pathCondition.key
+                  pathCondition?.key,
+                  undefined
                 );
-                setPathCondition(null);
+                setScript(pathCondition?.processConfig?.pathCondition);
+                setOpenScriptDialog(true);
               }}
               color="primary"
             >

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { Edit, NotInterested } from "@material-ui/icons";
+import { Edit } from "@material-ui/icons";
 import {
   Dialog,
   DialogTitle,
@@ -12,8 +12,10 @@ import {
   Tooltip,
 } from "@material-ui/core";
 
+import Textbox from "../../../../../components/properties/components/Textbox";
 import TextField from "../../../../../components/properties/components/TextField";
 import QueryBuilder from "../../../../../components/QueryBuilder";
+import AlertDialog from "../../../../../components/AlertDialog";
 import Select from "../../../../../components/Select";
 import { fetchModels, getButtons } from "../../../../../services/api";
 import { translate, getLowerCase, getBool } from "../../../../../utils";
@@ -74,6 +76,11 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
   },
+  scriptDialog: {
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+  },
 }));
 
 export default function UserTaskProps({ element, index, label, bpmnModeler }) {
@@ -84,6 +91,8 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [readOnly, setReadOnly] = useState(false);
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
   const classes = useStyles();
 
   const getProperty = React.useCallback(
@@ -236,6 +245,14 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
     setProperty("camunda:checked", checked);
   };
 
+  const getCompletedIf = () => {
+    let completedIf = getProperty("camunda:completedIf");
+    completedIf = (completedIf || "").replace(/[\u200B-\u200D\uFEFF]/g, "");
+    return {
+      completedIf,
+    };
+  };
+
   useEffect(() => {
     if (is(element, "bpmn:UserTask")) {
       setVisible(true);
@@ -287,14 +304,7 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
               label: translate("Completed if"),
               modelProperty: "completedIf",
               get: function () {
-                let completedIf = getProperty("camunda:completedIf");
-                completedIf = (completedIf || "").replace(
-                  /[\u200B-\u200D\uFEFF]/g,
-                  ""
-                );
-                return {
-                  completedIf,
-                };
+                return getCompletedIf();
               },
               set: function (e, values) {
                 let oldVal = getProperty("camunda:completedIf");
@@ -311,8 +321,9 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
             endAdornment={
               <div className={classes.new}>
                 <Tooltip title="Enable" aria-label="enable">
-                  <NotInterested
-                    className={classes.newIcon}
+                  <i
+                    className="fa fa-code"
+                    style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
                     onClick={() => {
                       if (readOnly) {
                         setAlertMessage(
@@ -320,9 +331,12 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
                         );
                         setAlertTitle("Warning");
                         setAlert(true);
+                      } else {
+                        setScript(getCompletedIf()?.completedIf);
+                        setOpenScriptDialog(true);
                       }
                     }}
-                  />
+                  ></i>
                 </Tooltip>
                 <Edit className={classes.newIcon} onClick={handleClickOpen} />
                 {open && (
@@ -338,7 +352,43 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
               </div>
             }
           />
-
+          {openScriptDialog && (
+            <AlertDialog
+              className={classes.scriptDialog}
+              openAlert={openScriptDialog}
+              alertClose={() => {
+                setScript(getCompletedIf()?.completedIf);
+                setOpenScriptDialog(false);
+              }}
+              handleAlertOk={() => {
+                setProperty(
+                  "camunda:completedIf",
+                  (script || "").replace(/[\u200B-\u200D\uFEFF]/g, "")
+                );
+                setOpenScriptDialog(false);
+              }}
+              title={translate("Completed if")}
+              children={
+                <Textbox
+                  element={element}
+                  className={classes.textbox}
+                  showLabel={false}
+                  defaultHeight={window?.innerHeight - 205}
+                  entry={{
+                    id: "script",
+                    label: translate("Completed if"),
+                    modelProperty: "completedIf",
+                    get: function () {
+                      return getCompletedIf();
+                    },
+                    set: function (e, values) {
+                      setScript(values?.completedIf);
+                    },
+                  }}
+                />
+              }
+            />
+          )}
           {openAlert && (
             <Dialog
               open={openAlert}
@@ -370,6 +420,8 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
                     setReadOnly(false);
                     setProperty("camunda:completedIfValue", undefined);
                     setProperty("camunda:completedIfCombinator", undefined);
+                    setScript(getCompletedIf()?.completedIf);
+                    setOpenScriptDialog(true);
                   }}
                   color="primary"
                   className={classes.save}
