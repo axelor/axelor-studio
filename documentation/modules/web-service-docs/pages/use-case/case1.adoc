@@ -1,28 +1,37 @@
-=   Axelor Instance
+=   Connecting to an Axelor's instance
 :toc-title:
 :page-pagination:
 
-You can refer to the axelor documentation in the official site for creating your requests and connecting to axelor **Rest API** .
+For using the Axelor Rest API  You can refer to the axelor documentation in the official site for creating your requests and connecting to axelor instance .
 
-
-
-== How to get A specif Product in axelor instance .
+== How get A specific Product in Axelor instance .
 
 In this example we want to retrieve a product data by sending a request to an axelor instance.
-It is a connector with one request of type ‘GET’. It will fetch the product by a specific ID .
+It is a connector with one request of type **GET**. It will fetch the product by a specific ID .
 
+The web service is accessible with following url pattern:
+----
+GET /ws/rest/:model/:id
+----
+
+.Request
+----
+GET /ws/rest/com.axelor.apps.base.db.Product/1 HTTP/1.1
+Accept: application/json
+----
 == Authentication
 
 We have to create an authentication to connect with an axelor instance .
-it's a custom authentication used , we need to provide a username and a password to be authenticated .
+it's a custom authentication used , We need to provide a **username** and a **password** to be authenticated .
+
 the request of authentication is :
 
-image::axelorAuth.png[auth axelor]
+image::axelorAuth.png[auth axelor,align="left"]
 
-The authentication is e basic and the token is sored in the cookies , so we chose the cookie option .
-By click on authenticate button , you can check if the authentication is correct or not .
+The authentication is a basic and the token is stored in the cookies , so we chose the cookie option .
+By click on the authenticate button , you can test if the authentication is correct or not .
 
-image::auth-axelor.png[auth axelor]
+image::auth-axelor.png[auth axelor,align="left"]
 
 == Get product request
 
@@ -31,15 +40,15 @@ To get a product by id ,  you can send a request to :
 GET :  baseUrl/com.axelor.apps.db.Product/{productID}
 ----
 
-image::getProduct.png[get product request]
+image::getProduct.png[get product request,align="left"]
 
-TIP: you can provide the product id via a context , by passing the product context in the BPM Connector script .
+TIP: You can provide the product id via a context , by passing the product context in the BPM Connector script .
 every dynamic value must donate by ${} , it is processed by a groovy template .
 
 == Get product connector
 
-Here we specify the requests to execute , we have only one ( Get product ), also we need to define the base url used .
+Here we specify the requests to execute , we have only one ( Get product ), also we need to define the base URL used .
 
-image::connectorGetProduct.png[get product request]
+image::connectorGetProduct.png[get product request,align="left"]
 
 NOTE: You can pass the product context via the connector script in the axelor BPM

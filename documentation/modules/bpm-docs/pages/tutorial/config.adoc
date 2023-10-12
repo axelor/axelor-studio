@@ -8,7 +8,7 @@ Pour insérer une piscine, il faut faire un glissé déposé de l’icon image:p
 Une fois qu’une piscine est insérée dans la modélisation, il est impossible d’insérer un objet en dehors d’une quelconque piscine.
 Le panel de configuration d’une piscine est composé de 4 onglets qui sont les suivants.
 
-image::panel-menu.png[Panel menu]
+image::panel-menu.png[Panel menu,align="left"]
 
 On accède à ce panel en cliquant sur la piscine.
 
@@ -53,11 +53,11 @@ Le champ “Chemin utilisateur par défaut”  …
 
 Ainsi dans le cas de notre scénario, la configuration devrait ressembler à celle-ci :
 
-image::config.png[Configuration]
+image::config.png[Configuration,align="left"]
 
 Une fois le processus configuré, on peut revenir dans l’onglet général et choisir le modèle pour le champ “Display models” :
 
-image::display-status.png[Display status]
+image::display-status.png[Display status,align="left"]
 
 == Listner
 

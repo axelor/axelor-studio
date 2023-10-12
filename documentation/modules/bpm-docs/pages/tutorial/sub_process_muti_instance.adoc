@@ -8,15 +8,15 @@ Pour cela nous allons utiliser un sous-processus séquentiel multi instance.
 Commencez par insérer un sous processus à la suite de la requête en effectuant un glisser déposer de l’icône : image:sub-process-icon-1.png[sub-process icon] Cliquez sur le sous processus et utilisez la clé à molette pour sélectionner les barres parallèle image:barre-paralelle-icon.png[barre parallele icon]
 pour transformer le sous processus en sous processus séquentiel multi instance :
 
-image::sub_process_bpm.png[event process]
+image::sub_process_bpm.png[event process,align="left"]
 
 Dans le sous processus, nous avons inséré une tâche script que l’on va paramétrer plus tard. En cliquant sur le sous processus, sur l’onglet de droite, nous avons accès aux champs suivants : “Loop cardinality” et “Collection”.  “Loop cardinality”  permet d’indiquer un nombre d’itération. “Collection” permet d’indiquer une collection sur laquelle le sous processus va itérer. Ici, nous souhaitons itérer sur la liste “ListeLignesDemande” construite précédemment, nous indiquons donc cette liste dans le champ “Collection”. Toujours dans l’onglet de droite, nous pouvons renseigner le champ “Element variable”. Ce champ permet de stocker dans une variable la valeur de l’élément de la liste à une itération donnée :
 
-image::sub_process_card.png[event process]
+image::sub_process_card.png[event process,align="left"]
 
 Dans la tâche script “Créer une ligne de commande d’achat”, nous pouvons alors utiliser la variable “uneLigneDemande” pour venir compléter les champs de la commande :
 
-image::script_sub_process.png[event process]
+image::script_sub_process.png[event process,align="left"]
 
 Ce qui génère le script suivant :
 
@@ -38,16 +38,16 @@ NOTE: Testez le processus.
 
 Voici la correction :
 
-image::correct_sub_process_bpm.png[event process]
+image::correct_sub_process_bpm.png[event process,align="left"]
 
 La tâche “Initialiser total” est paramétré de la manière suivante :
 
-image::script_task_sub_process.png[event process]
+image::script_task_sub_process.png[event process,align="left"]
 
 Voici le script de la tâche “Calculer total” :
 
-image::script_result_sub_process.png[event process]
+image::script_result_sub_process.png[event process,align="left"]
 
 Et voici la mise à jour du champ total (“Renseigner total”), vous pouvez renseigner cette tâche depuis le mapper :
 
-image::update_total_sub_process.png[event process]
+image::update_total_sub_process.png[event process,align="left"]

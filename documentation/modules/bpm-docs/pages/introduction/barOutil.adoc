@@ -6,7 +6,7 @@
 
 En haut à gauche est visible une barre d’outil semblable à celle ci :
 
-image::bareOutil.png[connector form]
+image::bareOutil.png[connector form,align="left"]
 === **Bouton “nouveau modèle”:**
 Le bouton image:plus-icon.png[plus image] permet de créer un nouveau modèle BPM.
 
@@ -26,7 +26,7 @@ Le bouton image:save-as-image-icon.png[save image] permet de télécharger une i
 Le studio BPM vous permet de venir importer et exporter vos modèles de processus, le fichier généré est un fichier XML d’extension .bpmn.
 Ce fichier comporte tous les éléments de votre diagramme mais également les paramétrages de chacun des nœuds du processus.
 
-I. **Bouton “Charger un processus”**
+A. **Bouton “Charger un processus”**
 Le bouton image:importer-icon.png[importe image] permet de charger un fichier xml avec une extension .bpmn. En faisant cela, le studio ouvre le processus tel qu’il est défini dans le fichier .bpmn.
 
 B. **Bouton “Télécharger un processus”**
@@ -39,13 +39,13 @@ IMPORTANT: Le téléchargement d’un processus permet d’éviter les problème
 Le bouton image:deploy-icon.png[deploy image] permet de déployer le processus dans l’application, c'est-à-dire de le rendre effectif.
 Lors d’un déploiement, une pop-up s’ouvre. Il s’agit du mapping. Cela permet de faire le lien entre les anciens et les nouveaux nœuds du processus. Lors d’un premier déploiement, il est vide car il n’y a pas d’ancien processus. Après il se présente sous la forme suivante.
 
-image::nodeMapping.png[connector form]
+image::nodeMapping.png[connector form,align="left"]
 
 Lors cette étape, en cas de déploiement d’une nouvelle version d’un processus, la possibilité de migrer les anciennes instances sur le nouveau modèle est offerte à l’utilisateur
 Ici on voit ci-dessous qu’il existait un nœud “La demande est acceptée” précédemment, mais que sur le nouveau processus il n’existe plus.
 Le mapping donne des informations sur les changements qu’il y a pu avoir entre l’ancien et le nouveau processus sur les nœuds déjà en place.
 
-image::nodeMapping-example.png[connector form]
+image::nodeMapping-example.png[connector form,align="left"]
 
 === **Bouton "Rafraîchissement":**
 Le bouton image:refresh-icon.png[refresh image] permet de recharger la vue du processus. Cela est utile si un autre utilisateur a modifié le modèle après que vous l’ayez ouvert (attention car vous perdrez vos modifications).
@@ -59,4 +59,4 @@ Le panel s’affiche à sa place habituelle, à droite de l’écran.
 
 A droite de la barre horizontale présentée précédemment, se trouve un champ déroulant qui permet de choisir le modèle sur lequel on souhaite travailler.
 
-image::chooseModel.png[connector form]
+image::chooseModel.png[connector form,align="left"]

@@ -8,6 +8,6 @@ Symbolisé par image:signal-icon-4.png[signal icon],image:signal-icon-5.png[sign
 
 Il est nécessaire de paramétrer le signal délivré ou en attente dans le panel de propriétés onglet général
 
-image::signal.png[event process]
+image::signal.png[event process,align="left"]
 
 Cliquer sur le bouton image:signal-icon-plus.png[signal icon] permet de créer un nouveau signal. Un Signal Name sera automatiquement généré, mais il est conseillé de le changer pour le rendre plus compréhensible.

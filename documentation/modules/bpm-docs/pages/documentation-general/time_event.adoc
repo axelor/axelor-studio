@@ -6,7 +6,7 @@ Symbolisé par image:time-icon-1.png[time icon],image:time-icon-2.png[time icon]
 
 Son déclenchement se paramètre dans le panel de propriétés onglet général
 
-image::time_event.png[event process]
+image::time_event.png[event process,align="left"]
 
 La définition du timer (Timer Definition) se fait en norme https://fr.wikipedia.org/wiki/ISO_8601[ISO 8601]
 

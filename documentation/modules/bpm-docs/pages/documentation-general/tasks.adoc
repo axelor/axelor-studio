@@ -15,12 +15,12 @@ Représentée par image:receive-task-icon.png[receive icon], il agit de manière
 représentée par image:task-user-icon.png[receive icon], il attend une action de l’utilisateur,
 Cela peut être d'appuyer sur un ou plusieurs bouton :
 
-image::user_task_tasks.png[event process]
+image::user_task_tasks.png[event process,align="left"]
 
 Ici il s’agit d’appuyer sur le fillProjectBtn
 Ou prendre la forme d’attente d’une vérification d’une condition, comme ici ou il faut fournir un partnerAccount pour compléter la tâche.
 
-image::completed_if_tasks.png[event process]
+image::completed_if_tasks.png[event process,align="left"]
 
 Bien sûr, il est tout à fait possible de combiner les deux types de vérification.
 
@@ -34,11 +34,11 @@ Concrètement, il s’agit d’une porte ouverte pour le moteur, mais qui déliv
 
 Représentée par image:script-task-1.png[script icon], il s’agit d’une activité automatisée. Lorsque le processus atteint cette tâche, il exécute au choix un script construit ou non avec le mapper
 
-image::stock_move.png[event process]
+image::stock_move.png[event process,align="left"]
 
 Ou une query en cochant la case image:query-icon.png[receive icon]  qui permet de récupérer une variable et de l’utiliser plus tard dans le processus.
 
-image::script_stock_move.png[event process]
+image::script_stock_move.png[event process,align="left"]
 ----
 $beans.get(com.axelor.apps.stock.service.StockMoveServiceImpl.class).realize($ctx.find('StockMove',stockMove?.id)?.getTarget())
 ----
@@ -47,7 +47,7 @@ $beans.get(com.axelor.apps.stock.service.StockMoveServiceImpl.class).realize($ct
 
 Représentée par image:businiss-rule-icon.png[business icon], il est majoritairement utilisé pour manipuler des DMN.
 
-image::businiss_rule_task.png[event process]
+image::businiss_rule_task.png[event process,align="left"]
 
 == Service Task
 
@@ -59,23 +59,23 @@ modèle via une liste déroulante image:baml-model-icon.png[baml icon] et modifi
 
 Le studio implémente plusieurs services externes sélectionnables via la liste déroulante
 
-image::implemenation_service_task.png[event process]
+image::implemenation_service_task.png[event process,align="left"]
 
 Les services disponibles sont l’appel d’une classe java, ou il faudra fournir le nom complet de celle-ci.
 
-image::implemantation_service_task_2.png[event process]
+image::implemantation_service_task_2.png[event process,align="left"]
 
 Cependant il faudra définir au format attendu par le moteur camunda la classe java appelée :
 
 https://docs.camunda.org/get-started/java-process-app/service-task/
 L’utilisation d’une expression qui peut renvoyer une variable de résultat
 
-image::implemenation_service_3.png[event process]
+image::implemenation_service_3.png[event process,align="left"]
 
 Il s’agit d’appeler une méthode d’une classe, mais il faut que celle ci soit sous un format spécifique à Camunda détaillé içi : https://docs.camunda.org/get-started/javaee7/service-task/
 
 L’utilisation d’une expression déléguée
 
-image::implementation_service_4.png[event process]
+image::implementation_service_4.png[event process,align="left"]
 
 Plus d’informations disponibles içi : https://docs.camunda.org/get-started/spring/service-task/

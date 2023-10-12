@@ -1,5 +1,4 @@
 =  Basic Authentication
-
 :toc-title:
 :page-pagination:
 
@@ -10,12 +9,12 @@ We will take the postman API  example , you can consult the docs of postman api 
 We need to select the type as basic auth and then fill the username and password field .
 then this authentication will be used in a connector that will encode the username and the password on base64
 
-image::postmanAuth.png[postman authentication]
+image::postmanAuth.png[postman authentication,align="left"]
 
-you can test to authentication with any request to the postman api.
-you can send a request to :
+You can test to authentication with any request to the postman api.
+by sending a request to :
 ----
 GET : https://postman-echo.com/basic-auth
 ----
 
-you will a json with a TRUE result .
+NOTE: The result is  a json with a TRUE value in case of correct authentication .

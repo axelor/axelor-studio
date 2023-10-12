@@ -11,11 +11,11 @@ Pour insérer un sous processus événementiel, faite un glisser déposer de l'i
 
 Les sous processus événementiel contiennent un processus qui va se déclencher sous condition. Nous matérialisons cette condition par un événement de départ du processus. En fonction de l’événement de départ, le sous-processus événementiel peut être interruptif (événement en traits plein) :
 
-image::event_process.png[event process]
+image::event_process.png[event process,align="left"]
 
 ou non interruptif (événement en traits pointillés) :
 
-image::interruptif_event.png[event process]
+image::interruptif_event.png[event process,align="left"]
 
 Ici on veut interrompre le processus principal dès lors que l’utilisateur clique sur “Annuler”, nous choisissons donc un processus interruptif. Comme point de départ nous utilisons un événement conditionnel (c’est celui sur l’image ci-dessus) en trait plein car l’on souhaite un processus interruptif.
 

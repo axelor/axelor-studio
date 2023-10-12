@@ -7,7 +7,7 @@
 Après avoir inséré et configuré notre piscine, nous devons maintenant insérer un élément de départ image:event-debut-icon.png[event first image] . C’est par lui que va commencer notre processus. Pour déployer et tester notre processus nous allons relier cet événement de départ  à un événement de fin image:event-fin-icon.png[params image].
 Le schéma devrait ressembler à cela :
 
-image::first-end-event.png[request form]
+image::first-end-event.png[request form,align="left"]
 
 Pour l’instant, notre processus ne fait pas grand chose : il commence puis se termine. Nous allons tout de même tester ce processus simple en le déployant image:deploy-icon.png[params image].
 
@@ -16,13 +16,13 @@ Pour l’instant, notre processus ne fait pas grand chose : il commence puis se 
 
 Lors du premier déploiement, vous devriez avoir le message suivant :
 
-image::nodeMapping-ex.png[Node mapping example]
+image::nodeMapping-ex.png[Node mapping example,align="left"]
 
 Après quelques instants le message “Deployed successfully” apparaît.
 
 Par curiosité, essayez d’appuyer à nouveau sur  image:deplace-icon.png[deploy image], vous devriez avoir quelque chose comme celà :
 
-image::node-mapping-process.png[Node mapping process]
+image::node-mapping-process.png[Node mapping process,align="left"]
 
 Cette fois-ci une correspondance entre les anciens nœuds et les nouveaux (qui dans notre exemple sont les mêmes) est faite.
 
@@ -32,11 +32,11 @@ La correspondance assure que chaque instance de processus déjà en cours soit m
 
 Par exemple :
 
-image::nodeMapping-ex.png[Node mapping process]
+image::nodeMapping-ex.png[Node mapping process,align="left"]
 
 En déployant, cette fois ci on a :
 
-image::node-mapping-process-ex.png[Node mapping process]
+image::node-mapping-process-ex.png[Node mapping process,align="left"]
 
 Les instances de processus qui sont sur le nœud “Event_1m7v83” seront migrées vers le nœud “Début du processus”.
 

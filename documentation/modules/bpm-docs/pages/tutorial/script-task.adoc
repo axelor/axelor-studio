@@ -6,11 +6,11 @@ Il reste à paramétrer les tâches script pour renseigner automatiquement une d
 Comme nous souhaitons un comportement automatique, nous allons utiliser une tâche script. Pour définir une tâche script, cliquez sur la tâche, puis sélectionnez la clé à molette, puis sélectionnez la tâche script.
 Le modèle de processus devrait ressembler à ça :
 
-image::task_script_process.png[Task script process]
+image::task_script_process.png[Task script process,align="left"]
 
 Dans le mapper, renseignez le “Modèle cible” avec  le modèle de la demande d’achat (PurchaseRequest). Vous pouvez ensuite cliquer sur “Add fields” et venir sélectionner le champ qui nous intéresse : “Société”, pour venir lui affecter une valeur, par exemple “Axelor”. Il existe plusieurs manières de récupérer des valeurs avec le mapper. Ici nous avons sélectionné “Valeur” pour le champ “Value from”, ce qui permet de récupérer une valeur directement. Intéressons nous au script qui a été généré :
 
-image::script_result.png[Script Result]
+image::script_result.png[Script Result,align="left"]
 
 La méthode $ctx.filterOne est utilisée pour rechercher une société dont le nom est égal à “Axelor”, puis le résultat est récupéré avec getTarget() et sauvegardé avec $ctx.save.
 

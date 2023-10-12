@@ -2,7 +2,7 @@
 :toc-title:
 :page-pagination:
 
-We have defined the connector in the previous step , i and we have noticed that it uses an Authentication element , so let's define this element .
+We have defined the connector in the previous step,  and we have noticed that it uses an authentication element , so let's define this element .
 
 == The purpose of Authentication
 
@@ -11,23 +11,23 @@ One authenticator can be used with multiple connectors.
 Currently, it supports two types of authentication Oauth-2 and basic.
 // Pease see this link bellow to understand more of result request
 
-image::auth.png[auth form]
+image::auth.png[auth form,align="left"]
 
 == Elements of  Authentication
 
-<1> **App :**  Use axelor application plugin
-<2> **Name of authentication :** The name of the authentication ( Required) .
-<3> **Authenticate ( button ) :** It will call the selected ‘Auth request’ and store its result inside ‘Auth response’.
+<1> **App :**  use axelor application plugin
+<2> **Name of authentication :** the name of the authentication ( Required) .
+<3> **Authenticate ( button ) :** it will call the selected ‘Auth request’ and store its result inside ‘Auth response’.
 If the authentication is successful it will check the ‘Authenticated’  checkbox.
-<4> **Authenticated :** A checkbox that is auto checked when the authentication is successful.
-<5> **Authentication request :** The api request for authentication.
-<6> **Auth response :** Text field to store response by calling authentication request.
-<7> **Auth type :** Type of the authentication, which is basic in basic authentication.
+<4> **Authenticated :** a checkbox that is auto checked when the authentication is successful.
+<5> **Authentication request :** the api request for authentication.
+<6> **Auth response :** text field to store response by calling authentication request.
+<7> **Auth type :** type of the authentication, which is basic in basic authentication.
 
 == Authentication type
 
-Authentication is the process of verifying the identity of a user or entity.
-There are several types of authentication methods commonly used , our web Service project support two major  types, **Basic Auth** and **Oauth2 auth**
+Authentication is the process of verifying the identity of a user or an entity.
+There are several authentication methods commonly used , the web Service project supports two major  types **Basic Auth** and **Oauth2**
 
 === Basic authentication
 
@@ -53,7 +53,7 @@ the credentials are passed in the request body  or the headers.
 
 ==== Standard Basic authentication
 
-image::basic-auth.png[Basic authentication]
+image::basic-auth.png[Basic authentication,align="left"]
 
 When select the basic  authentication , two fields appear ( username , password ), we can add an authentication request  to do a custom authentication to an API .
 
@@ -61,19 +61,15 @@ NOTE: When select an authentication request  **( a custom authentication )** , t
 
 ==== Custom Authentication
 
-when we add a request authentication , a field appear to chose between two modes : **Jeton** and **Cookie**
+When we add a request authentication , a field appear to chose between two modes : **Jeton** and **Cookie**
 
-image::tokenCookie.png[Basic authentication]
+image::tokenCookie.png[Basic authentication,align="left"]
 
-===== Cookie
+* **Cookie :** That means the token is saved as a cookie in the headers of the response's request authentication .
 
-That's mean the token is saved as a cookie in the headers of the response's request authentication .
+* **Jeton :** In many implementation of creation sessions of authentication , there is always some custom implementation , that's mean we can not find the token in the headers or in the cookies , but we can find it in the body of the response , for that we need to add the name of the attribute in the body response to extract the token .
 
-===== Jeton
-
-In many implementation of creation sessions of authentication , there is always some custom implementation , that's mean we can not find the token in the headers or in the cookies , but we can find it in the body of the response , for that we need to add the name of the attribute in the body response to extract the token .
-
-image::tokenCookie.png[Basic authentication]
+image::tokenCookie.png[Basic authentication,align="left"]
 
 
 === Oauth authentication
@@ -81,7 +77,7 @@ image::tokenCookie.png[Basic authentication]
 OAuth 2.0 is an authorization framework that allows users to grant limited access to their protected resources (such as data or APIs) to third-party applications without sharing their credentials directly. It provides a secure and standardized way for users to authorize external applications to access their resources on their behalf.
 This is the most common type of authentication currently used for api authentication. It allows  specific permission as per need.
 
-image::oauth2.png[Oauth authentication]
+image::oauth2.png[Oauth authentication,align="left"]
 
 <1> **Auth request :**  It is an api request to open permission consent window where users authenticate the necessary permission.
 <2> **Token request :** On success of Auth  request it will call this token request to get an authentication token.

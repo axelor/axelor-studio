@@ -6,6 +6,6 @@ Symbolisé par image:escalation-icon-1.png[escalation icon],image:escalation-ico
 
 Symbolisé par image:escalation-icon-3.png[escalation icon],image:escalation-icon-4.png[escalation icon], image:escalation-icon-5.png[escalation icon], image:escalation-icon-6.png[escalation icon] Il est déclenché à la réception d’un signal “Escalation”
 
-image::escalation_event.png[event process]
+image::escalation_event.png[event process,align="left"]
 
 Cliquer sur le bouton image:signal-icon-plus.png[signal icon] permet de créer un nouveau signal “Escalation”. Un Escalation Name sera automatiquement généré, mais il est conseillé de le changer pour le rendre plus compréhensible.

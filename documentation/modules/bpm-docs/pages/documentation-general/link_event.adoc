@@ -5,4 +5,4 @@
 Symbolisé par  et image:link-icon-1.png[link icon],image:link-icon-2.png[link icon] il sert de porte "allez vers” dans le même sous processus
 Il suffit de remplir le nom du lien pour permettre le lien entre image:link-icon-2.png[link icon]  et image:link-icon-1.png[link icon]
 
-image::link_event.png[event process]
+image::link_event.png[event process,align="left"]

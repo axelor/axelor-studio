@@ -7,16 +7,13 @@ Voici comment faire :
 
 <1> Allez dans “App>Studio”
 <2> Sélectionnez “Vue” à la place de “Personnalisé”, “Product” comme modèle, “product-form (Calculé)” comme vue et “attrs” comme champs personnalisés.
+<3> Dans le panel “attrs” ajoutez 2 boutons (glissez déposez image:btn-icon.png[button icon] ) que vous pouvez renommer “Envoyer” et “Synchroniser” grâce au champ “Titre” de l’onglet de droite : image:web_service_studio_form.png[event process]
 
-image::web_service_studio_form.png[event process]
-
-<3> Dans le panel “attrs” ajoutez 2 boutons (glissez déposez image:btn-icon.png[button icon] ) que vous pouvez renommer “Envoyer” et “Synchroniser” grâce au champ “Titre” de l’onglet de droite :
-
-image::web_service_studio_2.png[event process]
+image::web_service_studio_2.png[event process,align="left"]
 
 Dans l’onglet de droite, dans le champ “au clic”, ajoutez les actions : “save” et “action-refresh-record” :
 
-image::web_service_save_studio.png[event process]
+image::web_service_save_studio.png[event process,align="left"]
 
 À présent, nous pouvons nous concentrer sur le cœur de l’exercice, à savoir l’appel à un web service pour créer un produit sur le serveur (ou simuler sa création) puis la sauvegarde de l’identifiant dans le champ description.
 
@@ -24,14 +21,14 @@ La première étape consiste à créer un connecteur et une requête. Nous déta
 
 Il faut s’aider de la documentation de https://dummyjson.com/docs/products :
 
-image::web_service_studio_backend.png[event process]
+image::web_service_studio_backend.png[event process,align="left"]
 
 <1> Allez dans le menu “App>WS Component>Connector”
 <2> Créez un nouveau connecteur avec le +
 <3> Donnez lui un nom (ex: “dummy_product”) et renseigné “Base URL” avec “https://dummyjson.com”
 <4> Ajoutez une requête :
 
-image::web_service_request.png[event process]
+image::web_service_request.png[event process,align="left"]
 
 NOTE: avec cette requête on crée un produit qui s’appelle “BMW Pencil”, nous allons garder cette valeur pour tester mais nous verrons ensuite comment faire pour la rendre paramétrable.
 

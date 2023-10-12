@@ -1,19 +1,17 @@
-= Step 5: BPMN and Web service
+= BPMN and Web service
 :toc-title:
 :page-pagination:
 
 == BPMN
-The main purpose from the web service is for used it inside the axelor BPM , by adding a new task in the BPM , you can add it as a script task and select the connector option .
+The main purpose from the web service is for using it inside the axelor BPM , by adding a new task in the BPM , you can add it as a script task and select the connector option .
 
-image::ConnectorBPM.png[Connector option]
+image::ConnectorBPM.png[Connector option,align="left"]
 
 
 == Connector script
-To generate a connector script tou can click on the pen icon , an interface will be displayed :
+To generate a connector script you can click on the pen icon , an interface will be displayed :
 
-image::connectorInterface.png[Connector Interface]
-
-=== Fields
+image::connectorInterface.png[Connector Interface,align="left"]
 
 <1> **Connector :** Select the connector to call.
 <2> **Request :** Select the request from connect whose result is required.
@@ -22,4 +20,4 @@ image::connectorInterface.png[Connector Interface]
 <5> **Return expression :** It allows you to modify the result of response as per need. The variable ‘_res’ stores the full result of the request, it can be used here inside the expression.
 <6> **Payload :** Multiple payloads can be added here as per need from the connector. Here it is required to specify payloads for all requests from the connector as it will call a full connector and not just a single request. Variables (including context objects) available in bpm context can be used here in the value field. The checkbox ‘Expression’ should be checked if value is variable from bpm context else it will consider static value.
 
-NOTE: By select the request field , that's mean you will get the result of the execution' request selected . if you want to get all the result of the connector you can deselect this field.
+NOTE: By selecting the request field , that means you will get the result of the execution request selected . if you want to get all the result of the connector you can deselect this field.

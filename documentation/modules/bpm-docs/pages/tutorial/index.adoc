@@ -48,7 +48,6 @@ Demandez à l'utilisateur de renseigner la date de réception estimée de la com
 Nous allons nous intéresser aux produits et à l’API dummyjson : https://dummyjson.com/docs/products.
 
 <1> Création d’un produit : Sur la vue formulaire des produits ajoutez un bouton “Envoyer”. Lorsque l’on clique sur ce bouton, on doit faire appel à l’api : https://dummyjson.com/products/add  qui simule l’enregistrement du produit sur le serveur et renvoie un identifiant. Stocker cet identifiant dans la description du produit.
-
 <2> Mise à jour des produits : Ajouter un bouton “Mettre à jour” sur la vue formulaire des produits. Lorsque l’on clique sur ce bouton cela doit avoir pour effet :
 L’appel à l’api : https://dummyjson.com/products
 La création de tous les produits retournés par l’API

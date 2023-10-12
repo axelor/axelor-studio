@@ -12,17 +12,17 @@ Le DMN peut être utilisé avec BPM ou indépendamment. Seule la référence de 
 
 Pour accéder à la création d’un modèle BPM, il faut cliquer sur le menu suivant disponible dans l’onglet “Constructeur d’application”
 
-image::app_builder.png[event process]
+image::app_builder.png[event process,align="left"]
 
 Cela va ouvrir l’onglet et le visuel suivant :
 
-image::app_builder_menu.png[event process]
+image::app_builder_menu.png[event process,align="left"]
 
 Il faudra renseigner un nom qui est obligatoire. Il est possible de renseigner une description qui explicite ce que fait le modèle DMN. On peut renseigner un modèle qui sera utilisé si le DMN n’est pas lié à un modèle BPM.
 
 Pour accéder à l’éditeur du DMN, il faut cliquer sur le bouton suivant image:open-editor-icon.png[editor  icon]  Ce qui va amener à l’écran suivant
 
-image::dmn_diagram.png[event process]
+image::dmn_diagram.png[event process,align="left"]
 
 La vue de l’éditeur est similaire à celle que l’on a sur le BPM. sur le côté gauche, il y a une barre verticale avec toutes les possibilités sur le graphique image:dmn-menu.png[gateway icon]
 
@@ -40,8 +40,8 @@ Le bouton image:dmn-btn-5.png[gateway icon] (aucune utilité fonctionnelle, il s
 
 Sur la droite, nous avons le panneau des propriétés, qui donne par défaut celle du DRD
 
-image::diagram_table.png[event process]
+image::diagram_table.png[event process,align="left"]
 
-image::general_dmn.png[event process]
-image::general_dmn_2.png[event process]
-image::genral_dmn_2.png[event process]
+image::general_dmn.png[event process,align="left"]
+image::general_dmn_2.png[event process,align="left"]
+image::genral_dmn_2.png[event process,align="left"]

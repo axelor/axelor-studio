@@ -13,24 +13,24 @@ To use OAuth 2.0 with Google services, you'll need to perform the following step
 <6> Obtain an access token: Once the user grants permission, your application will receive an authorization code or an access token directly, depending on the flow you implemented. You can exchange the authorization code for an access token by making a request to Google's token endpoint.
 <7> Use the access token: With the access token, your application can make authorized API requests to Google services on behalf of the user. Include the access token in the Authorization header of your requests, following the OAuth 2.0 Bearer token scheme.
 
-
 == Authentication
 
 We have to create an authentication to connect with  Oauth2 google protocol .
-it's an oauth2 authentication , we need to provide a **request authentication** to get the code of authentication , it is needed to get the token . also we need to provide a **token request** to get the token , and also create a **refresh token request**
+it's an oauth2 authentication , we need to provide a **request authentication** to get the code of authentication , it is needed to get the token . also we need to provide a **token request** to get the token , and create a **refresh token request**
 
-=== Auth request
+=== Authentication request
 
-* The authorization request typically involves the following steps:
-* The client application (the third-party app) redirects the user to the authorization server's authorization endpoint URL, with the following parameters:
-* client_id: the unique identifier of the client application
-* redirect_uri: the URL to which the authorization server will redirect the user's browser after the authorization is complete
-* response_type: the value should be "code", indicating that the client application is requesting an authorization code
-* The authorization server authenticates the user and asks for their permission to grant the requested access.
+The authorization request typically involves the following steps:
+
+1. The client application (the third-party app) redirects the user to the authorization server's authorization endpoint URL, with the following parameters:
+2. Provide a client_id , the unique identifier of the client application
+3. Add redirect_uri: the URL to which the authorization server will redirect the user's browser after the authorization is complete
+4. Specify the response_type the value should be "code", indicating that the client application is requesting an authorization code
+4. The authorization server authenticates the user and asks for their permission to grant the requested access.
 If the user grants permission, the authorization server generates an authorization code and redirects the user's browser to the client application's redirect_uri with the authorization code appended as a query parameter.
-* The client application receives the authorization code and can then use it to request an access token, which will allow it to access the protected resources on behalf of the user.
+5. The client application receives the authorization code and can then use it to request an access token, which will allow it to access the protected resources on behalf of the user.
 
-image::authRequestOAUTH2.png[auth axelor]
+image::authRequestOAUTH2.png[auth axelor,align="left"]
 
 IMPORTANT: It's important to note that the authorization code should be kept confidential , also for redirect_uri it’s not important to mention here.
 For the client id you can configure your Google console developer account to get your client_ID .
@@ -40,27 +40,27 @@ You can do the configurations with this link : https://console.cloud.google.com
 
 To make the second request to get the token, you'll need to send a POST request to Google's token endpoint (https://oauth2.googleapis.com/token) with the following parameters:
 
-* grant_type: set to "authorization_code"
-* code: set to the authorization code obtained in step 1
-* redirect_uri: set to the same value used in the authorization request
-* client_id: the ID of the Google Cloud Console project
-* client_secret: the secret key of the Google Cloud Console project
+1. **grant_type :** set to "authorization_code"
+2. **code :** set to the authorization code obtained in step 1
+3. **redirect_uri :**  set to the same value used in the authorization request
+4. **client_id :**  the ID of the Google Cloud Console project
+5. **client_secret :**  the secret key of the Google Cloud Console project
 
-image::tokenOauth2.png[auth axelor]
+image::tokenOauth2.png[auth axelor,align="left"]
 
 === Refresh token request
 
 To request a refresh token, you'll need to include the access_type parameter in the initial authorization request to Google's authorization server. This parameter should be set to "offline", which indicates that you're requesting a refresh token along with the access token.
 
 
-image::refresh-token.png[refresh token request]
+image::refresh-token.png[refresh token request,align="left"]
 
 NOTE: When we click on the authenticate button , you can see the result on the tab panel bellow . every panel correspond to the result of the execution of any requests of those three .
 
-image::resultOauth2.png[result oauth2 request]
+image::resultOauth2.png[result oauth2 request,align="left"]
 
 == Request ( get list of messages of Google account )
 
 In this example we want to retrieve all messages that exist in my Google account , you can implement any request you want :
 
-image::getMessage.png[get message request]
+image::getMessage.png[get message request,align="left"]

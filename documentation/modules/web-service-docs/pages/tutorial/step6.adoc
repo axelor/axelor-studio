@@ -1,3 +1,0 @@
-= Step 6: React App
-:toc:
-:toc-title:

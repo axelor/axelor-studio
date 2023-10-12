@@ -20,7 +20,7 @@ Aujourd’hui, il n’y a pas de script builder disponible pour rédiger le scri
 
 Il y a 6 types d'événements permettant de déclencher le listener et donc l’application du script
 
-image::type_evenement.png[event process]
+image::type_evenement.png[event process,align="left"]
 
 * Create
    Le script est la toute première chose qui s’applique lorsque le processus arrive à la task.

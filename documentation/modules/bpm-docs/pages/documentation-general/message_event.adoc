@@ -2,11 +2,11 @@
 :toc-title:
 :page-pagination:
 
-Symbolisé par image:message-icon-1.png[message icon] , image:message-icon-2.png[message icon],image:message-icon-3.png[message icon] ll est déclenché  à la réception d’un message.
+Symbolisé par image:message-icon-1.png[message icon] , image:message-icon-2.png[message icon],image:message-icon-3.png[message icon] ll est déclenché à la réception d’un message.
 
-Lors d’un intermediate event (image:message-icon-3.png[message icon],image:message-icon-4.png[message icon]), il est nécessaire de préciser le nom du processus dans lequel celui-ci est reçu en ajoutant le suffixe -${Process_X} au nom du message
+Lors d’un intermediate event (image:message-icon-3.png[message icon],image:message-icon-4.png[message icon]), il est nécessaire de préciser le nom du processus dans lequel celui-ci est reçu en ajoutant le suffixe -$+{Process_X}+ au nom du message
 
-image::message_event_doc.png[event process]
+image::message_event_doc.png[event process,align="left"]
 
 Ici le signal message est reçu dans le processus Pizza_main
 
@@ -14,6 +14,6 @@ Symbolisé par image:message-icon-3.png[message icon],image:message-icon-5.png[m
 
 Il est nécessaire de paramétrer le message délivré ou en attente dans le panel de propriétés onglet général
 
-image::message_id.png[event process]
+image::message_id.png[event process,align="left"]
 
 Cliquer sur le bouton permet de créer un nouveau message. Un Message Name sera automatiquement généré, mais il est conseillé de le changer pour le rendre plus compréhensible.

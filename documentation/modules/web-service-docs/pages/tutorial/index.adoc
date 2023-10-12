@@ -1,7 +1,6 @@
 = API CONSOLE
-// page:page-id.adoc#whats-a-page-id == What's a page ID?
-// page:page-id.adoc#important == Why are page IDs important?
-//[#whats-a-cross-reference]
+:toc-title:
+:page-pagination:
 
 This is a general api connector feature for Axelor Open Suite.
 It is a part of Axelor's studio module. It facilitates calling of REST api through UI.
@@ -22,4 +21,4 @@ there is the request and the connector and the authentication and another stuff 
 We are going to explain each component in the next sections ...
 
 image::menu.png[alt text,align="left"]
-=
+
