@@ -174,7 +174,6 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, targetModel.getId());
 
-
     if (migrationMap == null) {
       return;
     }

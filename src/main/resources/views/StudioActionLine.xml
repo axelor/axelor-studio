@@ -69,6 +69,28 @@
     </panel>
   </form>
 
+  <grid name="studio-action-line-view-params-grid" title="View param"
+    model="com.axelor.studio.db.StudioActionLine">
+    <field name="name" title="Name"/>
+    <field name="value"/>
+  </grid>
+
+  <form name="studio-action-line-view-params-form" title="View param"
+    model="com.axelor.studio.db.StudioActionLine">
+    <panel name="mainPanel">
+      <field name="name" title="Name" selection="studio.menu.view.param.type.select"
+        onChange="action-studio-menu-attrs-set-value-onChange"/>
+      <panel itemSpan="12">
+        <field name="value"
+          showIf="name != 'search-filters' &amp;&amp; name != 'default-search-filters' &amp;&amp; name != 'limit'"
+          selection="studio-menu-view-param-boolean-value"/>
+        <field name="value"
+          showIf="name == 'search-filters' || name == 'default-search-filters'"/>
+        <field name="value" showIf="name == 'limit'" widget="Integer"/>
+      </panel>
+    </panel>
+  </form>
+
   <action-attrs name="action-studio-action-line-meta-json-field-domain">
     <attribute name="domain" for="metaJsonField"
       expr="eval:&quot;self.type not in ('panel','button','separator','label','spacer') and self.model = '${__parent__.model}'&quot;"
@@ -169,5 +191,10 @@
   <!-- <attribute name="hidden" for="valueField" expr="eval:true" if="__parent__._model == 'com.axelor.studio.db.StudioActionLine'
     &amp;&amp; __parent__.valueField == null &amp;&amp; __parent__.valueJson?.targetModel == null"/> -->
   <!-- </action-attrs> -->
+
+  <action-attrs name="action-studio-menu-attrs-set-value-onChange">
+    <attribute name="value" for="value" expr="eval: null"/>
+
+  </action-attrs>
 
 </object-views>
