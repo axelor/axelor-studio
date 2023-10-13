@@ -1,0 +1,7 @@
+=  Astuces sur l’espace de travail
+:toc-title:
+:page-pagination:
+
+== Afficher des éléments dans les logs
+
+def logger = org.slf4j.LoggerFactory.getLogger("org.camunda.bpm.engine.script")

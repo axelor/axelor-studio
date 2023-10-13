@@ -2,9 +2,9 @@
 :toc-title:
 :page-pagination:
 
-Symbolisé par image:signal-icon-1.png[signal icon],image:signal-icon-2.png[signal icon],image:signal-icon-3.png[signal icon] ll est déclenché à la réception d’un signal
+Symbolisé par image:signal-icon-1.png[signal icon],image:signal-icon-2.png[signal icon],image:signal-icon-3.png[signal icon],image:signal-icon-4.png[signal icon] ll est déclenché à la réception d’un signal
 
-Symbolisé par image:signal-icon-4.png[signal icon],image:signal-icon-5.png[signal icon] Il déclenche un envoi de signal.
+Symbolisé par image:signal-icon-5.png[signal icon] , image:signal-icon-6.png[signal icon] Il déclenche un envoi de signal.
 
 Il est nécessaire de paramétrer le signal délivré ou en attente dans le panel de propriétés onglet général
 

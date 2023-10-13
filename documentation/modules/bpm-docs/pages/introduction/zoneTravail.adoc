@@ -5,8 +5,6 @@
 == La zone de travail
 
 La zone restante est la zone de travail. C’est sur cette zone que va se passer la conception de notre processus.
-
-
 Pour positionner des objets dessus, nous allons utiliser la barre verticale située sur la gauche.
 
 

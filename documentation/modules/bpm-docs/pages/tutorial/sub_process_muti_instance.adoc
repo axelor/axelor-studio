@@ -10,11 +10,11 @@ pour transformer le sous processus en sous processus séquentiel multi instance 
 
 image::sub_process_bpm.png[event process,align="left"]
 
-Dans le sous processus, nous avons inséré une tâche script que l’on va paramétrer plus tard. En cliquant sur le sous processus, sur l’onglet de droite, nous avons accès aux champs suivants : “Loop cardinality” et “Collection”.  “Loop cardinality”  permet d’indiquer un nombre d’itération. “Collection” permet d’indiquer une collection sur laquelle le sous processus va itérer. Ici, nous souhaitons itérer sur la liste “ListeLignesDemande” construite précédemment, nous indiquons donc cette liste dans le champ “Collection”. Toujours dans l’onglet de droite, nous pouvons renseigner le champ “Element variable”. Ce champ permet de stocker dans une variable la valeur de l’élément de la liste à une itération donnée :
+Dans le sous processus, nous avons inséré une tâche script que l’on va paramétrer plus tard. En cliquant sur le sous processus, sur l’onglet de droite, nous avons accès aux champs suivants : **“Loop cardinality”** et **“Collection”**.  **“Loop cardinality”**  permet d’indiquer un nombre d’itération. **“Collection”** permet d’indiquer une collection sur laquelle le sous processus va itérer. Ici, nous souhaitons itérer sur la liste **“ListeLignesDemande”** construite précédemment, nous indiquons donc cette liste dans le champ **“Collection”**. Toujours dans l’onglet de droite, nous pouvons renseigner le champ **“Element variable”**. Ce champ permet de stocker dans une variable la valeur de l’élément de la liste à une itération donnée :
 
 image::sub_process_card.png[event process,align="left"]
 
-Dans la tâche script “Créer une ligne de commande d’achat”, nous pouvons alors utiliser la variable “uneLigneDemande” pour venir compléter les champs de la commande :
+Dans la tâche script **“Créer une ligne de commande d’achat”**, nous pouvons alors utiliser la variable **“uneLigneDemande”** pour venir compléter les champs de la commande :
 
 image::script_sub_process.png[event process,align="left"]
 
@@ -34,20 +34,20 @@ return $ctx.save(rec)
 
 NOTE: Testez le processus.
 
-À présent, il reste à calculer le montant total à partir des lignes de la demande d’achat. Essayez de réaliser cet exercice, vous avez vu toutes les notions nécessaires pour le faire. Pour cet exercice vous aurez besoin de la méthode “round(2)” qui permet d’arrondir à 2 chiffres significatif car le montant ne doit contenir que 2 chiffres après la virgule.
+À présent, il reste à calculer le montant total à partir des lignes de la demande d’achat. Essayez de réaliser cet exercice, vous avez vu toutes les notions nécessaires pour le faire. Pour cet exercice vous aurez besoin de la méthode **“round(2)”** qui permet d’arrondir à 2 chiffres significatif car le montant ne doit contenir que 2 chiffres après la virgule.
 
 Voici la correction :
 
 image::correct_sub_process_bpm.png[event process,align="left"]
 
-La tâche “Initialiser total” est paramétré de la manière suivante :
+La tâche **“Initialiser total”** est paramétré de la manière suivante :
 
 image::script_task_sub_process.png[event process,align="left"]
 
-Voici le script de la tâche “Calculer total” :
+Voici le script de la tâche **“Calculer total”** :
 
 image::script_result_sub_process.png[event process,align="left"]
 
-Et voici la mise à jour du champ total (“Renseigner total”), vous pouvez renseigner cette tâche depuis le mapper :
+Et voici la mise à jour du champ total (**“Renseigner total”**), vous pouvez renseigner cette tâche depuis le mapper :
 
 image::update_total_sub_process.png[event process,align="left"]

@@ -20,25 +20,24 @@ image::nodeMapping-ex.png[Node mapping example,align="left"]
 
 Après quelques instants le message “Deployed successfully” apparaît.
 
-Par curiosité, essayez d’appuyer à nouveau sur  image:deplace-icon.png[deploy image], vous devriez avoir quelque chose comme celà :
+Par curiosité, essayez d’appuyer à nouveau sur  image:deploy-icon.png[deploy image], vous devriez avoir quelque chose comme celà :
 
 image::node-mapping-process.png[Node mapping process,align="left"]
 
 Cette fois-ci une correspondance entre les anciens nœuds et les nouveaux (qui dans notre exemple sont les mêmes) est faite.
-
 Cette correspondance est faite automatiquement mais on peut venir la modifier manuellement au besoin.
 
 La correspondance assure que chaque instance de processus déjà en cours soit migrée correctement vers le nouveau modèle. Les noms des événements de début et de fin ne sont pas très parlants… Il est fortement conseillé de nommer correctement les différents objets du processus
 
 Par exemple :
 
-image::nodeMapping-ex.png[Node mapping process,align="left"]
+image::process-mapping-process.png[Node mapping process,align="left"]
 
 En déployant, cette fois ci on a :
 
 image::node-mapping-process-ex.png[Node mapping process,align="left"]
 
-Les instances de processus qui sont sur le nœud “Event_1m7v83” seront migrées vers le nœud “Début du processus”.
+Les instances de processus qui sont sur le nœud **“Event_1m7v83”** seront migrées vers le nœud **“Début du processus”**.
 
 Nous détaillons la migration, les éventuels problèmes que l’on peut rencontrer et comment y remédier dans la section … .
 
@@ -50,8 +49,8 @@ Pour visualiser le processus, allez dans le menu App>BPM components>technical mo
 
 Vous devriez voir ceci :
 
-image::visualiserProcess.png[Node mapping process]
+image::visualiserProcess.png[Node mapping process,align="left"]
 
-On a un jeton pour indiquer que le processus est passé sur “Début du processus” et il est actuellement sur le nœud “Fin du processus”.
+On a un jeton pour indiquer que le processus est passé sur **“Début du processus”** et il est actuellement sur le nœud **“Fin du processus”**.
 
-S’il y a plusieurs instances de processus, il faut retrouver la bonne. Pour cela, on peut ajouter le champ “processInstanceId” à la vue grille des demandes d’achats.
+S’il y a plusieurs instances de processus, il faut retrouver la bonne. Pour cela, on peut ajouter le champ **“processInstanceId”** à la vue grille des demandes d’achats.

@@ -12,10 +12,9 @@ En créant un nouveau modèle, vous allez arriver sur l’interface suivante :
 image::baml_diagram.png[event process,align="left"]
 
 Vous allez devoir choisir un nom (unique) et un constructeur d'applications sur lequel baser votre modèle.
-
 En dessous on peut voir le XML et le script a appliquer. Ils pourraient être rédigés à la main, mais le studio permet de faire ça de manière low code.
 
-Cliquer sur le bouton “Ouvrir l’éditeur” va faire apparaître la fenêtre suivante
+Cliquer sur le bouton **“Ouvrir l’éditeur”** va faire apparaître la fenêtre suivante :
 
 image::baml_bpm.png[event process,align="left"]
 
@@ -27,7 +26,7 @@ image::baml_bpm.png[event process,align="left"]
 
 * Le bouton  image:baml-icon-4.png[baml icon]  permet de générer le code qui correspond au modèle visible dans la zone d’édition.
 
-* Dans le panel de propriété situé sur la droite, on peut nommer le processus (la bonne pratique veut qu’il possède le même nom que celui du modèle) et choisir le modèle cible de ce que l’on va récupérer et le modèle source.
+Dans le panel de propriété situé sur la droite, on peut nommer le processus (la bonne pratique veut qu’il possède le même nom que celui du modèle) et choisir le modèle cible de ce que l’on va récupérer et le modèle source.
 
 image::process_baml.png[event process,align="left"]
 

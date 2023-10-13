@@ -8,20 +8,19 @@ Son déclenchement se paramètre dans le panel de propriétés onglet général
 
 image::time_event.png[event process,align="left"]
 
-La définition du timer (Timer Definition) se fait en norme https://fr.wikipedia.org/wiki/ISO_8601[ISO 8601]
+IMPORTANT: La définition du timer (Timer Definition) se fait en norme https://fr.wikipedia.org/wiki/ISO_8601[ISO 8601]
 
-Ainsi pour un type de définition dit “Date”, il sera de la forme aaaa−mm−qqThh:mi:sszzzzzz
+Pour un type de définition dit **“Date”**, il sera de la forme **aaaa−mm−qqThh:mi:sszzzzzz**
 
-Par exemple, **1977-04-22T01:00:00-05:00** correspond au 22 avril 1977, à 1 h du matin heure normale de l'est de l'Amérique du Nord qui a un décalage horaire de 5 heures.
+Par exemple: **1977-04-22T01:00:00-05:00** correspond au 22 avril 1977, à 1 h du matin heure normale de l'est de l'Amérique du Nord qui a un décalage horaire de 5 heures.
+La même date peut s’écrire **1977-04-22T06:00:00Z** car le suffixe Z à la fin correspond au fuseau **UTC (Greenwich + 1 heure)**.
 
-La même date peut s’écrire **1977-04-22T06:00:00Z** car le suffixe Z à la fin correspond au fuseau UTC (Greenwich + 1 heure)
+Pour un type de définition dit  **“Durée”**, il sera au choix de la forme **PnW** ou **PnYnMnDTnHnMnS**.
 
-Pour un type de définition dit  “Durée”, il sera au choix de la forme PnW ou PnYnMnDTnHnMnS
-
-Par exemple, P18Y9M4DT11H9M8S  représente une durée de 18 ans, 9 mois, 4 jours, 11 heures, 9 minutes et 8 secondes, et P3W représente une durée de 3 semaines.
+Par exemple: **P18Y9M4DT11H9M8S**  représente une durée de 18 ans, 9 mois, 4 jours, 11 heures, 9 minutes et 8 secondes, et **P3W** représente une durée de 3 semaines.
 
 NOTE: Pour différencier les mois et les minutes, on remarque toujours la présence du T séparant les jours des heures. Ainsi P1M correspond à un mois et PT1M correspond à une minute
 
 Pour un type de définition dit “Cycle” il sera sous la forme Rn/PnYnMnDTnHnMnS
 
-Par exemple, **R/PT01H** signifie «toutes les heures» quand **R5/PT01:30** signifie « cinq occurrences, espacées de une heure trente entre elles ».
+Par exemple, **R/PT01H** signifie «toutes les heures» quand **R5/PT01:30** signifie **« cinq occurrences, espacées de une heure trente entre elles »**.

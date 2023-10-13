@@ -2,7 +2,7 @@
 :toc-title:
 :page-pagination:
 
-Reprenons l’énoncé :  si on appuie sur “Requête” on envoie également un mail au fournisseur.
+Reprenons l’énoncé :  si on appuie sur **“Requête”** on envoie également un mail au fournisseur.
 Le contenu du mail pourrait être :
 ----
 “Bonjour,
@@ -18,20 +18,20 @@ Cette tâche utilisateur ne demande aucune vérification, nous allons donc lui i
 
 image::completed_if_send_mail.png[Completed If,align="left"]
 
-Il faut ensuite sélectionner un modèle dans le champ “Modèle” :
+Il faut ensuite sélectionner un modèle dans le champ **“Modèle”** :
 
 image::chose_model_send_mail.png[Chose Model,align="left"]
 
 La case personnalisé est à cocher dans le cas où le modèle a été créé avec le studio.
-Le fait de renseigner un modèle donne accès à l’onglet “Menu/Action”. Dans cette onglet, vous pouvez cocher la case “Notification email” :
+Le fait de renseigner un modèle donne accès à l’onglet **“Menu/Action”**. Dans cette onglet, vous pouvez cocher la case **“Notification email”** :
 
 image::notification_mail.png[Notification mail,align="left"]
 
-Le champ “Email event” permet d’indiquer si l’email sera envoyé au début ou à la fin de la tâche.
-Dans le champ “Modèle” nous allons sélectionner le modèle de mail que nous allons créer ensemble.
-Dans “Action/Email title” nous allons renseigner le nom du mail : “Mail de rappel”.
+Le champ **“Email event”** permet d’indiquer si l’email sera envoyé au début ou à la fin de la tâche.
+Dans le champ **“Modèle”** nous allons sélectionner le modèle de mail que nous allons créer ensemble.
+Dans **“Action/Email title”** nous allons renseigner le nom du mail : **“Mail de rappel”**.
 
-Pour créer un modèle de mail, rendez-vous dans le menu “Config Applicatif>Message>Modèles” et créer un nouveau modèle.
+Pour créer un modèle de mail, rendez-vous dans le menu **“Config Applicatif>Message>Modèles”** et créer un nouveau modèle.
 
 Compléter le nom et le modèle :
 
@@ -42,10 +42,11 @@ Renseigner le modèle de mail comme suit :
 image::contenu_send_mail.png[Contenu,align="left"]
 
 **$... $** permet d’insérer du code groovy, on peut l’utiliser dans les destinataires comme dans l’objet ou dans le corps du mail. Ici, dans le destinataire, on vient chercher l’adresse du fournisseur : $PurchaseRequest.supplierUser.emailAddress.address$ et dans le corps du mail on recherche le numéro de référence de la demande :
+
 ----
 $PurchaseRequest.purchaseRequestSeq$.
 ----
 
-Vous pouvez tester le modèle de mail en cliquant sur le bouton “Test template” dans la barre du haut et en sélectionnant une demande.
+Vous pouvez tester le modèle de mail en cliquant sur le bouton **“Test template”** dans la barre du haut et en sélectionnant une demande.
 
-Vous pouvez à présent renseigner le modèle de mail dans la tâche utilisateur du processus, déployer et tester le processus. Vous retrouverez les mail envoyé dans le menu “Config Applicative>Message>Tous les messages”.
+Vous pouvez à présent renseigner le modèle de mail dans la tâche utilisateur du processus, déployer et tester le processus. Vous retrouverez les mail envoyé dans le menu **“Config Applicative>Message>Tous les messages”**.

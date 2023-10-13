@@ -4,11 +4,11 @@
 
 == Send Task
 
-Représentée par image:send-task-icon.png[send icon], il agit de manière similaire à un événement d’envoi de message (Déconseillé)
+Représentée par image:send-task-icon.png[send icon], il agit de manière similaire à un événement d’envoi de message **(Déconseillé)**
 
 == Receive Task
 
-Représentée par image:receive-task-icon.png[receive icon], il agit de manière similaire à un événement de réception de message. (Déconseillé)
+Représentée par image:receive-task-icon.png[receive icon], il agit de manière similaire à un événement de réception de message. **(Déconseillé)**
 
 == User Task
 

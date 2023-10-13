@@ -4,10 +4,11 @@
 
 == Interruptif
 
-Passons maintenant à l’exercice 2 :  “cette fois-ci l’utilisateur doit pouvoir appuyer sur annuler à tout moment et cela doit arrêter le processus. ”
+**Passons maintenant à l’exercice 2 :  “cette fois-ci l’utilisateur doit pouvoir appuyer sur annuler à tout moment et cela doit arrêter le processus. ”**
+
 Un des problèmes de l’exercice précédent est que l’utilisateur doit d’abord renseigner un fournisseur pour pouvoir annuler sa demande.
 Pour résoudre l’exercice 2 nous allons introduire une nouvelle notion : les sous processus événementiels.
-Pour insérer un sous processus événementiel, faite un glisser déposer de l'icône image:process-event-icon.png[process icon]. Vous avez ainsi introduit un sous-processus. Pour le rendre événementiel, cliquer sur la clé à molette et sélectionner “Event Sub Process”.
+Pour insérer un sous processus événementiel, faite un glisser déposer de l'icône image:process-event-icon.png[process icon]. Vous avez ainsi introduit un sous-processus. Pour le rendre événementiel, cliquer sur la clé à molette et sélectionner **“Event Sub Process”**.
 
 Les sous processus événementiel contiennent un processus qui va se déclencher sous condition. Nous matérialisons cette condition par un événement de départ du processus. En fonction de l’événement de départ, le sous-processus événementiel peut être interruptif (événement en traits plein) :
 
@@ -17,50 +18,51 @@ ou non interruptif (événement en traits pointillés) :
 
 image::interruptif_event.png[event process,align="left"]
 
-Ici on veut interrompre le processus principal dès lors que l’utilisateur clique sur “Annuler”, nous choisissons donc un processus interruptif. Comme point de départ nous utilisons un événement conditionnel (c’est celui sur l’image ci-dessus) en trait plein car l’on souhaite un processus interruptif.
+Ici on veut interrompre le processus principal dès lors que l’utilisateur clique sur **“Annuler”**, nous choisissons donc un processus interruptif. Comme point de départ nous utilisons un événement conditionnel (c’est celui sur l’image ci-dessus) en trait plein car l’on souhaite un processus interruptif.
 
 Nous pouvons paramétrer cet événement conditionnel en lui indiquant une condition grâce à l’expressions builder (cliquez sur le crayon) :
 
-image::add_expression.png[event process]
+image::add_expression.png[event process,align="left"]
 
 
 Ici, dès lors que le sous-processus événementiel est déclenché, on termine le processus. Comme le sous processus est interruptif, il n’y a rien d’autre à faire :
 
-image::process_event_bpm.png[event process]
+image::process_event_bpm.png[event process,align="left"]
 
 IMPORTANT: Déployez et testez ce processus.
 
 == Non interruptif
 
-Passons à l’exercice 3 : “Nous allons partir sur un scénario sur les contrats (VehicleContract) du menu Parc automobile>Contrat.
+**Passons à l’exercice 3 : “Nous allons partir sur un scénario sur les contrats (VehicleContract) du menu Parc automobile > Contrat“**
+
 Le processus devra demander à l’utilisateur de renseigner le contractant puis le type, le coût d'activation, la fréquence de récurrence du coût et le fournisseur…
 
 Pour la première partie de l’exercice, voici le modèle de processus :
 
-image::non_interruptif_event.png[event process]
+image::non_interruptif_event.png[event process,align="left"]
 
 Je vous laisse créer un nouveau modèle, le configurer et le paramétrer.
 
-À tout moment si l’utilisateur renseigne la “Date de facturation” on renseignera automatiquement la “Date de début du contrat” un jour après…’
+À tout moment si l’utilisateur renseigne la **“Date de facturation”** on renseignera automatiquement la **“Date de début du contrat”** un jour après…’
 
 Nous avons une condition qui peut se déclencher à tout moment, nous allons donc à nouveau utiliser un sous-processus événementiel. Cette fois-ci, le processus principal ne doit pas être interrompu : le sous-processus événementiel sera donc non interruptif.
 Le modèle de processus est le suivant :
 
-image::non_interruptif_event_bpm.png[event process]
+image::non_interruptif_event_bpm.png[event process,align="left"]
 
 Nous allons maintenant paramétrer l’événement conditionnel et la tâche script. Vous devriez être capable de paramétrer l’événement conditionnel tout seul. Voici la correction :
 
-image::add_expression_non_interruptif_event.png[event process]
+image::add_expression_non_interruptif_event.png[event process,align="left"]
 
 Pour la tâche script, nous allons utiliser la méthode plusDays(n) qui permet d’ajouter n jour à une date :
 
-image::script_non_interruptif_event.png[event process]
+image::script_non_interruptif_event.png[event process,align="left"]
 
-Cette fois-ci nous utilisons la valeur “Expression” pour “Value from” afin d’indiquer que l’on renseigne une expression à évaluer.
+Cette fois-ci nous utilisons la valeur **“Expression”** pour **“Value from”** afin d’indiquer que l’on renseigne une expression à évaluer.
 
 Testons le processus et intéressons nous à son instance :
 
-image::bpm_execution_event.png[event process]
+image::bpm_execution_event.png[event process,align="left"]
 
 Normalement la mise à jour de la date à fonctionner mais il y a 8 jetons dans le sous
 processus… (il est possible que vous ayez un nombre différent du mien mais supérieur à 1).
@@ -69,16 +71,16 @@ Ce qui se passe, c’est qu’à chaque fois que l’on fait une mise à jour,
 la condition est testée et comme elle est toujours vraie (la date de facturation est bien remplie), on repasse dans le sous processus événementiel. Ce n’est pas forcément gênant car le comportement attendu est le bon mais ce n’est pas très élégant. Il faudrait non pas vérifier si la date est nulle ou non mais tester s’il y a eu un changement. Dans la suite de l’exercice nous allons mettre cette solution en place, c’est un peu technique.
 L’idée est la suivante :
 
-image::bpm_non_interruptif_event.png[event process]
+image::bpm_non_interruptif_event.png[event process,align="left"]
 
 On utilise un champ de test que l’on initialise avec la valeur de la date de facturation au début du processus principal.
 Dès que l’on détecte une différence entre le champ de test et la date de facturation,
 on entre dans le sous processus événementiel. La première tâche de ce sous processus consiste à mettre à jour le champ de test avec la valeur réelle.
-Pour mettre en place cela, nous allons nous servir du champ “attrs” de l’objet contrat. Le champ “attrs” est un champ json présent sur tous les objets qui sert à stocker les valeurs du studio.
+Pour mettre en place cela, nous allons nous servir du champ **“attrs”** de l’objet contrat. Le champ **“attrs”** est un champ json présent sur tous les objets qui sert à stocker les valeurs du studio.
 
-Sur la tâche script “Initialiser champ de test”, vous pouvez renseigner le script suivant :
+Sur la tâche script **“Initialiser champ de test”**, vous pouvez renseigner le script suivant :
 
-image::script_task_non_interruptif_event.png[event process]
+image::script_task_non_interruptif_event.png[event process,align="left"]
 
 Le script :
 ----
@@ -105,7 +107,11 @@ Le code suivant :
 def builder = new groovy.json.JsonBuilder(slurped)’
 ----
 
-nous donne accès à l’objet builder qui permet de parser le champ attrs. ‘def map = [invoiceDate :  vehicleContract?.invoiceDate]’ défini un dictionnaire dont la clé est invoiceDate et la valeur contient celle de la date de  facturation actuelle. Nous stockons ensuite ce dictionnaire dans l’objet json attrs en le castant en string. Enfin, on renvoie et on sauvegarde l’objet contrat.
+nous donne accès à l’objet builder qui permet de parser le champ attrs.
+----
+def map = [invoiceDate :  vehicleContract?.invoiceDate]
+----
+Cela défini un dictionnaire dont la clé est invoiceDate et la valeur contient celle de la date de  facturation actuelle. Nous stockons ensuite ce dictionnaire dans l’objet json attrs en le castant en string. Enfin, on renvoie et on sauvegarde l’objet contrat.
 
 Sur l’événement conditionnel nous pouvons indiquer le script suivant :
 
@@ -132,4 +138,4 @@ rec.attrs = builder.toString()
 return $ctx.save(rec)
 ----
 
-Vous pouvez tester le processus. Il se peut que l’on passe 2 fois dans le sous-processus événementiel lors du renseignement de la date mais, nous ne passons plus dans le sous processus lorsque l’on met à jour un autre champ du contrat.
+Vous pouvez tester le processus. ** Il se peut que l’on passe 2 fois dans le sous-processus événementiel lors du renseignement de la date mais, nous ne passons plus dans le sous processus lorsque l’on met à jour un autre champ du contrat **.
