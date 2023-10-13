@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.module;
 
+import com.axelor.app.AppSettings;
 import com.axelor.app.AxelorModule;
 import com.axelor.message.service.AppSettingsMessageServiceImpl;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
@@ -164,6 +165,8 @@ public class StudioModule extends AxelorModule {
 
   @Override
   protected void configure() {
+    AppSettings.get().enableFeature("studio");
+
     bind(MetaService.class).to(CustomMetaService.class);
     bind(StudioChartRepository.class).to(StudioChartRepo.class);
     bind(StudioActionRepository.class).to(StudioActionRepo.class);
