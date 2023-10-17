@@ -26,9 +26,9 @@ The authorization request typically involves the following steps:
 2. Provide a client_id , the unique identifier of the client application
 3. Add redirect_uri: the URL to which the authorization server will redirect the user's browser after the authorization is complete
 4. Specify the response_type the value should be "code", indicating that the client application is requesting an authorization code
-4. The authorization server authenticates the user and asks for their permission to grant the requested access.
+5. The authorization server authenticates the user and asks for their permission to grant the requested access.
 If the user grants permission, the authorization server generates an authorization code and redirects the user's browser to the client application's redirect_uri with the authorization code appended as a query parameter.
-5. The client application receives the authorization code and can then use it to request an access token, which will allow it to access the protected resources on behalf of the user.
+6. The client application receives the authorization code and can then use it to request an access token, which will allow it to access the protected resources on behalf of the user.
 
 image::authRequestOAUTH2.png[auth axelor,align="left"]
 

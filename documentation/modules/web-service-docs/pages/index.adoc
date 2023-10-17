@@ -4,5 +4,10 @@
 
 Welcome to the Web service Documentation. Here you will find information
 and resources to help you learn about the web service solution .
-The web service project is a connector used by Axelor BPM to fetch any internal or external request from any API .
-This solution improves the BPM abilities .
+The web service project is group of connectors used by Axelor BPM to fetch any internal or external requests from any API .
+This solution improves the BPM abilities to communicate with other services. You can refer to the BPM documentation for more information .
+
+xref:/tutorial/index.adoc[Quick Tutorial]::
+  Describe How to use the web service solution in a quick tutorial .
+xref:/use-case/index.adoc[Use cases]::
+ Provide some examples and use cases to help you in using the web service solution .

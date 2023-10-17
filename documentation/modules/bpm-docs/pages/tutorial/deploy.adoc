@@ -18,7 +18,7 @@ Lors du premier déploiement, vous devriez avoir le message suivant :
 
 image::nodeMapping-ex.png[Node mapping example,align="left"]
 
-Après quelques instants le message “Deployed successfully” apparaît.
+Après quelques instants le message **“Deployed successfully”** apparaît.
 
 Par curiosité, essayez d’appuyer à nouveau sur  image:deploy-icon.png[deploy image], vous devriez avoir quelque chose comme celà :
 

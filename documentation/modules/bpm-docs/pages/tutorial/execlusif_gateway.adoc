@@ -12,9 +12,7 @@ image::paralelle-exclusif.png[Paralelle execlusif,align="left"]
 Dans notre exercice, nous avons besoin de deux branches qui sortent de la passerelle : une qui teste l’activation du bouton **“Requête”** et une autre qui teste l’activation du bouton **“Annuler”**.  Puis nous utilisons à nouveau la passerelle exclusive image:passarel-icon.png[exclusif icon] pour fusionner les flux.
 Le modèle de processus devrait ressembler à ceci :
 
-
 image::process_paralelle-exclusif.png[BPM Paralelle execlusif,align="left"]
-
 
 Il reste à paramétrer les conditions. Pour cela cliquez sur la branche du haut puis  cliquez sur le crayon pour ouvrir l’expression builder.
 
@@ -22,4 +20,4 @@ Nous allons renseigné la condition suivante :
 
 image::parellele_gateway_expression.png[expression BPM Paralelle execlusif,align="left"]
 
-Je vous  laisse compléter la condition de la branche du bas : **“Annuler”**.
+NOTE: Je vous  laisse compléter la condition de la branche du bas : **“Annuler”**.

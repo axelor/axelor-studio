@@ -66,10 +66,11 @@ image::bpm_execution_event.png[event process,align="left"]
 
 Normalement la mise à jour de la date à fonctionner mais il y a 8 jetons dans le sous
 processus… (il est possible que vous ayez un nombre différent du mien mais supérieur à 1).
-Essayez de mettre à jour un champ quelconque sur le contrat et de sauvegarder : le nombre de jetons augmente encore.
+
+**Essayez de mettre à jour un champ quelconque sur le contrat et de sauvegarder :** le nombre de jetons augmente encore.
 Ce qui se passe, c’est qu’à chaque fois que l’on fait une mise à jour,
 la condition est testée et comme elle est toujours vraie (la date de facturation est bien remplie), on repasse dans le sous processus événementiel. Ce n’est pas forcément gênant car le comportement attendu est le bon mais ce n’est pas très élégant. Il faudrait non pas vérifier si la date est nulle ou non mais tester s’il y a eu un changement. Dans la suite de l’exercice nous allons mettre cette solution en place, c’est un peu technique.
-L’idée est la suivante :
+**L’idée est la suivante :**
 
 image::bpm_non_interruptif_event.png[event process,align="left"]
 
@@ -82,7 +83,7 @@ Sur la tâche script **“Initialiser champ de test”**, vous pouvez renseigner
 
 image::script_task_non_interruptif_event.png[event process,align="left"]
 
-Le script :
+**Le script :**
 ----
 def rec = $ctx.find('VehicleContract',vehicleContractId)
 def slurped = rec?.attrs ? new groovy.json.JsonSlurper().parseText(rec.attrs) : [:]
@@ -93,27 +94,27 @@ rec.attrs = builder.toString()
 return $ctx.save(rec)
 ----
 
-Quelques explications :
+**Quelques explications :**
 
 ----
 $ctx.find('VehicleContract',vehicleContractId)
 ----
 permet de récupérer l’objet contrat sur lequel notre processus s’exécute.
 
-Le code suivant :
+**Le code suivant :**
 
 ----
 ‘def slurped = rec?.attrs ? new groovy.json.JsonSlurper().parseText(rec.attrs) : [:]
 def builder = new groovy.json.JsonBuilder(slurped)’
 ----
 
-nous donne accès à l’objet builder qui permet de parser le champ attrs.
+**nous donne accès à l’objet builder qui permet de parser le champ attrs.**
 ----
 def map = [invoiceDate :  vehicleContract?.invoiceDate]
 ----
 Cela défini un dictionnaire dont la clé est invoiceDate et la valeur contient celle de la date de  facturation actuelle. Nous stockons ensuite ce dictionnaire dans l’objet json attrs en le castant en string. Enfin, on renvoie et on sauvegarde l’objet contrat.
 
-Sur l’événement conditionnel nous pouvons indiquer le script suivant :
+**Sur l’événement conditionnel nous pouvons indiquer le script suivant :**
 
 ----
 def rec = $ctx.find('VehicleContract',vehicleContractId)
@@ -138,4 +139,4 @@ rec.attrs = builder.toString()
 return $ctx.save(rec)
 ----
 
-Vous pouvez tester le processus. ** Il se peut que l’on passe 2 fois dans le sous-processus événementiel lors du renseignement de la date mais, nous ne passons plus dans le sous processus lorsque l’on met à jour un autre champ du contrat **.
+NOTE: Vous pouvez tester le processus.  Il se peut que l’on passe 2 fois dans le sous-processus événementiel lors du renseignement de la date mais, nous ne passons plus dans le sous processus lorsque l’on met à jour un autre champ du contrat .

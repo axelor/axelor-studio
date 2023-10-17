@@ -7,7 +7,7 @@
 A droite de l'écran est affiché le panel de propriétés,
 ce panel est affichable par simple clic sur son onglet.
 Vous y retrouverez l’ensemble des informations relatives aux éléments qui constituent le modèle de processus.
-Que ce soit le paramétrage de l’environnement, des processus et des nœuds qui le composent.
+Que ce soit le paramétrage de **l’environnement**, **des processus** et **des nœuds** qui le composent.
 Il y a un panel par objet de la norme (disponible en cliquant sur l’objet),
 et également un panel pour le modèle dans sa globalité. C’est par celui-ci que commence chaque modèle BPM.
 C’est grâce à lui que chaque modèle à son identité propre, que l’on peut voir si le processus est déployé ou non,

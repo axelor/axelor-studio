@@ -2,7 +2,7 @@
 :toc-title:
 :page-pagination:
 
-Pour pouvoir accéder au BPM Studio, vous devez trouver l’onglet Constructeur d’application dans le menu gauche de l’application AOS. A partir d’ici, vous pourrez le dérouler et cliquer sur “BPM Studio” pour accéder à celui-ci.
+Pour pouvoir accéder au BPM Studio, vous devez trouver l’onglet Constructeur d’application dans le menu gauche de l’application AOS. A partir d’ici, vous pourrez le dérouler et cliquer sur **“BPM Studio”** pour accéder à celui-ci.
 
 image::menu-studio.png[menu studio,align="left",align="left"]
 

@@ -17,7 +17,7 @@ Il permet de construire via une interface graphique une ou un ensemble de condit
 image::builder_completed_if.png[event process,align="left"]
 
 image:add-expression.png[add-expression] Cet outil nous permet de venir ajouter un nouveau bloc de condition.
-Les blocs sont liés par le mot clef ET/OU image:and-or-icon.png[and ou icon]:
+Les blocs sont liés par le mot clef ET/OU image:and-or-icon.png[and ou icon]
 Il faut choisir un modèle sur lequel tester notre condition, cela se fait via la liste déroulante suivante :
 
 image::model_builder_bpm.png[event process,align="left"]

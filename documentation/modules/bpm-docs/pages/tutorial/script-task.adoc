@@ -10,7 +10,7 @@ image::task_script_process.png[Task script process,align="left"]
 
 Nous allons maintenant définir le script à exécuter sur chacune des tâches.  Cliquez sur **“Renseigner une société”** puis cliquez sur le crayon du champ script. Cela permet d’ouvrir le mapper :
 
-image::script-task-missing.png[Task script process,align="left"]
+image::script-task-builder.png[Task script process,align="left"]
 
 Dans le mapper, renseignez le **“Modèle cible”** avec  le modèle de la demande d’achat (PurchaseRequest). Vous pouvez ensuite cliquer sur **“Add fields”** et venir sélectionner le champ qui nous intéresse : **“Société”**, pour venir lui affecter une valeur, par exemple **“Axelor”**. Il existe plusieurs manières de récupérer des valeurs avec le mapper. Ici nous avons sélectionné **“Valeur”** pour le champ **“Value from”**, ce qui permet de récupérer une valeur directement. Intéressons nous au script qui a été généré :
 
@@ -33,7 +33,7 @@ image::modify-script.png[Script modification,align="left"]
 
 **${...}** permet d’insérer une valeur dans une chaîne de caractères. Ici, on vient chercher le nom du fournisseur à l’intérieur de la demande d’achat.
 
-**Déployez et testez le processus**.
+NOTE: **Déployez et testez le processus !**
 
 NOTE: il se peut que vous ayez un message d’erreur indiquant **“L'enregistrement a été modifié ou supprimé par une autre action.”**.Cela vient du fait qu’une action sur le bouton met à jour le statut et qu’avec le BPM, nous modifions également le formulaire. Il suffit d’actualiser le formulaire pour avoir le comportement attendu.
 

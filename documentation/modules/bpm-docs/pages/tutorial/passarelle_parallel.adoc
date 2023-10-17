@@ -2,16 +2,16 @@
 :toc-title:
 :page-pagination:
 
-Intéressons nous à la suite de l’énoncé :
+**Intéressons nous à la suite de l’énoncé :**
 
 *** si l’utilisateur appuie sur **“Annuler”** le processus se termine,
 *** si il appuie sur **“Requête”** on renseigne automatiquement une description et la société ,
 
 Modifions un peu notre schéma, nous l’expliquerons ensuite :
 
-image::passarelle_process.png[passarelle_process]
+image::passarelle_process.png[passarelle_process,align="left"]
 
 Dans le cas où l’utilisateur appuie sur **“Annuler”**, le processus se termine. Si l’utilisateur appuie sur **“Requête”**, le processus effectue deux tâches en parallèle : **“Renseigner une description”** et **“Renseigner la société”**. Pour indiquer que l’on effectue deux tâches en parallèle, on utilise la passerelle parallel image:paralelle-icon.png[parallele icon].
 
-Le comportement est le suivant : toutes les branches qui sortent de la passerelle parallèle sont empruntées, lors de la fusion des branches, le processus attend que toutes les branches soient terminées avant de poursuivre. Nous paramétrerons les tâches **“Renseigner une description”** et **“Renseigner la société”** dans la section suivante.
+**Le comportement est le suivant :** toutes les branches qui sortent de la passerelle parallèle sont empruntées, lors de la fusion des branches, le processus attend que toutes les branches soient terminées avant de poursuivre. Nous paramétrerons les tâches **“Renseigner une description”** et **“Renseigner la société”** dans la section suivante.
 

@@ -18,7 +18,7 @@ Dans la tâche script **“Créer une ligne de commande d’achat”**, nous pou
 
 image::script_sub_process.png[event process,align="left"]
 
-Ce qui génère le script suivant :
+**Ce qui génère le script suivant :**
 
 ----
 def rec = $ctx.create('PurchaseOrderLine')
@@ -36,7 +36,7 @@ NOTE: Testez le processus.
 
 À présent, il reste à calculer le montant total à partir des lignes de la demande d’achat. Essayez de réaliser cet exercice, vous avez vu toutes les notions nécessaires pour le faire. Pour cet exercice vous aurez besoin de la méthode **“round(2)”** qui permet d’arrondir à 2 chiffres significatif car le montant ne doit contenir que 2 chiffres après la virgule.
 
-Voici la correction :
+**Voici la correction :**
 
 image::correct_sub_process_bpm.png[event process,align="left"]
 

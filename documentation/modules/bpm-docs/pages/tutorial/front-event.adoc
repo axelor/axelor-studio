@@ -10,7 +10,7 @@ Nous allons modifier légèrement notre modèle en rassemblant certaines tâches
 
 image::event-front-bpm.png[event process,align="left"]
 
-Vous pouvez tester : le comportement est le même que précédemment.  Nous allons voir la notion d’événement frontière. Il est possible de placer un événement à la frontière d’une tâche ou d’un sous processus. Tant que la tâche ou le sous-processus est actif, l’événement peut se déclencher. Ici nous allons placer un timer en frontière du sous-processus :
+**Vous pouvez tester :** le comportement est le même que précédemment.  Nous allons voir la notion d’événement frontière. Il est possible de placer un événement à la frontière d’une tâche ou d’un sous processus. Tant que la tâche ou le sous-processus est actif, l’événement peut se déclencher. Ici nous allons placer un timer en frontière du sous-processus :
 
 image::assign_info_event_front.png[event process,align="left"]
 

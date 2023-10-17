@@ -11,5 +11,5 @@ Si vous perdez ce panel (en cliquant sur l’espace de travail par exemple), vou
 
 Donnons un code et un nom à notre modèle, par exemple :
 
-<1> Nom : Demande d’achat
-<2> Code : DEMANDE_ACHAT
+<1> **Nom :** Demande d’achat
+<2> **Code :** DEMANDE_ACHAT

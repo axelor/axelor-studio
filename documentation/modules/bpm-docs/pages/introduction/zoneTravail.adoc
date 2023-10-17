@@ -12,13 +12,13 @@ Pour positionner des objets dessus, nous allons utiliser la barre verticale situ
 
 Sur la partie supérieure de cette barre, se trouve des icônes qui permettent de changer de mode d’édition.
 
-La main image:hand-icon.png[hand image] permet de déplacer la caméra librement pour se positionner ou l’on souhaite au niveau du processus.
+**La main** image:hand-icon.png[hand image] permet de déplacer la caméra librement pour se positionner ou l’on souhaite au niveau du processus.
 
-La sélection de zone image:select-icon.png[select image] permet de sélectionner une portion de la zone de travail et de pouvoir la déplacer dans son intégralité.
+**La sélection de zone** image:select-icon.png[select image] permet de sélectionner une portion de la zone de travail et de pouvoir la déplacer dans son intégralité.
 
-Le déplacement latéral image:deplace-icon.png[deplace image]  permet de déplacer un ensemble d'éléments du modèle horizontalement ou verticalement sans avoir à les sélectionner.
+**Le déplacement latéral** image:deplace-icon.png[deplace image]  permet de déplacer un ensemble d'éléments du modèle horizontalement ou verticalement sans avoir à les sélectionner.
 
-Le lien entre entité image:link-icon.png[link image]  permet de dessiner les différents liens existants dans la norme.
+**Le lien entre entité** image:link-icon.png[link image]  permet de dessiner les différents liens existants dans la norme.
 
 === **Les objets de la norme BPM**
 Sur la partie inférieure de la barre verticale, se trouvent les objets de la norme BPMN 2.0.
