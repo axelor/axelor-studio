@@ -6,7 +6,7 @@ import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/Implem
 import find from "lodash/find";
 import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
-import { Edit, NotInterested } from "@material-ui/icons";
+import { Edit } from "@material-ui/icons";
 import {
   Dialog,
   DialogTitle,
@@ -17,6 +17,7 @@ import {
   Tooltip,
 } from "@material-ui/core";
 
+import AlertDialog from "../../../../../components/AlertDialog";
 import Mapper from "../../../../../components/Mapper";
 import { translate } from "../../../../../utils";
 import {
@@ -71,6 +72,11 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
   },
+  scriptDialog: {
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+  },
 }));
 
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
@@ -82,8 +88,6 @@ const LISTENER_TYPE_LABEL = {
   delegateExpression: translate("Delegate expression"),
   script: translate("Script"),
 };
-
-
 
 const timerOptions = [
   { value: "timeDate", name: translate("Date") },
@@ -149,6 +153,8 @@ export default function ListenerProps({
   const [executionOptions, setExecutionOptions] = useState(null);
   const [open, setOpen] = useState(false);
   const [openAlert, setAlert] = useState(false);
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
 
   const classes = useStyles();
   const isSequenceFlow = ImplementationTypeHelper.isSequenceFlow(element);
@@ -213,13 +219,14 @@ export default function ListenerProps({
   };
 
   const getExecutionOptions = () => {
-    const executionListenerEventTypeOptions =
-      ImplementationTypeHelper.isSequenceFlow(element)
-        ? [{ name: translate("take"), value: "take" }]
-        : [
-            { name: translate("start"), value: "start" },
-            { name: translate("end"), value: "end" },
-          ];
+    const executionListenerEventTypeOptions = ImplementationTypeHelper.isSequenceFlow(
+      element
+    )
+      ? [{ name: translate("take"), value: "take" }]
+      : [
+          { name: translate("start"), value: "start" },
+          { name: translate("end"), value: "end" },
+        ];
     return executionListenerEventTypeOptions;
   };
 
@@ -328,8 +335,9 @@ export default function ListenerProps({
     return function (index) {
       let listeners = getListeners(bo, type);
       let listener = listeners[index];
-      let listenerType =
-        ImplementationTypeHelper.getImplementationType(listener);
+      let listenerType = ImplementationTypeHelper.getImplementationType(
+        listener
+      );
       if (!listener) return "";
       let event = listener.get("event")
         ? listener.get("event")
@@ -419,6 +427,28 @@ export default function ListenerProps({
         setSelectedExecutionEntity(null);
         setSelectedTaskEntity(taskOptions[0]);
       }
+    }
+  };
+
+  const setScriptValue = (values) => {
+    const listener = getListener();
+    if (!listener?.script) {
+      listener.script =
+        listener.script ||
+        elementHelper.createElement(
+          "camunda:Script",
+          {
+            scriptFormat: "axelor",
+            value: values.script,
+          },
+          getBO(),
+          bpmnFactory
+        );
+    } else {
+      if (!listener) return;
+      listener.script.value = values.script;
+      listener.script.resource = undefined;
+      listener.script.scriptFormat = "axelor";
     }
   };
 
@@ -586,25 +616,7 @@ export default function ListenerProps({
                     }
                   },
                   set: function (e, values) {
-                    const listener = getListener();
-                    if (!listener?.script) {
-                      listener.script =
-                        listener.script ||
-                        elementHelper.createElement(
-                          "camunda:Script",
-                          {
-                            scriptFormat: "axelor",
-                            value: values.script,
-                          },
-                          getBO(),
-                          bpmnFactory
-                        );
-                    } else {
-                      if (!listener) return;
-                      listener.script.value = values.script;
-                      listener.script.resource = undefined;
-                      listener.script.scriptFormat = "axelor";
-                    }
+                    setScriptValue(values);
                   },
                   validate: function (e, values) {
                     if (!values.script) {
@@ -613,86 +625,134 @@ export default function ListenerProps({
                   },
                 }}
               />
-              {(selectedExecutionEntity === 0 || selectedExecutionEntity) && (
-                <div className={classes.edit}>
-                  <Tooltip title="Enable" aria-label="enable">
-                    <NotInterested
+
+              <div className={classes.edit}>
+                <Tooltip title="Enable" aria-label="enable">
+                  <i
+                    className="fa fa-code"
+                    style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
+                    onClick={() => {
+                      const listener = getListener();
+                      if (listener?.script?.scriptValue) {
+                        setAlert(true);
+                      } else {
+                        setScript(listener?.script?.value);
+                        setOpenScriptDialog(true);
+                      }
+                    }}
+                  ></i>
+                </Tooltip>
+                {(selectedExecutionEntity === 0 || selectedExecutionEntity) && (
+                  <>
+                    <Edit
                       className={classes.editIcon}
-                      onClick={() => {
-                        const listener = getListener();
-                        if (listener?.script?.scriptValue) {
-                          setAlert(true);
-                        }
-                      }}
+                      onClick={handleClickOpen}
                     />
-                  </Tooltip>
-                  <Edit
-                    className={classes.editIcon}
-                    onClick={handleClickOpen}
-                  />
-                  {open && (
-                    <Mapper
-                      open={open}
-                      handleClose={handleClose}
-                      onSave={(expr) => onSave(expr)}
-                      params={() => getExpression()}
-                      element={element}
-                      bpmnModeler={bpmnModeler}
-                    />
-                  )}
-                  {openAlert && (
-                    <Dialog
-                      open={openAlert}
-                      onClose={(event, reason) => {
-                        if (reason !== "backdropClick") {
-                          setAlert(false);
-                        }
-                      }}
-                      aria-labelledby="alert-dialog-title"
-                      aria-describedby="alert-dialog-description"
-                      classes={{
-                        paper: classes.dialog,
-                      }}
-                    >
-                      <DialogTitle id="alert-dialog-title">
-                        <label className={classes.title}>
-                          {translate("Warning")}
-                        </label>
-                      </DialogTitle>
-                      <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                          {translate(
-                            "Script can't be managed using builder once changed manually."
-                          )}
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button
-                          onClick={() => {
-                            setAlert(false);
+                    {open && (
+                      <Mapper
+                        open={open}
+                        handleClose={handleClose}
+                        onSave={(expr) => onSave(expr)}
+                        params={() => getExpression()}
+                        element={element}
+                        bpmnModeler={bpmnModeler}
+                      />
+                    )}
+                  </>
+                )}
+                {openScriptDialog && (
+                  <AlertDialog
+                    className={classes.scriptDialog}
+                    openAlert={openScriptDialog}
+                    alertClose={() => {
+                      const listener = getListener();
+                      setScript(listener?.script?.value);
+                      setOpenScriptDialog(false);
+                    }}
+                    handleAlertOk={() => {
+                      setScriptValue({ script });
+                      setOpenScriptDialog(false);
+                    }}
+                    title={translate("Add script")}
+                    children={
+                      <Textbox
+                        element={element}
+                        className={classes.textbox}
+                        showLabel={false}
+                        defaultHeight={window?.innerHeight - 205}
+                        entry={{
+                          id: "script",
+                          label: translate("Script"),
+                          modelProperty: "script",
+                          get: function () {
                             const listener = getListener();
-                            if (!listener) return;
-                            listener.script.scriptValue = undefined;
-                          }}
-                          color="primary"
-                          className={classes.save}
-                        >
-                          {translate("OK")}
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setAlert(false);
-                          }}
-                          color="primary"
-                          className={classes.save}
-                        >
-                          {translate("Cancel")}
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  )}
-                </div>
-              )}
+                            if (listener?.script) {
+                              return { script: listener.script.value };
+                            }
+                          },
+                          set: function (e, values) {
+                            setScript(values?.script);
+                          },
+                        }}
+                      />
+                    }
+                  />
+                )}
+                {openAlert && (
+                  <Dialog
+                    open={openAlert}
+                    onClose={(event, reason) => {
+                      if (reason !== "backdropClick") {
+                        setAlert(false);
+                      }
+                    }}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    classes={{
+                      paper: classes.dialog,
+                    }}
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      <label className={classes.title}>
+                        {translate("Warning")}
+                      </label>
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        {translate(
+                          "Script can't be managed using builder once changed manually."
+                        )}
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button
+                        onClick={() => {
+                          setAlert(false);
+                          const listener = getListener();
+                          if (!listener) return;
+                          listener.script.scriptValue = undefined;
+                          console.log(listener);
+                          setScript(listener?.script?.value);
+                          setOpenScriptDialog(true);
+                        }}
+                        color="primary"
+                        className={classes.save}
+                      >
+                        {translate("OK")}
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setAlert(false);
+                        }}
+                        color="primary"
+                        className={classes.save}
+                      >
+                        {translate("Cancel")}
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                )}
+              </div>
             </div>
             {eventType === "timeout" && (
               <React.Fragment>

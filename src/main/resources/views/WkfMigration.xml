@@ -13,9 +13,11 @@
     model="com.axelor.studio.db.WkfMigration" width="large">
     <panel name="mainPanel">
       <field name="sourceVersion" required="true"
-        onChange="action-wkf-migration-attrs-unset-target-version,action-wkf-migration-attrs-unset-mapping"/>
+        onChange="action-wkf-migration-attrs-unset-target-version,action-wkf-migration-attrs-unset-mapping"
+        target-name="code"/>
       <field name="targetVersion" onSelect="action-wkf-migration-method-target-version-domain"
-        requiredIf="sourceVersion" onChange="action-wkf-migration-attrs-unset-mapping"/>
+        requiredIf="sourceVersion" onChange="action-wkf-migration-attrs-unset-mapping"
+        target-name="code"/>
       <button name="generateNodeMappingBtn" title="Generate Node Mapping"
         onClick="save,action-wkf-migration-method-generate-node-map,save" colSpan="4"
         showIf="sourceVersion &amp;&amp; targetVersion"/>

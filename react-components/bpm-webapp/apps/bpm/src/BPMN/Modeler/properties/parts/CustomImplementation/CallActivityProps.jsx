@@ -11,10 +11,11 @@ import {
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import classnames from "classnames";
-import { Edit, NotInterested, Add } from "@material-ui/icons";
+import { Edit, Add } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
+import AlertDialog from "../../../../../components/AlertDialog";
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import Select from "../../../../../components/Select";
 import Tooltip from "../../../../../components/Tooltip";
@@ -24,6 +25,7 @@ import {
   SelectBox,
   Checkbox,
   FieldEditor,
+  Textbox,
 } from "../../../../../components/properties/components";
 import { translate, getLowerCase, getBool } from "../../../../../utils";
 import {
@@ -110,6 +112,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "flex-end",
   },
+  scriptDialog: {
+    width: "100%",
+    height: "100%",
+    maxWidth: "100%",
+  },
 }));
 
 function getCallableType(bo) {
@@ -144,6 +151,9 @@ export default function CallActivityProps({ element, index, label }) {
     messageType: null,
     message: null,
   });
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
+
   const classes = useStyles();
   const id = nextId();
   const handleClickOpen = () => {
@@ -401,6 +411,14 @@ export default function CallActivityProps({ element, index, label }) {
     setProperty("conditionValue", undefined);
     setProperty("conditionCombinator", undefined);
     setReadOnly(false);
+  };
+
+  const getCallLinkCondition = () => {
+    let condition = getProperty("condition");
+    condition = (condition || "").replace(/[\u200B-\u200D\uFEFF]/g, "");
+    return {
+      condition,
+    };
   };
 
   useEffect(() => {
@@ -701,14 +719,7 @@ export default function CallActivityProps({ element, index, label }) {
               label: translate("Call link condition"),
               modelProperty: "condition",
               get: function () {
-                let condition = getProperty("condition");
-                condition = (condition || "").replace(
-                  /[\u200B-\u200D\uFEFF]/g,
-                  ""
-                );
-                return {
-                  condition,
-                };
+                return getCallLinkCondition();
               },
               set: function (e, values) {
                 let oldVal = getProperty("condition");
@@ -727,18 +738,26 @@ export default function CallActivityProps({ element, index, label }) {
                 {model && (
                   <div className={classes.new}>
                     <Tooltip title="Enable" aria-label="enable">
-                      <NotInterested
-                        className={classes.newIcon}
+                      <i
+                        className="fa fa-code"
+                        style={{
+                          fontSize: 18,
+                          color: "#58B423",
+                          marginLeft: 5,
+                        }}
                         onClick={() => {
                           if (readOnly) {
                             setAlertMessage(
-                              "Completed If can't be managed using builder once changed manually."
+                              "Link condition can't be managed using builder once changed manually."
                             );
                             setAlertTitle("Warning");
                             setAlert(true);
+                          } else {
+                            setScript(getCallLinkCondition()?.condition);
+                            setOpenScriptDialog(true);
                           }
                         }}
-                      />
+                      ></i>
                     </Tooltip>
                     <Edit
                       className={classes.newIcon}
@@ -791,6 +810,8 @@ export default function CallActivityProps({ element, index, label }) {
                     setReadOnly(false);
                     setProperty("conditionValue", undefined);
                     setProperty("conditionCombinator", undefined);
+                    setScript(getCallLinkCondition()?.condition);
+                    setOpenScriptDialog(true);
                   }}
                   color="primary"
                   className={classes.save}
@@ -811,6 +832,43 @@ export default function CallActivityProps({ element, index, label }) {
           )}
           <div className={classes.divider} />
         </React.Fragment>
+        {openScriptDialog && (
+          <AlertDialog
+            className={classes.scriptDialog}
+            openAlert={openScriptDialog}
+            alertClose={() => {
+              setScript(getCallLinkCondition()?.condition);
+              setOpenScriptDialog(false);
+            }}
+            handleAlertOk={() => {
+              setProperty(
+                "condition",
+                (script || "").replace(/[\u200B-\u200D\uFEFF]/g, "")
+              );
+              setOpenScriptDialog(false);
+            }}
+            title={translate("Call link condition")}
+            children={
+              <Textbox
+                element={element}
+                className={classes.textbox}
+                showLabel={false}
+                defaultHeight={window?.innerHeight - 205}
+                entry={{
+                  id: "script",
+                  label: translate("Call link condition"),
+                  modelProperty: "condition",
+                  get: function () {
+                    return getCallLinkCondition();
+                  },
+                  set: function (e, values) {
+                    setScript(values?.condition);
+                  },
+                }}
+              />
+            }
+          />
+        )}
         {open && (
           <Dialog
             open={open}
