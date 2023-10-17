@@ -24,11 +24,11 @@ import com.axelor.auth.db.Role;
 import com.axelor.auth.db.User;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
+import com.axelor.db.Model;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.inject.Beans;
 import com.axelor.mail.MailConstants;
-import com.axelor.mail.db.MailMessage;
-import com.axelor.mail.db.repo.MailMessageRepository;
+import com.axelor.message.service.MailMessageCreator;
 import com.axelor.meta.db.MetaAction;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.meta.db.MetaJsonModel;
@@ -62,15 +62,16 @@ public class StudioMetaServiceImpl implements StudioMetaService {
 
   protected final Logger log = LoggerFactory.getLogger(StudioMetaServiceImpl.class);
 
-  protected MetaActionRepository metaActionRepo;
+  protected final MetaActionRepository metaActionRepo;
 
-  protected MetaViewRepository metaViewRepo;
+  protected final MetaViewRepository metaViewRepo;
 
-  protected MetaMenuRepository metaMenuRepo;
+  protected final MetaMenuRepository metaMenuRepo;
 
-  protected StudioMenuRepository studioMenuRepo;
+  protected final StudioMenuRepository studioMenuRepo;
 
-  protected MetaModelRepository metaModelRepo;
+  protected final MetaModelRepository metaModelRepo;
+  protected final MailMessageCreator mailMessageCreator;
 
   @Inject
   public StudioMetaServiceImpl(
@@ -78,12 +79,14 @@ public class StudioMetaServiceImpl implements StudioMetaService {
       MetaViewRepository metaViewRepo,
       MetaMenuRepository metaMenuRepo,
       StudioMenuRepository studioMenuRepo,
-      MetaModelRepository metaModelRepo) {
+      MetaModelRepository metaModelRepo,
+      MailMessageCreator mailMessageCreator) {
     this.metaActionRepo = metaActionRepo;
     this.metaViewRepo = metaViewRepo;
     this.metaMenuRepo = metaMenuRepo;
     this.studioMenuRepo = studioMenuRepo;
     this.metaModelRepo = metaModelRepo;
+    this.mailMessageCreator = mailMessageCreator;
   }
 
   /**
@@ -369,18 +372,20 @@ public class StudioMetaServiceImpl implements StudioMetaService {
       AuditableModel auditableModel, String messageBody, String messageSubject) {
 
     User user = AuthUtils.getUser();
-    MailMessage message = new MailMessage();
-    Mapper mapper = Mapper.of(auditableModel.getClass());
+    Class<? extends Model> modelClass = EntityHelper.getEntityClass(auditableModel);
+    Mapper mapper = Mapper.of(modelClass);
 
-    message.setSubject(messageSubject);
-    message.setAuthor(user);
-    message.setBody(messageBody);
-    message.setRelatedId(auditableModel.getId());
-    message.setRelatedModel(EntityHelper.getEntityClass(auditableModel).getName());
-    message.setType(MailConstants.MESSAGE_TYPE_NOTIFICATION);
-    message.setRelatedName(mapper.getNameField().get(auditableModel).toString());
-
-    Beans.get(MailMessageRepository.class).save(message);
+    mailMessageCreator.persist(
+        user != null ? user.getId() : null,
+        messageBody,
+        messageSubject,
+        MailConstants.MESSAGE_TYPE_NOTIFICATION,
+        mailMessage -> {
+          mailMessage.setRelatedId(auditableModel.getId());
+          mailMessage.setRelatedModel(modelClass.getName());
+          mailMessage.setRelatedName(mapper.getNameField().get(auditableModel).toString());
+        }
+    );
   }
 
   @Override
