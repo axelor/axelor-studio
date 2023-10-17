@@ -384,8 +384,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
           mailMessage.setRelatedId(auditableModel.getId());
           mailMessage.setRelatedModel(modelClass.getName());
           mailMessage.setRelatedName(mapper.getNameField().get(auditableModel).toString());
-        }
-    );
+        });
   }
 
   @Override
