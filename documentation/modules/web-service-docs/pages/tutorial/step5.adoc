@@ -7,17 +7,16 @@ The main purpose from the web service is for using it inside the axelor BPM , by
 
 image::ConnectorBPM.png[Connector option,align="left"]
 
-
 == Connector script
 To generate a connector script you can click on the pen icon , an interface will be displayed :
 
 image::connectorInterface.png[Connector Interface,align="left"]
 
-<1> **Connector :** Select the connector to call.
-<2> **Request :** Select the request from connect whose result is required.
-<3> **Request variable :** If any specific variable is required from the response of request it is required to mention here. Value of this variable will be assigned to the result variable if this field is not empty.
-<4> **Result variable :** Variable which stores the result of either request variable if filled or full response or return expression. It is then available to use in further nodes of bpm.
-<5> **Return expression :** It allows you to modify the result of response as per need. The variable ‘_res’ stores the full result of the request, it can be used here inside the expression.
-<6> **Payload :** Multiple payloads can be added here as per need from the connector. Here it is required to specify payloads for all requests from the connector as it will call a full connector and not just a single request. Variables (including context objects) available in bpm context can be used here in the value field. The checkbox ‘Expression’ should be checked if value is variable from bpm context else it will consider static value.
+1. **Connector :** Select the connector to call.
+2. **Request :** Select the request from connect whose result is required.
+3. **Request variable :** If any specific variable is required from the response of request it is required to mention here. Value of this variable will be assigned to the result variable if this field is not empty.
+4. **Result variable :** Variable which stores the result of either request variable if filled or full response or return expression. It is then available to use in further nodes of bpm.
+5. **Return expression :** It allows you to modify the result of response as per need. The variable ‘_res’ stores the full result of the request, it can be used here inside the expression.
+6. **Payload :** Multiple payloads can be added here as per need from the connector. Here it is required to specify payloads for all requests from the connector as it will call a full connector and not just a single request. Variables (including context objects) available in bpm context can be used here in the value field. The checkbox ‘Expression’ should be checked if value is variable from bpm context else it will consider static value.
 
 NOTE: By selecting the request field , that means you will get the result of the execution request selected . if you want to get all the result of the connector you can deselect this field.

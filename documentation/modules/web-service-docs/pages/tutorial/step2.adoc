@@ -15,14 +15,14 @@ image::auth.png[auth form,align="left"]
 
 == Elements of  Authentication
 
-<1> **App :**  use axelor application plugin
-<2> **Name of authentication :** the name of the authentication ( Required) .
-<3> **Authenticate ( button ) :** it will call the selected ‘Auth request’ and store its result inside ‘Auth response’.
+1. **App :**  use axelor application plugin
+2. **Name of authentication :** the name of the authentication ( Required) .
+3. **Authenticate ( button ) :** it will call the selected ‘Auth request’ and store its result inside ‘Auth response’.
 If the authentication is successful it will check the ‘Authenticated’  checkbox.
-<4> **Authenticated :** a checkbox that is auto checked when the authentication is successful.
-<5> **Authentication request :** the api request for authentication.
-<6> **Auth response :** text field to store response by calling authentication request.
-<7> **Auth type :** type of the authentication, which is basic in basic authentication.
+4. **Authenticated :** a checkbox that is auto checked when the authentication is successful.
+5. **Authentication request :** the api request for authentication.
+6. **Auth response :** text field to store response by calling authentication request.
+7. **Auth type :** type of the authentication, which is basic in basic authentication.
 
 == Authentication type
 
@@ -79,8 +79,8 @@ This is the most common type of authentication currently used for api authentica
 
 image::oauth2.png[Oauth authentication,align="left"]
 
-<1> **Auth request :**  It is an api request to open permission consent window where users authenticate the necessary permission.
-<2> **Token request :** On success of Auth  request it will call this token request to get an authentication token.
-<3> **Refresh token request :** This request is used to get a new authentication token when the previous token is expired.
+1. **Auth request :**  It is an api request to open permission consent window where users authenticate the necessary permission.
+2. **Token request :** On success of Auth  request it will call this token request to get an authentication token.
+3. **Refresh token request :** This request is used to get a new authentication token when the previous token is expired.
 
 TIP: You can see the result of the execution of  the auth request and the token request and the refresh token request in the panel bellow the screen .

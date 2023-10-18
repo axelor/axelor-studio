@@ -20,8 +20,8 @@ Nous allons partir sur un scénario sur les demandes d’achat. Nous allons effe
 ====
 pour pouvoir sauvegarder des demandes d’achat, il y a une petite manipulation à faire.
 
-<1> Aller dans “Config Applicative -> Données générales -> Séquence”
-<2> Créer une nouvelle séquence pour le document demande d’achat
+1. Aller dans “Config Applicative -> Données générales -> Séquence”
+2. Créer une nouvelle séquence pour le document demande d’achat
 ====
 
 == Exercice 2 : sous processus événementiel interruptif

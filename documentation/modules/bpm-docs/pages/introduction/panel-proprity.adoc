@@ -20,9 +20,9 @@ Cette zone permet de voir les différents états possibles pour le processus.
 
 image::avancementProcess.png[avancement process image,align="left"]
 
-<1> **New:** Le processus est en cours de création, et il n’est pas en cours de déploiement.
-<2> **On going:** Le processus peut être modifié et il est déployé.
-<3> **Terminated:** Le processus est terminé et ne peut plus être instancié
+1. **New:** Le processus est en cours de création, et il n’est pas en cours de déploiement.
+2. **On going:** Le processus peut être modifié et il est déployé.
+3. **Terminated:** Le processus est terminé et ne peut plus être instancié
 
 === **Zone de nommage du modèle**
 Cette zone est constituée d’un champ Code et d’un champ nom. Le code doit être unique, il sera automatiquement mis en majuscule.

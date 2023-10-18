@@ -14,10 +14,10 @@ image::attrs_add_object.png[event process,align="left"]
 
 **Complété le menu de droite comme suit :**
 
-<1> **Nom** : purchaseRequest
-<2> **Titre** : Demande d’achat
-<3> **Modèle cible** : com.axelor.apps.purchase.db.PurchaseRequest
-<4> **Cachée :** image:cache-icon.png[cache icon,align="left"]
+1. **Nom** : purchaseRequest
+2. **Titre** : Demande d’achat
+3. **Modèle cible** : com.axelor.apps.purchase.db.PurchaseRequest
+4. **Cachée :** image:cache-icon.png[cache icon,align="left"]
 
 Et pensez à sauvegarder.
 

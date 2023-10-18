@@ -5,13 +5,13 @@
 OAuth 2.0 is an open authorization framework that allows applications to access the resources of a user on a given service. When using OAuth 2.0 with Google services, you can obtain access tokens that enable your application to interact with various Google APIs on behalf of the user.
 To use OAuth 2.0 with Google services, you'll need to perform the following steps:
 
-<1> Create a project in the Google Cloud Console: Go to the Google Cloud Console (https://console.cloud.google.com) and create a new project. This project will represent your application.
-<2> Enable the necessary APIs: Within your project, enable the specific Google API(s) that your application needs to access. For example, if you're building a calendar application, you would enable the Google Calendar API.
-<3> Set up OAuth consent screen: Configure the OAuth consent screen to specify the information about your application that will be presented to users when requesting access. This includes the application name, logo, and any requested scopes.
-<4> Create credentials: In the Google Cloud Console, create OAuth 2.0 client credentials for your application. You can choose between different types of credentials depending on your application's requirements (e.g., web application, mobile app, etc.). During this process, you'll be asked to provide a redirect URI, which is the endpoint where the authorization server will redirect the user after authentication.
-<5> Implement the authorization flow: Depending on the type of application you're building, you'll need to implement the appropriate authorization flow. Common flows include the authorization code flow and the implicit flow. The authorization flow involves redirecting the user to Google's authorization server, where they will be prompted to grant your application the requested permissions.
-<6> Obtain an access token: Once the user grants permission, your application will receive an authorization code or an access token directly, depending on the flow you implemented. You can exchange the authorization code for an access token by making a request to Google's token endpoint.
-<7> Use the access token: With the access token, your application can make authorized API requests to Google services on behalf of the user. Include the access token in the Authorization header of your requests, following the OAuth 2.0 Bearer token scheme.
+1. Create a project in the Google Cloud Console: Go to the Google Cloud Console (https://console.cloud.google.com) and create a new project. This project will represent your application.
+2. Enable the necessary APIs: Within your project, enable the specific Google API(s) that your application needs to access. For example, if you're building a calendar application, you would enable the Google Calendar API.
+3. Set up OAuth consent screen: Configure the OAuth consent screen to specify the information about your application that will be presented to users when requesting access. This includes the application name, logo, and any requested scopes.
+4. Create credentials: In the Google Cloud Console, create OAuth 2.0 client credentials for your application. You can choose between different types of credentials depending on your application's requirements (e.g., web application, mobile app, etc.). During this process, you'll be asked to provide a redirect URI, which is the endpoint where the authorization server will redirect the user after authentication.
+5. Implement the authorization flow: Depending on the type of application you're building, you'll need to implement the appropriate authorization flow. Common flows include the authorization code flow and the implicit flow. The authorization flow involves redirecting the user to Google's authorization server, where they will be prompted to grant your application the requested permissions.
+6. Obtain an access token: Once the user grants permission, your application will receive an authorization code or an access token directly, depending on the flow you implemented. You can exchange the authorization code for an access token by making a request to Google's token endpoint.
+7. Use the access token: With the access token, your application can make authorized API requests to Google services on behalf of the user. Include the access token in the Authorization header of your requests, following the OAuth 2.0 Bearer token scheme.
 
 == Authentication
 
@@ -27,8 +27,8 @@ The authorization request typically involves the following steps:
 3. Add redirect_uri: the URL to which the authorization server will redirect the user's browser after the authorization is complete
 4. Specify the response_type the value should be "code", indicating that the client application is requesting an authorization code
 5. The authorization server authenticates the user and asks for their permission to grant the requested access.
-If the user grants permission, the authorization server generates an authorization code and redirects the user's browser to the client application's redirect_uri with the authorization code appended as a query parameter.
-6. The client application receives the authorization code and can then use it to request an access token, which will allow it to access the protected resources on behalf of the user.
+6. If the user grants permission, the authorization server generates an authorization code and redirects the user's browser to the client application's redirect_uri with the authorization code appended as a query parameter.
+7. The client application receives the authorization code and can then use it to request an access token, which will allow it to access the protected resources on behalf of the user.
 
 image::authRequestOAUTH2.png[auth axelor,align="left"]
 

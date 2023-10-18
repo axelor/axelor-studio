@@ -3,5 +3,7 @@
 :page-pagination:
 
 == Afficher des éléments dans les logs
-
+----
 def logger = org.slf4j.LoggerFactory.getLogger("org.camunda.bpm.engine.script")
+logger.debug("toto")
+----

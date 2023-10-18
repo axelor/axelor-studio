@@ -43,9 +43,9 @@ NOTE: Si le message n'apparaît pas, vérifiez que vous avez bien coché la case
 
 Reprenons l'énoncé : **“Nous allons effectuer un processus qui** :
 
-<1> Vérifie que l’utilisateur a renseigné un contact fournisseur pour sa demande ;
-<2> Vérifie que l’utilisateur appuie sur le bouton “Requête” ou “Annuler” avant de continuer
-<3> ....
+1. Vérifie que l’utilisateur a renseigné un contact fournisseur pour sa demande ;
+2. Vérifie que l’utilisateur appuie sur le bouton “Requête” ou “Annuler” avant de continuer
+3. ....
 
 La première étape est déjà réalisée passons à la suivante.
 

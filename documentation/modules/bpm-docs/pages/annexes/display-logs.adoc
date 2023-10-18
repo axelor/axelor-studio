@@ -1,0 +1,24 @@
+=  Affichage des logs
+:toc-title:
+:page-pagination:
+
+== Paramétrage de la webapp
+
+Dans le fichier **axelor-config.properties** il faut avant déploiement indiquer ce paramétrage:
+----
+# Enable BPMN logging
+studio.bpm.logging = true
+----
+
+== Utilisation dans l’application
+
+Aucun paramétrage n’est nécessaire dans l’application, les logs sont affichés à l’échelle de l’instance:
+
+image::log-annexes.png[log BPM,align="left"]
+
+[NOTE]
+====
+1. **Clear log** permet de clear les logs de l’instance concernée.
+2. **Com.axelor.studio.bpm.service.job.ClearLogJob** est un batch permettant de clear les logs.
+3. Lorsqu’une instance est **terminée** (plus de jetons en circulation dans l’instance) les logs sont clear.
+====

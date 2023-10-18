@@ -5,18 +5,17 @@
 == Raccourcis clavier
 
 Le studio possède un certain nombre de raccourcis qui permettent de simplifier le travail.
-Voici la liste de ceux-ci.
 
-* **Retour en arrière** : ctrl + Z
-* **Annuler un retour en arrière** : ctrl + maj + Z
-* **Tout sélectionner** : ctrl + A
-* **Chercher un objet par son nom** : ctrl + F
+**[.underline]#Voici la liste de ceux-ci# :**
 
-image::anexes_clavier.png[event process]
 
-* **Zoom/Dezoom** : ctrl + Scrolling
-* **Scrolling (Horizontal)**: ctrl + maj + Scrolling
-* **Modifier le nom de l’objet sur lequel se situe le curseur** : E
-* **Activer l’outil main** : H
-* **Activer l’outil lasso** : L
-* **Activer l’outil déplacement latéral** : S
+1. **Retour en arrière** : ctrl + Z
+2. **Annuler un retour en arrière** : ctrl + maj + Z
+3. **Tout sélectionner** : ctrl + A
+4. **Chercher un objet par son nom** : ctrl + F image:anexes_clavier.png[event process,align="left"]
+5. **Zoom/Dezoom** : ctrl + Scrolling
+6. **Scrolling (Horizontal)**: ctrl + maj + Scrolling
+7. **Modifier le nom de l’objet sur lequel se situe le curseur** : E
+8. **Activer l’outil main** : H
+9. **Activer l’outil lasso** : L
+10. **Activer l’outil déplacement latéral** : S

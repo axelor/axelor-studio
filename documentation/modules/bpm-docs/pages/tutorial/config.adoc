@@ -19,9 +19,9 @@ Le process Id est celui qui sera utilisé lors du mapping du processus.
 
 Nous allons par exemple donner les identifiants et nom suivants :
 
-<1> **Id :** process_demande_achat
-<2> **Name :** Demande d’achat
-<3> **Process name :** Processus de la demande d’achat
+* **Id :** process_demande_achat
+* **Name :** Demande d’achat
+* **Process name :** Processus de la demande d’achat
 
 J’attire votre attention sur le booléen **“Executable”** qui ici est coché par défaut.
 Ce ne sera pas toujours le cas notamment lorsque l’on insère une deuxième piscine  au sein du même modèle.
