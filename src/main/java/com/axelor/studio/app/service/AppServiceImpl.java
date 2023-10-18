@@ -40,7 +40,7 @@ import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.AppSettingsStudioService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -305,7 +305,7 @@ public class AppServiceImpl implements AppService {
           try {
             copy(url.openStream(), tmp, name);
           } catch (IOException e) {
-            ExceptionTool.trace(e);
+            ExceptionHelper.trace(e);
           }
         });
 
@@ -481,7 +481,7 @@ public class AppServiceImpl implements AppService {
         setAppDependsOn(appDependsOnMap);
 
       } catch (Exception e) {
-        ExceptionTool.trace(e);
+        ExceptionHelper.trace(e);
       } finally {
         clean(tmp);
       }

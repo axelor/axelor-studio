@@ -37,7 +37,7 @@ import com.axelor.studio.db.WkfTaskMenu;
 import com.axelor.studio.db.WkfTaskMenuContext;
 import com.axelor.team.db.Team;
 import com.axelor.team.db.repo.TeamRepository;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -270,7 +270,7 @@ public class WkfMenuServiceImpl implements WkfMenuService {
         try {
           property = Mapper.of(Class.forName(model)).getProperty(path.split("\\.")[0]);
         } catch (ClassNotFoundException e) {
-          ExceptionTool.trace(e);
+          ExceptionHelper.trace(e);
         }
       }
 

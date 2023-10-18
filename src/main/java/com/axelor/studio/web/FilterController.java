@@ -26,7 +26,7 @@ import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.Filter;
 import com.axelor.studio.service.filter.FilterSqlService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.Map;
 
 public class FilterController {
@@ -62,7 +62,7 @@ public class FilterController {
 
       response.setValue("operator", null);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -81,7 +81,7 @@ public class FilterController {
       response.setValue("targetType", targetType);
       response.setValue("filterOperator", null);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -113,7 +113,7 @@ public class FilterController {
       }
       response.setValue("operator", null);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -134,7 +134,7 @@ public class FilterController {
       response.setValue("targetMetaField", null);
       response.setValue("operator", null);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

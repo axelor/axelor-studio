@@ -33,7 +33,7 @@ import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardService;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.repo.WkfModelRepository;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.db.Wizard;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -77,7 +77,7 @@ public class WkfDashboardController {
                 .map());
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -132,7 +132,7 @@ public class WkfDashboardController {
               : "self.id IN (0)");
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -171,7 +171,7 @@ public class WkfDashboardController {
       response.setCanClose(true);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 

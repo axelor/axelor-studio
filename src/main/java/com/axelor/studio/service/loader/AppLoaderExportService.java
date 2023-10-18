@@ -21,7 +21,7 @@ import com.axelor.data.xml.XMLBind;
 import com.axelor.data.xml.XMLConfig;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.db.AppLoader;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.context.FullContext;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;

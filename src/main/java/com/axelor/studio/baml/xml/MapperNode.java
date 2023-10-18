@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.baml.xml;
 
-import com.axelor.utils.StringTool;
+import com.axelor.utils.helpers.StringHelper;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
@@ -78,7 +78,7 @@ public class MapperNode extends BaseNode {
     }
 
     if (script.substring(script.lastIndexOf("\n") + 1).startsWith("return")) {
-      String target = StringTool.toFirstLower(targetField);
+      String target = StringHelper.toFirstLower(targetField);
       codeBuilder.append("def " + target + " = {\n" + script + "\n}()\n");
     } else {
       codeBuilder.append("\n" + script + "\n");

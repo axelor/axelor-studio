@@ -38,9 +38,9 @@ import com.axelor.studio.db.AppDataLoader;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.text.GroovyTemplates;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.context.FullContext;
-import com.axelor.utils.context.FullContextHelper;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.context.FullContext;
+import com.axelor.utils.helpers.context.FullContextHelper;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
@@ -159,7 +159,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       appLoaderRepository.save(appLoader);
 
     } catch (IOException | ClassNotFoundException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 
@@ -357,7 +357,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       fileWriter.close();
 
     } catch (IOException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 
@@ -445,7 +445,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       fileWriter.close();
 
     } catch (IOException | ClassNotFoundException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 

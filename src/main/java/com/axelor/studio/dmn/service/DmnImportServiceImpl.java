@@ -21,8 +21,8 @@ import com.axelor.meta.db.MetaFile;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.db.repo.WkfDmnModelRepository;
-import com.axelor.utils.reader.DataReaderFactory;
-import com.axelor.utils.reader.DataReaderService;
+import com.axelor.utils.service.reader.DataReaderFactory;
+import com.axelor.utils.service.reader.DataReader;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -68,14 +68,14 @@ public class DmnImportServiceImpl implements DmnImportService {
       throw new IllegalStateException(BpmExceptionMessage.INVALID_IMPORT_FILE);
     }
 
-    DataReaderService reader = dataReaderFactory.getDataReader(extension);
+    DataReader reader = dataReaderFactory.getDataReader(extension);
     reader.initialize(dataFile, null);
 
     this.process(reader, dmnModel);
   }
 
   @Transactional(rollbackOn = Exception.class)
-  public void process(DataReaderService reader, WkfDmnModel dmnModel) {
+  public void process(DataReader reader, WkfDmnModel dmnModel) {
     DmnModelInstance dmnModelInstance =
         Dmn.readModelFromStream(new ByteArrayInputStream(dmnModel.getDiagramXml().getBytes()));
 
@@ -139,7 +139,7 @@ public class DmnImportServiceImpl implements DmnImportService {
   }
 
   protected Object checkEntry(
-      String[] headerRow, int cellIndex, DecisionTable table, DataReaderService reader) {
+      String[] headerRow, int cellIndex, DecisionTable table, DataReader reader) {
 
     if (StringUtils.isBlank(headerRow[cellIndex])) {
       throw new IllegalStateException(BpmExceptionMessage.INVALID_HEADER);

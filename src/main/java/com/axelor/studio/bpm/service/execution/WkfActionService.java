@@ -29,7 +29,7 @@ import com.axelor.meta.schema.actions.ActionGroup;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfProcessRepository;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.service.ActionService;
 import java.util.Collections;
 import java.util.List;

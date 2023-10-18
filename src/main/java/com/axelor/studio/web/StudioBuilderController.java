@@ -24,7 +24,7 @@ import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
 import com.axelor.studio.service.StudioMetaService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class StudioBuilderController {
@@ -43,7 +43,7 @@ public class StudioBuilderController {
 
       response.setView(ActionView.define(I18n.get("Studio")).add("html", url).map());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

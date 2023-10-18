@@ -33,8 +33,8 @@ import com.axelor.team.db.Team;
 import com.axelor.team.db.TeamTask;
 import com.axelor.team.db.repo.TeamRepository;
 import com.axelor.team.db.repo.TeamTaskRepository;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.time.LocalDate;
@@ -137,7 +137,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       teamTaskRepository.save(teamTask);
 
     } catch (ClassNotFoundException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 

@@ -36,7 +36,7 @@ import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.service.StudioMetaService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -134,7 +134,7 @@ public class StudioMenuServiceImpl implements StudioMenuService {
           field.setAccessible(true);
           if (field.get(action) != null) contextList = (List<ActionView.Context>) field.get(action);
         } catch (Exception e) {
-          ExceptionTool.trace(e);
+          ExceptionHelper.trace(e);
         }
 
         if (!CollectionUtils.isEmpty(contextList)) {
@@ -156,7 +156,7 @@ public class StudioMenuServiceImpl implements StudioMenuService {
         return Optional.of(studioAction);
       }
     } catch (JAXBException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
     return Optional.empty();
   }

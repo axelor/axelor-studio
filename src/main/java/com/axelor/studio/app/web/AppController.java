@@ -35,7 +35,7 @@ import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +57,7 @@ public class AppController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -70,7 +70,7 @@ public class AppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -106,7 +106,7 @@ public class AppController {
                 .map());
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -119,7 +119,7 @@ public class AppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -149,7 +149,7 @@ public class AppController {
       response.setSignal("refresh-app", true);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -173,7 +173,7 @@ public class AppController {
               .param("download", "true")
               .map());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -187,7 +187,7 @@ public class AppController {
       response.setReload(true);
       response.setInfo(I18n.get(StudioExceptionMessage.ROLE_IMPORT_SUCCESS));
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -198,7 +198,7 @@ public class AppController {
       response.setInfo(I18n.get(StudioExceptionMessage.ROLE_IMPORT_SUCCESS));
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -215,7 +215,7 @@ public class AppController {
         response.setCanClose(true);
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

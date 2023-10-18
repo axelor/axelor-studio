@@ -24,7 +24,7 @@ import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
@@ -56,7 +56,7 @@ public class AppServerStartListener {
     try {
       appService.initApps();
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 
@@ -91,7 +91,7 @@ public class AppServerStartListener {
           appList, appSettingsService.importDemoData(), appSettingsService.applicationLocale());
 
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 }

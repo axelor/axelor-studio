@@ -22,7 +22,7 @@ import ch.qos.logback.core.OutputStreamAppender;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayOutputStream;
@@ -82,7 +82,7 @@ public class WkfLogServiceImpl implements WkfLogService {
         updateProcessInstanceLog(processInstanceId, outStream);
       }
     } catch (IOException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
     appender.setOutputStream(new ByteArrayOutputStream());
     wkfLoggerInitServiceImpl.detachAppender(appender);

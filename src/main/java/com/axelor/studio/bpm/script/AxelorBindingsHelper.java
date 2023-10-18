@@ -23,7 +23,7 @@ import com.axelor.auth.AuthUtils;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.context.FullContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

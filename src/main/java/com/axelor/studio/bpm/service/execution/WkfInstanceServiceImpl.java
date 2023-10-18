@@ -41,9 +41,9 @@ import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.context.FullContext;
-import com.axelor.utils.context.FullContextHelper;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.context.FullContext;
+import com.axelor.utils.helpers.context.FullContextHelper;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
@@ -443,7 +443,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       try {
         wkfEmailService.sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
-        ExceptionTool.trace(e);
+        ExceptionHelper.trace(e);
       }
     }
 
@@ -465,7 +465,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       try {
         wkfEmailService.sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
-        ExceptionTool.trace(e);
+        ExceptionHelper.trace(e);
       }
     }
   }
@@ -524,7 +524,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         try {
           return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
-          ExceptionTool.trace(e);
+          ExceptionHelper.trace(e);
         }
       }
     }

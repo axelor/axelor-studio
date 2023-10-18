@@ -32,9 +32,9 @@ import com.axelor.studio.bpm.script.AxelorBindingsHelper;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessConfigRepository;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.StringTool;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.StringHelper;
+import com.axelor.utils.helpers.context.FullContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.util.Arrays;
@@ -212,7 +212,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
     }
 
     if (name != null) {
-      name = StringTool.toFirstLower(name);
+      name = StringHelper.toFirstLower(name);
     }
 
     return name;
@@ -278,7 +278,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
                       .filter("self.name = ?1", value)
                       .fetchOne();
             } catch (Exception e) {
-              ExceptionTool.trace(e);
+              ExceptionHelper.trace(e);
             }
           }
           mapper.set(model, key, value);

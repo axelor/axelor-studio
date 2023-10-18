@@ -20,7 +20,7 @@ package com.axelor.studio.service;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.service.builder.StudioSelectionService;
-import com.axelor.utils.ModelTool;
+import com.axelor.utils.helpers.ModelHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -71,7 +71,7 @@ public class JsonFieldServiceImpl implements JsonFieldService {
   @Override
   @CallMethod
   public String checkName(String name, boolean isFieldName) {
-    return ModelTool.normalizeKeyword(name, isFieldName);
+    return ModelHelper.normalizeKeyword(name, isFieldName);
   }
 
   @Override

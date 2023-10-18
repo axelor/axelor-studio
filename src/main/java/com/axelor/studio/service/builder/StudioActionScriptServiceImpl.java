@@ -37,7 +37,7 @@ import com.axelor.studio.db.repo.StudioActionLineRepository;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.filter.FilterSqlService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
@@ -470,7 +470,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
         }
       }
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     if (sourceModel == null && line.getValue() != null && line.getValue().equals("$")) {

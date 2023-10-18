@@ -22,7 +22,7 @@ import com.axelor.studio.db.WsRequest;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.text.GroovyTemplates;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -109,7 +109,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       uriBuilder.addParameter("redirect_uri", getRedirectUrl());
       url = uriBuilder.toString();
     } catch (URISyntaxException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return url;
@@ -148,7 +148,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     Response response =
@@ -192,7 +192,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     Response response =

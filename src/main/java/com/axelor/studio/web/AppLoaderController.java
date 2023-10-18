@@ -24,7 +24,7 @@ import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 
 public class AppLoaderController {
 
@@ -35,7 +35,7 @@ public class AppLoaderController {
       Beans.get(AppLoaderExportService.class).exportApps(appLoader);
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -46,7 +46,7 @@ public class AppLoaderController {
       Beans.get(AppLoaderImportService.class).importApps(appLoader);
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

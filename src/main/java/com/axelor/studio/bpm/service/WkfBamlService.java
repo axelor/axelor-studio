@@ -22,7 +22,7 @@ import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.BamlModel;
 import com.axelor.studio.db.repo.BamlModelRepository;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;

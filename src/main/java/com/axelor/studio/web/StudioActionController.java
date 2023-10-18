@@ -27,7 +27,7 @@ import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioActionView;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.service.mapper.MapperScriptGeneratorService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +59,7 @@ public class StudioActionController {
         response.setValue("studioActionViews", views);
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -95,7 +95,7 @@ public class StudioActionController {
         response.setValue("_scriptString", scriptString);
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }
