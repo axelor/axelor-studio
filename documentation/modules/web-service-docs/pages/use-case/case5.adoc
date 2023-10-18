@@ -29,5 +29,3 @@ image::context.png[context,align="left"]
 The connector will have only one request and one context .
 
 image::connector.png[connector,align="left"]
-
-

@@ -21,4 +21,3 @@ there is the request and the connector and the authentication and another stuff 
 We are going to explain each component in the next sections ...
 
 image::menu.png[alt text,align="left"]
-
