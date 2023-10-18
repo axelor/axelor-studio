@@ -5,7 +5,7 @@ import com.axelor.data.xml.XMLInput;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.studio.db.StudioApp;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.persist.Transactional;
 import java.io.File;
 import java.util.List;

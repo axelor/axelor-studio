@@ -28,9 +28,9 @@ import com.axelor.rpc.Context;
 import com.axelor.studio.db.ValueMapper;
 import com.axelor.studio.db.repo.ValueMapperRepository;
 import com.axelor.studio.service.mapper.ValueMapperService;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.context.FullContext;
-import com.axelor.utils.context.FullContextHelper;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.context.FullContext;
+import com.axelor.utils.helpers.context.FullContextHelper;
 import java.util.Map;
 
 public class ValueMapperController {
@@ -81,7 +81,7 @@ public class ValueMapperController {
       }
       response.setCanClose(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

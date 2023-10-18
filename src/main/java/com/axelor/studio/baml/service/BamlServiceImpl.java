@@ -28,9 +28,9 @@ import com.axelor.studio.baml.xml.ProcessActionRootNode;
 import com.axelor.studio.bpm.script.AxelorBindingsHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.BamlModel;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.StringTool;
-import com.axelor.utils.xml.XPathParse;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.StringHelper;
+import com.axelor.utils.xml.XPathParser;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -96,7 +96,7 @@ public class BamlServiceImpl implements BamlService {
 
     if (processActionNode.getTargetModel() != null) {
       returnType = processActionNode.getTargetModel();
-      returnVar = StringTool.toFirstLower(returnType);
+      returnVar = StringHelper.toFirstLower(returnType);
       if (!processActionNode.getStaticCompile()) {
         returnVar += ".getTarget()";
         returnType = Model.class.getSimpleName();
@@ -112,7 +112,7 @@ public class BamlServiceImpl implements BamlService {
       if (varName.contains(".")) {
         varName = varName.substring(varName.lastIndexOf(".") + 1);
       }
-      varName = StringTool.toFirstLower(varName);
+      varName = StringHelper.toFirstLower(varName);
       if (!processActionNode.getStaticCompile()) {
         varName = varName + "V";
         parameterType = Model.class.getSimpleName();
@@ -191,7 +191,7 @@ public class BamlServiceImpl implements BamlService {
       return null;
     }
 
-    DocumentBuilderFactory docBuilderFactory = new XPathParse().getDocumentBuilderFactory();
+    DocumentBuilderFactory docBuilderFactory = new XPathParser().getDocumentBuilderFactory();
 
     try {
       docBuilderFactory.setNamespaceAware(false);
@@ -224,7 +224,7 @@ public class BamlServiceImpl implements BamlService {
       return xml;
 
     } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return xml;

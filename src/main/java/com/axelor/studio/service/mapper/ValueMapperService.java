@@ -23,9 +23,9 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.script.AxelorBindingsHelper;
 import com.axelor.studio.db.ValueMapper;
-import com.axelor.utils.StringTool;
-import com.axelor.utils.context.FullContext;
-import com.axelor.utils.context.FullContextHelper;
+import com.axelor.utils.helpers.StringHelper;
+import com.axelor.utils.helpers.context.FullContext;
+import com.axelor.utils.helpers.context.FullContextHelper;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import javax.script.Bindings;
@@ -70,7 +70,7 @@ public class ValueMapperService {
       modelName = model.getClass().getSimpleName();
     }
 
-    modelName = StringTool.toFirstLower(modelName);
+    modelName = StringHelper.toFirstLower(modelName);
 
     return modelName;
   }

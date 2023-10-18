@@ -18,7 +18,7 @@
 package com.axelor.studio.baml.service;
 
 import com.axelor.studio.baml.xml.ProcessActionRootNode;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.io.Resources;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -44,7 +44,7 @@ public class BamlParser {
       return (ProcessActionRootNode) unmarshaller.unmarshal(xml);
 
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return null;
@@ -65,7 +65,7 @@ public class BamlParser {
       return byteArrayOutputStream.toString();
 
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return null;

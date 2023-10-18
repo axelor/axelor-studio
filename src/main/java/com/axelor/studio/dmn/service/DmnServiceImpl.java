@@ -40,9 +40,9 @@ import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.db.DmnTable;
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.db.repo.DmnTableRepository;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.context.FullContext;
-import com.axelor.utils.context.FullContextHelper;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.context.FullContext;
+import com.axelor.utils.helpers.context.FullContextHelper;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
@@ -309,7 +309,7 @@ public class DmnServiceImpl implements DmnService {
               mapToMetaCustomModelFields(fields, modelName, searchOperator, multiple, resultVar);
         }
       } catch (ClassNotFoundException e) {
-        ExceptionTool.trace(e);
+        ExceptionHelper.trace(e);
       }
     }
 
@@ -557,7 +557,7 @@ public class DmnServiceImpl implements DmnService {
                 .replaceAll(String.format(id, matcher.group(2)), String.format(id, randomStr));
       }
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return diagramXml;

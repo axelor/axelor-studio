@@ -47,8 +47,8 @@ import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.MapTools;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.MapHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +82,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
       WkfModel model = request.getContext().asType(WkfModel.class);
       Beans.get(BpmErrorMessageService.class)
           .sendBpmErrorMessage(
@@ -94,7 +94,7 @@ public class WkfModelController {
     try {
       Beans.get(WkfInstanceService.class).terminateAll();
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -113,7 +113,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -127,7 +127,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -141,7 +141,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -155,7 +155,7 @@ public class WkfModelController {
 
       response.setValue("newVersionId", wkfModel.getId());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -181,7 +181,7 @@ public class WkfModelController {
               .context("versionIds", versionIds)
               .map());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -193,7 +193,7 @@ public class WkfModelController {
 
       response.setValue("xml", xml);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -206,7 +206,7 @@ public class WkfModelController {
       String sourceLanguage = (String) ctx.get("sourceLanguageSelect");
       String targetLanguage = (String) ctx.get("targetLanguageSelect");
 
-      MetaFile metaFile = MapTools.get(ctx, MetaFile.class, "dataFile");
+      MetaFile metaFile = MapHelper.get(ctx, MetaFile.class, "dataFile");
 
       String logText =
           Beans.get(WkfModelService.class)
@@ -219,7 +219,7 @@ public class WkfModelController {
       }
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -229,7 +229,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -253,7 +253,7 @@ public class WkfModelController {
 
       response.setInfo(I18n.get("Instance Restarted"));
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -270,7 +270,7 @@ public class WkfModelController {
 
       response.setInfo(I18n.get("Node cancelled"));
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -280,7 +280,7 @@ public class WkfModelController {
       response.setData(dataList);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -290,7 +290,7 @@ public class WkfModelController {
       response.setData(dataList);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -322,10 +322,10 @@ public class WkfModelController {
 
     Map<String, Object> ctx = getDataCtx(request);
 
-    String status = statusKey != null ? MapTools.get(ctx, String.class, "title") : "";
-    String modelName = MapTools.get(ctx, String.class, modelKey);
-    boolean isMetaModel = MapTools.get(ctx, Boolean.class, "isMetaModel");
-    List<Long> recordIds = MapTools.getCollection(ctx, Long.class, recordKey);
+    String status = statusKey != null ? MapHelper.get(ctx, String.class, "title") : "";
+    String modelName = MapHelper.get(ctx, String.class, modelKey);
+    boolean isMetaModel = MapHelper.get(ctx, Boolean.class, "isMetaModel");
+    List<Long> recordIds = MapHelper.getCollection(ctx, Long.class, recordKey);
 
     ActionViewBuilder actionViewBuilder =
         Beans.get(WkfDashboardCommonService.class)
@@ -344,7 +344,7 @@ public class WkfModelController {
       this.openRecordView(request, response, "title", "modelName", "statusRecordIds");
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -353,28 +353,28 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "recordIdsPerModel");
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
   public void openNewRecord(ActionRequest request, ActionResponse response) {
     try {
       Map<String, Object> ctx = getDataCtx(request);
-      String modelName = MapTools.get(ctx, String.class, "modelName");
-      boolean isMetaModel = MapTools.get(ctx, Boolean.class, "isMetaModel");
+      String modelName = MapHelper.get(ctx, String.class, "modelName");
+      boolean isMetaModel = MapHelper.get(ctx, Boolean.class, "isMetaModel");
 
       ActionViewBuilder actionViewBuilder = this.viewNewRecord(modelName, isMetaModel);
       response.setView(actionViewBuilder.map());
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
   public void openNewInstance(ActionRequest request, ActionResponse response) {
     try {
       Map<String, Object> ctx = getDataCtx(request);
-      WkfProcessConfig config = MapTools.get(ctx, WkfProcessConfig.class, "processConfig");
+      WkfProcessConfig config = MapHelper.get(ctx, WkfProcessConfig.class, "processConfig");
 
       boolean isMetaModel = config.getMetaModel() != null;
       String modelName =
@@ -384,7 +384,7 @@ public class WkfModelController {
       response.setView(actionViewBuilder.map());
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -447,7 +447,7 @@ public class WkfModelController {
       response.setAttr("myProcessPanel", "hidden", true);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -456,7 +456,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "taskTodayIds");
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -465,7 +465,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "taskNextIds");
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -474,7 +474,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "lateTaskIds");
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -485,7 +485,7 @@ public class WkfModelController {
       Beans.get(WkfLogService.class).clearLog(instance.getInstanceId());
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

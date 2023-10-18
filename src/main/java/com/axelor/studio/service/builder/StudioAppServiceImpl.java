@@ -43,9 +43,9 @@ import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportService;
 import com.axelor.text.GroovyTemplates;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.context.FullContext;
-import com.axelor.utils.context.FullContextHelper;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.context.FullContext;
+import com.axelor.utils.helpers.context.FullContextHelper;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.File;
@@ -182,7 +182,7 @@ public class StudioAppServiceImpl implements StudioAppService {
               @Override
               public void handle(Model bean, Exception e) {
                 logSB.append(String.format("Error Importing: %s\n", bean));
-                ExceptionTool.trace(e);
+                ExceptionHelper.trace(e);
               }
             });
         xmlImporter.run();
@@ -195,7 +195,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         return Beans.get(MetaFiles.class).upload(logFile);
       }
     } catch (IOException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     } finally {
       try {
         if (zipFile != null) Files.deleteIfExists(zipFile.toPath());
@@ -242,7 +242,7 @@ public class StudioAppServiceImpl implements StudioAppService {
       File zipFile = appLoaderExportService.createExportZip(exportDir);
       exportFile = Beans.get(MetaFiles.class).upload(zipFile);
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     } finally {
       try {
         if (exportDir != null) Files.deleteIfExists(exportDir.toPath());
@@ -264,7 +264,7 @@ public class StudioAppServiceImpl implements StudioAppService {
       File zipFile = appLoaderExportService.createExportZip(exportDir);
       exportFile = Beans.get(MetaFiles.class).upload(zipFile);
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     } finally {
       try {
         if (exportDir != null) Files.deleteIfExists(exportDir.toPath());
@@ -314,7 +314,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         }
       }
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 
@@ -341,7 +341,7 @@ public class StudioAppServiceImpl implements StudioAppService {
             writer = new FileWriter(file);
             templates.from(new InputStreamReader(value)).make(ctx).render(writer);
           } catch (Exception e) {
-            ExceptionTool.trace(e);
+            ExceptionHelper.trace(e);
           } finally {
             try {
               if (writer != null) writer.close();
@@ -367,7 +367,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         }
       }
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 
@@ -495,7 +495,7 @@ public class StudioAppServiceImpl implements StudioAppService {
             dataFile, stringBuffer.toString(), Charset.forName("UTF-8"));
       }
     } catch (IOException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
   }
 }

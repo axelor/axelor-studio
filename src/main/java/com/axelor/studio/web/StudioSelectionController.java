@@ -24,7 +24,7 @@ import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioSelection;
 import com.axelor.studio.db.repo.StudioSelectionRepository;
 import com.axelor.studio.service.builder.StudioSelectionService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public class StudioSelectionController {
         response.setValue("name", null);
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -70,7 +70,7 @@ public class StudioSelectionController {
       response.setValue(SELECTION_TEXT, selectionText);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -88,7 +88,7 @@ public class StudioSelectionController {
       response.setValue(SELECTION_OPTION_LIST, selectOptions);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

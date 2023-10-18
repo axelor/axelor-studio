@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.service.mapper;
 
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
@@ -32,7 +32,7 @@ public class MapperScriptGeneratorServiceImpl implements MapperScriptGeneratorSe
         return mapperRecord.toScript();
       }
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return null;
@@ -51,7 +51,7 @@ public class MapperScriptGeneratorServiceImpl implements MapperScriptGeneratorSe
       return mapperRecord;
 
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return null;

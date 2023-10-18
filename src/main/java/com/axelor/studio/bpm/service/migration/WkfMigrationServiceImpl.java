@@ -24,7 +24,7 @@ import com.axelor.studio.db.WkfMigration;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.repo.WkfMigrationRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -226,7 +226,7 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
     try {
       migration.setMapping(new ObjectMapper().writeValueAsString(contextMap));
     } catch (JsonProcessingException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
     saveMigration(migration);
   }

@@ -31,7 +31,7 @@ import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.repo.StudioAppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.builder.StudioAppService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class StudioAppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -62,7 +62,7 @@ public class StudioAppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -95,7 +95,7 @@ public class StudioAppController {
               .param("download", "true")
               .map());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -145,7 +145,7 @@ public class StudioAppController {
               .param("download", "true")
               .map());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -156,7 +156,7 @@ public class StudioAppController {
       Beans.get(StudioAppService.class).deleteApp(studioApp);
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, I18n.get(StudioExceptionMessage.STUDIO_APP_IN_REF));
+      ExceptionHelper.trace(response, I18n.get(StudioExceptionMessage.STUDIO_APP_IN_REF));
     }
   }
 }

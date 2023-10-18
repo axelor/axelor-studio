@@ -32,7 +32,7 @@ import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.BamlModel;
 import com.axelor.studio.db.repo.BamlModelRepository;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
 import java.util.Map;
 
@@ -48,7 +48,7 @@ public class BamlModelController {
         response.setValue("resultScript", resultScript);
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -104,7 +104,7 @@ public class BamlModelController {
 
       response.setView(builder.map());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

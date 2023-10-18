@@ -28,8 +28,8 @@ import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.repo.WsAuthenticatorRepository;
 import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.service.ws.WsConnectorService;
-import com.axelor.utils.ExceptionTool;
-import com.axelor.utils.StringTool;
+import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.StringHelper;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public class WsConnectorController {
       Class<? extends Model> recordClass =
           (Class<? extends Model>) Class.forName(recordModel.toString());
       Model model = JPA.find(recordClass, Long.parseLong(recordId.toString()));
-      ctx.put(StringTool.toFirstLower(model.getClass().getSimpleName()), model);
+      ctx.put(StringHelper.toFirstLower(model.getClass().getSimpleName()), model);
       ctx.put("_beans", Beans.class);
       Map<String, Object> res =
           Beans.get(WsConnectorService.class).callConnector(wsConnector, authenticator, ctx);
@@ -82,7 +82,7 @@ public class WsConnectorController {
       response.setValue("$result", result.toString());
     } catch (Exception e) {
       response.setStatus(-1);
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

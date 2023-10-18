@@ -25,7 +25,7 @@ import com.axelor.meta.schema.views.Button;
 import com.axelor.meta.schema.views.FormView;
 import com.axelor.meta.service.MetaService;
 import com.axelor.rpc.Response;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class CustomMetaService extends MetaService {
         | SecurityException
         | IllegalArgumentException
         | IllegalAccessException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
     return toolBar;
   }

@@ -21,7 +21,7 @@ import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.studio.db.*;
 import com.axelor.studio.db.repo.StudioActionRepository;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +46,7 @@ public class ExportService {
           byte[] img = IOUtils.toByteArray(new FileInputStream(file));
           return Base64.getEncoder().encodeToString(img);
         } catch (IOException e) {
-          ExceptionTool.trace(e);
+          ExceptionHelper.trace(e);
         }
       }
     }

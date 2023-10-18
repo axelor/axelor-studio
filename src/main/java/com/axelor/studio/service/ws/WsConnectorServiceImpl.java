@@ -25,7 +25,7 @@ import com.axelor.studio.db.*;
 import com.axelor.studio.db.repo.AppStudioRepository;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.text.Templates;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -352,7 +352,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
 
         url = uriBuilder.toString();
       } catch (URISyntaxException e) {
-        ExceptionTool.trace(e);
+        ExceptionHelper.trace(e);
       }
     } else {
       entity = createEntity(wsRequest, templates, ctx);
@@ -398,7 +398,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
                             ? it.getValue().get(0).asText()
                             : it.getValue().asText())));
       } catch (Exception e) {
-        ExceptionTool.trace(e);
+        ExceptionHelper.trace(e);
         throw new IllegalStateException(e);
       }
     }
@@ -561,7 +561,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
       metaFiles.deleteAttachments(wsConnector);
       metaFiles.attach(inputStream, "Log_File", wsConnector);
     } catch (IOException io) {
-      ExceptionTool.trace(io);
+      ExceptionHelper.trace(io);
     }
   }
 
@@ -611,7 +611,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
       metaFiles.deleteAttachments(wsConnector);
       metaFiles.attach(inputStream, "Log_File", wsConnector);
     } catch (IOException io) {
-      ExceptionTool.trace(io);
+      ExceptionHelper.trace(io);
     }
   }
 

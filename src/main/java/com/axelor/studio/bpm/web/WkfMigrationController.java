@@ -27,7 +27,7 @@ import com.axelor.studio.bpm.service.migration.WkfMigrationService;
 import com.axelor.studio.db.WkfMigration;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.repo.WkfMigrationRepository;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class WkfMigrationController {
       response.setValue("mapping", new ObjectMapper().writeValueAsString(_map));
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -67,7 +67,7 @@ public class WkfMigrationController {
       response.setData(new ObjectMapper().readValue(migration.getMapping(), Map.class));
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -90,7 +90,7 @@ public class WkfMigrationController {
               : "self.id IN (0)");
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -115,7 +115,7 @@ public class WkfMigrationController {
       response.setInfo(I18n.get(BpmExceptionMessage.MIGRATION_DONE));
 
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
       response.setError(e.getMessage(), I18n.get(BpmExceptionMessage.MIGRATION_ERR));
     }
   }

@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.service.mapper;
 
-import com.axelor.utils.StringTool;
+import com.axelor.utils.helpers.StringHelper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class MapperRecord {
 
   public void addSource() {
 
-    String src = StringTool.toFirstLower(sourceModel);
+    String src = StringHelper.toFirstLower(sourceModel);
 
     src = "def src = " + src + "\n";
 
@@ -140,10 +140,10 @@ public class MapperRecord {
               + " = __ctx__.find('"
               + targetModel
               + "',"
-              + StringTool.toFirstLower(targetModel)
+              + StringHelper.toFirstLower(targetModel)
               + "Id)\n");
     } else {
-      targetVariable = StringTool.toFirstLower(targetModel);
+      targetVariable = StringHelper.toFirstLower(targetModel);
     }
 
     return scriptBuilder;

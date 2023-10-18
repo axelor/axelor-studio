@@ -8,7 +8,7 @@ import com.axelor.rpc.Context;
 import com.axelor.studio.db.Parameter;
 import com.axelor.studio.db.Transformation;
 import com.axelor.studio.service.transformation.TransformationService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +49,7 @@ public class TransformationsLibrariesController {
                         I18n.get("Parameter %s has Already been defined!"), parameter.getName()));
               });
     } catch (Exception e) {
-      ExceptionTool.trace(actionResponse, e);
+      ExceptionHelper.trace(actionResponse, e);
     }
   }
 
@@ -112,7 +112,7 @@ public class TransformationsLibrariesController {
               actionResponse.setError(
                   I18n.get("The groovy template in transformation is not valid") + ":\n" + s));
     } catch (Exception e) {
-      ExceptionTool.trace(actionResponse, e);
+      ExceptionHelper.trace(actionResponse, e);
     }
   }
 }

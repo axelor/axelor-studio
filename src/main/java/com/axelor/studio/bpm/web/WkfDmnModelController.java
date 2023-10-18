@@ -34,7 +34,7 @@ import com.axelor.studio.dmn.service.DmnDeploymentService;
 import com.axelor.studio.dmn.service.DmnExportService;
 import com.axelor.studio.dmn.service.DmnImportService;
 import com.axelor.studio.dmn.service.DmnService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class WkfDmnModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -75,7 +75,7 @@ public class WkfDmnModelController {
 
       response.setCanClose(true);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -100,7 +100,7 @@ public class WkfDmnModelController {
 
       response.setValue("script", script);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -132,7 +132,7 @@ public class WkfDmnModelController {
       }
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -153,7 +153,7 @@ public class WkfDmnModelController {
       response.setCanClose(true);
 
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

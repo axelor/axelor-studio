@@ -25,7 +25,7 @@ import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.MetaJsonModelRepo;
 import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.db.repo.StudioMenuRepository;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.persist.Transactional;
 
 public class MetaJsonModelController {
@@ -47,7 +47,7 @@ public class MetaJsonModelController {
         response.setReload(true);
       }
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

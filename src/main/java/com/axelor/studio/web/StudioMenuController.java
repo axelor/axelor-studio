@@ -33,7 +33,7 @@ import com.axelor.rpc.Context;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.service.builder.StudioMenuService;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +56,7 @@ public class StudioMenuController {
 
       response.setValues(values);
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 
@@ -147,7 +147,7 @@ public class StudioMenuController {
 
       response.setView(actionViewBuilder.map());
     } catch (Exception e) {
-      ExceptionTool.trace(response, e);
+      ExceptionHelper.trace(response, e);
     }
   }
 }

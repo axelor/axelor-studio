@@ -19,7 +19,7 @@ package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.auth.db.User;
 import com.axelor.studio.db.WkfTaskConfig;
-import com.axelor.utils.context.FullContext;
+import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.persist.Transactional;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 

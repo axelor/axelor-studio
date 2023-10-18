@@ -18,7 +18,7 @@
 package com.axelor.studio.bpm.mapper;
 
 import com.axelor.studio.service.mapper.MapperRecord;
-import com.axelor.utils.StringTool;
+import com.axelor.utils.helpers.StringHelper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public class BpmMapperRecord extends MapperRecord {
 
     StringBuilder scriptBuilder = getScriptBuilder();
 
-    String src = StringTool.toFirstLower(getSourceModel());
+    String src = StringHelper.toFirstLower(getSourceModel());
 
     if (processId != null) {
       src = "__ctx__.getVariable(" + processId + ",'" + src + "')";

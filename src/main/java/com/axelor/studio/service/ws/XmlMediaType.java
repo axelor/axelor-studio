@@ -1,6 +1,6 @@
 package com.axelor.studio.service.ws;
 
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
@@ -31,7 +31,7 @@ public class XmlMediaType implements MediaType {
         return jsonObject;
       }
     } catch (Exception e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
       return wsResponse.readEntity(String.class);
     }
   }

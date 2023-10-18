@@ -37,7 +37,7 @@ import com.axelor.meta.schema.views.Panel;
 import com.axelor.meta.schema.views.PanelField;
 import com.axelor.meta.schema.views.PanelRelated;
 import com.axelor.meta.schema.views.PanelTabs;
-import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
@@ -108,7 +108,7 @@ public class ReportBuilderServiceImpl implements ReportBuilderService {
       log.debug("Template generated: {}", template);
       return template;
     } catch (JAXBException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return null;
@@ -287,7 +287,7 @@ public class ReportBuilderServiceImpl implements ReportBuilderService {
       }
       return name + "." + "id";
     } catch (ClassNotFoundException e) {
-      ExceptionTool.trace(e);
+      ExceptionHelper.trace(e);
     }
 
     return name;
@@ -449,7 +449,7 @@ public class ReportBuilderServiceImpl implements ReportBuilderService {
         return getHtmlTable(panelRelated.getName(), grid.getItems(), refModel);
 
       } catch (JAXBException e) {
-        ExceptionTool.trace(e);
+        ExceptionHelper.trace(e);
       }
     }
 
