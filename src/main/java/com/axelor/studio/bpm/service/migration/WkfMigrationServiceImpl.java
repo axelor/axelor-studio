@@ -190,7 +190,7 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
     WkfModel sourceModel = wkfModelRepo.find(migration.getSourceVersion().getId());
     WkfModel targetModel = wkfModelRepo.find(migration.getTargetVersion().getId());
 
-    Map<String, Map<String, String>> migrationMap = new HashMap<>();
+    Map<String, Object> migrationMap = new HashMap<>();
 
     for (Map<String, Object> valMap : valuesMapList) {
       if (valMap.get("processId") == null) {
@@ -217,9 +217,8 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
       wkfModelService.start(sourceModel, targetModel);
     }
 
-    Map<String, String> propsMap = new HashMap<>();
-    propsMap.put("removeOldVersionMenu", migration.getRemoveOldVersionMenu().toString());
-    migrationMap.put("props", propsMap);
+    migrationMap.put("removeOldVersionMenu", migration.getRemoveOldVersionMenu());
+    migrationMap.put("instanceId", contextMap.get("instanceId"));
 
     bpmDeploymentService.deploy(sourceModel, targetModel, migrationMap);
 

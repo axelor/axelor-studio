@@ -759,25 +759,26 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       return;
     }
 
-    WkfModel previousModel = instance.getWkfProcess().getWkfModel();
-    boolean isSameModel = previousModel.equals(process.getWkfModel());
-    instance.addWkfInstanceMigrationHistory(
-        createMigrationHistory(instance, previousModel, isSameModel));
+    if (process != null) {
+      instance.addWkfInstanceMigrationHistory(
+          createMigrationHistory(instance, process.getWkfModel()));
+      instance.setWkfProcess(process);
+      instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
+    }
 
     instance.setMigrationStatusSelect(migrationStatus);
-    instance.setWkfProcess(process);
-    instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
     wkfInstanceRepository.save(instance);
   }
 
   protected WkfInstanceMigrationHistory createMigrationHistory(
-      WkfInstance instance, WkfModel previousModel, boolean isSameModel) {
+      WkfInstance instance, WkfModel currentModel) {
+    WkfModel previousModel = instance.getWkfProcess().getWkfModel();
     WkfInstanceMigrationHistory migrationHistory =
         CollectionUtils.isEmpty(instance.getWkfInstanceMigrationHistory())
             ? null
             : instance.getWkfInstanceMigrationHistory().get(0);
 
-    if (migrationHistory != null && isSameModel) {
+    if (migrationHistory != null && currentModel.equals(previousModel)) {
       migrationHistory.setMigrationHistoryUpdatedOn(LocalDateTime.now());
     } else {
       migrationHistory = new WkfInstanceMigrationHistory();
