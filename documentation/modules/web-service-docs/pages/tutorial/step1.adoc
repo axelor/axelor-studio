@@ -39,3 +39,20 @@ TIP: The requests defined are executed one after one with the same order  how de
 List of context data that can be passed to the Connector , you can pass any static  or dynamic value .
 
 NOTE: The context data is shared with all elements of the  connector , so all Requests in the connector and the default authentication can be use the context data defined in the connector container .
+
+== Track the connector
+
+Every execution of a connector you can track the result by a feature that store this result in a log file .
+To use this feature you need to activate the tracking mode in the **Studio App configuration**
+
+image::enable_track.png[enable track web service]
+
+When execute any connector a new log file will be added to the attachment window
+
+image::attachment.png[attachment]
+
+The log file will contain the logs for the execution and also the result of the connector in the case of a successful API call .
+
+image::log_file.png[log file]
+
+In this example there is an error in the request with the name **"getPartnerInfos"** . the file locate the errors in the execution of the connector .
