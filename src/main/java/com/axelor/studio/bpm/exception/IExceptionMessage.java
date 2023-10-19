@@ -17,7 +17,9 @@
  */
 package com.axelor.studio.bpm.exception;
 
-/** @deprecated Replaced by {@link BpmExceptionMessage} */
+/**
+ * @deprecated Replaced by {@link BpmExceptionMessage}
+ */
 @Deprecated
 public interface IExceptionMessage {
 

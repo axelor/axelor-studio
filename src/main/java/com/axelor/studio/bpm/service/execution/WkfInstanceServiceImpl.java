@@ -395,8 +395,12 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         engineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery();
 
     List<String> processInstanceIds =
-        processInstanceQuery.processDefinitionId(processId).activeActivityIdIn(nodeKey).unfinished()
-            .list().stream()
+        processInstanceQuery
+            .processDefinitionId(processId)
+            .activeActivityIdIn(nodeKey)
+            .unfinished()
+            .list()
+            .stream()
             .map(HistoricProcessInstance::getId)
             .collect(Collectors.toList());
 
