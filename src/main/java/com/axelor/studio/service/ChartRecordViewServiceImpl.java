@@ -161,8 +161,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     List<BigInteger> resultList = queryBinder.getQuery().getResultList();
 
     resultList.add(BigInteger.ZERO);
-    return resultList
-        .parallelStream()
+    return resultList.parallelStream()
         .map(String::valueOf)
         .collect(Collectors.joining(",", "self.id in (", ")"));
   }

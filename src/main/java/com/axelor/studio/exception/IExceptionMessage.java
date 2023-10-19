@@ -17,7 +17,9 @@
  */
 package com.axelor.studio.exception;
 
-/** @deprecated Replaced by {@link StudioExceptionMessage} */
+/**
+ * @deprecated Replaced by {@link StudioExceptionMessage}
+ */
 @Deprecated
 public interface IExceptionMessage {
 
