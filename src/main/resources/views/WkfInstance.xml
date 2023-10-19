@@ -55,7 +55,7 @@
     <view type="grid" name="wkf-instance-grid"/>
     <view type="form" name="wkf-instance-form"/>
     <domain>self.instanceId = :processInstanceId</domain>
-    <context name="processInstanceId" expr="eval:processInstanceId"/>
+    <context name="processInstanceId" expr="eval:__self__.processInstanceId"/>
     <context name="_showSingle" expr="eval:true"/>
   </action-view>
 
