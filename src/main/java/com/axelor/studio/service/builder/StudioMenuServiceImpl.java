@@ -34,6 +34,7 @@ import com.axelor.studio.db.StudioActionView;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioActionRepository;
+import com.axelor.studio.db.repo.StudioActionViewRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.utils.helpers.ExceptionHelper;
@@ -56,14 +57,18 @@ public class StudioMenuServiceImpl implements StudioMenuService {
 
   protected StudioMenuRepo studioMenuRepo;
 
+  protected StudioActionViewRepository studioActionViewRepository;
+
   @Inject
   public StudioMenuServiceImpl(
       StudioActionService studioActionService,
       StudioMetaService metaService,
-      StudioMenuRepo studioMenuRepo) {
+      StudioMenuRepo studioMenuRepo,
+      StudioActionViewRepository studioActionViewRepository) {
     this.studioActionService = studioActionService;
     this.metaService = metaService;
     this.studioMenuRepo = studioMenuRepo;
+    this.studioActionViewRepository = studioActionViewRepository;
   }
 
   @Override
@@ -224,6 +229,17 @@ public class StudioMenuServiceImpl implements StudioMenuService {
 
   @Override
   public void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
+    if (studioActionViewRepository
+            .all()
+            .filter(
+                "self.viewType = ?1 AND self.viewName = ?2 AND self.studioAction = ?3",
+                viewType,
+                viewName,
+                studioAction)
+            .count()
+        > 0) {
+      return;
+    }
 
     StudioActionView studioActionView = new StudioActionView();
     studioActionView.setViewType(viewType);
