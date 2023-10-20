@@ -49,6 +49,8 @@ spotless:
 
 .publish_template: &publish_configuration
   stage: publish
+  cache:
+    - *global_cache_pull
   script:
     - ./gradlew -xtest -xspotlessApply -xlicenseFormat publish -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
