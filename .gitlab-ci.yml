@@ -52,7 +52,7 @@ spotless:
 .publish_template: &publish_configuration
   stage: publish
   script:
-    - ./gradlew -xtest -xspotlessApply -xlicenseFormat -Dinclude.react clean build publish --refresh-dependencies -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew -xtest -xspotlessApply -xlicenseFormat -Dinclude.react clean build publish --refresh-dependencies --stacktrace -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration
