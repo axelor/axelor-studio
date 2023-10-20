@@ -17,8 +17,8 @@ before_script:
 # Add wrapper and caches folders in cache
 .global_cache: &global_cache
   paths:
-    - .gradle/wrapper
-    - .gradle/caches
+    - .gradle
+    - build
   policy: pull-push
 
 .global_cache_pull: &global_cache_pull
@@ -32,10 +32,8 @@ build:
     - *global_cache
   allow_failure: false
   script:
-    - ./gradlew -xtest clean build --refresh-dependencies
+    - ./gradlew -xtest -xspotlessApply -xlicenseFormat clean build -Dinclude.react
   interruptible: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE != "schedule"
 
 # Check code formatting
 spotless:
@@ -48,11 +46,13 @@ spotless:
   interruptible: true
   only:
     - branches
+  rules:
+    - if: $CI_PIPELINE_SOURCE != "schedule"
 
 .publish_template: &publish_configuration
   stage: publish
   script:
-    - ./gradlew -xtest -xspotlessApply -xlicenseFormat -Dinclude.react clean build publish --refresh-dependencies --stacktrace -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew -xtest -xspotlessApply -xlicenseFormat publish -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration
