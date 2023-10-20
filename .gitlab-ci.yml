@@ -46,8 +46,6 @@ spotless:
   interruptible: true
   only:
     - branches
-  rules:
-    - if: $CI_PIPELINE_SOURCE != "schedule"
 
 .publish_template: &publish_configuration
   stage: publish
