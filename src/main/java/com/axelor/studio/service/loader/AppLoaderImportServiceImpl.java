@@ -19,18 +19,15 @@ package com.axelor.studio.service.loader;
 
 import com.axelor.common.FileUtils;
 import com.axelor.common.ResourceUtils;
-import com.axelor.data.Listener;
 import com.axelor.data.xml.XMLImporter;
-import com.axelor.db.Model;
 import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
-import com.google.common.collect.ImmutableMap;
+import com.axelor.studio.utils.ConsumerListener;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +80,7 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
   }
 
   @Override
-  public void importApps(AppLoader appLoader) throws FileNotFoundException, IOException {
+  public void importApps(AppLoader appLoader) throws IOException {
 
     if (appLoader.getImportMetaFile() == null) {
       return;
@@ -111,8 +108,7 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
     appLoaderRepository.save(appLoader);
   }
 
-  protected void extractImportZip(AppLoader appLoader, File dataDir)
-      throws FileNotFoundException, IOException {
+  protected void extractImportZip(AppLoader appLoader, File dataDir) throws IOException {
 
     FileInputStream fin =
         new FileInputStream(MetaFiles.getPath(appLoader.getImportMetaFile()).toFile());
@@ -120,16 +116,15 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
       ZipEntry zipEntry = zipInputStream.getNextEntry();
 
       while (zipEntry != null) {
-        FileOutputStream fout = new FileOutputStream(new File(dataDir, zipEntry.getName()));
-        IOUtils.copy(zipInputStream, fout);
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(new File(dataDir, zipEntry.getName()))) {
+          IOUtils.copy(zipInputStream, fout);
+        }
         zipEntry = zipInputStream.getNextEntry();
       }
     }
   }
 
-  protected File importApp(AppLoader appLoader, File dataDir)
-      throws IOException, FileNotFoundException {
+  protected File importApp(AppLoader appLoader, File dataDir) throws IOException {
 
     File logFile =
         appLoader.getImportLog() != null
@@ -143,20 +138,8 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
         xmlImporter.setContext(getImportContext(appLoader));
 
         xmlImporter.addListener(
-            new Listener() {
-
-              @Override
-              public void imported(Integer total, Integer success) {}
-
-              @Override
-              public void imported(Model bean) {}
-
-              @Override
-              public void handle(Model bean, Exception e) {
-                pw.write("Error Importing: " + bean);
-                e.printStackTrace(pw);
-              }
-            });
+            new ConsumerListener(
+                null, null, (model, e) -> pw.println("Error importing: " + model)));
 
         xmlImporter.run();
       }
@@ -166,10 +149,9 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
   }
 
   @Override
-  public List<File> getAppImportConfigFiles(File dataDir)
-      throws FileNotFoundException, IOException {
+  public List<File> getAppImportConfigFiles(File dataDir) throws IOException {
 
-    List<File> configFiles = new ArrayList<File>();
+    List<File> configFiles = new ArrayList<>();
 
     for (String fileName : IMPORT_FILES) {
       String dataFileName = fileName.replace("-call.xml", ".xml");
@@ -177,11 +159,10 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
         continue;
       }
       File configFile = new File(dataDir, fileName.replace(".xml", "-config.xml"));
-      FileOutputStream fout = new FileOutputStream(configFile);
-      InputStream inStream = ResourceUtils.getResourceStream("data-import/" + fileName);
-      IOUtils.copy(inStream, fout);
-      inStream.close();
-      fout.close();
+      try (FileOutputStream fout = new FileOutputStream(configFile);
+          InputStream inStream = ResourceUtils.getResourceStream("data-import/" + fileName)) {
+        IOUtils.copy(inStream, fout);
+      }
       configFiles.add(configFile);
     }
 
@@ -194,6 +175,6 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
   }
 
   protected Map<String, Object> getImportContext(AppLoader appLoader) {
-    return ImmutableMap.of("appLoaderId", appLoader.getId());
+    return Map.of("appLoaderId", appLoader.getId());
   }
 }
