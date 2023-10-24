@@ -34,16 +34,17 @@ import com.axelor.studio.db.StudioActionView;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioActionRepository;
-import com.axelor.studio.db.repo.StudioActionViewRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.utils.helpers.ExceptionHelper;
+import com.axelor.utils.helpers.WrappingHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,18 +58,14 @@ public class StudioMenuServiceImpl implements StudioMenuService {
 
   protected StudioMenuRepo studioMenuRepo;
 
-  protected StudioActionViewRepository studioActionViewRepository;
-
   @Inject
   public StudioMenuServiceImpl(
       StudioActionService studioActionService,
       StudioMetaService metaService,
-      StudioMenuRepo studioMenuRepo,
-      StudioActionViewRepository studioActionViewRepository) {
+      StudioMenuRepo studioMenuRepo) {
     this.studioActionService = studioActionService;
     this.metaService = metaService;
     this.studioMenuRepo = studioMenuRepo;
-    this.studioActionViewRepository = studioActionViewRepository;
   }
 
   @Override
@@ -211,13 +208,8 @@ public class StudioMenuServiceImpl implements StudioMenuService {
   public void addActionViews(
       StudioAction studioAction, Boolean isJson, String objectName, String objectClass) {
 
-    List<StudioActionView> views = studioAction.getStudioActionViews();
-    if (views == null) {
-      views = new ArrayList<>();
-    }
-
     String viewName;
-    if (isJson) {
+    if (Boolean.TRUE.equals(isJson)) {
       viewName = "custom-model-" + objectName;
     } else {
       objectName = StringUtils.substringAfterLast(objectName, ".");
@@ -229,15 +221,11 @@ public class StudioMenuServiceImpl implements StudioMenuService {
 
   @Override
   public void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
-    if (studioActionViewRepository
-            .all()
-            .filter(
-                "self.viewType = ?1 AND self.viewName = ?2 AND self.studioAction = ?3",
-                viewType,
-                viewName,
-                studioAction)
-            .count()
-        > 0) {
+    if (WrappingHelper.wrap(studioAction.getStudioActionViews()).stream()
+        .filter(Objects::nonNull)
+        .anyMatch(studioActionView ->
+            viewType.equals(studioActionView.getViewType())
+                && viewName.equals(studioActionView.getViewName()))) {
       return;
     }
 
