@@ -17,8 +17,8 @@ before_script:
 # Add wrapper and caches folders in cache
 .global_cache: &global_cache
   paths:
-    - .gradle/wrapper
-    - .gradle/caches
+    - .gradle
+    - build
   policy: pull-push
 
 .global_cache_pull: &global_cache_pull
@@ -32,10 +32,10 @@ build:
     - *global_cache
   allow_failure: false
   script:
-    - ./gradlew -xtest clean build --refresh-dependencies
+    - ./gradlew -xtest -xspotlessApply -xlicenseFormat clean build
   interruptible: true
   rules:
-    - if: $CI_PIPELINE_SOURCE != "schedule"
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
 
 # Check code formatting
 spotless:
@@ -46,27 +46,29 @@ spotless:
   script:
     - ./gradlew spotlessCheck
   interruptible: true
-  only:
-    - branches
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "schedule"'
 
 .publish_template: &publish_configuration
   stage: publish
+  cache:
+    - *global_cache_pull
   script:
-    - ./gradlew -xtest -Dinclude.react clean build publish --refresh-dependencies -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew -xtest -xspotlessApply -xlicenseFormat -Dinclude.react clean build publish -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration
   variables:
     PUBLISH_TYPE: "snapshotRelease"
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /next-.+/)
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH =~ /next-.+/)'
 
 publish release:
   <<: *publish_configuration
   variables:
     PUBLISH_TYPE: "finalRelease"
-  only:
-    - tags
+  rules:
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
 
 create release:
   stage: publish
@@ -74,8 +76,8 @@ create release:
   cache:
     - *global_cache_pull
   allow_failure: true
-  only:
-    - tags
+  rules:
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
   script:
     - echo "create release for $CI_COMMIT_TAG"
     - |

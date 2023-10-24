@@ -142,33 +142,63 @@
     </dataset>
     <template>
 			<![CDATA[
-	 			<table ng-repeat="process in data" class="table" style="margin-bottom:0px">
-	 				<thead>
-	 					<tr>
-	 						<th>{{process.title}}</th>
-	 					</tr>
-	 				</thead>
-	 				<tbody>
-	 					<tr ng-repeat="item in process.itemList">
-	 						<td ng-if="item.type == 'model'" style="padding-left: 20px;">
-	 							<a style="font-weight:bold;" href="" ui-action-context="item" ui-action-click="action-wkf-model-method-model-per-view">{{_t('value:' + item.title) == 'value:'+item.title ? item.title : _t('value:' + item.title)}} ({{item.modelRecordCount}})</a>
-	 							<div style="padding:8px 8px 8px 25px;display: flex;border: 1px solid #ddd;border-left: none;border-right: none;margin-top: 8px;">
-	 								<div style="flex:1;">
-	 									<p style="display:list-item" ng-repeat="status in item.statuses">
-	 										<a href="" ui-action-context="status" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + status.title) == 'value:'+status.title ? status.title : _t('value:' + status.title)}} ({{status.statusCount}})</a>
-	 									</p>
-	 								</div>
-	 								<div style="flex:1;">
-	 									<p style="display:list-item"><a href="" ui-action-context="item.tasks" ui-action-click="action-wkf-model-method-open-task-today"><span x-translate>Tasks to do today</span> ({{item.tasks.taskTodayIds.length}})</a></p>
-		 								<p style="display:list-item"><a href="" ui-action-context="item.tasks" ui-action-click="action-wkf-model-method-open-task-next"><span x-translate>Tasks to do for the next 7 days</span> ({{item.tasks.taskNextIds.length}})</a></p>
-		 								<p style="display:list-item"><a href="" ui-action-context="item.tasks" ui-action-click="action-wkf-model-method-open-late-task"><span x-translate>Late tasks</span> ({{item.tasks.lateTaskIds.length}})</a></p>
-	 								</div>
-	 							</div>
-	 						</td>
-	 					</tr>
-	 				</tbody>
-	 			</table>
-	 		]]>
+	 			<>
+ 				<div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+ 					{data?.map((process, i) => (
+ 					<Table key={i}>
+ 					<TableHead>
+ 					<TableRow>
+ 						<th>{process?.title}</th>
+ 					</TableRow>
+ 					</TableHead>
+ 					<TableBody>
+ 						{process?.itemList?.map((item, i) => (
+ 						<TableRow key={i}>
+ 							{item.type === "model" && (
+ 							<TableCell style={{ paddingLeft: 20 }}>
+ 								<a style={{ fontWeight: "bold" }} href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-model-per-view", item)}}>
+ 									{_t(`value:${item.title}`) === `value:${item.title}` ? item.title : _t(`value: ${item.title}`)}
+ 									({item.modelRecordCount})
+ 								</a>
+ 								<div style={{padding: "8px 8px 8px 25px", display: "flex", border: "1px solid #ddd", borderLeft: "none", borderRight: "none", marginTop: 8,}}>
+ 									<div style={{ flex: 1 }}>
+ 										{item?.statuses?.map((status, i) => (
+ 											<p key={i} style={{ display: "list-item" }}>
+ 											<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-status-per-view", status)}}>
+ 												{_t(`value:${status.title}`) === `value:${status.title}` ? status.title : _t(`value:${status.title}`)}
+ 												({status.statusCount})
+ 											</a>
+ 											</p>
+ 										))}
+ 									</div>
+ 									<div style={{ flex: 1 }}>
+ 										<p style={{ display: "list-item" }}>
+ 											<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-task-today", item.tasks)}}>
+ 												<span x-translate>Tasks to do today</span> ({item?.tasks?.taskTodayIds?.length})
+ 											</a>
+ 										</p>
+ 									<p style={{ display: "list-item" }}>
+ 										<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-task-next", item.tasks)}}>
+ 											<span x-translate>Tasks to do for the next 7 days</span> ({item?.tasks?.taskNextIds?.length})
+ 										</a>
+ 									</p>
+ 									<p style={{ display: "list-item" }}>
+ 										<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-late-task",item.tasks)}}>
+ 											<span x-translate>Late tasks</span> ({item?.tasks?.lateTaskIds?.length})
+ 										</a>
+ 									</p>
+							 	</div>
+ 							</div>
+ 						</TableCell>
+ 						)}
+ 					</TableRow>
+ 					))}
+ 				</TableBody>
+ 			</Table>
+ 			))}
+ 			</div>
+			</>
+	 	]]>
     </template>
   </custom>
 
@@ -180,39 +210,86 @@
     </dataset>
     <template>
 			<![CDATA[
-	 			<table ng-repeat="process in data" class="table" style="margin-bottom:0px">
-	 				<thead>
-	 					<tr>
-	 						<th>{{process.title}}</th>
-	 					</tr>
-	 					<tr>
-	 						<td><span x-translate>Tasks assigned to me</span> ({{process.taskAssignedToMe}})</td>
-	 					</tr>
-	 				</thead>
-	 				<tbody>
-	 					<tr ng-repeat="item in process.itemList">
-	 						<td ng-if="item.type == 'model'" style="padding-left: 20px;">
-	 							<a style="font-weight:bold;" href="" ui-action-context="item" ui-action-click="action-wkf-model-method-model-per-view">{{_t('value:' + item.title) == 'value:'+item.title ? item.title : _t('value:' + item.title)}} ({{item.modelRecordCount}})</a>
-	 							<div style="padding:8px 8px 8px 25px;display: flex;border-top: 1px solid #ddd;margin-top: 8px;">
-	 								<div style="flex:1;">
-	 									<p style="display:list-item" ng-repeat="status in item.statuses">
-	 										<a href="" ui-action-context="status" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + status.title) == 'value:'+status.title ? status.title : _t('value:' + status.title)}} ({{status.statusCount}})</a>
-	 									</p>
-	 								</div>
-	 								<div style="flex:1;">
-	 									<p style="display:list-item"><a href="" ui-action-context="item.tasks" ui-action-click="action-wkf-model-method-open-task-today"><span x-translate>My Tasks to do today</span> ({{item.tasks.taskTodayIds.length}})</a></p>
-		 								<p style="display:list-item"><a href="" ui-action-context="item.tasks" ui-action-click="action-wkf-model-method-open-task-next"><span x-translate>My Tasks to do for the next 7 days</span> ({{item.tasks.taskNextIds.length}})</a></p>
-		 								<p style="display:list-item"><a href="" ui-action-context="item.tasks" ui-action-click="action-wkf-model-method-open-late-task"><span x-translate>My Late tasks</span> ({{item.tasks.lateTaskIds.length}})</a></p>
-	 								</div>
-	 							</div>
-	 						</td>
-	 						<td ng-if="item.type == 'button' &amp;&amp; item.isDirectCreation" style="padding-left: 16px;font-weight:bold"><a class="btn btn-small btn-info" href="" ui-action-context="item" ui-action-click="action-wkf-model-method-open-new-record" x-translate>New record</a></td>
-	 					</tr>
-	 					<tr>
-	 						<td ng-if="process.processConfig != null" style="font-weight:bold;"><a class="btn btn-small btn-primary" href="" ui-action-context="process" ui-action-click="action-wkf-model-method-open-new-instance" x-translate>New instance</a></td>
-	 					</tr>
-	 				</tbody>
-	 			</table>
+	 			<>
+  <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+    {data?.map((process, i) => (
+      <Table key={i}>
+        <TableHead>
+          <TableRow>
+            <TableHead>{process.title}</TableHead>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <span x-translate>Tasks assigned to me</span> (
+              {process.taskAssignedToMe})
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {process?.itemList?.map((item, i) => (
+            <TableRow key={i}>
+              {item?.type === "model" && (
+                <TableCell style={{ paddingLeft: 20 }}>
+                  <a style={{ fontWeight: "bold" }} href="" onClick={(e) =>{ e.preventDefault(); $execute("action-wkf-model-method-model-per-view", item)}}>
+                    {_t(`value:${item.title}`) === `value:${item.title}` ? item.title : _t(`value:${item.title}`)}{" "}
+                    ({item.modelRecordCount})
+                  </a>
+                  <div style={{ padding: "8px 8px 8px 25px", display: "flex", borderTop: "1px solid #ddd", marginTop: "8"}}>
+                    <div style={{ flex: 1 }}>
+                      {item?.statuses?.map((status, i) => (
+                        <p key={i} style={{ display: "list-item" }}>
+                          <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-status-per-view", status)}}>
+                            {_t(`value:${status.title}`) === `value:${status.title}` ? status.title : _t(`value:${status.title}`)}
+                            ({status.statusCount})
+                          </a>
+                        </p>
+                      ))}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ display: "list-item" }}>
+                        <a href="" onClick={(e) => {e.preventDefault(); $action("action-wkf-model-method-open-task-today", item.tasks)}}>
+                          <span x-translate>My Tasks to do today</span> ({item?.tasks?.taskTodayIds?.length})
+                        </a>
+                      </p>
+                      <p style={{ display: "list-item" }}>
+                        <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-task-next", item.tasks)}}>
+                          <span x-translate>My Tasks to do for the next 7 days</span>
+                          ({item?.tasks?.taskNextIds?.length})
+                        </a>
+                      </p>
+                      <p style={{ display: "list-item" }}>
+                        <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-late-task", item.tasks)}}>
+                          <span x-translate>My Late tasks</span> 
+                          ({item?.tasks?.lateTaskIds?.length})
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                </TableCell>
+              )}
+              {item.type === "button" && item.isDirectCreation && (
+                <TableCell style={{ paddingLeft: 16, fontWeight: "bold" }}>
+                  <Button variant="info" m={1} onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-new-record", item)}}>
+                    {_t("New record")}
+                  </Button>
+                </TableCell>
+              )}
+            </TableRow>
+          ))}
+          <TableRow>
+            {process.processConfig != null && (
+              <TableCell style={{ fontWeight: "bold" }}>
+                <Button variant="primary" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-new-instance", process)}}>
+                  {_t("New instance")}
+                </Button>
+              </TableCell>
+            )}
+          </TableRow>
+        </TableBody>
+      </Table>
+    ))}
+  </div>
+</>
 	 		]]>
     </template>
   </custom>

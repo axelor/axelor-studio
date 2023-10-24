@@ -19,14 +19,12 @@ package com.axelor.studio.service.builder;
 
 import com.axelor.common.Inflector;
 import com.axelor.common.ObjectUtils;
-import com.axelor.data.Listener;
 import com.axelor.data.xml.XMLBind;
 import com.axelor.data.xml.XMLBindJson;
 import com.axelor.data.xml.XMLConfig;
 import com.axelor.data.xml.XMLImporter;
 import com.axelor.data.xml.XMLInput;
 import com.axelor.db.JpaSecurity;
-import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
@@ -42,6 +40,7 @@ import com.axelor.studio.db.repo.StudioAppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportService;
+import com.axelor.studio.utils.ConsumerListener;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.context.FullContext;
@@ -55,7 +54,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.IOUtils;
@@ -116,7 +116,7 @@ public class StudioAppServiceImpl implements StudioAppService {
     app.setIsInAppView(studioApp.getIsInAppView());
     app.setImage(studioApp.getImage());
     app.setDescription(studioApp.getDescription());
-    Set<App> depends = new HashSet<App>();
+    Set<App> depends = new HashSet<>();
     if (studioApp.getDependsOnSet() != null) {
       depends.addAll(studioApp.getDependsOnSet());
       app.setDependsOnSet(depends);
@@ -165,42 +165,37 @@ public class StudioAppServiceImpl implements StudioAppService {
       dataDir = Files.createTempDirectory("").toFile();
       zipFile = MetaFiles.getPath((String) dataFileMap.get("filePath")).toFile();
       extractImportZip(dataDir, zipFile);
-      StringBuilder logSB = new StringBuilder();
+      StringBuilder logStringBuilder = new StringBuilder();
 
       for (File confiFile : appLoaderImportService.getAppImportConfigFiles(dataDir)) {
         XMLImporter xmlImporter =
             new XMLImporter(confiFile.getAbsolutePath(), dataDir.getAbsolutePath());
         xmlImporter.addListener(
-            new Listener() {
-
-              @Override
-              public void imported(Integer total, Integer success) {}
-
-              @Override
-              public void imported(Model bean) {}
-
-              @Override
-              public void handle(Model bean, Exception e) {
-                logSB.append(String.format("Error Importing: %s\n", bean));
-                ExceptionHelper.trace(e);
-              }
-            });
+            new ConsumerListener(
+                null,
+                null,
+                (model, e) -> logStringBuilder.append("Error importing: " + model + "\n")));
         xmlImporter.run();
       }
 
-      if (logSB.length() > 0) {
+      if (logStringBuilder.length() > 0) {
         File logFile = MetaFiles.createTempFile("import-", "log").toFile();
         org.apache.commons.io.FileUtils.writeStringToFile(
-            logFile, logSB.toString(), Charset.forName("UTF-8"));
+            logFile, logStringBuilder.toString(), StandardCharsets.UTF_8);
         return Beans.get(MetaFiles.class).upload(logFile);
       }
     } catch (IOException e) {
       ExceptionHelper.trace(e);
     } finally {
       try {
-        if (zipFile != null) Files.deleteIfExists(zipFile.toPath());
-        if (dataDir != null) Files.deleteIfExists(dataDir.toPath());
+        if (zipFile != null) {
+          Files.deleteIfExists(zipFile.toPath());
+        }
+        if (dataDir != null) {
+          Files.deleteIfExists(dataDir.toPath());
+        }
       } catch (Exception e) {
+        ExceptionHelper.trace(e);
       }
     }
     return null;
@@ -213,20 +208,18 @@ public class StudioAppServiceImpl implements StudioAppService {
       return;
     }
 
-    try {
-      FileInputStream fin = new FileInputStream(zipFile);
-      ZipInputStream zipInputStream = new ZipInputStream(fin);
+    try (FileInputStream fin = new FileInputStream(zipFile);
+        ZipInputStream zipInputStream = new ZipInputStream(fin)) {
       ZipEntry zipEntry = zipInputStream.getNextEntry();
 
       while (zipEntry != null) {
-        FileOutputStream fout = new FileOutputStream(new File(dataDir, zipEntry.getName()));
-        IOUtils.copy(zipInputStream, fout);
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(new File(dataDir, zipEntry.getName()))) {
+          IOUtils.copy(zipInputStream, fout);
+        }
         zipEntry = zipInputStream.getNextEntry();
       }
-
-      zipInputStream.close();
     } catch (Exception e) {
+      ExceptionHelper.trace(e);
     }
   }
 
@@ -245,8 +238,11 @@ public class StudioAppServiceImpl implements StudioAppService {
       ExceptionHelper.trace(e);
     } finally {
       try {
-        if (exportDir != null) Files.deleteIfExists(exportDir.toPath());
+        if (exportDir != null) {
+          Files.deleteIfExists(exportDir.toPath());
+        }
       } catch (Exception e) {
+        ExceptionHelper.trace(e);
       }
     }
 
@@ -267,8 +263,11 @@ public class StudioAppServiceImpl implements StudioAppService {
       ExceptionHelper.trace(e);
     } finally {
       try {
-        if (exportDir != null) Files.deleteIfExists(exportDir.toPath());
+        if (exportDir != null) {
+          Files.deleteIfExists(exportDir.toPath());
+        }
       } catch (Exception e) {
+        ExceptionHelper.trace(e);
       }
     }
 
@@ -335,19 +334,16 @@ public class StudioAppServiceImpl implements StudioAppService {
         (key, value) -> {
           log.debug("Exporting file: {}", key);
           File file = null;
-          FileWriter writer = null;
           try {
             file = new File(parentFile, key);
-            writer = new FileWriter(file);
-            templates.from(new InputStreamReader(value)).make(ctx).render(writer);
+            try (FileWriter writer = new FileWriter(file);
+                InputStreamReader inputStreamReader = new InputStreamReader(value)) {
+              templates.from(inputStreamReader).make(ctx).render(writer);
+            }
           } catch (Exception e) {
             ExceptionHelper.trace(e);
           } finally {
-            try {
-              if (writer != null) writer.close();
-              deleteEmptyFile(file);
-            } catch (IOException e) {
-            }
+            deleteEmptyFile(file);
           }
         });
   }
@@ -356,14 +352,17 @@ public class StudioAppServiceImpl implements StudioAppService {
   public void deleteEmptyFile(File file) {
 
     try {
-      if (file == null) return;
+      if (file == null) {
+        return;
+      }
 
       if (file.length() == 0) {
-        file.delete();
+        Files.delete(file.toPath());
       } else {
-        long lines = java.nio.file.Files.lines(file.toPath()).count();
-        if (lines == 1) {
-          file.delete();
+        try (Stream<String> stream = Files.lines(file.toPath())) {
+          if (stream.count() == 1) {
+            Files.delete(file.toPath());
+          }
         }
       }
     } catch (Exception e) {
@@ -392,7 +391,7 @@ public class StudioAppServiceImpl implements StudioAppService {
     }
 
     xmlBindJson.setBindings(getFieldBinding(jsonModel, jsonFieldMap, relationalInput));
-    List<XMLBind> rootBindings = new ArrayList<XMLBind>();
+    List<XMLBind> rootBindings = new ArrayList<>();
     rootBindings.add(xmlBindJson);
     xmlInput.setBindings(rootBindings);
 
@@ -457,21 +456,21 @@ public class StudioAppServiceImpl implements StudioAppService {
         String modelName = jsonModel.getName();
         String dasherizeModel = Inflector.getInstance().dasherize(modelName);
 
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-        stringBuffer.append(
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+        stringBuilder.append(
             String.format(
                 "<%ss xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
                     + "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n",
                 dasherizeModel));
 
         records.forEach(
-            record -> {
+            it -> {
               if (!jpaSecurity.isPermitted(
-                  JpaSecurity.CAN_READ, MetaJsonRecord.class, (Long) record.get("id"))) {
+                  JpaSecurity.CAN_READ, MetaJsonRecord.class, (Long) it.get("id"))) {
                 return;
               }
-              stringBuffer.append(String.format("<%s>\n", dasherizeModel));
+              stringBuilder.append(String.format("<%s>%n", dasherizeModel));
 
               jsonModel
                   .getFields()
@@ -480,19 +479,19 @@ public class StudioAppServiceImpl implements StudioAppService {
                         String field = jsonField.getName();
                         Map<String, Object> fieldAttrs =
                             (Map<String, Object>) jsonFieldMap.get(field);
-                        stringBuffer.append(
+                        stringBuilder.append(
                             String.format(
-                                "\t<%s>%s</%s>\n",
+                                "\t<%s>%s</%s>%n",
                                 field,
-                                appLoaderExportService.extractJsonFieldValue(record, fieldAttrs),
+                                appLoaderExportService.extractJsonFieldValue(it, fieldAttrs),
                                 field));
                       });
-              stringBuffer.append(String.format("</%s>\n\n", dasherizeModel));
+              stringBuilder.append(String.format("</%s>%n%n", dasherizeModel));
             });
-        stringBuffer.append(String.format("</%ss>\n", dasherizeModel));
+        stringBuilder.append(String.format("</%ss>%n", dasherizeModel));
         File dataFile = new File(parentDir, modelName + ".xml");
         org.apache.commons.io.FileUtils.writeStringToFile(
-            dataFile, stringBuffer.toString(), Charset.forName("UTF-8"));
+            dataFile, stringBuilder.toString(), StandardCharsets.UTF_8);
       }
     } catch (IOException e) {
       ExceptionHelper.trace(e);

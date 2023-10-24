@@ -37,6 +37,7 @@ import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.translation.ITranslation;
+import com.axelor.studio.utils.ConsumerListener;
 import com.axelor.utils.service.TranslationService;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
@@ -54,7 +55,9 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -62,6 +65,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.xmlbeans.impl.common.IOUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class WkfModelServiceImpl implements WkfModelService {
 
@@ -269,30 +273,20 @@ public class WkfModelServiceImpl implements WkfModelService {
 
     XMLImporter importer = new XMLImporter(configFile.getAbsolutePath(), tempDir.getAbsolutePath());
     final StringBuilder log = new StringBuilder();
-    Listener listener =
-        new Listener() {
 
-          @Override
-          public void imported(Integer imported, Integer total) {
-            // do nothing
-          }
-
-          @Override
-          public void imported(Model arg0) {
-            log.append("Import model: ");
-            log.append(((WkfModel) arg0).getCode());
-            log.append("\n");
-          }
-
-          @Override
-          public void handle(Model arg0, Exception err) {
-            log.append("Error in import: ");
-            log.append(Arrays.toString(err.getStackTrace()));
-            log.append("\n");
-          }
-        };
-
-    importer.addListener(listener);
+    importer.addListener(
+        new ConsumerListener(
+            null,
+            model -> {
+              log.append("Import model: ");
+              log.append(((WkfModel) model).getCode());
+              log.append("\n");
+            },
+            (model, e) -> {
+              log.append("Error in import: ");
+              log.append(Arrays.toString(e.getStackTrace()));
+              log.append("\n");
+            }));
 
     importer.run();
 
@@ -308,7 +302,7 @@ public class WkfModelServiceImpl implements WkfModelService {
   }
 
   protected File translateNodeName(File importFile, String sourceLanguage, String targetLanguage)
-      throws Exception {
+      throws ParserConfigurationException, IOException, SAXException, TransformerException {
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = dbf.newDocumentBuilder();
@@ -375,14 +369,15 @@ public class WkfModelServiceImpl implements WkfModelService {
           }
           modelNames.add(modelName);
 
-          Map<String, Object> _map =
+          var computedMap =
               wkfDashboardCommonService.computeStatus(isMetaModel, modelName, process, null, null);
 
-          List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
-          List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statuses");
-          Map<String, Object> taskMap = (Map<String, Object>) _map.get("tasks");
+          List<Long> recordIdsPerModel = (List<Long>) computedMap.get("recordIdsPerModel");
+          List<Map<String, Object>> statusList =
+              (List<Map<String, Object>>) computedMap.get("statuses");
+          Map<String, Object> taskMap = (Map<String, Object>) computedMap.get("tasks");
 
-          HashMap<String, Object> map = new HashMap<>();
+          var map = new HashMap<String, Object>();
           map.put("type", "model");
           map.put(
               "title",
@@ -434,7 +429,8 @@ public class WkfModelServiceImpl implements WkfModelService {
     for (WkfProcessConfig processConfig : processConfigs) {
 
       if (firstProcessConfig == null) {
-        firstProcessConfig = processConfig.getIsStartModel() ? processConfig : null;
+        firstProcessConfig =
+            Boolean.TRUE.equals(processConfig.getIsStartModel()) ? processConfig : null;
       }
 
       boolean isDirectCreation = processConfig.getIsDirectCreation();

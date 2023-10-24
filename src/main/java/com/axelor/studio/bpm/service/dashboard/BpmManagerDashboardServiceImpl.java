@@ -74,10 +74,9 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
           List<Map<String, Object>> processList = new ArrayList<>();
 
           processes.forEach(
-              process -> {
-                prepareProcessList(
-                    processList, process, user, isSuperAdmin, isAdmin, isManager, isUser);
-              });
+              process ->
+                  prepareProcessList(
+                      processList, process, user, isSuperAdmin, isAdmin, isManager, isUser));
         });
 
     dataMap.put("$modelList", modelList);
@@ -85,6 +84,18 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
     dataMap.put("$limit", FETCH_LIMIT);
     dataMap.put("$totalRecord", totalRecord);
     return dataMap;
+  }
+
+  private static class ItemsHashMap extends HashMap<String, Object> {
+
+    public ItemsHashMap(WkfProcess process, List<Map<String, Object>> configList) {
+      put(
+          "title",
+          !StringUtils.isBlank(process.getDescription())
+              ? process.getDescription()
+              : process.getName());
+      put("itemList", configList);
+    }
   }
 
   protected void prepareProcessList(
@@ -100,12 +111,12 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
     List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
     wkfDashboardCommonService.sortProcessConfig(processConfigs);
 
-    List<String> _modelList = new ArrayList<>();
+    List<String> modelList = new ArrayList<>();
     processConfigs.forEach(
         processConfig ->
             prepareConfigList(
                 configList,
-                _modelList,
+                modelList,
                 process,
                 processConfig,
                 user,
@@ -113,22 +124,34 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
                 isAdmin,
                 isManager,
                 isUser));
-    processList.add(
-        new HashMap<String, Object>() {
-          {
-            put(
-                "title",
-                !StringUtils.isBlank(process.getDescription())
-                    ? process.getDescription()
-                    : process.getName());
-            put("itemList", configList);
-          }
-        });
+    processList.add(new ItemsHashMap(process, configList));
+  }
+
+  private static class ConfigsHashMap extends HashMap<String, Object> {
+
+    public ConfigsHashMap(
+        WkfProcessConfig processConfig,
+        String modelName,
+        List<Long> recordIdsModel,
+        boolean isMetaModel,
+        List<Map<String, Object>> statusUserList,
+        List<Map<String, Object>> statusList) {
+      put("type", "model");
+      put(
+          "title",
+          !StringUtils.isBlank(processConfig.getTitle()) ? processConfig.getTitle() : modelName);
+      put("modelName", modelName);
+      put("modelRecordCount", recordIdsModel.size());
+      put("isMetaModel", isMetaModel);
+      put("recordIdsPerModel", recordIdsModel);
+      put("userStatuses", statusUserList);
+      put("statuses", statusList);
+    }
   }
 
   protected void prepareConfigList(
       List<Map<String, Object>> configList,
-      List<String> _modelList,
+      List<String> modelList,
       WkfProcess process,
       WkfProcessConfig processConfig,
       User user,
@@ -143,19 +166,19 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
             ? processConfig.getMetaModel().getName()
             : processConfig.getMetaJsonModel().getName();
 
-    if (_modelList.contains(modelName)) {
+    if (modelList.contains(modelName)) {
       return;
     }
-    _modelList.add(modelName);
+    modelList.add(modelName);
 
-    Map<String, Object> _map =
+    Map<String, Object> map =
         this.computeAssignedTaskConfigs(process, modelName, isMetaModel, user);
-    List<Long> recordIdsUserPerModel = (List<Long>) _map.get("recordIdsUserPerModel");
+    List<Long> recordIdsUserPerModel = (List<Long>) map.get("recordIdsUserPerModel");
     List<Map<String, Object>> statusUserList =
-        (List<Map<String, Object>>) _map.get("statusUserList");
+        (List<Map<String, Object>>) map.get("statusUserList");
 
-    List<Long> recordIdsPerModel = (List<Long>) _map.get("recordIdsPerModel");
-    List<Map<String, Object>> statusList = (List<Map<String, Object>>) _map.get("statusList");
+    List<Long> recordIdsPerModel = (List<Long>) map.get("recordIdsPerModel");
+    List<Map<String, Object>> statusList = (List<Map<String, Object>>) map.get("statusList");
 
     List<Long> recordIdsModel = new ArrayList<>();
 
@@ -167,44 +190,33 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
     }
 
     configList.add(
-        new HashMap<String, Object>() {
-          {
-            put("type", "model");
-            put(
-                "title",
-                !StringUtils.isBlank(processConfig.getTitle())
-                    ? processConfig.getTitle()
-                    : modelName);
-            put("modelName", modelName);
-            put("modelRecordCount", recordIdsModel.size());
-            put("isMetaModel", isMetaModel);
-            put("recordIdsPerModel", recordIdsModel);
-            put("userStatuses", statusUserList);
-            put("statuses", statusList);
-          }
-        });
+        new ConfigsHashMap(
+            processConfig, modelName, recordIdsModel, isMetaModel, statusUserList, statusList));
+  }
+
+  private static class TasksHashMap extends HashMap<String, Object> {
+
+    public TasksHashMap(Object[] userObj, Object[] obj) {
+      put("recordIdsUserPerModel", userObj[0]);
+      put("statusUserList", userObj[1]);
+      put("recordIdsPerModel", obj[0]);
+      put("statusList", obj[1]);
+    }
   }
 
   @SuppressWarnings({"serial"})
   protected Map<String, Object> computeAssignedTaskConfigs(
       WkfProcess process, String modelName, boolean isMetaModel, User user) {
 
-    Object obj[] =
+    Object[] obj =
         bpmMgrDashboardUserService.computeAssignedTaskConfig(
             process, modelName, isMetaModel, user, true, WkfDashboardCommonService.ASSIGNED_ME);
 
-    Object userObj[] =
+    Object[] userObj =
         bpmMgrDashboardUserService.computeAssignedTaskConfig(
             process, modelName, isMetaModel, user, false, WkfDashboardCommonService.ASSIGNED_OTHER);
 
-    return new HashMap<String, Object>() {
-      {
-        put("recordIdsUserPerModel", userObj[0]);
-        put("statusUserList", userObj[1]);
-        put("recordIdsPerModel", obj[0]);
-        put("statusList", obj[1]);
-      }
-    };
+    return new TasksHashMap(userObj, obj);
   }
 
   @Override
@@ -220,7 +232,7 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
       List<WkfProcessConfig> processConfigs = process.getWkfProcessConfigList();
       wkfDashboardCommonService.sortProcessConfig(processConfigs);
 
-      List<String> _modelList = new ArrayList<>();
+      List<String> modelList = new ArrayList<>();
       for (WkfProcessConfig processConfig : processConfigs) {
 
         boolean isMetaModel = processConfig.getMetaModel() != null;
@@ -229,12 +241,12 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
                 ? processConfig.getMetaModel().getName()
                 : processConfig.getMetaJsonModel().getName();
 
-        if (_modelList.contains(modelName)) {
+        if (modelList.contains(modelName)) {
           continue;
         }
-        _modelList.add(modelName);
+        modelList.add(modelName);
 
-        Map<String, Object> _map =
+        Map<String, Object> map =
             wkfDashboardCommonService.computeStatus(isMetaModel, modelName, process, null, null);
 
         switch (type) {
@@ -250,7 +262,9 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
 
           case WkfDashboardCommonService.TASK_BY_PROCESS:
             bpmMgrDashboardTaskService.getTaskByProcess(
-                _map, process, taskByProcessType, dataMapList);
+                map, process, taskByProcessType, dataMapList);
+            break;
+          default:
             break;
         }
       }

@@ -7,7 +7,7 @@
     model="com.axelor.studio.db.WkfInstanceMigrationHistory">
     <field name="versionCode"/>
     <field name="createdOn"/>
-    <field name="migartionHistoryUpdatedOn"/>
+    <field name="migrationHistoryUpdatedOn"/>
     <button name="openEditorBtn" title="wkf.open.editor"
       onClick="action-wkf-migration-view-open-bpm-editor" icon="fa-edit"/>
   </grid>
@@ -17,7 +17,7 @@
     <panel name="mainPanel" colSpan="12">
       <field name="versionCode"/>
       <field name="createdOn" readonly="true"/>
-      <field name="migartionHistoryUpdatedOn" readonly="true"/>
+      <field name="migrationHistoryUpdatedOn" readonly="true"/>
     </panel>
   </form>
 

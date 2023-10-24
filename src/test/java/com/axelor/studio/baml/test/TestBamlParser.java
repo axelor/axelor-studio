@@ -30,28 +30,12 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TestBamlParser {
-
-  public void test() {
-
-    InputStream is = ResourceUtils.getResourceStream("BamlTest.xml");
-    ProcessActionRootNode rootNode = BamlParser.parse(is);
-    List<ProcessActionNode> processActionNodes = rootNode.getProcessActions();
-    String script = "";
-    if (processActionNodes != null) {
-      script = processActionNodes.get(0).toCode(true);
-    }
-
-    Context ctx = new Context(User.class);
-    GroovyScriptHelper helper = new GroovyScriptHelper(ctx);
-    helper.eval(script);
-  }
+class TestBamlParser {
 
   @Test
-  public void testJsonQuery() {
-
+  void testJsonQuery() {
     Map<String, Object> rawCriteria = new HashMap<String, Object>();
 
     Map<String, Object> _domainContext = new HashMap<String, Object>();

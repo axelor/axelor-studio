@@ -20,12 +20,12 @@ package com.axelor.studio.baml.test;
 import com.axelor.auth.db.User;
 import com.axelor.rpc.Context;
 import com.axelor.script.GroovyScriptHelper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TestStaticCompileGroovy {
+class TestStaticCompileGroovy {
 
   @Test
-  public void test() {
+  void test() {
     String script =
         "import com.axelor.auth.db.User\n"
             + "import groovy.transform.CompileStatic\n"
