@@ -101,15 +101,17 @@ public class WkfMigrationController {
         return;
       }
       Map<String, Object> contextMap = (Map<String, Object>) request.getData().get("context");
-      if (ObjectUtils.isEmpty(contextMap.get("values"))
-          || ObjectUtils.isEmpty(contextMap.get("wkfMigrationId"))) {
+      Map<String, Object> dataMap = (Map<String, Object>) contextMap.get("data");
+      if (ObjectUtils.isEmpty(dataMap)
+          || ObjectUtils.isEmpty(dataMap.get("values"))
+          || ObjectUtils.isEmpty(dataMap.get("wkfMigrationId"))) {
         return;
       }
 
-      Long wkfMigrationId = Long.valueOf(contextMap.get("wkfMigrationId").toString());
+      Long wkfMigrationId = Long.valueOf(dataMap.get("wkfMigrationId").toString());
       WkfMigration migration = Beans.get(WkfMigrationRepository.class).find(wkfMigrationId);
 
-      Beans.get(WkfMigrationService.class).migrate(migration, contextMap);
+      Beans.get(WkfMigrationService.class).migrate(migration, dataMap);
 
       response.setReload(true);
       response.setInfo(I18n.get(BpmExceptionMessage.MIGRATION_DONE));
