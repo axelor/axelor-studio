@@ -35,7 +35,6 @@ import com.axelor.studio.db.StudioActionView;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioActionRepository;
-import com.axelor.studio.db.repo.StudioActionViewRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.utils.ExceptionTool;
@@ -45,6 +44,7 @@ import com.google.inject.persist.Transactional;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.collections.CollectionUtils;
@@ -55,8 +55,6 @@ public class StudioMenuService {
   @Inject private StudioActionService studioActionService;
 
   @Inject private StudioMetaService metaService;
-
-  @Inject protected StudioActionViewRepository studioActionViewRepository;
 
   @Transactional
   public MetaMenu build(StudioMenu studioMenu) {
@@ -203,16 +201,13 @@ public class StudioMenuService {
     this.setStudioActionView("form", viewName + "-form", studioAction);
   }
 
-  private void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
-    if (studioActionViewRepository
-            .all()
-            .filter(
-                "self.viewType = ?1 AND self.viewName = ?2 AND self.studioAction = ?3",
-                viewType,
-                viewName,
-                studioAction)
-            .count()
-        > 0) {
+  private void setStudioActionView(
+      String viewType, String viewName, StudioAction studioAction) {
+    if (CollectionUtils.isEmpty(studioAction.getStudioActionViews()) || studioAction.getStudioActionViews().stream()
+        .filter(Objects::nonNull)
+        .anyMatch(studioActionView ->
+            viewType.equals(studioActionView.getViewType())
+                && viewName.equals(studioActionView.getViewName()))) {
       return;
     }
 
