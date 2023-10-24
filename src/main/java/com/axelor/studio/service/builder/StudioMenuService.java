@@ -44,6 +44,7 @@ import com.google.inject.persist.Transactional;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.xml.bind.JAXBException;
 import org.apache.commons.collections.CollectionUtils;
@@ -200,7 +201,15 @@ public class StudioMenuService {
     this.setStudioActionView("form", viewName + "-form", studioAction);
   }
 
-  private void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
+  private void setStudioActionView(
+      String viewType, String viewName, StudioAction studioAction) {
+    if (CollectionUtils.isEmpty(studioAction.getStudioActionViews()) || studioAction.getStudioActionViews().stream()
+        .filter(Objects::nonNull)
+        .anyMatch(studioActionView ->
+            viewType.equals(studioActionView.getViewType())
+                && viewName.equals(studioActionView.getViewName()))) {
+      return;
+    }
 
     StudioActionView studioActionView = new StudioActionView();
     studioActionView.setViewType(viewType);
