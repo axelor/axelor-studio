@@ -17,7 +17,7 @@
     <string name="logText" title="Log" large="true"/>
     <many-to-one name="wkfProcess" ref="WkfProcess"/>
     <one-to-many ref="com.axelor.studio.db.WkfInstanceMigrationHistory"
-      name="wkfInstanceMigrationHistory" title="Migration History" mappedBy="wkfInstnace"
+      name="wkfInstanceMigrationHistory" title="Migration History" mappedBy="wkfInstance"
       orderBy="-createdOn"/>
 
     <finder-method name="findByInstanceId" using="instanceId"/>

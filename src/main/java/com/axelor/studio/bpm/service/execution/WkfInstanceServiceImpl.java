@@ -778,10 +778,10 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
             : instance.getWkfInstanceMigrationHistory().get(0);
 
     if (migrationHistory != null && isSameModel) {
-      migrationHistory.setMigartionHistoryUpdatedOn(LocalDateTime.now());
+      migrationHistory.setMigrationHistoryUpdatedOn(LocalDateTime.now());
     } else {
       migrationHistory = new WkfInstanceMigrationHistory();
-      migrationHistory.setWkfInstnace(instance);
+      migrationHistory.setWkfInstance(instance);
       migrationHistory.setVersionCode(previousModel.getCode());
       migrationHistory.setVersionId(previousModel.getId());
     }
