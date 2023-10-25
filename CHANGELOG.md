@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+## 1.0.4
+
 * Anomaly #70597: Fix StudioActionView duplication on every save
 
 ## 1.0.3
