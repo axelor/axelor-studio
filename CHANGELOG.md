@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+* Anomaly #70597: Fix StudioActionView duplication on every save
+
 ## 1.0.3
 
 * Anomaly #70007: Fix apps images duplicating at each server startup
