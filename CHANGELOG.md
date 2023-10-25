@@ -1,3 +1,9 @@
+## 1.1.2 (2023-10-25)
+
+#### Fixed
+
+* Anomaly #70597: Fix StudioActionView duplication on every save
+
 ## 1.1.1 (2023-10-06)
 
 #### Fixed
@@ -25,6 +31,10 @@
 * Unable to use hideIf, showIf and requiredIf as view attributes
 * Replace deprecated classes from org.apache.commons.lang3 by org.apache.commons.text
 * BPM: Fix wrong evaluation of IN operator in case of selection on expression builder
+
+## 1.0.4
+
+* Anomaly #70597: Fix StudioActionView duplication on every save
 
 ## 1.0.3
 
