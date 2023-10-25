@@ -1,3 +1,9 @@
+## 1.3.3 (2023-10-25)
+
+#### Fixed
+
+* Anomaly #70597: Fix StudioActionView duplication on every save
+
 ## 1.3.2 (2023-10-06)
 
 #### Fixed
@@ -37,6 +43,12 @@
 * Demo data: Fix Purchase Request demo data
 * Wkf Deployment: Manage old menu removal
 * Fix AOP version to 6.1.5
+
+## 1.2.5 (2023-10-25)
+
+#### Fixed
+
+* Anomaly #70597: Fix StudioActionView duplication on every save
 
 ## 1.2.4 (2023-10-06)
 
@@ -123,6 +135,12 @@
 * Studio: Fix App export issue in widget attrs
 * BPM: Manage null and empty values for process instance id
 
+## 1.1.2 (2023-10-25)
+
+#### Fixed
+
+* Anomaly #70597: Fix StudioActionView duplication on every save
+
 ## 1.1.1 (2023-10-06)
 
 #### Fixed
@@ -151,6 +169,10 @@
 * Replace deprecated classes from org.apache.commons.lang3 by org.apache.commons.text
 * BPM: Fix wrong evaluation of IN operator in case of selection on expression builder
 * Anomaly #59638: Fix all old bad practices from controllers
+
+## 1.0.4
+
+* Anomaly #70597: Fix StudioActionView duplication on every save
 
 ## 1.0.3
 
