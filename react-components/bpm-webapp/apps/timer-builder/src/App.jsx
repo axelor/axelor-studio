@@ -22,7 +22,7 @@ import "./ReCron.css"
 import TabPanel from "./TabPanel"
 import ISO8601 from "./ISO8601"
 import { localization } from "./localization"
-import Service from "./Service"
+import Service from "./services/Service"
 import { CRON_OVERRIDE, TYPE } from "./utils"
 
 function a11yProps(index) {

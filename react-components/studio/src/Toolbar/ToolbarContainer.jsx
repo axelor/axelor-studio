@@ -13,7 +13,7 @@ import { styled } from "@mui/material/styles"
 import Toolbar from "./Toolbar"
 import { useStore } from "../store/context"
 import { generateView } from "../store/extensionGenerator"
-import AxelorService from "../services/axelor.rest"
+import AxelorService from "../services/api"
 import {
 	getDefaultProperties,
 	generateXMLToViewSchema,
