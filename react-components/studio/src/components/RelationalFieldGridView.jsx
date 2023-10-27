@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import AxelorService from "../services/axelor.rest"
+import AxelorService from "../services/api"
 import { fetchCustomModel } from "../Toolbar/api"
 import { translate, getDefaultGridFormName } from "../utils"
 

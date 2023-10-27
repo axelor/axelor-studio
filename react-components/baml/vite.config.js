@@ -5,13 +5,10 @@ import path from "path";
 import dns from "dns";
 
 dns.setDefaultResultOrder("verbatim");
-
 const env = loadEnv("dev", process.cwd(), "");
-const base =
-  env.NODE_ENV === "production" ? "./" : env.VITE_PROXY_CONTEXT ?? "/";
 
 export default defineConfig({
-  base,
+  base: "./",
   build: {
     outDir: "build",
     chunkSizeWarningLimit: 1600,
@@ -31,7 +28,7 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      [path.join(env.VITE_PROXY_CONTEXT, "ws")]: {
+      [env.VITE_PROXY_CONTEXT]: {
         target: env.VITE_PROXY_TARGET,
         changeOrigin: true,
         ws: true,

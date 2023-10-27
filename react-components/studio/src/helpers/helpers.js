@@ -1,4 +1,4 @@
-import AxelorService from "../services/axelor.rest"
+import AxelorService from "../services/api"
 import {
   fetchAttrsList,
   fetchCustomFields,

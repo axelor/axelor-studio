@@ -3,7 +3,7 @@ import { TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import _ from "lodash"
 
-import AxelorService from "../services/axelor.rest"
+import AxelorService from "../services/api"
 import { useDebounceEffect } from "../common.func"
 import SearchView from "../components/SearchView"
 import { translate } from "../utils"
