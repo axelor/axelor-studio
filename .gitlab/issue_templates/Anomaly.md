@@ -25,4 +25,5 @@ it's very hard to read otherwise.)
 
 /label ~"T: bug 🐛"  
 /cc @lde  
-/assign @lde  
+/cc @pco  
+/assign @lde
