@@ -400,7 +400,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
   @Override
   public String computeStudioBuilderUrl(String model, String viewName, boolean isJson) {
 
-    String url = "studio/custom-model/?json=" + isJson + "&model=" + model;
+    String url = "studio/?json=" + isJson + "&model=" + model;
 
     if (isJson) {
       return url;

@@ -20,7 +20,7 @@ if (providers.systemProperty("include.react").getOrNull() != null) {
 
   gradle.ext.componentPaths = [
     [from: "react-components/baml/build", to:"webapp/baml-editor"],
-    [from: "react-components/studio/build", to:"webapp/studio/custom-model"],
+    [from: "react-components/studio/build", to:"webapp/studio"],
     [from: "react-components/bpm-webapp/apps/bpm/build", to:"webapp/wkf-editor"],
     [from: "react-components/bpm-webapp/apps/mapper/build", to:"webapp/mapper"],
     [from: "react-components/webservices-builder/build", to:"webapp/ws-builder"]
