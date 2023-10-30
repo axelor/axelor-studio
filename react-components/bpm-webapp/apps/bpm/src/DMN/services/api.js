@@ -1,4 +1,4 @@
-import AxelorService from "./axelor.rest";
+import AxelorService from "./index";
 import services from "../../services/Service";
 import { sortBy } from "../../utils";
 import {

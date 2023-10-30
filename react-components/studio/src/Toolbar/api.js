@@ -1,5 +1,5 @@
 import { conditionProperties } from "../constants"
-import AxelorService from "./../services/axelor.rest"
+import AxelorService from "./../services/api"
 import { getViews, generateCustomModelSchema, getMenuBuilder } from "./../utils"
 
 import { validateWidgets } from "../store/validation"

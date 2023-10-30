@@ -1,6 +1,6 @@
 import React from "react"
 
-import AxelorService from "../services/axelor.rest"
+import AxelorService from "../services/api"
 import { generateCustomModelSchema, translate } from "../utils"
 import { validateWidgets } from "../store/validation"
 import Select from "./Select"

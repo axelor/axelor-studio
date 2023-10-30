@@ -9,7 +9,7 @@ import StudioProvider, { useStore } from "./store/context"
 import PropertiesPanel from "./Panels/PropertiesPanel/PropertiesPanelView"
 import AddPanelView from "./Panels/AttributesPanel/AddPanelView"
 import { fetchUserPreferences, getEnableAppBuilder } from "./Toolbar/api"
-import AxelorService from "./services/axelor.rest"
+import AxelorService from "./services/api"
 import { getParams, translate } from "./utils"
 import { MODEL_TYPE, relationalFields, ENTITY_TYPE } from "./constants"
 import {

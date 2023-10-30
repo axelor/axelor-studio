@@ -44,7 +44,14 @@ export class Service {
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
     headers.append("X-CSRF-Token", readCookie("CSRF-TOKEN"));
-    this.baseURL = import.meta.env.PROD ? ".." : ".";
+
+    /**
+     * Set the dynamic relative path for production server
+     * Set it based on nested directory level
+     */
+    this.baseURL = import.meta.env.PROD
+      ? ".."
+      : import.meta.env.VITE_PROXY_CONTEXT;
     this.headers = headers;
   }
 
@@ -75,7 +82,11 @@ export class Service {
       delete options.body;
     }
     return this.fetch(
-      `${this.baseURL}${url.indexOf("/") === 0 ? url : `/${url}`}`,
+      `${this.baseURL}${
+        url.indexOf("/") === 0 || this.baseURL.indexOf("/") === 0
+          ? url
+          : `/${url}`
+      }`,
       config.method,
       options
     );

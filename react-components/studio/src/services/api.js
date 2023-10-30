@@ -1,10 +1,8 @@
-import httpService from "./http"
+import services from "./Service"
 
 const joinURL = (model, subURL) => {
   return `ws/rest/${model}/${subURL}`
 }
-
-const services = new httpService()
 
 class AxelorService {
   constructor(props) {

@@ -1,4 +1,4 @@
-import services from './http';
+import services from './Service';
 import { uniqBy } from 'lodash';
 import { getFormName } from '../components/utils';
 import { sortBy } from '../utils';
