@@ -42,7 +42,6 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -223,9 +222,10 @@ public class StudioMenuServiceImpl implements StudioMenuService {
   public void setStudioActionView(String viewType, String viewName, StudioAction studioAction) {
     if (WrappingHelper.wrap(studioAction.getStudioActionViews()).stream()
         .filter(Objects::nonNull)
-        .anyMatch(studioActionView ->
-            viewType.equals(studioActionView.getViewType())
-                && viewName.equals(studioActionView.getViewName()))) {
+        .anyMatch(
+            studioActionView ->
+                viewType.equals(studioActionView.getViewType())
+                    && viewName.equals(studioActionView.getViewName()))) {
       return;
     }
 
