@@ -14,9 +14,9 @@ This way, you can define any type of transformation, You can even define a very 
 
 **Rules:**
 
-- The Groovy template contains placeholders for the parameters and the target ( kind of +${target}+ +${search}+). In the front-end, these placeholders will be filled in to generate the appropriate groovy expression.
+- The Groovy template contains placeholders for the parameters and the target **( kind of +${target}+ +${search}+)**. In the front-end, these placeholders will be filled in to generate the appropriate groovy expression.
 
-- target is the value which the transformation will be performed on it.
+- Target is the value which the transformation will be performed on it.
 
 - Every groovy expression must contain the target placeholder.
 

@@ -1,4 +1,4 @@
-* xref:index.adoc[Web service]
+* xref:index.adoc[Web service - EN]
 ** xref:/tutorial/index.adoc[Quick Tutorial]
 *** xref:/tutorial/step1.adoc[Step 1: Define  Connector]
 *** xref:/tutorial/step2.adoc[Step 2: Define  Authenticator]
