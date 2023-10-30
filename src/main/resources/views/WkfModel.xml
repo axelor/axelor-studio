@@ -259,7 +259,7 @@
                       </p>
                       <p style={{ display: "list-item" }}>
                         <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-late-task", item.tasks)}}>
-                          <span x-translate>My Late tasks</span> 
+                          <span x-translate>My Late tasks</span>
                           ({item?.tasks?.lateTaskIds?.length})
                         </a>
                       </p>

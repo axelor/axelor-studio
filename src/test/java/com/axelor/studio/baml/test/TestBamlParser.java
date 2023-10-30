@@ -17,18 +17,9 @@
  */
 package com.axelor.studio.baml.test;
 
-import com.axelor.auth.db.User;
-import com.axelor.common.ResourceUtils;
 import com.axelor.meta.db.MetaJsonRecord;
-import com.axelor.rpc.Context;
 import com.axelor.rpc.Criteria;
-import com.axelor.script.GroovyScriptHelper;
-import com.axelor.studio.baml.service.BamlParser;
-import com.axelor.studio.baml.xml.ProcessActionNode;
-import com.axelor.studio.baml.xml.ProcessActionRootNode;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
