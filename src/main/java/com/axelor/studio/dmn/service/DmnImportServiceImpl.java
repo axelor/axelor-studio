@@ -29,6 +29,7 @@ import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Objects;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.model.dmn.Dmn;
 import org.camunda.bpm.model.dmn.DmnModelInstance;
@@ -110,7 +111,7 @@ public class DmnImportServiceImpl implements DmnImportService {
         for (int j = 0; j < row.length; j++) {
           String value = StringUtils.isBlank(row[j]) ? null : row[j].trim();
 
-          Object entryObj = this.checkEntry(headerRow, j, table, reader);
+          Object entryObj = this.checkEntry(headerRow, j, table);
           if (entryObj == null) {
             continue;
           }
@@ -139,7 +140,7 @@ public class DmnImportServiceImpl implements DmnImportService {
   }
 
   protected Object checkEntry(
-      String[] headerRow, int cellIndex, DecisionTable table, DataReader reader) {
+      String[] headerRow, int cellIndex, DecisionTable table) {
 
     if (StringUtils.isBlank(headerRow[cellIndex])) {
       throw new IllegalStateException(BpmExceptionMessage.INVALID_HEADER);

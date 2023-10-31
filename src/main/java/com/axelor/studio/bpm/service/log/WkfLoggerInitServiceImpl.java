@@ -23,6 +23,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import ch.qos.logback.core.spi.ScanException;
 import ch.qos.logback.core.util.OptionHelper;
 import com.axelor.common.StringUtils;
 import com.axelor.common.logging.LoggerConfiguration;
@@ -141,10 +142,14 @@ public class WkfLoggerInitServiceImpl implements WkfLoggerInitService {
   }
 
   private void addEncoder() {
-    encoder = new PatternLayoutEncoder();
-    encoder.setPattern(OptionHelper.substVars(ANSI_LOG_PATTERN, context));
-    encoder.setCharset(StandardCharsets.UTF_8);
-    encoder.setContext(context);
-    encoder.start();
+    try {
+      encoder = new PatternLayoutEncoder();
+      encoder.setPattern(OptionHelper.substVars(ANSI_LOG_PATTERN, context));
+      encoder.setCharset(StandardCharsets.UTF_8);
+      encoder.setContext(context);
+      encoder.start();
+    } catch (ScanException e) {
+      throw new IllegalStateException(e);
+    }
   }
 }
