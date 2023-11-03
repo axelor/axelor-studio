@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+* Anomaly #71447: Fix NPE upon save of a custom model with a menu
+
 ## 1.0.4
 
 * Anomaly #70597: Fix StudioActionView duplication on every save
