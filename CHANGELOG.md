@@ -1,3 +1,9 @@
+## 1.1.3 (2023-11-03)
+
+#### Fixed
+
+* Anomaly #71447: Fix NPE upon save of a custom model with a menu
+
 ## 1.1.2 (2023-10-25)
 
 #### Fixed
@@ -31,6 +37,10 @@
 * Unable to use hideIf, showIf and requiredIf as view attributes
 * Replace deprecated classes from org.apache.commons.lang3 by org.apache.commons.text
 * BPM: Fix wrong evaluation of IN operator in case of selection on expression builder
+
+## 1.0.5
+
+* Anomaly #71447: Fix NPE upon save of a custom model with a menu
 
 ## 1.0.4
 
