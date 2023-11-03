@@ -120,18 +120,18 @@ The **‘axelor’** script is an extended format of the ‘groovy’ language, 
 
 * **\\__ctx__**: It represents the context helper service, and it has the following helper functions. It is used in a similar manner with both custom or real models.
   ** **\\__ctx__.create(String modelName):**
-         It is used to create a new record for the model name passed as a parameter. For example, to create a new product it should be used like **\\__ctx__.create(‘Product’)**. It returns the context of the new product created, here the context is the extended version of a normal JPA entity. This context allows the update and retrieval of custom field values too.
+         It is used to create a new record for the model name passed as a parameter. For example, to create a new product it should be used like `\\__ctx__.create(‘Product’)`. It returns the context of the new product created, here the context is the extended version of a normal JPA entity. This context allows the update and retrieval of custom field values too.
   ** **\\__ctx__.filterOne(String modelName, String query, String[] params):**
-          This helper function is used to find the record by using a query. For example, to find a product with code ‘COMP-005’, this can be used like **\\__ctx__.filterOne(‘Product’,’self.code = ?1’, ‘COMP-005’)**
+          This helper function is used to find the record by using a query. For example, to find a product with code ‘COMP-005’, this can be used like `\\__ctx__.filterOne(‘Product’,’self.code = ?1’, ‘COMP-005’)`
            It will return a single result from the executed query.
   ** **\\__ctx__.filter(String modelName, String query, String[] params):**
                  It is a similar function as the previous one, but it will return a list of records from the executed query.
   ** **\\__ctx__.find(String modleName, Long recordId):**
           It will find the record based on the modelName passed with the given recordId.
   ** **\\__ctx__.save(Object object):**
-         It allows you to save the record created by **\\__ctx__.create** or record available within the process instance context.
+         It allows you to save the record created by `\\__ctx__.create` or record available within the process instance context.
   ** **\\__ctx__.createVariable(WkfContext wkfContext, DelegateExecution execution):**
-         This function is used when a process variable is required to create from the newly created record from **\\__ctx__.create function**, here pass that record as wkfContext and execution (inbuilt variable).
-            For example, to create a new variable for a product that is created on the first function, the variable creation can be done by **\\__ctx__.createVariable(product,execution)**.
+         This function is used when a process variable is required to create from the newly created record from `\\__ctx__.create` function, here pass that record as wkfContext and execution (inbuilt variable).
+            For example, to create a new variable for a product that is created on the first function, the variable creation can be done by `\\__ctx__.createVariable(product,execution)`.
 
 * **\\__beans__:** It represents **com.axelor.inject.Beans**, which is used to inject and use services.

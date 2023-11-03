@@ -1,6 +1,7 @@
 =  Astuces sur l’espace de travail
 :toc-title:
 :page-pagination:
+:experimental:
 
 == Raccourcis clavier
 
@@ -9,13 +10,13 @@ Le studio possède un certain nombre de raccourcis qui permettent de simplifier 
 **[.underline]#Voici la liste de ceux-ci# :**
 
 
-1. **Retour en arrière** : ctrl + Z
-2. **Annuler un retour en arrière** : ctrl + maj + Z
-3. **Tout sélectionner** : ctrl + A
-4. **Chercher un objet par son nom** : ctrl + F image:anexes_clavier.png[event process,align="left"]
-5. **Zoom/Dezoom** : ctrl + Scrolling
-6. **Scrolling (Horizontal)**: ctrl + maj + Scrolling
-7. **Modifier le nom de l’objet sur lequel se situe le curseur** : E
-8. **Activer l’outil main** : H
-9. **Activer l’outil lasso** : L
-10. **Activer l’outil déplacement latéral** : S
+1. **Retour en arrière** : kbd:[ctrl] + kbd:[Z]
+2. **Annuler un retour en arrière** : kbd:[ctrl] + kbd:[maj] + kbd:[Z]
+3. **Tout sélectionner** : kbd:[ctrl] + kbd:[A]
+4. **Chercher un objet par son nom** : kbd:[ctrl] + kbd:[F] image:anexes_clavier.png[event process,align="left"]
+5. **Zoom/Dezoom** : kbd:[ctrl] + kbd:[Scrolling]
+6. **Scrolling (Horizontal)**: kbd:[ctrl] + kbd:[maj] + kbd:[Scrolling]
+7. **Modifier le nom de l’objet sur lequel se situe le curseur** : kbd:[E]
+8. **Activer l’outil main** : kbd:[H]
+9. **Activer l’outil lasso** : kbd:[L]
+10. **Activer l’outil déplacement latéral** : kbd:[S]
