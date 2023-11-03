@@ -85,19 +85,19 @@ image::script_task_non_interruptif_event.png[event process,align="left"]
 
 **Le script :**
 ----
-def rec = $ctx.find('VehicleContract',vehicleContractId)
+def rec = __ctx__.find('VehicleContract',vehicleContractId)
 def slurped = rec?.attrs ? new groovy.json.JsonSlurper().parseText(rec.attrs) : [:]
 def builder = new groovy.json.JsonBuilder(slurped)
 def map = [invoiceDate :  vehicleContract?.invoiceDate]
 builder.content = builder.content ?: [] << map
 rec.attrs = builder.toString()
-return $ctx.save(rec)
+return __ctx__.save(rec)
 ----
 
 **Quelques explications :**
 
 ----
-$ctx.find('VehicleContract',vehicleContractId)
+__ctx__.find('VehicleContract',vehicleContractId)
 ----
 permet de récupérer l’objet contrat sur lequel notre processus s’exécute.
 
@@ -117,7 +117,7 @@ Cela défini un dictionnaire dont la clé est invoiceDate et la valeur contient 
 **Sur l’événement conditionnel nous pouvons indiquer le script suivant :**
 
 ----
-def rec = $ctx.find('VehicleContract',vehicleContractId)
+def rec = __ctx__.find('VehicleContract',vehicleContractId)
 if (rec?.attrs==null){
   false
 }
@@ -128,15 +128,14 @@ else {
 }
 ----
 Et sur la tâche script **"Mettre à jour champ de test"** :
-
 ----
-def rec = $ctx.find('VehicleContract',vehicleContractId)
+def rec = __ctx__.find('VehicleContract',vehicleContractId)
 def slurped = new groovy.json.JsonSlurper().parseText(rec.attrs)
 def builder = new groovy.json.JsonBuilder(slurped)
 def map = [invoiceDate :  vehicleContract?.invoiceDate]
 builder.content = [] << map
 rec.attrs = builder.toString()
-return $ctx.save(rec)
+return __ctx__.save(rec)
 ----
 
 NOTE: Vous pouvez tester le processus.  Il se peut que l’on passe 2 fois dans le sous-processus événementiel lors du renseignement de la date mais, nous ne passons plus dans le sous processus lorsque l’on met à jour un autre champ du contrat .

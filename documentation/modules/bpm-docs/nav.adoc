@@ -43,5 +43,3 @@
 *** xref:/annexes/display-logs.adoc[Affichage des logs]
 *** xref:/annexes/Astuces_groovy.adoc[Astuces groovy]
 *** xref:/annexes/astuce_espace_travail.adoc[Astuces sur l’espace de travail]
-*** xref:/annexes/probelem_cache.adoc[Problème de cache]
-*** xref:/annexes/exercices.adoc[Exercices complémentaires]

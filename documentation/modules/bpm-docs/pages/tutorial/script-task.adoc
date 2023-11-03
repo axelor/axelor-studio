@@ -16,7 +16,8 @@ Dans le mapper, renseignez le **“Modèle cible”** avec  le modèle de la dem
 
 image::script_result.png[Script Result,align="left"]
 
-**La méthode $ctx.filterOne** est utilisée pour rechercher une société dont le nom est égal à **“Axelor”**, puis le résultat est récupéré avec **getTarget()** et sauvegardé avec **$ctx.save**.
+
+**La méthode \\__ctx__.filterOne** est utilisée pour rechercher une société dont le nom est égal à **“Axelor”**, puis le résultat est récupéré avec **getTarget()** et sauvegardé avec **\\__ctx__.save**.
 
 Passons à présent à la deuxième tâche script : **Renseigner une description**. Il serait intéressant d’avoir dans la description quelque chose comme : Cette demande a pour fournisseur
 ----

@@ -3,9 +3,9 @@ site:
   start_page: studio::index.adoc
 content:
   sources:
-    - url:  ../../../
+    - url:  ../
       branches: HEAD
-      start_path: modules/axelor-studio/documentation
+      start_path: documentation
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable

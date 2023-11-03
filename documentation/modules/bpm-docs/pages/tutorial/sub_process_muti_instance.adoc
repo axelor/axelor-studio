@@ -21,15 +21,16 @@ image::script_sub_process.png[event process,align="left"]
 **Ce qui génère le script suivant :**
 
 ----
-def rec = $ctx.create('PurchaseOrderLine')
+def rec = __ctx__.create('PurchaseOrderLine')
 rec.productName = uneLigneDemande?.product?.name
-rec.unit = $ctx.find('Unit',uneLigneDemande?.unit?.id)?.getTarget()
-rec.purchaseOrder = $ctx.find('PurchaseOrder',$ctx.getVariable(Process_commandeAchat,'purchaseOrder')?.id)?.getTarget()
+rec.unit = __ctx__.find('Unit',uneLigneDemande?.unit?.id)?.getTarget()
+rec.purchaseOrder = __ctx__.find('PurchaseOrder',__ctx__.getVariable(Process_commandeAchat,'purchaseOrder')?.id)?.getTarget()
 rec.qty = uneLigneDemande?.quantity
-rec.product = $ctx.find('Product',uneLigneDemande?.product?.id)?.getTarget()
+rec.product = __ctx__.find('Product',uneLigneDemande?.product?.id)?.getTarget()
 rec.price = uneLigneDemande?.product?.purchasePrice
 rec.exTaxTotal = uneLigneDemande?.product?.purchasePrice*uneLigneDemande?.quantity
-return $ctx.save(rec)
+return __ctx__.save(rec)
+
 ----
 
 NOTE: Testez le processus.
