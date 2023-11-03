@@ -75,43 +75,21 @@ public class StudioActionService {
         break;
       case StudioActionRepository.TYPE_SELECT_EMAIL:
         metaAction = studioActionEmailService.build(studioAction);
+        break;
+      default:
+        break;
     }
 
-    if (studioAction.getMetaModule() != null) {
+    if (studioAction.getMetaModule() != null && metaAction != null) {
       metaAction.setModule(studioAction.getMetaModule().getName());
     }
 
-    if (studioAction.getMenuAction()) {
+    if (Boolean.TRUE.equals(studioAction.getMenuAction()) && metaAction != null) {
       metaAction.setArchived(studioAction.getArchived());
     }
 
     MetaStore.clear();
 
     return metaAction;
-  }
-
-  public StudioAction setStudioActionViews(
-      StudioAction studioAction, String modelName, String formViewName, String gridViewName) {
-    if (studioAction.getStudioActionViews() == null) {
-      studioAction.setStudioActionViews(new ArrayList<>());
-    }
-    List<StudioActionView> studioActionViews = studioAction.getStudioActionViews();
-    if (formViewName != null) {
-      setStudioActionView("form", formViewName, studioActionViews);
-    }
-    if (gridViewName != null) {
-      setStudioActionView("grid", gridViewName, studioActionViews);
-    }
-
-    studioAction.setModel(modelName);
-    return studioAction;
-  }
-
-  private void setStudioActionView(
-      String viewType, String viewName, List<StudioActionView> studioActionViews) {
-    StudioActionView studioActionView = new StudioActionView();
-    studioActionView.setViewType(viewType);
-    studioActionView.setViewName(viewName);
-    studioActionViews.add(studioActionView);
   }
 }

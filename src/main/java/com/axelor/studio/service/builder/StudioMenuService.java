@@ -38,6 +38,7 @@ import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.utils.ExceptionTool;
+import com.axelor.utils.WrapUtils;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -208,7 +209,7 @@ public class StudioMenuService {
 
   private void setStudioActionView(
       String viewType, String viewName, List<StudioActionView> studioActionViews) {
-    if (CollectionUtils.isEmpty(studioActionViews) || studioActionViews.stream()
+    if (WrapUtils.wrap(studioActionViews).stream()
         .filter(Objects::nonNull)
         .anyMatch(studioActionView ->
             viewType.equals(studioActionView.getViewType())
