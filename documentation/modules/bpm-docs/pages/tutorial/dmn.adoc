@@ -2,5 +2,5 @@
 :toc-title:
 :page-pagination:
 
-=== Insérer une tâche règle métier
-=== Pour créer une décision : App>BPM Components>DMNs
+== Insérer une tâche règle métier
+== Pour créer une décision : App -> BPM Components -> DMNs

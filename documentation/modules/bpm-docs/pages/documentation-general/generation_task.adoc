@@ -1,14 +1,15 @@
 =  Généralité sur les task
 :toc-title:
 :page-pagination:
+:experimental:
 
-Les task possèdent un onglet nommé “listeners” image:listeners-icon.png[receive icon]  Celui-ci permet d’effectuer des scripts groovys lors de situations précises.
+**Les task possèdent un onglet nommé `listeners` image:listeners-icon.png[receive icon]  Celui-ci permet d’effectuer des scripts groovys lors de situations précises.**
 
 == Execution listener
 
 Un execution listener se crée en appuyant sur le bouton plus dans la liste des listener
 
-concernés dans l’onglet image:executable-icon.png[execution icon]
+concernés dans l’onglet image:execution-task-icon.png[execution icon]
 
 Celui-ci applique son script groovy au début ou à la fin (selon le choix fait par l’utilisateur) de la task. Le script peut être rédigé ou non via le script builder.
 
@@ -20,18 +21,18 @@ Aujourd’hui, il n’y a pas de script builder disponible pour rédiger le scri
 
 Il y a 6 types d'événements permettant de déclencher le listener et donc l’application du script
 
-image::type_evenement.png[event process]
+image::type_evenement.png[event process,align="left"]
 
-* Create
+* **Create :**
    Le script est la toute première chose qui s’applique lorsque le processus arrive à la task.
-* Update
+* **Update :**
    Non implémenté actuellement.
-* Assignement
+* **Assignement :**
    Non implémenté actuellement.
-* Timeout
+* **Timeout :**
    Le script s’applique si il y a un Timer lié à la tâche en cours, et que celui-ci est arrivé à la fin de son cycle.
 
-* Complete
+* **Complete :**
      Le script est la dernière chose que la tâche va réaliser avant d’arriver à la fin de sa vie et de passer à la prochaine étape si celle-ci n'a rencontré aucun problème.
-* Delete
+* **Delete :**
      Le script est la dernière chose que la tâche va réaliser avant d’arriver à la fin de sa vie et de passer à la prochaine étape si celle ci a rencontré un événement interruptif ou doit renvoyer une erreur imprévue

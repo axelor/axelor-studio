@@ -1,6 +1,7 @@
 = Piscine et configuration de processus
 :toc-title:
 :page-pagination:
+:experimental:
 
 Nous commençons par insérer une piscine qui va représenter un participant et au sein de laquelle nous allons insérer des objets pour définir notre processus.
 Pour insérer une piscine, il faut faire un glissé déposé de l’icon image:participant-icon.png[participant image]  vers l’espace de travail.
@@ -8,7 +9,7 @@ Pour insérer une piscine, il faut faire un glissé déposé de l’icon image:p
 Une fois qu’une piscine est insérée dans la modélisation, il est impossible d’insérer un objet en dehors d’une quelconque piscine.
 Le panel de configuration d’une piscine est composé de 4 onglets qui sont les suivants.
 
-image::panel-menu.png[Panel menu]
+image::panel-menu.png[Panel menu,align="left"]
 
 On accède à ce panel en cliquant sur la piscine.
 
@@ -19,45 +20,44 @@ Le process Id est celui qui sera utilisé lors du mapping du processus.
 
 Nous allons par exemple donner les identifiants et nom suivants :
 
-<1> Id : process_demande_achat
-<2> Name : Demande d’achat
-<3> Process name : Processus de la demande d’achat
+* **Id :** process_demande_achat
+* **Name :** Demande d’achat
+* **Process name :** Processus de la demande d’achat
 
-J’attire votre attention sur le booléen “Executable” qui ici est coché par défaut.
+J’attire votre attention sur le booléen `Executable` qui ici est coché par défaut.
 Ce ne sera pas toujours le cas notamment lorsque l’on insère une deuxième piscine  au sein du même modèle.
 Quoi qu’il en soit, il est important que ce booléen soit coché si l’on veut que le processus défini dans la piscine s’exécute.
 
-Nous pouvons cocher la case “Display status”, elle permet de rendre possible l’affichage des statuts du processus. Nous verrons bientôt sur un exemple concret à quoi celà correspond. Nous pouvons alors renseigner le champ “Display on models”, nous le compléterons après avoir configuré notre piscine.
+Nous pouvons cocher la case btn:[Display status], elle permet de rendre possible l’affichage des statuts du processus. Nous verrons bientôt sur un exemple concret à quoi celà correspond. Nous pouvons alors renseigner le champ `Display on models`, nous le compléterons après avoir configuré notre piscine.
 
-Dans l’onglet général, on retrouve également les champs “Version tag”, “Help” et un boolean “Add translation” qui servent respectivement à indiquer un numéro de version, indiquer une aide, ajouter des traductions.
+Dans l’onglet général, on retrouve également les champs `Version tag`, `Help` et un boolean `Add translation` qui servent respectivement à indiquer un numéro de version, indiquer une aide, ajouter des traductions.
 
-Il est également possible de venir changer la couleur de la piscine mais ceci est purement cosmétique.
+TIP: Il est également possible de venir changer la couleur de la piscine mais ceci est purement cosmétique.
 
 == Configuration
 
-Cet onglet permet de faire la configuration du processus. Il est essentiel pour permettre à celui-ci de fonctionner.
+**Cet onglet permet de faire la configuration du processus. Il est essentiel pour permettre à celui-ci de fonctionner.**
 
 On peut rajouter autant de modèles que souhaité. Il s’agit de les configurer correctement, pour cela, il faut déjà choisir le modèle sur lequel on veut que le processus puisse se déclencher.
 
 On peut choisir celui-ci dans la liste déroulante ou en commençant à écrire son nom.
+Si il s’agit d’un modèle personnalisé **(créé avec le studio)**, il convient de cocher la case `Personnalisé`.
 
-Si il s’agit d’un modèle personnalisé (créé avec le studio), il convient de cocher la case “Personnalisé”.
+* La case `Démarrage du processus` permet de déclencher notre processus dès que l’on ouvre un formulaire lié à notre modèle. Si cette case n’est pas cochée, il faudra définir un `Chemin du processus` entre notre modèle et un autre modèle qui lui possède la case Démarrage du processus. Ce chemin du processus est un champ m2o ou o2o. Par exemple, dans les lignes de commandes, il y a une relation m2o vers les commandes ce qui permet de faire le lien entre les 2 objets.
 
-La case “Démarrage du processus” permet de déclencher notre processus dès que l’on ouvre un formulaire lié à notre modèle. Si cette case n’est pas cochée, il faudra définir un “Chemin du processus” entre notre modèle et un autre modèle qui lui possède la case Démarrage du processus. Ce chemin du processus est un champ m2o ou o2o. Par exemple, dans les lignes de commandes, il y a une relation m2o vers les commandes ce qui permet de faire le lien entre les 2 objets.
+* Le champ `Titre` se remplira automatiquement au choix du modèle.
 
-Le champ “Titre” se remplira automatiquement au choix du modèle.
+* Le champ `Condition` permet de vérifier qu’une condition sur le modèle est vérifiée avant de démarrer l’accès à celui-ci.
 
-Le champ “Condition” permet de vérifier qu’une condition sur le modèle est vérifiée avant de démarrer l’accès à celui-ci.
-
-Le champ “Chemin utilisateur par défaut”  …
+* Le champ `Chemin utilisateur par défaut`  …
 
 Ainsi dans le cas de notre scénario, la configuration devrait ressembler à celle-ci :
 
-image::config.png[Configuration]
+image::config.png[Configuration,align="left"]
 
-Une fois le processus configuré, on peut revenir dans l’onglet général et choisir le modèle pour le champ “Display models” :
+Une fois le processus configuré, on peut revenir dans l’onglet général et choisir le modèle pour le champ `Display models` :
 
-image::display-status.png[Display status]
+image::display-status.png[Display status,align="left"]
 
 == Listner
 

@@ -1,33 +1,31 @@
 =  Création d’objet
 :toc-title:
 :page-pagination:
+:experimental:
 
 Nous allons créer une commande à partir d’une demande. Pour pouvoir faire le lien correctement entre la commande et la demande, nous allons créer un champ many-to-one vers la demande d’achat sur la commande d’achat. Pour cela, nous utilisons le studio. Pour plus d’explication sur le studio, référez vous à la documentation correspondante (...).
 
-Pour utiliser le studio, allez dans le menu “App>Studio”. Choisissez “Vue” à la place de “Personalisé” dans le menu du haut. Sélectionnez “purchaseOrder” comme modèle “purchase-order-form (calculée)” comme vue et “attrs” dans champs personnalisé :
+Pour utiliser le studio, allez dans le menu `App -> Studio`. Choisissez `Vue` à la place de `Personalisé` dans le menu du haut. Sélectionnez `purchaseOrder` comme modèle `purchase-order-form (calculée)` comme vue et `attrs` dans champs personnalisé :
 
-image::add_object_menu.png[event process]
+image::add_object_menu.png[event process,align="left"]
 
-Faites un glissé déposé de image:many-icon.png[studio icon]  dans la section attrs (en bas de l’écran) :
+**Faites un glissé déposé de image:many-icon.png[studio icon]  dans la section attrs (en bas de l’écran) :**
 
-image::attrs_add_object.png[event process]
+image::attrs_add_object.png[event process,align="left"]
 
-Complété le menu de droite comme suit :
+**Complété le menu de droite comme suit :**
 
-<1> Nom : purchaseRequest
-<2> Titre : Demande d’achat
-<3> Modèle cible : com.axelor.apps.purchase.db.PurchaseRequest
-
-Cachée image:cache-icon.png[cache icon] :
+1. **Nom** : purchaseRequest
+2. **Titre** : Demande d’achat
+3. **Modèle cible** : com.axelor.apps.purchase.db.PurchaseRequest
+4. **Cachée :** image:cache-icon.png[cache icon,align="left"]
 
 Et pensez à sauvegarder.
 
-À présent revenons au BPM.
+À présent revenons au BPM, La tâche script `Créer une commande`, nous sert à créer la commande :
 
-La tâche script “Créer une commande”, nous sert à créer la commande :
+image::script_add_object.png[event process,align="left"]
 
-image::script_add_object.png[event process]
-
-Sélectionnez “Nouvelle enregistrement” et cliquez sur “Add fields”, les champs obligatoires à la création d’un objet sont déjà présélectionnés.  Ajoutez également les champ “État” et “Demande d’achat”. Remplissez les comme ci-dessus. Cette fois ci, on est obligé de venir chercher les valeurs depuis le processus. On peut alors sélectionner le processus de la demande d’achat ou celui de la commande. Ici, nous allons chercher dans le contexte du processus de la demande d’achat les valeurs qui nous intéressent. Sélectionnez également “Create variable”, c’est important pour créer une variable qui sera associé à l’instance de processus.
+Sélectionnez `Nouvelle enregistrement` et cliquez sur `Add fields`, les champs obligatoires à la création d’un objet sont déjà présélectionnés.  Ajoutez également les champ `État` et `Demande d’achat`. Remplissez les comme ci-dessus. Cette fois ci, on est obligé de venir chercher les valeurs depuis le processus. On peut alors sélectionner le processus de la demande d’achat ou celui de la commande. Ici, nous allons chercher dans le contexte du processus de la demande d’achat les valeurs qui nous intéressent. Sélectionnez également `Create variable`, c’est important pour créer une variable qui sera associé à l’instance de processus.
 
 Vous pouvez à présent tester le processus. Vous pouvez vérifier qu’une commande d’achat a bien été générée (dans devis fournisseur car elle est à l’état brouillon). Intéressons nous au instance générée, vous remarquerez, qu’il y en a une pour la demande et un pour la commande avec des identifiant différents.

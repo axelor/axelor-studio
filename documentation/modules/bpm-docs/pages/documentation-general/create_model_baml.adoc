@@ -1,23 +1,23 @@
 =  Création des modèles BAML
 :toc-title:
 :page-pagination:
+:experimental:
 
 Les modèles BAML permettent de créer des scripts d’analyse et de calcul sur les données de la base de données extrêmement poussés.
 
-image::app_builder_dmn.png[event process]
+image::app_builder_dmn.png[event process,align="left"]
 
 Lorsque vous cliquez sur le bouton dans le menu, vous accédez à une liste de tous vos modèles BAML existants. Vous pouvez cliquer sur un modèle déjà existant pour le consulter et le modifier, ou bien en créer un nouveau en cliquant sur le bouton image:plus-icon.png[gateway icon]
 En créant un nouveau modèle, vous allez arriver sur l’interface suivante :
 
-image::baml_diagram.png[event process]
+image::baml_diagram.png[event process,align="left"]
 
 Vous allez devoir choisir un nom (unique) et un constructeur d'applications sur lequel baser votre modèle.
-
 En dessous on peut voir le XML et le script a appliquer. Ils pourraient être rédigés à la main, mais le studio permet de faire ça de manière low code.
 
-Cliquer sur le bouton “Ouvrir l’éditeur” va faire apparaître la fenêtre suivante
+Cliquer sur le bouton `Ouvrir l’éditeur` va faire apparaître la fenêtre suivante :
 
-image::baml_bpm.png[event process]
+image::baml_bpm.png[event process,align="left"]
 
 * Les boutons image:baml-icon-1.png[baml icon] permettent de télécharger notre modèle ou d’en appliquer un sur l’édition.
 
@@ -27,9 +27,9 @@ image::baml_bpm.png[event process]
 
 * Le bouton  image:baml-icon-4.png[baml icon]  permet de générer le code qui correspond au modèle visible dans la zone d’édition.
 
-* Dans le panel de propriété situé sur la droite, on peut nommer le processus (la bonne pratique veut qu’il possède le même nom que celui du modèle) et choisir le modèle cible de ce que l’on va récupérer et le modèle source.
+Dans le panel de propriété situé sur la droite, on peut nommer le processus (la bonne pratique veut qu’il possède le même nom que celui du modèle) et choisir le modèle cible de ce que l’on va récupérer et le modèle source.
 
-image::process_baml.png[event process]
+image::process_baml.png[event process,align="left"]
 
 Ici on va effectuer une action sur les inventaires, en partant des familles de produits.
 
@@ -41,21 +41,21 @@ Il est nécessaire de choisir un modèle sur lequel effectuer la requête à l�
 
 Ce champ permet de définir si on ne veut récupérer qu'une ou plusieurs données. Si la demande renvoie plusieurs données et que l’on stipule un retour unique, celui-ci va renvoyer le premier trouvé .
 
-image::return_type.png[event process]
+image::return_type.png[event process,align="left"]
 
 Ce résultat sera stocké dans une variable nommé comme l’utilisateur l’aura décidé dans ce champ la :
 
-image::var_stock_location.png[event process]
+image::var_stock_location.png[event process,align="left"]
 
 Il est possible de choisir si on veut garder le résultat sous la forme d’un objet ou d’un JSON en cliquant sur la case suivante : image:isJson-icon.png[baml icon]
 
 La requête se rédige avec le query builder  : image:baml-query.png[baml icon]
 
-image::query_baml.png[event process]
+image::query_baml.png[event process,align="left"]
 
 Le symbole image:mapper-baml.png[baml icon]  permet de créer de nouvelles données. L’utilisateur doit désigner le type d’objet qu’il veut créer : image:target_baml.png[baml icon]
 
-image::target_field_baml.png[event process]
+image::target_field_baml.png[event process,align="left"]
 
 et les informations qu’il veut lui assigner avec un script builder
 
@@ -70,7 +70,7 @@ Tant qu’il y a un produit dans l’ensemble, on effectue l’action de créati
 
 Pour terminer, voici un exemple de modèle BAML complet :
 
-image::example_baml.png[event process]
+image::example_baml.png[event process,align="left"]
 
 Il faut lire ce modèle de la façon suivante :
 
