@@ -13,7 +13,7 @@ Nous allons maintenant définir le script à exécuter sur chacune des tâches. 
 
 image::script-task-builder.png[Task script process,align="left"]
 
-Dans le mapper, renseignez le `Modèle cible` avec  le modèle de la demande d’achat (PurchaseRequest). Vous pouvez ensuite cliquer sur btn:[Add fields] et venir sélectionner le champ qui nous intéresse : `Société`, pour venir lui affecter une valeur, par exemple `Axelor`. Il existe plusieurs manières de récupérer des valeurs avec le mapper. Ici nous avons sélectionné `Valeur` pour le champ `Value from`, ce qui permet de récupérer une valeur directement. Intéressons nous au script qui a été généré :
+Dans le mapper, renseignez le `Modèle cible` avec  le modèle de la demande d’achat `(PurchaseRequest)`. Vous pouvez ensuite cliquer sur btn:[Add fields] et venir sélectionner le champ qui nous intéresse : `Société`, pour venir lui affecter une valeur, par exemple `Axelor`. Il existe plusieurs manières de récupérer des valeurs avec le mapper. Ici nous avons sélectionné `Valeur` pour le champ `Value from`, ce qui permet de récupérer une valeur directement. Intéressons nous au script qui a été généré :
 
 image::script_result.png[Script Result,align="left"]
 

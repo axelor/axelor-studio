@@ -3,13 +3,13 @@
 :page-pagination:
 :experimental:
 
-A de nombreuses occasions lors de l’utilisation du BPM Studio, les objets requièrent un script pour effectuer une action (script pur) ou pour vérifier si une condition est réalisée (script Completed if).
+A de nombreuses occasions lors de l’utilisation du BPM Studio, les objets requièrent un script pour effectuer une action `(script pur)` ou pour vérifier si une condition est réalisée `(script Completed if)`.
 A chaque fois que l’icône image:edit-icon.png[edit icon] apparaît, vous pouvez cliquer dessus pour ouvrir et éditer un builder. Vous avez également la possibilité de cliquer sur l’icône image:cancel-icon-script.png[cancel icon]  qui permet d’éditer à la main le script.
 
 image::warning_builder_bpm.png[event process,align="left"]
 
-Néanmoins, si vous choisissez de cliquer sur Ok, vous ne pourrez plus récupérer le script dans le builder et il faudra le refaire par vous même.
-Si vous avez cliqué sur Ok, l’icône image:delete-icon-script.png[delete icon]  apparaît et vous permet de supprimer l'intégralité de votre script
+Néanmoins, si vous choisissez de cliquer sur btn:[Ok], vous ne pourrez plus récupérer le script dans le builder et il faudra le refaire par vous même.
+Si vous avez cliqué sur btn:[Ok], l’icône image:delete-icon-script.png[delete icon]  apparaît et vous permet de supprimer l'intégralité de votre script
 
 == Builder completed if
 
@@ -45,7 +45,7 @@ Quand ce champ fait référence à un objet, il y a trois types de vérification
 
 image::expression_builder.png[event process,align="left"]
 
-Si le champ fait référence à une date ou à une valeur numérique, il est possible d’avoir d’autres types de vérification, toutes basées sur une vérification du type **“entre tel et tel date”**
+Si le champ fait référence à une date ou à une valeur numérique, il est possible d’avoir d’autres types de vérification, toutes basées sur une vérification du type `entre tel et tel date`
 
 (image:between-icon.png[between icon]) ou supérieur/inférieur/égal à une certaine date ou valeur (image:greater-icon.png[greater icon]).
 
@@ -86,26 +86,26 @@ Le résultat obtenu sera stocké dans la variable défini dans le champ suivant 
 
 Il permet de créer facilement un script qui va créer un nouvel enregistrement sur un modèle, modifier un enregistrement déjà existant ou créer une nouvelle variable.
 
-Le mapper se présente sous la forme suivante :
+`Le mapper se présente sous la forme suivante :`
 
 image::script_ad_query.png[event process,align="left"]
 
-On peut choisir un modèle cible (Target model), c’est sur celle ci que vont s’effectuer les modifications
+On peut choisir un modèle cible `(Target model)`, c’est sur celle ci que vont s’effectuer les modifications
 Ensuite il faut choisir un ou plusieurs modèles source qui serviront de base pour récupérer des données.
 Si nous sommes dans un form A pendant l’utilisation de notre processus, nous pouvons spécifier que le modèle source est issu du context via le champ `model from`. De la même manière, il est possible de spécifier que le modèle source est issu du processus en cours.
-Le mapper permet donc d’assigner des valeurs au modèle cible. Ici 4 exemples des assignations possibles.
+Le mapper permet donc d’assigner des valeurs au modèle cible.`Ici 4 exemples des assignations possibles`.
 
 image::mapper.png[event process,align="left"]
 
-On peut assigner au modèle cible une valeur obtenue via le modèle source (1ère ligne).
+* `On peut assigner au modèle cible` une valeur obtenue via le modèle source (1ère ligne).
 
-On peut aussi choisir de récupérer le modèle via ceux disponibles dans le processus (2nde ligne). De plus, il est possible de `chaîner` la récupération de la donnée (Purchase request possède une société, celle-ci possède une devise, je récupère la devise par ce biais).
+* `On peut aussi choisir de récupérer le modèle` via ceux disponibles dans le processus (2nde ligne). De plus, il est possible de `chaîner` la récupération de la donnée (Purchase request possède une société, celle-ci possède une devise, je récupère la devise par ce biais).
 
-On peut plus simplement assigner une expression parmi celle disponible dans la base de donnée si le champ est un objet en base (Équipe) ou une valeur numérique si l’objet en accepte une.
+* `On peut plus simplement assigner une expression` parmi celle disponible dans la base de donnée si le champ est un objet en base (Équipe) ou une valeur numérique si l’objet en accepte une.
 
-On peut également, si l’objet existe déjà (sinon on provoque une NPE), récupérer une valeur directement sur celui-ci puis l’assigner à un autre champ.
+* `On peut également, si l’objet existe déjà (sinon on provoque une NPE), récupérer` une valeur directement sur celui-ci puis l’assigner à un autre champ.
 
-Il est également possible d’accéder à des variables d’environnement en sélectionnant le contexte comme origine de la valeur.
+* `Il est également possible d’accéder à des variables d’environnement` en sélectionnant le contexte comme origine de la valeur.
 
 image::mapper_script.png[event process,align="left"]
 
@@ -117,7 +117,7 @@ Les variables de contexte accessibles sont:
 
 == Variables disponibles pour les scripts
 
-The **‘axelor’** script is an extended format of the ‘groovy’ language, it supports the following inbuilt variables and functions.
+The `Axelor` script is an extended format of the `groovy` language, it supports the following inbuilt variables and functions.
 
 * **\\__ctx__**: It represents the context helper service, and it has the following helper functions. It is used in a similar manner with both custom or real models.
   ** **\\__ctx__.create(String modelName):**

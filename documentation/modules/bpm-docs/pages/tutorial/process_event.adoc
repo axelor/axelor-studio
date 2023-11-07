@@ -55,7 +55,7 @@ Nous allons maintenant paramétrer l’événement conditionnel et la tâche scr
 
 image::add_expression_non_interruptif_event.png[event process,align="left"]
 
-Pour la tâche script, nous allons utiliser la méthode plusDays(n) qui permet d’ajouter n jour à une date :
+Pour la tâche script, nous allons utiliser la méthode `plusDays(n)` qui permet d’ajouter n jour à une date :
 
 image::script_non_interruptif_event.png[event process,align="left"]
 
@@ -70,7 +70,7 @@ processus… (il est possible que vous ayez un nombre différent du mien mais su
 
 **Essayez de mettre à jour un champ quelconque sur le contrat et de sauvegarder :** le nombre de jetons augmente encore.
 Ce qui se passe, c’est qu’à chaque fois que l’on fait une mise à jour,
-la condition est testée et comme elle est toujours vraie (la date de facturation est bien remplie), on repasse dans le sous processus événementiel. Ce n’est pas forcément gênant car le comportement attendu est le bon mais ce n’est pas très élégant. Il faudrait non pas vérifier si la date est nulle ou non mais tester s’il y a eu un changement. Dans la suite de l’exercice nous allons mettre cette solution en place, c’est un peu technique.
+la condition est testée et comme elle est toujours vraie `(la date de facturation est bien remplie)`, on repasse dans le sous processus événementiel. Ce n’est pas forcément gênant car le comportement attendu est le bon mais ce n’est pas très élégant. Il faudrait non pas vérifier si la date est nulle ou non mais tester s’il y a eu un changement. Dans la suite de l’exercice nous allons mettre cette solution en place, c’est un peu technique.
 **L’idée est la suivante :**
 
 image::bpm_non_interruptif_event.png[event process,align="left"]

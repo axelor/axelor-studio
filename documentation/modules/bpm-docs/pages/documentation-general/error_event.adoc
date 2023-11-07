@@ -7,18 +7,18 @@ Symbolisé par image:error-icon-1.png[error icon] Il est déclenché à la réce
 
 image::error_event.png[event process,align="left"]
 
-* Si on ne spécifie aucune erreur, le sous processus se lancera pour chaque envoi d’erreur du processus
-* Le Error Code contiendra le code d’erreur qui sera spécifié avec celle-ci.
-* Le Error Message contiendra le message d’erreur qui sera spécifié avec celle-ci.
+* `Si on ne spécifie aucune erreur`, le sous processus se lancera pour chaque envoi d’erreur du processus
+* `L'Error Code` contiendra le code d’erreur qui sera spécifié avec celle-ci.
+* `L'Error Message` contiendra le message d’erreur qui sera spécifié avec celle-ci.
 
 Symbolisé par image:error-icon-2.png[error icon] Il est déclenché à la réception d’un signal `Error`
 
 image::error_event_2.png[event process,align="left"]
 
-* Si aucune erreur n’est renseignée,l'événement se déclenche pour n’importe quelle erreur envoyée par le processus, sans prendre en compte une erreur précise ou un code d’erreur
-* Si une erreur est renseignée, l'événement se déclenche avec  uniquement les erreurs respectant le code renseigné.
-* Si un Error Code Variable est renseigné, on pourra récupérer le code d’erreur de l’événement via celui-ci.
-* Si un Error Message Variable est renseigné, on pourra récupérer le message d’erreur de l’événement via celui-ci.
+* `Si aucune erreur n’est renseignée`,l'événement se déclenche pour n’importe quelle erreur envoyée par le processus, sans prendre en compte une erreur précise ou un code d’erreur
+* `Si une erreur est renseignée`, l'événement se déclenche avec  uniquement les erreurs respectant le code renseigné.
+* `Si un Error Code Variable est renseigné`, on pourra récupérer le code d’erreur de l’événement via celui-ci.
+* `Si un Error Message Variable est renseigné`, on pourra récupérer le message d’erreur de l’événement via celui-ci.
 
 Symbolisé par image:error-icon-3.png[error icon] Il permet d’envoyer un signal `Error`
 
