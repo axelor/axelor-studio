@@ -1,8 +1,9 @@
 = Recursion case
 :toc-title:
 :page-pagination:
+:experimental:
 
-The request will have one special value in the **Repeat If** field The request use a variable ** list ** which is a list of products ids .
+The request will have one special value in the `Repeat If` field The request use a variable `list` which is a list of products ids .
 
 The difference between this case and the first case is that this request will be repeated until the repeat If will be false .
 
@@ -20,7 +21,7 @@ TIP: You can see the authentication in the first case xref:../use-case/case1.ado
 
 == Connector
 
-The connector will have a context where we define the variable **list** .
+The connector will have a context where we define the variable `list` .
 The variable is a List with some objects contains id attribute .
 
 image::context.png[context,align="left"]

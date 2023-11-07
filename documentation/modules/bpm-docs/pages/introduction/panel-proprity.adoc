@@ -1,14 +1,15 @@
 = Le panel de propriétés
 :toc-title:
 :page-pagination:
+:experimental:
 
 == Le panel de propriétés
 
 A droite de l'écran est affiché le panel de propriétés,
 ce panel est affichable par simple clic sur son onglet.
 Vous y retrouverez l’ensemble des informations relatives aux éléments qui constituent le modèle de processus.
-Que ce soit le paramétrage de **l’environnement**, **des processus** et **des nœuds** qui le composent.
-Il y a un panel par objet de la norme (disponible en cliquant sur l’objet),
+Que ce soit le paramétrage de `l’environnement`, `des processus` et `des nœuds` qui le composent.
+Il y a un panel par objet de la norme **(disponible en cliquant sur l’objet)**,
 et également un panel pour le modèle dans sa globalité. C’est par celui-ci que commence chaque modèle BPM.
 C’est grâce à lui que chaque modèle à son identité propre, que l’on peut voir si le processus est déployé ou non,
 la version du processus, etc.
@@ -25,7 +26,7 @@ image::avancementProcess.png[avancement process image,align="left"]
 3. **Terminated:** Le processus est terminé et ne peut plus être instancié
 
 === **Zone de nommage du modèle**
-Cette zone est constituée d’un champ Code et d’un champ nom. Le code doit être unique, il sera automatiquement mis en majuscule.
+Cette zone est constituée d’un champ `Code` et d’un champ `Nom`. Le code doit être unique, il sera automatiquement mis en majuscule.
 Le choix du nom est libre et sans contrainte.
 
 image::zoneNommage.png[zoneNommage image,align="left"]

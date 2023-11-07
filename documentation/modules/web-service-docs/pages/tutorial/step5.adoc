@@ -1,6 +1,7 @@
 = BPMN and Web service
 :toc-title:
 :page-pagination:
+:experimental:
 
 == BPMN
 The main purpose from the web service is for using it inside the axelor BPM , by adding a new task in the BPM , you can add it as a script task and select the connector option .

@@ -1,6 +1,7 @@
 =  Signal Event
 :toc-title:
 :page-pagination:
+:experimental:
 
 Symbolisé par image:signal-icon-1.png[signal icon],image:signal-icon-2.png[signal icon],image:signal-icon-3.png[signal icon],image:signal-icon-4.png[signal icon] ll est déclenché à la réception d’un signal
 

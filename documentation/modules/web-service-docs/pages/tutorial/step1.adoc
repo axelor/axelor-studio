@@ -1,6 +1,7 @@
 = Define Connector
 :toc-title:
 :page-pagination:
+:experimental:
 
 == The purpose of connector
 
@@ -10,7 +11,7 @@ On calling of the connector it performs requests by sequence. The result of the 
 
 image::Connector.png[connector form,align="left"]
 
-TIP:  The variable **"_1"** will contain values returned from first request , so it can be used with second or subsequent requests.
+TIP:  The variable `_1` will contain values returned from first request , so it can be used with second or subsequent requests.
 At the end the connector returns the result of all requests called.
 // Pease see this link bellow to understand more of result request
 
@@ -31,7 +32,7 @@ Root url of the api, all requests should provide sub url of this root url only.
 This is a default authenticator for the connector, when calling a connector if no authenticator is provided this one will be used.
 
 * **Requests: **
-List of requests to be called. All requests will be called one by one in sequence, users can change the sequence of the url as its draggable. The response of each request will be stored with variable ‘_sequence’ in this list. For example ‘_1’ will represent the result of the first request.
+List of requests to be called. All requests will be called one by one in sequence, users can change the sequence of the url as its draggable. The response of each request will be stored with variable ‘_sequence’ in this list. For example `"_1"` will represent the result of the first request.
 
 TIP: The requests defined are executed one after one with the same order  how defined in the connector .
 
@@ -43,7 +44,7 @@ NOTE: The context data is shared with all elements of the  connector , so all Re
 == Track the connector
 
 Every execution of a connector you can track the result by a feature that store this result in a log file .
-To use this feature you need to activate the tracking mode in the **Studio App configuration**
+To use this feature you need to activate the tracking mode in the `Studio App configuration`
 
 image::enable_track.png[enable track web service]
 
@@ -55,4 +56,4 @@ The log file will contain the logs for the execution and also the result of the 
 
 image::log_file.png[log file]
 
-In this example there is an error in the request with the name **"getPartnerInfos"** . the file locate the errors in the execution of the connector .
+In this example there is an error in the request with the name `getPartnerInfos` . the file locate the errors in the execution of the connector .

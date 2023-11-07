@@ -1,6 +1,7 @@
 = Déploiement du processus
 :toc-title:
 :page-pagination:
+:experimental:
 
 == Événement de début et de fin
 
@@ -18,7 +19,7 @@ Lors du premier déploiement, vous devriez avoir le message suivant :
 
 image::nodeMapping-ex.png[Node mapping example,align="left"]
 
-Après quelques instants le message **“Deployed successfully”** apparaît.
+Après quelques instants le message `Deployed successfully` apparaît.
 
 Par curiosité, essayez d’appuyer à nouveau sur  image:deploy-icon.png[deploy image], vous devriez avoir quelque chose comme celà :
 
@@ -37,7 +38,7 @@ En déployant, cette fois ci on a :
 
 image::node-mapping-process-ex.png[Node mapping process,align="left"]
 
-Les instances de processus qui sont sur le nœud **“Event_1m7v83”** seront migrées vers le nœud **“Début du processus”**.
+Les instances de processus qui sont sur le nœud `Event_1m7v83` seront migrées vers le nœud `Début du processus`.
 
 Nous détaillons la migration, les éventuels problèmes que l’on peut rencontrer et comment y remédier dans la section … .
 
@@ -45,12 +46,12 @@ Nous détaillons la migration, les éventuels problèmes que l’on peut rencont
 
 Notre processus est configuré pour se déclencher à l’enregistrement d’une demande d’achat. Nous allons donc créer une demande d’achat et l’enregistrer. Une instance de processus qui correspond à cette demande d’achat a été créée.
 
-Pour visualiser le processus, allez dans le menu App>BPM components>technical monitoring>Process Instance et sélectionnez l’instance de processus.
+Pour visualiser le processus, allez dans le menu `App -> BPM components -> technical monitoring -> Process Instance` et sélectionnez l’instance de processus.
 
 Vous devriez voir ceci :
 
 image::visualiserProcess.png[Node mapping process,align="left"]
 
-On a un jeton pour indiquer que le processus est passé sur **“Début du processus”** et il est actuellement sur le nœud **“Fin du processus”**.
+On a un jeton pour indiquer que le processus est passé sur `Début du processus` et il est actuellement sur le nœud `Fin du processus`.
 
-S’il y a plusieurs instances de processus, il faut retrouver la bonne. Pour cela, on peut ajouter le champ **“processInstanceId”** à la vue grille des demandes d’achats.
+S’il y a plusieurs instances de processus, il faut retrouver la bonne. Pour cela, on peut ajouter le champ `processInstanceId` à la vue grille des demandes d’achats.

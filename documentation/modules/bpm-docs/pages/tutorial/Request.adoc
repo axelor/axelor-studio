@@ -1,8 +1,9 @@
 =  Requête
 :toc-title:
 :page-pagination:
+:experimental:
 
-**Poursuivons l’exercice 4 : “Il faut reprendre les lignes de la demande d’achat sur la commande d’achat.”**
+**Poursuivons l’exercice 4 : “Il faut reprendre les lignes de la demande d’achat sur la commande d’achat.**
 
 Vous pouvez faire le test mais actuellement, si des lignes sont présentes sur la demande, elles n’apparaissent pas sur la commande.
 La première étape est de récupérer les lignes de la demande d’achat et de les stocker dans une variable :
@@ -13,8 +14,8 @@ Pour créer une requête, il faut cocher la case image:request-icon.png[request 
 
 image::script_editor_add_object.png[event process,align="left"]
 
-On recherche les lignes de demande d’achat dont l’identifiant de la demande d’achat est égal à l’identifiant de la demande d’achat qui se trouve sur la commande d’achat de notre contexte. Il est important pour pouvoir faire cette opération d’avoir au préalable ajouté un champ many to one vers la demande sur la commande (voir début de la section **“Création d’objet”**).
+On recherche les lignes de demande d’achat dont l’identifiant de la demande d’achat est égal à l’identifiant de la demande d’achat qui se trouve sur la commande d’achat de notre contexte. Il est important pour pouvoir faire cette opération d’avoir au préalable ajouté un champ many to one vers la demande sur la commande **(voir début de la section `Création d’objet`)**.
 
-Nous stockons le résultat de cette requête dans une variable grâce au champ **“Result variable”**:
+Nous stockons le résultat de cette requête dans une variable grâce au champ `Result variable`:
 
 image::result_var_add_object.png[event process,align="left"]

@@ -1,6 +1,7 @@
 =  Tâche script
 :toc-title:
 :page-pagination:
+:experimental:
 
 Il reste à paramétrer les tâches script pour renseigner automatiquement une description et la société.
 Comme nous souhaitons un comportement automatique, nous allons utiliser une tâche script. Pour définir une tâche script, cliquez sur la tâche, puis sélectionnez la clé à molette, puis sélectionnez la tâche script.
@@ -8,18 +9,18 @@ Le modèle de processus devrait ressembler à ça :
 
 image::task_script_process.png[Task script process,align="left"]
 
-Nous allons maintenant définir le script à exécuter sur chacune des tâches.  Cliquez sur **“Renseigner une société”** puis cliquez sur le crayon du champ script. Cela permet d’ouvrir le mapper :
+Nous allons maintenant définir le script à exécuter sur chacune des tâches.  Cliquez sur `Renseigner une société` puis cliquez sur le crayon du champ script. Cela permet d’ouvrir le mapper :
 
 image::script-task-builder.png[Task script process,align="left"]
 
-Dans le mapper, renseignez le **“Modèle cible”** avec  le modèle de la demande d’achat (PurchaseRequest). Vous pouvez ensuite cliquer sur **“Add fields”** et venir sélectionner le champ qui nous intéresse : **“Société”**, pour venir lui affecter une valeur, par exemple **“Axelor”**. Il existe plusieurs manières de récupérer des valeurs avec le mapper. Ici nous avons sélectionné **“Valeur”** pour le champ **“Value from”**, ce qui permet de récupérer une valeur directement. Intéressons nous au script qui a été généré :
+Dans le mapper, renseignez le `Modèle cible` avec  le modèle de la demande d’achat (PurchaseRequest). Vous pouvez ensuite cliquer sur btn:[Add fields] et venir sélectionner le champ qui nous intéresse : `Société`, pour venir lui affecter une valeur, par exemple `Axelor`. Il existe plusieurs manières de récupérer des valeurs avec le mapper. Ici nous avons sélectionné `Valeur` pour le champ `Value from`, ce qui permet de récupérer une valeur directement. Intéressons nous au script qui a été généré :
 
 image::script_result.png[Script Result,align="left"]
 
 
-**La méthode \\__ctx__.filterOne** est utilisée pour rechercher une société dont le nom est égal à **“Axelor”**, puis le résultat est récupéré avec **getTarget()** et sauvegardé avec **\\__ctx__.save**.
+**La méthode \\__ctx__.filterOne** est utilisée pour rechercher une société dont le nom est égal à `Axelor`, puis le résultat est récupéré avec `getTarget()` et sauvegardé avec `\\__ctx__.save`.
 
-Passons à présent à la deuxième tâche script : **Renseigner une description**. Il serait intéressant d’avoir dans la description quelque chose comme : Cette demande a pour fournisseur
+Passons à présent à la deuxième tâche script : `Renseigner une description`. Il serait intéressant d’avoir dans la description quelque chose comme : Cette demande a pour fournisseur
 ----
 ${nom du fournisseur}
 ----
@@ -36,6 +37,6 @@ image::modify-script.png[Script modification,align="left"]
 
 NOTE: **Déployez et testez le processus !**
 
-NOTE: il se peut que vous ayez un message d’erreur indiquant **“L'enregistrement a été modifié ou supprimé par une autre action.”**.Cela vient du fait qu’une action sur le bouton met à jour le statut et qu’avec le BPM, nous modifions également le formulaire. Il suffit d’actualiser le formulaire pour avoir le comportement attendu.
+NOTE: il se peut que vous ayez un message d’erreur indiquant `L'enregistrement a été modifié ou supprimé par une autre action.`.Cela vient du fait qu’une action sur le bouton met à jour le statut et qu’avec le BPM, nous modifions également le formulaire. Il suffit d’actualiser le formulaire pour avoir le comportement attendu.
 
-TIP: Une autre possibilité si vous voulez enlevez le message d’erreur et de venir modifier la vue en ajoutant un **“save”** et un **“action-refresh-record”** dans les premières actions du bouton **“Request”**.
+TIP: Une autre possibilité si vous voulez enlevez le message d’erreur et de venir modifier la vue en ajoutant un `save` et un `action-refresh-record` dans les premières actions du bouton btn:[Request].

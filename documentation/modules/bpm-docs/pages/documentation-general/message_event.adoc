@@ -1,6 +1,7 @@
 =  Message Event
 :toc-title:
 :page-pagination:
+:experimental:
 
 Symbolisé par image:message-icon-1.png[message icon] , image:message-icon-2.png[message icon],image:message-icon-3.png[message icon] ll est déclenché à la réception d’un message.
 

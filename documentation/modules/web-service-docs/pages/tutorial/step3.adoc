@@ -1,6 +1,7 @@
 = Define Request
 :toc-title:
 :page-pagination:
+:experimental:
 
 It is the basic definition of the api request. It is used with both connector and authenticator.
 The connector is a container for requests , that handle the authentication and the execution of a series of requests.
@@ -10,8 +11,8 @@ The connector is a container for requests , that handle the authentication and t
 To create an HTTP request to communicate with any Api, you typically need to define the following components:
 
 1. **Request URL :** Specify the URL or endpoint you want to send the request to.
-2. **Request method :** Choose the appropriate HTTP method for your request, such as GET, POST, PUT, DELETE, etc. This determines the action you want to perform on the server.
-3. **Request headers :** Set any headers required for your request, such as Content-Type, Authorization, or custom headers. Headers provide additional information about the request.
+2. **Request method :** Choose the appropriate HTTP method for your request, such as `GET`, `POST`, `PUT`, `DELETE`, etc. This determines the action you want to perform on the server.
+3. **Request headers :** Set any headers required for your request, such as `Content-Type`, `Authorization`, or custom headers. Headers provide additional information about the request.
 4. **Request body (optional) :** If your request requires a payload or data, you can include it in the request body. The body format depends on the specific API or service you are interacting with. It can be JSON, form data, XML, or other formats.
 5. **Authentication (if applicable) :** If the API or service requires authentication, you may need to include authentication credentials in the headers or request body. The method of authentication depends on the specific authentication mechanism being used.
 6. **Send the request :** Use an HTTP client library or framework in your preferred programming language to send the request to the server. The library will handle the low-level details of establishing the connection, sending the request, and receiving the response.
@@ -23,24 +24,35 @@ To create an HTTP request to communicate with any Api, you typically need to def
 
 image::request.png[request form,align="left"]
 
+`The description of the fields is explained bellow :`
+[cols="2,8"]
+|===
+| Attribute | Description
 
-* **App :**  Use axelor application plugin
-* **Name :** The name of the request ( Required) .
-* **URL :** It can be a sub url of connector or full url of the api request.
-* **Type :** Type can be any of GET, POST, PUT, DELETE, PATCH (all are REST api request type)
-* ** PayLoad type :**  It is a type of data put inside the payload of the request, we can find :
-* **Form :** If the request accepts html form data, just like AOP login request.
-* **Json :** If the request accepts json data as payload.
-* **XML :** if the request accepts xml as data of payload.
-* **Text :** if the payload is of simple text type.
-* **File path :** If payload data required a file content but in context if we are providing only file path then this type should be used.
-* **File link :** If payload required a file content but in context if we have url of file.
-* **File text :** If payload requests a file content and in context if we have content of file in text format.
-* **Stream :** If payload required a file content and in context we have a file data in octet stream
-* **Call if :** Groovy expression to conditionally call the request, so request will be called only if this expression is true.
-* **Repeat if :** This is also a groovy expression, if provided it will keep calling the request until expression is true. All requests of a connector with the same ‘Repeat if’ get combined for execution in a loop. For example, to search and download files we have two requests one for search and one for download, if both requests have the same ‘Repeat if’ both will be called in a loop one after another. It is added for the pagination purpose.
-* **Headers :** Provide here all headers required for the api request call.
-* **Payload :** It is a key and value pair of data to be passed a payload of the request. Nested data support is also there.
+| App | Use Axelor application plugin
+| Name | The name of the request ( Required)
+| URL | It can be a sub url of connector or full url of the api request.
+| Type | Type can be any of GET, POST, PUT, DELETE, PATCH (all are REST api request type)
+| Payload type | It is a type of data put inside the payload of the request, we can find
+| Call if | Groovy expression to conditionally call the request, so request will be called only if this expression is true
+| Repeat if | This is also a groovy expression, if provided it will keep calling the request until expression is true. All requests of a connector with the same ‘Repeat if’ get combined for execution in a loop. For example, to search and download files we have two requests one for search and one for download, if both requests have the same ‘Repeat if’ both will be called in a loop one after another. It is added for the pagination purpose
+| Headers | Provide here all headers required for the api request call
+| Payload | It is a key and value a pair of data to be passed a payload of the request. Nested data support is also there
+|===
+
+In the payload type we can find those types for using it in your payload request .
+[cols="2,8"]
+|===
+| Payload type | Description
+| Form | If the request accepts html form data, just like AOP login request
+| Json | If the request accepts json data as payload
+| Xml | If the request accepts xml as data of payload
+| Text | If the payload is of simple text type
+| File path | If payload data required a file content but in context if we are providing only file path then this type should be used
+| File link | f payload required a file content but in context if we have url of file
+| File text | If payload requests a file content and in context if we have content of file in text format
+| Stream | If payload required a file content and in context we have a file data in octet stream
+|===
 
 == Payload | Parameter builder
 

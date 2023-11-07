@@ -1,9 +1,10 @@
 =  XML request exchange
 :toc-title:
 :page-pagination:
+:experimental:
 
 There is many data types to exchanges with API, in this example we will communicate with xml data .
-**Open weather ** as use case
+`Open weather` as use case
 
 == Request
 

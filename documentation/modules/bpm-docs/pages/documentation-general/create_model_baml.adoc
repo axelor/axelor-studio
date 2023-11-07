@@ -1,6 +1,7 @@
 =  Création des modèles BAML
 :toc-title:
 :page-pagination:
+:experimental:
 
 Les modèles BAML permettent de créer des scripts d’analyse et de calcul sur les données de la base de données extrêmement poussés.
 
@@ -14,7 +15,7 @@ image::baml_diagram.png[event process,align="left"]
 Vous allez devoir choisir un nom (unique) et un constructeur d'applications sur lequel baser votre modèle.
 En dessous on peut voir le XML et le script a appliquer. Ils pourraient être rédigés à la main, mais le studio permet de faire ça de manière low code.
 
-Cliquer sur le bouton **“Ouvrir l’éditeur”** va faire apparaître la fenêtre suivante :
+Cliquer sur le bouton `Ouvrir l’éditeur` va faire apparaître la fenêtre suivante :
 
 image::baml_bpm.png[event process,align="left"]
 

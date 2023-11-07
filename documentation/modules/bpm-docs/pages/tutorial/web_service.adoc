@@ -1,20 +1,21 @@
 =  Web services
 :toc-title:
 :page-pagination:
+:experimental:
 
 **Nous allons à présent nous intéresser à l’exercice 6.**
 
-Ce dernier demande la mise en place de deux boutons **“Envoyer”** pour 1) et **“Synchroniser”** pour 2).  Pour cela vous pouvez vous référer à la documentation du Studio, ce n’est pas vraiment en lien avec le BPM et les web services mais c’est nécessaire pour réaliser l’exercice.
+Ce dernier demande la mise en place de deux boutons btn:[Envoyer] pour 1) et btn:[Synchroniser] pour 2).  Pour cela vous pouvez vous référer à la documentation du Studio, ce n’est pas vraiment en lien avec le BPM et les web services mais c’est nécessaire pour réaliser l’exercice.
 Voici comment faire :
 
-1. Allez dans **“App > Studio”*
-2. Sélectionnez **“Vue”** à la place de **“Personnalisé”**, **“Product”** comme modèle, **“product-form (Calculé)”** comme vue et **“attrs”** comme champs personnalisés.
+1. Allez dans `App -> Studio`
+2. Sélectionnez `Vue` à la place de `Personnalisé`, `Product` comme modèle, `product-form (Calculé)` comme vue et `attrs` comme champs personnalisés.
 image:web_service_studio_form.png[event process]
-3. Dans le panel **“attrs”** ajoutez 2 boutons (glissez déposez image:btn-icon.png[button icon] ) que vous pouvez renommer **“Envoyer”** et **“Synchroniser”** grâce au champ “Titre” de l’onglet de droite :
+3. Dans le panel `attrs` ajoutez 2 boutons (glissez déposez image:btn-icon.png[button icon] ) que vous pouvez renommer btn:[Envoyer] et btn:[Synchroniser] grâce au champ `Titre` de l’onglet de droite :
 
 image::web_service_studio_2.png[event process,align="left"]
 
-Dans l’onglet de droite, dans le champ **“au clic”**, ajoutez les actions : **“save”** et **“action-refresh-record”** :
+Dans l’onglet de droite, dans le champ `au clic`, ajoutez les actions : `save` et `action-refresh-record` :
 
 image::web_service_save_studio.png[event process,align="left"]
 
@@ -26,13 +27,13 @@ Il faut s’aider de la documentation de https://dummyjson.com/docs/products :
 
 image::web_service_studio_backend.png[event process,align="left"]
 
-1. Allez dans le menu **“App -> WS Component -> Connector”**
+1. Allez dans le menu `App -> WS Component -> Connector`
 2. Créez un nouveau connecteur avec le +
-3. Donnez lui un nom (ex: **“dummy_product”**) et renseigné **“Base URL”** avec https://dummyjson.com
+3. Donnez lui un nom (ex: `dummy_product`) et renseigné `Base URL` avec https://dummyjson.com
 4. Ajoutez une requête :
 
 image::web_service_request.png[event process,align="left"]
 
-NOTE: avec cette requête on crée un produit qui s’appelle **“BMW Pencil”**, nous allons garder cette valeur pour tester mais nous verrons ensuite comment faire pour la rendre paramétrable.
+NOTE: avec cette requête on crée un produit qui s’appelle `BMW Pencil`, nous allons garder cette valeur pour tester mais nous verrons ensuite comment faire pour la rendre paramétrable.
 
-TIP: Testons à présent notre requête grâce au menu **“App/WS Studio”**.
+TIP: Testons à présent notre requête grâce au menu `App/WS Studio`.

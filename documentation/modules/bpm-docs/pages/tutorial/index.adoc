@@ -15,13 +15,11 @@ Nous allons partir sur un scénario sur les demandes d’achat. Nous allons effe
 - Si il appuie sur btn:[Requête] on renseigne automatiquement une description et la société ,
 - On envoie également un mail au fournisseur.
 
-
-
 [NOTE]
 ====
 pour pouvoir sauvegarder des demandes d’achat, il y a une petite manipulation à faire.
 
-1. Aller dans “Config Applicative -> Données générales -> Séquence”
+1. Aller dans `Config Applicative -> Données générales -> Séquence`
 2. Créer une nouvelle séquence pour le document demande d’achat
 ====
 
@@ -29,20 +27,20 @@ pour pouvoir sauvegarder des demandes d’achat, il y a une petite manipulation 
 Même exercice que l'exercice 1 mais cette fois-ci l’utilisateur doit pouvoir appuyer sur annuler à tout moment et cela doit arrêter le processus.
 
 == Exercice 3 : sous processus événementiel non interruptif, événement frontière
-Nous allons partir sur un scénario sur les contrats (VehicleContract) du menu **Parc automobile -> Contrat**. Le processus devra demander à l’utilisateur de renseigner le contractant puis le Type, le Coûts d'activation, la Fréquence de récurrence du coût et le fournisseur.
+Nous allons partir sur un scénario sur les contrats `(VehicleContract)` du menu `Parc automobile -> Contrat`. Le processus devra demander à l’utilisateur de renseigner le contractant puis le Type, le Coûts d'activation, la Fréquence de récurrence du coût et le fournisseur.
 
-À tout moment si l’utilisateur renseigne la **“Date de facturation”** on renseignera automatiquement la **“Date de début du contrat”** un jour après.
+À tout moment si l’utilisateur renseigne la `Date de facturation` on renseignera automatiquement la `Date de début du contrat` un jour après.
 
 De plus, après avoir renseigné le contractant  si au bout d’une semaine, l’utilisateur n’a pas renseigné  le Type, le Coûts d'activation, la Fréquence de récurrence du coût et le fournisseur, un mail de rappel est envoyé au contractant.
 
 == Exercice 4 : requête, sous processus séquentiel multi instance
-Suite de l'exercice 2 , créer une commande d’achat (purchaseOrder) à partir d’une demande d’achat lorsque l’utilisateur clique sur le bouton btn:[Achat]. Il faut reprendre les lignes de la demande d’achat sur la commande d’achat. Le total de la commande d’achat doit également être renseigné.
+Suite de l'exercice 2 , créer une commande d’achat `(purchaseOrder)` à partir d’une demande d’achat lorsque l’utilisateur clique sur le bouton btn:[Achat]. Il faut reprendre les lignes de la demande d’achat sur la commande d’achat. Le total de la commande d’achat doit également être renseigné.
 
 == Exercice 5 :  DMN
 
-Suite de l’exercice 4.
+`Suite de l’exercice 4.`
 
-Demandez à l'utilisateur de renseigner la date de réception estimée de la commande. Puis utilisez une tâche **“règle métier” (DMN)** pour estimer si la commande est prioritaire (booléen) en fonction du montant et de la date de réception estimée. Puis en fonction de ce booléen et du pays fournisseur, déterminez le mode d’expédition.
+Demandez à l'utilisateur de renseigner la date de réception estimée de la commande. Puis utilisez une tâche `règle métier (DMN)` pour estimer si la commande est prioritaire `(booléen)` en fonction du montant et de la date de réception estimée. Puis en fonction de ce booléen et du pays fournisseur, déterminez le mode d’expédition.
 
 
 == Exercice 6 : Web services

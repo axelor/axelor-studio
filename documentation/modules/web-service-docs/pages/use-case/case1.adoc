@@ -1,13 +1,14 @@
 =   Connecting to an Axelor's instance
 :toc-title:
 :page-pagination:
+:experimental:
 
 For using the Axelor Rest API  You can refer to the axelor documentation in the official site for creating your requests and connecting to axelor instance .
 
 == How get A specific Product in Axelor instance .
 
 In this example we want to retrieve a product data by sending a request to an axelor instance.
-It is a connector with one request of type **GET**. It will fetch the product by a specific ID .
+It is a connector with one request of type `GET`. It will fetch the product by a specific ID .
 
 The web service is accessible with following url pattern:
 ----
@@ -22,7 +23,7 @@ Accept: application/json
 == Authentication
 
 We have to create an authentication to connect with an axelor instance .
-it's a custom authentication used , We need to provide a **username** and a **password** to be authenticated .
+it's a custom authentication used , We need to provide a `username` and a `password` to be authenticated .
 
 the request of authentication is :
 
