@@ -56,8 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -169,16 +168,13 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
         final String finalProcessInstanceId = model.getProcessInstanceId();
-        ExecutorService executor = Executors.newCachedThreadPool();
-        executor.submit(
-            () -> {
-              bpmErrorMessageService.sendBpmErrorMessage(
-                  null,
-                  e.getMessage(),
-                  EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                  finalProcessInstanceId);
-              return true;
-            });
+        ForkJoinPool.commonPool()
+            .submit(
+                () -> bpmErrorMessageService.sendBpmErrorMessage(
+                    null,
+                    e.getMessage(),
+                    EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
+                    finalProcessInstanceId));
       }
       throw e;
     } finally {
