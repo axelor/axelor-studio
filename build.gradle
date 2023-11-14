@@ -47,14 +47,12 @@ test {
 dependencies {
   if (findProject(":modules:axelor-message") != null) {
     api project(":modules:axelor-message")
-  }
-  else {
+  } else {
     implementation "com.axelor.addons:axelor-message:2.0.+"
   }
   if (findProject(":modules:axelor-utils") != null) {
     api project(":modules:axelor-utils")
-  }
-  else {
+  } else {
     implementation "com.axelor.addons:axelor-utils:2.0.+"
   }
 
@@ -89,7 +87,7 @@ tasks.register('generateChangelog', GenerateChangelog) {
   }
 }
 
-if (providers.systemProperty("include.react").getOrNull() != null) {
+try {
   for (int i = 0; i < gradle.ext.reactComponents?.size() - 1; i++) {
     tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i).name}:reactBuild").finalizedBy(tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i + 1).name}:reactBuild"))
   }
@@ -101,7 +99,7 @@ if (providers.systemProperty("include.react").getOrNull() != null) {
 
     gradle.ext.componentPaths.each { paths ->
       into("${paths.to}") {
-      from "$projectDir/${paths.from}"
+        from "$projectDir/${paths.from}"
       }
     }
   }
@@ -121,6 +119,8 @@ if (providers.systemProperty("include.react").getOrNull() != null) {
       }
     }
   }
+} catch (MissingPropertyException ignored) {
+  // Do nothing if no reactComponents
 }
 
 
