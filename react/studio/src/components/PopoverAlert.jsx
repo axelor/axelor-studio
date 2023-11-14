@@ -1,89 +1,62 @@
 import React from "react"
-import { styled } from "@mui/material/styles"
-import Popover from "@mui/material/Popover"
-import Typography from "@mui/material/Typography"
-import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-
+import { Box, Button, Popper } from "@axelor/ui"
 import { translate } from "../utils"
 
-const Text = styled(Typography)({
-	textAlign: "center",
-	fontSize: 14,
-})
-
-const DialogContainer = styled("div")({
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-	flexDirection: "column",
-	width: 160,
-	height: 70,
-})
-
-const StyledButton = styled(Button)({
-	width: "min-content",
-	fontWeight: 600,
-	color: "#fff",
-	borderRadius: 25,
-	backgroundColor: "#0275d8",
-	padding: 0,
-	overflow: "hidden",
-	textOverflow: "ellipsis",
-	textTransform: "capitalize",
-	"&:hover": {
-		backgroundColor: "#0275d8",
-	},
-})
-
-const StyledPopover = styled(Popover)({
-	borderRadius: 5,
-	padding: 15,
-	boxShadow: "rgb(0 0 0 / 16%) 0px 3px 6px, rgb(0 0 0 / 23%) 0px 3px 6px",
-})
-
-export default function PopoverAlert({ anchorEl, handleClose, handleYes }) {
+export default function PopoverAlert({
+	targetEl,
+	anchorEl,
+	handleClose,
+	handleYes,
+}) {
 	const open = Boolean(anchorEl)
 	const id = open ? "simple-popover" : undefined
 
 	return (
-		<StyledPopover
+		<Popper
 			id={id}
 			open={open}
-			anchorEl={anchorEl}
 			onClose={handleClose}
-			anchorOrigin={{
-				vertical: "bottom",
-				horizontal: "right",
-			}}
-			transformOrigin={{
-				vertical: "top",
-				horizontal: "right",
-			}}
+			target={targetEl}
+			offset={[0, 4]}
+			arrow
 		>
-			<DialogContainer>
-				<Text>{translate("Sure want to delete?")}</Text>
-				<Box>
-					<StyledButton
-						size="small"
-						style={{
-							marginRight: 4,
-						}}
+			<Box
+				d="flex"
+				justifyContent="center"
+				flexDirection="column"
+				p={2}
+				style={{ height: "70px" }}
+			>
+				<Box textAlign="center" mb={1}>
+					{translate("Sure want to delete?")}
+				</Box>
+				<Box d="flex" justifyContent="flex-end">
+					<Button
+						color="light"
+						fontWeight="bold"
+						bg="primary"
+						size="sm"
+						mx={1}
+						px={1}
+						py={0}
 						onClick={handleYes}
 					>
 						{translate("Yes")}
-					</StyledButton>
-					<StyledButton
-						size="small"
-						style={{
-							marginRight: 4,
-						}}
+					</Button>
+					<Button
+						color="light"
+						fontWeight="bold"
+						bg="primary"
+						size="sm"
+						mx={1}
+						px={1}
+						py={0}
 						onClick={handleClose}
 					>
 						{translate("No")}
-					</StyledButton>
+					</Button>
 				</Box>
-			</DialogContainer>
-		</StyledPopover>
+			</Box>
+		</Popper>
 	)
 }

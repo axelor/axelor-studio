@@ -1,40 +1,30 @@
 import React from "react"
-import { styled } from "@mui/material/styles"
-import Button from "@mui/material/Button"
-import Grid from "@mui/material/Grid"
-import Stack from "@mui/material/Stack"
-import ChevronLeft from "@mui/icons-material/ChevronLeft"
-import ChevronRight from "@mui/icons-material/ChevronRight"
-import Typography from "@mui/material/Typography"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogTitle from "@mui/material/DialogTitle"
-import useMediaQuery from "@mui/material/useMediaQuery"
-import List from "@mui/material/List"
-import ListItem from "@mui/material/ListItem"
-import ListItemText from "@mui/material/ListItemText"
-import { useTheme } from "@mui/material/styles"
-import IconButton from "@mui/material/IconButton"
-import { Search } from "@mui/icons-material"
-import {
-	Tabs,
-	Tab,
-	CircularProgress,
-	Box,
-	InputAdornment,
-	TextField,
-} from "@mui/material"
-
 import { translate } from "../utils"
-
-const StyledListItem = styled(ListItem)({
-	borderBottom: "1px solid #ddd",
-	paddingTop: 10,
-	paddingBottom: 10,
-})
+import {
+	Box,
+	Button,
+	CircularProgress,
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	Input,
+	List,
+	ListItem,
+	NavTabs,
+	Scrollable,
+	TextField,
+} from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
+import IconButton from "./IconButton"
 
 const tabsLabel = ["Model actions", "Global actions", "Other actions"]
+const tabsLabel2 = [
+	{ id: 0, title: "Model actions" },
+	{ id: 1, title: "Global actions" },
+	{ id: 2, title: "Other actions" },
+]
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props
@@ -65,8 +55,6 @@ export default function ResponsiveDialog(props) {
 		isTypeOnClick = false,
 		isDataLoading,
 	} = props
-	const theme = useTheme()
-	const fullScreen = useMediaQuery(theme.breakpoints.down("md"))
 
 	const handleItemClick = React.useCallback(
 		(item) => {
@@ -83,71 +71,55 @@ export default function ResponsiveDialog(props) {
 	const getLabel = (item) => {
 		return getOptionLabel ? getOptionLabel(item) : item[displayField || "name"]
 	}
+	const [inputRef, setInputRef] = React.useState()
+	React.useEffect(() => {
+		if (inputRef) {
+			inputRef.focus()
+		}
+		return () => inputRef && inputRef.blur()
+	}, [inputRef])
 
 	return (
 		<div>
 			<Dialog
-				fullScreen={fullScreen}
+				fullScreen={{ base: false, md: true }}
 				maxWidth="sm"
-				fullWidth={true}
 				open={props.open}
-				onClose={props.handleClose}
 				aria-labelledby="responsive-dialog-title"
 			>
-				<DialogTitle
-					id="responsive-dialog-title"
-					sx={{ borderBottom: "0.5px solid #ddd" }}
-				>{`${translate("Search")} ${
-					props.title || translate("item")
-				}`}</DialogTitle>
-				<DialogContent sx={{ pt: "8px !important" }}>
-					<Grid container>
-						<Grid container item alignItems="center">
+				<DialogHeader onCloseClick={props.handleClose}>
+					<DialogTitle id="responsive-dialog-title">{`${translate("Search")} ${
+						props.title || translate("item")
+					}`}</DialogTitle>
+				</DialogHeader>
+				<DialogContent>
+					<Box w={100}>
+						<Box d="flex" flexDirection="row" alignItems="center">
 							{/* Add tabbed view for distinguising between different types of models */}
-							<Grid
-								item
-								xs={10}
-								style={{
-									flex: 1,
-								}}
-							>
-								<TextField
+							<Box flex={1}>
+								<Input
+									ref={setInputRef}
 									size="small"
 									fullWidth
-									sx={{
-										"& .MuiOutlinedInput-root": {
-											borderRadius: 20,
-											"& fieldset": {
-												borderColor: "#bdbdbd !important",
-											},
-											"&:hover fieldset": {
-												borderColor: "#bdbdbd",
-											},
-											"&.Mui-focused fieldset": {
-												borderColor: "#bdbdbd",
-											},
-										},
-									}}
-									value={props.searchText}
+									flex={1}
+									w={100}
+									value={props.searchText ?? ""}
 									variant="outlined"
 									onChange={(e) => props.setSearchText(e.target.value)}
-									InputProps={{
-										startAdornment: (
-											<InputAdornment position="start">
-												<Search sx={{ fill: "#bdbdbd " }} />
-											</InputAdornment>
-										),
-									}}
 									placeholder={translate("Search")}
 								/>
-							</Grid>
-							<Stack direction="row" alignItems="center">
+							</Box>
+							<Box d="flex" flexDirection="row" alignItems="center" horizontal>
 								<IconButton
 									onClick={props.onPrevious}
 									disabled={!canPrev || isDataLoading}
 									size="small"
 								>
-									<ChevronLeft />
+									<MaterialIcon
+										color="primary"
+										fontSize={25}
+										icon="arrow_left"
+									/>
 								</IconButton>
 								<span>{`${page}/${totalPages}`}</span>
 								<IconButton
@@ -155,133 +127,110 @@ export default function ResponsiveDialog(props) {
 									disabled={!canNext || isDataLoading}
 									size="small"
 								>
-									<ChevronRight />
+									{" "}
+									<MaterialIcon
+										color="primary"
+										fontSize={25}
+										icon="arrow_right"
+									/>
 								</IconButton>
-							</Stack>
-						</Grid>
+							</Box>
+						</Box>
 						{isTypeOnClick && (
-							<Grid item xs={12}>
-								<Tabs
-									orientation="horizontal"
-									variant="fullWidth"
-									value={props.currentTab}
-									onChange={props.onTabChange}
-									sx={{
-										"& .MuiTabs-indicator": {
-											backgroundColor: "#3f51b5",
-										},
-									}}
-								>
-									{tabsLabel.map((label, i) => (
-										<Tab
-											key={`${i}-${label}`}
-											label={translate(label)}
-											sx={{ textTransform: "none" }}
-										/>
-									))}
-								</Tabs>
-							</Grid>
+							<Box>
+								<NavTabs
+									items={tabsLabel2}
+									active={props.currentTab}
+									onItemClick={(e) => props.onTabChange("", e.id)}
+								/>
+							</Box>
 						)}
-					</Grid>
+					</Box>
 					{isDataLoading ? (
 						<Box
-							sx={{
-								minHeight: 300,
-								padding: "8px",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
+							d="flex"
+							justifyContent="center"
+							alignItems="center"
+							p={2}
+							style={{
+								minHeight: "253px",
 							}}
 						>
-							<CircularProgress size={40} />
+							<CircularProgress size={40} indeterminate />
 						</Box>
 					) : list.length !== 0 ? (
 						!isTypeOnClick ? (
-							<List
-								sx={{
-									width: "100%",
-									backgroundColor: theme.palette.background.paper,
-									minHeight: 300,
-									overflow: "auto",
-								}}
-							>
-								{list
-									.filter((item) => item.id !== "studio_show_More_View")
-									.map((item, i) => (
-										<StyledListItem
-											key={`${i}-${getLabel(item)}`}
-											role={undefined}
-											dense
-											button
-											onClick={() => handleItemClick(item)}
-										>
-											<ListItemText id={i} primary={getLabel(item)} />
-										</StyledListItem>
-									))}
-							</List>
+							<Scrollable style={{ maxHeight: "253px" }}>
+								<List flush w={100} py={1} px={0} overflow="hidden">
+									{list
+										.filter((item) => item.id !== "studio_show_More_View")
+										.map((item, i) => (
+											<ListItem
+												style={{ cursor: "pointer" }}
+												key={`${i}-${getLabel(item)}`}
+												onClick={() => handleItemClick(item)}
+											>
+												<Box id={i}>{getLabel(item)}</Box>
+											</ListItem>
+										))}
+								</List>
+							</Scrollable>
 						) : (
 							tabsLabel.map(
 								(_, index) =>
 									props.currentTab === index && (
-										<Grid item>
+										<Box key={index}>
 											<TabPanel value={index} index={index}>
-												<Grid item>
-													<List
-														sx={{
-															width: "100%",
-															backgroundColor: theme.palette.background.paper,
-															minHeight: 300,
-															overflow: "auto",
-														}}
-													>
-														{list
-															.filter(
-																(item) => item.id !== "studio_show_More_View"
-															)
-															.map((item, i) => (
-																<StyledListItem
-																	key={`${i}-${getLabel(item)}`}
-																	role={undefined}
-																	dense
-																	button
-																	onClick={() => handleItemClick(item)}
-																>
-																	<ListItemText
-																		id={i}
-																		primary={getLabel(item)}
-																	/>
-																</StyledListItem>
-															))}
-													</List>
-												</Grid>
+												<Box>
+													<Scrollable style={{ height: "253px" }}>
+														<List flush w={100} py={1} px={0} overflow="hidden">
+															{list
+																.filter(
+																	(item) => item.id !== "studio_show_More_View"
+																)
+																.map((item, i) => (
+																	<ListItem
+																		key={`${i}-${getLabel(item)}`}
+																		role={undefined}
+																		dense
+																		button
+																		onClick={() => handleItemClick(item)}
+																	>
+																		<Box id={i}>{getLabel(item)}</Box>
+																	</ListItem>
+																))}
+														</List>
+													</Scrollable>
+												</Box>
 											</TabPanel>
-										</Grid>
+										</Box>
 									)
 							)
 						)
 					) : (
 						<Box
-							sx={{
-								minHeight: 300,
-								padding: "8px",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
+							d="flex"
+							justifyContent="center"
+							alignItems="center"
+							p={2}
+							style={{
+								minHeight: "253px",
 							}}
 						>
-							<Typography variant="body2">
-								{translate("No data found")}
-							</Typography>
+							<Box color="body">{translate("No data found")}</Box>
 						</Box>
 					)}
 				</DialogContent>
-				<DialogActions>
-					<Button autoFocus onClick={props.handleClose} color="primary">
-						<Typography sx={{ textTransform: "capitalize" }}>
-							{translate("Close")}
-						</Typography>
+				<DialogFooter>
+					<Button
+						autoFocus
+						onClick={props.handleClose}
+						size="sm"
+						color="primary"
+					>
+						<Box textTransform="capitalize">{translate("Close")}</Box>
 					</Button>
-				</DialogActions>
+				</DialogFooter>
 			</Dialog>
 		</div>
 	)

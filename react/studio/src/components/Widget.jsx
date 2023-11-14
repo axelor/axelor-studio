@@ -1,7 +1,7 @@
 import React from "react"
 import classNames from "classnames"
 import { useDragLayer, useDrag, useDrop } from "react-dnd"
-
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 import { useStore } from "../store/context"
 import { TYPE as WIDGET_TYPE, IDS, MODEL_TYPE } from "../constants"
 import Registry from "./Registery"
@@ -13,6 +13,7 @@ import {
 	getWidgetElementId,
 } from "../utils"
 import PopoverAlert from "./PopoverAlert"
+import { Box } from "@axelor/ui"
 
 // Unique Type for Widget
 const TYPE = Symbol()
@@ -46,6 +47,7 @@ const SimpleWidget = React.forwardRef((props, ref) => {
 	React.useImperativeHandle(ref, () => innerRef.current)
 
 	const [anchorEl, setAnchorEl] = React.useState(null)
+	const [targetEl, setTargetEl] = React.useState(null)
 
 	const _widgets =
 		rest._type === "customField" ? state.customFieldWidgets : state.widgets
@@ -218,16 +220,20 @@ const SimpleWidget = React.forwardRef((props, ref) => {
 				/>
 			)}
 			{showRemove && !isDragInProgress && (
-				<span
+				<Box
+					as="span"
+					bg="primary"
+					ref={setTargetEl}
 					onClick={handleWidgetRemove}
 					className="widget-remove"
 					title={translate("Remove widget")}
 				>
-					<i className="fa fa-remove" />
-				</span>
+					<MaterialIcon color="light" fontSize={20} icon="close" />
+				</Box>
 			)}
 			{anchorEl && (
 				<PopoverAlert
+					targetEl={targetEl}
 					anchorEl={anchorEl}
 					handleClose={handleClose}
 					handleYes={handleYes}

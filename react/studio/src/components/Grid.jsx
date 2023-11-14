@@ -392,7 +392,7 @@ function Grid(props) {
 	}, [tableRowWidth, drawerOpen, propertiesPanelWidth, rows])
 
 	return (
-		<GridContainer {...{ attrs, className }} style={{ width: "100%" }}>
+		<GridContainer {...{ attrs, className }} w={100}>
 			<Table>
 				{rows.map((cols, rowIndex) => (
 					<Row

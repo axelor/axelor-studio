@@ -1,46 +1,28 @@
 import React, { useState, useEffect } from "react"
-import { styled } from "@mui/material/styles"
 import SelectComponent from "../../components/SelectComponent"
-
-import { IconButton, Typography } from "@mui/material"
-import clsx from "clsx"
-import Button from "@mui/material/Button"
-import Dialog from "@mui/material/Dialog"
-import DialogTitle from "@mui/material/DialogTitle"
-import DialogContent from "@mui/material/DialogContent"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContentText from "@mui/material/DialogContentText"
-import FormControlLabel from "@mui/material/FormControlLabel"
+import {
+	Box,
+	Dialog,
+	DialogHeader,
+	DialogTitle,
+	DialogFooter,
+	Button,
+	Table,
+	TableRow,
+	TableHead,
+	TableCell,
+	TableBody,
+	Scrollable,
+	DialogContent,
+} from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 import _ from "lodash"
-import CardContent from "@mui/material/CardContent"
 import { getSelectionText } from "../../Toolbar/api"
 import { translate } from "../../utils"
 import Content from "./Content"
 import CheckboxField from "./CheckboxField"
 import { MODEL_TYPE, WKF_COLORS } from "../../constants"
-
-const Root = styled("div")(() => ({
-	display: "flex",
-	justifyContent: "space-between",
-	alignItems: "flex-start",
-}))
-
-const StyledButton = styled(Button)(() => ({
-	"& .MuiButton-root": {
-		backgroundColor: "#0275d8",
-		borderColor: "#0275d8",
-		color: "#fff !important",
-		"&:hover": {
-			backgroundColor: "#0275d8",
-			borderColor: "#0275d8",
-			color: "#fff",
-		},
-	},
-	"& .MuiButtonBase-root": {
-		textTransform: "none",
-		color: "#333",
-	},
-}))
+import IconButton from "../../components/IconButton"
 
 export default function SelectionWidget(_props) {
 	const { field, index, props, error, loader } = _props
@@ -95,12 +77,13 @@ export default function SelectionWidget(_props) {
 	const addRow = () => {
 		setRows((rows) => {
 			return [
-				...rows?.map((row) => {
-					return {
-						...row,
-						editable: false,
-					}
-				}),
+				...(rows ||
+					[].map((row) => {
+						return {
+							...row,
+							editable: false,
+						}
+					})),
 				{
 					title: "",
 					value: "",
@@ -216,7 +199,7 @@ export default function SelectionWidget(_props) {
 	}, [selectionText, createRows])
 
 	return (
-		<Root>
+		<Box d="flex" justifyContent="space-between" alignItems="start">
 			<SelectComponent
 				field={field}
 				key={index}
@@ -229,95 +212,66 @@ export default function SelectionWidget(_props) {
 			<IconButton
 				onClick={addOptions}
 				aria-label="add"
-				size="small"
+				size="sm"
 				disabled={loader}
-				sx={{ marginTop: "20px", paddingLeft: "10px" }}
+				ms={2}
+				style={{ marginTop: "42px" }}
 			>
-				<i
-					style={{
-						color: "white",
-						...(loader && {
-							color: "#959697 ",
-						}),
-					}}
-					className={clsx(
-						propertyList[field.name] || selectionText
-							? "fa fa-pencil"
-							: "fa fa-plus"
-					)}
+				<MaterialIcon
+					color={loader ? "light-emphasis" : "primary"}
+					icon={propertyList[field.name] || selectionText ? "edit" : "add"}
 				/>
 			</IconButton>
 			{openGrid && (
-				<Dialog
-					open={openGrid}
-					fullWidth
-					maxWidth="md"
-					onClose={(_, reason) => {
-						if (reason !== "backdropClick") {
-							setOpenGrid(false)
-						}
-					}}
-				>
-					<DialogTitle>{translate("Selection")}</DialogTitle>
-					<DialogContent sx={{ display: "flex", flexDirection: "column" }}>
-						<CardContent sx={{ overflow: "auto", padding: "0px 8px 16px 8px" }}>
+				<Dialog open={openGrid} size="lg">
+					<DialogHeader onCloseClick={() => setOpenGrid(false)}>
+						<DialogTitle>{translate("Selection")}</DialogTitle>
+					</DialogHeader>
+					<DialogContent>
+						<Scrollable style={{ padding: "0px 8px 16px 8px" }}>
 							<div>
-								<FormControlLabel
-									control={
-										<CheckboxField
-											field={{
-												name: "updateSelection",
-												dependModelType: MODEL_TYPE.CUSTOM,
-												title: "New selection",
-												uncheckDialog: true,
-												alertMessage:
-													"All options and selection will be lost. Are you sure ?",
-											}}
-											handleDialogOk={handleDialogOk}
-											isHistoryGenerated={isHistoryGenerated}
-											markHistoryGenerated={markHistoryGenerated}
-											props={props}
-										/>
-									}
-									label={
-										<Typography sx={{ fontSize: 13 }}>
-											{translate("New selection")}
-										</Typography>
-									}
-								/>
-								<div className="one-to-many-header">
+								<Box>
+									<CheckboxField
+										field={{
+											name: "updateSelection",
+											dependModelType: MODEL_TYPE.CUSTOM,
+											title: "New selection",
+											uncheckDialog: true,
+											alertMessage:
+												"All options and selection will be lost. Are you sure ?",
+										}}
+										handleDialogOk={handleDialogOk}
+										isHistoryGenerated={isHistoryGenerated}
+										markHistoryGenerated={markHistoryGenerated}
+										props={props}
+										title={translate("New selection")}
+									/>
+									<Box d="inline-block" ps={2}>
+										{translate("New selection")}
+									</Box>
+								</Box>
+								<Box
+									color="body"
+									alignItems="center"
+									className="one-to-many-header"
+								>
 									<span>{translate("Selection items")}</span>
 									<Button
 										onClick={addRow}
 										aria-label="add"
 										size="small"
-										sx={{ textTransform: "none", color: "#333" }}
+										bg="primary"
+										d="flex"
+										color="light"
 										disabled={!updateSelection}
-										startIcon={
-											<i
-												className={clsx("fa fa-plus")}
-												style={{
-													height: "1.5em",
-													width: "1.5em",
-													display: "flex",
-													alignItems: "center",
-													justifyContent: "center",
-													color: updateSelection
-														? "black"
-														: "rgba(0, 0, 0, 0.26)",
-												}}
-											/>
-										}
 									>
+										<MaterialIcon icon={"add"} />
 										{translate("New")}
 									</Button>
-								</div>
-								<table>
-									<tbody
-										className="one-to-many-row"
-										style={{ textAlign: "left" }}
-									>
-										<tr style={{ display: "flex", alignItems: "center" }}>
+								</Box>
+								<Table>
+									<TableHead className="one-to-many-row" textAlign="start">
+										<TableRow d="flex" textAlign="center">
 											{[
 												"\u00A0",
 												"Title",
@@ -327,18 +281,25 @@ export default function SelectionWidget(_props) {
 												"\u00A0",
 												"\u00A0",
 											].map((item, i) => (
-												<td
+												<TableCell
 													className="one-to-many-col one-to-many-col-border"
 													key={`td_${i}`}
 													style={{
-														borderBottom: "1px solid #ddd",
 														maxWidth: item === "\u00A0" ? "4%" : "22%",
 													}}
 												>
 													{item}
-												</td>
+												</TableCell>
 											))}
-										</tr>
+										</TableRow>
+									</TableHead>
+									<TableBody
+										d="block"
+										overflow="auto"
+										style={{
+											maxHeight: "50vh",
+										}}
+									>
 										{rows?.map((row, i) => (
 											<Content
 												key={row.id}
@@ -355,67 +316,56 @@ export default function SelectionWidget(_props) {
 												rowsCount={rows?.length}
 											/>
 										))}
-									</tbody>
-								</table>
+									</TableBody>
+								</Table>
 							</div>
-						</CardContent>
+						</Scrollable>
 					</DialogContent>
-					<DialogActions sx={{ paddingBottom: "16px" }}>
+					<DialogFooter>
 						<Button
+							size="sm"
+							variant="secondary"
 							onClick={() => {
 								setRows([])
 								setOpenGrid(false)
 								setIsHistoryGenerated(false)
 							}}
-							sx={{ textTransform: "none", color: "#333" }}
-							variant="outlined"
 						>
 							{translate("Close")}
 						</Button>
-						<StyledButton>
-							<Button onClick={handleOk} autoFocus>
-								{translate("OK")}
-							</Button>
-						</StyledButton>
-					</DialogActions>
+						<Button onClick={handleOk} autoFocus size="sm" variant="primary">
+							{translate("OK")}
+						</Button>
+					</DialogFooter>
 				</Dialog>
 			)}
 			{openAlert && (
 				<Dialog
 					open={openAlert}
-					onClose={() => setAlertOpen(false)}
 					aria-labelledby="alert-dialog-title"
 					aria-describedby="alert-dialog-description"
 				>
-					<DialogTitle id="alert-dialog-title">
-						{translate("Alert")}
-					</DialogTitle>
-					<DialogContent sx={{ minWidth: 300 }}>
-						<DialogContentText id="alert-dialog-description">
+					<DialogHeader onCloseClick={() => setAlertOpen(false)}>
+						<DialogTitle id="alert-dialog-title">
+							{translate("Alert")}
+						</DialogTitle>
+					</DialogHeader>
+					<DialogContent>
+						<Box id="alert-dialog-description">
 							{translate("Value is required")}
-						</DialogContentText>
+						</Box>
 					</DialogContent>
-					<DialogActions>
+					<DialogFooter>
 						<Button
 							onClick={() => setAlertOpen(false)}
 							color="primary"
-							sx={{
-								textTransform: "none",
-								backgroundColor: "#0275d8",
-								borderColor: "#0275d8",
-								color: "#fff",
-								"&:hover": {
-									backgroundColor: "#0275d8",
-									borderColor: "#0275d8",
-									color: "#fff",
-								},
-							}}
+							size="sm"
 						>
 							{translate("OK")}
 						</Button>
-					</DialogActions>
+					</DialogFooter>
 				</Dialog>
 			)}
-		</Root>
+		</Box>
 	)
 }

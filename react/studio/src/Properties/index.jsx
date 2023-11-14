@@ -1,12 +1,5 @@
 import React, { useState } from "react"
-import {
-	TextField,
-	Grid,
-	Typography,
-	FormControlLabel,
-	Switch,
-	IconButton,
-} from "@mui/material"
+import { TextField, Switch, Box } from "@axelor/ui"
 import { options } from "./list"
 import {
 	camleCaseString,
@@ -26,7 +19,6 @@ import {
 	TargetJsonModel,
 	TargetModel,
 } from "./propertyFields"
-import ClearIcon from "@mui/icons-material/Close"
 import { getSelectionText } from "../Toolbar/api"
 import StaticSelection from "./widgets/StaticSelection"
 import SelectionWidget from "./widgets/SelectionWidget"
@@ -40,12 +32,14 @@ function Label(text, field) {
 		<span>
 			<span>{text}</span>
 			{field.unique && (
-				<span style={{ WebkitTextFillColor: "#0275d8" }}>
+				<Box d="inline" color="primary">
 					{` (${translate("unique")}) `}
-				</span>
+				</Box>
 			)}
 			{field.required && (
-				<span style={{ WebkitTextFillColor: "red" }}> * </span>
+				<Box as="span" color="danger">
+					*
+				</Box>
 			)}
 		</span>
 	)
@@ -92,7 +86,7 @@ function StringInput(_props) {
 		editWidgetType,
 	} = props
 	let label = Label(translate(camleCaseString(title || name)), _props.field)
-	let placeholder = translate(camleCaseString(title || name))
+	let placeholder = null
 	if (name === "showIf" || name === "requiredIf") {
 		placeholder = "id == 1"
 	} else if (name === "hideIf") {
@@ -101,8 +95,12 @@ function StringInput(_props) {
 		placeholder = "id != null"
 	}
 	let value = propertyList[name] || ""
+
 	if (
-		(modelType === rest.modelType || props.editWidgetType === "customField") &&
+		(modelType !== MODEL_TYPE.BASE || props.editWidgetType === "customField") &&
+		(!rest.modelType ||
+			modelType === rest.modelType ||
+			props.editWidgetType === "customField") &&
 		parentField
 	) {
 		const field = propertyList[parentField] || {}
@@ -128,151 +126,17 @@ function StringInput(_props) {
 	return (
 		<React.Fragment>
 			<TextField
-				sx={{
-					marginTop: "15px",
-					backgroundColor: "#293846",
-					...(disabled
-						? {}
-						: {
-								color: "#ffffff",
-								"&:hover .MuiInputBase-root .MuiOutlinedInput-notchedOutline": {
-									borderColor: "#ffffff",
-								},
-								"&:focus-within .MuiInputBase-root .MuiOutlinedInput-notchedOutline":
-									{
-										borderColor: "white",
-										borderWidth: 1,
-									},
-						  }),
-
-					"& .MuiInputBase-inputMultiline": {
-						height: "auto !important",
-					},
-					"& .MuiFormLabel-root": {
-						color: "#f7f7f7 !important",
-						fontSize: 12,
-						"&.MuiInputLabel-shrink": {
-							top: "1px !important",
-						},
-					},
-					"& .MuiInputBase-input": {
-						color: "#f7f7f7 !important",
-						fontSize: 13,
-					},
-					"& .Mui-disabled": {
-						WebkitTextFillColor: "#a3a3a3 !important",
-					},
-				}}
-				error={(required && !value) || Boolean(error)}
-				helperText={error}
-				size="small"
-				InputLabelProps={{
-					sx: {
-						...(disabled
-							? {}
-							: {
-									"& .MuiFormLabel-root": {
-										color: "#f7f7f7 !important",
-										fontSize: 12,
-										"&.MuiInputLabel-shrink": {
-											top: "1px !important",
-										},
-									},
-							  }),
-					},
-				}}
-				InputProps={{
-					endAdornment: clearable ? (
-						<IconButton
-							sx={{
-								color: "#ffffff",
-								padding: "10px 12px",
-								"& > span > svg": {
-									fontSize: "1.1rem",
-								},
-							}}
-							onClick={() => {
-								let value = ""
-								let flag = true
-								if (
-									rest.modelType === MODEL_TYPE.BASE &&
-									props.editWidgetType !== "customField"
-								) {
-									flag =
-										value === ""
-											? propertyList[name] !== undefined
-												? true
-												: false
-											: true
-								}
-								if (
-									rest.modelType === MODEL_TYPE.CUSTOM &&
-									props.editWidgetType === "customField"
-								) {
-									// set null value when value is negative for custom view & custom fields
-									value = value || null
-								}
-								if (flag) {
-									onChange(
-										{
-											...(propertyList || {}),
-											...getProperty(
-												name,
-												value,
-												parentField,
-												propertyList[parentField],
-												!(modelType === rest.modelType) ||
-													editWidgetType === "customField"
-											),
-										},
-										name
-									)
-								}
-							}}
-							size="large"
-						>
-							<ClearIcon sx={{ fontSize: "1.1rem" }} />
-						</IconButton>
-					) : null,
-				}}
-				inputProps={{ min: min, max: max }}
-				key={index}
-				id="outlined-basic"
-				multiline={multiline}
-				type={type === "integer" ? "number" : type}
-				label={translate(label)}
-				placeholder={translate(placeholder)}
-				variant="outlined"
-				disabled={disabled}
 				value={value}
-				minRows={3}
-				onFocus={() => {
-					savedValue.current = value
-				}}
+				as={multiline && "textarea"}
+				key={index}
+				type={type === "integer" ? "number" : type}
 				autoComplete="off"
-				onChange={(e) => {
-					if (type === "integer" && isNaN(Number(e.target.value))) {
-						return
-					}
-					if (min && max) {
-						const value = Number(e.target.value)
-						if (value < min || value > max) {
-							return
-						}
-					}
-					let value = e.target.value
-					setPropertyList({
-						...(propertyList || {}),
-						...getProperty(
-							name,
-							value,
-							parentField,
-							propertyList[parentField],
-							!(modelType !== rest.modelType) ||
-								editWidgetType === "customField"
-						),
-					})
+				style={{
+					WebkitAppearance: "searchfield-cancel-button",
+					appearance: "searchfield-cancel-button",
 				}}
+				label={<Box mt={2}>{translate(label)}</Box>}
+				placeholder={translate(placeholder)}
 				onBlur={(e) => {
 					if (savedValue.current === value) return
 					if (type === "integer" && isNaN(Number(e.target.value))) {
@@ -321,6 +185,84 @@ function StringInput(_props) {
 						)
 					}
 				}}
+				onChange={(e) => {
+					if (type === "integer" && isNaN(Number(e.target.value))) {
+						return
+					}
+					if (min && max) {
+						const value = Number(e.target.value)
+						if (value < min || value > max) {
+							return
+						}
+					}
+					let value = e.target.value
+					setPropertyList({
+						...(propertyList || {}),
+						...getProperty(
+							name,
+							value,
+							parentField,
+							propertyList[parentField],
+							modelType === rest.modelType ||
+								editWidgetType === "customField" ||
+								!(rest.modelType || modelType === MODEL_TYPE.BASE)
+						),
+					})
+				}}
+				invalid={(required && !value) || Boolean(error)}
+				description={error}
+				disabled={disabled}
+				onFocus={() => {
+					savedValue.current = value
+				}}
+				icons={
+					clearable &&
+					value && [
+						{
+							icon: "clear",
+							color: "body",
+							className: "clearIcon",
+							onClick: () => {
+								let value = ""
+								let flag = true
+								if (
+									rest.modelType === MODEL_TYPE.BASE &&
+									props.editWidgetType !== "customField"
+								) {
+									flag =
+										value === ""
+											? propertyList[name] !== undefined
+												? true
+												: false
+											: true
+								}
+								if (
+									rest.modelType === MODEL_TYPE.CUSTOM &&
+									props.editWidgetType === "customField"
+								) {
+									// set null value when value is negative for custom view & custom fields
+									value = value || null
+								}
+								if (flag) {
+									onChange(
+										{
+											...(propertyList || {}),
+											...getProperty(
+												name,
+												value,
+												parentField,
+												propertyList[parentField],
+												!(modelType === rest.modelType) ||
+													editWidgetType === "customField"
+											),
+										},
+										name
+									)
+								}
+							},
+						},
+					]
+				}
 			/>
 		</React.Fragment>
 	)
@@ -403,30 +345,10 @@ function BooleanField(_props) {
 		)
 	}
 	return (
-		<React.Fragment>
+		<React.Fragment key={index}>
 			{!hide && (
-				<FormControlLabel
-					sx={{
-						marginTop: "15px",
-						alignSelf: "flex-start",
-						"& .MuiSwitch-root": {
-							"& .MuiSwitch-thumb": {
-								color: "#ffffff",
-							},
-
-							"& .Mui-checked + .MuiSwitch-track": {
-								backgroundColor: "#ffffff",
-							},
-						},
-						"& .Mui-disabled": {
-							color: "#a3a3a3 !important",
-						},
-						"& .MuiTypography-root": {
-							fontSize: 12,
-						},
-					}}
-					key={index}
-					control={
+				<>
+					<Box d="flex" my={2} fontSize={12} alignSelf="flex-start" gap={1}>
 						<Switch
 							checked={fieldValue}
 							disabled={disabled}
@@ -444,9 +366,9 @@ function BooleanField(_props) {
 							}}
 							value={propertyList[name]}
 						/>
-					}
-					label={translate(camleCaseString(title || name))}
-				/>
+						<Box color="body">{translate(camleCaseString(title || name))}</Box>
+					</Box>
+				</>
 			)}
 			{openAlert && (
 				<DialogConfirmation
@@ -828,18 +750,18 @@ export default function Properties(props) {
 	}
 
 	return (
-		<Grid style={{ padding: 20 }}>
+		<Box d="grid" p={4}>
 			{type &&
 				property &&
 				!(
 					state.modelType === MODEL_TYPE.CUSTOM && property.type === TYPE.tabs
 				) &&
 				Object.keys(property.value).map((panel, i) => (
-					<Grid key={i}>
-						<Typography
-							sx={{
-								color: "white",
-								fontWeight: "600",
+					<Box key={i}>
+						<Box
+							color="body"
+							fontWeight="bold"
+							style={{
 								...(i !== 0 && { margin: "25px 0px 0px 0px" }),
 							}}
 							variant="body1"
@@ -849,8 +771,8 @@ export default function Properties(props) {
 								modelType,
 								editWidgetType
 							) && translate(capitalizeFirst(panel))}
-						</Typography>
-						<Grid style={{ display: "flex", flexDirection: "column" }}>
+						</Box>
+						<Box d="flex" flexDirection="column">
 							<PropertiesProvider
 								key={editWidget}
 								elements={property.value[panel]}
@@ -874,9 +796,9 @@ export default function Properties(props) {
 							>
 								<RenderPropertyField />
 							</PropertiesProvider>
-						</Grid>
-					</Grid>
+						</Box>
+					</Box>
 				))}
-		</Grid>
+		</Box>
 	)
 }

@@ -1,18 +1,14 @@
-import { Drawer } from "@mui/material"
 import React, { useState } from "react"
 import { Resizable } from "re-resizable"
-
 import { translate } from "../../utils"
 import PropertiesView from "./PropertiesView"
 import { useStore } from "../../store/context"
+import { Box } from "@axelor/ui"
 
 const drawerWidth = 380
 const resizeStyle = {
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-	borderLeft: "solid 1px #ddd",
-	background: "#f0f0f0",
+	borderLeft: "solid 1px var(--bs-secondary-bg)",
+	backgroundColor: "var(--bs-tertiary-bg)",
 }
 
 export default React.memo(function PropertiesPanel() {
@@ -52,7 +48,9 @@ export default React.memo(function PropertiesPanel() {
 	})
 
 	return (
-		<div style={{ position: "sticky", top: "0px", height: "100vh" }}>
+		<div
+			style={{ position: "sticky", top: "0px", right: "0px", height: "100vh" }}
+		>
 			<Resizable
 				style={resizeStyle}
 				size={{ width, height }}
@@ -67,44 +65,29 @@ export default React.memo(function PropertiesPanel() {
 					left: true,
 				}}
 			>
-				<Drawer
-					variant="persistent"
-					anchor="right"
-					open={drawerOpen}
-					sx={{
-						width: drawerWidth,
-						"& .MuiPaper-root": {
-							background: "#2f4050",
-							width: "100%",
-							height: "100%",
-							position: "absolute",
-							borderLeft: "1px solid #2f4050",
-							overflow: "auto",
-						},
-					}}
-					transitionDuration={0}
-				>
+				<Box style={{ height: "100vh" }} overflow="auto">
 					<PropertiesView />
-				</Drawer>
-				<div
+				</Box>
+				<Box
+					color="body"
+					borderEnd
+					borderTop
+					borderStart
+					fontSize={6}
+					pos="absolute"
+					bg="body-tertiary"
+					userSelect="none"
+					roundedTop
 					style={{
-						position: "absolute",
-						left: "-30px",
+						left: "-33px",
 						top: "calc(50% + 60px)",
-						background: "#293846",
-						color: "white",
 						padding: "5px 20px 7px 20px",
 						transform: "rotate(-90deg)",
 						whiteSpace: "nowrap",
-						fontSize: "13px",
-						border: "solid 1px #293846",
-						borderBottom: "none",
-						borderRadius: "5px 5px 0 0",
 						transformOrigin: "top left",
 						zIndex: "10",
-						cursor: "default",
+						cursor: "pointer",
 						userSelect: "none",
-						boxShadow: "1px 2px 8px 0px rgb(1 1 1 / 75%)",
 					}}
 					onClick={() => {
 						setWidth((width) => (width === 0 ? drawerWidth : 0))
@@ -112,7 +95,7 @@ export default React.memo(function PropertiesPanel() {
 					}}
 				>
 					{translate("Properties")}
-				</div>
+				</Box>
 			</Resizable>
 		</div>
 	)

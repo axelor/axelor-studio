@@ -1,12 +1,12 @@
 import React from "react"
 import classNames from "classnames"
-import Tooltip from "@mui/material/Tooltip"
-import AddIcon from "@mui/icons-material/Add"
-
+import { Box } from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 import { GridContainer, useGridWidget } from "./Grid"
 import { translate } from "../utils"
 import { useStoreState } from "../store/context"
 import { MODEL_TYPE } from "../constants"
+import Tooltip from "./tooltip/tooltip"
 
 const panelAttrs = { cols: 1 }
 
@@ -47,17 +47,18 @@ function TabPanelComponent(props) {
 	return (
 		<React.Fragment>
 			{title && (
-				<div
+				<Box
+					color="body"
 					className={classNames("panel-header panel-tab-header", {
 						inline: isTab,
 					})}
 				>
 					{title}
-				</div>
+				</Box>
 			)}
 			{!isTab && (
 				<GridContainer className={"tabs-panel panel-body"} attrs={panelAttrs}>
-					<div className={classNames("tabs")}>
+					<Box className={classNames("tabs")}>
 						{tabs.map(
 							(tab, i) =>
 								WidgetComponent && (
@@ -78,13 +79,18 @@ function TabPanelComponent(props) {
 						{!(
 							modelType === MODEL_TYPE.BASE && props._type !== "customField"
 						) && (
-							<div style={{ display: "flex", alignItems: "center" }}>
+							<Box d="flex" alignItems="center">
 								<Tooltip title={translate("Add tab")} arrow>
-									<AddIcon onClick={() => addTabPanel({ id })} />
+									<MaterialIcon
+										color="primary"
+										icon="add"
+										fontSize={20}
+										onClick={() => addTabPanel({ id })}
+									/>
 								</Tooltip>
-							</div>
+							</Box>
 						)}
-					</div>
+					</Box>
 					{items.length > 0 && WidgetComponent && (
 						<WidgetComponent
 							className={highlightedOption?.id === current && "search-overlay"}

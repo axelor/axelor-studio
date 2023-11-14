@@ -326,12 +326,11 @@ const buttonOption = {
       canAddNew: true,
     }),
   ],
-  uiOptions: [ReadOnly, Hidden, VisibleInGrid, ColumnSequence, Css],
+  uiOptions: [ReadOnly, Hidden, ColumnSequence, Css],
   conditions: [
     OnlyIf,
     ShowIf,
     HideIf,
-    RequiredIf,
     ReadOnlyIf,
     IncludeIf,
     ValidIf,
