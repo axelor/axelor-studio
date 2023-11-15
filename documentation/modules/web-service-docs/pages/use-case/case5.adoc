@@ -1,3 +1,32 @@
-= Step 5: Recursion request
+= Recursion case
 :toc-title:
 :page-pagination:
+:experimental:
+
+The request will have one special value in the `Repeat If` field The request use a variable `list` which is a list of products ids .
+
+The difference between this case and the first case is that this request will be repeated until the repeat If will be false .
+
+== Request
+
+image::request-case.png[request case,align="left"]
+
+* ** Repeat If **: The expression return a boolean , true is the case if the repeatIndex is smaller than the size of the list variable and false in the other case .
+
+In the end we will get all the products in our instance with the ids defined in the list variable .
+
+== Authentication
+
+TIP: You can see the authentication in the first case xref:../use-case/case1.adoc[authentication]
+
+== Connector
+
+The connector will have a context where we define the variable `list` .
+The variable is a List with some objects contains id attribute .
+
+image::context.png[context,align="left"]
+
+
+The connector will have only one request and one context .
+
+image::connector.png[connector,align="left"]

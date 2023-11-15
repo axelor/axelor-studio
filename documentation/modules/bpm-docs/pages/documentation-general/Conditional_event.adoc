@@ -1,7 +1,8 @@
 =  Conditional Event
 :toc-title:
 :page-pagination:
+:experimental:
 
 Symbolisé par image:conditional-icon-1.png[conditional icon],image:conditional-icon-2.png[conditional icon],image:conditional-icon-3.png[conditional icon] Il est déclenché suite à la réalisation d’une condition. Cette condition peut être générée via le mapper completed if.
 
-image::conditional_event.png[event process]
+image::conditional_event.png[event process,align="left"]

@@ -1,4 +1,4 @@
-* xref:index.adoc[Axelor BPM]
+* xref:index.adoc[Axelor BPM - FR]
 ** xref:/introduction/index.adoc[Introduction de BPM Studio]
 *** xref:/introduction/barOutil.adoc[La barre d’outil horizontale]
 *** xref:/introduction/panel-proprity.adoc[Le panel de propriétés]
@@ -9,7 +9,7 @@
 *** xref:/tutorial/deploy.adoc[Déploiement du processus]
 *** xref:/tutorial/user_task.adoc[Tâche utilisateur]
 *** xref:/tutorial/execlusif_gateway.adoc[Passerelle exclusif]
-*** xref:/tutorial/passarelle_parallel.adoc[Passerelle parallel]
+*** xref:/tutorial/passarelle_parallel.adoc[Passerelle parallèle]
 *** xref:/tutorial/script-task.adoc[Tâche script]
 *** xref:/tutorial/send_mail.adoc[Envoie de mail]
 *** xref:/tutorial/process_event.adoc[Processus événementiel]
@@ -25,7 +25,7 @@
 *** xref:/documentation-general/builder_bpm.adoc[Les builders du BPM]
 *** xref:/documentation-general/message_event.adoc[Message Event]
 *** xref:/documentation-general/signal_event.adoc[Signal Event]
-*** xref:/documentation-general/time_event[Time Event]
+*** xref:/documentation-general/time_event.adoc[Time Event]
 *** xref:/documentation-general/Conditional_event.adoc[Conditional Event]
 *** xref:/documentation-general/Escalation_event.adoc[Escalation Event]
 *** xref:/documentation-general/error_event.adoc[Error Event]
@@ -40,6 +40,6 @@
 
 
 ** xref:/annexes/[Annexes]
+*** xref:/annexes/display-logs.adoc[Affichage des logs]
+*** xref:/annexes/Astuces_groovy.adoc[Astuces groovy]
 *** xref:/annexes/astuce_espace_travail.adoc[Astuces sur l’espace de travail]
-*** xref:/annexes/probelem_cache.adoc[Problème de cache]
-*** xref:/annexes/exercices.adoc[Exercices complémentaires]

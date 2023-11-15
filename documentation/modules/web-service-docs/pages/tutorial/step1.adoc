@@ -1,46 +1,59 @@
 = Define Connector
 :toc-title:
 :page-pagination:
+:experimental:
 
 == The purpose of connector
 
 The connector allows you to create different api requests.
 One authenticator is required to select in most cases to authenticate all requests from the connector.
 On calling of the connector it performs requests by sequence. The result of the previous request can be accessed with the sequence of requests.
-For example **‘_1’** will contain values returned from request **‘1’**, so it can be used with second or subsequent requests.
+
+image::Connector.png[connector form,align="left"]
+
+TIP:  The variable `_1` will contain values returned from first request , so it can be used with second or subsequent requests.
 At the end the connector returns the result of all requests called.
 // Pease see this link bellow to understand more of result request
-
-image::Connector.png[connector form]
 
 == Elements of a connector
 
 
-=== App
-
-Each web Service project must be attached to an existing app , this facilitates managing The use of web service in the **Axelor BPMN**
+* **App : **
+Each web Service project must be attached to an existing app , this facilitates managing The use of web service in the Axelor BPMN
 also this can help in export and import the data of the web service project .
 
-=== Name Of connector
+* **Name of connector ( Required ) : **
+The name of the connector .
 
-The name of the connector ( Required) .
-
-=== Base Url **( Required )**
-
+* **Base Url ( Required ) : **
 Root url of the api, all requests should provide sub url of this root url only.
 
-=== Default authenticator
-
+* **Default authenticator: **
 This is a default authenticator for the connector, when calling a connector if no authenticator is provided this one will be used.
 
-=== Requests
-
-List of requests to be called. All requests will be called one by one in sequence, users can change the sequence of the url as its draggable. The response of each request will be stored with variable ‘_sequence’ in this list. For example ‘_1’ will represent the result of the first request.
+* **Requests: **
+List of requests to be called. All requests will be called one by one in sequence, users can change the sequence of the url as its draggable. The response of each request will be stored with variable ‘_sequence’ in this list. For example `"_1"` will represent the result of the first request.
 
 TIP: The requests defined are executed one after one with the same order  how defined in the connector .
 
-=== Context
+* **Context :**
+List of context data that can be passed to the Connector , you can pass any static  or dynamic value .
 
-List of context data that can be passed to the Connector , you can pass any static value or a dynamic data .
+NOTE: The context data is shared with all elements of the  connector , so all Requests in the connector and the default authentication can be use the context data defined in the connector container .
 
-NOTE: The context data is shared also with all elements of the  connector , so all Requests in the connector and the default authentication can be use the context data defined in the connector container .
+== Track the connector
+
+Every execution of a connector you can track the result by a feature that store this result in a log file .
+To use this feature you need to activate the tracking mode in the `Studio App configuration`
+
+image::enable_track.png[enable track web service]
+
+When execute any connector a new log file will be added to the attachment window
+
+image::attachment.png[attachment]
+
+The log file will contain the logs for the execution and also the result of the connector in the case of a successful API call .
+
+image::log_file.png[log file]
+
+In this example there is an error in the request with the name `getPartnerInfos` . the file locate the errors in the execution of the connector .

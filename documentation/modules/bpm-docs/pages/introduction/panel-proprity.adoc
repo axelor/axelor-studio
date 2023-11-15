@@ -1,40 +1,41 @@
 = Le panel de propriétés
 :toc-title:
 :page-pagination:
+:experimental:
 
 == Le panel de propriétés
 
 A droite de l'écran est affiché le panel de propriétés,
 ce panel est affichable par simple clic sur son onglet.
 Vous y retrouverez l’ensemble des informations relatives aux éléments qui constituent le modèle de processus.
-Que ce soit le paramétrage de l’environnement, des processus et des nœuds qui le composent.
-Il y a un panel par objet de la norme (disponible en cliquant sur l’objet),
+Que ce soit le paramétrage de `l’environnement`, `des processus` et `des nœuds` qui le composent.
+Il y a un panel par objet de la norme **(disponible en cliquant sur l’objet)**,
 et également un panel pour le modèle dans sa globalité. C’est par celui-ci que commence chaque modèle BPM.
 C’est grâce à lui que chaque modèle à son identité propre, que l’on peut voir si le processus est déployé ou non,
 la version du processus, etc.
 
-image::panel.png[panel image,rotate=90]
+image::panel.png[panel image,,align="left"]
 
 === **Avancement du processus**
 Cette zone permet de voir les différents états possibles pour le processus.
 
-image::avancementProcess.png[avancement process image]
+image::avancementProcess.png[avancement process image,align="left"]
 
-<1> **New:** Le processus est en cours de création, et il n’est pas en cours de déploiement.
-<2> **On going:** Le processus peut être modifié et il est déployé.
-<3> **Terminated:** Le processus est terminé et ne peut plus être instancié
+1. **New:** Le processus est en cours de création, et il n’est pas en cours de déploiement.
+2. **On going:** Le processus peut être modifié et il est déployé.
+3. **Terminated:** Le processus est terminé et ne peut plus être instancié
 
 === **Zone de nommage du modèle**
-Cette zone est constituée d’un champ Code et d’un champ nom. Le code doit être unique, il sera automatiquement mis en majuscule.
+Cette zone est constituée d’un champ `Code` et d’un champ `Nom`. Le code doit être unique, il sera automatiquement mis en majuscule.
 Le choix du nom est libre et sans contrainte.
 
-image::zoneNommage.png[zoneNommage image]
+image::zoneNommage.png[zoneNommage image,align="left"]
 Ces champs sont obligatoires et doivent être renseignés avant d’enregistrer le modèle
 
 === **Choix du constructeur d’application**
 Cette liste déroulante affiche toutes les applications créées par le constructeur d’apps du studio
 
-image::contructeurApplication.png[contructeur d'Application image]
+image::contructeurApplication.png[contructeur d'Application image,align="left"]
 
 Elle permet d’affilier un modèle à une application. Si aucune application n’est sélectionnée, le processus sera disponible constamment, dans le cas contraire, il faut que l’application soit installée pour que le processus se déclenche.
 
@@ -45,22 +46,22 @@ Cette fonctionnalité permet de venir récupérer le modèle de processus lors d
 === **Choix du tag de version**
 Ce champ permet de donner un tag à la version en cours. Cela permet donc de faire du versionnage et de retrouver plus rapidement les différentes modifications qu’il y a pu avoir entre deux instants.
 
-image::versionTag.png[version tag image]
+image::versionTag.png[version tag image,align="left"]
 
 Ce tag est celui qui sera utilisé dans le tableau affichant les différentes versions précédentes.
 
-image::versionPrecedentes.png[version Precedentes image]
+image::versionPrecedentes.png[version Precedentes image,align="left"]
 
 
 === **Couleur des statuts du workflow**
 Ce champ ouvre une liste déroulante de couleurs. Cela permet de choisir la couleur
 de l’affichage des étapes du processus sur les formulaires pour lequel ce dernier s’exécute.
 
-image::statutCouleur.png[statut Couleur image]
+image::statutCouleur.png[statut Couleur image,align="left"]
 
-image::indicateContact.png[statut Couleur image]
+image::indicateContact.png[statut Couleur image,align="left"]
 
 === **Description**
 Ce champ permet de renseigner une description complète du modèle.
 
-image::descriptionIntro.png[description image]
+image::descriptionIntro.png[description image,align="left"]

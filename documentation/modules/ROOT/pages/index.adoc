@@ -6,7 +6,7 @@ Welcome to the {page-component-title} Documentation. Here you will find informat
 and resources to help you learn about {page-component-title}.
 
 xref:web-service-docs:index.adoc[Web Service]::
-This tutorial will quickly introduce you to the {page-component-title} and guide you
-to create your first application.
+This tutorial will quickly introduce you to the web service solution and guide you
+to create your first usage.
 xref:bpm-docs:index.adoc[Axelor  BPM]::
-These topics describe how to use {page-component-title} as a developer.
+These topics describe how to use the axelor BPM solution  as BPM modeler.

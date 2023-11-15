@@ -1,26 +1,23 @@
 =  XML request exchange
-
 :toc-title:
 :page-pagination:
+:experimental:
 
 There is many data types to exchanges with API, in this example we will communicate with xml data .
-**Open weather ** as use case
+`Open weather` as use case
 
 == Request
 
-image::openWeather.png[auth axelor]
-
-
-
+image::openWeather.png[auth axelor,align="left"]
 
 == Authentication
 
 TIP: There is  no need for authentication in this case , Open weather is an open API
 
-=== Connector
+== Connector
 
-You need to specify the base url .
+You need to specify the base URL .
 
-image::connectorXML.png[connector xml example]
+image::connectorXML.png[connector xml example,align="left"]
 
-IMPORTANT: It's important to note that we can create a xml payload with the payload builder . you can see the part where we explained the  xref:tutorial:step3.adoc[payload builder]
+IMPORTANT: It's important to note that we can create a xml payload with the payload builder . you can see the part where we explained the  xref:../tutorial/step3.adoc[payload builder]

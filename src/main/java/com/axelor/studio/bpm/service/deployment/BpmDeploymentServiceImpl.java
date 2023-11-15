@@ -172,6 +172,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, targetModel.getId());
 
+    targetModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
+
     if (migrationMap == null) {
       return;
     }
@@ -406,7 +408,6 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   protected void addDmn(DeploymentBuilder deploymentBuilder, Set<MetaFile> dmnFiles) {
-
     dmnFiles.forEach(
         dmnFile ->
             deploymentBuilder.addModelInstance(

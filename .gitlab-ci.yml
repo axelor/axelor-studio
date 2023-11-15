@@ -54,7 +54,7 @@ spotless:
   cache:
     - *global_cache_pull
   script:
-    - ./gradlew -xtest -xspotlessApply -xlicenseFormat -Dinclude.react clean build publish -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew -xtest -xspotlessApply -xlicenseFormat clean build publish -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration

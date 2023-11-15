@@ -2,9 +2,9 @@
 :toc:
 :toc-title:
 
-Le module BPM vous permet de modéliser et d’exécuter vos processus métier, en vous appuyant sur les normes BPMN 2.0.
+Le module BPM vous permet de modéliser et d’exécuter vos processus métier, en vous appuyant sur les normes `BPMN 2.0`.
 Un processus ne sera effectif qu’une fois déployé. Il existe plusieurs façons de lancer une instance depuis un processus.
 
-Cette documentation se découpe en trois parties. La première “Introduction de BPM Studio” consiste en une prise en main rapide de BMP Studio, on y présente les différents menus, la création d’un nouveau modèle et la zone de travail.
-La deuxième partie “Découverte par l’exemple” est un tutoriel qui aborde plusieurs notions du BPM à travers des exercices.
-La dernière partie “Documentation Générale” se consacre, comme son nom l’indique, à une documentation générale qui vient compléter les notions abordées dans le tutoriel (partie 2).
+Cette documentation se découpe en trois parties. La première `Introduction de BPM Studio` consiste en une prise en main rapide de BMP Studio, on y présente les différents menus, la création d’un nouveau modèle et la zone de travail.
+La deuxième partie `Découverte par l’exemple` est un tutoriel qui aborde plusieurs notions du BPM à travers des exercices.
+La dernière partie `Documentation Générale` se consacre, comme son nom l’indique, à une documentation générale qui vient compléter les notions abordées dans le tutoriel (partie 2).
