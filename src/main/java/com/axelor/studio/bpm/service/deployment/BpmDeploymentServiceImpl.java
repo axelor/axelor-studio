@@ -168,11 +168,12 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     List<MetaAttrs> metaAttrsList =
         wkfNodeService.extractNodes(targetModel, bpmInstance, processMap);
 
+    targetModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
+
     saveWkfModel(targetModel);
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, targetModel.getId());
 
-    targetModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
 
     if (migrationMap == null) {
       return;
