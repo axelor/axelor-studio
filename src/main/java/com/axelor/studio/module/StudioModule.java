@@ -35,10 +35,13 @@ import com.axelor.studio.app.service.AppVersionServiceImpl;
 import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.baml.service.BamlServiceImpl;
 import com.axelor.studio.bpm.listener.ServerStartListener;
+import com.axelor.studio.bpm.listener.WkfModelImportListener;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
 import com.axelor.studio.bpm.mapper.BpmMapperScriptGeneratorServiceImpl;
 import com.axelor.studio.bpm.service.AppLoaderExportBpmServiceImpl;
 import com.axelor.studio.bpm.service.AppLoaderImportBpmServiceImpl;
+import com.axelor.studio.bpm.service.WkfBpmImportService;
+import com.axelor.studio.bpm.service.WkfBpmImportServiceImpl;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.WkfCommonServiceImpl;
 import com.axelor.studio.bpm.service.WkfDisplayService;
@@ -251,5 +254,7 @@ public class StudioModule extends AxelorModule {
     bind(WkfMenuService.class).to(WkfMenuServiceImpl.class);
     bind(WkfLogService.class).to(WkfLogServiceImpl.class);
     bind(WkfLoggerInitService.class).to(WkfLoggerInitServiceImpl.class);
+    bind(WkfBpmImportService.class).to(WkfBpmImportServiceImpl.class);
+    bind(WkfModelImportListener.class);
   }
 }
