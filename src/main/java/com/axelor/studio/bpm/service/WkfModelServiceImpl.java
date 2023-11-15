@@ -121,8 +121,6 @@ public class WkfModelServiceImpl implements WkfModelService {
   @Transactional(rollbackOn = Exception.class)
   public WkfModel start(WkfModel sourceModel, WkfModel targetModel) {
 
-    targetModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
-
     if (!ObjectUtils.isEmpty(sourceModel)) {
       updatePreviousVersion(targetModel, sourceModel);
     } else {
@@ -228,7 +226,6 @@ public class WkfModelServiceImpl implements WkfModelService {
           public void imported(Model arg0) {
             WkfModel wkfModel = (WkfModel) arg0;
             bpmDeploymentService.deploy(null, wkfModel, null);
-            wkfModel.setStatusSelect(WkfModelRepository.STATUS_ON_GOING);
           }
 
           @Override
