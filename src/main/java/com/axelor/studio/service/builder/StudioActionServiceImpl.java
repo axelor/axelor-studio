@@ -86,13 +86,16 @@ public class StudioActionServiceImpl implements StudioActionService {
         break;
       case StudioActionRepository.TYPE_SELECT_EMAIL:
         metaAction = studioActionEmailService.build(studioAction);
+        break;
+      default:
+        break;
     }
 
-    if (studioAction.getMetaModule() != null) {
+    if (metaAction != null && studioAction.getMetaModule() != null) {
       metaAction.setModule(studioAction.getMetaModule().getName());
     }
 
-    if (studioAction.getMenuAction()) {
+    if (metaAction != null && studioAction.getMenuAction()) {
       metaAction.setArchived(studioAction.getArchived());
     }
 
