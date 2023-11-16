@@ -48,7 +48,8 @@
           <field name="studioActionViews" colSpan="12" grid-view="studio-action-view-grid"
             form-view="studio-action-view-form"/>
           <field name="viewParams" title="View params" colSpan="12"
-            grid-view="studio-action-line-simple-grid" form-view="studio-action-line-simple-form"/>
+            form-view="studio-action-line-view-params-form"
+            grid-view="studio-action-line-view-params-grid"/>
           <field name="lines" title="Context" colSpan="12"
             grid-view="studio-action-line-simple-grid" form-view="studio-action-line-simple-form"/>
           <field name="domainCondition" colSpan="12"
