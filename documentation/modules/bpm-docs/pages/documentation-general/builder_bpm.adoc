@@ -113,7 +113,8 @@ Les variables de contexte accessibles sont:
 
 * **\\__date__** : date du jour
 * **\\__datetime__**: date et heure du jour
-* **\\__user__** : utilisateur connecté
+* **\\__studiouser__** : utilisateur connecté
+* **\\__log__** : le logger utilisable dans les scripts du BPM
 
 == Variables disponibles pour les scripts
 

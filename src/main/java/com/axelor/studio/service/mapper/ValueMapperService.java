@@ -22,6 +22,7 @@ import com.axelor.db.Model;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.script.AxelorBindingsHelper;
+import com.axelor.studio.bpm.utils.BpmLoggingHelper;
 import com.axelor.studio.db.ValueMapper;
 import com.axelor.utils.helpers.StringHelper;
 import com.axelor.utils.helpers.context.FullContext;
@@ -55,10 +56,9 @@ public class ValueMapperService {
     bindings.put("__self__", model);
     bindings.put("__parent__", new FullContext(model).getParent());
     bindings.put("__id__", model.getId());
+    bindings.put("__log__", BpmLoggingHelper.get());
 
-    Object result = new GroovyScriptHelper(bindings).eval(mapper.getScript());
-
-    return result;
+    return new GroovyScriptHelper(bindings).eval(mapper.getScript());
   }
 
   protected String getModelVariable(Model model) {
