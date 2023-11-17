@@ -124,3 +124,4 @@ Some variables are available to be used with groovy script expressions in BPM. T
 * `__ctx__` - workflow context helper as `WkfContextHelper`
 * `__transform__` - workflow transformation helper for web service connector as `WkfTransformationHelper`
 * `__repo__` - repository of given model class
+* `__log__` - get the global instance of the Logger
