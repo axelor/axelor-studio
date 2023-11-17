@@ -257,6 +257,7 @@ public class WkfExecutionListener implements ExecutionListener {
     WkfTaskConfig wkfTaskConfig =
         wkfTaskConfigRepo
             .all()
+            .autoFlush(false)
             .filter(
                 "self.name = ? and self.wkfModel.id = (select wkfModel.id from WkfProcess where processId = ?)",
                 execution.getCurrentActivityId(),

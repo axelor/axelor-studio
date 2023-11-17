@@ -50,6 +50,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.collections.CollectionUtils;
@@ -178,7 +180,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       return;
     }
 
-    String isRemove = migrationMap.get("removeOldVersionMenu").toString();
+    String isRemove =
+        Optional.ofNullable(migrationMap.get("removeOldVersionMenu"))
+            .map(Objects::toString)
+            .orElse("false");
     if (isRemove.equals("true") && targetModel.getPreviousVersion() != null) {
       removePreviousVersionMenus(targetModel.getPreviousVersion());
     }
