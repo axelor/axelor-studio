@@ -102,6 +102,7 @@ public class WkfMigrationController {
       }
       Map<String, Object> contextMap = (Map<String, Object>) request.getData().get("context");
       Map<String, Object> dataMap = (Map<String, Object>) contextMap.get("data");
+
       if (ObjectUtils.isEmpty(dataMap)
           || ObjectUtils.isEmpty(dataMap.get("values"))
           || ObjectUtils.isEmpty(dataMap.get("wkfMigrationId"))) {
@@ -109,6 +110,10 @@ public class WkfMigrationController {
       }
 
       Long wkfMigrationId = Long.valueOf(dataMap.get("wkfMigrationId").toString());
+
+      String instanceId = (String) contextMap.get("_instanceId");
+      dataMap.put("instanceId", instanceId);
+
       WkfMigration migration = Beans.get(WkfMigrationRepository.class).find(wkfMigrationId);
 
       Beans.get(WkfMigrationService.class).migrate(migration, dataMap);

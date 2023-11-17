@@ -56,8 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -169,16 +168,13 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
         final String finalProcessInstanceId = model.getProcessInstanceId();
-        ExecutorService executor = Executors.newCachedThreadPool();
-        executor.submit(
-            () -> {
-              bpmErrorMessageService.sendBpmErrorMessage(
-                  null,
-                  e.getMessage(),
-                  EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                  finalProcessInstanceId);
-              return true;
-            });
+        ForkJoinPool.commonPool()
+            .submit(
+                () -> bpmErrorMessageService.sendBpmErrorMessage(
+                    null,
+                    e.getMessage(),
+                    EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
+                    finalProcessInstanceId));
       }
       throw e;
     } finally {
@@ -759,25 +755,26 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       return;
     }
 
-    WkfModel previousModel = instance.getWkfProcess().getWkfModel();
-    boolean isSameModel = previousModel.equals(process.getWkfModel());
-    instance.addWkfInstanceMigrationHistory(
-        createMigrationHistory(instance, previousModel, isSameModel));
+    if (process != null) {
+      instance.addWkfInstanceMigrationHistory(
+          createMigrationHistory(instance, process.getWkfModel()));
+      instance.setWkfProcess(process);
+      instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
+    }
 
     instance.setMigrationStatusSelect(migrationStatus);
-    instance.setWkfProcess(process);
-    instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
     wkfInstanceRepository.save(instance);
   }
 
   protected WkfInstanceMigrationHistory createMigrationHistory(
-      WkfInstance instance, WkfModel previousModel, boolean isSameModel) {
+      WkfInstance instance, WkfModel currentModel) {
+    WkfModel previousModel = instance.getWkfProcess().getWkfModel();
     WkfInstanceMigrationHistory migrationHistory =
         CollectionUtils.isEmpty(instance.getWkfInstanceMigrationHistory())
             ? null
             : instance.getWkfInstanceMigrationHistory().get(0);
 
-    if (migrationHistory != null && isSameModel) {
+    if (migrationHistory != null && currentModel.equals(previousModel)) {
       migrationHistory.setMigrationHistoryUpdatedOn(LocalDateTime.now());
     } else {
       migrationHistory = new WkfInstanceMigrationHistory();

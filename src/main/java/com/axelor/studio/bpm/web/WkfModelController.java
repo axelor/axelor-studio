@@ -67,8 +67,7 @@ public class WkfModelController {
 
       WkfModel wkfModel = context.asType(WkfModel.class);
 
-      Map<String, Map<String, String>> migrationMap =
-          (Map<String, Map<String, String>>) context.get("wkfMigrationMap");
+      Map<String, Object> migrationMap = (Map<String, Object>) context.get("wkfMigrationMap");
 
       Boolean isMigrateOld = (Boolean) context.get("isMigrateOld");
 
@@ -86,7 +85,10 @@ public class WkfModelController {
       WkfModel model = request.getContext().asType(WkfModel.class);
       Beans.get(BpmErrorMessageService.class)
           .sendBpmErrorMessage(
-              null, e.getMessage(), Beans.get(WkfModelRepository.class).find(model.getId()), null);
+              null,
+              e.getMessage(),
+              Beans.get(WkfModelRepository.class).find(model.getId()),
+              null);
     }
   }
 

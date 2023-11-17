@@ -10,7 +10,8 @@
   </grid>
 
   <form title="BPM Migration" name="wkf-migration-form"
-    model="com.axelor.studio.db.WkfMigration" width="large">
+    model="com.axelor.studio.db.WkfMigration" width="large"
+    onNew="action-wkf-migration-attrs-set-source-version">
     <panel name="mainPanel">
       <field name="sourceVersion" required="true"
         onChange="action-wkf-migration-attrs-unset-target-version,action-wkf-migration-attrs-unset-mapping"
@@ -104,6 +105,13 @@
 
   <action-attrs name="action-wkf-migration-attrs-mapping-dashlet-show">
     <attribute name="hidden" for="mappingPanelDashlet" expr="eval: false"/>
+  </action-attrs>
+
+  <action-attrs name="action-wkf-migration-attrs-set-source-version">
+    <attribute name="value" for="sourceVersion" expr="eval: _sourceVersion"
+      if="_sourceVersion != null"/>
+    <attribute name="readonly" for="sourceVersion" expr="eval: true"
+      if="_sourceVersion != null"/>
   </action-attrs>
 
 </object-views>

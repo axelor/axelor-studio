@@ -22,8 +22,7 @@ import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -35,14 +34,10 @@ import org.codehaus.groovy.jsr223.GroovyScriptEngineImpl;
 public class AxelorScriptEngine extends GroovyScriptEngineImpl {
 
   protected volatile AxelorScriptEngineFactory factory;
-  protected final WkfLogService wkfLogService;
-  protected final BpmErrorMessageService bpmErrorMessageService;
 
   AxelorScriptEngine(AxelorScriptEngineFactory factory) {
     super();
     this.factory = factory;
-    this.wkfLogService = Beans.get(WkfLogService.class);
-    this.bpmErrorMessageService = Beans.get(BpmErrorMessageService.class);
   }
 
   @Override
@@ -53,13 +48,12 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
       object = new GroovyScriptHelper(bindings).eval(script);
     } catch (Exception e) {
       PvmExecutionImpl execution = (PvmExecutionImpl) bindings.get("execution");
-      wkfLogService.writeLog(execution.getProcessInstanceId());
-      ExecutorService executor = Executors.newCachedThreadPool();
-      executor.submit(
-          () -> {
-            bpmErrorMessageService.sendBpmErrorMessage(execution, e.getMessage(), null, null);
-            return true;
-          });
+      Beans.get(WkfLogService.class).writeLog(execution.getProcessInstanceId());
+      ForkJoinPool.commonPool()
+          .execute(
+              () ->
+                  Beans.get(BpmErrorMessageService.class)
+                      .sendBpmErrorMessage(execution, e.getMessage(), null, null));
       throw new AxelorScriptEngineException(e);
     }
     return object;

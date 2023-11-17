@@ -41,7 +41,10 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
 
   @Override
   public void sendBpmErrorMessage(
-      PvmExecutionImpl execution, String errorMessage, WkfModel model, String processInstanceId) {
+      PvmExecutionImpl execution,
+      String errorMessage,
+      WkfModel model,
+      String processInstanceId) {
     Long relatedId = null;
     Class<? extends Model> relatedModel = WkfModel.class;
     String body = errorMessage;
@@ -51,7 +54,9 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
 
       WkfInstance instance =
           wkfInstanceRepository.findByInstanceId(
-              isExecution ? execution.getProcessInstanceId() : processInstanceId);
+              isExecution && execution != null
+                  ? execution.getProcessInstanceId()
+                  : processInstanceId);
 
       if (instance == null) {
         return;
@@ -62,7 +67,7 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
 
       model = instance.getWkfProcess().getWkfModel();
       String activtyDetails =
-          isExecution
+          isExecution && execution != null
               ? ("</br>"
                   + I18n.get(BpmExceptionMessage.NODE_IDS)
                   + " : "
@@ -74,11 +79,13 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
       body =
           I18n.get(BpmExceptionMessage.BPM_MODEL)
               + " : "
-              + model.getId()
+              + prepareUrl(
+                  "#/ds/wkf.model.all/edit/" + model.getId(), model.getId().toString())
               + "</br>"
               + I18n.get(BpmExceptionMessage.PROCESS_INSTANCE_ID)
               + " : "
-              + instance.getInstanceId()
+              + prepareUrl(
+                  "#/ds/wkf.instance.all/edit/" + relatedId, instance.getInstanceId())
               + activtyDetails
               + "</br></br> "
               + errorMessage;
@@ -93,18 +100,18 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
   }
 
   protected Set<User> getRelatedUserSet(WkfModel model) {
-    Set<User> relatedUserSet = new HashSet<>();
-    relatedUserSet.addAll(userRepo.all().filter("self.group.code = 'admins'").fetch());
+    Set<User> relatedUserSet =
+        new HashSet<>(userRepo.all().filter("self.group.code = 'admins'").fetch());
 
-    if (model.getSendAdminsNotification()) {
+    if (model != null && model.getSendAdminsNotification()) {
       addUsers(relatedUserSet, model.getAdminUserSet(), model.getAdminRoleSet());
     }
 
-    if (model.getSendManagerNotification()) {
+    if (model != null && model.getSendManagerNotification()) {
       addUsers(relatedUserSet, model.getManagerUserSet(), model.getManagerRoleSet());
     }
 
-    if (model.getSendUserNotification()) {
+    if (model != null && model.getSendUserNotification()) {
       addUsers(relatedUserSet, model.getUserSet(), model.getRoleSet());
     }
     return relatedUserSet;
@@ -118,5 +125,9 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
     if (CollectionUtils.isNotEmpty(roles)) {
       relatedUserSet.addAll(userRepo.all().filter("self.roles IN (?1)", roles).fetch());
     }
+  }
+
+  protected String prepareUrl(String viewUrl, String id) {
+    return "<a href='" + viewUrl + "'>" + id + "</a> </br>";
   }
 }

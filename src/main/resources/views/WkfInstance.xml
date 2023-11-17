@@ -28,6 +28,9 @@
         action="action-wkf-instance-display-instance-state" colSpan="12" height="600"
         showIf="$imageUrl != null" readonly="true" title="BPM Instance State"/>
       <panel name="migrationHistoryPanel" title="Migration History">
+        <button
+          onClick="save,action-wkf-migration-validate-instance,action-wkf-migration-view-instance-migration"
+          name="migrateInstanceBtn" title="Migrate instance"/>
         <field name="wkfInstanceMigrationHistory" readonly="true" colSpan="12"/>
       </panel>
       <panel name="logPanel" title="Log" hidden="true">
@@ -37,6 +40,19 @@
       </panel>
     </panel-tabs>
   </form>
+
+  <action-view name="action-wkf-migration-view-instance-migration" title="BPM Migration"
+    model="com.axelor.studio.db.WkfMigration">
+    <view type="form" name="wkf-migration-form"/>
+    <view-param name="popup" value="reload"/>
+    <context name="_instanceId" expr="eval: __this__.instanceId"/>
+    <context name="_sourceVersion" expr="eval: __this__.wkfProcess?.wkfModel"/>
+  </action-view>
+
+  <action-validate name="action-wkf-migration-validate-instance">
+    <error message="No new version found"
+      if="__repo__(WkfModel).all().filter('self.previousVersion = ?1', __self__.wkfProcess?.wkfModel).count() &lt; 1"/>
+  </action-validate>
 
   <action-view name="action-wkf-instance-display-instance-state"
     title="BPM Instance State">

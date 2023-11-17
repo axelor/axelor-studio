@@ -39,4 +39,26 @@
     <option value="com.axelor.studio.db.WkfModel">WkfModel</option>
   </selection>
 
+  <selection name="studio.menu.view.param.type.select">
+    <option value="forceEdit">forceEdit</option>
+    <option value="forceTitle">forceTitle</option>
+    <option value="showArchived">showArchived</option>
+    <option value="details-view">details-view</option>
+    <option value="search-filters">search-filters</option>
+    <option value="default-search-filters">default-search-filters</option>
+    <option value="limit">limit</option>
+    <option value="popup">popup</option>
+    <option value="popup-save">popup-save</option>
+    <option value="popup.maximized">popup.maximized</option>
+    <option value="show-toolbar">show-toolbar</option>
+    <option value="show-confirm">show-confirm</option>
+    <option value="reload-dotted">reload-dotted</option>
+    <option value="download">download</option>
+  </selection>
+
+  <selection name="studio-menu-view-param-boolean-value">
+    <option value="true">True</option>
+    <option value="false">False</option>
+  </selection>
+
 </object-views>
