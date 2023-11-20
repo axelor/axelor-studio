@@ -12,5 +12,4 @@ public class BpmLoggingHelper {
   public static Logger get() {
     return LOGGER;
   }
-
 }

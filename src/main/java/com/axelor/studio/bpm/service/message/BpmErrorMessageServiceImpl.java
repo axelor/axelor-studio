@@ -41,10 +41,7 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
 
   @Override
   public void sendBpmErrorMessage(
-      PvmExecutionImpl execution,
-      String errorMessage,
-      WkfModel model,
-      String processInstanceId) {
+      PvmExecutionImpl execution, String errorMessage, WkfModel model, String processInstanceId) {
     Long relatedId = null;
     Class<? extends Model> relatedModel = WkfModel.class;
     String body = errorMessage;
@@ -79,13 +76,11 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
       body =
           I18n.get(BpmExceptionMessage.BPM_MODEL)
               + " : "
-              + prepareUrl(
-                  "#/ds/wkf.model.all/edit/" + model.getId(), model.getId().toString())
+              + prepareUrl("#/ds/wkf.model.all/edit/" + model.getId(), model.getId().toString())
               + "</br>"
               + I18n.get(BpmExceptionMessage.PROCESS_INSTANCE_ID)
               + " : "
-              + prepareUrl(
-                  "#/ds/wkf.instance.all/edit/" + relatedId, instance.getInstanceId())
+              + prepareUrl("#/ds/wkf.instance.all/edit/" + relatedId, instance.getInstanceId())
               + activtyDetails
               + "</br></br> "
               + errorMessage;

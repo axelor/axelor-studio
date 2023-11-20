@@ -170,11 +170,12 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         final String finalProcessInstanceId = model.getProcessInstanceId();
         ForkJoinPool.commonPool()
             .submit(
-                () -> bpmErrorMessageService.sendBpmErrorMessage(
-                    null,
-                    e.getMessage(),
-                    EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                    finalProcessInstanceId));
+                () ->
+                    bpmErrorMessageService.sendBpmErrorMessage(
+                        null,
+                        e.getMessage(),
+                        EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
+                        finalProcessInstanceId));
       }
       throw e;
     } finally {

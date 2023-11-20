@@ -85,10 +85,7 @@ public class WkfModelController {
       WkfModel model = request.getContext().asType(WkfModel.class);
       Beans.get(BpmErrorMessageService.class)
           .sendBpmErrorMessage(
-              null,
-              e.getMessage(),
-              Beans.get(WkfModelRepository.class).find(model.getId()),
-              null);
+              null, e.getMessage(), Beans.get(WkfModelRepository.class).find(model.getId()), null);
     }
   }
 
