@@ -3,7 +3,7 @@ if (JavaVersion.current() != JavaVersion.VERSION_11) {
 }
 
 def modules = []
-file("react-components").traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
+file("react").traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
   if (new File(it, "build.gradle").exists()) {
     modules.add(it)
   }
@@ -12,14 +12,14 @@ file("react-components").traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth
 gradle.ext.reactComponents = modules
 
 modules.each { dir ->
-  include ":react-components:$dir.name"
-  project(":react-components:$dir.name").projectDir = dir
+  include ":react:$dir.name"
+  project(":react:$dir.name").projectDir = dir
 }
 
 gradle.ext.componentPaths = [
-    [from: "react-components/baml/build", to: "webapp/baml-editor"],
-    [from: "react-components/studio/build", to: "webapp/studio"],
-    [from: "react-components/bpm-webapp/apps/bpm/build", to: "webapp/wkf-editor"],
-    [from: "react-components/bpm-webapp/apps/mapper/build", to: "webapp/mapper"],
-    [from: "react-components/webservices-builder/build", to: "webapp/ws-builder"]
+    [from: "react/baml/build", to: "webapp/baml-editor"],
+    [from: "react/studio/build", to: "webapp/studio"],
+    [from: "react/bpm-webapp/apps/bpm/build", to: "webapp/wkf-editor"],
+    [from: "react/bpm-webapp/apps/mapper/build", to: "webapp/mapper"],
+    [from: "react/webservices-builder/build", to: "webapp/ws-builder"]
 ]
