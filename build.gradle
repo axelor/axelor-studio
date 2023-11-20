@@ -89,12 +89,12 @@ tasks.register('generateChangelog', GenerateChangelog) {
 
 try {
   for (int i = 0; i < gradle.ext.reactComponents?.size() - 1; i++) {
-    tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i).name}:reactBuild").finalizedBy(tasks.getByPath(":react-components:${gradle.ext.reactComponents?.get(i + 1).name}:reactBuild"))
+    tasks.getByPath(":react:${gradle.ext.reactComponents?.get(i).name}:reactBuild").finalizedBy(tasks.getByPath(":react:${gradle.ext.reactComponents?.get(i + 1).name}:reactBuild"))
   }
 
   jar {
     gradle.ext.reactComponents?.each {
-      dependsOn ":react-components:${it.name}:reactBuild"
+      dependsOn ":react:${it.name}:reactBuild"
     }
 
     gradle.ext.componentPaths.each { paths ->
@@ -108,7 +108,7 @@ try {
     description = 'Copy Studio React into webapp'
 
     gradle.ext.reactComponents?.each {
-      dependsOn ":react-components:${it.name}:reactBuild"
+      dependsOn ":react:${it.name}:reactBuild"
     }
 
     destinationDir = file(rootProject.buildDir)
