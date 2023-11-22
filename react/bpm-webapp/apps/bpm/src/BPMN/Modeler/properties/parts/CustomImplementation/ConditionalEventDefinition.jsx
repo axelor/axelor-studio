@@ -233,11 +233,9 @@ export default function ConditionalEventProps({
           widget: "textField",
           get: getValue("variableName"),
           set: setValue("variableName"),
-          validate: function (e, values) {
-            if (!values?.variableName && conditionType === "script") {
-              return { variableName: translate("Must provide a value") };
-            }
-          },
+          description: translate(
+            "Variable name can be used to restrict that to changes of a specific variable"
+          ),
         }}
       />
       {!(
@@ -266,11 +264,9 @@ export default function ConditionalEventProps({
             optionLabel="name"
             optionLabelSecondary="title"
             isLabel={false}
-            validate={function (values) {
-              if (!values?.multiSelect?.length && conditionType === "script") {
-                return { multiSelect: translate("Must provide a value") };
-              }
-            }}
+            description={translate(
+              "Variable events can be used to restrict the type of change. It is possible to specify more than one variable change event as a comma separated list"
+            )}
           />
         </>
       )}
