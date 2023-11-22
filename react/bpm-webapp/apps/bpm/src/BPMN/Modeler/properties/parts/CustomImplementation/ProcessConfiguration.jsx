@@ -180,11 +180,11 @@ export default function ProcessConfiguration({
   const [openProcessPathDialog, setOpenProcessDialog] = useState(false);
   const [openUserPathDialog, setOpenUserPathDialog] = useState(false);
   const [startModel, setStartModel] = useState(null);
+  const [alert, setAlert] = useState({
+    open: false,
+  });
   const [selectedProcessConfig, setSelectedProcessConfig] = useState(null);
-  const [openExpressionAlert, setExpressionAlert] = useState(false);
   const [openExpressionBuilder, setExpressionBuilder] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [errorTitle, setErrorTitle] = useState(null);
   const [pathCondition, setPathCondition] = useState(null);
   const [field, setField] = useState(null);
   const [openTranslationDialog, setTranslationDialog] = useState(false);
@@ -849,11 +849,25 @@ export default function ProcessConfiguration({
                                               processConfig &&
                                               processConfig.pathConditionValue
                                             ) {
-                                              setErrorMessage(
-                                                "Path condition can't be managed using builder once changed manually."
-                                              );
-                                              setErrorTitle("Warning");
-                                              setExpressionAlert(true);
+                                              setAlert({
+                                                open: true,
+                                                message:
+                                                  "Path condition can't be managed using builder once changed manually.",
+                                                title: "Warning",
+                                                callback: () => {
+                                                  updateValue(
+                                                    processConfig?.pathCondition,
+                                                    "pathCondition",
+                                                    undefined,
+                                                    key,
+                                                    undefined
+                                                  );
+                                                  setScript(
+                                                    processConfig?.pathCondition
+                                                  );
+                                                  setOpenScriptDialog(true);
+                                                },
+                                              });
                                             } else {
                                               setOpenScriptDialog(true);
                                             }
@@ -1002,10 +1016,11 @@ export default function ProcessConfiguration({
                 field.target !== (startModel && startModel.fullName) &&
                 field.jsonTarget !== (startModel && startModel.name)
               ) {
-                setExpressionAlert(true);
-                setErrorMessage(
-                  "Last subfield should be related to start model"
-                );
+                setAlert({
+                  open: true,
+                  message: "Last subfield should be related to start model",
+                  title: "Warning",
+                });
                 return;
               }
               setOpenProcessDialog(false);
@@ -1083,12 +1098,12 @@ export default function ProcessConfiguration({
           }
         />
       )}
-      {openExpressionAlert && (
+      {alert?.open && (
         <Dialog
-          open={openExpressionAlert}
+          open={alert?.open}
           onClose={(event, reason) => {
             if (reason !== "backdropClick") {
-              setExpressionAlert(false);
+              setAlert({ open: false });
             }
           }}
           aria-labelledby="alert-dialog-title"
@@ -1098,36 +1113,26 @@ export default function ProcessConfiguration({
           }}
         >
           <DialogTitle id="alert-dialog-title">
-            {translate(errorTitle)}
+            {translate(alert?.title)}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              {translate(errorMessage)}
+              {translate(alert?.message)}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button
               className={classes.save}
               onClick={() => {
-                setExpressionAlert(false);
-                setErrorMessage(null);
-                setErrorTitle(null);
-                updateValue(
-                  pathCondition?.processConfig?.pathCondition,
-                  "pathCondition",
-                  undefined,
-                  pathCondition?.key,
-                  undefined
-                );
-                setScript(pathCondition?.processConfig?.pathCondition);
-                setOpenScriptDialog(true);
+                alert?.callback && alert.callback();
+                setAlert({ open: false });
               }}
               color="primary"
             >
               {translate("OK")}
             </Button>
             <Button
-              onClick={() => setExpressionAlert(false)}
+              onClick={() => setAlert({ open: false })}
               color="primary"
               className={classes.save}
             >
@@ -1189,8 +1194,10 @@ export default function ProcessConfiguration({
             <Button
               onClick={() => {
                 if (field && field.target !== "com.axelor.auth.db.User") {
-                  setExpressionAlert(true);
-                  setErrorMessage("Last subfield should be related to user");
+                  setAlert({
+                    open: true,
+                    message: "Last subfield should be related to user",
+                  });
                   return;
                 }
                 setOpenUserPathDialog(false);
