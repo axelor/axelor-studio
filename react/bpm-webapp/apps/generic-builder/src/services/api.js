@@ -1,6 +1,5 @@
 import services from './Service';
 import { uniqBy } from 'lodash';
-import { getFormName } from '../expression-builder/utils';
 import { getItemsByType, sortBy } from '../utils';
 import { ALLOWED_TYPES, QUERY_CUSTOM_TYPES } from '../constants';
 
@@ -135,8 +134,8 @@ export async function getButtons(models = []) {
   if (models.length > 0) {
     for (let i = 0; i < models.length; i++) {
       const { type, model, modelFullName, defaultForm } = models[i];
-      let formName = defaultForm || getFormName(model);
-      if (formName === 'fetchAPI') {
+      let formName = defaultForm;
+      if (!formName) {
         const views = await getViews({
           name: model,
           type,
@@ -392,53 +391,46 @@ export async function getMetaModels(_data = {}) {
   if (res && res.status === -1) return [];
   const { data = [] } = res || {};
 
-  let models = [];
-  let formName = [];
-
-  data.forEach(m => {
-    if (getFormName(m.name) === 'fetchAPI') {
-      models.push(`${m.packageName}.${m.name}`);
-    } else {
-      formName.push(getFormName(m.name));
-    }
+  const models = data.map(m => {
+    return m.fullName;
   });
+
   const views =
     models.length > 0 &&
     (await getViews(
       undefined,
       [
         {
-          fieldName: 'type',
-          operator: '=',
-          value: 'form',
-        },
-        {
           fieldName: 'model',
           value: models,
           operator: 'IN',
+        },
+        {
+          operator: 'or',
+          criteria: [
+            {
+              fieldName: 'extension',
+              operator: 'IS NULL',
+            },
+            {
+              fieldName: 'extension',
+              operator: '=',
+              value: false,
+            },
+          ],
         },
       ],
       undefined,
       false
     ));
 
-  const metaJsonViews = formName.length > 0 && (await getFormViews(formName));
-
   let result = [];
   data.forEach(d => {
-    if (getFormName(d.name) === 'fetchAPI') {
-      views.forEach(v => {
-        if (v.model === d.fullName) {
-          result.push({ ...d, title: v.title });
-        }
-      });
-    } else {
-      metaJsonViews.forEach(mv => {
-        if (mv.model === d.fullName) {
-          result.push({ ...d, title: mv.title });
-        }
-      });
-    }
+    views.forEach(v => {
+      if (v.model === d.fullName) {
+        result.push({ ...d, title: v.title });
+      }
+    });
   });
   return result || [];
 }
