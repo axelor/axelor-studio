@@ -1,6 +1,5 @@
 import services from './Service';
 import { uniqBy } from 'lodash';
-import { getFormName } from '../components/utils';
 import { sortBy } from '../utils';
 
 export const ModelType = {
@@ -205,15 +204,8 @@ export async function getMetaModels(
     return data;
   }
 
-  let models = [];
-  let formName = [];
-
-  data.forEach((m) => {
-    if (getFormName(m.name) === 'fetchAPI') {
-      models.push(`${m.fullName}`);
-    } else {
-      formName.push(getFormName(m.name));
-    }
+  const models = data.map((m) => {
+    return m.fullName;
   });
 
   const views =
@@ -222,38 +214,38 @@ export async function getMetaModels(
       undefined,
       [
         {
-          fieldName: 'type',
-          operator: '=',
-          value: 'form',
-        },
-        {
           fieldName: 'model',
           value: models,
           operator: 'IN',
+        },
+        {
+          operator: 'or',
+          criteria: [
+            {
+              fieldName: 'extension',
+              operator: 'IS NULL',
+            },
+            {
+              fieldName: 'extension',
+              operator: '=',
+              value: false,
+            },
+          ],
         },
       ],
       undefined,
       false
     ));
 
-  const metaJsonViews = formName.length > 0 && (await getFormViews(formName));
-
   let result = [];
   data.forEach((d) => {
-    if (getFormName(d.name) === 'fetchAPI') {
-      views.forEach((v) => {
-        if (v.model === d.fullName) {
-          result.push({ ...d, title: v.title });
-        }
-      });
-    } else {
-      metaJsonViews.forEach((mv) => {
-        if (mv.model === d.fullName) {
-          result.push({ ...d, title: mv.title });
-        }
-      });
-    }
+    views.forEach((v) => {
+      if (v.model === d.fullName) {
+        result.push({ ...d, title: v.title });
+      }
+    });
   });
+
   return result;
 }
 
