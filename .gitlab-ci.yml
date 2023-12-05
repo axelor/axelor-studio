@@ -1,10 +1,22 @@
 # Stages (ie phases) that can be used by jobs
 stages:
+  - init
   - build
   - test
-  - publish
+  - plan
+  - deploy
+  - cleanup
 
-image: axelor/app-builder:6.1
+include:
+  - project: aop/addons/devops/ci-modules
+    file:
+      - /templates/AOP-Addons/Default.yml
+    ref: main
+    rules:
+      - if: '$CI_PIPELINE_SOURCE != "schedule" && $CI_COMMIT_BRANCH !~ /^\d+\.\d+$/ && $CI_COMMIT_TAG == null'
+
+.global-env:
+  image: axelor/app-builder:6.1
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -27,6 +39,7 @@ before_script:
 
 # Build artifacts
 build:
+  extends: .global-env
   stage: build
   cache:
     - *global_cache
@@ -35,10 +48,11 @@ build:
     - ./gradlew -xtest -xspotlessApply -xlicenseFormat clean build
   interruptible: true
   rules:
-    - if: '$CI_PIPELINE_SOURCE != "schedule"'
+    - if: '$CI_PIPELINE_SOURCE != "schedule" && ($CI_COMMIT_BRANCH =~ /^\d+\.\d+$/ || $CI_COMMIT_TAG)'
 
 # Check code formatting
 spotless:
+  extends: .global-env
   stage: test
   cache:
     - *global_cache_pull
@@ -50,7 +64,7 @@ spotless:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
 
 .publish_template: &publish_configuration
-  stage: publish
+  stage: plan
   cache:
     - *global_cache_pull
   script:
@@ -71,7 +85,7 @@ publish release:
     - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
 
 create release:
-  stage: publish
+  stage: plan
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   cache:
     - *global_cache_pull

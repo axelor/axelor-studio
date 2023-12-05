@@ -85,17 +85,6 @@ function getLowerCase(str) {
   return str.trim().toLowerCase();
 }
 
-function getFormName(str) {
-  if (!str) return;
-  const formString = str.match(/[A-Z][a-z]+/g);
-  if (!formString) return;
-  if (formString.join("").trim().length !== str.length) {
-    return "fetchAPI";
-  }
-  const form = formString && formString.join("-");
-  return `${form.toLowerCase()}-form`;
-}
-
 function lowerCaseFirstLetter(str) {
   if (!str) return;
   return str.charAt(0).toLowerCase() + str.slice(1);
@@ -143,7 +132,6 @@ export {
   getBool,
   sortBy,
   getItemsByType,
-  getFormName,
   getLowerCase,
   getAxelorScope,
   lowerCaseFirstLetter,

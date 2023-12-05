@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 
 import Service from "./Service";
-import { getItemsByType, getFormName } from "../utils";
+import { getItemsByType } from "../utils";
 import { WKF_FIELDS, RELATED_FIELDS } from "../BPMN/Modeler/constants";
 import { getProcessConfig } from "../components/expression-builder/extra/util";
 import { UI_TYPES } from "../DMN/constants";
@@ -392,22 +392,6 @@ export async function getProcessConfigModel(data = {}) {
   }
 }
 
-export async function getFormViews(formViewNames) {
-  const res = await Service.search("com.axelor.meta.db.MetaView", {
-    data: {
-      _domain:
-        "self.type = :type and (self.extension IS NULL or self.extension IS FALSE) and self.name in :names",
-      _domainContext: {
-        type: "form",
-        names: formViewNames && formViewNames.length > 0 ? formViewNames : [""],
-      },
-    },
-    fields: ["name", "title", "model"],
-  });
-  const { data = [] } = res || {};
-  return data;
-}
-
 export async function getMetaModels(_data = {}) {
   const res = await Service.search("com.axelor.meta.db.MetaModel", {
     data: _data,
@@ -417,53 +401,46 @@ export async function getMetaModels(_data = {}) {
   if (res && res.status === -1) return [];
   const { data = [] } = res || {};
 
-  let models = [];
-  let formName = [];
-
-  data.forEach((m) => {
-    if (getFormName(m.name) === "fetchAPI") {
-      models.push(`${m.packageName}.${m.name}`);
-    } else {
-      formName.push(getFormName(m.name));
-    }
+  const models = data.map((m) => {
+    return m.fullName;
   });
+
   const views =
     models.length > 0 &&
     (await getViews(
       undefined,
       [
         {
-          fieldName: "type",
-          operator: "=",
-          value: "form",
-        },
-        {
           fieldName: "model",
           value: models,
           operator: "IN",
+        },
+        {
+          operator: "or",
+          criteria: [
+            {
+              fieldName: "extension",
+              operator: "IS NULL",
+            },
+            {
+              fieldName: "extension",
+              operator: "=",
+              value: false,
+            },
+          ],
         },
       ],
       undefined,
       false
     ));
 
-  const metaJsonViews = formName.length > 0 && (await getFormViews(formName));
-
   let result = [];
   data.forEach((d) => {
-    if (getFormName(d.name) === "fetchAPI") {
-      views.forEach((v) => {
-        if (v.model === d.fullName) {
-          result.push({ ...d, title: v.title });
-        }
-      });
-    } else {
-      metaJsonViews.forEach((mv) => {
-        if (mv.model === d.fullName) {
-          result.push({ ...d, title: mv.title });
-        }
-      });
-    }
+    views.forEach((v) => {
+      if (v.model === d.fullName) {
+        result.push({ ...d, title: v.title });
+      }
+    });
   });
   return _.uniqBy(result, "id");
 }
@@ -651,9 +628,9 @@ export async function getButtons(models = [], includeAllForms = false) {
   if (models.length > 0) {
     for (let i = 0; i < models.length; i++) {
       const { type, model, modelFullName, defaultForm } = models[i];
-      let formName = defaultForm || getFormName(model);
+      let formName = defaultForm;
       let allFormViews;
-      if (formName === "fetchAPI" || includeAllForms) {
+      if (includeAllForms || !formName) {
         const views = await getViews({
           name: model,
           type,

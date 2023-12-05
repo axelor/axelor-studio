@@ -4,6 +4,7 @@ import AutoComplete from "@material-ui/lab/Autocomplete";
 import { TextField, CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
+import Description from "../components/properties/components/Description";
 import { translate } from "../utils";
 
 function useDebounceEffect(handler, interval) {
@@ -97,6 +98,7 @@ export default function SelectComponent({
   disableUnderline = true,
   disableClearable = false,
   isOptionEllipsis = false,
+  description,
 }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -377,6 +379,7 @@ export default function SelectComponent({
           {translate(errorMessage)}
         </div>
       )}
+      {description && <Description desciption={description} />}
     </React.Fragment>
   );
 }

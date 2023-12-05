@@ -17,14 +17,3 @@ export function useMetaModelSearch(element, type) {
     [element, type]
   );
 }
-
-export function getFormName(str) {
-  if (!str) return;
-  const formString = str.match(/[A-Z][a-z]+/g);
-  if (!formString) return;
-  if (formString.join('').trim().length !== str.length) {
-    return 'fetchAPI';
-  }
-  const form = formString && formString.join('-');
-  return `${form.toLowerCase()}-form`;
-}
