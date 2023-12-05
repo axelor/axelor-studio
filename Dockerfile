@@ -1,0 +1,60 @@
+FROM axelor/app-builder:6.1 AS builder
+
+ARG JAVA_OPTS="-Xmx4g"
+ARG APP_SOURCE=/app/open-platform-demo
+ARG DEBIAN_FRONTEND=noninteractive
+ARG MODULE_NAME=axelor-studio
+
+COPY . /${MODULE_NAME}
+WORKDIR /
+RUN if [ ! -f ${MODULE_NAME}/app.zip ]; then echo "app.zip webapp archive not found. Existing."; exit 1; fi
+RUN mv ${MODULE_NAME}/app.zip .
+RUN unzip app.zip
+RUN mv ${MODULE_NAME} ${APP_SOURCE}/modules
+WORKDIR ${APP_SOURCE}
+
+RUN chmod +x gradlew && \
+    ./gradlew --no-daemon build -xtest -xcheck -Dinclude.react;
+
+RUN mkdir -p ${APP_SOURCE}/webapps/ROOT && \
+    unzip -q -o ${APP_SOURCE}/build/libs/*.war -d ${APP_SOURCE}/webapps/ROOT/
+
+
+# Image to run tomcat with axelor-app
+FROM eclipse-temurin:11-jre-alpine
+
+ARG BUILD_DATE
+ARG TOMCAT_VERSION=9.0.83
+
+ENV CATALINA_HOME=/usr/local/tomcat
+
+# System Upgrade for security reasons + install tools needed by the entrypoint
+RUN apk upgrade && \
+    apk add --no-cache curl coreutils postgresql-client
+
+# Install Tomcat
+RUN export TOMCAT_MINOR_VERSION=$(echo ${TOMCAT_VERSION} | cut -d"." -f 1) && \
+    mkdir -p ${CATALINA_HOME} && \
+	  curl -L https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MINOR_VERSION}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz | tar xvzf - --exclude="apache-tomcat*/webapps/*" --strip-components=1 --directory=${CATALINA_HOME}
+
+# Copy app
+COPY --from=builder /app/open-platform-demo/webapps ${CATALINA_HOME}/webapps
+
+# Expose ports
+EXPOSE 8080
+
+# Copy entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Label images
+LABEL \
+	maintainer="Axelor <support@axelor.com>" \
+	org.label-schema.schema-version="1.0" \
+	org.label-schema.build-date=${BUILD_DATE} \
+	org.label-schema.name=${MODULE_NAME} \
+	org.label-schema.vendor=axelor
+
+# Entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["start"]

@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  axelor:
+    build: .
+    environment:
+      PGHOST: postgres
+      PGUSER: axelor
+      PGPASSWORD: axelor
+      PGDATABASE: axelor
+      JAVA_XMS: "4096M"
+      JAVA_XMX: "4096M"
+      APP_LOAD_APPS: "false"
+      APP_DEMO_DATA: "true"
+    ports:
+      - "8080:8080"
+  postgres:
+    image: "postgres:13"
+    environment:
+      POSTGRES_USER: axelor
+      POSTGRES_PASSWORD: axelor
+      POSTGRES_DB: axelor
