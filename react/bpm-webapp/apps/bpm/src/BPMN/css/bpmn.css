@@ -88,17 +88,17 @@ body,
   display: none;
 }
 
-#canvas-task .highlight:not(.djs-connection) .djs-visual > :nth-child(1) {
+#canvas-task .highlight:not(.djs-connection) .djs-visual> :nth-child(1) {
   stroke: var(--main-bg-color, #006400) !important;
 }
 
 #canvas-task {
   padding: 0;
   margin: 0;
-  height: calc(97% - 50px);
+  height: calc(100% - 30px);
 }
 
-#canvas-task > .bjs-container > .djs-container > .djs-palette {
+#canvas-task>.bjs-container>.djs-container>.djs-palette {
   display: none;
 }
 
@@ -143,13 +143,20 @@ h1 {
 .zoom-buttons {
   width: 50px;
   padding: 5px;
-  background: #fafafa;
-  border: solid 1px #ccc;
-  border-radius: 2px;
+  background: #6c67fa;
+  border: solid 1px #615dd2;
+  color: #ffffff;
   cursor: pointer;
   position: relative;
+  display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 18px;
+}
+
+.zoom-buttons:hover {
+  background-color: #635fdc;
+  border-color: #615dd2;
 }
 
 .snackbarAlert {
@@ -157,7 +164,7 @@ h1 {
   align-items: center;
 }
 
-.snackbarAlert > .MuiAlert-message {
+.snackbarAlert>.MuiAlert-message {
   font-size: 14px;
 }
 
@@ -185,7 +192,7 @@ h1 {
 }
 
 @media only screen and (max-height: 710px) {
-  #bpmnview > .bjs-container > .djs-container > .djs-palette {
+  #bpmnview>.bjs-container>.djs-container>.djs-palette {
     width: 94px;
   }
 }
