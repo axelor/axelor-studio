@@ -8,7 +8,7 @@ stages:
   - cleanup
 
 include:
-  - project: infrastructure/devops/ci-modules
+  - project: infrastructure/devops/aop-addons-ci
     file:
       - /templates/AOP-Addons/Default.yml
     ref: main
