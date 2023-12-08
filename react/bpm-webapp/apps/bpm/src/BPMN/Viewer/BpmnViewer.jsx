@@ -179,7 +179,7 @@ const openDiagramImage = (taskIds, diagramXml, activityCounts) => {
       return console.error("could not import BPMN 2.0 diagram", err);
     }
     let canvas = bpmnViewer.get("canvas");
-    canvas.zoom("fit-viewport");
+    canvas.zoom("fit-viewport", "auto");
     bpmnViewer.get("readOnly").readOnly(true);
     let elementRegistry = bpmnViewer.get("elementRegistry");
     let nodes = elementRegistry && elementRegistry._elements;
@@ -267,19 +267,18 @@ function BpmnViewerComponent({ isInstance }) {
   const [activityCounts, setActivityCounts] = useState(null);
   const [activeProcessId, setActiveProcessId] = useState(null);
 
-  const saveSVG = () => {
-    bpmnViewer.saveSVG({ format: true }, async function (err, svg) {
-      download(svg, "diagram.svg", false);
-    });
+  const saveSVG = async () => {
+    const { svg } = await bpmnViewer.saveSVG({ format: true });
+    download(svg, "diagram.svg", false);
   };
 
   const toolBarButtons = [
     {
       name: "DownloadSVG",
-      icon: <i className="fa fa-picture-o" style={{ fontSize: 18 }}></i>,
+      icon: <i className="fa fa-picture-o" aria-hidden="true"></i>,
       tooltipText: "Download SVG",
       onClick: saveSVG,
-      classname: "property-button",
+      classname: "zoom-buttons",
     },
     {
       name: "ZoomInIcon",
@@ -450,7 +449,14 @@ function BpmnViewerComponent({ isInstance }) {
 
   return (
     <React.Fragment>
-      <div style={{ display: "flex", padding: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          padding: 10,
+          position: "absolute",
+          zIndex: 100,
+        }}
+      >
         {toolBarButtons.map((btn) => (
           <div key={btn.name} style={{ display: "flex" }}>
             <Tooltip

@@ -21,7 +21,7 @@ body,
   font-family: "Arial", sans-serif;
 }
 
-.bjs-container {
+.simulation {
   border: solid 4px transparent;
   box-sizing: border-box;
   height: calc(100% - 64px) !important;

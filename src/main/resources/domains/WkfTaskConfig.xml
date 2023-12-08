@@ -9,7 +9,7 @@
 
     <string name="name" title="Name"/>
     <string name="description" title="Description" large="true"/>
-    <string name="expression" title="Expression"/>
+    <string name="expression" title="Expression" large="true"/>
     <string name="button" title="Button"/>
     <string name="messages" title="Send messages"/>
     <many-to-one name="wkfModel" ref="WkfModel"/>
