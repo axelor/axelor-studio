@@ -78,8 +78,8 @@ const getJsonExpression = (field, prefix, fieldName) => {
 };
 
 function translate(str) {
-  if (window._t && typeof str === "string") {
-    return window._t(str);
+  if (window?.top?.axelor?.i18n.get && typeof str === "string") {
+    return window?.top?.axelor?.i18n.get(str);
   }
   return str;
 }
