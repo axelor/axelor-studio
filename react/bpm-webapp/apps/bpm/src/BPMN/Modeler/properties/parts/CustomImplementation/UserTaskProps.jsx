@@ -19,6 +19,7 @@ import AlertDialog from "../../../../../components/AlertDialog";
 import Select from "../../../../../components/Select";
 import { fetchModels, getButtons } from "../../../../../services/api";
 import { translate, getLowerCase, getBool } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
@@ -199,6 +200,11 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
   }
 
   const setProperty = (name, value) => {
+    setDummyProperty({
+      bpmnModeler,
+      element,
+      value,
+    });
     const bo = getBusinessObject(element);
     if (!bo) return;
     if (bo.$attrs) {

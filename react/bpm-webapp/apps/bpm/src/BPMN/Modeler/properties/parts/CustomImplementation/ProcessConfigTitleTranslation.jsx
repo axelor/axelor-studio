@@ -15,6 +15,7 @@ import { Close, Add } from "@material-ui/icons";
 import { getTranslations } from "../../../../../services/api";
 import { TextField } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles({
   groupLabel: {
@@ -75,6 +76,7 @@ export default function ProcessConfigTitleTranslation({
   configKey,
   element,
   onChange,
+  bpmnModeler,
 }) {
   const [translations, setTranslations] = useState(null);
   const [removedTranslations, setRemovedTranslations] = useState(null);
@@ -93,6 +95,11 @@ export default function ProcessConfigTitleTranslation({
   };
 
   const removeTranslation = async (index) => {
+    setDummyProperty({
+      bpmnModeler,
+      element,
+      value: index,
+    });
     const cloneTranslations = [...(translations || [])];
     const remove = [...(removedTranslations || []), cloneTranslations[index]];
     cloneTranslations.splice(index, 1);
@@ -102,6 +109,11 @@ export default function ProcessConfigTitleTranslation({
   };
 
   const setProperty = (index, label, value, callConfirm = false) => {
+    setDummyProperty({
+      bpmnModeler,
+      element,
+      value,
+    });
     const cloneTranslations = [...(translations || [])];
     cloneTranslations[index] = {
       ...cloneTranslations[index],

@@ -2,6 +2,7 @@ import nameEntryFactory from "./implementation/Name";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
+import { setDummyProperty } from "./CustomImplementation/utils";
 import { getProcessBusinessObject, getFlowElements } from "../../extra";
 
 export default function ProcessProps(
@@ -41,6 +42,11 @@ export default function ProcessProps(
       idEntry.set = function (element, values) {
         const process = element.businessObject.processRef;
         if (process) {
+          setDummyProperty({
+            bpmnModeler,
+            element,
+            value: values.processId,
+          });
           process.id = values.processId;
 
           /**Update call activity nodes */

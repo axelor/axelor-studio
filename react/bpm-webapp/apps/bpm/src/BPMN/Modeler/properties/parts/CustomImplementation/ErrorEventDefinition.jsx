@@ -6,6 +6,7 @@ import {
   CustomSelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 export default function ErrorEventProps({
   element,
@@ -32,6 +33,11 @@ export default function ErrorEventProps({
   const setValue = (modelProperty) => {
     return function (element, values) {
       if (!errorEventDefinition) return;
+      setDummyProperty({
+        bpmnModeler,
+        element,
+        value: values[modelProperty],
+      });
       errorEventDefinition["camunda:" + modelProperty] =
         values[modelProperty] || undefined;
     };
@@ -85,6 +91,11 @@ export default function ErrorEventProps({
             setSelectedError(value);
             setEle(ele);
             if (errorEventDefinition && errorEventDefinition.errorRef) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: ele.name,
+              });
               errorEventDefinition.errorRef.name = ele.name;
             }
           },
@@ -116,6 +127,11 @@ export default function ErrorEventProps({
               set: function (e, value) {
                 if (errorEventDefinition && errorEventDefinition.errorRef) {
                   errorEventDefinition.errorRef.name = value.name;
+                  setDummyProperty({
+                    bpmnModeler,
+                    element,
+                    value: value.name,
+                  });
                   getOptions();
                   setSelectedError(ele && ele.id);
                 }
@@ -146,6 +162,11 @@ export default function ErrorEventProps({
                 if (!errorEventDefinition) return;
                 let reference = errorEventDefinition.get("errorRef");
                 if (reference) {
+                  setDummyProperty({
+                    bpmnModeler,
+                    element,
+                    value: value.errorCode,
+                  });
                   reference.errorCode = value.errorCode;
                 }
               },
@@ -170,6 +191,11 @@ export default function ErrorEventProps({
                 if (!errorEventDefinition) return;
                 let reference = errorEventDefinition.get("errorRef");
                 if (reference) {
+                  setDummyProperty({
+                    bpmnModeler,
+                    element,
+                    value: value.errorMessage,
+                  });
                   reference.errorMessage = value.errorMessage;
                 }
               },

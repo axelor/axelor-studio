@@ -16,6 +16,7 @@ import {
   SelectBox,
 } from "../../../../../components/properties/components";
 import { getBool, translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const timerOptions = [
   { value: "timeDate", name: translate("Date") },
@@ -70,6 +71,7 @@ export default function TimerEventProps({
   element,
   bpmnFactory,
   timerEventDefinition,
+  bpmnModeler
 }) {
   const [timerDefinitionType, setTimerDefinitionType] = useState("");
   const [open, setOpen] = useState(false);
@@ -99,6 +101,11 @@ export default function TimerEventProps({
   );
 
   const setProperty = (name, value) => {
+    setDummyProperty({
+      bpmnModeler,
+      element,
+      value
+    });
     const bo = getBusinessObject(element);
     let propertyName = `camunda:${name}`;
     if (!bo) return;
@@ -118,6 +125,11 @@ export default function TimerEventProps({
   };
 
   const handleTimerDefinitionChange = (element, values) => {
+    setDummyProperty({
+      bpmnModeler,
+      element,
+      value: true,
+    });
     const bo = getBusinessObject(element);
     let timerDefinition = timerEventDefinition,
       type = getTimerDefinitionType(timerDefinition),
@@ -154,6 +166,11 @@ export default function TimerEventProps({
   };
 
   const handleChange = (value) => {
+    setDummyProperty({
+      bpmnModeler,
+      element,
+      value: true,
+    });
     let isFromBuilder = value ? true : false;
     handleTimerDefinitionChange(element, { timerDefinition: value });
     handleFromBuilder(isFromBuilder);

@@ -178,6 +178,7 @@ function BpmnModelerComponent() {
   const [height, setHeight] = useState("100%");
   const [enableStudioApp, setEnableStudioApp] = useState(false);
   const [showError, setError] = useState(false);
+  const [initialState, setInitialState] = useState(false);
 
   const classes = useStyles();
   const diagramXmlRef = React.useRef(null);
@@ -402,6 +403,8 @@ function BpmnModelerComponent() {
         try {
           const { xml } = await bpmnModeler.saveXML({ format: true });
           diagramXmlRef.current = xml;
+          setInitialState(true);
+          setDirty(false);
         } catch (error) {
           console.error(error);
         }
@@ -498,6 +501,8 @@ function BpmnModelerComponent() {
   };
 
   const addNewDiagram = React.useCallback(() => {
+    setInitialState(false);
+    setDirty(false);
     setWkf(null);
     setId(null);
     newBpmnDiagram();
@@ -520,6 +525,8 @@ function BpmnModelerComponent() {
 
   const updateWkf = React.useCallback(
     async (value) => {
+      setInitialState(false);
+      setDirty(false);
       const wkf = await fetchWkf(value?.id);
       const { diagramXml, id } = wkf || {};
       setWkf(wkf);
@@ -837,6 +844,7 @@ function BpmnModelerComponent() {
           setId(res.data[0].id);
           addDiagramProperties(res.data[0]);
         }
+        setDirty(false);
         handleSnackbarClick("success", "Saved Successfully");
       } else {
         handleSnackbarClick(
@@ -1341,6 +1349,8 @@ function BpmnModelerComponent() {
   };
 
   const reloadView = () => {
+    setInitialState(false);
+    setDirty(false);
     fetchDiagram(id);
   };
 
@@ -1665,6 +1675,14 @@ function BpmnModelerComponent() {
     return getWkfModels(criteria);
   }, []);
 
+  function setDirty(dirty = true) {
+    const axelor = getAxelorScope();
+    if (axelor?.useActiveTab) {
+      const [, setTabState] = axelor.useActiveTab();
+      setTabState({ dirty });
+    }
+  }
+
   useEffect(() => {
     window.top && window.top.addEventListener("beforeunload", alertUser);
     return () => {
@@ -1673,63 +1691,18 @@ function BpmnModelerComponent() {
   });
 
   useEffect(() => {
-    const checkDirty = async () => {
-      const { xml } = await bpmnModeler.saveXML({ format: true });
-      const diagramXml = diagramXmlRef.current;
-      return `${diagramXml}` !== `${xml}`;
-    };
-
-    // check angular scope available
-    const axelorScope = getAxelorScope();
-    const angular = window.top && window.top.angular;
-    if (angular && angular.element) {
-      const scope = angular
-        .element(
-          window.top.document.querySelector(
-            '[ng-repeat="tab in navTabs"][class="ng-scope active"] [ng-click="closeTab(tab)"]'
-          )
-        )
-        .scope();
-      if (!scope) return;
-      scope.tab.$viewScope.confirmDirty = async function (
-        callback,
-        cancelCallback
-      ) {
-        try {
-          const isDirty = await checkDirty();
-          if (!isDirty) {
-            return callback && callback();
-          } else {
-            axelorScope?.dialogs &&
-              axelorScope.dialogs.confirm(
-                translate(
-                  "Current changes will be lost. Do you really want to proceed?"
-                ),
-                function (confirmed) {
-                  if (!confirmed) {
-                    return cancelCallback && cancelCallback();
-                  }
-                  return callback && callback();
-                }
-              );
-          }
-        } catch (error) {
-          console.error(error);
-        }
+    if (initialState) {
+      const checkDirty = async () => {
+        const isDirty = await checkIfUpdated();
+        setDirty(isDirty);
       };
-    } else {
-      // v7 migration
-      const tabScope = axelorScope?.tab;
-      const tabName = tabScope && tabScope.name;
-      if (tabName) {
-        tabScope.checkDirty = async (_tabName) =>
-          _tabName === tabName ? await checkDirty() : false;
-        return () => {
-          tabScope.checkDirty = null;
-        };
-      }
+      const eventBus = bpmnModeler.get("eventBus");
+      eventBus.on("elements.changed", checkDirty);
+      return () => {
+        eventBus.off("elements.changed", checkDirty);
+      };
     }
-  }, []);
+  }, [initialState]);
 
   useEffect(() => {
     let modeler = {

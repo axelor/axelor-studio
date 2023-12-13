@@ -5,6 +5,7 @@ import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles({
   groupLabel: {
@@ -23,29 +24,38 @@ const useStyles = makeStyles({
   },
 });
 
-export default function StartEventInitiator({ element, index, label }) {
+export default function StartEventInitiator({
+  element,
+  index,
+  label,
+  bpmnModeler,
+}) {
   const [isVisible, setVisible] = useState(false);
   const classes = useStyles();
 
   const showLabel = () => {
     if (!element) return;
-    let messageEventDefinition =
-      eventDefinitionHelper.getMessageEventDefinition(element);
+    let messageEventDefinition = eventDefinitionHelper.getMessageEventDefinition(
+      element
+    );
     if (messageEventDefinition) {
       return false;
     }
-    let timerEventDefinition =
-      eventDefinitionHelper.getTimerEventDefinition(element);
+    let timerEventDefinition = eventDefinitionHelper.getTimerEventDefinition(
+      element
+    );
     if (timerEventDefinition) {
       return false;
     }
-    let signalEventDefinition =
-      eventDefinitionHelper.getSignalEventDefinition(element);
+    let signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
+      element
+    );
     if (signalEventDefinition) {
       return false;
     }
-    let conditionalEventDefinition =
-      eventDefinitionHelper.getConditionalEventDefinition(element);
+    let conditionalEventDefinition = eventDefinitionHelper.getConditionalEventDefinition(
+      element
+    );
     if (conditionalEventDefinition) {
       return false;
     }
@@ -85,6 +95,11 @@ export default function StartEventInitiator({ element, index, label }) {
               return { initiator: bo && bo.get("initiator") };
             },
             set: function (element, values) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: values["initiator"],
+              });
               element.businessObject.initiator = values["initiator"];
             },
           }}

@@ -4,6 +4,7 @@ import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles({
   groupLabel: {
@@ -38,7 +39,7 @@ function getLinkEventDefinition(element) {
   return linkEventDefinition;
 }
 
-export default function LinkProps({ element, index, label }) {
+export default function LinkProps({ element, index, label, bpmnModeler }) {
   const [isVisible, setVisible] = useState(false);
   const [linkEventDefinition, setLinkEventDefinition] = useState(null);
 
@@ -78,6 +79,11 @@ export default function LinkProps({ element, index, label }) {
             },
 
             set: function (element, values) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: values["link-name"],
+              });
               element.businessObject.eventDefinitions[0].name =
                 values["link-name"];
             },

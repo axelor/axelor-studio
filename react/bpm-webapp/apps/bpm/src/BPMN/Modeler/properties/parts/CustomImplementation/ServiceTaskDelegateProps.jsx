@@ -26,7 +26,7 @@ import {
   Checkbox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import { openWebApp } from "./utils";
+import { openWebApp, setDummyProperty } from "./utils";
 
 const eventTypes = [
   "bpmn:StartEvent",
@@ -143,7 +143,12 @@ const implementationOptions = [
   { name: translate("External"), value: "external" },
 ];
 
-export default function ServiceTaskDelegateProps({ element, index, label }) {
+export default function ServiceTaskDelegateProps({
+  element,
+  index,
+  label,
+  bpmnModeler,
+}) {
   const [isVisible, setVisible] = useState(false);
   const [implementationType, setImplementationType] = useState("");
   const [bindingType, setBindingType] = useState("latest");
@@ -173,6 +178,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
   );
 
   const setPropertyValue = (propertyName, value) => {
+    setDummyProperty({ bpmnModeler, element, value });
     const bo = getBusinessObject(element);
     if (bo) {
       bo[propertyName] = value;
@@ -181,6 +187,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
 
   const setProperty = React.useCallback(
     (name, value) => {
+      setDummyProperty({ bpmnModeler, element, value });
       let bo = getBusinessObject(element);
       if ((element && element.type) === "bpmn:Participant") {
         bo = getBusinessObject(bo.processRef);
@@ -196,7 +203,7 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
         delete bo.$attrs[propertyName];
       }
     },
-    [element]
+    [element, bpmnModeler]
   );
 
   const getProperty = React.useCallback(
@@ -548,6 +555,11 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                     },
                     set: function (e, values) {
                       if (element.businessObject) {
+                        setDummyProperty({
+                          bpmnModeler,
+                          element,
+                          value: values.resultVariable || undefined,
+                        });
                         element.businessObject.resultVariable =
                           values.resultVariable || undefined;
                       }
@@ -698,8 +710,9 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                       modelProperty: "decisionRefVersion",
                       get: function () {
                         return {
-                          decisionRefVersion:
-                            getPropertyValue("decisionRefVersion"),
+                          decisionRefVersion: getPropertyValue(
+                            "decisionRefVersion"
+                          ),
                         };
                       },
                       set: function (e, values) {
@@ -877,6 +890,11 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
                     set: function (element, values) {
                       let taskPriority = values.taskPriority;
                       if (element.businessObject) {
+                        setDummyProperty({
+                          bpmnModeler,
+                          element,
+                          value: taskPriority,
+                        });
                         element.businessObject.taskPriority = taskPriority;
                       }
                     },

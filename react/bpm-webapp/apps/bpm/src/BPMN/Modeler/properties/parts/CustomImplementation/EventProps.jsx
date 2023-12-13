@@ -118,6 +118,7 @@ export default function EventProps({
             element={element}
             bpmnFactory={bpmnFactory}
             timerEventDefinition={renderType.eventDefinition}
+            bpmnModeler={bpmnModeler}
           />
         );
       case "compensation":

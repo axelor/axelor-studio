@@ -5,6 +5,7 @@ import {
   CustomSelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 export default function EscalationEventProps({
   element,
@@ -69,6 +70,11 @@ export default function EscalationEventProps({
               escalationEventDefinition &&
               escalationEventDefinition.escalationRef
             ) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: ele.name,
+              });
               escalationEventDefinition.escalationRef.name = ele.name;
             }
           },
@@ -102,6 +108,11 @@ export default function EscalationEventProps({
                   escalationEventDefinition &&
                   escalationEventDefinition.escalationRef
                 ) {
+                  setDummyProperty({
+                    bpmnModeler,
+                    element,
+                    value: ele.name,
+                  });
                   escalationEventDefinition.escalationRef.name = value.name;
                   getOptions();
                   setSelectedEscalation(ele && ele.id);
@@ -133,6 +144,11 @@ export default function EscalationEventProps({
                 if (!escalationEventDefinition) return;
                 let reference = escalationEventDefinition.get("escalationRef");
                 if (reference) {
+                  setDummyProperty({
+                    bpmnModeler,
+                    element,
+                    value: value.escalationCode,
+                  });
                   reference.escalationCode = value.escalationCode;
                 }
               },
@@ -158,6 +174,11 @@ export default function EscalationEventProps({
             },
             set: function (element, values) {
               if (!escalationEventDefinition) return;
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: values.escalationCodeVariable || undefined,
+              });
               escalationEventDefinition["camunda:escalationCodeVariable"] =
                 values.escalationCodeVariable || undefined;
             },

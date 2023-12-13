@@ -11,6 +11,7 @@ import {
   SelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 function getContainedActivities(element) {
   return getFlowElements(element, "bpmn:Activity");
@@ -105,6 +106,11 @@ export default function CompensateProps({
           },
           set: function (element, values) {
             if (!compensateEventDefinition) return;
+            setDummyProperty({
+              bpmnModeler,
+              element,
+              value: !values.waitForCompletion || false,
+            });
             compensateEventDefinition.waitForCompletion =
               !values.waitForCompletion || false;
           },
@@ -134,6 +140,7 @@ export default function CompensateProps({
                 elementRegistry && elementRegistry.get(activityRef)
               );
             if (!compensateEventDefinition) return;
+            setDummyProperty({ bpmnModeler, element, value: activityRef });
             compensateEventDefinition.activityRef = activityRef;
           },
         }}

@@ -27,6 +27,7 @@ import {
   Textbox,
 } from "../../../../../components/properties/components";
 import { TASK_LISTENER_EVENT_TYPE_OPTION } from "../../../constants";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
@@ -432,6 +433,11 @@ export default function ListenerProps({
 
   const setScriptValue = (values) => {
     const listener = getListener();
+    setDummyProperty({
+      bpmnModeler,
+      element,
+      value: true,
+    });
     if (!listener?.script) {
       listener.script =
         listener.script ||
@@ -585,6 +591,11 @@ export default function ListenerProps({
                   set: function (e, values) {
                     const listener = getListener();
                     if (!listener) return;
+                    setDummyProperty({
+                      bpmnModeler,
+                      element,
+                      value: values.listenerId,
+                    });
                     listener.id = values.listenerId;
                   },
                   validate: function (e, values) {
@@ -851,7 +862,11 @@ export default function ListenerProps({
                           ),
                           type = getTimerDefinitionType(timerDefinition),
                           definition = type && timerDefinition.get(type);
-
+                        setDummyProperty({
+                          bpmnModeler,
+                          element,
+                          value: values.timerDefinitio,
+                        });
                         if (definition) {
                           definition.body = values.timerDefinition || undefined;
                         }
