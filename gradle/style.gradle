@@ -51,7 +51,7 @@ spotless {
       exclude '**/bolt-module/src/main/resources/configurators/**'
       exclude '.idea/**'
     }
-    eclipseWtp('xml').configFile("${project.rootDir}/gradle/spotless.xml.prefs")
+    eclipseWtp('xml').configFile("${project.projectDir}/gradle/spotless.xml.prefs")
     trimTrailingWhitespace()
   }
 
