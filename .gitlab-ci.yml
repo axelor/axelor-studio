@@ -64,6 +64,7 @@ spotless:
     - if: '$CI_PIPELINE_SOURCE != "schedule"'
 
 .publish_template: &publish_configuration
+  extends: .global-env
   stage: plan
   cache:
     - *global_cache_pull

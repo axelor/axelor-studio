@@ -39,6 +39,11 @@ body,
 
 .dmn-js-parent {
   top: 8px;
+  height: calc(100% - 75px) !important;
+}
+
+.powered-by__logo {
+  display: none;
 }
 
 #resize-handler {
@@ -84,7 +89,7 @@ body,
   align-items: center;
 }
 
-.snackbarAlert > .MuiAlert-message {
+.snackbarAlert>.MuiAlert-message {
   font-size: 14px;
 }
 
