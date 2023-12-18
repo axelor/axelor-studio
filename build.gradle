@@ -80,7 +80,7 @@ dependencies {
 }
 
 changelog {
-  version baseVersion
+  version = baseVersion
   output.set(file("CHANGELOG.md"))
   inputPath.set(file("changelogs/unreleased"))
   types.set(["Feature", "Change", "Deprecate", "Remove", "Fix", "Security"])
