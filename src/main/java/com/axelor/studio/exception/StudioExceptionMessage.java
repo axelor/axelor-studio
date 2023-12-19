@@ -254,5 +254,4 @@ public final class StudioExceptionMessage {
   public static final String STUDIO_ADD_NEW = /*$$(*/ "Add new" /*)*/;
   public static final String STUDIO_TOOLBAR = /*$$(*/ "Toolbar" /*)*/;
   public static final String STUDIO_MENUBAR = /*$$(*/ "Menubar" /*)*/;
-
 }
