@@ -61,4 +61,10 @@
     <option value="false">False</option>
   </selection>
 
+  <selection name="studio-wkf-process-update-status-select">
+    <option value="1">Draft</option>
+    <option value="2">Applied</option>
+    <option value="3">Error</option>
+  </selection>
+
 </object-views>

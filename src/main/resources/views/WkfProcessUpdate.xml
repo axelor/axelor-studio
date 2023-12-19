@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.1.xsd">
+
+    <grid name="wkf-process-update-grid" model="com.axelor.studio.db.WkfProcessUpdate"
+          title="Process update">
+        <field name="name"/>
+        <field name="statusSelect"/>
+    </grid>
+
+    <form name="wkf-process-update-form" model="com.axelor.studio.db.WkfProcessUpdate"
+          title="Process update">
+        <toolbar>
+            <button name="uploadBtn" icon="fa-upload"
+                    onClick="save,action.wkf.process.view.upload.file.popup"/>
+            <button name="downloadBtn" icon="fa-download"
+                    onClick="action-wkf-process-update-method-export"/>
+        </toolbar>
+        <panel name="mainPanel">
+            <field name="statusSelect" showTitle="false" readonly="true" widget="NavSelect"
+                   colSpan="8"/>
+            <field name="name"/>
+            <field name="script" widget="codeEditor" height="500" colSpan="12" x-code-syntax="yaml"/>
+            <button name="applyBtn" title="Apply"
+                    onClick="save,action-wkf-process-update-method-exec-script"/>
+        </panel>
+    </form>
+
+    <form name="wkf-process-upload-file-wizard-form" title="Upload File"
+          model="com.axelor.utils.db.Wizard" width="large"
+          onSave="action-wkf-process-update-method-generate-script">
+        <panel name="mainPanel">
+            <field name="$_operationMetaFile" title="operations" widget="binary-link"
+                   type="many-to-one" target="com.axelor.meta.db.MetaFile"/>
+        </panel>
+    </form>
+
+    <action-method name="action-wkf-process-update-method-exec-script">
+        <call class="com.axelor.studio.bpm.web.ProcessInstanceModificationController"
+              method="executeScript"/>
+    </action-method>
+
+    <action-method name="action-wkf-process-update-method-generate-script">
+        <call class="com.axelor.studio.bpm.web.ProcessInstanceModificationController"
+              method="generateScript"/>
+    </action-method>
+
+    <action-method name="action-wkf-process-update-method-export">
+        <call class="com.axelor.studio.bpm.web.ProcessInstanceModificationController"
+              method="export"/>
+    </action-method>
+
+    <action-view name="action.wkf.process.view.upload.file.popup" title="Upload File"
+                 model="com.axelor.utils.db.Wizard">
+        <view type="form" name="wkf-process-upload-file-wizard-form"/>
+        <view-param name="popup" value="reload"/>
+        <view-param name="width" value="800"/>
+        <view-param name="show-confirm" value="false"/>
+    </action-view>
+
+</object-views>

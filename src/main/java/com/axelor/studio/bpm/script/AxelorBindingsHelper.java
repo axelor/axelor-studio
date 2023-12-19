@@ -24,6 +24,7 @@ import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
 import com.axelor.studio.bpm.utils.BpmLoggingHelper;
+import com.axelor.studio.helper.MigrationHelper;
 import com.axelor.utils.helpers.context.FullContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +46,7 @@ public class AxelorBindingsHelper {
     bindings.put("__transform__", WkfTransformationHelper.class);
     bindings.put("__config__", AppSettings.get());
     bindings.put("__log__", BpmLoggingHelper.get());
+    bindings.put("__migration__", MigrationHelper.class);
     return bindings;
   }
 }

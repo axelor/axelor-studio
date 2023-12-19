@@ -40,6 +40,8 @@ import com.axelor.studio.bpm.listener.WkfRequestListener;
 import com.axelor.studio.bpm.mapper.BpmMapperScriptGeneratorServiceImpl;
 import com.axelor.studio.bpm.service.AppLoaderExportBpmServiceImpl;
 import com.axelor.studio.bpm.service.AppLoaderImportBpmServiceImpl;
+import com.axelor.studio.bpm.service.ProcessInstanceModificationService;
+import com.axelor.studio.bpm.service.ProcessInstanceModificationServiceImpl;
 import com.axelor.studio.bpm.service.WkfBpmImportService;
 import com.axelor.studio.bpm.service.WkfBpmImportServiceImpl;
 import com.axelor.studio.bpm.service.WkfCommonService;
@@ -256,5 +258,6 @@ public class StudioModule extends AxelorModule {
     bind(WkfLoggerInitService.class).to(WkfLoggerInitServiceImpl.class);
     bind(WkfBpmImportService.class).to(WkfBpmImportServiceImpl.class);
     bind(WkfModelImportListener.class);
+    bind(ProcessInstanceModificationService.class).to(ProcessInstanceModificationServiceImpl.class);
   }
 }

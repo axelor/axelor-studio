@@ -701,4 +701,9 @@ public final class BpmExceptionMessage {
   public static final String
       STUDIO_DMN_CURRENT_CHANGES_WILL_BE_LOST_DO_YOU_REALLY_WANT_TO_PROCEED = /*$$(*/
           "Current changes will be lost. Do you really want to proceed?" /*)*/;
+  public static final String BPM_YAML_INVALID_FILE = /*$$(*/ "Invalid File" /*)*/;
+  public static final String BPM_YAML_UNSUPPORTED_OPERATION = /*$$(*/
+          "Unsupported operation : %s" /*)*/;
+  public static final String BPM_YAML_NOT_FOUND_FILE = /*$$(*/ "File not found" /*)*/;
+
 }
