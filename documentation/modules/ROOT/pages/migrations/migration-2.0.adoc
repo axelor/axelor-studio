@@ -1,7 +1,7 @@
 = 2.0 Migration Guide
 :toc-title:
 
-:product-version-changelog: https://github.com/axelor/axelor-open-platform/blob/6.0/CHANGELOG.md
+:product-version-changelog: https://github.com/axelor/axelor-studio/blob/main/CHANGELOG.md
 
 In this document, we will see the major steps to migrate from 1.x to 2.0.
 
