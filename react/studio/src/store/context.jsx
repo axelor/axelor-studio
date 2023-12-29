@@ -288,7 +288,8 @@ function StoreProvider({ children }) {
 				if (isPanel) {
 					if (
 						widgets[panelId].layout === PANEL_TYPE.grid &&
-						![TYPE.menubar, TYPE.toolbar].includes(widgets[panelId].type)
+						![TYPE.menubar, TYPE.toolbar].includes(widgets[panelId].type) &&
+						widgets[panelId].type !== TYPE.tabs
 					) {
 						const removedIds = arrangeGrid(
 							draft,
