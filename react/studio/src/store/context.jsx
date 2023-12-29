@@ -354,12 +354,16 @@ function StoreProvider({ children }) {
 				generateHistory(draft, draft.modelType === MODEL_TYPE.BASE)
 			const widgets =
 				draft.modelType === MODEL_TYPE.BASE ? "customFieldWidgets" : "widgets"
-			const tabsPanel = draft[widgets][id]
-			if (tabsPanel.items) {
-				tabsPanel.items.push(panelId)
-			} else {
-				tabsPanel.items = [panelId]
+			// if widget doesn't exist, do nothing
+			if (!draft[widgets][id]) return
+			// if widget isn't a tabs-panel, do nothing
+			if (draft[widgets][id].type !== TYPE.tabs) return
+
+			draft[widgets][id] = {
+				...draft[widgets][id],
+				items: [...(draft[widgets][id].items || []), panelId],
 			}
+
 			draft[widgets][panelId] = getPanel(draft.modelType, {
 				...(widgets === "customFieldWidgets"
 					? { model: draft.model.fullName }
