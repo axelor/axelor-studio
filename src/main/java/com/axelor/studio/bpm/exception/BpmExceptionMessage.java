@@ -703,7 +703,6 @@ public final class BpmExceptionMessage {
           "Current changes will be lost. Do you really want to proceed?" /*)*/;
   public static final String BPM_YAML_INVALID_FILE = /*$$(*/ "Invalid File" /*)*/;
   public static final String BPM_YAML_UNSUPPORTED_OPERATION = /*$$(*/
-          "Unsupported operation : %s" /*)*/;
+      "Unsupported operation : %s" /*)*/;
   public static final String BPM_YAML_NOT_FOUND_FILE = /*$$(*/ "File not found" /*)*/;
-
 }

@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Instance {
-    private List<String> name;
-    private List<String> operations;
+  private List<String> name;
+  private List<String> operations;
 
-    public Instance() {}
+  public Instance() {}
 }

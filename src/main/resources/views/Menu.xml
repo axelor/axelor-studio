@@ -272,11 +272,11 @@
   </action-view>
 
   <menuitem title="Process instance modification" name="menu-process-modification"
-            parent="bpm-app-technical-monitoring" action="menu.process.modification.all" order="55"
-            if="__config__.app?.isApp('bpm')"/>
+    parent="bpm-app-technical-monitoring" action="menu.process.modification.all" order="55"
+    if="__config__.app?.isApp('bpm')"/>
 
   <action-view name="menu.process.modification.all"
-               title="Process instance modification" model="com.axelor.studio.db.WkfProcessUpdate">
+    title="Process instance modification" model="com.axelor.studio.db.WkfProcessUpdate">
     <view type="grid" name="wkf-process-update-grid"/>
     <view type="form" name="wkf-process-update-form"/>
   </action-view>
