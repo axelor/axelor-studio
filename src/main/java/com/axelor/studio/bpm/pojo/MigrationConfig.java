@@ -1,4 +1,3 @@
-
 package com.axelor.studio.bpm.pojo;
 
 import java.util.List;
@@ -10,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class MigrationConfig {
-    private List<MigrationInstance> migration;
+  private List<MigrationInstance> migration;
 
-    public MigrationConfig() {}
+  public MigrationConfig() {}
 }

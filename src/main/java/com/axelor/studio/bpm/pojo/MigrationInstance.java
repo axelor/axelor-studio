@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class MigrationInstance {
-    private Instance instance;
+  private Instance instance;
 
-    public MigrationInstance() {}
+  public MigrationInstance() {}
 }
