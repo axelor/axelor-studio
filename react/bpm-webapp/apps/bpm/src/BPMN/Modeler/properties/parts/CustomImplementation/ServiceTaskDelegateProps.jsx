@@ -948,7 +948,10 @@ export default function ServiceTaskDelegateProps({ element, index, label }) {
               <Select
                 className={classes.select}
                 update={(value) => {
-                  setDmnModel(value);
+                  setDmnModel({
+                    ...value?.wkfDmnModel,
+                    decisionId: value?.decisionId,
+                  });
                 }}
                 name="dmnModel"
                 isLabel={true}
