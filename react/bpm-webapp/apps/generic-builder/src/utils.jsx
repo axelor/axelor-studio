@@ -34,8 +34,8 @@ function getModelName(str) {
 }
 
 function translate(str) {
-  if (window && window.top && window.top._t && typeof str === "string") {
-    return window.top._t(str);
+  if (window?.top?.axelor?.i18n.get && typeof str === "string") {
+    return window?.top?.axelor?.i18n.get(str);
   }
   return str;
 }
