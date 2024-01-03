@@ -5,6 +5,7 @@ import {
   CustomSelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 export default function SignalEventProps({
   element,
@@ -65,6 +66,11 @@ export default function SignalEventProps({
             setEle(ele);
             setSelectedSignal(value);
             if (signalEventDefinition && signalEventDefinition.signalRef) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: ele.name,
+              });
               signalEventDefinition.signalRef.name = ele.name;
             }
           },
@@ -95,6 +101,11 @@ export default function SignalEventProps({
             set: function (e, value) {
               if (signalEventDefinition && signalEventDefinition.signalRef) {
                 signalEventDefinition.signalRef.name = value.name;
+                setDummyProperty({
+                  bpmnModeler,
+                  element,
+                  value: value.name,
+                });
                 getOptions();
                 setSelectedSignal(ele && ele.id);
               }

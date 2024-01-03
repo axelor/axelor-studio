@@ -50,8 +50,9 @@ let isExternalTaskPriorityEnabled = function (element) {
     return true;
   }
 
-  let externalBo =
-      ImplementationTypeHelper.getServiceTaskLikeBusinessObject(element),
+  let externalBo = ImplementationTypeHelper.getServiceTaskLikeBusinessObject(
+      element
+    ),
     isExternalTask =
       ImplementationTypeHelper.getImplementationType(externalBo) === "external";
 
@@ -127,8 +128,8 @@ function createGeneralTabGroups(
   idProps(generalGroup, element, translate, idOptions, bpmnModeler);
   nameProps(generalGroup, element, bpmnFactory, canvas, translate, bpmnModeler);
   processProps(generalGroup, element, translate, processOptions, bpmnModeler);
-  executableProps(generalGroup, element, translate);
-  colorProps(generalGroup, element, translate);
+  executableProps(generalGroup, element, translate, bpmnModeler);
+  colorProps(generalGroup, element, translate, bpmnModeler);
 
   let userTaskProps = {
     id: "userTaskProps",

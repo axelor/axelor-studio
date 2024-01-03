@@ -8,6 +8,7 @@ import {
   SelectBox,
 } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles({
   groupLabel: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function BusinessRuleTaskProps({ element, index, label }) {
+export default function BusinessRuleTaskProps({ element, index, bpmnModeler }) {
   const [isVisible, setVisible] = useState(false);
   const [searchWith, setSearchWith] = useState(null);
   const [ifMultiple, setIfMultiple] = useState(null);
@@ -35,6 +36,7 @@ export default function BusinessRuleTaskProps({ element, index, label }) {
   const classes = useStyles();
 
   const setProperty = (name, value) => {
+    setDummyProperty({ bpmnModeler, element, value });
     const bo = getBusinessObject(element);
     let propertyName = `camunda:${name}`;
     if (!bo) return;

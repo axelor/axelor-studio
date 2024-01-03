@@ -20,6 +20,7 @@ import { Textbox } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import { fetchModels } from "../../../../../services/api";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
@@ -176,6 +177,7 @@ export default function ConditionalProps({
   };
 
   const setValue = (valExpression) => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     let expression =
       valExpression && valExpression.replace(/[\u200B-\u200D\uFEFF]/g, "");
     expression =

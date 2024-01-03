@@ -32,6 +32,7 @@ import {
 } from "../../../../../components/properties/components";
 import AlertDialog from "../../../../../components/AlertDialog";
 import { translate, getBool } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
@@ -298,6 +299,7 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
 
   const setProperty = React.useCallback(
     (name, value) => {
+      setDummyProperty({ bpmnModeler, element, value });
       let bo = getBusinessObject(element);
       if ((element && element.type) === "bpmn:Participant") {
         bo = getBusinessObject(bo.processRef);
@@ -313,7 +315,7 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
         delete bo.$attrs[propertyName];
       }
     },
-    [element]
+    [element, bpmnModeler]
   );
 
   const getProperty = React.useCallback(

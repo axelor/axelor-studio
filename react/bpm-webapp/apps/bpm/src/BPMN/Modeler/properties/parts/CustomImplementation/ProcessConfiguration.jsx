@@ -40,6 +40,7 @@ import {
   getProcessConfig,
   createProcessConfiguration,
   createParameter,
+  setDummyProperty,
 } from "./utils";
 import {
   addTranslations,
@@ -174,6 +175,7 @@ export default function ProcessConfiguration({
   index,
   label,
   bpmnFactory,
+  bpmnModeler,
 }) {
   const classes = useStyles();
   const [processConfigList, setProcessConfigList] = useState(null);
@@ -340,6 +342,7 @@ export default function ProcessConfiguration({
   };
 
   const removeElement = (optionIndex) => {
+    setDummyProperty({ bpmnModeler, element, value: optionIndex });
     let processConfigList = getProcessConfigList();
     if (optionIndex < 0) return;
     processConfigList.splice(optionIndex, 1);
@@ -364,6 +367,7 @@ export default function ProcessConfiguration({
   };
 
   const addItems = () => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     const cloneProcessConfigList = [...(processConfigList || [])];
     cloneProcessConfigList.push({ ...initialProcessConfigList });
     setProcessConfigList(cloneProcessConfigList);
@@ -374,12 +378,15 @@ export default function ProcessConfiguration({
   };
 
   const removeItem = (index) => {
+    setDummyProperty({ bpmnModeler, element, value: index });
     const cloneProcessConfigList = [...(processConfigList || [])];
     cloneProcessConfigList.splice(index, 1);
     setProcessConfigList(cloneProcessConfigList);
   };
 
   const updateValue = async (value, name, label, index, valueLabel) => {
+    setDummyProperty({ bpmnModeler, element, value });
+
     const cloneProcessConfigList = [...(processConfigList || [])];
     cloneProcessConfigList[index] = {
       ...(cloneProcessConfigList[index] || {}),
@@ -451,9 +458,13 @@ export default function ProcessConfiguration({
       : undefined;
   };
 
-  const updateStartModel = React.useCallback((processConfig) => {
-    setStartModel(getData(processConfig));
-  }, []);
+  const updateStartModel = React.useCallback(
+    (processConfig) => {
+      setDummyProperty({ bpmnModeler, element, value: true });
+      setStartModel(getData(processConfig));
+    },
+    [bpmnModeler, element]
+  );
 
   const onConfirm = async () => {
     if (translations) {
@@ -1258,6 +1269,7 @@ export default function ProcessConfiguration({
                 setTranslations(translations);
                 setRemovedTranslations(removedTranslations);
               }}
+              bpmnModeler={bpmnModeler}
             />
           </DialogContent>
           <DialogActions>

@@ -31,6 +31,7 @@ import {
   getMenu,
 } from "../../../../../services/api";
 import { translate, getBool } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 import { USER_TASKS_TYPES } from "../../../constants";
 import {
   createElement,
@@ -140,7 +141,7 @@ export function createMenus(parent, bpmnFactory, properties) {
   return createElement("camunda:Menus", parent, bpmnFactory, properties);
 }
 
-export default function MenuActionPanel({ element, bpmnFactory }) {
+export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
   const [createUserAction, setCreateUserAction] = useState(false);
   const [deadlineFieldPath, setDeadlineFieldPath] = useState(null);
   const [emailNotification, setEmailNotification] = useState(false);
@@ -177,6 +178,7 @@ export default function MenuActionPanel({ element, bpmnFactory }) {
 
   const setProperty = React.useCallback(
     (name, value) => {
+      setDummyProperty({ bpmnModeler, element, value });
       const bo = getBusinessObject(element);
       let propertyName = `camunda:${name}`;
       if (!bo) return;
@@ -189,7 +191,7 @@ export default function MenuActionPanel({ element, bpmnFactory }) {
         delete bo.$attrs[propertyName];
       }
     },
-    [element]
+    [element, bpmnModeler]
   );
 
   const updatePropertyValue = (name, value, optionLabel = "name") => {
