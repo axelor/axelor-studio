@@ -47,6 +47,7 @@ spotless {
     target fileTree(projectDir) {
       include '**/*.xml'
       exclude '**/build/**'
+      exclude '**/.gradle/**'
       exclude '**/node_modules/**'
       exclude '**/bolt-module/src/main/resources/configurators/**'
       exclude '.idea/**'
