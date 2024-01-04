@@ -296,7 +296,7 @@ function DMNModeler() {
     return { ...clone };
   };
 
-  const getSheet = () => {
+  const getSheet = React.useCallback(() => {
     if (!dmnModeler) return;
     const activeEditor = dmnModeler.getActiveViewer();
     if (!activeEditor) return;
@@ -398,7 +398,7 @@ function DMNModeler() {
         setRule(null);
       }
     });
-  };
+  }, [decision]);
 
   const renderComponent = (entry) => {
     if (!entry && entry.widget) return;
@@ -896,6 +896,16 @@ function DMNModeler() {
     setId(id);
   }, [fetchDiagram]);
 
+  useEffect(() => {
+    if (!dmnModeler) return;
+    dmnModeler.on("views.changed", (event) => {
+      const { activeView } = event;
+      if (activeView?.type === "decisionTable") {
+        getSheet();
+      }
+    });
+  }, [getSheet]);
+
   const getNameCol = (nameCol) => {
     nameCol && setNameCol(nameCol);
   };
@@ -1093,22 +1103,9 @@ function DMNModeler() {
               onClick={() => {
                 setWidth((width) => (width === 0 ? 380 : 0));
                 setCSSWidth(width === 0 ? 380 : 0);
-                const definitions = dmnModeler?.getDefinitions();
-                const latestDecision = definitions?.drgElement?.find(
-                  (d) => d.id === decision?.id
-                );
-                if (
-                  latestDecision?.businessObject?.decisionLogic?.$type ===
-                  "dmn:LiteralExpression"
-                ) {
-                  return;
-                }
-                if (latestDecision) {
-                  getSheet();
-                }
               }}
             >
-              Properties Panel
+              {translate("Properties Panel")}
             </div>
           </Resizable>
         </div>

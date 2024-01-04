@@ -185,7 +185,7 @@ function checkInvalidSubfields(builderFields) {
 const alert = (msg) => {
   const dialogs = window.axelor?.dialogs || window.top.axelor?.dialogs;
   if (dialogs) {
-    const showMsg = dialogs.error.bind(dialogs, msg);
+    const showMsg = dialogs.error({ content: msg });
     return showMsg();
   }
   return window.alert(msg);

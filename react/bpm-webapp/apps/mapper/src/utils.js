@@ -42,7 +42,7 @@ function getText(key, ...values) {
 }
 
 export function translate(key, ...args) {
-  const _t = window._t || window.top._t;
+  const _t = window?.top?.axelor?.i18n.get;
   if (_t && typeof key === 'string') {
     return _t(key, ...args);
   }

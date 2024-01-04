@@ -35,7 +35,7 @@ import {
   getMetaFields,
   fetchModels,
 } from "../../../../../services/api";
-import { openWebApp } from "./utils";
+import { openWebApp, setDummyProperty } from "./utils";
 import Ids from "ids";
 
 function nextId() {
@@ -367,6 +367,7 @@ export default function CallActivityProps({ element, index, label }) {
 
   const setProperty = React.useCallback(
     (name, value) => {
+      setDummyProperty({ bpmnModeler, element, value });
       let bo = getBusinessObject(element);
       if ((element && element.type) === "bpmn:Participant") {
         bo = getBusinessObject(bo && bo.processRef);
@@ -382,7 +383,7 @@ export default function CallActivityProps({ element, index, label }) {
         delete bo.$attrs[propertyName];
       }
     },
-    [element]
+    [element, bpmnModeler]
   );
 
   const getSelectValue = React.useCallback(
@@ -480,6 +481,11 @@ export default function CallActivityProps({ element, index, label }) {
             },
 
             set: function (element, values) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: values?.callActivityType,
+              });
               setCallActivityType(values.callActivityType);
             },
           }}
@@ -502,6 +508,11 @@ export default function CallActivityProps({ element, index, label }) {
                 element.businessObject.calledElement = values.calledElement;
                 element.businessObject.calledElementBinding = "latest";
                 element.businessObject.caseRef = undefined;
+                setDummyProperty({
+                  bpmnModeler,
+                  element,
+                  value: values?.calledElement,
+                });
                 updateModel(values.calledElement);
               },
               validate: function (e, values) {
@@ -551,6 +562,11 @@ export default function CallActivityProps({ element, index, label }) {
                 element.businessObject.caseRef = values.caseRef;
                 element.businessObject.calledElement = undefined;
                 element.businessObject.caseBinding = "latest";
+                setDummyProperty({
+                  bpmnModeler,
+                  element,
+                  value: values?.caseRef,
+                });
               },
               validate: function (e, values) {
                 if (!values.caseRef && callActivityType === "cmmn") {

@@ -17,6 +17,7 @@ import {
 } from "../../../../../services/api";
 import { translate, getBool } from "../../../../../utils";
 import { USER_TASKS_TYPES, DATA_STORE_TYPES } from "../../../constants";
+import { setDummyProperty } from "./utils";
 
 const CONDITIONAL_SOURCES = [
   "bpmn:EventBasedGateway",
@@ -101,7 +102,7 @@ const useStyles = makeStyles({
 });
 
 export default function ModelProps(props) {
-  const { element, index, label, handleMenuActionTab } = props;
+  const { element, index, label, handleMenuActionTab, bpmnModeler } = props;
   const [isVisible, setVisible] = useState(false);
   const [metaModel, setMetaModel] = useState(null);
   const [metaJsonModel, setMetaJsonModel] = useState(null);
@@ -190,6 +191,7 @@ export default function ModelProps(props) {
 
   const setProperty = React.useCallback(
     (name, value) => {
+      setDummyProperty({ bpmnModeler, element, value });
       let bo = getBusinessObject(element);
       if ((element && element.type) === "bpmn:Participant") {
         bo = getBusinessObject(bo && bo.processRef);
@@ -205,7 +207,7 @@ export default function ModelProps(props) {
         delete bo.$attrs[propertyName];
       }
     },
-    [element]
+    [element, bpmnModeler]
   );
 
   const getProperty = React.useCallback(

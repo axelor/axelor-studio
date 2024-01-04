@@ -36,6 +36,7 @@ import {
   NUM_ATTRIBUTES,
   ALL_ATTRIBUTES,
 } from "./constants";
+import { setDummyProperty } from "./utils";
 import Ids from "ids";
 
 
@@ -162,6 +163,7 @@ export default function ViewAttributePanel({
   const [processModels, setProcessModels] = useState([]);
 
   const addModelView = () => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     setRow({
       ...(row || {}),
       values: [...((row && (row.values || [])) || []), { ...valueObj }],
@@ -179,6 +181,7 @@ export default function ViewAttributePanel({
   };
 
   const updateValue = (value, name, label, index, valueLabel) => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     const cloneRow = { ...row };
     let values = cloneRow.values;
     values[index] = {
@@ -192,6 +195,7 @@ export default function ViewAttributePanel({
   };
 
   const addItems = (index) => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     const cloneRow = { ...row };
     let values = cloneRow.values;
     values[index] = {
@@ -221,6 +225,7 @@ export default function ViewAttributePanel({
   };
 
   const handleItems = (value, name, label, index, itemIndex, valueLabel) => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     const cloneRow = { ...row };
     let values = cloneRow.values;
     let items = cloneRow.values[index].items;
@@ -248,6 +253,7 @@ export default function ViewAttributePanel({
   };
 
   const removeItem = (valueIndex, itemIndex) => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     const cloneRow = { ...row };
     let values = cloneRow.values;
     let items = cloneRow.values[valueIndex].items;
@@ -261,6 +267,7 @@ export default function ViewAttributePanel({
   };
 
   const removeCard = (index) => {
+    setDummyProperty({ bpmnModeler, element, value: true });
     const cloneRow = { ...row };
     let values = cloneRow.values;
     values.splice(index, 1);

@@ -24,6 +24,7 @@ import { translate, getBool } from "../../../../../utils";
 import { fetchModels } from "../../../../../services/api";
 import Select from "../../../../../components/Select";
 import { TASK_LISTENER_EVENT_TYPE_OPTION } from "../../../constants";
+import { setDummyProperty } from "./utils";
 
 const conditionType = "script";
 
@@ -135,6 +136,11 @@ export default function ConditionalEventProps({
 
   const setValue = (modelProperty) => {
     return function (element, values) {
+      setDummyProperty({
+        bpmnModeler,
+        element,
+        value: values[modelProperty],
+      });
       let props = {};
       props["camunda:" + modelProperty] = values[modelProperty] || undefined;
       conditionalEventDefinition[modelProperty] = values[modelProperty];

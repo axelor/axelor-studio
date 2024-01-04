@@ -37,7 +37,7 @@ import { getBool, translate } from "../../../../../utils";
 import { getStudioApp, fetchWkf } from "../../../../../services/api";
 import Service from "../../../../../services/Service";
 import { WKF_COLORS, STATUS } from "../../../constants";
-import { openTabView, openWebApp } from "./utils";
+import { openTabView, openWebApp, setDummyProperty } from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   label: {
@@ -126,7 +126,7 @@ export default function Definition({
   enableStudioApp = false,
   addNewVersion = () => {},
   showError,
-  bpmnFactory,
+  bpmnModeler,
 }) {
   const [studioApp, setStudioApp] = useState(null);
   const [wkfStatusColor, setWkfStatusColor] = useState(null);
@@ -254,6 +254,11 @@ export default function Definition({
 
   const setProperty = React.useCallback(
     (name, value) => {
+      setDummyProperty({
+        bpmnModeler,
+        element: element?.rootElements && element?.rootElements[0],
+        value,
+      });
       let propertyName = `camunda:${name}`;
       if (!element) return;
       if (element.$attrs) {
@@ -265,7 +270,7 @@ export default function Definition({
         delete element.$attrs[propertyName];
       }
     },
-    [element]
+    [element, bpmnModeler]
   );
 
   const getVersionList = React.useCallback(async () => {

@@ -8,6 +8,7 @@ import {
   CustomSelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
+import { setDummyProperty } from "./utils";
 
 const setProperty = (name, value, element) => {
   const bo = getBusinessObject(element);
@@ -85,6 +86,11 @@ export default function MessageProps({
             setEle(ele);
             setSelectedMessage(value);
             if (messageEventDefinition && messageEventDefinition.messageRef) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: ele.name,
+              });
               messageEventDefinition.messageRef.name = ele.name;
             }
           },
@@ -106,6 +112,11 @@ export default function MessageProps({
             shouldValidate: true,
             elementType: "bpmn:Message",
             set: function (e, values) {
+              setDummyProperty({
+                bpmnModeler,
+                element,
+                value: true,
+              });
               let root = utils.getRoot(messageEventDefinition);
               if (is(element, "bpmn:SendTask")) {
                 setProperty("camunda:messageName", values["name"], element);
