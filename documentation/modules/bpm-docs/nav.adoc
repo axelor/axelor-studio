@@ -37,6 +37,7 @@
 *** xref:/documentation-general/gateway.adoc[Gateway]
 *** xref:/documentation-general/creation_modele_dmn.adoc[Création des modèles DMN]
 *** xref:/documentation-general/create_model_baml.adoc[Création des modèles BAML]
+*** xref:/documentation-general/process_runtime_modification.adoc[Modification d'instance de processus en cours d'exécution]
 
 
 ** xref:/annexes/[Annexes]
