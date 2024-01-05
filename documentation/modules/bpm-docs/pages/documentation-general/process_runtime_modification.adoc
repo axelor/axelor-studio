@@ -33,7 +33,25 @@ La fonctionnalité est basée sur un script YAML qui contient les modifications 
 
 La syntaxe est la suivante :
 
-image::yaml.png[Syntax]
+[source,yaml]
+----
+migration:
+  - instance:
+      name:
+        - "process-instance-1-id"
+        - "process-instance-2-id"
+      operations:
+        - cancelAll("activity-1-id")
+        - startBefore("activity-2-id")
+  - instance:
+      name:
+        - "process-instance-3-id"
+        - "process-instance-4-id"
+      operations:
+        - cancelAll("activity-3-id")
+        - startAfter("activity-4-id","var-name","var-value")
+
+----
 === Mapping des opérations
 Voici une correspondance entre les modifications possibles et les mots-clés qui peuvent les déclencher :
 
