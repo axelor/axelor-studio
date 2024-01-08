@@ -16,14 +16,14 @@ Groovy pre-defined variables has changed its expressions to adapt with AOP expre
 |===
 | Old name | New name | Objective
 | `$ctx` | `\\__ctx__` | Used for using the context Map of the BPM model
-| `$beans` | `\\__beans__` | access to the class Beans
-| `$transform` |`\\__tranform__` | give access to the transformation class defined in studio
-| `$date` | `\\__date__` | return the current date
-| `$user` | `\\__user__` | return the current user authenticated
-| `$time` | `\\__time__` | return the current time
-| `$repo` | `\\__repo__` | give access  the repo object
+| `$beans` | `\\__beans__` | Access to the class Beans
+| `$transform` |`\\__tranform__` | Give access to the transformation class defined in studio
+| `$date` | `\\__date__` | Return the current date
+| `$user` | `\\__user__` | Return the current user authenticated
+| `$time` | `\\__time__` | Return the current time
+| `$repo` | `\\__repo__` | Give access  the repo object
 | `$config` | `\\__config__` | The app configurations data
-| `$datetime` | `\\__datetime__` | return the current date time
+| `$datetime` | `\\__datetime__` | Return the current date time
 |===
 
 == Install Studio
@@ -32,13 +32,29 @@ Use the new enableFeature method of AppSettings to dynamically add the propertie
 
 image::enableStudio.png[enable studio]
 
-== Enable Studio Logging
+==  Display  logs
 
-Enable  BPM logging to be stored in logging files , you can easily activate this option by setting the `studio.bpm.logging` with `true` value
+=== Parameter the webapp
+
+In the `axelor-config.properties` file, you need to specify this configuration before deployment:
 ----
 # Enable BPMN logging
 studio.bpm.logging = true
 ----
+
+=== usage in the app
+
+No configuration is required in the application. logs are displayed on the instance scale :
+
+image::log-annexes.png[log BPM,align="left"]
+
+[NOTE]
+====
+1. **Clear log**: Clear the logs of the relevant instance.
+2. **Com.axelor.studio.bpm.service.job.ClearLogJob** is a batch job for clearing logs.
+3. When an instance is **terminated** (no more tokens in circulation within the instance), the logs are cleared.
+====
+
 == Enable track web service logs
 
 Enable  Track web service  logs will create a log file on any connector executed .
