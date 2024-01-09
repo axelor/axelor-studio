@@ -101,6 +101,7 @@ export default function EventProps({
             bpmnModdle={bpmnModdle}
             bpmnModeler={bpmnModeler}
             signalEventDefinition={renderType.eventDefinition}
+            id={id}
           />
         );
       case "escalation":
@@ -162,8 +163,8 @@ export default function EventProps({
     events.forEach((event) => {
       if (is(element, event)) {
         let messageEventDefinition = eventDefinitionHelper.getMessageEventDefinition(
-            element
-          ),
+          element
+        ),
           signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
             element
           );
