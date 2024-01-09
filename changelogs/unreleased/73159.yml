@@ -1,0 +1,4 @@
+---
+title : "BPM : Fix dirty tab feature"
+type : fix
+description : "Linked DMN should be selected and loaded while opened from BPM"

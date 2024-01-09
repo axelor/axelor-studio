@@ -1,0 +1,4 @@
+---
+title : "BPM : Code editing popup not fully implemented"
+type : fix
+description : "The code editing popup should be available everywhere in the builder when a script can be used "
