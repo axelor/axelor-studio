@@ -1,4 +1,5 @@
 ---
 title : "BPM : Get a visual feedback for the logs"
 type : feature
+description : "Get a maximum information when an error occurs in the BPM execution"
 
