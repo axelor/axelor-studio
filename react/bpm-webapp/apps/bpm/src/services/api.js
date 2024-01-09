@@ -59,9 +59,9 @@ export const getWkfDMNModels = async (options = {}) => {
   return wkf;
 };
 
-export const getWkfModels = async (options = {}) => {
+export const getWkfModels = async (options = {}, fields = []) => {
   let res = await Service.search("com.axelor.studio.db.WkfModel", {
-    fields: ["name"],
+    fields: ["name", ...fields],
     related: {
       wkfProcessList: RELATED_FIELDS,
     },

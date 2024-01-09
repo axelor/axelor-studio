@@ -73,6 +73,7 @@ export default function EventProps({
   bpmnFactory,
   bpmnModdle,
   bpmnModeler,
+  id
 }) {
   const [isVisible, setVisible] = useState(false);
   const [renderType, setRenderType] = useState(null);
@@ -89,6 +90,7 @@ export default function EventProps({
             messageEventDefinition={renderType.eventDefinition}
             bpmnModdle={bpmnModdle}
             bpmnModeler={bpmnModeler}
+            id={id}
           />
         );
       case "signal":
