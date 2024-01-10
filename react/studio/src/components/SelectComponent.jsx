@@ -22,11 +22,13 @@ export default function SelectComponent(_props) {
 		limit = 10,
 		data: preData = [],
 		isDisabled,
+
 		needsTargetModel,
 		canAddNew = false,
 		getOptionLabel,
 		shouldFetchInStart = false,
 		_domain,
+		...rest
 	} = _props.field
 	const { props, error, loader, filled } = _props
 	const { propertyList, setPropertyList, onChange, editWidgetType, modelType } =
@@ -51,9 +53,10 @@ export default function SelectComponent(_props) {
 	const [total, setTotal] = useState(0)
 	const [initialFetch, setInitialFetch] = useState(false)
 	const { targetModel } = propertyList
-	const disabled = isDisabled
-		? isDisabled(propertyList, editWidgetType, modelType)
-		: false
+
+	const disabled = isDisabled ? isDisabled(props) : false
+	const hide = rest.isHidden ? rest.isHidden(props) : false
+
 	const isTypeOnClick = name === "onClick" && type === "select"
 	const [isLoading, setIsLoading] = useState(true)
 	const { state } = useStore()
@@ -510,6 +513,9 @@ export default function SelectComponent(_props) {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [fetchOptions, moreDialog])
+	if (hide) {
+		return null
+	}
 
 	return (
 		<Box mt={2} d="flex" flexDirection="column" w={100}>

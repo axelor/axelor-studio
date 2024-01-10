@@ -47,13 +47,13 @@ export default function StaticSelection(_props) {
 		value = field[name] || ""
 	}
 	let disabled = false
+	let hide = false
 	if (rest.isDisabled) {
-		disabled = rest.isDisabled({
-			properties: propertyList,
-			metaFieldStore,
-			editWidgetType,
-			modelType,
-		})
+		disabled = rest.isDisabled(props)
+	}
+
+	if (rest.isHidden) {
+		hide = rest.isHidden(props)
 	}
 
 	if (
@@ -71,6 +71,9 @@ export default function StaticSelection(_props) {
 			? option.text
 			: option
 
+	if (hide) {
+		return null
+	}
 	return (
 		<>
 			<InputLabel mt={1} fontSize={7}>
