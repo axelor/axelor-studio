@@ -131,7 +131,7 @@ function getCallableType(bo) {
   return callActivityType;
 }
 
-export default function CallActivityProps({ element, index, label }) {
+export default function CallActivityProps({ element, index, label, bpmnModeler }) {
   const [isVisible, setVisible] = useState(false);
   const [custom, setCustom] = useState(false);
   const [callActivityType, setCallActivityType] = useState("bpmn");
@@ -177,7 +177,7 @@ export default function CallActivityProps({ element, index, label }) {
     if (value !== undefined) {
       try {
         values = JSON.parse(value);
-      } catch (errror) {}
+      } catch (errror) { }
     }
     return { values: values, combinator, checked };
   };
