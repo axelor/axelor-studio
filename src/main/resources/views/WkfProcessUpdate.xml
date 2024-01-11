@@ -57,6 +57,7 @@
     <view-param name="popup" value="reload"/>
     <view-param name="width" value="800"/>
     <view-param name="show-confirm" value="false"/>
+    <view-param name="show-toolbar" value="false"/>
   </action-view>
 
 </object-views>
