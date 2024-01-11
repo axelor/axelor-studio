@@ -1,5 +1,5 @@
 ---
-title : "APP BUILDER : Studio shouldn't be accessible from any view"
-type : fix
-description : 
+title: "APP BUILDER : Studio shouldn't be accessible from any view"
+type: fix
+description: |
   Added magic-wand icon to Open studio button
