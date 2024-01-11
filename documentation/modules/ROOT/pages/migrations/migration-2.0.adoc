@@ -1,0 +1,66 @@
+= 2.0 Migration Guide
+:toc-title:
+
+:product-version-changelog: https://github.com/axelor/axelor-studio/blob/main/CHANGELOG.md
+
+In this document, we will see the major steps to migrate from 1.x to 2.0.
+
+NOTE: Please check the {product-version-changelog}[change log] for detailed list of fixes, changes and improvements
+introduced in 2.0
+
+== BPM Groovy Script Variables  syntax changed
+
+Groovy pre-defined variables has changed its expressions to adapt with AOP expressions
+
+[cols="3"]
+|===
+| Old name | New name | Objective
+| `$ctx` | `\\__ctx__` | Used for using the context Map of the BPM model
+| `$beans` | `\\__beans__` | Access to the class Beans
+| `$transform` |`\\__tranform__` | Give access to the transformation class defined in studio
+| `$date` | `\\__date__` | Return the current date
+| `$user` | `\\__user__` | Return the current user authenticated
+| `$time` | `\\__time__` | Return the current time
+| `$repo` | `\\__repo__` | Give access  the repo object
+| `$config` | `\\__config__` | The app configurations data
+| `$datetime` | `\\__datetime__` | Return the current date time
+|===
+
+== Install Studio
+
+Use the new enableFeature method of AppSettings to dynamically add the properties "Enable app" to tell if studio is installed or not.
+
+image::enableStudio.png[enable studio]
+
+==  Display  logs
+
+=== Parameter the webapp
+
+In the `axelor-config.properties` file, you need to specify this configuration before deployment:
+----
+# Enable BPMN logging
+studio.bpm.logging = true
+----
+
+=== usage in the app
+
+No configuration is required in the application. logs are displayed on the instance scale :
+
+image::log-annexes.png[log BPM,align="left"]
+
+[NOTE]
+====
+1. **Clear log**: Clear the logs of the relevant instance.
+2. **Com.axelor.studio.bpm.service.job.ClearLogJob** is a batch job for clearing logs.
+3. When an instance is **terminated** (no more tokens in circulation within the instance), the logs are cleared.
+====
+
+== Enable track web service logs
+
+Enable  Track web service  logs will create a log file on any connector executed .
+
+image::enableWebServiceLogs.png[enable web service logs]
+
+== Order the requests on the connector
+
+WARNING: Please pay attention to the order of the requests on each connector. The new version will arrange the requests as they are defined by the order of the database. Therefore, please verify the order of the requests on the connectors.

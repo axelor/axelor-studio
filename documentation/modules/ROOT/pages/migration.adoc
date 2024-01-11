@@ -1,0 +1,9 @@
+= Migration Guides
+:toc:
+:toc-title:
+
+:product-changelog: https://github.com/axelor/axelor-open-platform/blob/{page-component-version}/CHANGELOG.md
+
+NOTE: Please check the {product-changelog}[change log] for detailed list of changes
+
+* xref:migrations/migration-2.0.adoc[Migrate from 1.x to 2.0]
