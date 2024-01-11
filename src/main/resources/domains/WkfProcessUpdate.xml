@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_6.1.xsd">
+
+  <module name="studio" package="com.axelor.studio.db"/>
+
+  <entity name="WkfProcessUpdate">
+    <string name="name" title="Name" required="true"/>
+    <integer name="statusSelect" title="Status" default="1"
+      selection="studio-wkf-process-update-status-select"/>
+    <string name="script" title="Script" large="true"/>
+    <extra-code><![CDATA[
+		public static final int STATUS_DRAFT = 1;
+		public static final int STATUS_APPLIED= 2;
+		public static final int STATUS_ERROR = 3;
+	]]></extra-code>
+  </entity>
+
+</domain-models>
