@@ -43,6 +43,7 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
+import com.axelor.studio.db.WkfInstanceVariable;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
@@ -483,6 +484,18 @@ public class WkfModelController {
       instance = Beans.get(WkfInstanceRepository.class).find(instance.getId());
       Beans.get(WkfLogService.class).clearLog(instance.getInstanceId());
       response.setReload(true);
+    } catch (Exception e) {
+      ExceptionHelper.trace(response, e);
+    }
+  }
+
+  public void showInstanceVariables(ActionRequest request, ActionResponse response) {
+    try {
+      WkfInstance instance = request.getContext().asType(WkfInstance.class);
+      instance = Beans.get(WkfInstanceRepository.class).find(instance.getId());
+      List<WkfInstanceVariable> variableList =
+          Beans.get(WkfInstanceService.class).getWkfInstanceVariables(instance);
+      response.setValue("$variableList", variableList);
     } catch (Exception e) {
       ExceptionHelper.trace(response, e);
     }

@@ -20,6 +20,7 @@ package com.axelor.studio.bpm.service.execution;
 import com.axelor.db.Model;
 import com.axelor.meta.CallMethod;
 import com.axelor.studio.db.WkfInstance;
+import com.axelor.studio.db.WkfInstanceVariable;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfTaskConfig;
 import java.util.List;
@@ -66,4 +67,6 @@ public interface WkfInstanceService {
 
   public void updateProcessInstance(
       WkfProcess process, String processInstanceId, int migrationStatus);
+
+  public List<WkfInstanceVariable> getWkfInstanceVariables(WkfInstance instance);
 }
