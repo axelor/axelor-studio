@@ -742,7 +742,6 @@ export default function ListenerProps({
                           const listener = getListener();
                           if (!listener) return;
                           listener.script.scriptValue = undefined;
-                          console.log(listener);
                           setScript(listener?.script?.value);
                           setOpenScriptDialog(true);
                         }}

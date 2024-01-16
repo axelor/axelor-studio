@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import find from "lodash/find";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import classnames from "classnames";
 
+import Select from "../../Select";
 import { translate } from "../../../utils";
 
 const useStyles = makeStyles({
@@ -22,7 +24,7 @@ const useStyles = makeStyles({
     marginBottom: 3,
   },
   add: {
-    top: "-23px !important",
+    top: "-15px !important",
     position: "absolute",
     height: 23,
     width: 24,
@@ -32,6 +34,9 @@ const useStyles = makeStyles({
     border: "1px solid #ccc",
     borderBottom: "none",
     right: 0,
+  },
+  endAdornment: {
+    right: 23,
   },
   clear: {
     top: "-23px !important",
@@ -63,6 +68,7 @@ export default function CustomSelectBox({
   definition,
   bpmnModeler,
   defaultOptions = [],
+  endAdornment,
 }) {
   const classes = useStyles();
   const {
@@ -71,7 +77,6 @@ export default function CustomSelectBox({
     id,
     referenceProperty,
     set,
-    emptyParameter = true,
     elementType,
     newElementIdPrefix,
     get,
@@ -86,7 +91,8 @@ export default function CustomSelectBox({
   ]);
 
   const setSelectedElement = React.useCallback(
-    (id) => {
+    (option) => {
+      const { id } = option || {};
       let rootElements =
         bpmnModeler &&
         bpmnModeler.get("canvas").getRootElement().businessObject.$parent
@@ -122,16 +128,13 @@ export default function CustomSelectBox({
       selectedElement.$parent = root;
       definition[referenceProperty] = selectedElement;
     }
-
-    setOptions([
-      ...(options || []),
-      {
-        name: `${name} (id=${id})`,
-        value: name,
-        id: id,
-      },
-    ]);
-    setSelectedElement(id);
+    let opt = {
+      name: `${name} (id=${id})`,
+      value: name,
+      id: id,
+    };
+    setOptions([...(options || []), opt]);
+    setSelectedElement(opt);
   };
 
   useEffect(() => {
@@ -153,27 +156,23 @@ export default function CustomSelectBox({
           {translate(label)}
         </label>
         <div className={classes.container}>
-          <select
-            id={`cam-extensionElements-${id}`}
-            className={classes.extensionElements}
+          <Select
             name="selectedExtensionElement"
-            data-list-entry-container
-            value={selectedOption || ""}
-            onChange={(e) => {
-              setSelectedElement(e.target.value);
-            }}
-          >
-            {options &&
-              options.length > 0 &&
-              options.map((option) => (
-                <option value={option.id} key={option.value}>
-                  {option.name}
-                </option>
-              ))}
-            {emptyParameter && <option value=""></option>}
-          </select>
+            optionLabel="name"
+            optionLabelSecondary="title"
+            value={options?.find((o) => o?.id === selectedOption)}
+            className={classes.select}
+            update={(value) => setSelectedElement(value)}
+            isLabel={true}
+            options={options}
+            index={`cam-extensionElements-${id}`}
+            endAdornment={endAdornment}
+          />
           <button
-            className={classes.add}
+            className={classnames(
+              classes.add,
+              endAdornment && classes.endAdornment
+            )}
             id={`cam-extensionElements-create-${id}`}
             onClick={addElement}
           >

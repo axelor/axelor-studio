@@ -36,6 +36,10 @@ const useStyles = makeStyles((theme) => ({
     background: "white",
     border: "1px solid #ccc",
     padding: "0px 5px",
+    width: "100%",
+  },
+  edit: {
+    margin: "8px 5px 8px 0px",
   },
   input: {
     fontSize: 14,
@@ -72,6 +76,10 @@ const useStyles = makeStyles((theme) => ({
   disableAutoComplete: {
     background: "#dddddd",
   },
+  root: {
+    display: "flex",
+    alignItems: "center",
+  },
 }));
 
 export default function SelectComponent({
@@ -99,6 +107,7 @@ export default function SelectComponent({
   disableClearable = false,
   isOptionEllipsis = false,
   description,
+  endAdornment,
 }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -194,188 +203,193 @@ export default function SelectComponent({
 
   return (
     <React.Fragment>
-      <AutoComplete
-        classes={{
-          inputFocused: disabled ? classes.disabled : classes.input,
-          clearIndicator: disabled ? classes.disabled : classes.input,
-          popupIndicator: disabled ? classes.disabled : classes.input,
-          endAdornment: classes.endAdornment,
-          option: isOptionEllipsis ? classes.option : "",
-        }}
-        size="small"
-        key={index}
-        open={open}
-        onOpen={(e) => {
-          e && e.stopPropagation();
-          setOpen(true);
-        }}
-        onClose={(e) => {
-          e && e.stopPropagation();
-          setOpen(false);
-        }}
-        onClick={(e) => {
-          e && e.stopPropagation();
-          setOpen(true);
-        }}
-        loading={loading}
-        defaultValue={defaultValue}
-        clearOnEscape
-        autoComplete
-        className={classnames(
-          classes.autoComplete,
-          className,
-          isError && classes.error,
-          disabled && classes.disableAutoComplete
-        )}
-        disableClearable={disableClearable}
-        options={options}
-        multiple={multiple}
-        value={open ? (multiple ? oldValue || [] : "") : oldValue}
-        disabled={disabled}
-        getOptionSelected={(option, val) => {
-          if (!val) return;
-          let optionName = "";
-          if (name === "itemName" || name === "userFieldPath") {
-            optionName = option["label"]
-              ? "label"
-              : option["title"]
-              ? "title"
-              : option["name"]
-              ? "name"
-              : "name";
-          } else if (name === "wkfModel") {
-            optionName = `${
-              option["wkfModel"] && option["wkfModel"]["name"]
-            } (${option["name"]})`;
-          } else if (name === "multiSelect") {
-            return option === val;
-          } else {
-            optionName = option[optionLabel]
-              ? optionLabel
-              : option["title"]
-              ? "title"
-              : "name";
-          }
-          if (!val[optionName] && val) return `"${option[optionName]}"` === val;
-          return option[optionName] === val[optionName];
-        }}
-        onChange={(e, value) => {
-          let values = value;
-          if (type === "multiple") {
-            values =
-              value &&
-              value.filter(
-                (val, i, self) =>
-                  i ===
-                  self.findIndex((t) => t[optionLabel] === val[optionLabel])
+      <div className={classes.root}>
+        <AutoComplete
+          classes={{
+            inputFocused: disabled ? classes.disabled : classes.input,
+            clearIndicator: disabled ? classes.disabled : classes.input,
+            popupIndicator: disabled ? classes.disabled : classes.input,
+            endAdornment: classes.endAdornment,
+            option: isOptionEllipsis ? classes.option : "",
+          }}
+          size="small"
+          key={index}
+          open={open}
+          onOpen={(e) => {
+            e && e.stopPropagation();
+            setOpen(true);
+          }}
+          onClose={(e) => {
+            e && e.stopPropagation();
+            setOpen(false);
+          }}
+          onClick={(e) => {
+            e && e.stopPropagation();
+            setOpen(true);
+          }}
+          loading={loading}
+          defaultValue={defaultValue}
+          clearOnEscape
+          autoComplete
+          className={classnames(
+            classes.autoComplete,
+            className,
+            isError && classes.error,
+            disabled && classes.disableAutoComplete,
+            endAdornment && classes.edit
+          )}
+          disableClearable={disableClearable}
+          options={options}
+          multiple={multiple}
+          value={open ? (multiple ? oldValue || [] : "") : oldValue}
+          disabled={disabled}
+          getOptionSelected={(option, val) => {
+            if (!val) return;
+            let optionName = "";
+            if (name === "itemName" || name === "userFieldPath") {
+              optionName = option["label"]
+                ? "label"
+                : option["title"]
+                ? "title"
+                : option["name"]
+                ? "name"
+                : "name";
+            } else if (name === "wkfModel") {
+              optionName = `${
+                option["wkfModel"] && option["wkfModel"]["name"]
+              } (${option["name"]})`;
+            } else if (name === "multiSelect") {
+              return option === val;
+            } else {
+              optionName = option[optionLabel]
+                ? optionLabel
+                : option["title"]
+                ? "title"
+                : "name";
+            }
+            if (!val[optionName] && val)
+              return `"${option[optionName]}"` === val;
+            return option[optionName] === val[optionName];
+          }}
+          onChange={(e, value) => {
+            let values = value;
+            if (type === "multiple") {
+              values =
+                value &&
+                value.filter(
+                  (val, i, self) =>
+                    i ===
+                    self.findIndex((t) => t[optionLabel] === val[optionLabel])
+                );
+              const titles = value
+                ?.map((v) => v["lable"] || v["title"])
+                .join(",");
+              const secondaryOptionLabels = value
+                ?.map((v) => v[optionLabelSecondary])
+                .join(",");
+              const optionLabels = value?.map((v) => v[optionLabel]).join(",");
+              update(
+                values,
+                name === "itemName" && value
+                  ? titles
+                  : optionLabelSecondary === "title"
+                  ? secondaryOptionLabels
+                  : optionLabels
               );
-            const titles = value
-              ?.map((v) => v["lable"] || v["title"])
-              .join(",");
-            const secondaryOptionLabels = value
-              ?.map((v) => v[optionLabelSecondary])
-              .join(",");
-            const optionLabels = value?.map((v) => v[optionLabel]).join(",");
+              return;
+            }
             update(
               values,
               name === "itemName" && value
-                ? titles
+                ? value["label"] || value["title"]
                 : optionLabelSecondary === "title"
-                ? secondaryOptionLabels
-                : optionLabels
+                ? value && value[optionLabelSecondary]
+                : value && value[optionLabel],
+              oldValue
             );
-            return;
-          }
-          update(
-            values,
-            name === "itemName" && value
-              ? value["label"] || value["title"]
-              : optionLabelSecondary === "title"
-              ? value && value[optionLabelSecondary]
-              : value && value[optionLabel],
-            oldValue
-          );
-        }}
-        name={name}
-        onInputChange={(e, val) => setsearchText(val)}
-        renderInput={(params) => (
-          <TextField
-            error={error}
-            disabled={disabled}
-            helperText={error ? translate("Required") : ""}
-            className={isError ? classes.error : ""}
-            fullWidth
-            {...params}
-            InputProps={{
-              ...(params.InputProps || {}),
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress
-                      className={classes.circularProgress}
-                      size={15}
-                    />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-              onClick: (e) => e && e.stopPropagation(),
-              disableUnderline,
-            }}
-            inputProps={{
-              ...(params.inputProps || {}),
-              onClick: (e) => {
-                e && e.stopPropagation();
-                params.inputProps &&
-                  params.inputProps.onClick &&
-                  params.inputProps.onClick(e);
-              },
-            }}
-            placeholder={translate(placeholder) || ""}
-            InputLabelProps={{
-              className: classes && classes.label,
-            }}
-            label={isLabel ? translate(label) : undefined}
-          />
-        )}
-        getOptionLabel={(option) => {
-          let optionName = "";
-          if (name === "itemName" || name === "userFieldPath") {
-            optionName =
-              option["label"] || option["title"]
-                ? `${option["label"] || option["title"]}${
-                    option["name"] ? ` (${option["name"]})` : ""
-                  }`
-                : typeof option === "object"
-                ? option["name"]
-                  ? `(${option["name"]})`
-                  : ""
-                : option;
-          } else if (name === "dmnModel") {
-            optionName = `${option["name"]} (${option["decisionId"]})`;
-          } else if (name === "wkfModel") {
-            optionName = `${
-              option["wkfModel"] && option["wkfModel"]["name"]
-            } (${option["name"]})`;
-          } else {
-            optionName =
-              option[optionLabel] && option[optionLabelSecondary]
-                ? `${option[optionLabel]} (${option[optionLabelSecondary]})`
-                : option[optionLabel]
-                ? `${option[optionLabel]}`
-                : option[optionLabelSecondary]
-                ? `${option[optionLabelSecondary]}`
-                : option["title"]
-                ? option["title"]
-                : option["id"]
-                ? `${option["id"]}`
-                : typeof option === "object"
-                ? ""
-                : option;
-          }
-          return isTranslated ? translate(optionName) : optionName;
-        }}
-      />
+          }}
+          name={name}
+          onInputChange={(e, val) => setsearchText(val)}
+          renderInput={(params) => (
+            <TextField
+              error={error}
+              disabled={disabled}
+              helperText={error ? translate("Required") : ""}
+              className={isError ? classes.error : ""}
+              fullWidth
+              {...params}
+              InputProps={{
+                ...(params.InputProps || {}),
+                endAdornment: (
+                  <React.Fragment>
+                    {loading ? (
+                      <CircularProgress
+                        className={classes.circularProgress}
+                        size={15}
+                      />
+                    ) : null}
+                    {params.InputProps.endAdornment}
+                  </React.Fragment>
+                ),
+                onClick: (e) => e && e.stopPropagation(),
+                disableUnderline,
+              }}
+              inputProps={{
+                ...(params.inputProps || {}),
+                onClick: (e) => {
+                  e && e.stopPropagation();
+                  params.inputProps &&
+                    params.inputProps.onClick &&
+                    params.inputProps.onClick(e);
+                },
+              }}
+              placeholder={translate(placeholder) || ""}
+              InputLabelProps={{
+                className: classes && classes.label,
+              }}
+              label={isLabel ? translate(label) : undefined}
+            />
+          )}
+          getOptionLabel={(option) => {
+            let optionName = "";
+            if (name === "itemName" || name === "userFieldPath") {
+              optionName =
+                option["label"] || option["title"]
+                  ? `${option["label"] || option["title"]}${
+                      option["name"] ? ` (${option["name"]})` : ""
+                    }`
+                  : typeof option === "object"
+                  ? option["name"]
+                    ? `(${option["name"]})`
+                    : ""
+                  : option;
+            } else if (name === "dmnModel") {
+              optionName = `${option["name"]} (${option["decisionId"]})`;
+            } else if (name === "wkfModel") {
+              optionName = `${
+                option["wkfModel"] && option["wkfModel"]["name"]
+              } (${option["name"]})`;
+            } else {
+              optionName =
+                option[optionLabel] && option[optionLabelSecondary]
+                  ? `${option[optionLabel]} (${option[optionLabelSecondary]})`
+                  : option[optionLabel]
+                  ? `${option[optionLabel]}`
+                  : option[optionLabelSecondary]
+                  ? `${option[optionLabelSecondary]}`
+                  : option["title"]
+                  ? option["title"]
+                  : option["id"]
+                  ? `${option["id"]}`
+                  : typeof option === "object"
+                  ? ""
+                  : option;
+            }
+            return isTranslated ? translate(optionName) : optionName;
+          }}
+        />
+        {endAdornment}
+      </div>
       {errorMessage && (
         <div className={classes.errorDescription}>
           {translate(errorMessage)}
