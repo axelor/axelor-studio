@@ -30,7 +30,7 @@
       <field name="xmlId"
         onChange="action-studio-menu-attrs-xml-id-onchange,action-studio-menu-attrs-check-generate-id"
         required="true"/>
-      <field name="parentMenu"/>
+      <field name="parentMenu" domain="self.name != :name"/>
       <field name="icon" widget="ImageSelect"/>
       <field name="iconBackground"/>
       <field name="order" colSpan="3"/>
