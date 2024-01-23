@@ -6,8 +6,8 @@
   <grid name="wkf-model-grid" title="BPM Model" model="com.axelor.studio.db.WkfModel"
     orderBy="code" edit-icon="false">
     <toolbar>
-      <button name="terminateAllProcessesBtn" title="Terminate all the processes"
-        icon="stop" prompt="Are you sure you want to terminate all the processes?"
+      <button name="terminateAllProcessesBtn" title="Terminate all the processes" icon="stop"
+        prompt="Are you sure you want to terminate all the processes?"
         onClick="action-wkf-model-method-terminate-all-processes"/>
       <button name="exportBtn" title="Export" onClick="action-wkf-model-export-wkf-models"
         icon="download"/>
