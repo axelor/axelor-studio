@@ -5,7 +5,7 @@
 
   <grid name="value-mapper-grid" title="Mapper" model="com.axelor.studio.db.ValueMapper">
     <button name="btnOpenMapper" onClick="action-value-mapper-open-mapper"
-      title="Open mapper" icon="fa-edit"/>
+      title="Open mapper" icon="pencil-square"/>
     <field name="name"/>
     <field name="targetField"/>
     <field name="sourceField"/>
@@ -16,7 +16,7 @@
     <panel name="mainPanel">
       <field name="name"/>
       <button name="btnOpenMapper" onClick="save,action-value-mapper-open-mapper"
-        title="Open mapper" colSpan="2" icon="fa-edit" showIf="id != null"/>
+        title="Open mapper" colSpan="2" icon="pencil-square" showIf="id != null"/>
       <field name="targetField" readonly="true"/>
       <field name="sourceField" readonly="true"/>
       <field name="script" colSpan="12" readonly="true" widget="CodeEditor"
