@@ -17,7 +17,7 @@
         onClick="action-wkf-model-method-import-standard-wkf-model"/>
     </toolbar>
     <button name="openEditorBtn" title="wkf.open.editor"
-      onClick="action-wkf-view-open-editor" icon="edit_square"/>
+      onClick="action-wkf-view-open-editor" icon="pencil-square"/>
     <field name="code" x-bind="{{code|unaccent|uppercase}}"/>
     <field name="name"/>
     <field name="versionTag"/>
