@@ -6,18 +6,18 @@
   <grid name="wkf-model-grid" title="BPM Model" model="com.axelor.studio.db.WkfModel"
     orderBy="code" edit-icon="false">
     <toolbar>
-      <button name="terminateAllProcessesBtn" title="Terminate all the processes"
-        icon="fa-stop" prompt="Are you sure you want to terminate all the processes?"
+      <button name="terminateAllProcessesBtn" title="Terminate all the processes" icon="stop"
+        prompt="Are you sure you want to terminate all the processes?"
         onClick="action-wkf-model-method-terminate-all-processes"/>
       <button name="exportBtn" title="Export" onClick="action-wkf-model-export-wkf-models"
-        icon="fa-download"/>
-      <button name="importBtn" title="import.verb" icon="fa-upload"
+        icon="download"/>
+      <button name="importBtn" title="import.verb" icon="upload"
         onClick="action-wkf-model-view-import-wkf-model-form"/>
       <button name="importStandardWkfModelsBtn" title="Import standard models"
         onClick="action-wkf-model-method-import-standard-wkf-model"/>
     </toolbar>
     <button name="openEditorBtn" title="wkf.open.editor"
-      onClick="action-wkf-view-open-editor" icon="fa-edit"/>
+      onClick="action-wkf-view-open-editor" icon="edit_square"/>
     <field name="code" x-bind="{{code|unaccent|uppercase}}"/>
     <field name="name"/>
     <field name="versionTag"/>
