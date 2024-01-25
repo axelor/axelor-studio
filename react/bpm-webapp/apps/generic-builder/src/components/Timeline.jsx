@@ -1,57 +1,45 @@
 import React from 'react';
-import TimelineContent from '@material-ui/lab/TimelineContent';
-import TimelineItem from '@material-ui/lab/TimelineItem';
-import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
-import TimelineConnector from '@material-ui/lab/TimelineConnector';
-import Timeline from '@material-ui/lab/Timeline';
-import TimelineDot from '@material-ui/lab/TimelineDot';
-import TimelineOppositeContent from '@material-ui/lab/TimelineOppositeContent';
-import { makeStyles } from '@material-ui/core/styles';
 import { translate } from '../utils';
+import { Box } from '@axelor/ui';
 
-const useStyles = makeStyles(theme => ({
-  timeline: {
-    height: '100%',
-    width: '100%',
-    padding: 0,
-    margin: 0,
-  },
-  timelineOppositeContent: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: 0,
-    maxWidth: 80,
-  },
-  timelineItem: {
-    minHeight: '100%',
-  },
+const styles = {
   timelineDot: {
-    borderColor: '#0275d8',
+    padding: 4,
+    border: '2px solid',
+    borderRadius: '50%',
+    borderColor: 'var(--bs-blue)',
   },
   timelineConnector: {
-    backgroundColor: '#0275d8',
+    width: 2,
+    background: 'var(--bs-blue)',
   },
-}));
+  timelineContent: {
+    padding: '6px 16px',
+  },
+};
 
-export default function TimelineComponent({ title, children, isBPMN }) {
-  const classes = useStyles();
+export default function TimelineComponent({ title, children }) {
   return (
-    <Timeline
-      align="alternate"
-      className={classes.timeline}
-      style={isBPMN ? { height: `calc(100% - 40px)` } : {}}
-    >
-      <TimelineItem className={classes.timelineItem}>
-        <TimelineOppositeContent className={classes.timelineOppositeContent}>
+    <Box d="flex" flexDirection="column">
+      <Box d="flex">
+        <Box
+          d="flex"
+          flex="1"
+          alignItems="center"
+          justifyContent="flex-end"
+          p={0}
+          style={{ maxWidth: 80 }}
+        >
           {translate(title)}
-        </TimelineOppositeContent>
-        <TimelineSeparator>
-          <TimelineDot variant="outlined" className={classes.timelineDot} />
-          <TimelineConnector className={classes.timelineConnector} />
-        </TimelineSeparator>
-        <TimelineContent>{children}</TimelineContent>
-      </TimelineItem>
-    </Timeline>
+        </Box>
+        <Box d="flex" alignItems="center" flexDirection="column" gap={8}>
+          <Box style={styles.timelineDot} />
+          <Box flexGrow="1" style={styles.timelineConnector} />
+        </Box>
+        <Box flex="1" style={styles.timelineContent}>
+          {children}
+        </Box>
+      </Box>
+    </Box>
   );
 }

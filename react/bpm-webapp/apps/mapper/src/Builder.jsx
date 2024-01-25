@@ -1,11 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import update from 'immutability-helper';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
 import IconButton from '@material-ui/core/IconButton';
-import SaveIcon from '@material-ui/icons/Save';
 import { makeStyles } from '@material-ui/core/styles';
 
 import DataTable from './DataTable';
@@ -35,24 +31,17 @@ import {
 } from './Builder.utils';
 import Loader from './components/Loader';
 import DialogBox from './components/Dialog';
+import { Box, InputLabel, Switch } from '@axelor/ui';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 const useStyles = makeStyles({
   input: {
     width: '13%',
     marginRight: 20,
   },
-  switch: {
-    marginLeft: 5,
-  },
   switchText: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  switchFormControl: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: 5,
+    marginRight: 16,
+    marginTop: 6,
   },
   topView: {
     margin: '10px 10px 0px 10px',
@@ -61,6 +50,7 @@ const useStyles = makeStyles({
   saveIcon: {},
   selectContainer: {
     minWidth: 150,
+    marginRight: 20,
   },
   selectContainerBPMN: {
     minWidth: '30%',
@@ -130,14 +120,14 @@ function checkInvalidSubfields(builderFields) {
   return builderFields
     .filter((field) => {
       const { subFields = [] } = field.value;
-      const data = subFields[subFields.length - 1];
+      const data = subFields && subFields[subFields.length - 1];
       const { target, fullName, name, type, jsonTarget, targetModel } =
         data || {};
 
       // ignore built-in-variables
       if (
-        subFields.length === 0 ||
-        subFields[0].title === 'Built In Variables'
+        subFields &&
+        (subFields.length === 0 || subFields[0].title === 'Built In Variables')
       ) {
         return false;
       }
@@ -427,7 +417,7 @@ function Builder({
   ]);
 
   const handleSourceModelChange = (e) => {
-    const list = e.map((item) => {
+    const list = (e || []).map((item) => {
       if (!item.fullName && item.target) {
         return { ...item, fullName: item.target };
       }
@@ -622,126 +612,140 @@ function Builder({
     };
   }, [builderRecord, getJSONQuery]);
 
+  const SwitchBox = ({ label, checked, onChange }) => (
+    <Box d="flex" alignItems="center" gap={5}>
+      <Switch
+        size="lg"
+        fontSize={5}
+        checked={checked}
+        color="primary"
+        onChange={onChange}
+        id={label}
+      />
+      <InputLabel color="body" htmlFor={label} className={classes.switchText}>
+        {label}
+      </InputLabel>
+    </Box>
+  );
+
+  const handleRemoveTag = (option) => {
+    const optionIndex = sourceModelList?.findIndex(
+      (s) => s.name === option?.name
+    );
+    setSourceModelList((sourceModelList) =>
+      sourceModelList.splice(0, optionIndex)
+    );
+  };
+
   function UI() {
     return (
-      <Grid container style={{ height: '100%' }}>
-        <Grid container className={classes.topView}>
-          <Grid container style={{ marginBottom: 10 }}>
-            {!isBPMN && (
-              <IconButton
-                classes={{ colorPrimary: classes.saveIcon }}
-                color="primary"
-                onClick={handleSave}
-                className={classNames(classes.iconButtonClassName)}
-                disabled={!model}
-              >
-                <SaveIcon />
-              </IconButton>
-            )}
-
-            <Selection
-              className={classes.input}
-              name="metaModal"
-              title="Target model"
-              placeholder="Target model"
-              fetchAPI={(e) => getModels(e)}
-              optionValueKey="name"
-              onChange={(model) => {
-                setModel(model);
-                setBuilderFields([]);
-              }}
-              value={model}
-              inputRootClass={classes.targetModelInputRoot}
-            />
-            {!isBPMN && (
-              <MultiSelection
-                containerClassName={classes.selectContainer}
-                title="Source model"
-                optionValueKey="name"
-                optionLabelKey="title"
-                concatValue={true}
-                isM2o={true}
-                isContext={true}
-                value={sourceModelList}
-                onChange={handleSourceModelChange}
-              />
-            )}
-            <Grid item className={classes.switchFormControl}>
-              <Switch
-                className={classes.switch}
-                checked={newRecord}
-                color="primary"
-                onChange={(e) => {
-                  const newRecord = e.target.checked;
-                  setNewRecord(newRecord);
-                  if (newRecord) {
-                    setSave(true);
-                    setSavedRecord(false);
-                  } else {
-                    if (!savedRecord) {
-                      setSave(false);
-                    }
-                  }
-                }}
-              />
-              <Typography className={classes.switchText}>
-                {translate('New record')}
-              </Typography>
-            </Grid>
-            <Grid item className={classes.switchFormControl}>
-              <Switch
-                className={classes.switch}
-                checked={savedRecord}
-                color="primary"
-                onChange={(e) => {
-                  const savedRecord = e.target.checked;
-                  setSavedRecord(savedRecord);
-                  if (savedRecord) {
-                    setSave(true);
-                    setNewRecord(false);
-                  } else {
-                    if (!newRecord) {
-                      setSave(false);
-                    }
-                  }
-                }}
-              />
-              <Typography className={classes.switchText}>
-                {translate('Update saved record')}
-              </Typography>
-            </Grid>
-            <Grid item className={classes.switchFormControl}>
-              <Switch
-                className={classes.switch}
-                checked={save}
-                color="primary"
-                onChange={(e) => {
-                  const save = e.target.checked;
-                  if (!save && (savedRecord || newRecord)) {
-                    return;
-                  }
-                  setSave(save);
-                }}
-              />
-              <Typography className={classes.switchText}>
-                {translate('Save')}
-              </Typography>
-            </Grid>
-            {isBPMN && (
-              <Grid item className={classes.switchFormControl}>
-                <Switch
-                  className={classes.switch}
-                  checked={createVariable}
+      <Box w={100} h={100} overflow="hidden">
+        <Box className={classes.topView}>
+          <Box style={{ marginBottom: 10 }}>
+            <Box d="flex" flexWrap="wrap" alignItems="center">
+              {!isBPMN && (
+                <IconButton
+                  classes={{ colorPrimary: classes.saveIcon }}
                   color="primary"
-                  onChange={(e) => setCreateVariable(e.target.checked)}
+                  onClick={handleSave}
+                  className={classNames(classes.iconButtonClassName)}
+                  disabled={!model}
+                >
+                  <MaterialIcon icon="save" fontSize={20} />
+                </IconButton>
+              )}
+              <Selection
+                className={classes.input}
+                name="metaModal"
+                title="Target model"
+                placeholder="Target model"
+                fetchAPI={(e) => getModels(e)}
+                optionValueKey="name"
+                onChange={(model) => {
+                  setModel(model);
+                  setBuilderFields([]);
+                }}
+                value={model}
+                inputRootClass={classes.targetModelInputRoot}
+              />
+              {!isBPMN && (
+                <MultiSelection
+                  containerClassName={classes.selectContainer}
+                  title="Source model"
+                  optionValueKey="name"
+                  optionLabelKey="title"
+                  concatValue={true}
+                  isM2o={true}
+                  isContext={true}
+                  value={sourceModelList}
+                  onChange={handleSourceModelChange}
+                  handleRemove={(option) => handleRemoveTag(option)}
                 />
-                <Typography className={classes.switchText}>
-                  {translate('Create variable')}
-                </Typography>
-              </Grid>
-            )}
+              )}
+              <Box
+                d="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                flexWrap="wrap"
+              >
+                <SwitchBox
+                  label={translate('New record')}
+                  checked={newRecord}
+                  onChange={(e) => {
+                    const newRecord = e.target.checked;
+                    setNewRecord(newRecord);
+                    if (newRecord) {
+                      setSave(true);
+                      setSavedRecord(false);
+                    } else {
+                      if (!savedRecord) {
+                        setSave(false);
+                      }
+                    }
+                  }}
+                />
+                <SwitchBox
+                  label={translate('Update saved record')}
+                  checked={savedRecord}
+                  onChange={(e) => {
+                    const savedRecord = e.target.checked;
+                    setSavedRecord(savedRecord);
+                    if (savedRecord) {
+                      setSave(true);
+                      setNewRecord(false);
+                    } else {
+                      if (!newRecord) {
+                        setSave(false);
+                      }
+                    }
+                  }}
+                />
+                <SwitchBox
+                  label={translate('Save')}
+                  checked={save}
+                  onChange={(e) => {
+                    const save = e.target.checked;
+                    if (!save && (savedRecord || newRecord)) {
+                      return;
+                    }
+                    setSave(save);
+                  }}
+                />
+                {isBPMN && (
+                  <SwitchBox
+                    label={translate('Create variable')}
+                    checked={createVariable}
+                    onChange={(e) => setCreateVariable(e.target.checked)}
+                  />
+                )}
+              </Box>
+            </Box>
             {isBPMN && (
-              <Grid container style={{ marginTop: 10, alignItems: 'flex-end' }}>
+              <Box
+                d="flex"
+                w={100}
+                style={{ marginTop: 10, alignItems: 'flex-end' }}
+              >
                 <Selection
                   disableClearable
                   className={classes.input}
@@ -757,7 +761,7 @@ function Builder({
                     handleModalForm();
                   }}
                 />
-                {modelFrom.id === VALUE_FROM.CONTEXT ? (
+                {modelFrom?.id === VALUE_FROM.CONTEXT ? (
                   <MultiSelection
                     containerClassName={classes.selectContainerBPMN}
                     title="Source model"
@@ -769,14 +773,10 @@ function Builder({
                     isBPMN={true}
                     value={sourceModelList}
                     onChange={handleSourceModelChange}
+                    handleRemove={(option) => handleRemoveTag(option)}
                   />
                 ) : (
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-end',
-                    }}
-                  >
+                  <Box d="flex" alignItems="center">
                     <Selection
                       optionValueKey="name"
                       optionLabelKey="title"
@@ -802,16 +802,16 @@ function Builder({
                           value={sourceModelList}
                           element={getProcessElement(processId)}
                           onChange={handleSourceModelChange}
+                          handleRemove={(option) => handleRemoveTag(option)}
                         />
                       </React.Fragment>
                     )}
-                  </div>
+                  </Box>
                 )}
-              </Grid>
+              </Box>
             )}
-          </Grid>
-        </Grid>
-
+          </Box>
+        </Box>
         <DataTable
           data={builderFields}
           metaFields={metaFields}
@@ -828,7 +828,7 @@ function Builder({
           isDMNAllow={isDMNAllow}
           getDMNValues={getDMNValues}
         />
-      </Grid>
+      </Box>
     );
   }
   return (

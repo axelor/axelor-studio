@@ -8,14 +8,13 @@ import {
   SelectBox,
 } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
+import { Box, Divider } from "@axelor/ui";
 
 const useStyles = makeStyles({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -23,11 +22,15 @@ const useStyles = makeStyles({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
 });
 
-export default function BusinessRuleTaskProps({ element, index, bpmnModeler }) {
+export default function BusinessRuleTaskProps({
+  element,
+  index,
+  bpmnModeler,
+  setDummyProperty = () => {},
+}) {
   const [isVisible, setVisible] = useState(false);
   const [searchWith, setSearchWith] = useState(null);
   const [ifMultiple, setIfMultiple] = useState(null);
@@ -52,6 +55,7 @@ export default function BusinessRuleTaskProps({ element, index, bpmnModeler }) {
 
   const getProperty = React.useCallback(
     (name) => {
+      if (!element) return;
       let propertyName = `camunda:${name}`;
       const bo = getBusinessObject(element);
       return (bo.$attrs && bo.$attrs[propertyName]) || "";
@@ -124,7 +128,7 @@ export default function BusinessRuleTaskProps({ element, index, bpmnModeler }) {
             widget: "checkbox",
             get: function () {
               return {
-                assignOutputToFields: assignOutputToFields,
+                assignOutputToFields,
               };
             },
             set: function (e, value) {
@@ -140,11 +144,11 @@ export default function BusinessRuleTaskProps({ element, index, bpmnModeler }) {
         {assignOutputToFields && (
           <React.Fragment>
             <React.Fragment>
-              {index > 0 && <div className={classes.divider} />}
+              {index > 0 && <Divider className={classes.divider} />}
             </React.Fragment>
-            <div className={classes.groupLabel}>
+            <Box color="body" className={classes.groupLabel}>
               {translate("Relational field search")}
-            </div>
+            </Box>
             <SelectBox
               element={element}
               entry={{

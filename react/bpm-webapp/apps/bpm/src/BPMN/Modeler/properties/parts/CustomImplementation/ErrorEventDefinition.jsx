@@ -6,7 +6,6 @@ import {
   CustomSelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
 
 export default function ErrorEventProps({
   element,
@@ -14,6 +13,7 @@ export default function ErrorEventProps({
   errorEventDefinition,
   bpmnModdle,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [selectedError, setSelectedError] = useState(null);
   const [errorOptions, setErrorOptions] = useState([]);

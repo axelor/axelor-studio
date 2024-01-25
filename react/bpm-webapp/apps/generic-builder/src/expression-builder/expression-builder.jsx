@@ -1,7 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
-import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { Box } from '@axelor/ui';
 
 import Editor from './editor';
 import { Selection } from '../components';
@@ -225,21 +226,30 @@ function ExpressionBuilder(props) {
   const getChildEditors = parentId =>
     rules && rules.filter(editor => editor.parentId === parentId);
 
+  const fetchAPI = React.useCallback(
+    async e => {
+      let data = [];
+      if (fetchModels && !isBPMQuery(type)) {
+        data = await fetchModels();
+      } else {
+        data = await fetchMetaModels(e);
+      }
+      return data;
+    },
+    [fetchModels, type, isBPMQuery, fetchMetaModels]
+  );
+
   return (
     <div className={classes.container}>
-      <Paper variant="outlined" className={classes.paper}>
+      <Box border className={classes.paper}>
         <div className={classes.content}>
           <div className={classes.flex}>
             {(isBPMQuery(type) ? (index === 0 ? true : false) : true) && (
               <Selection
                 name="metaModal"
                 title="Meta model"
-                placeholder="meta model"
-                fetchAPI={
-                  fetchModels && !isBPMQuery(type)
-                    ? fetchModels
-                    : fetchMetaModels
-                }
+                placeholder="Meta model"
+                fetchAPI={fetchAPI}
                 className={classNames({
                   [classes.hide]:
                     (isCondition && isBPMQuery(type)) || isPackage,
@@ -282,7 +292,7 @@ function ExpressionBuilder(props) {
             isAllowButtons={isAllowButtons}
           />
         ))}
-      </Paper>
+      </Box>
     </div>
   );
 }

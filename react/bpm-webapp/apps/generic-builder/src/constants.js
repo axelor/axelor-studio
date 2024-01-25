@@ -242,6 +242,12 @@ const BUILT_IN_VARIABLES = [
     title: translate('Current datetime'),
   },
 ];
+
+const BUTTON_TYPE_OPERATOR = [
+  { name: true, title: 'true' },
+  { name: false, title: 'false' },
+];
+
 export {
   COMBINATOR,
   EXPRESSION_TYPE,
@@ -259,4 +265,5 @@ export {
   MANY_TO_ONE_TYPES,
   RELATIONAL_TYPES,
   BUILT_IN_VARIABLES,
+  BUTTON_TYPE_OPERATOR,
 };

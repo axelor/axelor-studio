@@ -19,6 +19,12 @@ export const VALUE_FROM = {
   DMN: 'dmn',
 };
 
+export const DATE_FORMAT = {
+  date: 'DD/MM/YYYY',
+  time: 'HH:mm:ss',
+  datetime: 'DD/MM/YYYY HH:mm',
+};
+
 export function dashToUnderScore(str) {
   return str && str.replace('json-', '').replaceAll('-', '_').toLowerCase();
 }

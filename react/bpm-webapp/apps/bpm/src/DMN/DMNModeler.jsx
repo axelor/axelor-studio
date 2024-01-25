@@ -6,18 +6,8 @@ import drdAdapterModule from "dmn-js-properties-panel/lib/adapter/drd";
 import propertiesProviderModule from "dmn-js-properties-panel/lib/provider/camunda";
 import camundaModdleDescriptor from "camunda-dmn-moddle/resources/camunda";
 import classnames from "classnames";
-import Alert from "@material-ui/lab/Alert";
-import { Snackbar, Drawer, Typography } from "@material-ui/core";
 import { Resizable } from "re-resizable";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Divider,
-} from "@material-ui/core";
 
 import AlertDialog from "../components/AlertDialog";
 import Select from "../components/Select";
@@ -37,7 +27,6 @@ import {
   fetchDMNModel,
 } from "../services/api";
 import Tooltip from "../components/Tooltip";
-import { Tab, Tabs } from "../components/Tabs";
 import {
   Textbox,
   TextField,
@@ -53,6 +42,22 @@ import {
   splitWithComma,
 } from "../utils";
 
+import {
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Button,
+  Box,
+  InputLabel,
+  NavTabs,
+  Divider,
+  Input,
+  CommandBar,
+} from "@axelor/ui";
+
+import Alert from "../components/Alert";
+import { useAppTheme } from "../custom-hooks/useAppTheme.jsx";
 import "dmn-js-properties-panel/dist/assets/dmn-js-properties-panel.css";
 import "dmn-js/dist/assets/dmn-js-decision-table-controls.css";
 import "dmn-js/dist/assets/dmn-js-decision-table.css";
@@ -70,18 +75,16 @@ const resizeStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  borderLeft: "solid 1px #ddd",
-  background: "#f0f0f0",
 };
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
-    background: "#F8F8F8",
+    background: "var(--bs-tertiary-bg)",
     width: "100%",
     position: "absolute",
-    borderLeft: "1px solid #ccc",
     overflow: "auto",
     height: "100%",
+    zIndex: 2,
   },
   drawerContainer: {
     padding: 10,
@@ -92,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -103,11 +105,6 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
-  },
-  nodeTitle: {
-    fontSize: "120%",
-    fontWeight: "bolder",
   },
   dialog: {
     minWidth: 300,
@@ -115,31 +112,22 @@ const useStyles = makeStyles((theme) => ({
   label: {
     display: "inline-block",
     verticalAlign: "middle",
-    color: "rgba(0, 0, 0, 0.54)",
-    margin: "8px 0px 3px 25px",
-  },
-  textButton: {
-    minWidth: 100,
-    fontWeight: "bold",
-    minHeight: 30,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   save: {
-    margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
+    minWidth: 64,
   },
   select: {
     minWidth: 150,
-    marginLeft: 20,
     marginTop: 0,
-    border: "none",
+  },
+  commandBar: {
+    "& > div": {
+      "& > button": {
+        fontSize: 14,
+      },
+    },
   },
 }));
 
@@ -215,7 +203,6 @@ function DMNModeler() {
   });
   const [width, setWidth] = useState(drawerWidth);
   const [height, setHeight] = useState("100%");
-  const [drawerOpen, setDrawerOpen] = useState(true);
   const [selectedElement, setSelectedElement] = useState(null);
   const [tabValue, setTabValue] = useState(0);
   const [tabs, setTabs] = useState(null);
@@ -234,6 +221,9 @@ function DMNModeler() {
   const [nameCol, setNameCol] = useState(null);
   const classes = useStyles();
   const diagramXmlRef = React.useRef(null);
+  const tab = tabs && tabs[tabValue];
+  const { groups = [], id: tabId = "" } = tab || {};
+  const { theme = "light" } = useAppTheme();
 
   const exportDiagram = () => {
     dmnModeler.saveXML({ format: true }, function (err, xml) {
@@ -296,6 +286,10 @@ function DMNModeler() {
     return { ...clone };
   };
 
+  const openPropertyPanel = () => {
+    setWidth(380);
+  };
+
   const getSheet = React.useCallback(() => {
     if (!dmnModeler) return;
     const activeEditor = dmnModeler.getActiveViewer();
@@ -332,12 +326,14 @@ function DMNModeler() {
       setOutput(null);
       setRule(null);
       setInputRule(null);
+      openPropertyPanel();
     });
     eventBus.on("output.edit", (event) => {
       setOutput(event.output);
       setInput(null);
       setRule(null);
       setInputRule(null);
+      openPropertyPanel();
     });
     eventBus.on("cell.click", (event) => {
       const { id } = event;
@@ -397,6 +393,7 @@ function DMNModeler() {
         setOutputIndex(null);
         setRule(null);
       }
+      openPropertyPanel();
     });
   }, [decision]);
 
@@ -475,7 +472,7 @@ function DMNModeler() {
       },
     });
     if (!actionResponse) {
-      handleSnackbarClick("error", "Import failed");
+      handleSnackbarClick("danger", "Import failed");
       return;
     }
     handleSnackbarClick("success", "Imported successfully");
@@ -514,10 +511,12 @@ function DMNModeler() {
       return;
     }
     const { data } = actionResponse;
-    const { view } = (data && data[0]) || {};
+    const { view, error } = (data && data[0]) || {};
     const file = view && view.views && view.views[0] && view.views[0].name;
     if (file) {
       await Service.download(file, (wkfModel && wkfModel.name) || "DMN");
+    } else if (error?.message) {
+      handleSnackbarClick("danger", error?.message);
     }
   };
 
@@ -535,7 +534,6 @@ function DMNModeler() {
     setTabValue(0);
     setTabs(tabs);
     setSelectedElement(element);
-    setDrawerOpen(true);
   }, []);
 
   const openDiagram = React.useCallback(
@@ -625,7 +623,7 @@ function DMNModeler() {
     let files = e.target.files;
     let reader = new FileReader();
     if (files && files[0] && files[0].name && !files[0].name.includes(".dmn")) {
-      handleSnackbarClick("error", "Upload dmn files only");
+      handleSnackbarClick("danger", "Upload dmn files only");
       return;
     }
     reader.readAsText(files[0]);
@@ -646,7 +644,7 @@ function DMNModeler() {
           handleSnackbarClick("success", "Saved Successfully");
         } else {
           handleSnackbarClick(
-            "error",
+            "danger",
             (res &&
               res.data &&
               (res.data.message ||
@@ -683,7 +681,7 @@ function DMNModeler() {
         wkfProcess &&
         !(dmnList && dmnList.some((item) => decisionIds?.includes(item)))
       ) {
-        handleSnackbarClick("error", "Please provide unique process id");
+        handleSnackbarClick("danger", "Please provide unique process id");
         return;
       } else {
         return true;
@@ -721,7 +719,7 @@ function DMNModeler() {
           fetchDiagram(wkfModel.id, setWkfModel);
         } else {
           handleSnackbarClick(
-            "error",
+            "danger",
             (actionRes &&
               actionRes.data &&
               (actionRes.data.message ||
@@ -732,7 +730,7 @@ function DMNModeler() {
         }
       } else {
         handleSnackbarClick(
-          "error",
+          "danger",
           (res && res.data && (res.data.message || res.data.title)) || "Error"
         );
       }
@@ -767,45 +765,58 @@ function DMNModeler() {
     });
   };
 
-  const toolBarButtons = [
+  const leftToolbar = [
     {
-      name: "Save",
-      icon: <i className="fa fa-floppy-o" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Save",
+      key: "save",
+      iconOnly: true,
+      description: translate("Save"),
+      iconProps: { icon: "save" },
       onClick: onSave,
     },
     {
-      name: "UploadXml",
-      icon: <i className="fa fa-upload" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Upload",
-      onClick: uploadXml,
-    },
-    {
-      name: "DownloadXml",
-      icon: <i className="fa fa-download" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Download",
-      onClick: exportDiagram,
-    },
-    {
-      name: "Deploy",
-      icon: <i className="fa fa-rocket" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Deploy",
-      onClick: deployDiagram,
-    },
-    {
-      name: "Refresh",
-      icon: <i className="fa fa-refresh" style={{ fontSize: 18 }}></i>,
+      key: "refresh",
+      iconOnly: true,
+      description: translate("Refresh"),
+      iconProps: { icon: "refresh" },
       tooltipText: "Refresh",
       onClick: onRefresh,
     },
+    {
+      key: "deploy",
+      iconOnly: true,
+      description: translate("Deploy"),
+      iconProps: { icon: "rocket" },
+      onClick: deployDiagram,
+    },
   ];
 
-  const setCSSWidth = (width) => {
-    setDrawerOpen(width === "0px" ? false : true);
-  };
+  const rightToolbar = [
+    {
+      key: "upload",
+      iconOnly: true,
+      description: translate("Upload"),
+      iconProps: { icon: "upload" },
+      onClick: uploadXml,
+    },
+    {
+      key: "download",
+      iconOnly: true,
+      description: translate("Download"),
+      iconProps: { icon: "download" },
+      onClick: exportDiagram,
+    },
+    { key: "export", text: translate("Export"), onClick: exportExcel },
+    {
+      key: "import",
+      text: translate("Import"),
+      onClick: () => setUploadDialog(true),
+    },
+  ];
 
-  const handleChange = (event, newValue) => {
-    setTabValue(newValue);
+  const handleChange = (newValue) => {
+    const val = tabs.findIndex((tab) => tab.id === newValue?.id);
+    const tabValue = val > -1 ? val : 0;
+    setTabValue(tabValue);
   };
 
   const TabPanel = ({ group, index }) => {
@@ -826,9 +837,11 @@ function DMNModeler() {
           group.entries.length > 0 && (
             <React.Fragment>
               <React.Fragment>
-                {index > 0 && <div className={classes.divider} />}
+                {index > 0 && <Divider className={classes.divider} />}
               </React.Fragment>
-              <div className={classes.groupLabel}>{translate(group.label)}</div>
+              <Box color="body" className={classes.groupLabel}>
+                {translate(group.label)}
+              </Box>
               <div>
                 {group.entries.map((entry, i) => (
                   <Entry entry={entry} key={i} />
@@ -910,76 +923,44 @@ function DMNModeler() {
     nameCol && setNameCol(nameCol);
   };
 
+  const handleDRDClick = (e) => {
+    e.stopPropagation();
+    handleViewDRD();
+  };
+
   return (
-    <div className="App">
+    <Box className="App" color="body">
       <div className="modeler">
         <div id="canvas">
-          <div className="toolbar-buttons">
-            {toolBarButtons.map((btn) => (
-              <div key={btn.name}>
-                {btn.name === "UploadXml" && (
-                  <input
-                    id="inputFile"
-                    type="file"
-                    name="file"
-                    onChange={uploadFile}
-                    style={{ display: "none" }}
-                  />
-                )}
-                <Tooltip
-                  title={btn.tooltipText}
-                  children={
-                    <button onClick={btn.onClick} className="property-button">
-                      {btn.icon}
-                    </button>
-                  }
-                />
-              </div>
-            ))}
-            <Tooltip
-              title="Export"
-              children={
-                <button
-                  onClick={exportExcel}
-                  className={classnames(classes.textButton, "property-button")}
-                >
-                  {translate("Export")}
-                </button>
+          <Box
+            d="flex"
+            alignItems="center"
+            flexWrap="wrap"
+            justifyContent="space-between"
+            border
+            rounded
+            gap={4}
+            style={{
+              padding: "6px 20px 8px 20px",
+              backgroundColor: "var(--bs-tertiary-bg)",
+            }}
+          >
+            <CommandBar
+              items={
+                selectedElement?.id === "__implicitroot"
+                  ? [
+                      ...leftToolbar,
+                      {
+                        key: "view-drd",
+                        text: translate("View DRD"),
+                        onClick: handleDRDClick,
+                      },
+                    ]
+                  : leftToolbar
               }
+              className={classes.commandBar}
             />
-            <Tooltip
-              title="Import"
-              children={
-                <button
-                  onClick={() => setUploadDialog(true)}
-                  className={classnames(classes.textButton, "property-button")}
-                >
-                  {translate("Import")}
-                </button>
-              }
-            />
-            {selectedElement && selectedElement.id === "__implicitroot" && (
-              <button
-                className={classnames(classes.textButton, "property-button")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleViewDRD();
-                }}
-              >
-                {translate("View DRD")}
-              </button>
-            )}
-            <div
-              style={{
-                width: `calc(100% - ${
-                  selectedElement && selectedElement.id === "__implicitroot"
-                    ? "550px"
-                    : "450px"
-                })`,
-                textAlign: "left",
-              }}
-            >
-              <label className={classes.label}>{translate("DMN model")}</label>
+            <Box color="body" textAlign="left" flex="1">
               <Select
                 className={classes.select}
                 disableClearable={true}
@@ -998,43 +979,41 @@ function DMNModeler() {
                 fetchMethod={(options) => getWkfDMNModels(options)}
                 disableUnderline={false}
                 isOptionEllipsis={true}
+                placeholder={translate("DMN model")}
               />
-            </div>
-          </div>
-          <Divider />
+            </Box>
+            <CommandBar items={rightToolbar} className={classes.commandBar} />
+            <Input
+              id="inputFile"
+              type="file"
+              name="file"
+              onChange={uploadFile}
+              style={{ display: "none" }}
+            />
+          </Box>
         </div>
-        <div>
+        <Box>
           <Resizable
             style={resizeStyle}
             size={{ width, height }}
             onResizeStop={(e, direction, ref, d) => {
               setWidth((width) => width + d.width);
               setHeight(height + d.height);
-              setCSSWidth(width + d.width);
             }}
             maxWidth={window.innerWidth - 150}
           >
-            <Drawer
-              variant="persistent"
-              anchor="right"
-              open={drawerOpen}
-              style={{
-                width: drawerWidth,
-              }}
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-              id="drawer"
-            >
-              <div className={classes.drawerContainer}>
+            <Box className={classes.drawerPaper} id="drawer">
+              <Box className={classes.drawerContainer}>
                 {selectedElement && selectedElement.id !== "__implicitroot" && (
-                  <Typography className={classes.nodeTitle}>
+                  <InputLabel fontSize={5} fontWeight="bold">
                     {selectedElement && selectedElement.id}
-                  </Typography>
+                  </InputLabel>
                 )}
-                <Tabs value={tabValue} onChange={handleChange}>
-                  <Tab label="General" data-tab="General" />
-                </Tabs>
+                <NavTabs
+                  items={[{ title: "General", id: "general" }]}
+                  onItemClick={handleChange}
+                  active={tabId}
+                />
                 {selectedElement && selectedElement.id === "__implicitroot" ? (
                   decision && (
                     <div style={{ marginTop: 10 }}>
@@ -1087,124 +1066,111 @@ function DMNModeler() {
                   )
                 ) : (
                   <React.Fragment>
-                    {tabs &&
-                      tabs[tabValue] &&
-                      tabs[tabValue].groups &&
-                      tabs[tabValue].groups.map((group, index) => (
-                        <TabPanel key={index} group={group} index={index} />
-                      ))}
+                    {groups.map((group, index) => (
+                      <TabPanel key={index} group={group} index={index} />
+                    ))}
                   </React.Fragment>
                 )}
                 <div id="properties" style={{ display: "none" }}></div>
-              </div>
-            </Drawer>
-            <div
+              </Box>
+            </Box>
+            <Box
               className="bpmn-property-toggle"
+              color="body"
+              pos="absolute"
+              bg="body-tertiary"
+              userSelect="none"
+              roundedTop
+              fontSize={6}
               onClick={() => {
                 setWidth((width) => (width === 0 ? 380 : 0));
-                setCSSWidth(width === 0 ? 380 : 0);
               }}
             >
-              {translate("Properties Panel")}
-            </div>
+              {translate("Properties")}
+            </Box>
           </Resizable>
-        </div>
+        </Box>
       </div>
-      {openAlert && (
-        <AlertDialog
-          openAlert={openAlert}
-          alertClose={alertClose}
-          handleAlertOk={reloadView}
-          message="Current changes will be lost. Do you really want to proceed?"
-          title="Refresh"
+      <AlertDialog
+        openAlert={openAlert}
+        alertClose={alertClose}
+        handleAlertOk={reloadView}
+        message="Current changes will be lost. Do you really want to proceed?"
+        title="Refresh"
+      />
+      {openSnackbar.open && (
+        <Alert
+          open={openSnackbar.open}
+          message={openSnackbar.message}
+          messageType={openSnackbar.messageType}
+          onClose={handleSnackbarClose}
         />
       )}
-      {openSnackbar.open && (
-        <Snackbar
-          open={openSnackbar.open}
-          autoHideDuration={2000}
-          onClose={handleSnackbarClose}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            onClose={handleSnackbarClose}
-            className="snackbarAlert"
-            severity={openSnackbar?.messageType}
-          >
-            {translate(openSnackbar.message)}
-          </Alert>
-        </Snackbar>
-      )}
-      {openUploadDialog && (
-        <Dialog
-          open={openUploadDialog}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              setUploadDialog(false);
+      <Dialog
+        open={openUploadDialog}
+        centered
+        backdrop
+        className={classes.dialog}
+      >
+        <DialogHeader onCloseClick={() => setUploadDialog(false)}>
+          <h3>{translate("Upload")}</h3>
+        </DialogHeader>
+        <DialogContent>
+          <input
+            id="inputExcelFile"
+            type="file"
+            name="file"
+            onChange={uploadExcel}
+            style={{ display: "none" }}
+          />
+          <Tooltip
+            title={translate("Import")}
+            children={
+              <Button
+                variant={theme}
+                onClick={uploadExcelFile}
+                className={classnames(classes.textButton, "property-button")}
+              >
+                <i className="fa fa-upload" style={{ fontSize: 18 }}></i>
+              </Button>
             }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">
-            {translate("Upload")}
-          </DialogTitle>
-          <DialogContent>
-            <input
-              id="inputExcelFile"
-              type="file"
-              name="file"
-              onChange={uploadExcel}
-              style={{ display: "none" }}
-            />
-            <Tooltip
-              title={translate("Import")}
-              children={
-                <button
-                  onClick={uploadExcelFile}
-                  className={classnames(classes.textButton, "property-button")}
-                >
-                  <i className="fa fa-upload" style={{ fontSize: 18 }}></i>
-                </button>
-              }
-            />
-            {file && <Typography>{file.fileName}</Typography>}
-          </DialogContent>
-          <DialogActions>
-            <Button
-              className={classes.save}
-              onClick={importExcel}
-              color="primary"
-            >
-              {translate("Import")}
-            </Button>
-            <Button
-              onClick={() => {
-                setUploadDialog(false);
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
-                setUploadDialog(false);
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("Cancel")}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+          />
+          {file && (
+            <InputLabel fontSize={5} style={{ margin: "0 4px" }}>
+              {file.fileName}
+            </InputLabel>
+          )}
+        </DialogContent>
+        <DialogFooter>
+          <Button
+            className={classes.save}
+            onClick={importExcel}
+            variant="primary"
+          >
+            {translate("Import")}
+          </Button>
+          <Button
+            onClick={() => {
+              setUploadDialog(false);
+            }}
+            variant="primary"
+            className={classes.save}
+          >
+            {translate("OK")}
+          </Button>
+          <Button
+            onClick={() => {
+              setUploadDialog(false);
+            }}
+            variant="secondary"
+            className={classes.save}
+          >
+            {translate("Cancel")}
+          </Button>
+        </DialogFooter>
+      </Dialog>
       <Logo />
-    </div>
+    </Box>
   );
 }
 

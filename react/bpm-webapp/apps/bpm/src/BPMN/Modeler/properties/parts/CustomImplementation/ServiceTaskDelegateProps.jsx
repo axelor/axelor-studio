@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import AddIcon from "@material-ui/icons/Add";
-import {
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  Button,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { is } from "bpmn-js/lib/util/ModelUtil";
 
@@ -26,7 +17,18 @@ import {
   Checkbox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import { openWebApp, setDummyProperty } from "./utils";
+import { openWebApp } from "./utils";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  InputLabel,
+  Box,
+  Divider,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const eventTypes = [
   "bpmn:StartEvent",
@@ -68,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -79,10 +80,8 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   linkIcon: {
-    color: "#58B423",
     marginLeft: 5,
   },
   link: {
@@ -99,23 +98,16 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   button: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   actionContainer: {
     margin: "5px 0px 0px",
@@ -148,6 +140,7 @@ export default function ServiceTaskDelegateProps({
   index,
   label,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [isVisible, setVisible] = useState(false);
   const [implementationType, setImplementationType] = useState("");
@@ -231,7 +224,6 @@ export default function ServiceTaskDelegateProps({
   const updateModel = React.useCallback(
     async (decisionRef) => {
       const dmnModel = await getDMNModel(decisionRef);
-      setDmnModel(dmnModel);
       if (decisionRef) {
         const dmnTable = await getDMNModels([
           {
@@ -241,6 +233,11 @@ export default function ServiceTaskDelegateProps({
           },
         ]);
         const dmnName = dmnTable && dmnTable[0] && dmnTable[0].name;
+        setDmnModel({
+          ...(dmnModel || {}),
+          name: dmnName,
+          decisionId: decisionRef,
+        });
         if (element && element.businessObject && dmnName) {
           setProperty("decisionName", dmnName);
         }
@@ -248,6 +245,23 @@ export default function ServiceTaskDelegateProps({
     },
     [element, setProperty]
   );
+
+  const updateAction = (value) => {
+    if (value?.length) {
+      element.businessObject.class = `com.axelor.studio.bpm.service.execution.WkfActionService`;
+      element.businessObject.topic = undefined;
+      element.businessObject.expression = undefined;
+      element.businessObject.resultVariable = undefined;
+      element.businessObject.delegateExpression = undefined;
+      element.businessObject.decisionRef = undefined;
+      setProperty("actions", value?.map((v) => v.name).join(","));
+      setProperty("isAction", "true");
+    } else {
+      element.businessObject.class = undefined;
+      setProperty("actions", undefined);
+      setProperty("isAction", undefined);
+    }
+  };
 
   useEffect(() => {
     async function fetchModel() {
@@ -333,9 +347,11 @@ export default function ServiceTaskDelegateProps({
         {element && element.type !== "bpmn:SendTask" && (
           <React.Fragment>
             <React.Fragment>
-              {index > 0 && <div className={classes.divider} />}
+              {index > 0 && <Divider className={classes.divider} />}
             </React.Fragment>
-            <div className={classes.groupLabel}>{translate(label)}</div>
+            <Box color="body" className={classes.groupLabel}>
+              {translate(label)}
+            </Box>
           </React.Fragment>
         )}
         {element && element.type === "bpmn:ServiceTask" && (
@@ -371,7 +387,9 @@ export default function ServiceTaskDelegateProps({
         )}
         {isBaml && (
           <React.Fragment>
-            <label className={classes.label}>{translate("BAML model")}</label>
+            <InputLabel color="body" className={classes.label}>
+              {translate("BAML model")}
+            </InputLabel>
             <div className={classes.baml}>
               <Select
                 className={classes.select}
@@ -402,7 +420,11 @@ export default function ServiceTaskDelegateProps({
                   }}
                   className={classes.link}
                 >
-                  <OpenInNewIcon className={classes.linkIcon} />
+                  <MaterialIcon
+                    icon="open_in_new"
+                    fontSize={18}
+                    className={classes.linkIcon}
+                  />
                 </div>
               )}
             </div>
@@ -433,7 +455,6 @@ export default function ServiceTaskDelegateProps({
                   }
                   return options;
                 },
-                emptyParameter: true,
                 get: function () {
                   return { implementationType };
                 },
@@ -462,9 +483,10 @@ export default function ServiceTaskDelegateProps({
                     setProperty("isAction", undefined);
                     setProperty("actions", undefined);
                   }
-
                   setImplementationType(values.implementationType);
                   setProperty("implementationType", values.implementationType);
+                  setDmnModel(null);
+                  element.businessObject.decisionRef = undefined;
                 },
               }}
             />
@@ -642,7 +664,11 @@ export default function ServiceTaskDelegateProps({
                   endAdornment={
                     <>
                       <div onClick={handleClickOpen} className={classes.link}>
-                        <AddIcon className={classes.linkIcon} />
+                        <MaterialIcon
+                          icon="add"
+                          fontSize={18}
+                          className={classes.linkIcon}
+                        />
                       </div>
                       {dmnModel &&
                         element &&
@@ -657,7 +683,11 @@ export default function ServiceTaskDelegateProps({
                             }}
                             className={classes.link}
                           >
-                            <OpenInNewIcon className={classes.linkIcon} />
+                            <MaterialIcon
+                              icon="open_in_new"
+                              fontSize={18}
+                              className={classes.linkIcon}
+                            />
                           </div>
                         )}
                     </>
@@ -868,11 +898,11 @@ export default function ServiceTaskDelegateProps({
                   canRemove={true}
                 />
                 <React.Fragment>
-                  {index > 0 && <div className={classes.divider} />}
+                  {index > 0 && <Divider className={classes.divider} />}
                 </React.Fragment>
-                <div className={classes.groupLabel}>
+                <Box color="body" className={classes.groupLabel}>
                   {translate("External task configuration")}
-                </div>
+                </Box>
                 <TextField
                   element={element}
                   entry={{
@@ -905,28 +935,14 @@ export default function ServiceTaskDelegateProps({
             )}
             {implementationType === "actions" && (
               <div className={classes.actionContainer}>
-                <label className={classes.label}>{translate("Actions")}</label>
+                <InputLabel color="body" className={classes.label}>
+                  {translate("Actions")}
+                </InputLabel>
                 <Select
                   className={classes.actionSelect}
                   update={(value) => {
                     setActions(value);
-                    if (value?.length) {
-                      element.businessObject.class = `com.axelor.studio.bpm.service.execution.WkfActionService`;
-                      element.businessObject.topic = undefined;
-                      element.businessObject.expression = undefined;
-                      element.businessObject.resultVariable = undefined;
-                      element.businessObject.delegateExpression = undefined;
-                      element.businessObject.decisionRef = undefined;
-                      setProperty(
-                        "actions",
-                        value?.map((v) => v.name).join(",")
-                      );
-                      setProperty("isAction", "true");
-                    } else {
-                      element.businessObject.class = undefined;
-                      setProperty("actions", undefined);
-                      setProperty("isAction", undefined);
-                    }
+                    updateAction(value);
                   }}
                   name="actions"
                   validate={(values) => {
@@ -939,65 +955,57 @@ export default function ServiceTaskDelegateProps({
                   optionLabel="name"
                   optionLabelSecondary="title"
                   fetchMethod={({ criteria }) => getActions(criteria)}
+                  handleRemove={(option) => {
+                    const value = actions?.filter(
+                      (r) => r.name !== option.name
+                    );
+                    setActions(value);
+                    updateAction(value);
+                  }}
                 />
               </div>
             )}
           </React.Fragment>
         )}
-        {open && (
-          <Dialog
-            open={open}
-            onClose={(event, reason) => {
-              if (reason !== "backdropClick") {
-                handleClose();
+
+        <Dialog open={open} centered backdrop className={classes.dialogPaper}>
+          <DialogHeader onCloseClick={() => setOpen(false)}>
+            <h3>{translate("Select DMN")}</h3>
+          </DialogHeader>
+          <DialogContent>
+            <InputLabel color="body" className={classes.label}>
+              {translate("DMN")}
+            </InputLabel>
+            <Select
+              className={classes.select}
+              update={(value) => {
+                setDmnModel(value);
+              }}
+              value={dmnModel}
+              name="dmnModel"
+              isLabel={true}
+              fetchMethod={(options) =>
+                getDMNModels(options && options.criteria)
               }
-            }}
-            aria-labelledby="form-dialog-title"
-            maxWidth="sm"
-            classes={{
-              paper: classes.dialogPaper,
-            }}
-          >
-            <DialogTitle id="form-dialog-title">
-              {translate("Select DMN")}
-            </DialogTitle>
-            <DialogContent>
-              <label className={classes.label}>{translate("DMN")}</label>
-              <Select
-                className={classes.select}
-                update={(value) => {
-                  setDmnModel({
-                    ...value?.wkfDmnModel,
-                    decisionId: value?.decisionId,
-                  });
-                }}
-                name="dmnModel"
-                isLabel={true}
-                fetchMethod={(options) =>
-                  getDMNModels(options && options.criteria)
-                }
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={handleClose}
-                className={classes.button}
-                color="primary"
-                variant="outlined"
-              >
-                {translate("Cancel")}
-              </Button>
-              <Button
-                onClick={onConfirm}
-                className={classes.button}
-                color="primary"
-                variant="outlined"
-              >
-                {translate("OK")}
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
+            />
+          </DialogContent>
+          <DialogFooter>
+            <Button
+              onClick={handleClose}
+              className={classes.button}
+              variant="secondary"
+            >
+              {translate("Cancel")}
+            </Button>
+            <Button
+              onClick={onConfirm}
+              className={classes.button}
+              variant="primary"
+            >
+              {translate("OK")}
+            </Button>
+          </DialogFooter>
+        </Dialog>
       </div>
     )
   );

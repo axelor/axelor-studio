@@ -6,16 +6,6 @@ import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/Implem
 import find from "lodash/find";
 import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
-import { Edit } from "@material-ui/icons";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
 
 import AlertDialog from "../../../../../components/AlertDialog";
 import Mapper from "../../../../../components/Mapper";
@@ -26,15 +16,24 @@ import {
   TextField,
   Textbox,
 } from "../../../../../components/properties/components";
+import Tooltip from "../../../../../components/Tooltip";
 import { TASK_LISTENER_EVENT_TYPE_OPTION } from "../../../constants";
-import { setDummyProperty } from "./utils";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Box,
+  Divider,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -42,10 +41,8 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   editIcon: {
-    color: "#58B423",
     marginLeft: 5,
   },
   edit: {
@@ -62,21 +59,16 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
+  },
+  content: {
+    fontSize: 16,
   },
   scriptDialog: {
     width: "100%",
     height: "100%",
-    maxWidth: "100%",
   },
 }));
 
@@ -144,6 +136,7 @@ export default function ListenerProps({
   label,
   bpmnFactory,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [isVisible, setVisible] = useState(false);
   const [selectedExecutionEntity, setSelectedExecutionEntity] = useState(null);
@@ -474,9 +467,11 @@ export default function ListenerProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{translate(label)}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {translate(label)}
+        </Box>
         {showExecutionListener() && (
           <ExtensionElementTable
             element={element}
@@ -636,12 +631,11 @@ export default function ListenerProps({
                   },
                 }}
               />
-
-              <div className={classes.edit}>
+              <Box color="body" className={classes.edit}>
                 <Tooltip title="Enable" aria-label="enable">
                   <i
                     className="fa fa-code"
-                    style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
+                    style={{ fontSize: 18, marginLeft: 5 }}
                     onClick={() => {
                       const listener = getListener();
                       if (listener?.script?.scriptValue) {
@@ -655,7 +649,9 @@ export default function ListenerProps({
                 </Tooltip>
                 {(selectedExecutionEntity === 0 || selectedExecutionEntity) && (
                   <>
-                    <Edit
+                    <MaterialIcon
+                      icon="edit"
+                      fontSize={16}
                       className={classes.editIcon}
                       onClick={handleClickOpen}
                     />
@@ -669,100 +665,86 @@ export default function ListenerProps({
                         bpmnModeler={bpmnModeler}
                       />
                     )}
+                    {openScriptDialog && (
+                      <AlertDialog
+                        className={classes.scriptDialog}
+                        openAlert={openScriptDialog}
+                        alertClose={() => {
+                          const listener = getListener();
+                          setScript(listener?.script?.value);
+                          setOpenScriptDialog(false);
+                        }}
+                        handleAlertOk={() => {
+                          setScriptValue({ script });
+                          setOpenScriptDialog(false);
+                        }}
+                        title={translate("Add script")}
+                        children={
+                          <Textbox
+                            element={element}
+                            className={classes.textbox}
+                            showLabel={false}
+                            defaultHeight={window?.innerHeight - 205}
+                            entry={{
+                              id: "script",
+                              label: translate("Script"),
+                              modelProperty: "script",
+                              get: function () {
+                                return { script };
+                              },
+                              set: function (e, values) {
+                                setScript(values?.script);
+                              },
+                            }}
+                          />
+                        }
+                      />
+                    )}
+                    {openAlert && (
+                      <Dialog
+                        open={openAlert}
+                        backdrop
+                        centered
+                        className={classes.dialog}
+                      >
+                        <DialogHeader onCloseClick={() => setAlert(false)}>
+                          <h3>{translate("Warning")}</h3>
+                        </DialogHeader>
+                        <DialogContent className={classes.content}>
+                          {translate(
+                            "Script can't be managed using builder once changed manually."
+                          )}
+                        </DialogContent>
+                        <DialogFooter>
+                          <Button
+                            onClick={() => {
+                              setAlert(false);
+                              const listener = getListener();
+                              if (!listener) return;
+                              setScript(listener?.script?.value);
+                              listener.script.scriptValue = undefined;
+                              setOpenScriptDialog(true);
+                            }}
+                            variant="primary"
+                            className={classes.save}
+                          >
+                            {translate("OK")}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setAlert(false);
+                            }}
+                            variant="secondary"
+                            className={classes.save}
+                          >
+                            {translate("Cancel")}
+                          </Button>
+                        </DialogFooter>
+                      </Dialog>
+                    )}
                   </>
                 )}
-                {openScriptDialog && (
-                  <AlertDialog
-                    className={classes.scriptDialog}
-                    openAlert={openScriptDialog}
-                    alertClose={() => {
-                      const listener = getListener();
-                      setScript(listener?.script?.value);
-                      setOpenScriptDialog(false);
-                    }}
-                    handleAlertOk={() => {
-                      setScriptValue({ script });
-                      setOpenScriptDialog(false);
-                    }}
-                    title={translate("Add script")}
-                    children={
-                      <Textbox
-                        element={element}
-                        className={classes.textbox}
-                        showLabel={false}
-                        defaultHeight={window?.innerHeight - 205}
-                        entry={{
-                          id: "script",
-                          label: translate("Script"),
-                          modelProperty: "script",
-                          get: function () {
-                            const listener = getListener();
-                            if (listener?.script) {
-                              return { script: listener.script.value };
-                            }
-                          },
-                          set: function (e, values) {
-                            setScript(values?.script);
-                          },
-                        }}
-                      />
-                    }
-                  />
-                )}
-                {openAlert && (
-                  <Dialog
-                    open={openAlert}
-                    onClose={(event, reason) => {
-                      if (reason !== "backdropClick") {
-                        setAlert(false);
-                      }
-                    }}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    classes={{
-                      paper: classes.dialog,
-                    }}
-                  >
-                    <DialogTitle id="alert-dialog-title">
-                      <label className={classes.title}>
-                        {translate("Warning")}
-                      </label>
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        {translate(
-                          "Script can't be managed using builder once changed manually."
-                        )}
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button
-                        onClick={() => {
-                          setAlert(false);
-                          const listener = getListener();
-                          if (!listener) return;
-                          listener.script.scriptValue = undefined;
-                          setScript(listener?.script?.value);
-                          setOpenScriptDialog(true);
-                        }}
-                        color="primary"
-                        className={classes.save}
-                      >
-                        {translate("OK")}
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setAlert(false);
-                        }}
-                        color="primary"
-                        className={classes.save}
-                      >
-                        {translate("Cancel")}
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                )}
-              </div>
+              </Box>
             </div>
             {eventType === "timeout" && (
               <React.Fragment>

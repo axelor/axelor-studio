@@ -7,8 +7,7 @@ body,
 #canvas,
 .App {
   height: 100%;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 12px;
+  background-color: var(--bs-body-bg);
   height: 100%;
   max-height: 100%;
   padding: 0;
@@ -28,7 +27,7 @@ body,
 }
 
 #properties {
-  background: #f8f8f8;
+  background: var(--bs-body-bg);
   width: calc(100% - 15px);
   position: absolute;
 }
@@ -51,14 +50,14 @@ body,
   width: 260px;
   height: 100%;
   right: 0;
-  background-color: #f8f8f8;
+  background-color: var(--bs-body-bg);
   max-width: calc(100% - 29.5px);
   overflow: auto;
 }
 
 #resize-handler:after {
   content: " ";
-  background-color: #ccc;
+  background-color: var(--bs-body-bg);
   position: absolute;
   left: 0;
   width: 0.5px;
@@ -70,12 +69,12 @@ body,
   position: absolute;
   left: calc(100% - 29.5px - var(--container-width));
   top: calc(50% + 60px);
-  background: #f8f8f8;
+  background: var(--bs-body-bg);
   padding: 7px 10px;
   transform: rotate(-90deg);
   white-space: nowrap;
   font-size: 13px;
-  border: solid 1px #ccc;
+  border: solid 1px var(--bs-body-color);
   border-bottom: none;
   border-radius: 2px 2px 0 0;
   transform-origin: top left;
@@ -89,7 +88,7 @@ body,
   align-items: center;
 }
 
-.snackbarAlert>.MuiAlert-message {
+.snackbarAlert > .MuiAlert-message {
   font-size: 14px;
 }
 
@@ -132,4 +131,97 @@ body,
 .custom-context-edit {
   min-width: 170px;
   min-height: 40px;
+}
+
+.djs-popup .entry.selected {
+  background-color: var(--bs-body-bg) !important;
+}
+
+.djs-label {
+  font-family: var(--bs-body-font-family) !important;
+  fill: var(--bs-black) !important;
+  font-weight: var(--bs-body-font-weight) !important;
+}
+
+.djs-group .djs-outline {
+  stroke: var(--bs-blue) !important;
+}
+
+.dmn-decision-table-container .decision-table-properties {
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-tertiary-bg) !important;
+  border: 1px solid var(--bs-border-color) !important;
+}
+.dmn-decision-table-container .decision-table-header-separator {
+  border-color: var(--bs-border-color) !important;
+}
+
+.dmn-decision-table-container .tjs-table-container {
+  border: 1px solid var(--bs-border-color) !important;
+}
+.dmn-decision-table-container td,
+.dmn-decision-table-container th {
+  border: 1px solid var(--bs-border-color) !important;
+}
+
+.dmn-decision-table-container .tjs-table {
+  border: 1px solid var(--bs-border-color) !important;
+}
+.dmn-decision-table-container thead th {
+  background-color: var(--bs-tertiary-bg) !important;
+}
+
+.dmn-decision-table-container tbody td:first-child,
+.dmn-decision-table-container tfoot td:first-child {
+  background: var(--bs-body-bg) !important;
+}
+
+.dmn-decision-table-container tbody tr:nth-child(even) td {
+  background: var(--ax-theme-table-striped-bg) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+.dmn-decision-table-container .tjs-table tbody tr:nth-child(2n) {
+  background: var(--bs-body-bg) !important;
+}
+.dmn-decision-table-container thead {
+  background: none !important;
+}
+
+.dmn-decision-table-container .action-icon {
+  box-shadow: 0 0 0 2px var(--bs-body-color) !important;
+}
+
+.djs-direct-editing-content {
+  color: var(--bs-black);
+}
+.djs-palette-entries .group .dmn-icon-lasso-tool,
+.djs-palette-entries .group .dmn-icon-input-data,
+.djs-palette-entries .group .dmn-icon-decision,
+.djs-palette-entries .group .dmn-icon-knowledge-source,
+.djs-palette-entries .group .dmn-icon-business-knowledge,
+.input-expression,
+.input-variable,
+.input-label,
+.clause,
+.output-variable,
+.content-editable,
+.output-label,
+.output-name,
+.annotation {
+  color: var(--bs-body-color) !important;
+}
+
+.dmn-icon-plus {
+  color: var(--bs-body-color) !important;
+  background-color: var(--bs-body-bg) !important;
+}
+
+.context-menu {
+  background-color: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.context-menu-group-entry:hover {
+  color: var(--bs-dark) !important;
 }

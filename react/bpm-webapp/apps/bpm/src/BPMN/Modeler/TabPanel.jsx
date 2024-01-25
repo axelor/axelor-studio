@@ -6,13 +6,13 @@ import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import RenderComponent from "./RenderWidget";
 import { isHiddenProperty } from "./extra.js";
 import { translate } from "../../utils";
+import { Box, Divider } from "@axelor/ui";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -23,13 +23,9 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   businessRuleTask: {
     marginTop: 0,
-  },
-  comments: {
-    height: "calc(100% - 66px)",
   },
 }));
 
@@ -73,6 +69,7 @@ export default function TabPanel({
   changeColor,
   bpmnModeler,
   showError,
+  setDummyProperty,
 }) {
   const classes = useStyles();
 
@@ -115,14 +112,17 @@ export default function TabPanel({
           enableStudioApp={enableStudioApp}
           addNewVersion={addNewVersion}
           showError={showError}
+          setDummyProperty={setDummyProperty}
         />
       ) : (
         group.entries.length > 0 && (
           <React.Fragment>
             <React.Fragment>
-              {index > 0 && <div className={classes.divider} />}
+              {index > 0 && <Divider className={classes.divider} />}
             </React.Fragment>
-            <div className={classes.groupLabel}>{translate(group.label)}</div>
+            <Box color="body" className={classes.groupLabel}>
+              {translate(group.label)}
+            </Box>
             <div>
               {group.entries.map((entry, i) => (
                 <Entry
@@ -132,6 +132,7 @@ export default function TabPanel({
                   changeColor={changeColor}
                   bpmnModeler={bpmnModeler}
                   readOnly={getReadOnly(entry)}
+                  setDummyProperty={setDummyProperty}
                 />
               ))}
             </div>

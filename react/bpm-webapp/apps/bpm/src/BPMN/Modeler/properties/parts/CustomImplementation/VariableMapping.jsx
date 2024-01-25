@@ -14,13 +14,13 @@ import {
   Checkbox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
+import { Box, Divider } from "@axelor/ui";
 
 const useStyles = makeStyles({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -28,7 +28,6 @@ const useStyles = makeStyles({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
 });
 
@@ -52,8 +51,9 @@ const CAMUNDA_IN_EXTENSION_ELEMENT = "camunda:In",
 
 function getCamundaInOutMappings(element, type) {
   let bo = getBusinessObject(element);
-  let signalEventDefinition =
-    eventDefinitionHelper.getSignalEventDefinition(bo);
+  let signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
+    bo
+  );
   return (
     extensionElementsHelper.getExtensionElements(
       signalEventDefinition || bo,
@@ -253,8 +253,9 @@ export default function VariableMapping({
   }, [element, addOptions]);
 
   useEffect(() => {
-    const signalEventDefinition =
-      eventDefinitionHelper.getSignalEventDefinition(element);
+    const signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
+      element
+    );
     setSignalEventDefinition(signalEventDefinition);
     if (is(element, "camunda:CallActivity") && !signalEventDefinition) {
       setVisible(true);
@@ -275,9 +276,11 @@ export default function VariableMapping({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{translate(label)}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {translate(label)}
+        </Box>
         <ExtensionElementTable
           element={element}
           options={inOptions}
@@ -292,7 +295,7 @@ export default function VariableMapping({
               return getVariableMappings(element, CAMUNDA_IN_EXTENSION_ELEMENT);
             },
             onSelectionChange: function (value) {
-              setSelectedInEntry(value);
+              setSelectedInEntry(`${value}`);
               setSelectedOutEntry(null);
             },
             setOptionLabelValue: setOptionLabelValue(
@@ -322,7 +325,7 @@ export default function VariableMapping({
               },
               onSelectionChange: function (value) {
                 setSelectedInEntry(null);
-                setSelectedOutEntry(value);
+                setSelectedOutEntry(`${value}`);
               },
               setOptionLabelValue: setOptionLabelValue(
                 CAMUNDA_OUT_EXTENSION_ELEMENT,
@@ -422,14 +425,13 @@ export default function VariableMapping({
                           : !values["sourceExpression"]
                       ) {
                         return {
-                          [type === "source" ? "source" : "sourceExpression"]:
-                            translate(
-                              `Mapping must have a ${
-                                type === "source"
-                                  ? "source"
-                                  : "source expression"
-                              }`
-                            ),
+                          [type === "source"
+                            ? "source"
+                            : "sourceExpression"]: translate(
+                            `Mapping must have a ${
+                              type === "source" ? "source" : "source expression"
+                            }`
+                          ),
                         };
                       }
                     },

@@ -1,18 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Grid,
-  Tooltip,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Edit, NotInterested } from "@material-ui/icons";
 
 import { TYPES } from "../constants";
 import { getAllModels, getMetaFields, getNameColumn } from "../../services/api";
@@ -27,38 +14,46 @@ import { translate, lowerCaseFirstLetter, getLowerCase } from "../../utils";
 import { RELATIONAL_TYPES, ALL_TYPES } from "../constants";
 import { getNameField } from "../services/api";
 import AlertDialog from "../../components/AlertDialog";
+import Tooltip from "../../components/Tooltip";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Box,
+} from "@axelor/ui";
+import { BooleanRadio } from "../../components/BooleanRadio";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   newIcon: {
-    color: "#58B423",
     marginLeft: 5,
     cursor: "pointer",
   },
   dialog: {
-    minWidth: 300,
+    "& > div": {
+      maxWidth: "90%",
+      width: "fit-content",
+      minWidth: 500,
+    },
   },
   dialogContent: {
     display: "flex",
     alignItems: "flex-end",
     flexDirection: "column",
+    overflow: "auto",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   radio: {
     padding: "1px 9px",
-    color: "#0275d8",
+    color: "var(--bs-blue)",
     "&.MuiRadio-colorSecondary.Mui-checked": {
-      color: "#0275d8",
+      color: "var(--bs-blue)",
     },
   },
   group: {
@@ -68,13 +63,6 @@ const useStyles = makeStyles((theme) => ({
   MuiAutocompleteRoot: {
     width: "250px",
     marginRight: "10px",
-  },
-  grid: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    overflow: "auto",
-    width: "100%",
-    display: "flex",
   },
 }));
 
@@ -353,165 +341,150 @@ export default function OutputHeadProperties({
         endAdornment={
           <>
             <Tooltip title="Enable" aria-label="enable">
-              <NotInterested
+              <MaterialIcon
+                icon="do_not_disturb"
                 className={classes.newIcon}
                 onClick={() => readOnly && setOpenAlert(true)}
               />
             </Tooltip>
-            <Edit className={classes.newIcon} onClick={handleClickOpen} />
+            <MaterialIcon
+              icon="edit"
+              className={classes.newIcon}
+              onClick={handleClickOpen}
+            />
           </>
         }
       />
-      {openOutputExpression && (
-        <Dialog
-          open={openOutputExpression}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              setOpenOutputExpression(false);
-            }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">
-            {translate("Expression")}
-          </DialogTitle>
-          <DialogContent className={classes.dialogContent}>
-            <Grid>
-              <RadioGroup
-                aria-label="radioType"
-                name="radioType"
-                value={valueFrom || "context"}
-                className={classes.group}
+
+      <Dialog
+        open={openOutputExpression}
+        backdrop
+        centered
+        className={classes.dialog}
+      >
+        <DialogHeader onCloseClick={() => setOpenOutputExpression(false)}>
+          <h3>{translate("Expression")}</h3>
+        </DialogHeader>
+        <DialogContent className={classes.dialogContent}>
+          <BooleanRadio
+            name="radioType"
+            onChange={(e) => setValueFrom(e?.target?.value)}
+            data={[
+              { value: "context", label: "Context" },
+              { value: "model", label: "Model" },
+            ]}
+            value={valueFrom || "context"}
+          />
+          <Box d="flex" w={100} overflow="auto">
+            {valueFrom === "model" ? (
+              <Selection
+                name="model"
+                title="Model"
+                placeholder="Model"
+                fetchAPI={(e) => getModels(e)}
+                optionLabelKey="name"
                 onChange={(e) => {
-                  setValueFrom(e.target.value);
+                  setModel(e);
+                  setOutputField(e && e.name);
                 }}
-              >
-                <FormControlLabel
-                  value="context"
-                  control={<Radio className={classes.radio} size="small" />}
-                  label={translate("Context")}
-                />
-                <FormControlLabel
-                  value="model"
-                  control={<Radio className={classes.radio} size="small" />}
-                  label={translate("Model")}
-                />
-              </RadioGroup>
-            </Grid>
-            <Grid className={classes.grid}>
-              {valueFrom === "model" ? (
-                <Selection
-                  name="model"
-                  title="Model"
-                  placeholder="model"
-                  fetchAPI={(e) => getModels(e)}
-                  optionLabelKey="name"
-                  onChange={(e) => {
-                    setModel(e);
-                    setOutputField(e && e.name);
-                  }}
-                  value={model}
-                  classes={{ root: classes.MuiAutocompleteRoot }}
-                />
-              ) : (
-                <React.Fragment>
-                  {models?.length > 1 && (
-                    <Selection
-                      name="model"
-                      title="Context model"
-                      fetchAPI={() => getData()}
-                      optionLabelKey="name"
-                      onChange={(e) => {
-                        if (!e) {
-                          setMetaField(null);
-                          setRelationalField(null);
-                          setAllFields(null);
-                        }
-                        setContextModel(e);
-                        setOutputField(null);
-                      }}
-                      value={contextModel}
-                      classes={{ root: classes.MuiAutocompleteRoot }}
-                    />
-                  )}
-                  <FieldEditor
-                    getMetaFields={() => getMetaFields(contextModel)}
-                    allowAllFields={true}
-                    excludeUITypes={true}
-                    onChange={(val, metaField, relationalField) => {
-                      setOutputField(val);
-                      setMetaField(metaField);
-                      const values = val && val.split(".");
-                      const newFields = [...(allFields || []), metaField];
-                      const fields =
-                        newFields &&
-                        values &&
-                        newFields.filter((f) => values.includes(f && f.name));
-                      const isAvailable =
-                        fields &&
-                        relationalField &&
-                        fields.find(
-                          (f) => (f && f.name) === relationalField.name
-                        );
-                      if (isAvailable) {
-                        setRelationalField(relationalField);
-                      } else {
+                value={model}
+                classes={{ root: classes.MuiAutocompleteRoot }}
+              />
+            ) : (
+              <React.Fragment>
+                {models?.length > 1 && (
+                  <Selection
+                    name="model"
+                    title="Context model"
+                    fetchAPI={() => getData()}
+                    optionLabelKey="name"
+                    onChange={(e) => {
+                      if (!e) {
+                        setMetaField(null);
                         setRelationalField(null);
+                        setAllFields(null);
                       }
-                      setAllFields(fields);
+                      setContextModel(e);
+                      setOutputField(null);
                     }}
-                    value={{
-                      fieldName: outputField || "",
-                      allFields,
-                    }}
-                    isParent={true}
+                    value={contextModel}
+                    classes={{ root: classes.MuiAutocompleteRoot }}
                   />
-                </React.Fragment>
-              )}
-            </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                handleOk();
-                setModel(null);
-                setOpenOutputExpression(false);
-                const field =
-                  metaField ||
-                  (allFields?.length > 0 && allFields[allFields?.length - 1]);
-                if (valueFrom === "model") {
-                  setProperty({ name: model?.name }, output);
-                } else {
-                  setProperty({ name: field?.name }, output);
-                }
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
-                setOpenOutputExpression(false);
-                setOutputField(null);
-                setModel(null);
-                setContextModel(null);
-                setMetaField(null);
-                setAllFields([]);
-                setRelationalField(null);
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("Cancel")}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+                )}
+                <FieldEditor
+                  getMetaFields={() => getMetaFields(contextModel)}
+                  allowAllFields={true}
+                  excludeUITypes={true}
+                  onChange={(val, metaField, relationalField) => {
+                    setOutputField(val);
+                    setMetaField(metaField);
+                    const values = val && val.split(".");
+                    const newFields = [...(allFields || []), metaField];
+                    const fields =
+                      newFields &&
+                      values &&
+                      newFields.filter((f) => values.includes(f && f.name));
+                    const isAvailable =
+                      fields &&
+                      relationalField &&
+                      fields.find(
+                        (f) => (f && f.name) === relationalField.name
+                      );
+                    if (isAvailable) {
+                      setRelationalField(relationalField);
+                    } else {
+                      setRelationalField(null);
+                    }
+                    setAllFields(fields);
+                  }}
+                  value={{
+                    fieldName: outputField || "",
+                    allFields,
+                  }}
+                  isParent={true}
+                />
+              </React.Fragment>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogFooter>
+          <Button
+            onClick={() => {
+              handleOk();
+              setModel(null);
+              setOpenOutputExpression(false);
+              const field =
+                metaField ||
+                (allFields?.length > 0 && allFields[allFields?.length - 1]);
+              if (valueFrom === "model") {
+                setProperty({ name: model?.name }, output);
+              } else {
+                setProperty({ name: field?.name }, output);
+              }
+            }}
+            variant="primary"
+            className={classes.save}
+          >
+            {translate("OK")}
+          </Button>
+          <Button
+            onClick={() => {
+              setOpenOutputExpression(false);
+              setOutputField(null);
+              setModel(null);
+              setContextModel(null);
+              setMetaField(null);
+              setAllFields([]);
+              setRelationalField(null);
+            }}
+            variant="secondary"
+            className={classes.save}
+          >
+            {translate("Cancel")}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
       <TextField
         element={element}
         entry={{
@@ -594,15 +567,13 @@ export default function OutputHeadProperties({
         />
       )}
 
-      {openAlert && (
-        <AlertDialog
-          openAlert={openAlert}
-          handleAlertOk={handleAlertOk}
-          alertClose={alertClose}
-          message="Script can't be managed using builder once changed manually."
-          title="Warning"
-        />
-      )}
+      <AlertDialog
+        openAlert={openAlert}
+        handleAlertOk={handleAlertOk}
+        alertClose={alertClose}
+        message="Script can't be managed using builder once changed manually."
+        title="Warning"
+      />
     </React.Fragment>
   );
 }

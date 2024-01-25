@@ -1,19 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TableHead,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
-} from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import { Add, Close, ReportProblem } from "@material-ui/icons";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
@@ -36,9 +23,17 @@ import {
   NUM_ATTRIBUTES,
   ALL_ATTRIBUTES,
 } from "./constants";
-import { setDummyProperty } from "./utils";
 import Ids from "ids";
-
+import {
+  Button,
+  InputLabel,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TableHead,
+} from "@axelor/ui";
 
 const valueObj = {
   model: null,
@@ -67,89 +62,62 @@ function createData(values = []) {
 
 const useStyles = makeStyles({
   button: {
+    minWidth: 64,
     textTransform: "none",
-  },
-  addButton: {
-    borderRadius: 0,
-    marginLeft: 5,
-    padding: 0,
-    height: 23,
-    border: "1px solid #ccc",
-    color: "#727272",
-    width: "fit-content",
-    "&:hover": {
-      border: "1px solid #727272",
-    },
   },
   grid: {
     padding: "0px 5px 0px 0px",
   },
-  card: {
-    margin: "5px 0px 10px 0px",
-    boxShadow: "none",
-    width: "100%",
-    border: "1px solid #ccc",
-    background: "#f8f8f8",
-    borderRadius: 0,
-  },
-  cardContent: {
-    padding: "10px !important",
-  },
-  cardContainer: {
-    display: "flex",
-    alignItems: "flex-start",
-  },
   tableCell: {
     padding: "6px !important",
     width: "33%",
+    textAlign: "center",
   },
   tableHead: {
     padding: "6px !important",
-    fontWeight: "bolder",
-    color: "#666",
     margin: "3px 0px",
+    textAlign: "center",
   },
   attributes: {
-    fontWeight: "bolder",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   iconButton: {
     margin: "5px 0px 5px 5px",
     borderRadius: 0,
     border: "1px solid #ccc",
+    color: "inherit",
     padding: 2,
     width: "fit-content",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   typography: {
     display: "flex",
     alignItems: "center",
-    color: "#CC3333",
     marginTop: 10,
   },
   icon: {
+    color: "inherit",
     marginRight: 10,
   },
-  textFieldRoot: {
-    marginTop: 0,
-  },
-  textFieldLabel: {
-    marginBottom: 0,
-  },
-  icons: {
-    display: "flex",
-    flexDirection: "column",
-  },
   checkbox: {
-    marginTop: 0,
     justifyContent: "center",
+  },
+  select: {
+    '& input[type="text"]': {
+      width: "100%",
+      textOverflow: "ellipsis",
+    },
+  },
+  textField: {
+    minWidth: 150,
   },
 });
 
@@ -157,6 +125,7 @@ export default function ViewAttributePanel({
   handleAdd,
   element,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const classes = useStyles();
   const [row, setRow] = useState(null);
@@ -646,18 +615,31 @@ export default function ViewAttributePanel({
               row.values.map(
                 (val, index) =>
                   val && (
-                    <div
-                      key={`card_${index}`}
-                      className={classes.cardContainer}
-                    >
-                      <Card className={classes.card}>
-                        <CardContent className={classes.cardContent}>
-                          <Grid>
-                            <Grid container>
-                              <Grid item xs={6} className={classes.grid}>
-                                <label className={classes.label}>
+                    <Box d="flex" key={`card_${index}`}>
+                      <Box
+                        w={100}
+                        rounded={2}
+                        border
+                        bg="body-tertiary"
+                        color="body"
+                        style={{
+                          marginTop: 5,
+                          marginBottom: 10,
+                        }}
+                      >
+                        <Box style={{ padding: 10 }}>
+                          <Box>
+                            <Box d="flex">
+                              <div
+                                style={{ width: "50%" }}
+                                className={classes.grid}
+                              >
+                                <InputLabel
+                                  color="body"
+                                  className={classes.label}
+                                >
                                   {translate("Model")}
-                                </label>
+                                </InputLabel>
                                 <Select
                                   fetchMethod={() =>
                                     getModels(getProcessConfig())
@@ -704,19 +686,21 @@ export default function ViewAttributePanel({
                                   }}
                                   value={val.model}
                                   isLabel={false}
+                                  className={classes.select}
                                 />
-                              </Grid>
-                              <Grid
-                                item
-                                xs={6}
-                                style={{ justifyContent: "flex-end" }}
+                              </div>
+                              <div
+                                style={{ width: "50%" }}
                                 className={classes.grid}
                               >
                                 {val.model && (
                                   <div>
-                                    <label className={classes.label}>
+                                    <InputLabel
+                                      color="body"
+                                      className={classes.label}
+                                    >
                                       {translate("View")}
-                                    </label>
+                                    </InputLabel>
                                     <Select
                                       fetchMethod={(data) => {
                                         return getViews(
@@ -735,18 +719,22 @@ export default function ViewAttributePanel({
                                       }}
                                       name="view"
                                       value={val.view || null}
+                                      className={classes.select}
                                       isLabel={false}
                                     />
                                   </div>
                                 )}
-                              </Grid>
-                            </Grid>
+                              </div>
+                            </Box>
                             {val?.model?.name &&
                               !processModels.includes(val?.model?.name) && (
                                 <div>
-                                  <label className={classes.label}>
+                                  <InputLabel
+                                    color="body"
+                                    className={classes.label}
+                                  >
                                     {translate("Related field")}
-                                  </label>
+                                  </InputLabel>
                                   <Select
                                     isLabel={false}
                                     fetchMethod={() => getRelatedField(val)}
@@ -769,15 +757,19 @@ export default function ViewAttributePanel({
                                       }
                                     }}
                                     name="relatedField"
+                                    className={classes.select}
                                     value={val?.relatedField || null}
                                   />
                                 </div>
                               )}
                             {(val.model || val.view) && (
                               <div>
-                                <label className={classes.label}>
+                                <InputLabel
+                                  color="body"
+                                  className={classes.label}
+                                >
                                   {translate("Roles")}
-                                </label>
+                                </InputLabel>
                                 <Select
                                   fetchMethod={(data) =>
                                     getRoles(data?.criteria)
@@ -790,76 +782,95 @@ export default function ViewAttributePanel({
                                       index
                                     )
                                   }
+                                  handleRemove={(option) => {
+                                    updateValue(
+                                      val?.roles?.filter(
+                                        (r) => r.name !== option.name
+                                      ),
+                                      "roles",
+                                      undefined,
+                                      index
+                                    );
+                                  }}
                                   name="roles"
                                   value={val.roles || []}
                                   multiple={true}
                                   isLabel={false}
+                                  className={classes.select}
                                 />
                               </div>
                             )}
                             {val.model &&
                               (!val.items || val.items.length === 0) && (
-                                <Typography className={classes.typography}>
+                                <InputLabel
+                                  color="danger"
+                                  className={classes.typography}
+                                >
                                   <ReportProblem
                                     fontSize="small"
                                     className={classes.icon}
                                   />
                                   {translate("Must provide attributes")}
-                                </Typography>
+                                </InputLabel>
                               )}
-                            <Grid container alignItems="center">
-                              <Grid item xs={6}>
-                                <Typography className={classes.attributes}>
+                            <Box
+                              d="flex"
+                              alignItems="center"
+                              justifyContent="space-between"
+                            >
+                              <Box>
+                                <InputLabel
+                                  color="body"
+                                  className={classes.attributes}
+                                >
                                   {translate("Attributes")}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6} style={{ textAlign: "right" }}>
+                                </InputLabel>
+                              </Box>
+                              <Box style={{ textAlign: "right" }}>
                                 <Button
                                   className={classes.button}
                                   onClick={() => addItems(index)}
-                                  disabled={!val.model}
-                                  startIcon={<Add />}
+                                  disabled={!val?.model || false}
+                                  variant="light"
                                 >
-                                  {translate("New")}
+                                  <Add /> {translate("New")}
                                 </Button>
-                              </Grid>
-                            </Grid>
-                            <Grid>
+                              </Box>
+                            </Box>
+                            <Box overflow="auto">
                               {val && val.items && val.items.length > 0 && (
-                                <TableContainer>
-                                  <Table
-                                    size="small"
-                                    aria-label="a dense table"
-                                  >
+                                <Box
+                                  rounded={2}
+                                  bgColor="body"
+                                  shadow
+                                  color="body"
+                                  className={classes.tableContainer}
+                                >
+                                  <Table size="sm" aria-label="a dense table">
                                     <TableHead>
                                       <TableRow>
                                         <TableCell
                                           className={classes.tableHead}
-                                          align="center"
                                         >
                                           {translate("Item")}
                                         </TableCell>
                                         <TableCell
                                           className={classes.tableHead}
-                                          align="center"
                                         >
                                           {translate("Name")}
                                         </TableCell>
                                         <TableCell
                                           className={classes.tableHead}
-                                          align="center"
                                         >
                                           {translate("Value")}
                                         </TableCell>
                                         <TableCell
                                           className={classes.tableHead}
-                                          align="center"
                                         >
                                           {translate("Permanent ?")}
                                         </TableCell>
                                         <TableCell
                                           className={classes.tableHead}
-                                          align="center"
                                         ></TableCell>
                                       </TableRow>
                                     </TableHead>
@@ -871,12 +882,11 @@ export default function ViewAttributePanel({
                                             key={`item_${val.id}_${key}`}
                                           >
                                             <TableCell
-                                              component="th"
-                                              scope="row"
-                                              align="center"
+                                              as="td"
                                               className={classes.tableCell}
                                             >
                                               <Select
+                                                className={classes.select}
                                                 isLabel={false}
                                                 skipFilter={true}
                                                 fetchMethod={(data) =>
@@ -926,10 +936,10 @@ export default function ViewAttributePanel({
                                               />
                                             </TableCell>
                                             <TableCell
-                                              align="center"
                                               className={classes.tableCell}
                                             >
                                               <Select
+                                                className={classes.select}
                                                 isLabel={false}
                                                 options={
                                                   item?.itemName &&
@@ -961,7 +971,6 @@ export default function ViewAttributePanel({
                                               />
                                             </TableCell>
                                             <TableCell
-                                              align="center"
                                               className={classes.tableCell}
                                             >
                                               {item.attributeName &&
@@ -969,6 +978,7 @@ export default function ViewAttributePanel({
                                                   item.attributeName
                                                 ) && (
                                                   <Select
+                                                    className={classes.select}
                                                     isLabel={false}
                                                     options={["true", "false"]}
                                                     disableClearable={true}
@@ -999,18 +1009,15 @@ export default function ViewAttributePanel({
                                                   <TextField
                                                     element={element}
                                                     canRemove={true}
+                                                    className={
+                                                      classes.textField
+                                                    }
                                                     type={
                                                       NUM_ATTRIBUTES.includes(
                                                         item.attributeName
                                                       )
                                                         ? "number"
                                                         : undefined
-                                                    }
-                                                    rootClass={
-                                                      classes.textFieldRoot
-                                                    }
-                                                    labelClass={
-                                                      classes.textFieldLabel
                                                     }
                                                     entry={{
                                                       id: "attributeValue",
@@ -1043,10 +1050,9 @@ export default function ViewAttributePanel({
                                                           !values.attributeValue
                                                         ) {
                                                           return {
-                                                            attributeValue:
-                                                              translate(
-                                                                "Must provide a value"
-                                                              ),
+                                                            attributeValue: translate(
+                                                              "Must provide a value"
+                                                            ),
                                                           };
                                                         }
                                                       },
@@ -1055,7 +1061,6 @@ export default function ViewAttributePanel({
                                                 )}
                                             </TableCell>
                                             <TableCell
-                                              align="center"
                                               className={classes.tableCell}
                                             >
                                               <Checkbox
@@ -1084,7 +1089,6 @@ export default function ViewAttributePanel({
                                               />
                                             </TableCell>
                                             <TableCell
-                                              align="center"
                                               className={classes.tableCell}
                                             >
                                               <IconButton
@@ -1092,6 +1096,7 @@ export default function ViewAttributePanel({
                                                 onClick={() =>
                                                   removeItem(index, key)
                                                 }
+                                                style={{ color: "inherit" }}
                                               >
                                                 <Close fontSize="small" />
                                               </IconButton>
@@ -1100,29 +1105,31 @@ export default function ViewAttributePanel({
                                         ))}
                                     </TableBody>
                                   </Table>
-                                </TableContainer>
+                                </Box>
                               )}
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                      </Card>
-                      <IconButton
-                        className={classes.iconButton}
-                        onClick={() => removeCard(index)}
-                      >
-                        <Close fontSize="small" />
-                      </IconButton>
-                    </div>
+                            </Box>
+                          </Box>
+                        </Box>
+                      </Box>
+                      <Box color="body">
+                        <IconButton
+                          className={classes.iconButton}
+                          onClick={() => removeCard(index)}
+                        >
+                          <Close fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </Box>
                   )
               )}
           </div>
         </div>
       )}
-      <div className={classes.icons}>
+      <Box color="body" d="flex" alignItems="center">
         <IconButton className={classes.iconButton} onClick={addModelView}>
           <Add fontSize="small" />
         </IconButton>
-      </div>
+      </Box>
     </div>
   );
 }

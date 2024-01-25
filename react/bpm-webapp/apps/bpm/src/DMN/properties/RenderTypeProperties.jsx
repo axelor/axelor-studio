@@ -18,11 +18,7 @@ import NumberInput from "../../components/expression-builder/components/number";
 import Select from "../../components/Select";
 import { TextField, Description } from "../../components/properties/components";
 import { translate } from "../../utils";
-import {
-  getCustomModelData,
-  getNameField,
-  getData,
-} from "../services/api";
+import { getCustomModelData, getNameField, getData } from "../services/api";
 import { getExpressionValues } from "../../services/api";
 
 import {
@@ -34,6 +30,9 @@ import {
   DATE_OPTIONS,
   RELATIONAL_TYPES,
 } from "../constants";
+
+import { InputLabel } from "@axelor/ui";
+
 const DISJUNCTION = "disjunction";
 const NEGATION = "negation";
 
@@ -42,14 +41,13 @@ const useStyles = makeStyles(() => ({
     border: "1px solid #ccc",
     margin: "8px 0px",
     padding: "0px 5px",
-    background: "white",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginBottom: 3,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
 }));
 
@@ -119,11 +117,8 @@ export default function RenderTypeProperties({
       );
     } else if (["date", "datetime", "time"].includes(type)) {
       const parsedInput = parseDate(ruleValue?.text);
-      const {
-        type: parsedType = "exact",
-        date,
-        dates: parsedDates,
-      } = parsedInput || {};
+      const { type: parsedType = "exact", date, dates: parsedDates } =
+        parsedInput || {};
       if (ruleValue?.text) {
         setValueType(
           "defaultTypeValue",
@@ -211,9 +206,9 @@ export default function RenderTypeProperties({
         <React.Fragment>
           {valueFrom === "model" && isOutput ? (
             <React.Fragment>
-              <label className={classes.label}>
+              <InputLabel color="body" className={classes.label}>
                 {translate("Select value")}
-              </label>
+              </InputLabel>
               <Select
                 update={(val) => {
                   let value =
@@ -241,9 +236,9 @@ export default function RenderTypeProperties({
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <label className={classes.label}>
+              <InputLabel color="body" className={classes.label}>
                 {translate("Edit string")}
-              </label>
+              </InputLabel>
               {!isOutput && (
                 <Select
                   update={(value) => {
@@ -327,7 +322,9 @@ export default function RenderTypeProperties({
     case "boolean":
       return (
         <React.Fragment>
-          <label className={classes.label}>{translate("Value")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Value")}
+          </InputLabel>
           <Select
             update={(value) => {
               updateDRDCell(ruleValue, rule, (value && value.id) || "");
@@ -361,7 +358,9 @@ export default function RenderTypeProperties({
         />
       ) : (
         <React.Fragment>
-          <label className={classes.label}>{translate("Edit")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Edit")}
+          </InputLabel>
           <Select
             update={(value) => {
               setValueType("defaultTypeValue", value);
@@ -390,7 +389,9 @@ export default function RenderTypeProperties({
           />
           {defaultType && defaultType.id === "between" ? (
             <React.Fragment>
-              <label className={classes.label}>{translate("Value")}</label>
+              <InputLabel color="body" className={classes.label}>
+                {translate("Value")}
+              </InputLabel>
               <DateTimePicker
                 disableUnderline={true}
                 className={classes.input}
@@ -438,7 +439,9 @@ export default function RenderTypeProperties({
           ) : (
             defaultType && (
               <React.Fragment>
-                <label className={classes.label}>{translate("Value")}</label>
+                <InputLabel color="body" className={classes.label}>
+                  {translate("Value")}
+                </InputLabel>
                 <DateTimePicker
                   disableUnderline={true}
                   className={classes.input}
@@ -469,11 +472,12 @@ export default function RenderTypeProperties({
     case "decimal":
       return isOutput ? (
         <React.Fragment>
-          <label className={classes.label}>{translate("Value")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Value")}
+          </InputLabel>
           <NumberInput
             value={Number(numberValue)}
             type={type}
-            className={classes.input}
             scale={99}
             disableUnderline={true}
             onChange={(value) => {
@@ -483,7 +487,9 @@ export default function RenderTypeProperties({
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <label className={classes.label}>{translate("Edit number")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Edit number")}
+          </InputLabel>
           <Select
             update={(value) => {
               setValueType("defaultTypeValue", value);
@@ -522,9 +528,9 @@ export default function RenderTypeProperties({
           />
           {defaultType?.id === "range" ? (
             <React.Fragment>
-              <label className={classes.label}>
+              <InputLabel color="body" className={classes.label}>
                 {translate("Start value")}
-              </label>
+              </InputLabel>
               <Select
                 update={(value) => {
                   setValueType("rangeStartType", value);
@@ -544,12 +550,13 @@ export default function RenderTypeProperties({
                 isLabel={false}
                 disableClearable
               />
-              <label className={classes.label}>{translate("Value")}</label>
+              <InputLabel color="body" className={classes.label}>
+                {translate("Value")}
+              </InputLabel>
               <NumberInput
                 value={rangeStartValue}
                 type={type}
                 scale={99}
-                className={classes.input}
                 disableUnderline={true}
                 onChange={(value) => {
                   updateDRDCell(
@@ -564,7 +571,9 @@ export default function RenderTypeProperties({
                   );
                 }}
               />
-              <label className={classes.label}>{translate("End value")}</label>
+              <InputLabel color="body" className={classes.label}>
+                {translate("End value")}
+              </InputLabel>
               <Select
                 update={(value) => {
                   setValueType("rangeEndType", value);
@@ -584,9 +593,10 @@ export default function RenderTypeProperties({
                 isLabel={false}
                 disableClearable
               />
-              <label className={classes.label}>{translate("Value")}</label>
+              <InputLabel color="body" className={classes.label}>
+                {translate("Value")}
+              </InputLabel>
               <NumberInput
-                className={classes.input}
                 value={rangeEndValue}
                 type={type}
                 disableUnderline={true}
@@ -628,11 +638,12 @@ export default function RenderTypeProperties({
                 isLabel={false}
                 disableClearable
               />
-              <label className={classes.label}>{translate("Value")}</label>
+              <InputLabel color="body" className={classes.label}>
+                {translate("Value")}
+              </InputLabel>
               <NumberInput
                 value={numberValue}
                 type={type}
-                className={classes.input}
                 disableUnderline={true}
                 scale={99}
                 onChange={(value) => {
@@ -652,23 +663,28 @@ export default function RenderTypeProperties({
         </React.Fragment>
       );
     case "selection":
+      const updateValue = (value) => {
+        const text = value.reduce(
+          (accumulator, item) =>
+            item.value
+              ? metaField.type.toUpperCase() === "STRING"
+                ? `${accumulator}${accumulator ? "," : ""}"${item.value}"`
+                : `${accumulator}${accumulator ? "," : ""}${item.value}`
+              : accumulator,
+          ""
+        );
+        setValueType("setValue", text);
+        updateDRDCell(ruleValue, rule, text);
+      };
       return (
         <React.Fragment>
-          <label className={classes.label}>{translate("Select value")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Select value")}
+          </InputLabel>
           <Select
             className={classes.select}
             update={(value) => {
-              const text = value.reduce(
-                (accumulator, item) =>
-                  item.value
-                    ? metaField.type.toUpperCase() === "STRING"
-                      ? `${accumulator}${accumulator ? "," : ""}"${item.value}"`
-                      : `${accumulator}${accumulator ? "," : ""}${item.value}`
-                    : accumulator,
-                ""
-              );
-              setValueType("setValue", text);
-              updateDRDCell(ruleValue, rule, text);
+              updateValue(value);
             }}
             multiple={true}
             options={metaField.selectionList}
@@ -681,7 +697,17 @@ export default function RenderTypeProperties({
             )}
             optionLabel={metaFieldName || nameField || targetName || "name"}
             optionLabelSecondary="title"
-            isLabel={false}
+            handleRemove={(option) => {
+              let value = metaField.selectionList
+                .filter((item) =>
+                  stringValue
+                    .split(",")
+                    .map((v) => v.replace(/"/g, ""))
+                    .includes(item.value.toString())
+                )
+                .filter((r) => r.title !== option.title);
+              updateValue(value);
+            }}
           />
         </React.Fragment>
       );
@@ -703,13 +729,36 @@ export default function RenderTypeProperties({
     case "json-one-to-many":
       const input = parseString(ruleValue?.text);
       const { values: value } = input || {};
+      const updateSelectValue = (value) => {
+        const values = [];
+        let isNameField;
+        (value || []).forEach((val) => {
+          if (typeof val !== "string") {
+            const targetFields =
+              metaFieldName || nameField || targetName || "name" || "id";
+            isNameField = Array.isArray(val)
+              ? val.find((v) => v && v[targetFields])
+              : val && val[targetFields];
+            values.push(`"${isNameField}"`);
+            return;
+          }
+          values.push(val);
+        });
+        const str = values && values.toString();
+        if (defaultType?.id === NEGATION) {
+          const updatedStr = str ? "not(".concat(str, ")") : "";
+          updateDRDCell(ruleValue, rule, updatedStr);
+        } else {
+          updateDRDCell(ruleValue, rule, str);
+        }
+      };
       return (
         <React.Fragment>
           {!isOutput && (
             <React.Fragment>
-              <label className={classes.label}>
+              <InputLabel color="body" className={classes.label}>
                 {translate("Edit string")}
-              </label>
+              </InputLabel>
               <Select
                 update={(value) => {
                   setValueType("defaultTypeValue", value);
@@ -730,46 +779,33 @@ export default function RenderTypeProperties({
               />
             </React.Fragment>
           )}
-          <label className={classes.label}>{translate("Select value")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Select value")}
+          </InputLabel>
           <Select
             className={classes.select}
             multiple={true}
             fetchMethod={() => fetchData()}
             update={(value) => {
-              const values = [];
-              let isNameField;
-              (value || []).forEach((val) => {
-                if (typeof val !== "string") {
-                  const targetFields =
-                    metaFieldName || nameField || targetName || "name" || "id";
-                  isNameField = Array.isArray(val)
-                    ? val.find((v) => v && v[targetFields])
-                    : val && val[targetFields];
-                  values.push(`"${isNameField}"`);
-                  return;
-                }
-                values.push(val);
-              });
-              const str = values && values.toString();
-              if (defaultType?.id === NEGATION) {
-                const updatedStr = str ? "not(".concat(str, ")") : "";
-                updateDRDCell(ruleValue, rule, updatedStr);
-              } else {
-                updateDRDCell(ruleValue, rule, str);
-              }
+              updateSelectValue(value);
             }}
             name="value"
             value={value || []}
             isLabel={false}
             optionLabel={metaFieldName || nameField || targetName || "name"}
             optionLabelSecondary="title"
+            handleRemove={(option) => {
+              updateSelectValue(value?.filter((r) => r !== option));
+            }}
           />
         </React.Fragment>
       );
     default:
       return (
         <React.Fragment>
-          <label className={classes.label}>{translate("Edit string")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Edit string")}
+          </InputLabel>
           {!isOutput && (
             <Select
               update={(value) => {

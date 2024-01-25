@@ -1,85 +1,69 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  makeStyles,
-  Paper,
-} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import { translate } from '../utils';
+import {
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Button,
+  Box,
+} from '@axelor/ui';
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    margin: theme.spacing(1),
-    width: `calc(100% - 16px)`,
-    display: 'flex',
-    height: 'calc(100% - 50px)',
-    overflow: 'hidden',
-  },
   dialogPaper: {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    resize: 'both',
-    width: '100%',
-    height: '90%',
-  },
-  root: {
+    margin: 20,
+    maxHeight: 'calc(100% - 40px)',
+    maxWidth: 'calc(100% - 40px)',
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    height: '100%',
-    overflow: 'hidden',
+    '& > div': {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      '& > div': {
+        maxWidth: '100%',
+        maxHeight: '100%',
+        resize: 'both',
+        overflow: 'auto',
+        minWidth: '50%',
+      },
+    },
   },
   save: {
-    backgroundColor: '#0275d8',
-    borderColor: '#0267bf',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#025aa5',
-      borderColor: '#014682',
-      color: 'white',
-    },
+    minWidth: 64,
+    textTransform: 'none',
+  },
+  dialogContent: {
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
 function DialogBox({ open, children, handleSave, handleClose }) {
   const classes = useStyles();
   return (
-    <Dialog
-      onClose={(event, reason) => {
-        if (reason !== 'backdropClick') {
-          handleClose();
-        }
-      }}
-      aria-labelledby="simple-dialog-title"
-      open={open}
-      classes={{
-        paper: classes.dialogPaper,
-      }}
-    >
-      <DialogTitle id="simple-dialog-title">{translate('Script')}</DialogTitle>
-      <div className={classes.root}>
-        <Paper variant="outlined" className={classes.paper}>
-          <div style={{ height: '100%', width: '100%' }}>{children}</div>
-        </Paper>
-        <DialogActions>
-          <Button
-            className={classes.save}
-            onClick={handleSave}
-            style={{ textTransform: 'none' }}
-          >
-            {translate('OK')}
-          </Button>
-          <Button
-            className={classes.save}
-            onClick={handleClose}
-            style={{ textTransform: 'none' }}
-          >
-            {translate('Cancel')}
-          </Button>
-        </DialogActions>
-      </div>
+    <Dialog fullscreen backdrop open={open} className={classes.dialogPaper}>
+      <DialogHeader onCloseClick={handleClose}>
+        <h3>{translate('Script')}</h3>
+      </DialogHeader>
+      <DialogContent d="flex" flexDirection="column">
+        <Box shadow="md" bgColor="body" flex="1" overflow="auto">
+          {children}
+        </Box>
+      </DialogContent>
+      <DialogFooter>
+        <Button variant="primary" className={classes.save} onClick={handleSave}>
+          {translate('OK')}
+        </Button>
+        <Button
+          variant="secondary"
+          className={classes.save}
+          onClick={handleClose}
+        >
+          {translate('Cancel')}
+        </Button>
+      </DialogFooter>
     </Dialog>
   );
 }

@@ -1,16 +1,7 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-  input: {
-    width: '100%',
-  },
-});
-
+import { TextField } from '@axelor/ui';
 
 function Input(props) {
-  const classes = useStyles();
   const { value, onChange, onClearError, error } = props;
   const [text, setText] = React.useState('');
 
@@ -34,16 +25,14 @@ function Input(props) {
   }, [value]);
 
   return (
-    <React.Fragment>
-      <TextField
-        className={classes.input}
-        name="value"
-        value={text}
-        onBlur={handleBlur}
-        onChange={handleChange}
-        error={error && (!text || text.trim() === '')}
-      />
-    </React.Fragment>
+    <TextField
+      w={100}
+      name="value"
+      value={text}
+      onBlur={handleBlur}
+      onChange={handleChange}
+      invalid={error && (!text || text.trim() === '')}
+    />
   );
 }
 

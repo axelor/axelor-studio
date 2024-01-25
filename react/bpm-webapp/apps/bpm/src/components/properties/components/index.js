@@ -9,7 +9,7 @@ import ExtensionElementTable from "./ExtensionElementTable";
 import Table from "./Table";
 import ColorPicker from "./ColorPicker";
 import FieldEditor from "./FieldEditor";
-import { TabScrollButtonComponent } from "./TabScrollButton";
+import Alert from "../../Alert";
 
 export {
   Textbox,
@@ -23,5 +23,5 @@ export {
   Table,
   ColorPicker,
   FieldEditor,
-  TabScrollButtonComponent,
+  Alert,
 };

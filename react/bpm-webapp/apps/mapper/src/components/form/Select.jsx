@@ -1,24 +1,23 @@
 import React from 'react';
 import classnames from 'classnames';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
+
+import { Select, Box } from '@axelor/ui';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { translate } from '../../utils';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  select: {
+  formControl: {
     width: '100%',
   },
-  formControl: {
-    width: '100%'
-  }
+  select: {
+    marginRight: 8,
+    '& > div': {
+      '& > input': {
+        width: '100%',
+      },
+    },
+  },
 }));
 
 export default function Selection({
@@ -33,25 +32,24 @@ export default function Selection({
 }) {
   const classes = useStyles();
   return (
-    <FormControl className={classnames(classes.formControl, className)}>
-      {title && <InputLabel>{translate(title)}</InputLabel>}
+    <Box
+      d="flex"
+      flexDirection="column"
+      className={classnames(classes.formControl, className)}
+    >
       <Select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={value ?? null}
+        onChange={(value) => onChange(value)}
         name={name}
-        style={{ marginRight: 8 }}
-        classes={{ select: classes.select }}
-        error={error && !value}
+        className={classes.select}
+        flex="1"
+        placeholder={translate(title) || ''}
+        invalid={error && !value}
+        options={options}
+        optionKey={(option) => option.name}
+        optionLabel={(option) => option.title}
         {...rest}
-      >
-        {options &&
-          Array.isArray(options) &&
-          options.map(({ name, title }, index) => (
-            <MenuItem value={name} key={index}>
-              {title}
-            </MenuItem>
-          ))}
-      </Select>
-    </FormControl>
+      />
+    </Box>
   );
 }

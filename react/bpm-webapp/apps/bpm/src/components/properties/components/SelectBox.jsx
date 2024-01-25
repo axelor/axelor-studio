@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 
 import { translate } from "../../../utils";
 import Description from "./Description";
+import { Box, InputLabel, Select } from "@axelor/ui";
 
 const useStyles = makeStyles({
   root: {
@@ -11,11 +12,11 @@ const useStyles = makeStyles({
     marginTop: 5,
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginBottom: 3,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
 });
 
@@ -23,10 +24,7 @@ export default function SelectBox({ entry, element }) {
   const classes = useStyles();
   const {
     id,
-    emptyParameter,
     selectOptions,
-    canBeDisabled,
-    canBeHidden,
     label,
     modelProperty,
     description,
@@ -39,16 +37,17 @@ export default function SelectBox({ entry, element }) {
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const handleChange = (e) => {
-    setSelectedOption(e.target.value);
+  const handleChange = (updatedValue) => {
+    setSelectedOption(updatedValue);
+    const { value = "" } = updatedValue || {};
     if (!set && !setProperty) return;
     if (set) {
       set(element, {
-        [modelProperty]: e.target.value,
+        [modelProperty]: value,
       });
     } else {
       setProperty(element, {
-        [modelProperty]: e.target.value,
+        [modelProperty]: value,
       });
     }
   };
@@ -59,8 +58,8 @@ export default function SelectBox({ entry, element }) {
     let value = getProperty
       ? getProperty(element)
       : values && values[modelProperty];
-    setSelectedOption(value);
-  }, [element, modelProperty, get, getProperty]);
+    setSelectedOption(options?.find((o) => o.value === value) || null);
+  }, [element, modelProperty, get, options, getProperty]);
 
   useEffect(() => {
     if (typeof selectOptions === "object") {
@@ -74,28 +73,25 @@ export default function SelectBox({ entry, element }) {
   }, [selectOptions, element]);
 
   return (
-    <div className={classes.root}>
-      <label htmlFor={`camunda-${id}`} className={classes.label}>
-        {translate(label)}
-      </label>
-      <select
-        id={`camunda-${id}-select`}
-        name={modelProperty}
-        data-disable={canBeDisabled ? "isDisabled" : ""}
-        data-show={canBeHidden ? "isHidden" : ""}
-        value={selectedOption || ""}
-        onChange={handleChange}
-        disabled={disabled}
+    <Box className={classes.root}>
+      <InputLabel
+        htmlFor={`camunda-${id}`}
+        color="body"
+        className={classes.label}
       >
-        {options &&
-          options.map((option, index) => (
-            <option value={option.value} key={index}>
-              {option.name ? option.name : ""}{" "}
-            </option>
-          ))}
-        {emptyParameter && <option value=""></option>}
-      </select>
+        {translate(label)}
+      </InputLabel>
+      <Select
+        placeholder="Select a value"
+        options={options}
+        onChange={handleChange}
+        optionKey={(x) => x.value}
+        optionLabel={(x) => x.name}
+        optionEqual={(o, v) => o.value === v.value}
+        value={selectedOption}
+        disabled={disabled}
+      />
       {description && <Description desciption={description} />}
-    </div>
+    </Box>
   );
 }

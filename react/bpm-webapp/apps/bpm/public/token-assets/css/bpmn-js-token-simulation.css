@@ -1,15 +1,15 @@
 @import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
 
 :root {
-  --token-simulation-green-base-44: #3ecf8e;
-  --token-simulation-grey-base-40: #666666;
-  --token-simulation-grey-darken-30: #212121;
-  --token-simulation-grey-lighten-56: #909090;
-  --token-simulation-red-base-62: #ff3d3d;
-  --token-simulation-silver-base-97: #f8f8f8;
-  --token-simulation-silver-darken-94: #efefef;
+  --token-simulation-green-base-44: var(--bs-teal);
+  --token-simulation-grey-base-40: var(--bs-grey);
+  --token-simulation-grey-darken-30: var(--bs-dark);
+  --token-simulation-grey-lighten-56: var(--bs-grey-500);
+  --token-simulation-red-base-62: var(--bs-red);
+  --token-simulation-silver-base-97: var(--bs-light);
+  --token-simulation-silver-darken-94: var(--bs-light-bg-subtle);
 
-  --token-simulation-white: #ffffff;
+  --token-simulation-white: var(--bs-body-color);
 }
 
 html,
@@ -24,7 +24,7 @@ body,
 .simulation {
   border: solid 4px transparent;
   box-sizing: border-box;
-  height: calc(100% - 64px) !important;
+  height: calc(100% - 76px) !important;
 }
 
 .bjs-container.simulation {
@@ -130,7 +130,7 @@ body,
 
 .notifications .notification.info {
   background-color: var(--token-simulation-silver-darken-94, #efefef);
-  color: #000;
+  color: var(--bs-body-color) !important;
 }
 
 .notifications .notification.success {
@@ -197,8 +197,8 @@ body,
   position: absolute;
   top: 20px;
   left: 20px;
-  background-color: var(--token-simulation-silver-darken-94, #efefef);
-  border-radius: 2px;
+  background-color: var(--bs-success-bg-subtle);
+  border-radius: 0.375rem;
   padding: 6px;
   font-size: 16px;
   color: var(--token-simulation-grey-darken-30, #212121);
@@ -385,7 +385,7 @@ body,
   font-size: 16px;
   line-height: 30px;
   text-align: center;
-  background-color: var(--token-simulation-silver-darken-94, #efefef);
+  background-color: var(--bs-body-bg);
   margin-right: 10px;
   cursor: pointer;
 }

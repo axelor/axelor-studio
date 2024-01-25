@@ -11,7 +11,6 @@ import {
   SelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
 
 function getContainedActivities(element) {
   return getFlowElements(element, "bpmn:Activity");
@@ -72,7 +71,7 @@ function getActivitiesForActivityRef(element) {
 }
 
 function createActivityRefOptions(element) {
-  let options = [{ value: "" }];
+  let options = [];
   let activities = getActivitiesForActivityRef(element);
   forEach(activities, function (activity) {
     let activityId = activity.id;
@@ -88,6 +87,7 @@ export default function CompensateProps({
   bpmnFactory,
   bpmnModeler,
   compensateEventDefinition,
+  setDummyProperty = () => {},
 }) {
   return (
     <div>

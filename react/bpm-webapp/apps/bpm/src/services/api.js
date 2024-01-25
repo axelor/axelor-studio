@@ -570,9 +570,16 @@ export async function getDMNModel(decisionId) {
 }
 
 export async function getInfo() {
-  const url = `ws/app/info`;
+  const url = `ws/public/app/info`;
   const res = await Service.get(url);
   return res;
+}
+
+export async function loadTheme(theme) {
+  if (!theme) return;
+  const url = `js/theme/${theme}.json`;
+  const options = await Service.get(url);
+  return { options, theme };
 }
 
 export async function getBamlModels(criteria = []) {

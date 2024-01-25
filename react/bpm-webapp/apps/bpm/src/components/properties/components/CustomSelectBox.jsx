@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import find from "lodash/find";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import { makeStyles } from "@material-ui/core/styles";
 import classnames from "classnames";
 
 import Select from "../../Select";
 import { translate } from "../../../utils";
+import { Box, Button, InputLabel } from "@axelor/ui";
 
 const useStyles = makeStyles({
   root: {
@@ -17,41 +19,33 @@ const useStyles = makeStyles({
     width: "100%",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginBottom: 3,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   add: {
-    top: "-15px !important",
-    position: "absolute",
-    height: 23,
-    width: 24,
-    overflow: "hidden",
-    cursor: "pointer",
-    backgroundColor: "#f8f8f8",
-    border: "1px solid #ccc",
-    borderBottom: "none",
-    right: 0,
-  },
-  endAdornment: {
-    right: 23,
-  },
-  clear: {
     top: "-23px !important",
     position: "absolute",
     height: 23,
     width: 24,
     overflow: "hidden",
-    cursor: "pointer",
-    backgroundColor: "#f8f8f8",
-    border: "1px solid #ccc",
     borderBottom: "none",
+    right: 0,
+    borderRadius: 0,
+    padding: 0,
+    background: "var(--bs-body-bg)",
+    border: "none",
+  },
+  endAdornment: {
     right: 23,
   },
   container: {
     position: "relative",
+  },
+  select: {
+    width: "100%",
   },
 });
 
@@ -149,18 +143,19 @@ export default function CustomSelectBox({
   return (
     <div className={classes.root}>
       <div data-show={canBeHidden ? "hideElements" : ""}>
-        <label
+        <InputLabel
           htmlFor={`cam-extensionElements-${id}`}
+          color="body"
           className={classes.label}
         >
           {translate(label)}
-        </label>
-        <div className={classes.container}>
+        </InputLabel>
+        <Box position="relative" d="flex" gap={5}>
           <Select
             name="selectedExtensionElement"
             optionLabel="name"
             optionLabelSecondary="title"
-            value={options?.find((o) => o?.id === selectedOption)}
+            value={options?.find((o) => o?.id === selectedOption) || null}
             className={classes.select}
             update={(value) => setSelectedElement(value)}
             isLabel={true}
@@ -168,17 +163,22 @@ export default function CustomSelectBox({
             index={`cam-extensionElements-${id}`}
             endAdornment={endAdornment}
           />
-          <button
+          <Button
+            variant="secondary"
+            outline
+            d="flex"
+            alignItems="center"
+            justifyContent="center"
             className={classnames(
               classes.add,
               endAdornment && classes.endAdornment
             )}
-            id={`cam-extensionElements-create-${id}`}
             onClick={addElement}
           >
-            <span>+</span>
-          </button>
-        </div>
+            <MaterialIcon icon="add" fontSize={16} />
+          </Button>
+          {endAdornment}
+        </Box>
       </div>
     </div>
   );
