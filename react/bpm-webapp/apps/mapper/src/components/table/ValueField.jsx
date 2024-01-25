@@ -2,7 +2,7 @@ import React from 'react';
 import get from 'lodash/get';
 import moment from 'moment';
 
-import DateTimePicker, { DATE_FORMAT } from '../form/DateTimePicker';
+import DateTimePicker from '../form/DateTimePicker';
 import {
   Selection,
   MultiSelection,
@@ -20,9 +20,9 @@ import {
 } from '../../services/api';
 import { isRelationalField } from './ModelField';
 import ExpressionField from './ExpressionField';
-import { translate, VALUE_FROM } from '../../utils';
-import { ArrowForward } from '@material-ui/icons';
+import { translate, VALUE_FROM, DATE_FORMAT } from '../../utils';
 import { getType } from '../../DataTable.utils';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 const getSelfValue = (row) => {
   const { selected } = row.value || {};
@@ -106,8 +106,15 @@ function RenderRelationalWidget(props) {
 
 function RenderSimpleWidget(props) {
   const { Component, internalProps } = props;
-  const { onChange, value, value2, classes, style, targetName, ...rest } =
-    internalProps;
+  const {
+    onChange,
+    value,
+    value2,
+    classes,
+    style,
+    targetName,
+    ...rest
+  } = internalProps;
   const { error = false } = rest;
   const showError =
     !value || (typeof value === 'string' && value.trim() === '');
@@ -389,7 +396,7 @@ export default function ValueField({
           />
           {getValue(row, 'processId') && (
             <React.Fragment>
-              <ArrowForward className={classes.rightIcon} />
+              <MaterialIcon icon="arrow_forward" fontSize={20} />
               <MultiSelection
                 {...multiSelectProps}
                 isProcessContext={true}
@@ -414,7 +421,7 @@ export default function ValueField({
           />
           {getValue(row, 'dmn') && (
             <React.Fragment>
-              <ArrowForward className={classes.rightIcon} />
+              <MaterialIcon icon="arrow_forward" fontSize={20} />
               <Selection
                 {...multiSelectProps}
                 isProcessContext={true}

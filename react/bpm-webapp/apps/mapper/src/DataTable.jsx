@@ -1,23 +1,14 @@
 import React from 'react';
-import classNames from 'classnames';
-import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import TextField from '@material-ui/core/TextField';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import ReorderIcon from '@material-ui/icons/Reorder';
 import Close from '@material-ui/icons/Close';
 import AddRounded from '@material-ui/icons/AddRounded';
 import { makeStyles } from '@material-ui/core/styles';
 import get from 'lodash/get';
+import classNames from 'classnames';
 
 import FieldPopover from './components/Popover';
+import Tooltip from './components/Tooltip';
 import { Selection } from './components/form';
 import { DNDRow, SearchField, ValueField } from './components/table';
 import ExpressionField from './components/table/ExpressionField';
@@ -31,31 +22,28 @@ import {
 } from './DataTable.utils';
 import { VALUE_FROM } from './utils';
 import { translate } from './utils';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Box,
+  TextField,
+} from '@axelor/ui';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    overflowX: 'auto',
-    height: 'calc(100% - 120px)',
-    overflowY: 'auto',
+    height: '100%',
   },
   table: {
     minWidth: 650,
-    '& td': {
-      padding: '0.3rem 0.5rem !important',
-    },
-    '& th': {
-      paddingLeft: 0,
-      textAlign: 'center',
-    },
   },
-  tableRowRoot: {
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    '& .MuiInput-underline:before': {
-      borderBottom: 0,
-    },
+  tableCell: {
+    textAlign: 'center',
+    verticalAlign: 'middle',
   },
   valueInputContainer: {
     position: 'relative',
@@ -64,21 +52,11 @@ const useStyles = makeStyles((theme) => ({
     padding: '8px',
   },
   deleteIcon: {
-    color: '#0275d8',
+    color: 'var(--bs-body-color)',
   },
   addFieldButton: {
     margin: theme.spacing(1),
     textTransform: 'none',
-  },
-  searchField: {
-    flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    paddingRight: '2.7%',
-    '&>div': {
-      marginTop: 10,
-      minWidth: 230,
-    },
   },
   move: {
     cursor: 'move',
@@ -185,19 +163,28 @@ function DataTable(props) {
                 previewRef(ref);
               }}
               style={{ ...style }}
-              classes={{ root: classNames(classes.tableRowRoot, className) }}
+              className={className}
+              color="body"
             >
-              <TableCell className={classes.move} align="left" ref={dragRef}>
+              <TableCell
+                className={classNames(classes.move, classes.tableCell)}
+                ref={dragRef}
+              >
                 <div className={classes.flex}>
                   <ReorderIcon />
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className={classes.tableCell}>
                 <ModelField item={row} handleAdd={onRowAdd} />
               </TableCell>
-              <TableCell>=</TableCell>
+              <TableCell className={classes.tableCell}>=</TableCell>
 
-              <TableCell className={classes.valueInputContainer}>
+              <TableCell
+                className={classNames(
+                  classes.valueInputContainer,
+                  classes.addFieldButton.tableCell
+                )}
+              >
                 <ValueField
                   classes={classes}
                   values={values}
@@ -215,7 +202,7 @@ function DataTable(props) {
                 />
               </TableCell>
               {isDMN && (
-                <TableCell size="small">
+                <TableCell size="small" className={classes.tableCell}>
                   {from === VALUE_FROM.DMN &&
                     ['many_to_one', 'json_many_to_one'].includes(
                       getType(row)
@@ -228,7 +215,7 @@ function DataTable(props) {
                     )}
                 </TableCell>
               )}
-              <TableCell>
+              <TableCell className={classes.tableCell}>
                 <ExpressionField
                   selected={row.condition}
                   onSelectedChange={getOnChange('condition')}
@@ -237,7 +224,7 @@ function DataTable(props) {
                 />
               </TableCell>
 
-              <TableCell size="small">
+              <TableCell size="small" className={classes.tableCell}>
                 <Selection
                   disableClearable
                   options={getOptions(
@@ -254,7 +241,7 @@ function DataTable(props) {
                   onChange={getOnChange('from')}
                 />
               </TableCell>
-              <TableCell>
+              <TableCell className={classes.tableCell}>
                 <IconButton
                   size="medium"
                   onClick={() => onRemove(row, index)}
@@ -300,73 +287,93 @@ function DataTable(props) {
   }, [data, metaFields, newRecord]);
 
   return (
-    <Paper className={classes.root}>
+    <Box shadow rounded={2} bgColor="body-tertiary" className={classes.root}>
       {targetModel && (
-        <Grid container style={{ backgroundColor: '#FAFAFA' }}>
+        <Box d="flex" alignItems="center" justifyContent="space-between">
           <Button
-            variant="outlined"
-            color="primary"
+            border
+            color="body"
+            bgColor="body"
             className={classes.addFieldButton}
-            style={isBPMN ? null : { marginLeft: 20 }}
             onClick={openPopover}
-            endIcon={<AddRounded style={{ fontSize: '1.25rem' }} />}
+            d="flex"
+            alignItems="center"
+            gap={4}
           >
             {translate('Add fields')}
+            <AddRounded style={{ fontSize: '1.25rem' }} />
           </Button>
           <TextField
-            classes={{ root: classes.searchField }}
+            color="body"
+            size="lg"
+            className={classes.searchField}
             placeholder="Filter field"
-            style={isBPMN ? null : { paddingRight: '4.6%' }}
+            style={{ margin: '0 8px', minWidth: 250 }}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-        </Grid>
+        </Box>
       )}
-      <Table
-        className={classes.table}
-        aria-label="simple table"
-        stickyHeader={true}
-      >
-        <colgroup>
-          <col style={{ width: '3%' }} />
-          <col style={{ width: '27%', minWidth: 150 }} />
-          <col style={{ width: '15px' }} />
-          <col
-            style={
-              isBPMN
-                ? { width: '50%', minWidth: 200 }
-                : { width: '30%', minWidth: 160 }
-            }
-          />
-          {isDMN && <col style={{ width: '10%', minWidth: 200 }} />}
-          <col style={{ width: '20%', minWidth: 250 }} />
-          <col style={{ width: '210px', minWidth: 230 }} />
-          <col style={{ width: '5%' }} />
-        </colgroup>
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">&nbsp;</TableCell>
-            <TableCell>{translate('Field name')}</TableCell>
-            <TableCell></TableCell>
-            <TableCell>{translate('Value')}</TableCell>
-            {isDMN && <TableCell>{translate('Search field')}</TableCell>}
-            <TableCell>{translate('Condition')}</TableCell>
-            <TableCell>{translate('Value from')}</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row, index) => {
-            if (
-              searchText &&
-              !row.name.toLowerCase().includes(searchText.toLowerCase())
-            ) {
-              return null;
-            }
-            return renderRow(row, index);
-          })}
-        </TableBody>
-      </Table>
+      <Box overflow="auto" maxH={100} maxW={100}>
+        <Table
+          className={classes.table}
+          aria-label="simple table"
+          rounded="pill"
+          overflow="auto"
+        >
+          <colgroup>
+            <col style={{ width: '3%' }} />
+            <col style={{ width: '27%', minWidth: 150 }} />
+            <col style={{ width: '15px' }} />
+            <col
+              style={
+                isBPMN
+                  ? { width: '50%', minWidth: 200 }
+                  : { width: '30%', minWidth: 160 }
+              }
+            />
+            {isDMN && <col style={{ width: '10%', minWidth: 200 }} />}
+            <col style={{ width: '20%', minWidth: 250 }} />
+            <col style={{ width: '210px', minWidth: 230 }} />
+            <col style={{ width: '5%' }} />
+          </colgroup>
+          <TableHead pos="sticky" position="sticky">
+            <TableRow>
+              <TableCell className={classes.tableCell}>&nbsp;</TableCell>
+              <TableCell className={classes.tableCell}>
+                {translate('Field name')}
+              </TableCell>
+              <TableCell className={classes.tableCell}></TableCell>
+              <TableCell className={classes.tableCell}>
+                {translate('Value')}
+              </TableCell>
+              {isDMN && (
+                <TableCell className={classes.tableCell}>
+                  {translate('Search field')}
+                </TableCell>
+              )}
+              <TableCell className={classes.tableCell}>
+                {translate('Condition')}
+              </TableCell>
+              <TableCell className={classes.tableCell}>
+                {translate('Value from')}
+              </TableCell>
+              <TableCell className={classes.tableCell}></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row, index) => {
+              if (
+                searchText &&
+                !row.name.toLowerCase().includes(searchText.toLowerCase())
+              ) {
+                return null;
+              }
+              return renderRow(row, index);
+            })}
+          </TableBody>
+        </Table>
+      </Box>
 
       {popover && (
         <FieldPopover
@@ -377,7 +384,7 @@ function DataTable(props) {
           onClose={closePopover}
         />
       )}
-    </Paper>
+    </Box>
   );
 }
 

@@ -8,16 +8,13 @@ import Select from "../../../components/Select";
 import { getCustomModels, getMetaModels } from "../../../services/api";
 import { translate, getBool, splitWithComma } from "../../../utils";
 
+import { Box, Divider, InputLabel } from "@axelor/ui";
+
 const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-  },
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -25,14 +22,13 @@ const useStyles = makeStyles({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   select: {
     margin: 0,
@@ -104,7 +100,8 @@ export default function ModelProps({ element, label }) {
       const labels = splitWithComma(getProperty(`${name}Labels`));
       const names = splitWithComma(getProperty(`${name}s`));
       const fullNames =
-        name === "metaModel" && splitWithComma(getProperty(`${name}ModelNames`));
+        name === "metaModel" &&
+        splitWithComma(getProperty(`${name}ModelNames`));
       if (!names?.length && !labels?.length) return null;
       const models = [];
       for (let i = 0; i < names.length; i++) {
@@ -144,10 +141,14 @@ export default function ModelProps({ element, label }) {
 
   return (
     isVisible && (
-      <div className={classes.root}>
-        <div className={classes.divider} />
-        <div className={classes.groupLabel}>{label}</div>
-        <label className={classes.label}>{translate("Model")}</label>
+      <Box d="flex" flexDirection="column">
+        <Divider className={classes.divider} />
+        <Box color="body" className={classes.groupLabel}>
+          {label}
+        </Box>
+        <InputLabel color="body" className={classes.label}>
+          {translate("Model")}
+        </InputLabel>
         <Checkbox
           className={classes.checkbox}
           entry={{
@@ -184,9 +185,14 @@ export default function ModelProps({ element, label }) {
             multiple={true}
             type="multiple"
             placeholder={translate("Custom model")}
-            isLabel={false}
             optionLabel="name"
             optionLabelSecondary="title"
+            handleRemove={(option) => {
+              let value = metaJsonModel?.filter((r) => r.name !== option.name);
+              let label = value?.map((v) => v["title"]).join(",");
+              setMetaJsonModel(value);
+              updateSelectValue("metaJsonModel", value, label);
+            }}
           />
         ) : (
           <Select
@@ -200,13 +206,18 @@ export default function ModelProps({ element, label }) {
             value={metaModel || []}
             multiple={true}
             type="multiple"
-            isLabel={false}
             placeholder={translate("Model")}
             optionLabel="name"
             optionLabelSecondary="title"
+            handleRemove={(option) => {
+              let value = metaModel?.filter((r) => r.name !== option.name);
+              let label = value?.map((v) => v["title"]).join(",");
+              setMetaModel(value);
+              updateSelectValue("metaModel", value, label);
+            }}
           />
         )}
-      </div>
+      </Box>
     )
   );
 }

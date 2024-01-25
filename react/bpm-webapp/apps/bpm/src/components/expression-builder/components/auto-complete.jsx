@@ -1,24 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { TextField, CircularProgress, Chip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import _uniqueId from "lodash/uniqueId";
+
+import { Badge, Select, ClickAwayListener } from "@axelor/ui";
 
 import { translate } from "../../../utils";
 import { useDebounce } from "../extra/util";
 
-const useStyles = makeStyles((theme) => ({
-  listbox: {
-    maxHeight: "300px !important",
-  },
-  chip: {
-    "&.MuiChip-outlined .MuiChip-deleteIconSmall": {
-      color: "#0275d8",
-    },
-    border: "1px solid #0275d8",
-    color: "#0275d8",
-  },
-}));
 export default function AutoComplete(props) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -38,12 +25,13 @@ export default function AutoComplete(props) {
     InputProps,
     error,
     filterSelectedOptions = false,
-    disableCloseOnSelect = true,
-    readOnly,
+    disableCloseOnSelect = false,
+    readOnly = false,
+    disabled = false,
+    disableClearable = false,
     ...other
   } = props;
 
-  const classes = useStyles();
   const [loading, setLoading] = useState(false);
 
   const findOption = React.useCallback(
@@ -96,14 +84,6 @@ export default function AutoComplete(props) {
     }
   }, [value, isMulti, findOption]);
 
-  function onKeyDown(e) {
-    if (e.key === "Backspace") {
-      if (selectedValue && selectedValue[optionLabelKey] === inputValue) {
-        onChange(null);
-      }
-    }
-  }
-
   function handleChange(item) {
     if (typeof value === "string") {
       isMulti
@@ -140,84 +120,86 @@ export default function AutoComplete(props) {
       : "";
   };
 
+  const customOptions = React.useMemo(() => {
+    if (loading) {
+      return [
+        {
+          key: "loading",
+          title: "Loading...",
+        },
+      ];
+    }
+    if (!options.length) {
+      return [
+        {
+          key: "no-options",
+          title: "No options",
+        },
+      ];
+    }
+    return [];
+  }, [loading, options]);
+
   return (
-    <Autocomplete
-      getOptionSelected={(option, value) => {
-        return isMulti
-          ? option[optionValueKey] === value[optionValueKey]
-          : checkValue(option) === checkValue(value);
-      }}
-      getOptionLabel={(option) => {
-        return checkValue(option);
-      }}
-      disabled={readOnly}
-      loading={loading}
-      id={_uniqueId("select-widget")}
-      open={open}
-      onOpen={() => setOpen(true)}
-      onClose={() => setOpen(false)}
-      value={
-        selectedValue
-          ? isMulti
-            ? Array.isArray(selectedValue)
-              ? selectedValue
-              : []
-            : selectedValue
-          : isMulti
-          ? []
-          : null
-      }
-      onChange={(event, newValue) => handleChange(newValue)}
-      options={options || []}
-      multiple={isMulti}
-      filterSelectedOptions={filterSelectedOptions}
-      onInputChange={(e, value) => delayChange(value)}
-      classes={{ option: "menu-item", listbox: classes.listbox }}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip
-            variant="outlined"
-            label={option[optionLabelKey]}
-            size="small"
-            classes={{
-              root: classes.chip,
-            }}
-            {...getTagProps({ index })}
-          />
-        ))
-      }
-      renderInput={(params) => {
-        return (
-          <TextField
-            {...params}
-            error={error}
-            label={inline ? "" : translate(title)}
-            fullWidth
-            onClick={() => {
-              if (readOnly) return;
-              setOpen(true);
-            }}
-            InputProps={{
-              ...InputProps,
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress
-                      className={classes.circularProgress}
-                      size={15}
-                    />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-            {...(isMulti ? {} : { onKeyDown: onKeyDown })}
-          />
-        );
-      }}
-      {...(isMulti ? { disableCloseOnSelect } : {})}
-      {...other}
-    />
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <Select
+        optionEqual={(option, value) => {
+          return isMulti
+            ? option[optionValueKey] === value[optionValueKey]
+            : checkValue(option) === checkValue(value);
+        }}
+        optionLabel={(option) => checkValue(option)}
+        autoComplete={true}
+        clearOnEscape
+        removeOnBackspace
+        disabled={disabled}
+        readOnly={readOnly}
+        id={_uniqueId("select-widget")}
+        open={open}
+        onOpen={() => setOpen(true)}
+        onClose={() => setOpen(false)}
+        value={
+          selectedValue
+            ? isMulti
+              ? Array.isArray(selectedValue)
+                ? selectedValue
+                : []
+              : selectedValue
+            : isMulti
+            ? []
+            : null
+        }
+        optionMatch={(option, text = "") => {
+          if (text === "") return true;
+          const key = text.toLowerCase();
+          const name = option?.name?.toLowerCase() || "";
+          const title = option?.title?.toLowerCase() || "";
+          if (name.includes(key) || title.includes(key)) {
+            return true;
+          }
+          return false;
+        }}
+        onChange={(newValue) => handleChange(newValue)}
+        options={loading ? [] : options || []}
+        customOptions={customOptions}
+        multiple={isMulti}
+        onInputChange={(value) => delayChange(value)}
+        clearIcon={!disableClearable}
+        renderValue={(value, getTagProps) => {
+          return value.map((option, index) => (
+            <Badge
+              variant="primary"
+              label={option[optionLabelKey]}
+              size="small"
+            >
+              {option[optionLabelKey]}
+            </Badge>
+          ));
+        }}
+        optionKey={(option) => option.name}
+        {...(isMulti ? { disableCloseOnSelect } : {})}
+        {...other}
+      />
+    </ClickAwayListener>
   );
 }

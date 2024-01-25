@@ -1,19 +1,13 @@
-import {
-  IconButton,
-  Grid,
-  InputAdornment,
-  Typography,
-  OutlinedInput,
-  FormControl,
-} from "@material-ui/core"
+import { IconButton, InputAdornment, OutlinedInput } from "@material-ui/core"
 import { useState } from "react"
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { makeStyles } from "@material-ui/core"
+import { Box, InputLabel } from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 
 const useStyle = makeStyles({
   root: {
     width: "10ch",
+    color: "currentColor",
     "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
       display: "none",
     },
@@ -32,6 +26,9 @@ const useStyle = makeStyles({
       },
     "&:hover, &:focus-within": {
       paddingRight: 0,
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: "var(--bs-border-color) !important",
     },
   },
 })
@@ -127,64 +124,63 @@ function Tile({ label, onChange, value, name, integer, allowNegetiveOne }) {
   }
 
   return (
-    <FormControl>
-      <Grid
-        container
-        direction="column"
-        alignItems="center"
-        style={{ gap: "0.5rem" }}
-      >
-        <OutlinedInput
-          className={classes.root}
-          type="number"
-          id={label}
-          value={isFocused ? value[name] || "" : value[name] || 0}
-          onChange={handleChange}
-          onWheel={handleWheel}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          endAdornment={
-            <InputAdornment position="end">
-              <Grid container direction="column" onMouseDown={handleMouseDown}>
-                <IconButton
-                  tabIndex={-1}
-                  onClick={increment}
-                  onMouseDown={
-                    e => isLeftClick(e) && startTimer(500, 75, increment)
-                    /* 
+    <Box d="flex" flexDirection="column" alignItems="center" gap="0.5rem">
+      <OutlinedInput
+        className={classes.root}
+        type="number"
+        id={label}
+        value={isFocused ? value[name] || "" : value[name] || 0}
+        onChange={handleChange}
+        onWheel={handleWheel}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        endAdornment={
+          <InputAdornment position="end">
+            <Box d="flex" flexDirection="column" onMouseDown={handleMouseDown}>
+              <IconButton
+                tabIndex={-1}
+                onClick={increment}
+                onMouseDown={
+                  e => isLeftClick(e) && startTimer(500, 75, increment)
+                  /* 
                     start timer only on left mousedown, 
                     on rightClick, mousedown event fires but not mouseup
                      */
-                  }
-                  onMouseUp={clearTimer}
-                  size="small"
-                >
-                  <KeyboardArrowUpIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  tabIndex={-1}
-                  onClick={decrement}
-                  size="small"
-                  onMouseDown={
-                    e => isLeftClick(e) && startTimer(500, 75, decrement)
-                    /* 
+                }
+                onMouseUp={clearTimer}
+                size="small"
+              >
+                <MaterialIcon
+                  icon="keyboard_arrow_up"
+                  fontSize="small"
+                  color="body"
+                />
+              </IconButton>
+              <IconButton
+                tabIndex={-1}
+                onClick={decrement}
+                size="small"
+                onMouseDown={
+                  e => isLeftClick(e) && startTimer(500, 75, decrement)
+                  /* 
                     start timer only on left mousedown, 
                     on rightClick, mousedown event fires but not mouseup
                      */
-                  }
-                  onMouseUp={clearTimer}
-                >
-                  <KeyboardArrowDownIcon fontSize="small" />
-                </IconButton>
-              </Grid>
-            </InputAdornment>
-          }
-        />
-        <Typography htmlFor={label} component="label">
-          {label}
-        </Typography>
-      </Grid>
-    </FormControl>
+                }
+                onMouseUp={clearTimer}
+              >
+                <MaterialIcon
+                  icon="keyboard_arrow_down"
+                  fontSize="small"
+                  color="body"
+                />
+              </IconButton>
+            </Box>
+          </InputAdornment>
+        }
+      />
+      <InputLabel htmlFor={label}>{label}</InputLabel>
+    </Box>
   )
 }
 

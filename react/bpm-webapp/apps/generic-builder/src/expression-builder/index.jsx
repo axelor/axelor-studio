@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/core/styles';
 
 import produce from 'immer';
@@ -35,28 +27,27 @@ import {
   translate,
 } from '../utils';
 import { getRecord, getModels, saveRecord } from '../services/api';
-import { Checkbox, FormControlLabel } from '@material-ui/core';
+import {
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Box,
+  Input,
+  InputLabel,
+} from '@axelor/ui';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   paper: {
-    padding: theme.spacing(3, 2),
+    padding: '24px 16px',
     minWidth: `calc(100% - 55px)`,
     margin: '10px',
-    display: 'flex',
-    '& > *': {
-      height: '100%',
-      width: '100%',
-    },
-  },
-  expressionContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    overflow: 'auto',
+    maxWidth: '100%',
   },
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    height: 'calc(100% - 50px)',
+    flex: 1,
     overflow: 'auto',
   },
   expression: {
@@ -66,37 +57,18 @@ const useStyles = makeStyles(theme => ({
   dialog: {
     minWidth: 300,
   },
-  container: {
-    height: '100%',
-    overflow: 'hidden',
+  dialogContent: {
+    fontSize: 16,
   },
-  actions: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
+
   combinator: {
     width: 'fit-content',
   },
   save: {
-    margin: theme.spacing(1),
-    backgroundColor: '#0275d8',
-    borderColor: '#0267bf',
-    color: 'white',
-    '&:hover': {
-      backgroundColor: '#025aa5',
-      borderColor: '#014682',
-      color: 'white',
-    },
+    margin: 8,
+    minWidth: 64,
   },
-  checkbox: {
-    color: '#0275d8',
-    '&.MuiCheckbox-colorSecondary.Mui-checked': {
-      color: '#0275d8',
-    },
-  },
-}));
+});
 
 let paramCount = 0;
 let count = 0;
@@ -1016,6 +988,7 @@ function ExpressionBuilder({
       } else {
         const targetFields =
           isObjectValue && (fieldValue[field.targetName] || fieldValue['name']);
+
         let value = isObjectValue
           ? targetFields
             ? `'${jsStringEscape(targetFields, withParam)}'`
@@ -1555,55 +1528,57 @@ function ExpressionBuilder({
     fetchValue();
   }, [resultMetaField, id, model, setQueryModel, setData]);
 
+  const renderCheckbox = (label, checked, onChange) => (
+    <Box d="flex" alignItems="center" gap={8} style={{ padding: 9 }}>
+      <Input
+        type="checkbox"
+        checked={checked}
+        id={label}
+        style={{ fontSize: 16 }}
+        onChange={e => onChange(e.target.checked)}
+      />
+      <InputLabel style={{ margin: 0 }} htmlFor={label}>
+        {translate(label)}
+      </InputLabel>
+    </Box>
+  );
+
   return (
-    <div className={classes.container}>
-      <div className={classes.root}>
-        <Paper variant="outlined" className={classes.paper}>
-          <div style={{ width: '100%', height: '100%' }}>
-            {isBPMN && !isBPMQuery(parentType) && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={generateWithId}
-                    onChange={e => setGenerateWithId(e.target.checked)}
-                    name="generateWithId"
-                    className={classes.checkbox}
-                  />
-                }
-                style={{ color: '#0275d8' }}
-                label={translate('Generate with saved record')}
-              />
-            )}
-            {isBPMN && isBPMQuery(parentType) && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={singleResult}
-                    onChange={e => setSingleResult(e.target.checked)}
-                    name="singleResult"
-                    className={classes.checkbox}
-                  />
-                }
-                style={{ color: '#0275d8' }}
-                label={translate('Single result')}
-              />
-            )}
+    <Box d="flex" flexDirection="column" overflow="hidden" flex="1">
+      <Box
+        d="flex"
+        flexDirection="column"
+        color="body"
+        className={classes.root}
+      >
+        <Box rounded={2} border className={classes.paper}>
+          <Box maxH={100} maxW={100}>
+            {isBPMN &&
+              !isBPMQuery(parentType) &&
+              renderCheckbox(
+                'Generate with saved record',
+                generateWithId,
+                setGenerateWithId
+              )}
+            {isBPMN &&
+              isBPMQuery(parentType) &&
+              renderCheckbox('Single result', singleResult, setSingleResult)}
             <Timeline
               isBPMN={isBPMN}
               title={
                 <Select
                   className={classes.combinator}
                   name="expression"
-                  value={combinator}
+                  value={COMBINATORS.find(c => c.name === combinator)}
                   options={COMBINATORS}
-                  onChange={setCombinator}
+                  onChange={({ name }) => setCombinator(name)}
                   disableUnderline={true}
                 />
               }
             >
               <Button
                 title={isBPMQuery(parentType) ? 'Add group' : 'Add expression'}
-                Icon={AddIcon}
+                icon="add"
                 onClick={() => onAddExpressionEditor()}
                 disabled={
                   isBPMQuery(parentType)
@@ -1621,7 +1596,7 @@ function ExpressionBuilder({
                 {expressionComponents &&
                   expressionComponents.map(({ value }, index) => {
                     return (
-                      <div className={classes.expressionContainer} key={index}>
+                      <Box d="flex" alignItems="center" key={index}>
                         <ExpressionComponent
                           value={value}
                           index={index}
@@ -1640,21 +1615,27 @@ function ExpressionBuilder({
                         />
                         <IconButton
                           size="small"
+                          color="inherit"
                           onClick={() => onRemoveExpressionEditor(index)}
                         >
-                          <DeleteIcon />
+                          <MaterialIcon
+                            icon="delete"
+                            fontSize={18}
+                            color="body"
+                          />
                         </IconButton>
-                      </div>
+                      </Box>
                     );
                   })}
               </div>
             </Timeline>
-          </div>
-        </Paper>
-      </div>
+          </Box>
+        </Box>
+      </Box>
 
-      <div className={classes.actions}>
+      <Box d="flex" alignItems="center" justifyContent="flex-end" w={100}>
         <Button
+          variant="primary"
           title="Save"
           className={classes.save}
           onClick={() => generateExpression(combinator, parentType)}
@@ -1662,28 +1643,24 @@ function ExpressionBuilder({
         {dialogActionButton && (
           <React.Fragment>{dialogActionButton}</React.Fragment>
         )}
-      </div>
+      </Box>
 
-      <Dialog
-        open={openAlert}
-        onClose={() => setAlert(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        classes={{
-          paper: classes.dialog,
-        }}
-      >
-        <DialogTitle id="alert-dialog-title">{translate('Error')}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {translate('Add all values')}
-          </DialogContentText>
+      <Dialog centered open={openAlert} className={classes.dialog}>
+        <DialogHeader onCloseClick={() => setAlert(false)}>
+          <h3>{translate('Error')}</h3>
+        </DialogHeader>
+        <DialogContent className={classes.dialogContent}>
+          {translate('Add all values')}
         </DialogContent>
-        <DialogActions>
-          <Button title="OK" onClick={() => setAlert(false)} />
-        </DialogActions>
+        <DialogFooter>
+          <Button
+            variant="primary"
+            title="OK"
+            onClick={() => setAlert(false)}
+          />
+        </DialogFooter>
       </Dialog>
-    </div>
+    </Box>
   );
 }
 

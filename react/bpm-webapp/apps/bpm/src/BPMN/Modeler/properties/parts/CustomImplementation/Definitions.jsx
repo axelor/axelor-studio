@@ -1,28 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TableHead,
-  Card,
-  Button,
-  Grid,
-  Stepper,
-  Step,
-  StepButton,
-  CardActions,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Collapse,
-  IconButton,
-  Tooltip,
-} from "@material-ui/core";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import RefreshIcon from "@material-ui/icons/Refresh";
+import { IconButton } from "@material-ui/core";
 import classnames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -33,74 +10,62 @@ import {
   TextField,
   Textbox,
 } from "../../../../../components/properties/components";
+import Tooltip from "../../../../../components/Tooltip";
 import { getBool, translate } from "../../../../../utils";
 import { getStudioApp, fetchWkf } from "../../../../../services/api";
 import Service from "../../../../../services/Service";
 import { WKF_COLORS, STATUS } from "../../../constants";
-import { openTabView, openWebApp, setDummyProperty } from "./utils";
+import { openTabView, openWebApp } from "./utils";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TableHead,
+  Collapse,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import Stepper from "./Stepper";
 
 const useStyles = makeStyles((theme) => ({
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   select: {
     margin: 0,
-  },
-  wkfStatusColor: {
-    padding: 5,
-    background: "white",
   },
   tableCell: {
     padding: "3px !important",
   },
   tableHead: {
     padding: "3px !important",
-    fontWeight: "bolder",
-    color: "#666",
     margin: "3px 0px",
-  },
-  tableData: {
-    color: "black",
+    textAlign: "center",
   },
   linkIcon: {
-    color: "#0275d8",
+    color: "inherit",
     marginLeft: 5,
     cursor: "pointer",
   },
   save: {
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    color: "white",
     textTransform: "none",
     width: "100%",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   cardContent: {
     overflow: "auto",
     maxHeight: "80%",
     minWidth: 250,
-  },
-  cardActionView: {
-    justifyContent: "flex-end",
-  },
-  buttons: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  previousVersions: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
   expand: {
     transform: "rotate(0deg)",
@@ -127,9 +92,10 @@ export default function Definition({
   addNewVersion = () => {},
   showError,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [studioApp, setStudioApp] = useState(null);
-  const [wkfStatusColor, setWkfStatusColor] = useState(null);
+  const [wkfStatusColor, setWkfStatusColor] = useState([]);
   const [wkfModelList, setWkfModelList] = useState(null);
   const [open, setOpen] = useState(false);
   const [process, setProcess] = useState(null);
@@ -149,13 +115,13 @@ export default function Definition({
       action: "action-wkf-model-view-dashboard",
       data: {
         context: {
-          _model: "om.axelor.apps.base.db.Wizard",
-          _wkf: { ...wkf },
-          process: process && process.name,
+          process: process?.name,
+          _model: "com.axelor.utils.db.Wizard",
           _signal: "showDashboardBtn",
           _source: "showDashboardBtn",
           _viewName: "wfk-model-select-process-wizard-form",
           _viewType: "form",
+          _wkf: { ...wkf },
           _views: {
             name: "wfk-model-select-process-wizard-form",
             type: "form",
@@ -296,9 +262,9 @@ export default function Definition({
     const color =
       element && element.$attrs && element.$attrs["camunda:wkfStatusColor"];
     const wkfStatusColor = WKF_COLORS.find((c) => c.name === color);
-    setWkfStatusColor(
-      wkfStatusColor || { name: "blue", title: "Blue", color: "#2196f3" }
-    );
+    setWkfStatusColor([
+      wkfStatusColor || { name: "blue", title: "Blue", color: "#2196f3" },
+    ]);
   }, [element]);
 
   useEffect(() => {
@@ -328,13 +294,7 @@ export default function Definition({
 
   return (
     <React.Fragment>
-      <Stepper nonLinear activeStep={statusSelect - 1}>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepButton onClick={() => {}}>{translate(label)}</StepButton>
-          </Step>
-        ))}
-      </Stepper>
+      <Stepper active={statusSelect - 1} items={steps} />
       <TextField
         element={element}
         canRemove={true}
@@ -383,7 +343,9 @@ export default function Definition({
       />
       {enableStudioApp && (
         <React.Fragment>
-          <label className={classes.label}>{translate("App")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("App")}
+          </InputLabel>
           <Select
             className={classes.select}
             update={(value, label) => {
@@ -430,17 +392,18 @@ export default function Definition({
           },
         }}
       />
-      <label className={classes.label}>{translate("Wkf status color")}</label>
+      <InputLabel color="body" className={classes.label}>
+        {translate("Wkf status color")}
+      </InputLabel>
       <br />
       <StaticSelect
         name="wkfStatusColor"
         onChange={(value) => {
-          setWkfStatusColor(value);
+          setWkfStatusColor([value]);
           setProperty("wkfStatusColor", value?.name);
         }}
         value={wkfStatusColor}
         options={WKF_COLORS}
-        selectClassName={classes.wkfStatusColor}
       />
       <Textbox
         element={element}
@@ -461,20 +424,25 @@ export default function Definition({
 
       {wkfModelList && wkfModelList.length > 0 && (
         <React.Fragment>
-          <div className={classes.previousVersions}>
-            <label className={classes.label} style={{ marginTop: 10 }}>
+          <Box d="flex" alignItems="center" justifyContent="space-between">
+            <InputLabel className={classes.label} style={{ marginTop: 10 }}>
               {translate("Previous versions")}
-            </label>
-            <div>
+            </InputLabel>
+            <Box color="body">
               <Tooltip
                 title={translate("Refresh")}
                 children={
-                  <IconButton onClick={getVersionList} aria-label="Refresh">
-                    <RefreshIcon />
+                  <IconButton
+                    onClick={getVersionList}
+                    aria-label="Refresh"
+                    style={{ color: "inherit" }}
+                  >
+                    <MaterialIcon icon="refresh" fontSize={16} />
                   </IconButton>
                 }
               />
               <IconButton
+                style={{ color: "inherit" }}
                 className={classnames(classes.expand, {
                   [classes.expandOpen]: expanded,
                 })}
@@ -484,89 +452,87 @@ export default function Definition({
                 aria-expanded={expanded}
                 aria-label="show more"
               >
-                <ExpandMoreIcon />
+                <MaterialIcon icon="expand_more" fontSize={16} />
               </IconButton>
-            </div>
-          </div>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <Card style={{ marginTop: 10 }}>
-              <TableContainer>
-                <Table size="small" aria-label="a dense table">
-                  <colgroup>
-                    <col width="5%" />
-                    <col width="23%" />
-                    <col width="22%" />
-                    <col width="15%" />
-                    <col width="15%" />
-                    <col width="5%" />
-                  </colgroup>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        className={classes.tableHead}
-                        align="center"
-                      ></TableCell>
-                      <TableCell className={classes.tableHead} align="center">
-                        {translate("Code")}
+            </Box>
+          </Box>
+          <Collapse in={expanded} timeout={300} unmountOnExit>
+            <Box
+              color="body"
+              rounded={2}
+              bgColor="body"
+              shadow
+              style={{ marginTop: 10 }}
+            >
+              <Table size="sm" aria-label="a dense table">
+                <colgroup>
+                  <col width="5%" />
+                  <col width="23%" />
+                  <col width="22%" />
+                  <col width="15%" />
+                  <col width="15%" />
+                  <col width="5%" />
+                </colgroup>
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.tableHead}></TableCell>
+                    <TableCell className={classes.tableHead}>
+                      {translate("Code")}
+                    </TableCell>
+                    <TableCell className={classes.tableHead}>
+                      {translate("Name")}
+                    </TableCell>
+                    <TableCell className={classes.tableHead}>
+                      {translate("Version tag")}
+                    </TableCell>
+                    <TableCell className={classes.tableHead}>
+                      {translate("Status")}
+                    </TableCell>
+                    <TableCell className={classes.tableHead}>
+                      {translate("App")}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {wkfModelList.map((model, key) => (
+                    <TableRow key={key}>
+                      <TableCell textAlign="center">
+                        <MaterialIcon
+                          icon="open_in_new"
+                          fontSize={16}
+                          className={classes.linkIcon}
+                          onClick={() => {
+                            openWebApp(
+                              `wkf-editor/?id=${model?.id || ""}`,
+                              translate("BPM editor")
+                            );
+                          }}
+                        />
                       </TableCell>
-                      <TableCell className={classes.tableHead} align="center">
-                        {translate("Name")}
+                      <TableCell textAlign="center">{model.code}</TableCell>
+                      <TableCell textAlign="center">{model.name}</TableCell>
+                      <TableCell textAlign="center">
+                        {model.versionTag}
                       </TableCell>
-                      <TableCell className={classes.tableHead} align="center">
-                        {translate("Version tag")}
+                      <TableCell textAlign="center">
+                        {translate(STATUS[model.statusSelect])}
                       </TableCell>
-                      <TableCell className={classes.tableHead} align="center">
-                        {translate("Status")}
-                      </TableCell>
-                      <TableCell className={classes.tableHead} align="center">
-                        {translate("App")}
+                      <TableCell textAlign="center">
+                        {model.studioApp && model.studioApp.name}
                       </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {wkfModelList.map((model, key) => (
-                      <TableRow key={key}>
-                        <TableCell className={classes.tableData} align="center">
-                          <OpenInNewIcon
-                            className={classes.linkIcon}
-                            onClick={() => {
-                              openWebApp(
-                                `wkf-editor/?id=${model?.id || ""}`,
-                                translate("BPM editor")
-                              );
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell className={classes.tableData} align="center">
-                          {model.code}
-                        </TableCell>
-                        <TableCell className={classes.tableData} align="center">
-                          {model.name}
-                        </TableCell>
-                        <TableCell className={classes.tableData} align="center">
-                          {model.versionTag}
-                        </TableCell>
-                        <TableCell className={classes.tableData} align="center">
-                          {translate(STATUS[model.statusSelect])}
-                        </TableCell>
-                        <TableCell className={classes.tableData} align="center">
-                          {model.studioApp && model.studioApp.name}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Card>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
           </Collapse>
         </React.Fragment>
       )}
-      <Grid className={classes.buttons}>
+      <Box d="flex" flexDirection="column" alignItems="center">
         {statusSelect === 2 && isActive && (
           <Button
-            variant="contained"
+            variant="primary"
             className={classes.save}
-            color="primary"
             onClick={terminate}
           >
             {translate("wkf.terminate.btn")}
@@ -574,36 +540,32 @@ export default function Definition({
         )}
         {statusSelect === 3 && isActive && (
           <Button
-            variant="contained"
+            variant="primary"
             className={classes.save}
-            color="primary"
             onClick={backToDraft}
           >
             {translate("Back to draft")}
           </Button>
         )}
         <Button
-          variant="contained"
+          variant="primary"
           className={classes.save}
-          color="primary"
           onClick={openBPMState}
         >
           {translate("BPM state")}
         </Button>
         {statusSelect === 2 && (
           <Button
-            variant="contained"
+            variant="primary"
             className={classes.save}
-            color="primary"
             onClick={() => addNewVersion(wkf)}
           >
             {translate("New version")}
           </Button>
         )}
         <Button
-          variant="contained"
+          variant="primary"
           className={classes.save}
-          color="primary"
           onClick={() => {
             if (wkf && wkf.wkfProcessList) {
               setOpen(true);
@@ -612,27 +574,17 @@ export default function Definition({
         >
           {translate("Dashboard")}
         </Button>
-      </Grid>
+      </Box>
+
       {open && (
-        <Dialog
-          fullWidth={true}
-          scroll="paper"
-          open={open}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              handleClose();
-            }
-          }}
-          aria-labelledby="scroll-dialog-title"
-        >
-          <DialogTitle id="scroll-dialog-title">
-            {translate("Select process")}
-          </DialogTitle>
-          <DialogContent
-            dividers={true}
-            classes={{ root: classes.cardContent }}
-          >
-            <label className={classes.label}>{translate("Process")}</label>
+        <Dialog backdrop centered open={open}>
+          <DialogHeader onCloseClick={() => setOpen(false)}>
+            <h3>{translate("Select process")}</h3>
+          </DialogHeader>
+          <DialogContent className={classes.cardContent}>
+            <InputLabel color="body" className={classes.label}>
+              {translate("Process")}
+            </InputLabel>
             <Select
               className={classes.select}
               options={wkf && wkf.wkfProcessList}
@@ -644,26 +596,24 @@ export default function Definition({
               isLabel={false}
             />
           </DialogContent>
-          <CardActions className={classes.cardActionView}>
+          <Box d="flex" justifyContent="flex-end">
             {process && (
               <Button
-                variant="contained"
+                variant="primary"
                 className={classes.save}
-                color="primary"
                 onClick={showDashboard}
               >
                 {translate("Show")}
               </Button>
             )}
             <Button
-              variant="contained"
+              variant="primary"
               className={classes.save}
-              color="primary"
               onClick={handleClose}
             >
               {translate("Close")}
             </Button>
-          </CardActions>
+          </Box>
         </Dialog>
       )}
     </React.Fragment>

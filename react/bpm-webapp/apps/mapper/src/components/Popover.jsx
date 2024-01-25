@@ -1,107 +1,54 @@
 import React, { useEffect } from 'react';
-import classNames from 'classnames';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import CardActions from '@material-ui/core/CardActions';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import { translate } from '../utils';
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Input,
+  TextField,
+  Box,
+  InputLabel,
+} from '@axelor/ui';
 
 const useStyles = makeStyles({
-  dialogPaper: {
-    minHeight: '75vh',
-    maxHeight: '75vh',
-  },
-  cardContent: {
-    height: '100%',
-    minWidth: 250,
-    paddingLeft: 0,
-    paddingRight: 0,
-  },
-  cardContentItemText: {
-    fontSize: 12,
-    lineHeight: 0.5,
-    paddingBottom: 8,
-  },
-  cardContentItemContainer: {
-    marginLeft: 10,
-  },
-  cardContentItemTitle: {
-    fontSize: 16,
-  },
-  cardActionView: {
-    justifyContent: 'flex-end',
-  },
-  noFields: {
-    textAlign: 'center',
-    color: 'gray',
-  },
   dialogTitle: {
-    '& > h2': {
-      display: 'flex',
-      justifyContent: 'space-between',
-    },
+    padding: '16px 24px',
   },
   subHeaderRow: {
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid var(--bs-border-color)',
     paddingLeft: 16,
     paddingRight: 16,
     paddingBottom: 8,
     display: 'flex',
+    alignItems: 'center',
   },
   fieldListViewContainer: {
-    marginLeft: 16,
-    marginRight: 2,
-    marginTop: 8,
+    padding: '8px 2px 0px 16px',
     overflowY: 'auto',
     height: '53.8vh',
   },
   searchField: {
     width: '75%',
-    '& input': {
-      padding: '8px 0 7px !important',
-    },
   },
-  checkbox: {
-    color: '#2185D0 !important',
-  },
-  checkboxChecked: {
-    color: '#2185D0 !important',
-    backgrounColor: '#2185D0 !important',
-  },
-  selectButton: {
-    backgroundColor: '#0275d8',
+  save: {
+    minWidth: 64,
     textTransform: 'capitalize',
-    '&:hover': {
-      backgroundColor: '#025aa5',
-      borderColor: '#014682',
-    },
-  },
-  cancelButton: {
-    backgroundColor: '#fff',
-    borderColor: '#cccccc',
-    textTransform: 'capitalize',
-    color: '#333333',
-    '&:hover': {
-      backgroundColor: '#e6e6e6',
-      borderColor: '#adadad',
-    },
-  },
-  required: {
-    color: '#f44336',
   },
 });
 
 const getFilteredFields = (_list, text) => {
-  const list = _list.sort((item1, item2) =>
-    item1.required ? (item2.required ? 0 : -1) : 1
-  );
+  const list = _list.sort((item1, item2) => {
+    if (item1.required && !item2.required) {
+      return -1;
+    } else if (!item1.required && item2.required) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
   if (!text) {
     return list;
   }
@@ -126,10 +73,10 @@ function FieldPopoverComponent({
   const [selected, setSelected] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
 
-  const selectAll = React.useMemo(
-    () => selected.length === data.length,
-    [data, selected]
-  );
+  const selectAll = React.useMemo(() => selected.length === data.length, [
+    data,
+    selected,
+  ]);
 
   useEffect(() => {
     // reset state
@@ -183,103 +130,91 @@ function FieldPopoverComponent({
   }, [open]);
 
   return (
-    <React.Fragment>
-      <Dialog
-        fullWidth={true}
-        open={open}
-        classes={{ paper: classes.dialogPaper }}
-        onClose={handleClose}
-        aria-labelledby="scroll-dialog-title"
-      >
-        <DialogTitle id="scroll-dialog-title" className={classes.dialogTitle}>
-          <span>{translate('Select fields')}</span>
-        </DialogTitle>
+    <Dialog open={open} centered>
+      <DialogHeader className={classes.dialogTitle} onCloseClick={handleClose}>
+        <h4>{translate('Select fields')}</h4>
+      </DialogHeader>
 
-        <DialogContent dividers={true} classes={{ root: classes.cardContent }}>
-          <div className={classes.subHeaderRow}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  classes={{
-                    root: classes.checkbox,
-                    checked: classes.checkboxChecked,
-                  }}
-                  onChange={() => handleSelectAll(!selectAll)}
-                  value={selectAll}
-                  checked={selectAll}
-                />
-              }
-            />
+      <DialogContent px={0}>
+        <Box className={classes.subHeaderRow}>
+          <Input
+            fontSize={5}
+            type="checkbox"
+            onChange={() => handleSelectAll(!selectAll)}
+            value={selectAll}
+            checked={selectAll}
+            style={{ marginRight: 16 }}
+          />
+          <Box w={100}>
             <TextField
-              classes={{ root: classes.searchField }}
+              className={classes.searchField}
               placeholder={translate('Search fields')}
               onChange={(e) => handleFieldSearch(e)}
             />
-          </div>
-          <div className={classes.fieldListViewContainer}>
-            {getFilteredFields(data, searchText).map((field, i) => (
-              <Grid container key={i}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      classes={{ root: classes.checkbox }}
-                      onChange={(e) => {
-                        if (!selectItems.includes(field.name)) {
-                          handleCheckbox(e);
-                        }
-                      }}
-                      value={field.name}
-                      checked={selected.indexOf(field.name) !== -1}
-                    />
+          </Box>
+        </Box>
+        <div className={classes.fieldListViewContainer}>
+          {getFilteredFields(data, searchText).map((field, i) => (
+            <Box d="flex" alignItems="center" gap={8} key={i}>
+              <Input
+                type="checkbox"
+                fontSize={5}
+                onChange={(e) => {
+                  if (!selectItems.includes(field.name)) {
+                    handleCheckbox(e);
                   }
-                  label={
-                    <div className={classes.cardContentItemContainer}>
-                      <Typography
-                        className={classNames(classes.cardContentItemTitle, {
-                          [classes.required]: field.required,
-                        })}
-                      >
-                        {field.title}
-                      </Typography>
-                      <Typography
-                        className={classNames(classes.cardContentItemText, {
-                          [classes.required]: field.required,
-                        })}
-                      >
-                        {field.name}
-                      </Typography>
-                    </div>
-                  }
-                />
-              </Grid>
-            ))}
-            {data.length === 0 && (
-              <Typography className={classes.noFields}>
-                {translate('No fields available')}
-              </Typography>
-            )}
-          </div>
-        </DialogContent>
-        <CardActions className={classes.cardActionView}>
-          <Button
-            className={classes.cancelButton}
-            variant="contained"
-            color="secondary"
-            onClick={handleClose}
-          >
-            {translate('Close')}
-          </Button>
-          <Button
-            className={classes.selectButton}
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-          >
-            {translate('OK')}
-          </Button>
-        </CardActions>
-      </Dialog>
-    </React.Fragment>
+                }}
+                id={field.name}
+                value={field.name}
+                checked={selected.indexOf(field.name) !== -1}
+              />
+              <Box
+                d="flex"
+                flexDirection="column"
+                justifyContent="center"
+                style={{ marginLeft: 10 }}
+              >
+                <InputLabel
+                  htmlFor={field.name}
+                  invalid={field.required}
+                  style={{ marginBottom: 0, fontSize: 16 }}
+                >
+                  {field.title}
+                </InputLabel>
+                <InputLabel
+                  htmlFor={field.name}
+                  invalid={field.required}
+                  style={{ marginBottom: 0, fontSize: 12 }}
+                >
+                  {field.name}
+                </InputLabel>
+              </Box>
+            </Box>
+          ))}
+          {data.length === 0 && (
+            <InputLabel d="flex" justifyContent="center" color="body">
+              {translate('No fields available')}
+            </InputLabel>
+          )}
+        </div>
+      </DialogContent>
+      <DialogFooter>
+        <Button
+          className={classes.save}
+          variant="primary"
+          onClick={handleSubmit}
+        >
+          {translate('OK')}
+        </Button>
+        <Button
+          className={classes.save}
+          variant="secondary"
+          onClick={handleClose}
+        >
+          {translate('Close')}
+        </Button>
+      </DialogFooter>
+    </Dialog>
   );
 }
 

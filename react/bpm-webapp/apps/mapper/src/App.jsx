@@ -1,6 +1,8 @@
 import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { ThemeProvider } from '@axelor/ui';
+import { useAppTheme } from './custom-hooks/useAppTheme';
 
 import Builder from './Builder';
 import './App.css';
@@ -73,20 +75,25 @@ export default function App({
   isDMNAllow,
   getDMNValues,
 }) {
+  const data = useAppTheme();
+  const { theme, options } = data;
+
   return (
-    <DndProvider backend={HTML5Backend}>
-      <AppContent
-        isBPMN={isBPMN}
-        open={open}
-        handleClose={handleClose}
-        isDialog={isDialog || isBPMN}
-        onSave={onSave}
-        param={param}
-        getProcesses={getProcesses}
-        getProcessElement={getProcessElement}
-        isDMNAllow={isDMNAllow}
-        getDMNValues={getDMNValues}
-      />
-    </DndProvider>
+    <ThemeProvider options={options} theme={theme}>
+      <DndProvider backend={HTML5Backend}>
+        <AppContent
+          isBPMN={isBPMN}
+          open={open}
+          handleClose={handleClose}
+          isDialog={isDialog || isBPMN}
+          onSave={onSave}
+          param={param}
+          getProcesses={getProcesses}
+          getProcessElement={getProcessElement}
+          isDMNAllow={isDMNAllow}
+          getDMNValues={getDMNValues}
+        />
+      </DndProvider>
+    </ThemeProvider>
   );
 }

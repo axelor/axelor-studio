@@ -1,45 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Popper from '@material-ui/core/Popper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { makeStyles } from '@material-ui/styles';
+import { ClickAwayListener, Select } from '@axelor/ui';
 import _uniqueId from 'lodash/uniqueId';
 
 import { useDebounce } from '../utils';
 import { translate } from '../../utils';
 
 const getKey = (key) => (key === '_selectId' ? 'id' : key);
-
-const useStyles = makeStyles((theme) => ({
-  listbox: {
-    maxHeight: '300px !important',
-  },
-  popper: {
-    width: 'auto !important',
-  },
-  tag: {
-    height: 24,
-  },
-  input: {
-    width: '100% !important',
-  },
-  inputSelected: {
-    width: '100% !important',
-    margin: 4,
-    color: 'rgba(0, 0, 0, 0.87)',
-    border: '1px solid #e0e0e0',
-    padding: '3px 24px !important',
-    borderRadius: 25,
-    background: '#e0e0e0',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    textAlign: 'center',
-    fontSize: '0.8125rem',
-    height: 18,
-  },
-}));
 
 export default function AutoComplete(props) {
   const [open, setOpen] = useState(false);
@@ -65,13 +31,14 @@ export default function AutoComplete(props) {
     concatValue,
     inputRootClass,
     isProcessContext = false,
+    renderValue,
+    disableClearable,
     ...other
   } = props;
 
   const showError =
     (!value && !value?.name) || (Array.isArray(value) && value?.length === 0);
 
-  const classes = useStyles();
   const [loading, setLoading] = useState(false);
 
   const findOption = React.useCallback(
@@ -127,17 +94,6 @@ export default function AutoComplete(props) {
     }
   }, [value, isMulti, findOption]);
 
-  function onKeyDown(e) {
-    if (e.key === 'Backspace') {
-      if (
-        selectedValue &&
-        selectedValue[getKey(optionLabelKey)] === inputValue
-      ) {
-        onChange(null, 'backspace');
-      }
-    }
-  }
-
   function handleChange(item, reason) {
     if (typeof value === 'string') {
       isMulti
@@ -147,7 +103,10 @@ export default function AutoComplete(props) {
           )
         : onChange(item && item[getKey(optionValueKey)], reason);
     } else {
-      onChange(item, reason);
+      onChange(
+        item?.length ? item.map((i, ind) => ({ ...i, trackKey: ind })) : item,
+        reason
+      );
     }
   }
 
@@ -178,93 +137,84 @@ export default function AutoComplete(props) {
         : ''
       : '';
   };
-  return (
-    <Autocomplete
-      getOptionSelected={(option, value) => {
-        return isMulti
-          ? option[getKey(optionValueKey)] === value[getKey(optionValueKey)]
-          : checkValue(option) === checkValue(value);
-      }}
-      getOptionLabel={(option) => {
-        return checkValue(option);
-      }}
-      loading={loading}
-      id={_uniqueId('select-widget')}
-      open={open}
-      onOpen={() => setOpen(true)}
-      onClose={() => setOpen(false)}
-      disabled={readOnly}
-      value={
-        selectedValue
-          ? isMulti
-            ? Array.isArray(selectedValue)
-              ? selectedValue
-              : []
-            : selectedValue
-          : isMulti
-          ? []
-          : null
-      }
-      onChange={(event, newValue, reason) => handleChange(newValue, reason)}
-      options={options || []}
-      multiple={isMulti}
-      filterSelectedOptions={filterSelectedOptions}
-      onInputChange={(e, value) => delayChange(value)}
-      classes={{
-        option: 'menu-item',
-        inputRoot: inputRootClass,
-        input: isProcessContext
-          ? selectedValue
-            ? classes.inputSelected
-            : classes.input
-          : '',
-        popper: (options || []).length > 0 && classes.popper,
-        tag: classes.tag,
-      }}
-      PopperComponent={CustomPopper}
-      renderInput={(params) => {
-        return (
-          <TextField
-            {...params}
-            error={error && showError}
-            label={inline ? '' : translate(title)}
-            fullWidth
-            onClick={() => {
-              if (readOnly) return;
-              setOpen(true);
-            }}
-            InputProps={{
-              ...InputProps,
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress
-                      className={classes.circularProgress}
-                      size={15}
-                    />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-            {...(isMulti ? {} : { onKeyDown: onKeyDown })}
-          />
-        );
-      }}
-      {...(isMulti ? { disableCloseOnSelect } : {})}
-      {...other}
-    />
-  );
-}
 
-function CustomPopper(props) {
-  const { style = {} } = props;
+  const customOptions = React.useMemo(() => {
+    if (loading) {
+      return [
+        {
+          key: 'loading',
+          title: 'Loading...',
+        },
+      ];
+    }
+    if (!options?.length) {
+      return [
+        {
+          key: 'no-options',
+          title: 'No options',
+        },
+      ];
+    }
+    return [];
+  }, [options, loading]);
+
   return (
-    <Popper
-      {...props}
-      style={{ style, ...(style.width ? { minWidth: style.width } : {}) }}
-      placement="bottom-start"
-    />
+    <React.Fragment>
+      <ClickAwayListener onClickAway={() => setOpen(false)}>
+        <Select
+          optionEqual={(option, val) => {
+            return isMulti
+              ? value?.map((v) => v[getKey(optionValueKey)])?.join('.') ===
+                  [...(value || []), val]
+                    ?.map((v) => v[getKey(optionValueKey)])
+                    ?.join('.')
+              : checkValue(option) === checkValue(val);
+          }}
+          optionLabel={(option) => checkValue(option)}
+          optionKey={(option) => option.name}
+          customOptions={customOptions}
+          id={_uniqueId('select-widget')}
+          open={open}
+          onOpen={() => setOpen(true)}
+          onClose={() => setOpen(false)}
+          disabled={readOnly}
+          invalid={error && showError}
+          clearOnEscape
+          removeOnBackspace
+          autoComplete
+          value={
+            selectedValue
+              ? isMulti
+                ? Array.isArray(selectedValue)
+                  ? selectedValue
+                  : []
+                : selectedValue
+              : isMulti
+              ? []
+              : null
+          }
+          optionMatch={(option, text = '') => {
+            if (text === '') return true;
+            const key = text.toLowerCase();
+            const name = option?.name?.toLowerCase() || '';
+            const title = option?.title?.toLowerCase() || '';
+            if (name.includes(key) || title.includes(key)) {
+              return true;
+            }
+            return false;
+          }}
+          onChange={(newValue, reason) => handleChange(newValue, reason)}
+          options={loading ? [] : options ?? []}
+          multiple={isMulti}
+          renderValue={renderValue}
+          onInputChange={(value) => delayChange(value)}
+          removeOnDelete
+          placeholder={title}
+          clearIcon={!disableClearable}
+          {...(isMulti ? { closeOnSelect: false } : {})}
+          {...other}
+        />
+      </ClickAwayListener>
+    </React.Fragment>
   );
 }

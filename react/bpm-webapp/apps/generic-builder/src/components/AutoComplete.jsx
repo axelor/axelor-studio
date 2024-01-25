@@ -1,28 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Popper from '@material-ui/core/Popper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Chip from '@material-ui/core/Chip';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { makeStyles } from '@material-ui/styles';
+import { Select, ClickAwayListener, Badge, Box } from '@axelor/ui';
 import { translate, useDebounce } from '../utils';
 import { uniqueId } from 'lodash';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
-const useStyles = makeStyles(theme => ({
-  listbox: {
-    maxHeight: '300px !important',
-  },
-  chip: {
-    '&.MuiChip-outlined .MuiChip-deleteIconSmall': {
-      color: '#0275d8',
-    },
-    border: '1px solid #0275d8',
-    color: '#0275d8',
-  },
-  popper: {
-    width: 'auto !important',
-  },
-}));
 export default function AutoComplete(props) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -46,10 +27,11 @@ export default function AutoComplete(props) {
     readOnly = false,
     className,
     classes: $classes,
+    handleRemove = () => {},
+    disableClearable = false,
     ...other
   } = props;
 
-  const classes = useStyles();
   const [loading, setLoading] = useState(false);
 
   const findOption = React.useCallback(
@@ -95,20 +77,12 @@ export default function AutoComplete(props) {
     if (typeof value === 'string') {
       const values = value.split(',');
       setSelectedValue(
-        isMulti ? values.map(v => findOption(v)) : findOption(values[0])
+        isMulti ? values?.map(v => findOption(v)) : findOption(values[0])
       );
     } else {
       setSelectedValue(value ? value : isMulti ? [] : null);
     }
   }, [value, isMulti, findOption]);
-
-  function onKeyDown(e) {
-    if (e.key === 'Backspace') {
-      if (selectedValue && selectedValue[optionLabelKey] === inputValue) {
-        onChange(null);
-      }
-    }
-  }
 
   function handleChange(item) {
     if (typeof value === 'string') {
@@ -144,96 +118,93 @@ export default function AutoComplete(props) {
       : '';
   };
 
-  return (
-    <Autocomplete
-      getOptionSelected={(option, value) => {
-        return isMulti
-          ? option[optionValueKey] === value[optionValueKey]
-          : checkValue(option) === checkValue(value);
-      }}
-      getOptionLabel={option => {
-        return checkValue(option);
-      }}
-      className={className}
-      loading={loading}
-      id={uniqueId('select-widget')}
-      open={open}
-      onOpen={() => setOpen(true)}
-      onClose={() => setOpen(false)}
-      disabled={readOnly}
-      value={
-        selectedValue
-          ? isMulti
-            ? Array.isArray(selectedValue)
-              ? selectedValue
-              : []
-            : selectedValue
-          : isMulti
-          ? []
-          : null
-      }
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
-          <Chip
-            variant="outlined"
-            label={option[optionLabelKey] || option['name'] || option['id']}
-            size="small"
-            classes={{
-              root: classes.chip,
-            }}
-            {...getTagProps({ index })}
-          />
-        ))
-      }
-      onChange={(event, newValue) => handleChange(newValue)}
-      options={options || []}
-      multiple={isMulti}
-      filterSelectedOptions={filterSelectedOptions}
-      onInputChange={(e, value) => delayChange(value)}
-      classes={{
-        ...$classes,
-        option: 'menu-item',
-        listbox: classes.listbox,
-        popper: options && options.length > 0 && classes.popper,
-      }}
-      PopperComponent={CustomPopper}
-      renderInput={params => {
-        return (
-          <TextField
-            {...params}
-            error={error}
-            label={inline ? '' : translate(title)}
-            fullWidth
-            onClick={() => {
-              if (readOnly) return;
-              setOpen(true);
-            }}
-            InputProps={{
-              ...InputProps,
-              ...params.InputProps,
-              // disableUnderline: true,
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress
-                      className={classes.circularProgress}
-                      size={15}
-                    />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-            {...(isMulti ? {} : { onKeyDown: onKeyDown })}
-          />
-        );
-      }}
-      {...(isMulti ? { disableCloseOnSelect } : {})}
-      {...other}
-    />
-  );
-}
+  const customOptions = React.useMemo(() => {
+    if (loading) {
+      return [
+        {
+          key: 'loading',
+          title: 'Loading...',
+        },
+      ];
+    }
+    if (!options?.length) {
+      return [
+        {
+          key: 'no-options',
+          title: 'No options',
+        },
+      ];
+    }
+    return [];
+  }, [loading, options]);
 
-function CustomPopper(props) {
-  return <Popper {...props} placement="bottom-start" />;
+  return (
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <Select
+        optionEqual={(option, value) => {
+          return isMulti
+            ? option[optionValueKey] === value[optionValueKey]
+            : checkValue(option) === checkValue(value);
+        }}
+        optionLabel={option => checkValue(option)}
+        className={className}
+        id={uniqueId('select-widget')}
+        open={open}
+        onOpen={() => setOpen(true)}
+        onClose={() => setOpen(false)}
+        disabled={readOnly}
+        value={
+          selectedValue
+            ? isMulti
+              ? Array.isArray(selectedValue)
+                ? selectedValue
+                : []
+              : selectedValue
+            : isMulti
+            ? []
+            : null
+        }
+        onChange={newValue => handleChange(newValue)}
+        optionKey={option => option.id}
+        options={loading ? [] : options ?? []}
+        customOptions={customOptions}
+        multiple={isMulti}
+        clearIcon={!disableClearable}
+        optionMatch={(option, text = '') => {
+          if (text === '') return true;
+          const key = text.toLowerCase();
+          const name = option?.name?.toLowerCase() || '';
+          const title = option?.title?.toLowerCase() || '';
+          if (name.includes(key) || title.includes(key)) {
+            return true;
+          }
+          return false;
+        }}
+        renderValue={({ option }) => {
+          return isMulti ? (
+            <Badge bg="primary">
+              <Box d="flex" alignItems="center" g={1}>
+                <Box as="span">{checkValue(option)}</Box>
+                <Box as="span" style={{ cursor: 'pointer' }}>
+                  <MaterialIcon
+                    icon="close"
+                    fontSize="1rem"
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleRemove(option);
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Badge>
+          ) : null;
+        }}
+        filterSelectedOptions={filterSelectedOptions}
+        onInputChange={value => delayChange(value)}
+        removeOnBackspace
+        {...(isMulti ? { disableCloseOnSelect } : {})}
+        {...other}
+      />
+    </ClickAwayListener>
+  );
 }

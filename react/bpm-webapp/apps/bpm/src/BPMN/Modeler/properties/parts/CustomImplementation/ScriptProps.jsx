@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import Edit from "@material-ui/icons/Edit";
 
 import Select from "../../../../../components/Select";
 import QueryBuilder from "../../../../../components/QueryBuilder";
@@ -30,16 +20,28 @@ import {
   Checkbox,
   SelectBox,
 } from "../../../../../components/properties/components";
+import Tooltip from "../../../../../components/Tooltip";
 import AlertDialog from "../../../../../components/AlertDialog";
 import { translate, getBool } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
+
+import {
+  Button,
+  Dialog,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  Badge,
+  InputLabel,
+  Box,
+  Divider,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -47,14 +49,13 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   expressionBuilder: {
     display: "flex",
@@ -62,7 +63,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   newIcon: {
-    color: "#58B423",
     marginLeft: 5,
   },
   new: {
@@ -82,37 +82,22 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   scriptDialog: {
     width: "100%",
     height: "100%",
-    maxWidth: "100%",
-  },
-  typeLabel: {
-    padding: "0px 10px",
-    background: "gray",
-    color: "white",
-    borderRadius: 25,
-    marginRight: 5,
-  },
-  entryLabel: {
-    padding: "0px 10px",
-    color: "white",
-    borderRadius: 25,
+    overflow: "hidden",
   },
   script: {
     display: "flex",
     justifyContent: "space-between",
+  },
+  content: {
+    padding: "8px 24px",
+    fontSize: 16,
   },
 }));
 
@@ -125,7 +110,13 @@ const implementationOptions = [
   },
 ];
 
-export default function ScriptProps({ element, index, label, bpmnModeler }) {
+export default function ScriptProps({
+  element,
+  index,
+  label,
+  bpmnModeler,
+  setDummyProperty = () => {},
+}) {
   const [isVisible, setVisible] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [metaModel, setMetaModel] = useState(null);
@@ -494,9 +485,11 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{translate(label)}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {translate(label)}
+        </Box>
         <SelectBox
           element={element}
           entry={{
@@ -541,22 +534,27 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                 <div className={classes.script}>
                   <div>{translate("Script")}</div>
                   <div style={{ display: "flex" }}>
-                    <div className={classes.typeLabel}>
+                    <Badge
+                      m={1}
+                      bgColor="secondary"
+                      rounded="pill"
+                      style={{ fontSize: 12 }}
+                    >
                       {
                         implementationOptions?.find((i) => i?.value === type)
                           ?.name
                       }
-                    </div>
-                    <div
-                      className={classes.entryLabel}
-                      style={{
-                        background: isReadOnly ? "rgb(88, 180, 35)" : "#0275d8",
-                      }}
+                    </Badge>
+                    <Badge
+                      m={1}
+                      bgColor={isReadOnly ? "success" : "primary"}
+                      rounded="pill"
+                      style={{ fontSize: 12 }}
                     >
                       {isReadOnly
                         ? translate("Generated")
                         : translate("Manually edited")}
-                    </div>
+                    </Badge>
                   </div>
                 </div>
               ),
@@ -579,7 +577,7 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
               {/* Code icon is not available in material icons */}
               <i
                 className="fa fa-code"
-                style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
+                style={{ fontSize: 18, marginLeft: 5 }}
                 onClick={() => {
                   if (isReadOnly) {
                     setAlertMessage(
@@ -588,12 +586,15 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                     setAlertTitle("Warning");
                     setAlert(true);
                   } else {
+                    setScript(getScript()?.script);
                     setOpenScriptDialog(true);
                   }
                 }}
               ></i>
             </Tooltip>
-            <Edit
+            <MaterialIcon
+              icon="edit"
+              fontSize={18}
               className={classes.newIcon}
               onClick={() => {
                 type === "connector"
@@ -646,61 +647,47 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                     element={element}
                   />
                 )}
-            {openAlert && (
-              <Dialog
-                open={openAlert}
-                onClose={(event, reason) => {
-                  if (reason !== "backdropClick") {
+            <Dialog
+              open={openAlert}
+              centered
+              className={classes.Dialog}
+            >
+              <DialogHeader onCloseClick={() => setAlert(false)}>
+                <h3>{translate(alertTitle)}</h3>
+              </DialogHeader>
+              <DialogContent className={classes.content}>
+                {translate(alertMessage)}
+              </DialogContent>
+              <DialogFooter>
+                <Button
+                  onClick={() => {
                     setAlert(false);
-                  }
-                }}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                classes={{
-                  paper: classes.dialog,
-                }}
-              >
-                <DialogTitle id="alert-dialog-title">
-                  <label className={classes.title}>
-                    {translate(alertTitle)}
-                  </label>
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    {translate(alertMessage)}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button
-                    onClick={() => {
-                      setAlert(false);
-                      setAlertMessage(null);
-                      setAlertTitle(null);
-                      setReadOnly(false);
-                      setOpenScriptDialog(true);
-                      setScript(getScript()?.script);
-                      if (element.businessObject) {
-                        setProperty("scriptOperatorType", undefined);
-                        setProperty("scriptValue", undefined);
-                      }
-                    }}
-                    color="primary"
-                    className={classes.save}
-                  >
-                    {translate("OK")}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setAlert(false);
-                    }}
-                    color="primary"
-                    className={classes.save}
-                  >
-                    {translate("Cancel")}
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            )}
+                    setAlertMessage(null);
+                    setAlertTitle(null);
+                    setReadOnly(false);
+                    setOpenScriptDialog(true);
+                    setScript(getScript()?.script);
+                    if (element.businessObject) {
+                      setProperty("scriptOperatorType", undefined);
+                      setProperty("scriptValue", undefined);
+                    }
+                  }}
+                  variant="primary"
+                  className={classes.save}
+                >
+                  {translate("OK")}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setAlert(false);
+                  }}
+                  variant="secondary"
+                  className={classes.save}
+                >
+                  {translate("Cancel")}
+                </Button>
+              </DialogFooter>
+            </Dialog>
             {openScriptDialog && (
               <AlertDialog
                 className={classes.scriptDialog}
@@ -722,7 +709,7 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                       label: translate("Script"),
                       modelProperty: "script",
                       get: function () {
-                        return getScript();
+                        return { script };
                       },
                       set: function (e, values) {
                         setScript(values?.script);
@@ -767,7 +754,9 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
         )}
         {type !== "request" && (
           <React.Fragment>
-            <label className={classes.label}>{translate("Model")}</label>
+            <InputLabel color="body" className={classes.label}>
+              {translate("Model")}
+            </InputLabel>
             <Checkbox
               className={classes.checkbox}
               entry={{
@@ -826,9 +815,9 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
             )}
             {isDefaultFormVisible && (
               <React.Fragment>
-                <label className={classes.label}>
+                <InputLabel color="body" className={classes.label}>
                   {translate("Default form")}
-                </label>
+                </InputLabel>
                 <Select
                   className={classes.select}
                   update={(value, label) => {
@@ -874,9 +863,9 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
               {displayStatus && (
                 <React.Fragment>
                   <div className={classes.allModels}>
-                    <label className={classes.label}>
+                    <InputLabel color="body" className={classes.label}>
                       {translate("Display on models")}
-                    </label>
+                    </InputLabel>
                     <Select
                       className={classes.select}
                       update={(value) => {
@@ -887,9 +876,15 @@ export default function ScriptProps({ element, index, label, bpmnModeler }) {
                       name="models"
                       value={models || []}
                       multiple={true}
-                      isLabel={false}
                       optionLabel="name"
                       optionLabelSecondary="title"
+                      handleRemove={(option) => {
+                        const value = models?.filter(
+                          (r) => r.name !== option.name
+                        );
+                        setModels(value);
+                        addModels(value);
+                      }}
                     />
                   </div>
                 </React.Fragment>

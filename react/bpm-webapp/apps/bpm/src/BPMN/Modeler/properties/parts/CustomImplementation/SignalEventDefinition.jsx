@@ -1,12 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Edit from "@material-ui/icons/Edit";
-import {
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  Button,
-} from "@material-ui/core";
 import BpmnModeler from "bpmn-js/lib/Modeler";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -17,7 +9,15 @@ import {
 } from "../../../../../components/properties/components";
 import { getWkfModels } from "../../../../../services/api";
 import { translate } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  InputLabel,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
@@ -27,28 +27,18 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
+    minWidth: 64,
   },
   label: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   select: {
     width: "100%",
   },
   newIcon: {
-    color: "#58B423",
     cursor: "pointer",
   },
 }));
@@ -59,7 +49,8 @@ export default function SignalEventProps({
   signalEventDefinition,
   bpmnModdle,
   bpmnModeler,
-  id: wkfId
+  id: wkfId,
+  setDummyProperty = () => {},
 }) {
   const [selectedSignal, setSelectedSignal] = useState(null);
   const [signalOptions, setSignalOptions] = useState([]);
@@ -74,28 +65,30 @@ export default function SignalEventProps({
 
   const setInfo = async () => {
     let code;
-    const id = signalEventDefinition?.signalRef?.id
-    if (!id) return
-    const signalElement = findElementById(id)
-    code = signalElement?.$attrs["camunda:modelRefCode"]
-    if (!code) return
+    const id = signalEventDefinition?.signalRef?.id;
+    if (!id) return;
+    const signalElement = findElementById(id);
+    code = signalElement?.$attrs["camunda:modelRefCode"];
+    if (!code) return;
     const model = await getModels({
-      criteria: [{
-        fieldName: "code",
-        operator: "=",
-        value: code
-      }]
-    })
-    if (!model) return
+      criteria: [
+        {
+          fieldName: "code",
+          operator: "=",
+          value: code,
+        },
+      ],
+    });
+    if (!model) return;
     setSignalObj({
       wkf: model[0],
-      signal: signalElement
-    })
-  }
+      signal: signalElement,
+    });
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
-    setInfo()
+    setInfo();
   };
 
   const handleClose = () => {
@@ -111,19 +104,23 @@ export default function SignalEventProps({
     await bpmnModelerTest.importXML(catchSignalObj?.wkf?.diagramXml);
     const rootElements = bpmnModelerTest?.get("canvas")?.getRootElement()
       ?.businessObject?.$parent.rootElements;
-    return rootElements?.filter((r) => (!(r?.$attrs && r.$attrs["camunda:modelRefCode"]) && r.$type === "bpmn:Signal"));
+    return rootElements?.filter(
+      (r) =>
+        !(r?.$attrs && r.$attrs["camunda:modelRefCode"]) &&
+        r.$type === "bpmn:Signal"
+    );
   };
 
   function findElementById(id) {
-    if (!id) return
+    if (!id) return;
     const rootElements = bpmnModeler?.get("canvas")?.getRootElement()
       ?.businessObject?.$parent.rootElements;
-    return rootElements?.find((r) => (r.$type === "bpmn:Signal" && r.id === id));
+    return rootElements?.find((r) => r.$type === "bpmn:Signal" && r.id === id);
   }
 
   const addElement = ({ wkf, signal: signalElement }) => {
-    if (!signalEventDefinition || !signalElement) return
-    const { id, name } = signalElement
+    if (!signalEventDefinition || !signalElement) return;
+    const { id, name } = signalElement;
     if (!findElementById(id)) {
       let rootElement =
         bpmnModeler &&
@@ -135,7 +132,10 @@ export default function SignalEventProps({
         value: name,
         id: id,
       };
-      setSignalOptions(signalEventDefinition => [...(signalEventDefinition || []), opt]);
+      setSignalOptions((signalEventDefinition) => [
+        ...(signalEventDefinition || []),
+        opt,
+      ]);
     }
     signalElement.$attrs["camunda:modelRefCode"] = wkf?.code;
     signalEventDefinition["signalRef"] = signalElement;
@@ -190,7 +190,9 @@ export default function SignalEventProps({
         bpmnModeler={bpmnModeler}
         defaultOptions={signalOptions}
         endAdornment={
-          <Edit
+          <MaterialIcon
+            icon="edit"
+            fontSize={15}
             className={classes.newIcon}
             onClick={() => {
               handleClickOpen();
@@ -260,57 +262,57 @@ export default function SignalEventProps({
         />
       )}
       {open && (
-        <Dialog
-          open={open}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              handleClose();
-            }
-          }}
-          aria-labelledby="form-dialog-title"
-          maxWidth="sm"
-          classes={{
-            paper: classes.dialogPaper,
-          }}
-        >
-          <DialogTitle id="form-dialog-title">
-            {translate("Select Signal")}
-          </DialogTitle>
+        <Dialog open={open} backdrop centered className={classes.dialogPaper}>
+          <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
+            <h3>{translate("Select Signal")}</h3>
+          </DialogHeader>
           <DialogContent>
-            <label className={classes.label}>{translate("BPM model")}</label>
+            <InputLabel color="body">{translate("BPM model")}</InputLabel>
             <Select
               className={classes.select}
               disableClearable={true}
               update={(value) => {
-                setSignalObj(signalObj => ({ ...(signalObj || {}), wkf: value }));
+                setSignalObj((signalObj) => ({
+                  ...(signalObj || {}),
+                  wkf: value,
+                }));
               }}
               name="wkf"
               value={catchSignalObj?.wkf || ""}
               optionLabel="name"
               optionLabelSecondary="description"
               isLabel={false}
-              fetchMethod={(options = {}) => getModels({
-                ...options,
-                criteria: wkfId ? [
-                  {
-                    fieldName: "id",
-                    operator: "!=",
-                    value: wkfId
-                  },
-                  ...(options?.criteria || [])
-                ] : [...(options?.criteria || [])]
-              })}
+              fetchMethod={(options = {}) =>
+                getModels({
+                  ...options,
+                  criteria: wkfId
+                    ? [
+                        {
+                          fieldName: "id",
+                          operator: "!=",
+                          value: wkfId,
+                        },
+                        ...(options?.criteria || []),
+                      ]
+                    : [...(options?.criteria || [])],
+                })
+              }
               disableUnderline={true}
               isOptionEllipsis={true}
             />
-            {catchSignalObj?.wkf &&
+            {catchSignalObj?.wkf && (
               <>
-                <label className={classes.label}>{translate("Signals")}</label>
+                <InputLabel color="body" className={classes.label}>
+                  {translate("Signals")}
+                </InputLabel>
                 <Select
                   className={classes.select}
                   disableClearable={true}
                   update={(value) => {
-                    setSignalObj(signalObj => ({ ...(signalObj || {}), signal: value }));
+                    setSignalObj((signalObj) => ({
+                      ...(signalObj || {}),
+                      signal: value,
+                    }));
                   }}
                   name="signal"
                   value={catchSignalObj?.signal}
@@ -322,31 +324,28 @@ export default function SignalEventProps({
                   isOptionEllipsis={true}
                 />
               </>
-
-            }
+            )}
           </DialogContent>
-          <DialogActions>
+          <DialogFooter>
             <Button
               onClick={handleClose}
               className={classes.button}
-              color="primary"
-              variant="outlined"
+              variant="secondary"
             >
               {translate("Cancel")}
             </Button>
             <Button
               onClick={() => {
-                addElement(catchSignalObj)
+                addElement(catchSignalObj);
                 setSignalObj(null);
                 handleClose();
               }}
               className={classes.button}
-              color="primary"
-              variant="outlined"
+              variant="primary"
             >
               {translate("OK")}
             </Button>
-          </DialogActions>
+          </DialogFooter>
         </Dialog>
       )}
     </div>

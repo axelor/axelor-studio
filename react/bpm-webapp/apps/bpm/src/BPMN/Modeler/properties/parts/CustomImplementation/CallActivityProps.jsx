@@ -1,17 +1,5 @@
 import React, { useEffect, useState } from "react";
-import OpenInNewIcon from "@material-ui/icons/OpenInNew";
-import {
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  Button,
-  Snackbar,
-} from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
 import classnames from "classnames";
-import { Edit, Add } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
@@ -35,8 +23,20 @@ import {
   getMetaFields,
   fetchModels,
 } from "../../../../../services/api";
-import { openWebApp, setDummyProperty } from "./utils";
+import { openWebApp } from "./utils";
 import Ids from "ids";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  InputLabel,
+  Box,
+  Divider,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import Alert from "../../../../../components/Alert";
 
 function nextId() {
   let ids = new Ids([32, 32, 1]);
@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -56,10 +55,8 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   linkIcon: {
-    color: "#58B423",
     marginLeft: 5,
   },
   link: {
@@ -71,31 +68,18 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginTop: 3,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(--ax-theme-panel-header-font-size, 1rem)",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
-  },
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
   },
   newIcon: {
-    color: "#58B423",
     marginLeft: 5,
   },
   new: {
@@ -111,11 +95,19 @@ const useStyles = makeStyles((theme) => ({
   dialogContent: {
     display: "flex",
     alignItems: "flex-end",
+    minWidth: 300,
+    fontSize: 16,
   },
   scriptDialog: {
     width: "100%",
     height: "100%",
-    maxWidth: "100%",
+  },
+  parentPathDialog: {
+    "& > div": {
+      maxWidth: "90%",
+      width: "fit-content",
+      minWidth: 500,
+    },
   },
 }));
 
@@ -136,6 +128,7 @@ export default function CallActivityProps({
   index,
   label,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [isVisible, setVisible] = useState(false);
   const [custom, setCustom] = useState(false);
@@ -286,7 +279,7 @@ export default function CallActivityProps({
       }
     } else {
       handleSnackbarClick(
-        "error",
+        "danger",
         (res && res.data && (res.data.message || res.data.title)) || "Error"
       );
     }
@@ -331,6 +324,7 @@ export default function CallActivityProps({
           name: wkfProcess.name,
           id: wkfProcess.wkfModel && wkfProcess.wkfModel.id,
           processId: wkfProcess.name,
+          wkfModel: wkfProcess?.wkfModel,
         });
         if (element && element.businessObject) {
           element.businessObject.calledElement = wkfProcess.name;
@@ -439,6 +433,7 @@ export default function CallActivityProps({
   }, [element]);
 
   useEffect(() => {
+    if (!element) return;
     const bo = getBusinessObject(element);
     updateModel(bo.calledElement);
   }, [element, updateModel]);
@@ -467,14 +462,16 @@ export default function CallActivityProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{translate(label)}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {translate(label)}
+        </Box>
         <SelectBox
           element={element}
           entry={{
             id: "callActivity",
-            label: "CallActivity type",
+            label: "Call activity type",
             modelProperty: "callActivityType",
             selectOptions: [
               { name: "BPMN", value: "bpmn" },
@@ -492,6 +489,10 @@ export default function CallActivityProps({
                 value: values?.callActivityType,
               });
               setCallActivityType(values.callActivityType);
+              element.businessObject.calledElement = undefined;
+              element.businessObject.calledElementBinding = undefined;
+              element.businessObject.caseRef = undefined;
+              setWkfModel(null);
             },
           }}
         />
@@ -529,12 +530,28 @@ export default function CallActivityProps({
             canRemove={true}
             endAdornment={
               <>
-                <div onClick={handleClickOpen} className={classes.link}>
-                  <Edit className={classes.linkIcon} />
-                </div>
-                <div onClick={addNewBPMRecord} className={classes.link}>
-                  <Add className={classes.linkIcon} />
-                </div>
+                <Box
+                  color="body"
+                  onClick={handleClickOpen}
+                  className={classes.link}
+                >
+                  <MaterialIcon
+                    icon="edit"
+                    fontSize={16}
+                    className={classes.linkIcon}
+                  />
+                </Box>
+                <Box
+                  color="body"
+                  onClick={addNewBPMRecord}
+                  className={classes.link}
+                >
+                  <MaterialIcon
+                    icon="add"
+                    fontSize={16}
+                    className={classes.linkIcon}
+                  />
+                </Box>
                 {wkfModel && (
                   <div
                     onClick={() => {
@@ -545,7 +562,11 @@ export default function CallActivityProps({
                     }}
                     className={classes.link}
                   >
-                    <OpenInNewIcon className={classes.linkIcon} />
+                    <MaterialIcon
+                      fontSize={16}
+                      icon="open_in_new"
+                      className={classes.linkIcon}
+                    />
                   </div>
                 )}
               </>
@@ -582,7 +603,7 @@ export default function CallActivityProps({
             canRemove={true}
           />
         )}
-        <div className={classes.divider} />
+        <Divider className={classes.divider} />
         <Checkbox
           element={element}
           entry={{
@@ -601,7 +622,9 @@ export default function CallActivityProps({
             },
           }}
         />
-        <label className={classes.label}>{translate("Call model")}</label>
+        <InputLabel color="body" className={classes.label}>
+          {translate("Call model")}
+        </InputLabel>
         {custom ? (
           <Select
             className={classnames(classes.select, classes.metajsonModel)}
@@ -641,7 +664,9 @@ export default function CallActivityProps({
           />
         )}
         <React.Fragment>
-          <label className={classes.label}>{translate("Call link")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Call link")}
+          </InputLabel>
           <TextField
             element={element}
             canRemove={true}
@@ -666,72 +691,65 @@ export default function CallActivityProps({
             endAdornment={
               <>
                 {model && (
-                  <div className={classes.new}>
-                    <Edit
+                  <Box color="body" className={classes.new}>
+                    <MaterialIcon
+                      icon="edit"
+                      fontSize={16}
                       className={classes.newIcon}
                       onClick={() => {
                         setOpenParentPath(true);
                       }}
                     />
-                  </div>
+                  </Box>
                 )}
               </>
             }
           />
-          {openParentPath && (
-            <Dialog
-              open={openParentPath}
-              onClose={(e, reason) => {
-                if (reason !== "backdropClick") {
+          <Dialog
+            open={openParentPath}
+            centered
+            backdrop
+            className={classes.parentPathDialog}
+          >
+            <DialogHeader>
+              <h3>{translate("Parent path")}</h3>
+            </DialogHeader>
+            <DialogContent d="flex" overflow="auto" alignItems="flex-end">
+              <FieldEditor
+                getMetaFields={() => getMetaFields(model)}
+                onChange={(val, field) => {
+                  setParentPathDummy(val);
+                }}
+                value={{
+                  fieldName: parentPathDummy,
+                }}
+                isParent={true}
+                allowAllFields={true}
+              />
+            </DialogContent>
+            <DialogFooter>
+              <Button
+                onClick={() => {
                   setOpenParentPath(false);
-                }
-              }}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-              classes={{
-                paper: classes.dialog,
-              }}
-            >
-              <DialogTitle id="alert-dialog-title">
-                {translate("Parent path")}
-              </DialogTitle>
-              <DialogContent className={classes.dialogContent}>
-                <FieldEditor
-                  getMetaFields={() => getMetaFields(model)}
-                  onChange={(val, field) => {
-                    setParentPathDummy(val);
-                  }}
-                  value={{
-                    fieldName: parentPathDummy,
-                  }}
-                  isParent={true}
-                  allowAllFields={true}
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button
-                  onClick={() => {
-                    setOpenParentPath(false);
-                    setParentPath(parentPathDummy);
-                    setProperty("parentPath", parentPathDummy);
-                  }}
-                  color="primary"
-                  className={classes.save}
-                >
-                  {translate("OK")}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setOpenParentPath(false);
-                  }}
-                  color="primary"
-                  className={classes.save}
-                >
-                  {translate("Cancel")}
-                </Button>
-              </DialogActions>
-            </Dialog>
-          )}
+                  setParentPath(parentPathDummy);
+                  setProperty("parentPath", parentPathDummy);
+                }}
+                variant="primary"
+                className={classes.save}
+              >
+                {translate("OK")}
+              </Button>
+              <Button
+                onClick={() => {
+                  setOpenParentPath(false);
+                }}
+                variant="secondary"
+                className={classes.save}
+              >
+                {translate("Cancel")}
+              </Button>
+            </DialogFooter>
+          </Dialog>
           <TextField
             element={element}
             readOnly={!readOnly && model ? false : true}
@@ -757,13 +775,12 @@ export default function CallActivityProps({
             endAdornment={
               <>
                 {model && (
-                  <div className={classes.new}>
+                  <Box color="body" className={classes.new}>
                     <Tooltip title="Enable" aria-label="enable">
                       <i
                         className="fa fa-code"
                         style={{
                           fontSize: 18,
-                          color: "#58B423",
                           marginLeft: 5,
                         }}
                         onClick={() => {
@@ -780,7 +797,9 @@ export default function CallActivityProps({
                         }}
                       ></i>
                     </Tooltip>
-                    <Edit
+                    <MaterialIcon
+                      icon="edit"
+                      fontSize={16}
                       className={classes.newIcon}
                       onClick={() => setOpenCondition(true)}
                     />
@@ -795,171 +814,140 @@ export default function CallActivityProps({
                         fetchModels={() => fetchModels(element)}
                       />
                     )}
-                  </div>
+                  </Box>
                 )}
               </>
             }
           />
-          {openAlert && (
-            <Dialog
-              open={openAlert}
-              onClose={(event, reason) => {
-                if (reason !== "backdropClick") {
-                  setAlert(false);
-                }
-              }}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-              classes={{
-                paper: classes.dialog,
-              }}
-            >
-              <DialogTitle id="alert-dialog-title">
-                {translate(alertTitle)}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  {translate(alertMessage)}
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                    setAlertMessage(null);
-                    setAlertTitle(null);
-                    setReadOnly(false);
-                    setProperty("conditionValue", undefined);
-                    setProperty("conditionCombinator", undefined);
-                    setScript(getCallLinkCondition()?.condition);
-                    setOpenScriptDialog(true);
-                  }}
-                  color="primary"
-                  className={classes.save}
-                >
-                  {translate("OK")}
-                </Button>
-                <Button
-                  className={classes.save}
-                  onClick={() => {
-                    setAlert(false);
-                  }}
-                  color="primary"
-                >
-                  {translate("Cancel")}
-                </Button>
-              </DialogActions>
-            </Dialog>
-          )}
-          <div className={classes.divider} />
-        </React.Fragment>
-        {openScriptDialog && (
-          <AlertDialog
-            className={classes.scriptDialog}
-            openAlert={openScriptDialog}
-            alertClose={() => {
-              setScript(getCallLinkCondition()?.condition);
-              setOpenScriptDialog(false);
-            }}
-            handleAlertOk={() => {
-              setProperty(
-                "condition",
-                (script || "").replace(/[\u200B-\u200D\uFEFF]/g, "")
-              );
-              setOpenScriptDialog(false);
-            }}
-            title={translate("Call link condition")}
-            children={
-              <Textbox
-                element={element}
-                className={classes.textbox}
-                showLabel={false}
-                defaultHeight={window?.innerHeight - 205}
-                entry={{
-                  id: "script",
-                  label: translate("Call link condition"),
-                  modelProperty: "condition",
-                  get: function () {
-                    return getCallLinkCondition();
-                  },
-                  set: function (e, values) {
-                    setScript(values?.condition);
-                  },
-                }}
-              />
-            }
-          />
-        )}
-        {open && (
           <Dialog
-            open={open}
-            onClose={(event, reason) => {
-              if (reason !== "backdropClick") {
-                handleClose();
-              }
-            }}
-            aria-labelledby="form-dialog-title"
-            maxWidth="sm"
-            classes={{
-              paper: classes.dialogPaper,
-            }}
+            open={openAlert}
+            backdrop
+            centered
+            scrollable
+            className={classes.dialog}
           >
-            <DialogTitle id="form-dialog-title">
-              {translate("Select BPMN")}
-            </DialogTitle>
+            <DialogHeader onCloseClick={() => setAlert(false)}>
+              <h3>{translate(alertTitle)}</h3>
+            </DialogHeader>
             <DialogContent>
-              <label className={classes.label}>{translate("BPMN")}</label>
-              <Select
-                className={classes.select}
-                update={(value) => {
-                  if (!value) return;
-                  setWkfModel({
-                    id: value.wkfModel.id,
-                    name: `${value.wkfModel.name} (${value.name})`,
-                    processId: value.name,
-                  });
-                }}
-                name="wkfModel"
-                isLabel={true}
-                fetchMethod={(options) => getBPMNModels(options)}
-              />
+              <Box as="p" color="body" fontSize={5}>
+                {translate(alertMessage)}
+              </Box>
             </DialogContent>
-            <DialogActions>
+            <DialogFooter>
               <Button
-                onClick={handleClose}
+                onClick={() => {
+                  setAlert(false);
+                  setAlertMessage(null);
+                  setAlertTitle(null);
+                  setReadOnly(false);
+                  setScript(getCallLinkCondition()?.condition);
+                  setProperty("conditionValue", undefined);
+                  setProperty("conditionCombinator", undefined);
+                  setOpenScriptDialog(true);
+                }}
+                variant="primary"
                 className={classes.save}
-                color="primary"
-                variant="outlined"
-              >
-                {translate("Cancel")}
-              </Button>
-              <Button
-                onClick={onConfirm}
-                className={classes.save}
-                color="primary"
-                variant="outlined"
               >
                 {translate("OK")}
               </Button>
-            </DialogActions>
+              <Button
+                className={classes.save}
+                onClick={() => {
+                  setAlert(false);
+                }}
+                variant="secondary"
+              >
+                {translate("Cancel")}
+              </Button>
+            </DialogFooter>
           </Dialog>
-        )}
-        {openSnackbar.open && (
-          <Snackbar
-            open={openSnackbar.open}
-            autoHideDuration={2000}
-            onClose={handleSnackbarClose}
-          >
-            <Alert
-              elevation={6}
-              variant="filled"
-              onClose={handleSnackbarClose}
-              className="snackbarAlert"
-              severity={openSnackbar.messageType}
+          <Divider className={classes.divider} />
+        </React.Fragment>
+        <AlertDialog
+          className={classes.scriptDialog}
+          openAlert={openScriptDialog}
+          alertClose={() => {
+            setScript(getCallLinkCondition()?.condition);
+            setOpenScriptDialog(false);
+          }}
+          handleAlertOk={() => {
+            setProperty(
+              "condition",
+              (script || "").replace(/[\u200B-\u200D\uFEFF]/g, "")
+            );
+            setOpenScriptDialog(false);
+          }}
+          title={translate("Call link condition")}
+          children={
+            <Textbox
+              element={element}
+              className={classes.textbox}
+              showLabel={false}
+              defaultHeight={window?.innerHeight - 205}
+              entry={{
+                id: "script",
+                label: translate("Call link condition"),
+                modelProperty: "condition",
+                get: function () {
+                  return { condition: script };
+                },
+                set: function (e, values) {
+                  setScript(values?.condition);
+                },
+              }}
+            />
+          }
+        />
+        <Dialog open={open} backdrop centered className={classes.dialogPaper}>
+          <DialogHeader onCloseClick={() => setOpen(false)}>
+            <h3>{translate("Select BPMN")}</h3>
+          </DialogHeader>
+          <DialogContent style={{ minHeight: 90 }}>
+            <InputLabel color="body" className={classes.label}>
+              {translate("BPMN")}
+            </InputLabel>
+            <Select
+              className={classes.select}
+              update={(value) => {
+                if (!value) return;
+                setWkfModel({
+                  id: value.wkfModel?.id,
+                  name: value.name,
+                  processId: value.name || "",
+                  wkfModel: value.wkfModel,
+                });
+              }}
+              value={wkfModel}
+              name="wkfModel"
+              fetchMethod={(options) => getBPMNModels(options)}
+              optionLabel="name"
+            />
+          </DialogContent>
+          <DialogFooter>
+            <Button
+              onClick={handleClose}
+              className={classes.save}
+              variant="secondary"
             >
-              {translate(openSnackbar.message)}
-            </Alert>
-          </Snackbar>
+              {translate("Cancel")}
+            </Button>
+            <Button
+              onClick={onConfirm}
+              className={classes.save}
+              variant="primary"
+            >
+              {translate("OK")}
+            </Button>
+          </DialogFooter>
+        </Dialog>
+        {openSnackbar.open && (
+          <Alert
+            open={openSnackbar.open}
+            onClose={handleSnackbarClose}
+            message={openSnackbar.message}
+            messageType={openSnackbar.messageType}
+          />
         )}
       </div>
     )

@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import {
-  AppBar,
-  Tabs,
-  Tab,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  Button,
-  DialogContent,
-  capitalize,
-  makeStyles,
-} from "@material-ui/core"
+import { makeStyles } from "@material-ui/core"
 import { parse } from "iso8601-duration"
 import cronValidate from "cron-validate"
 
@@ -24,13 +12,16 @@ import ISO8601 from "./ISO8601"
 import { localization } from "./localization"
 import Service from "./services/Service"
 import { CRON_OVERRIDE, TYPE } from "./utils"
-
-function a11yProps(index) {
-  return {
-    id: `tab-${index}`,
-    "aria-controls": `tabpanel-${index}`,
-  }
-}
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Box,
+  NavTabs,
+  InputLabel,
+} from "@axelor/ui"
 
 const useStyle = makeStyles({
   root: {
@@ -51,14 +42,15 @@ const useStyle = makeStyles({
   },
   dialogContent: {
     paddingInline: 0,
+    maxHeight: "70vh",
+    overflow: "auto",
   },
   button: {
-    backgroundColor: "#0275d8",
-    textTransform: "none",
-    marginBlock: "0.5rem",
+    minWidth: 64,
+    textTransform: "capitalize",
   },
-  tabIndicator: {
-    backgroundColor: "#0275d8",
+  tabs: {
+    fontSize: 14,
   },
 })
 
@@ -110,22 +102,29 @@ function Cron({
 
   return (
     <div className={className}>
-      <Typography variant="h5" align="center" style={{ marginBlock: "1rem" }}>
+      <InputLabel
+        fontSize={4}
+        d="flex"
+        justifyContent="center"
+        style={{ marginBlock: "1rem" }}
+      >
         {timerDefinition || originalExpression}
-      </Typography>
+      </InputLabel>
 
       {localError && (
-        <Typography
-          variant="h6"
-          align="center"
+        <InputLabel
+          d="flex"
+          justifyContent="center"
+          textTransform="capitalize"
+          color="var(--bs-red)"
           style={{
             marginBlock: "0.5rem",
             color: "red",
             marginInlineEnd: "auto",
           }}
         >
-          {capitalize(t(localError))}
-        </Typography>
+          {t(localError)}
+        </InputLabel>
       )}
       <ReQuartzCron
         onChange={onChange}
@@ -176,30 +175,22 @@ const TIMER_DEFINITION_TYPE_TABS = {
 
 function TabBar({ tabs, tabIndex, onChange, t }) {
   const classes = useStyle()
+  const navItems = React.useMemo(
+    () =>
+      TABS.filter(tab => tabs.includes(tab.id)).map(tab => {
+        return { ...tab, title: t(tab.label) }
+      }),
+    [TABS]
+  )
   return (
-    <>
-      <AppBar position="static" classes={{ root: classes.background }}>
-        <Tabs
-          value={tabIndex}
-          onChange={onChange}
-          classes={{
-            indicator: classes.tabIndicator,
-          }}
-        >
-          {TABS.filter(tab => tabs.includes(tab.id)).map((tab, index) => (
-            <Tab
-              disableRipple
-              key={tab.id}
-              label={t(tab.label)}
-              {...a11yProps(index)}
-              classes={{
-                root: classes.root,
-              }}
-            />
-          ))}
-        </Tabs>
-      </AppBar>
-    </>
+    <Box color="body">
+      <NavTabs
+        className={classes.tabs}
+        items={navItems}
+        onItemClick={onChange}
+        active={tabs[tabIndex]}
+      />
+    </Box>
   )
 }
 
@@ -239,32 +230,23 @@ function Actions({ onOK, onCancel, t, error }) {
   return (
     <>
       {error && (
-        <Typography
-          variant="h6"
-          align="center"
+        <InputLabel
+          d="flex"
+          justifyContent="center"
+          textTransform="capitalize"
           style={{
             marginBlock: "0.5rem",
-            color: "red",
+            color: "var(--bs-red)",
             marginInlineEnd: "auto",
           }}
         >
           {capitalize(t(error))}
-        </Typography>
+        </InputLabel>
       )}
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.button}
-        onClick={onOK}
-      >
+      <Button variant="primary" className={classes.button} onClick={onOK}>
         {t("OK")}
       </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.button}
-        onClick={onCancel}
-      >
+      <Button variant="secondary" className={classes.button} onClick={onCancel}>
         {t("Cancel")}
       </Button>
     </>
@@ -307,8 +289,10 @@ function App({
   const [timerDefinition, setTimerDefinition] = useState("")
   const [error, setError] = useState("") // errors due to invalid originalExpression
 
-  const handleTabChange = (event, newValue) => {
-    setTabIndex(newValue)
+  const handleTabChange = newValue => {
+    const val = tabIds.findIndex(id => id === newValue.id)
+    const ind = val > -1 ? val : 0
+    setTabIndex(ind)
     setTimerDefinition("")
   }
 
@@ -328,20 +312,15 @@ function App({
   }, [timerDefinitionType])
 
   return isDialog ? (
-    <Dialog
-      open={open}
-      maxWidth="md"
-      fullWidth
-      classes={{ paper: classes.dialogPaper }}
-    >
-      <DialogTitle className={classes.dialogTitle}>
+    <Dialog open={open} backdrop centered>
+      <DialogHeader className={classes.dialogTitle}>
         <TabBar
           tabs={tabIds}
           tabIndex={tabIndex}
           onChange={handleTabChange}
           t={t}
         />
-      </DialogTitle>
+      </DialogHeader>
       <DialogContent className={classes.dialogContent}>
         <Panels
           tabs={tabIds}
@@ -355,9 +334,9 @@ function App({
           expressionType={expressionType}
         />
       </DialogContent>
-      <DialogActions className={classes.dialogActions}>
+      <DialogFooter className={classes.dialogActions}>
         <Actions onCancel={onClose} onOK={handleOK} t={t} error={error} />
-      </DialogActions>
+      </DialogFooter>
     </Dialog>
   ) : (
     <div className="App">

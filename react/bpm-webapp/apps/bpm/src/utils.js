@@ -125,6 +125,21 @@ function convertSVGtoBase64(svgXml) {
   });
 }
 
+function lightenColor(color, percent) {
+  const hex = color.replace("#", "");
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const lightenR = Math.round((255 - r) * percent) + r;
+  const lightenG = Math.round((255 - g) * percent) + g;
+  const lightenB = Math.round((255 - b) * percent) + b;
+  const lightenHex = `#${lightenR.toString(16)}${lightenG.toString(
+    16
+  )}${lightenB.toString(16)}`;
+
+  return lightenHex;
+}
+
 export {
   download,
   translate,
@@ -138,4 +153,5 @@ export {
   splitWithComma,
   dashToUnderScore,
   convertSVGtoBase64,
+  lightenColor,
 };

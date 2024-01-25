@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Input from "@material-ui/core/Input";
 import classnames from "classnames";
-import { TextField } from "@material-ui/core";
+import { Input } from "@axelor/ui";
 
 import { translate } from "../../../utils";
 function InputField({
@@ -39,9 +38,10 @@ function InputField({
     );
   }
   return (
-    <TextField
+    <Input
+      type="text"
       id={`filled-${name}`}
-      label={translate(title || autoTitle)}
+      placeholder={translate(title || autoTitle)}
       name={name}
       style={{ width: "100%", ...style }}
       onChange={(e) => onChange(e.target.value)}

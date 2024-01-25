@@ -432,7 +432,7 @@ export async function getMetaModels(_data = {}) {
       }
     });
   });
-  return result || [];
+  return uniqBy(result, 'id');
 }
 
 export async function getCustomModels(_data = {}) {

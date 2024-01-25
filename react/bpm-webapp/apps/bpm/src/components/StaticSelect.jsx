@@ -1,88 +1,65 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Select, Chip, MenuItem } from "@material-ui/core";
-
+import { Select, Badge, MenuItem } from "@axelor/ui";
 import { translate } from "../utils";
 
-const useStyles = makeStyles((theme) => ({
-  select: {
-    width: "100%",
-    background: "white",
-    borderRadius: 0,
-  },
-}));
-
-function StaticSelect({
-  value,
-  onChange,
-  options = [],
-  className,
-  selectClassName,
-}) {
-  const { name = "" } = value || {};
-  const classes = useStyles();
-  const [val, setVal] = useState(name);
-
-  const onSelectUpdate = (e) => {
-    let option = options.find((option) => option.name === e.target.value);
-    onChange(option, e);
-    setVal(e.target.value);
-  };
-
-  const renderChip = (value) => {
-    let option = options.find((option) => option.name === value);
-    if (!option) return <React.Fragment></React.Fragment>;
-    return (
-      <Chip
-        label={translate(option.title)}
-        size="small"
-        style={{
-          background: option && option.color,
-          color: (option && option.border) || "white",
-        }}
-      />
-    );
-  };
+function StaticSelect({ value = [], onChange, options = [] }) {
+  const [val, setVal] = useState(value);
 
   useEffect(() => {
-    setVal(name);
-  }, [name]);
+    setVal(value);
+  }, [value]);
+
+  const handleSelectChange = (newValue) => {
+    const lastSelectedValue =
+      newValue.length > 0 ? newValue[newValue.length - 1] : null;
+    setVal([lastSelectedValue]);
+    onChange(lastSelectedValue);
+  };
 
   return (
     <Select
-      className={classes.select}
-      value={val || ""}
-      onChange={onSelectUpdate}
-      renderValue={renderChip}
-      inputProps={{
-        name: `${name}`,
-        id: `outlined-${name}-native-simple`,
-      }}
-      classes={{
-        select: selectClassName,
-      }}
-      variant="outlined"
-    >
-      {options &&
-        options.map((option) => (
-          <MenuItem value={option.name} key={option.name}>
-            <Chip
-              key={option.name}
-              label={translate(option.title)}
-              size="small"
-              style={{
-                background: option && option.color,
-                color: (option && option.border) || "white",
-              }}
-            />
-          </MenuItem>
-        ))}
-    </Select>
+      value={val}
+      onChange={handleSelectChange}
+      renderValue={({ option }) => (
+        <Badge
+          rounded="pill"
+          m={1}
+          p={2}
+          style={{
+            background: option && option.color,
+            color: (option && option.border) || "white",
+          }}
+        >
+          {translate(option?.title || "")}
+        </Badge>
+      )}
+      options={options}
+      optionKey={(x) => x.name}
+      optionLabel={(x) => x.title}
+      renderOption={({ option }) => (
+        <MenuItem value={option.name} key={option.name}>
+          <Badge
+            key={option.name}
+            rounded="pill"
+            m={1}
+            p={2}
+            style={{
+              background: option && option.color,
+              color: (option && option.border) || "white",
+            }}
+          >
+            {translate(option.title)}
+          </Badge>
+        </MenuItem>
+      )}
+      clearIcon={false}
+      multiple
+    />
   );
 }
 
 StaticSelect.defaultProps = {
-  value: {},
+  value: [],
   onChange: () => {},
 };
 

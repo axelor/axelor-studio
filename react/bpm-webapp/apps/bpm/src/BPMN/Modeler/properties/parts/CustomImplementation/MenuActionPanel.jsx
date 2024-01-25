@@ -2,17 +2,7 @@ import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  IconButton,
-  Card,
-  CardContent,
-} from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 
 import Select from "../../../../../components/Select";
 import {
@@ -31,7 +21,6 @@ import {
   getMenu,
 } from "../../../../../services/api";
 import { translate, getBool } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
 import { USER_TASKS_TYPES } from "../../../constants";
 import {
   createElement,
@@ -40,10 +29,16 @@ import {
   nextId,
   openTabView,
 } from "./utils";
-import Add from "@material-ui/icons/Add";
-import Close from "@material-ui/icons/Close";
-import Edit from "@material-ui/icons/Edit";
-import OpenInNew from "@material-ui/icons/OpenInNew";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  InputLabel,
+  Box,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -54,11 +49,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 10,
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   select: {
     margin: "0px 5px 0px 0px",
@@ -68,57 +63,35 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 0,
     border: "1px solid #ccc",
     padding: 2,
+    color: "inherit",
     width: "fit-content",
-  },
-  icons: {
-    display: "flex",
-    alignItems: "center",
-  },
-  card: {
-    margin: "5px 0px 10px 0px",
-    boxShadow: "none",
-    width: "100%",
-    border: "1px solid #ccc",
-    background: "#f8f8f8",
-    borderRadius: 0,
-  },
-  cardContent: {
-    padding: "10px !important",
-  },
-  cardContainer: {
-    display: "flex",
-    alignItems: "flex-start",
   },
   newIcon: {
     marginLeft: 4,
-    color: "#58B423",
     cursor: "pointer",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    color: "white",
     textTransform: "none",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   dialogContent: {
     display: "flex",
     alignItems: "flex-end",
-  },
-  menuContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  menu: {
-    width: "50%",
+    overflow: "auto",
   },
   dialog: {
     minWidth: 300,
+  },
+  content: {
+    fontSize: 16,
+  },
+  teamFieldPathDialog: {
+    "& > div": {
+      maxWidth: "90%",
+      width: "fit-content",
+      minWidth: 500,
+    },
   },
 }));
 
@@ -141,7 +114,12 @@ export function createMenus(parent, bpmnFactory, properties) {
   return createElement("camunda:Menus", parent, bpmnFactory, properties);
 }
 
-export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
+export default function MenuActionPanel({
+  element,
+  bpmnFactory,
+  bpmnModeler,
+  setDummyProperty = () => {},
+}) {
   const [createUserAction, setCreateUserAction] = useState(false);
   const [deadlineFieldPath, setDeadlineFieldPath] = useState(null);
   const [emailNotification, setEmailNotification] = useState(false);
@@ -618,7 +596,9 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
         />
         {createUserAction && (
           <React.Fragment>
-            <label className={classes.label}>{translate("Role")}</label>
+            <InputLabel color="body" className={classes.label}>
+              {translate("Role")}
+            </InputLabel>
             <Select
               className={classes.select}
               update={(value, label) => {
@@ -662,7 +642,9 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
         </div>
         {emailNotification && (
           <React.Fragment>
-            <label className={classes.label}>{translate("Email event")}</label>
+            <InputLabel color="body" className={classes.label}>
+              {translate("Email event")}
+            </InputLabel>
             <Select
               className={classes.select}
               update={(value, label) => {
@@ -682,7 +664,9 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
         )}
         {emailNotification && (
           <React.Fragment>
-            <label className={classes.label}>{translate("Template")}</label>
+            <InputLabel color="body" className={classes.label}>
+              {translate("Template")}
+            </InputLabel>
             <Select
               className={classes.select}
               update={(value, label) => {
@@ -755,7 +739,9 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
           endAdornment={
             USER_TASKS_TYPES.includes(element.type) &&
             !!!teamFieldPath && (
-              <Edit
+              <MaterialIcon
+                fontSize={16}
+                icon="edit"
                 className={classes.newIcon}
                 onClick={() => {
                   setOpenUserPathDialog(true);
@@ -793,7 +779,9 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
           canRemove={true}
           endAdornment={
             !!!userFieldPath && (
-              <Edit
+              <MaterialIcon
+                fontSize={16}
+                icon="edit"
                 className={classes.newIcon}
                 onClick={() => {
                   setOpenTeamPathDialog(true);
@@ -821,7 +809,9 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
             },
           }}
           endAdornment={
-            <Edit
+            <MaterialIcon
+              fontSize={16}
+              icon="edit"
               className={classes.newIcon}
               onClick={() => {
                 setOpenDeadlinePathDialog(true);
@@ -831,402 +821,383 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
         />
       </div>
       <div>
-        <label className={classes.label}>{translate("Add menus")}</label>
-        <div>
-          {menus?.map(
-            (menu, key) =>
-              menu && (
-                <div key={`card_menu_${key}`} className={classes.cardContainer}>
-                  <Card className={classes.card}>
-                    <CardContent className={classes.cardContent}>
-                      <div>
-                        <div className={classes.menuContainer}>
-                          <div className={classes.menu}>
-                            <TextField
-                              element={element}
-                              canRemove={true}
-                              entry={{
-                                id: "menuName",
-                                name: "menuName",
-                                modelProperty: "menuName",
-                                label: translate("Menu name"),
-                                get: function () {
-                                  return {
-                                    menuName: menu?.menuName,
-                                  };
-                                },
-                                set: function (e, value) {
-                                  updateValue(
-                                    value.menuName,
-                                    "menuName",
-                                    undefined,
-                                    key
-                                  );
-                                },
-                                validate: function (e, values) {
-                                  if (!values.menuName) {
-                                    return {
-                                      menuName: translate(
-                                        "Must provide a value"
-                                      ),
-                                    };
-                                  }
-                                },
-                              }}
-                            />
-                          </div>
-                          <div className={classes.menu}>
-                            <label className={classes.label}>
-                              {translate("Menu parent")}
-                            </label>
-                            <Select
-                              className={classes.select}
-                              update={(value) => {
-                                updateValue(value, "menuParent", "name", key);
-                              }}
-                              name="menuParent"
-                              value={menu?.menuParent}
-                              isLabel={false}
-                              fetchMethod={(options) => getParentMenus(options)}
-                            />
-                          </div>
-                        </div>
-                        <div className={classes.menuContainer}>
-                          <div className={classes.menu}>
-                            <label className={classes.label}>
-                              {translate("Position")}
-                            </label>
-                            <Select
-                              className={classes.select}
-                              update={(value) => {
-                                updateValue(value, "position", "name", key);
-                              }}
-                              name="position"
-                              value={menu?.position}
-                              isLabel={false}
-                              options={[
-                                { name: translate("After"), id: "after" },
-                                { name: translate("Before"), id: "before" },
-                              ]}
-                            />
-                          </div>
-                          <div className={classes.menu}>
-                            <label className={classes.label}>
-                              {translate("Position menu")}
-                            </label>
-                            <Select
-                              className={classes.select}
-                              update={(value) => {
-                                updateValue(value, "positionMenu", "name", key);
-                              }}
-                              fetchMethod={() => getSubMenus(menu?.menuParent)}
-                              name="positionMenu"
-                              value={menu?.positionMenu}
-                              isLabel={false}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <TextField
-                            element={element}
-                            canRemove={true}
-                            entry={{
-                              id: "domain",
-                              name: "domain",
-                              modelProperty: "domain",
-                              label: translate("Domain"),
-                              get: function () {
+        <InputLabel color="body" className={classes.label}>
+          {translate("Add menus")}
+        </InputLabel>
+        {menus?.map(
+          (menu, key) =>
+            menu && (
+              <Box key={`card_menu_${key}`} d="flex" alignItems="flex-start">
+                <Box
+                  flex={1}
+                  rounded={2}
+                  border
+                  bg="body-tertiary"
+                  color="body"
+                  style={{ width: "calc(100% - 20px)" }}
+                >
+                  <Box color="body" style={{ padding: 10 }}>
+                    <Box d="flex" alignItems="center" color="body">
+                      <Box w={50}>
+                        <TextField
+                          element={element}
+                          canRemove={true}
+                          entry={{
+                            id: "menuName",
+                            name: "menuName",
+                            modelProperty: "menuName",
+                            label: translate("Menu name"),
+                            get: function () {
+                              return {
+                                menuName: menu?.menuName,
+                              };
+                            },
+                            set: function (e, value) {
+                              updateValue(
+                                value.menuName,
+                                "menuName",
+                                undefined,
+                                key
+                              );
+                            },
+                            validate: function (e, values) {
+                              if (!values.menuName) {
                                 return {
-                                  domain: menu?.domain,
+                                  menuName: translate("Must provide a value"),
                                 };
-                              },
-                              set: function (e, value) {
-                                updateValue(
-                                  value.domain,
-                                  "domain",
-                                  undefined,
-                                  key
-                                );
-                              },
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label className={classes.label}>
-                            {translate("Roles")}
-                          </label>
+                              }
+                            },
+                          }}
+                        />
+                      </Box>
+                      <Box w={50}>
+                        <InputLabel color="body" className={classes.label}>
+                          {translate("Menu parent")}
+                        </InputLabel>
+                        <Select
+                          className={classes.select}
+                          update={(value) => {
+                            updateValue(value, "menuParent", "name", key);
+                          }}
+                          name="menuParent"
+                          value={menu?.menuParent}
+                          isLabel={false}
+                          fetchMethod={(options) => getParentMenus(options)}
+                        />
+                      </Box>
+                    </Box>
+                    <Box d="flex" alignItems="center" color="body">
+                      <Box w={50}>
+                        <InputLabel color="body" className={classes.label}>
+                          {translate("Position")}
+                        </InputLabel>
+                        <Select
+                          className={classes.select}
+                          update={(value) => {
+                            updateValue(value, "position", "name", key);
+                          }}
+                          name="position"
+                          value={menu?.position}
+                          isLabel={false}
+                          options={[
+                            { name: translate("After"), id: "after" },
+                            { name: translate("Before"), id: "before" },
+                          ]}
+                        />
+                      </Box>
+                      <Box w={50}>
+                        <InputLabel color="body" className={classes.label}>
+                          {translate("Position menu")}
+                        </InputLabel>
+                        <Select
+                          className={classes.select}
+                          update={(value) => {
+                            updateValue(value, "positionMenu", "name", key);
+                          }}
+                          fetchMethod={() => getSubMenus(menu?.menuParent)}
+                          name="positionMenu"
+                          value={menu?.positionMenu}
+                          isLabel={false}
+                        />
+                      </Box>
+                    </Box>
+                    <div>
+                      <TextField
+                        element={element}
+                        canRemove={true}
+                        entry={{
+                          id: "domain",
+                          name: "domain",
+                          modelProperty: "domain",
+                          label: translate("Domain"),
+                          get: function () {
+                            return {
+                              domain: menu?.domain,
+                            };
+                          },
+                          set: function (e, value) {
+                            updateValue(value.domain, "domain", undefined, key);
+                          },
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <InputLabel color="body" className={classes.label}>
+                        {translate("Roles")}
+                      </InputLabel>
+                      <Select
+                        className={classes.select}
+                        update={(value) => {
+                          updateValue(value, "roles", "name", key);
+                        }}
+                        fetchMethod={(options) => getRoles(options?.criteria)}
+                        name="roles"
+                        value={
+                          (typeof menu?.roles === "string"
+                            ? menu?.roles?.split(",").map((name) => ({ name }))
+                            : menu?.roles) || []
+                        }
+                        label={translate("Roles")}
+                        handleRemove={(option) => {
+                          let value = (
+                            (typeof menu?.roles === "string"
+                              ? menu?.roles
+                                  ?.split(",")
+                                  .map((name) => ({ name }))
+                              : menu?.roles) || []
+                          )?.filter((r) => r.name !== option.name);
+                          updateValue(value, "roles", "name", key);
+                        }}
+                        multiple={true}
+                      />
+                    </div>
+                    <Box
+                      d="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
+                      <Checkbox
+                        element={element}
+                        entry={{
+                          id: "permanent",
+                          label: translate("Permanent ?"),
+                          modelProperty: "permanent",
+                          get: function () {
+                            return {
+                              permanent: getBool(menu?.permanent),
+                            };
+                          },
+                          set: function (e, value) {
+                            updateValue(
+                              !value.permanent,
+                              "permanent",
+                              undefined,
+                              key
+                            );
+                          },
+                        }}
+                      />
+                      <Checkbox
+                        element={element}
+                        entry={{
+                          id: "tagCount",
+                          label: translate("Display tag count ?"),
+                          modelProperty: "tagCount",
+                          get: function () {
+                            return {
+                              tagCount: getBool(menu?.tagCount),
+                            };
+                          },
+                          set: function (e, value) {
+                            updateValue(
+                              !value.tagCount,
+                              "tagCount",
+                              undefined,
+                              key
+                            );
+                          },
+                        }}
+                      />
+                      <Checkbox
+                        element={element}
+                        entry={{
+                          id: "isUserMenu",
+                          label: translate("User menu ?"),
+                          modelProperty: "isUserMenu",
+                          get: function () {
+                            return {
+                              isUserMenu: getBool(menu?.isUserMenu),
+                            };
+                          },
+                          set: function (e, value) {
+                            updateValue(
+                              !value.isUserMenu,
+                              "isUserMenu",
+                              undefined,
+                              key
+                            );
+                          },
+                        }}
+                      />
+                    </Box>
+                    {model?.type === "metaModel" && (
+                      <Box d="flex" alignItems="center" color="body">
+                        <Box w={50}>
+                          <InputLabel color="body" className={classes.label}>
+                            {translate("Grid view")}
+                          </InputLabel>
                           <Select
                             className={classes.select}
                             update={(value) => {
-                              updateValue(value, "roles", "name", key);
+                              updateValue(value, "gridView", "name", key);
                             }}
                             fetchMethod={(options) =>
-                              getRoles(options?.criteria)
+                              getViews(model, options?.criteria, "grid")
                             }
-                            name="roles"
-                            value={
-                              (typeof menu?.roles === "string"
-                                ? menu?.roles
-                                    ?.split(",")
-                                    .map((name) => ({ name }))
-                                : menu?.roles) || []
-                            }
-                            label={translate("Roles")}
-                            multiple={true}
+                            name="gridView"
+                            value={menu?.gridView}
+                            label={translate("Grid view")}
                             isLabel={false}
                           />
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Checkbox
-                            element={element}
-                            entry={{
-                              id: "permanent",
-                              label: translate("Permanent ?"),
-                              modelProperty: "permanent",
-                              get: function () {
-                                return {
-                                  permanent: getBool(menu?.permanent),
-                                };
-                              },
-                              set: function (e, value) {
-                                updateValue(
-                                  !value.permanent,
-                                  "permanent",
-                                  undefined,
-                                  key
-                                );
-                              },
+                        </Box>
+                        <Box w={50}>
+                          <InputLabel color="body" className={classes.label}>
+                            {translate("Form view")}
+                          </InputLabel>
+                          <Select
+                            className={classes.select}
+                            update={(value) => {
+                              updateValue(value, "formView", "name", key);
                             }}
+                            fetchMethod={(options) =>
+                              getViews(model, options?.criteria)
+                            }
+                            name="formView"
+                            value={menu?.formView}
+                            label={translate("Form view")}
+                            isLabel={false}
                           />
-                          <Checkbox
-                            element={element}
-                            entry={{
-                              id: "tagCount",
-                              label: translate("Display tag count ?"),
-                              modelProperty: "tagCount",
-                              get: function () {
-                                return {
-                                  tagCount: getBool(menu?.tagCount),
-                                };
-                              },
-                              set: function (e, value) {
-                                updateValue(
-                                  !value.tagCount,
-                                  "tagCount",
-                                  undefined,
-                                  key
-                                );
-                              },
-                            }}
-                          />
-                          <Checkbox
-                            element={element}
-                            entry={{
-                              id: "isUserMenu",
-                              label: translate("User menu ?"),
-                              modelProperty: "isUserMenu",
-                              get: function () {
-                                return {
-                                  isUserMenu: getBool(menu?.isUserMenu),
-                                };
-                              },
-                              set: function (e, value) {
-                                updateValue(
-                                  !value.isUserMenu,
-                                  "isUserMenu",
-                                  undefined,
-                                  key
-                                );
-                              },
-                            }}
-                          />
-                        </div>
-                        {model?.type === "metaModel" && (
-                          <div className={classes.menuContainer}>
-                            <div className={classes.menu}>
-                              <label className={classes.label}>
-                                {translate("Grid view")}
-                              </label>
-                              <Select
-                                className={classes.select}
-                                update={(value) => {
-                                  updateValue(value, "gridView", "name", key);
-                                }}
-                                fetchMethod={(options) =>
-                                  getViews(model, options?.criteria, "grid")
-                                }
-                                name="gridView"
-                                value={menu?.gridView}
-                                label={translate("Grid view")}
-                                isLabel={false}
-                              />
-                            </div>
-                            <div className={classes.menu}>
-                              <label className={classes.label}>
-                                {translate("Form view")}
-                              </label>
-                              <Select
-                                className={classes.select}
-                                update={(value) => {
-                                  updateValue(value, "formView", "name", key);
-                                }}
-                                fetchMethod={(options) =>
-                                  getViews(model, options?.criteria)
-                                }
-                                name="formView"
-                                value={menu?.formView}
-                                label={translate("Form view")}
-                                isLabel={false}
-                              />
-                            </div>
-                          </div>
-                        )}
-                        <div>
-                          <Table
-                            entry={{
-                              id: `menu-context-${key}`,
-                              labels: [translate("Key"), translate("Value")],
-                              modelProperties: ["key", "value"],
-                              addLabel: "Add context menu",
-                              getElements: function () {
-                                return getElements(key);
-                              },
-                              updateElement: function (
-                                value,
-                                label,
-                                optionIndex
-                              ) {
-                                updateContextElement(
-                                  value,
-                                  label,
-                                  optionIndex,
-                                  key
-                                );
-                              },
-                              addElement: function (entryValue) {
-                                addContextElement(entryValue, key);
-                              },
-                              removeElement: function (optionIndex) {
-                                removeContextElement(optionIndex, key);
-                              },
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <div>
-                    <IconButton
-                      className={classes.iconButton}
-                      onClick={() => {
-                        removeItem(key);
-                        removeElement(key);
-                      }}
-                    >
-                      <Close fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      className={classes.iconButton}
-                      onClick={() => openMenu(menu)}
-                    >
-                      <OpenInNew fontSize="small" />
-                    </IconButton>
-                  </div>
-                </div>
-              )
-          )}
-        </div>
-        <div className={classes.icons}>
+                        </Box>
+                      </Box>
+                    )}
+                    <div>
+                      <Table
+                        entry={{
+                          id: `menu-context-${key}`,
+                          labels: [translate("Key"), translate("Value")],
+                          modelProperties: ["key", "value"],
+                          addLabel: "Add context menu",
+                          getElements: function () {
+                            return getElements(key);
+                          },
+                          updateElement: function (value, label, optionIndex) {
+                            updateContextElement(
+                              value,
+                              label,
+                              optionIndex,
+                              key
+                            );
+                          },
+                          addElement: function (entryValue) {
+                            addContextElement(entryValue, key);
+                          },
+                          removeElement: function (optionIndex) {
+                            removeContextElement(optionIndex, key);
+                          },
+                        }}
+                      />
+                    </div>
+                  </Box>
+                </Box>
+                <Box color="body">
+                  <IconButton
+                    className={classes.iconButton}
+                    onClick={() => {
+                      removeItem(key);
+                      removeElement(key);
+                    }}
+                  >
+                    <MaterialIcon icon="close" fontSize={16} />
+                  </IconButton>
+                  <IconButton
+                    className={classes.iconButton}
+                    onClick={() => openMenu(menu)}
+                  >
+                    <MaterialIcon icon="open_in_new" fontSize={16} />
+                  </IconButton>
+                </Box>
+              </Box>
+            )
+        )}
+        <Box d="flex" alignItems="center" color="body">
           <IconButton className={classes.iconButton} onClick={addItems}>
-            <Add fontSize="small" />
+            <MaterialIcon icon="add" fontSize={16} />
           </IconButton>
-        </div>
+        </Box>
       </div>
-      {openTeamPathDialog && (
-        <Dialog
-          open={openTeamPathDialog}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
+
+      <Dialog
+        open={openTeamPathDialog}
+        backdrop
+        centered
+        className={classes.teamFieldPathDialog}
+      >
+        <DialogHeader onCloseClick={() => setOpenTeamPathDialog(false)}>
+          <h3>{translate("Team field path")}</h3>
+        </DialogHeader>
+        <DialogContent className={classes.dialogContent}>
+          <FieldEditor
+            getMetaFields={getFields}
+            onChange={(val, field) => {
+              setTeamFieldDummy(val);
+              setTeamField(field);
+            }}
+            value={{
+              fieldName: teamFieldDummy,
+            }}
+            isParent={true}
+            className="hello"
+          />
+        </DialogContent>
+        <DialogFooter>
+          <Button
+            onClick={() => {
+              if (teamField && teamField.target !== "com.axelor.team.db.Team") {
+                setAlertMessage("Last subfield should be related to team");
+                setExpressionAlert(true);
+                return;
+              }
               setOpenTeamPathDialog(false);
-            }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">
-            {translate("Team field path")}
-          </DialogTitle>
-          <DialogContent className={classes.dialogContent}>
-            <FieldEditor
-              getMetaFields={getFields}
-              onChange={(val, field) => {
-                setTeamFieldDummy(val);
-                setTeamField(field);
-              }}
-              value={{
-                fieldName: teamFieldDummy,
-              }}
-              isParent={true}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                if (
-                  teamField &&
-                  teamField.target !== "com.axelor.team.db.Team"
-                ) {
-                  setAlertMessage("Last subfield should be related to team");
-                  setExpressionAlert(true);
-                  return;
-                }
-                setOpenTeamPathDialog(false);
-                setTeamFieldPath(teamFieldDummy);
-                setProperty("teamFieldPath", teamFieldDummy);
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
-                setOpenTeamPathDialog(false);
-                setTeamFieldDummy(teamFieldPath);
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("Cancel")}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+              setTeamFieldPath(teamFieldDummy);
+              setProperty("teamFieldPath", teamFieldDummy);
+            }}
+            variant="primary"
+            className={classes.save}
+          >
+            {translate("OK")}
+          </Button>
+          <Button
+            onClick={() => {
+              setOpenTeamPathDialog(false);
+              setTeamFieldDummy(teamFieldPath);
+            }}
+            variant="secondary"
+            className={classes.save}
+          >
+            {translate("Cancel")}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
       <Dialog
         open={openDeadlinePathDialog}
-        onClose={(event, reason) => {
-          if (reason !== "backdropClick") {
-            setOpenDeadlinePathDialog(false);
-          }
-        }}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        classes={{
-          paper: classes.dialog,
-        }}
+        backdrop
+        centered
+        className={classes.dialog}
       >
-        <DialogTitle id="alert-dialog-title">
-          {translate("Deadline field path")}
-        </DialogTitle>
+        <DialogHeader onCloseClick={() => setOpenDeadlinePathDialog(false)}>
+          <h3>{translate("Deadline field path")}</h3>
+        </DialogHeader>
         <DialogContent className={classes.dialogContent}>
           <FieldEditor
             getMetaFields={getFields}
@@ -1241,7 +1212,7 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
             isDatePath={true}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogFooter>
           <Button
             onClick={() => {
               if (
@@ -1257,7 +1228,7 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
               setDeadlineFieldPath(deadlineFieldPathDummy);
               setProperty("deadlineFieldPath", deadlineFieldPathDummy);
             }}
-            color="primary"
+            variant="primary"
             className={classes.save}
           >
             {translate("OK")}
@@ -1267,29 +1238,22 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
               setOpenDeadlinePathDialog(false);
               setDeadlineFieldPathDummy(userFieldPath);
             }}
-            color="primary"
+            variant="secondary"
             className={classes.save}
           >
             {translate("Cancel")}
           </Button>
-        </DialogActions>
+        </DialogFooter>
       </Dialog>
       <Dialog
         open={openUserPathDialog}
-        onClose={(event, reason) => {
-          if (reason !== "backdropClick") {
-            setOpenUserPathDialog(false);
-          }
-        }}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        classes={{
-          paper: classes.dialog,
-        }}
+        backdrop
+        centered
+        className={classes.dialog}
       >
-        <DialogTitle id="alert-dialog-title">
-          {translate("User field path")}
-        </DialogTitle>
+        <DialogHeader onCloseClick={() => setOpenUserPathDialog(false)}>
+          <h3>{translate("User field path")}</h3>
+        </DialogHeader>
         <DialogContent className={classes.dialogContent}>
           <FieldEditor
             getMetaFields={getFields}
@@ -1304,7 +1268,7 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
             isUserPath={true}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogFooter>
           <Button
             onClick={() => {
               if (field && field.target !== "com.axelor.auth.db.User") {
@@ -1316,7 +1280,7 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
               setUserFieldPath(userFieldPathDummy);
               setProperty("userFieldPath", userFieldPathDummy);
             }}
-            color="primary"
+            variant="primary"
             className={classes.save}
           >
             {translate("OK")}
@@ -1326,48 +1290,41 @@ export default function MenuActionPanel({ element, bpmnFactory, bpmnModeler }) {
               setOpenUserPathDialog(false);
               setUserFieldPathDummy(userFieldPath);
             }}
-            color="primary"
+            variant="secondary"
             className={classes.save}
           >
             {translate("Cancel")}
           </Button>
-        </DialogActions>
+        </DialogFooter>
       </Dialog>
       <Dialog
         open={openExpressionAlert}
-        onClose={(event, reason) => {
-          if (reason !== "backdropClick") {
-            setExpressionAlert(false);
-          }
-        }}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        classes={{
-          paper: classes.dialog,
-        }}
+        backdrop
+        centered
+        className={classes.dialog}
       >
-        <DialogTitle id="alert-dialog-title">{translate("Error")}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {translate(alertMessage)}
-          </DialogContentText>
+        <DialogHeader onCloseClick={() => setExpressionAlert(false)}>
+          <h3>{translate("Error")}</h3>
+        </DialogHeader>
+        <DialogContent className={classes.content}>
+          {translate(alertMessage)}
         </DialogContent>
-        <DialogActions>
+        <DialogFooter>
           <Button
             onClick={() => setExpressionAlert(false)}
-            color="primary"
+            variant="primary"
             className={classes.save}
           >
             {translate("OK")}
           </Button>
           <Button
             onClick={() => setExpressionAlert(false)}
-            color="primary"
+            variant="secondary"
             className={classes.save}
           >
             {translate("Cancel")}
           </Button>
-        </DialogActions>
+        </DialogFooter>
       </Dialog>
     </div>
   );

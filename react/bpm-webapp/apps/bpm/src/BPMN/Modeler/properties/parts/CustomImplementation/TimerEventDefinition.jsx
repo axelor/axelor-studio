@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import Edit from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { DateTimePicker } from "@material-ui/pickers";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
-import MomentUtils from "@date-io/moment";
-import Tooltip from "@material-ui/core/Tooltip";
 import NotInterested from "@material-ui/icons/NotInterested";
 
 import TimerBuilder from "../../../../../components/TimerBuilder";
@@ -15,8 +10,20 @@ import {
   TextField,
   SelectBox,
 } from "../../../../../components/properties/components";
+import Tooltip from "../../../../../components/Tooltip";
 import { getBool, translate } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  Input,
+  InputLabel,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import moment from "moment";
 
 const timerOptions = [
   { value: "timeDate", name: translate("Date") },
@@ -26,13 +33,26 @@ const timerOptions = [
 
 const useStyles = makeStyles(() => ({
   newIcon: {
-    color: "#58B423",
     cursor: "pointer",
     margin: 5,
   },
   new: {
     cursor: "pointer",
     display: "flex",
+  },
+  timeDateDialog: {
+    "& > div": {
+      maxWidth: "90%",
+      width: "fit-content",
+      minWidth: 500,
+    },
+  },
+  timeDateContent: {
+    minHeight: 300,
+  },
+  button: {
+    minWidth: 64,
+    textTransform: "capitalize",
   },
 }));
 
@@ -71,7 +91,8 @@ export default function TimerEventProps({
   element,
   bpmnFactory,
   timerEventDefinition,
-  bpmnModeler
+  bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [timerDefinitionType, setTimerDefinitionType] = useState("");
   const [open, setOpen] = useState(false);
@@ -81,6 +102,7 @@ export default function TimerEventProps({
     alertMessage: "Error",
     title: "Error",
   });
+  const [date, setDate] = useState();
   const classes = useStyles();
 
   function createTimerEventDefinition(bo) {
@@ -104,7 +126,7 @@ export default function TimerEventProps({
     setDummyProperty({
       bpmnModeler,
       element,
-      value
+      value,
     });
     const bo = getBusinessObject(element);
     let propertyName = `camunda:${name}`;
@@ -194,6 +216,12 @@ export default function TimerEventProps({
     setFromBuilder(isFromBuilder);
   }, [getProperty]);
 
+  useEffect(() => {
+    if (open && timerDefinitionType === "timeDate") {
+      setDate(getTimerValue());
+    }
+  }, [open, timerDefinitionType]);
+
   return (
     <div>
       <SelectBox
@@ -267,7 +295,7 @@ export default function TimerEventProps({
               },
             }}
             endAdornment={
-              <div className={classes.new}>
+              <Box color="body" className={classes.new}>
                 <Tooltip title="Enable" aria-label="enable">
                   <NotInterested
                     className={classes.newIcon}
@@ -286,20 +314,56 @@ export default function TimerEventProps({
                     }}
                   />
                 </Tooltip>
-                <Edit className={classes.newIcon} onClick={handleClickOpen} />
-              </div>
+                <MaterialIcon
+                  icon="edit"
+                  fontSize={16}
+                  className={classes.newIcon}
+                  onClick={handleClickOpen}
+                />
+              </Box>
             }
           />
           {open && timerDefinitionType === "timeDate" && (
-            <MuiPickersUtilsProvider utils={MomentUtils}>
-              <DateTimePicker
-                style={{ display: "none" }}
-                open={open}
-                onClose={handleClose}
-                value={getTimerValue()}
-                onChange={(value) => handleChange(value?.format())}
-              />
-            </MuiPickersUtilsProvider>
+            <Dialog
+              centered
+              backdrop
+              open={open}
+              className={classes.timeDateDialog}
+            >
+              <DialogHeader onCloseClick={handleClose}>
+                <h3>{translate("Timer definition")}</h3>
+              </DialogHeader>
+              <DialogContent className={classes.timeDateContent}>
+                <InputLabel style={{ fontSize: 14 }}>
+                  {translate("Select datetime")}
+                </InputLabel>
+                <Input
+                  type="datetime-local"
+                  value={moment(date).format("YYYY-MM-DDTHH:mm")}
+                  onChange={(e) => setDate(moment(e?.target?.value))}
+                  rounded
+                />
+              </DialogContent>
+              <DialogFooter>
+                <Button
+                  className={classes.button}
+                  variant="primary"
+                  onClick={() => {
+                    handleChange(moment(date).format("YYYY-MM-DDTHH:mm"));
+                    handleClose();
+                  }}
+                >
+                  OK
+                </Button>
+                <Button
+                  className={classes.button}
+                  variant="secondary"
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </Dialog>
           )}
           {open && timerDefinitionType !== "timeDate" && (
             <TimerBuilder

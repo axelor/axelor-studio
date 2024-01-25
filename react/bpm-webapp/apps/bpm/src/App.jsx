@@ -2,57 +2,67 @@ import React, { useEffect, useState } from "react";
 import BpmnModelerComponent from "./BPMN/Modeler/BpmnModeler";
 import BpmnViewerComponent from "./BPMN/Viewer/BpmnViewer";
 import DMNModeler from "./DMN/DMNModeler";
+import { useAppTheme } from "./custom-hooks/useAppTheme";
+import Loader from "./components/Loader";
+import { ThemeProvider } from "@axelor/ui";
 
 let isInstance = false;
 
+const getParams = () => {
+  const params = new URL(document.location).searchParams;
+  return {
+    isDMN: params.get("type") === "dmn",
+    instanceIds: params.get("instanceId"),
+    taskIds: params.get("taskIds"),
+    id: params.get("id"),
+  };
+};
+
 const fetchId = () => {
-  const regexBPMN = /[?&]id=([^&#]*)/g; // ?id=1
-  const regexBPMNTask = /[?&]taskIds=([^&#]*)/g; // ?id=1&taskIds=1,2
-  const regexBPMNInstance = /[?&]instanceId=([^&#]*)/g; // ?instanceId=1
-  const regexDMN = /[?&]type=dmn([^&#]*)/g; // ?type=dmn?id=1
-
-  const url = window.location.href;
-  let type = "bpmnModeler";
-
-  while (regexBPMN.exec(url)) {
-    type = "bpmnModeler";
-  }
-
-  while (regexBPMNTask.exec(url)) {
-    type = "bpmnViewer";
-  }
-
-  while (regexDMN.exec(url)) {
-    type = "dmnModeler";
-  }
-
-  while (regexBPMNInstance.exec(url)) {
-    type = "bpmnViewer";
+  const { isDMN, instanceIds, taskIds, id } = getParams();
+  if (isDMN) {
+    return "dmnModeler";
+  } else if (instanceIds) {
     isInstance = true;
+    return "bpmnViewer";
+  } else if (taskIds) {
+    return "bpmnViewer";
+  } else if (id) {
+    return "bpmnModeler";
   }
 
-  return type;
+  return "bpmnModeler";
 };
 
 function App() {
   const [type, setType] = useState(null);
+  const data = useAppTheme();
+  const { theme, options, loading } = data;
 
   useEffect(() => {
     let type = fetchId() || {};
     setType(type);
   }, []);
+
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
-    <React.Fragment>
-      {type === "dmnModeler" ? (
-        <DMNModeler />
-      ) : type === "bpmnModeler" ? (
-        <BpmnModelerComponent />
-      ) : type === "bpmnViewer" ? (
-        <BpmnViewerComponent isInstance={isInstance} />
-      ) : (
-        <React.Fragment></React.Fragment>
-      )}
-    </React.Fragment>
+    <ThemeProvider options={options} theme={theme}>
+      {(() => {
+        switch (type) {
+          case "dmnModeler":
+            return <DMNModeler />;
+          case "bpmnModeler":
+            return <BpmnModelerComponent />;
+          case "bpmnViewer":
+            return <BpmnViewerComponent isInstance={isInstance} />;
+          default:
+            return <BpmnModelerComponent />;
+        }
+      })()}
+    </ThemeProvider>
   );
 }
 export default App;

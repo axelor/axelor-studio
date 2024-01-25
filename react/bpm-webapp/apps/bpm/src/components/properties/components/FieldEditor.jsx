@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
-import { Close, ArrowForward } from "@material-ui/icons";
-import { IconButton, Tooltip } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 
 import { translate } from "../../../utils";
 import { Selection } from "../../expression-builder/components";
 import { getSubMetaField } from "../../../services/api";
 import { UI_TYPES } from "../../../DMN/constants";
+import Tooltip from "../../Tooltip";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles(() => ({
   MuiAutocompleteRoot: {
@@ -16,9 +17,6 @@ const useStyles = makeStyles(() => ({
   },
   iconButton: {
     marginRight: 10,
-  },
-  icon: {
-    color: "#0275d8",
   },
 }));
 
@@ -180,12 +178,7 @@ export default function FieldEditor({
         optionLabelKey="name"
         onChange={(value) => handleChange(value)}
         value={transformValue}
-        classes={{
-          root: classnames(
-            classes.MuiAutocompleteRoot,
-            classNames && classNames.root
-          ),
-        }}
+        classes={classnames(classes.MuiAutocompleteRoot, classNames)}
       />
       {hasManyValues &&
         relationModel &&
@@ -212,7 +205,14 @@ export default function FieldEditor({
                 className={classes.iconButton}
               >
                 <Tooltip title={translate("Remove sub field")}>
-                  <Close className={classes.icon} fontSize="small" />
+                  <MaterialIcon
+                    d="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    icon="close"
+                    color="body"
+                    fontSize={18}
+                  />
                 </Tooltip>
               </IconButton>
             )}
@@ -250,7 +250,11 @@ export default function FieldEditor({
                 className={classes.iconButton}
               >
                 <Tooltip title={translate("Add sub field")}>
-                  <ArrowForward className={classes.icon} fontSize="small" />
+                  <MaterialIcon
+                    icon="arrow_forward"
+                    color="body"
+                    fontSize={18}
+                  />
                 </Tooltip>
               </IconButton>
             )}

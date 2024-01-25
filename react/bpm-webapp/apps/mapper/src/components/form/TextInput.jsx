@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
+import { Input } from '@axelor/ui';
 import { translate } from '../../utils';
 
 function InputField({
@@ -31,7 +30,6 @@ function InputField({
       <Input
         style={{ width: '100%', ...style }}
         placeholder={translate(title)}
-        inputProps={{ 'aria-label': title }}
         name={name}
         onChange={(e) => setText(e.target.value)}
         onBlur={(e) => onBlur(e.target.value)}
@@ -40,23 +38,23 @@ function InputField({
         disabled={readOnly}
         value={text || ''}
         {...other}
-        error={error && showError}
+        invalid={error && showError}
       />
     );
   }
   return (
-    <TextField
+    <Input
       label={title || autoTitle}
       name={name}
       style={{ width: '100%', ...style }}
       onChange={(e) => setText(e.target.value)}
       onBlur={onBlur}
       autoComplete="off"
-      InputProps={{ readOnly, ...InputProps }}
+      readOnly={readOnly}
       value={text || ''}
       className={other.className}
       {...other}
-      error={error && showError}
+      invalid={error && showError}
     />
   );
 }

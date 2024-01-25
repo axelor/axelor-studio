@@ -2,14 +2,6 @@ import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
-import Edit from "@material-ui/icons/Edit";
-import {
-  Dialog,
-  DialogActions,
-  DialogTitle,
-  DialogContent,
-  Button,
-} from "@material-ui/core";
 import BpmnModeler from "bpmn-js/lib/Modeler";
 
 import { getWkfModels } from "../../../../../services/api";
@@ -19,39 +11,36 @@ import {
 } from "../../../../../components/properties/components";
 import Select from "../../../../../components/Select";
 import { translate } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
 import { makeStyles } from "@material-ui/core/styles";
+import {
+  Button,
+  InputLabel,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   dialogPaper: {
-    padding: 5,
     minWidth: 450,
     overflow: "auto",
   },
   button: {
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
+    minWidth: 64,
   },
   label: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   select: {
     width: "100%",
   },
   newIcon: {
-    color: "#58B423",
     cursor: "pointer",
   },
 }));
@@ -79,7 +68,8 @@ export default function MessageProps({
   messageEventDefinition,
   bpmnModdle,
   bpmnModeler,
-  id: wkfId
+  id: wkfId,
+  setDummyProperty = () => {},
 }) {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageOptions, setMessageOptions] = useState([]);
@@ -94,28 +84,30 @@ export default function MessageProps({
 
   const setInfo = async () => {
     let code;
-    const id = messageEventDefinition?.messageRef?.id
-    if (!id) return
-    const messageElement = findElementById(id)
-    code = messageElement?.$attrs["camunda:modelRefCode"]
-    if (!code) return
+    const id = messageEventDefinition?.messageRef?.id;
+    if (!id) return;
+    const messageElement = findElementById(id);
+    code = messageElement?.$attrs["camunda:modelRefCode"];
+    if (!code) return;
     const model = await getModels({
-      criteria: [{
-        fieldName: "code",
-        operator: "=",
-        value: code
-      }]
-    })
-    if (!model) return
+      criteria: [
+        {
+          fieldName: "code",
+          operator: "=",
+          value: code,
+        },
+      ],
+    });
+    if (!model) return;
     setMsgObj({
       wkf: model[0],
-      message: messageElement
-    })
-  }
+      message: messageElement,
+    });
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
-    setInfo()
+    setInfo();
   };
 
   const handleClose = () => {
@@ -131,19 +123,23 @@ export default function MessageProps({
     await bpmnModelerTest.importXML(catchMsgObj?.wkf?.diagramXml);
     const rootElements = bpmnModelerTest?.get("canvas")?.getRootElement()
       ?.businessObject?.$parent.rootElements;
-    return rootElements?.filter((r) => (!(r?.$attrs && r.$attrs["camunda:modelRefCode"]) && r.$type === "bpmn:Message"));
+    return rootElements?.filter(
+      (r) =>
+        !(r?.$attrs && r.$attrs["camunda:modelRefCode"]) &&
+        r.$type === "bpmn:Message"
+    );
   };
 
   function findElementById(id) {
-    if (!id) return
+    if (!id) return;
     const rootElements = bpmnModeler?.get("canvas")?.getRootElement()
       ?.businessObject?.$parent.rootElements;
-    return rootElements?.find((r) => (r.$type === "bpmn:Message" && r.id === id));
+    return rootElements?.find((r) => r.$type === "bpmn:Message" && r.id === id);
   }
 
   const addElement = ({ wkf, message: messageElement }) => {
-    if (!messageEventDefinition || !messageElement) return
-    const { id, name } = messageElement
+    if (!messageEventDefinition || !messageElement) return;
+    const { id, name } = messageElement;
     if (!findElementById(id)) {
       let rootElement =
         bpmnModeler &&
@@ -155,7 +151,10 @@ export default function MessageProps({
         value: name,
         id: id,
       };
-      setMessageOptions(messageEventDefinition => [...(messageEventDefinition || []), opt]);
+      setMessageOptions((messageEventDefinition) => [
+        ...(messageEventDefinition || []),
+        opt,
+      ]);
     }
     messageElement.$attrs["camunda:modelRefCode"] = wkf?.code;
     messageEventDefinition["messageRef"] = messageElement;
@@ -213,7 +212,9 @@ export default function MessageProps({
         bpmnModeler={bpmnModeler}
         defaultOptions={messageOptions}
         endAdornment={
-          <Edit
+          <MaterialIcon
+            icon="edit"
+            fontSize={16}
             className={classes.newIcon}
             onClick={() => {
               handleClickOpen();
@@ -305,57 +306,56 @@ export default function MessageProps({
         />
       )}
       {open && (
-        <Dialog
-          open={open}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              handleClose();
-            }
-          }}
-          aria-labelledby="form-dialog-title"
-          maxWidth="sm"
-          classes={{
-            paper: classes.dialogPaper,
-          }}
-        >
-          <DialogTitle id="form-dialog-title">
-            {translate("Select Message")}
-          </DialogTitle>
-          <DialogContent>
-            <label className={classes.label}>{translate("BPM model")}</label>
+        <Dialog open={open} centered backdrop className={classes.dialogPaper}>
+          <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
+            <h3>{translate("Select Message")}</h3>
+          </DialogHeader>
+          <DialogContent className={classes.dialogContent}>
+            <InputLabel className={classes.label}>
+              {translate("BPM model")}
+            </InputLabel>
             <Select
               className={classes.select}
               disableClearable={true}
               update={(value) => {
-                setMsgObj(msgObj => ({ ...(msgObj || {}), wkf: value }));
+                setMsgObj((msgObj) => ({ ...(msgObj || {}), wkf: value }));
               }}
               name="wkf"
               value={catchMsgObj?.wkf || ""}
               optionLabel="name"
               optionLabelSecondary="description"
               isLabel={false}
-              fetchMethod={(options = {}) => getModels({
-                ...options,
-                criteria: wkfId ? [
-                  {
-                    fieldName: "id",
-                    operator: "!=",
-                    value: wkfId
-                  },
-                  ...(options?.criteria || [])
-                ] : [...(options?.criteria || [])]
-              })}
+              fetchMethod={(options = {}) =>
+                getModels({
+                  ...options,
+                  criteria: wkfId
+                    ? [
+                        {
+                          fieldName: "id",
+                          operator: "!=",
+                          value: wkfId,
+                        },
+                        ...(options?.criteria || []),
+                      ]
+                    : [...(options?.criteria || [])],
+                })
+              }
               disableUnderline={true}
               isOptionEllipsis={true}
             />
-            {catchMsgObj?.wkf &&
+            {catchMsgObj?.wkf && (
               <>
-                <label className={classes.label}>{translate("Messages")}</label>
+                <InputLabel className={classes.label}>
+                  {translate("Messages")}
+                </InputLabel>
                 <Select
                   className={classes.select}
                   disableClearable={true}
                   update={(value) => {
-                    setMsgObj(msgObj => ({ ...(msgObj || {}), message: value }));
+                    setMsgObj((msgObj) => ({
+                      ...(msgObj || {}),
+                      message: value,
+                    }));
                   }}
                   name="message"
                   value={catchMsgObj?.message}
@@ -367,31 +367,28 @@ export default function MessageProps({
                   isOptionEllipsis={true}
                 />
               </>
-
-            }
+            )}
           </DialogContent>
-          <DialogActions>
+          <DialogFooter>
             <Button
               onClick={handleClose}
               className={classes.button}
-              color="primary"
-              variant="outlined"
+              variant="secondary"
             >
               {translate("Cancel")}
             </Button>
             <Button
               onClick={() => {
-                addElement(catchMsgObj)
+                addElement(catchMsgObj);
                 setMsgObj(null);
                 handleClose();
               }}
               className={classes.button}
-              color="primary"
-              variant="outlined"
+              variant="primary"
             >
               {translate("OK")}
             </Button>
-          </DialogActions>
+          </DialogFooter>
         </Dialog>
       )}
     </div>

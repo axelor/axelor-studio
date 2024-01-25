@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
 
 import TabPanel from "./TabPanel";
-import { Tab, Tabs } from "../../components/Tabs";
-import { TabScrollButtonComponent } from "../../components/properties/components";
 import { isGroupVisible, isDefinition } from "./extra.js";
-import { translate } from "../../utils";
+import { Box } from "@axelor/ui";
+import Tab from "./Tab";
 
 const useStyles = makeStyles((theme) => ({
   nodeTitle: {
     fontSize: "120%",
     fontWeight: "bolder",
+  },
+  navDisable: {
+    cursor: "default",
+    pointerEvents: "none",
+    opacity: 0.8,
+  },
+  tabContent: {
+    border: "var(--ax-theme-panel-border, 1px solid var(--bs-border-color))",
+    borderRadius:
+      "var(--ax-theme-panel-border-radius, var(--bs-border-radius))",
+    padding: "var(--ax-theme-panel-body-padding, .5rem)",
   },
 }));
 
@@ -21,7 +30,7 @@ export default function DrawerContent({
   tabValue,
   handleChange,
   isMenuActionDisable,
-  comments,
+  comments = 0,
   id,
   handleAdd,
   wkf,
@@ -36,67 +45,67 @@ export default function DrawerContent({
   changeColor,
   bpmnModeler,
   showError,
+  setDummyProperty,
 }) {
   const classes = useStyles();
+
+  const tabItems = useMemo(
+    () =>
+      tabs.map((t) => {
+        return t.id === "comments" && comments
+          ? { ...t, title: `${t.label} (${comments})` }
+          : { ...t, title: t.label };
+      }),
+    [tabs, comments]
+  );
+
+  const tab = tabItems && tabItems[tabValue];
+  const { groups = [], id: tabId = "" } = tab || {};
+
   return (
     <React.Fragment>
-      <Typography className={classes.nodeTitle}>
+      <Box color="body" className={classes.nodeTitle}>
         {selectedElement
           ? isDefinition(selectedElement)
             ? ""
-            : selectedElement.id
+            : selectedElement?.id
           : ""}
-      </Typography>
-      <Tabs
-        value={tabValue}
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        ScrollButtonComponent={TabScrollButtonComponent}
-      >
-        {tabs.map((tab, tabIndex) => (
-          <Tab
-            disabled={tab.id === "menu-action-tab" && isMenuActionDisable}
-            label={
-              tab.id === "comments" && comments
-                ? `${translate(tab.label)} (${comments})`
-                : translate(tab.label)
-            }
-            key={tabIndex}
-            data-tab={tab.id}
-          />
+      </Box>
+      <Tab
+        onItemClick={handleChange}
+        items={tabItems}
+        active={tabId}
+        isMenuActionDisable={isMenuActionDisable}
+        setDummyProperty={setDummyProperty}
+      />
+      <Box className={classes.tabContent}>
+        {groups.map((group, index) => (
+          <React.Fragment key={group.id}>
+            {isGroupVisible(group, selectedElement) && (
+              <TabPanel
+                group={group}
+                index={index}
+                selectedElement={selectedElement}
+                id={id}
+                handleAdd={handleAdd}
+                wkf={wkf}
+                reloadView={reloadView}
+                onSave={onSave}
+                openSnackbar={openSnackbar}
+                handleMenuActionTab={handleMenuActionTab}
+                updateCommentsCount={updateCommentsCount}
+                handleSnackbarClick={handleSnackbarClick}
+                enableStudioApp={enableStudioApp}
+                addNewVersion={addNewVersion}
+                changeColor={changeColor}
+                bpmnModeler={bpmnModeler}
+                showError={showError}
+                setDummyProperty={setDummyProperty}
+              />
+            )}
+          </React.Fragment>
         ))}
-      </Tabs>
-      <React.Fragment>
-        {tabs &&
-          tabs[tabValue] &&
-          tabs[tabValue].groups &&
-          tabs[tabValue].groups.map((group, index) => (
-            <React.Fragment key={group.id}>
-              {isGroupVisible(group, selectedElement) && (
-                <TabPanel
-                  group={group}
-                  index={index}
-                  selectedElement={selectedElement}
-                  id={id}
-                  handleAdd={handleAdd}
-                  wkf={wkf}
-                  reloadView={reloadView}
-                  onSave={onSave}
-                  openSnackbar={openSnackbar}
-                  handleMenuActionTab={handleMenuActionTab}
-                  updateCommentsCount={updateCommentsCount}
-                  handleSnackbarClick={handleSnackbarClick}
-                  enableStudioApp={enableStudioApp}
-                  addNewVersion={addNewVersion}
-                  changeColor={changeColor}
-                  bpmnModeler={bpmnModeler}
-                  showError={showError}
-                />
-              )}
-            </React.Fragment>
-          ))}
-      </React.Fragment>
+      </Box>
     </React.Fragment>
   );
 }

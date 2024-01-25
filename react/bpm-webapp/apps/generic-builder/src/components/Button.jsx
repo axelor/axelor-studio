@@ -1,22 +1,31 @@
 import React from 'react';
 import classnames from 'classnames';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { translate } from '../utils';
+import { Button } from '@axelor/ui';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 const useStyles = makeStyles(theme => ({
   button: {
     textTransform: 'none',
-    color: '#0275d8',
+    minWidth: 64,
+    maxWidth: 'fit-content',
   },
   buttonLabel: {
     maxHeight: 30,
   },
 }));
 
-function ButtonComp({ title, Icon, onClick, className, disabled = false }) {
+function ButtonComp({
+  title,
+  icon = '',
+  onClick,
+  className,
+  disabled = false,
+  variant = 'primary',
+}) {
   const classes = useStyles();
   if (!title) {
     return (
@@ -30,30 +39,32 @@ function ButtonComp({ title, Icon, onClick, className, disabled = false }) {
         <Icon fontSize="small" />
       </IconButton>
     );
-  }
-
-  if (!Icon) {
+  } else if (!icon) {
     return (
       <Button
         className={classnames(classes.button, classes.buttonLabel, className)}
         onClick={onClick}
         disabled={disabled}
+        variant={variant}
       >
         {translate(title)}
       </Button>
     );
-  }
-
-  return (
-    <Button
-      className={classnames(classes.button, classes.buttonLabel, className)}
-      endIcon={<Icon />}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {title}
-    </Button>
-  );
+  } else
+    return (
+      <Button
+        className={classnames(classes.button, classes.buttonLabel, className)}
+        onClick={onClick}
+        disabled={disabled}
+        variant={variant}
+        d="flex"
+        alignItems="center"
+        gap={4}
+        outline
+      >
+        {title} <MaterialIcon icon={icon} fontSize={18} />
+      </Button>
+    );
 }
 
 export default ButtonComp;

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import BpmnModeler from "bpmn-js/lib/Modeler";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
-import { Snackbar } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
 
 import Service from "../../services/Service";
 import Tooltip from "../../components/Tooltip";
@@ -11,10 +9,14 @@ import { download, getBool, translate } from "../../utils";
 import { getInfo, getTranslations } from "../../services/api";
 import { Logo } from "../../components/Logo";
 import { getElements } from "../Modeler/extra";
+import Alert from "../../components/Alert";
+
+import { Box, Button } from "@axelor/ui";
 
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import "../css/bpmn.css";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 let bpmnViewer = null;
 
@@ -275,28 +277,28 @@ function BpmnViewerComponent({ isInstance }) {
   const toolBarButtons = [
     {
       name: "DownloadSVG",
-      icon: <i className="fa fa-picture-o" aria-hidden="true"></i>,
+      icon: "photo",
       tooltipText: "Download SVG",
       onClick: saveSVG,
       classname: "zoom-buttons",
     },
     {
       name: "ZoomInIcon",
-      icon: <i className="fa fa-plus" aria-hidden="true"></i>,
+      icon: "add",
       tooltipText: "Zoom in",
       onClick: zoomIn,
       classname: "zoom-buttons",
     },
     {
       name: "zoomOut",
-      icon: <i className="fa fa-minus" aria-hidden="true"></i>,
+      icon: "remove",
       tooltipText: "Zoom out",
       onClick: zoomOut,
       classname: "zoom-buttons",
     },
     {
       name: "resetZoom",
-      icon: <i className="fa fa-refresh" aria-hidden="true"></i>,
+      icon: "refresh",
       tooltipText: "Reset zoom",
       onClick: resetZoom,
       classname: "zoom-buttons",
@@ -349,7 +351,7 @@ function BpmnViewerComponent({ isInstance }) {
       fetchInstanceDiagram(id, taskIds, activityCounts);
     } else {
       handleSnackbarClick(
-        "error",
+        "danger",
         (actionRes?.data && actionRes?.data[0]?.error?.message) ||
           actionRes?.data?.message ||
           actionRes?.data?.title ||
@@ -378,7 +380,7 @@ function BpmnViewerComponent({ isInstance }) {
       fetchInstanceDiagram(id, taskIds, activityCounts);
     } else {
       handleSnackbarClick(
-        "error",
+        "danger",
         (actionRes &&
           actionRes.data &&
           (actionRes.data.message || actionRes.data.title)) ||
@@ -458,16 +460,23 @@ function BpmnViewerComponent({ isInstance }) {
         }}
       >
         {toolBarButtons.map((btn) => (
-          <div key={btn.name} style={{ display: "flex" }}>
+          <Box d="flex" key={btn.name}>
             <Tooltip
               title={btn.tooltipText}
               children={
-                <button onClick={btn.onClick} className={btn.classname}>
-                  {btn.icon}
-                </button>
+                <Button
+                  border
+                  color="body"
+                  bgColor="body"
+                  variant="light"
+                  onClick={btn.onClick}
+                  className={btn.classname}
+                >
+                  <MaterialIcon icon={btn.icon} fontSize={20} />
+                </Button>
               }
             />
-          </div>
+          </Box>
         ))}
         {isInstance && (
           <React.Fragment>
@@ -475,9 +484,14 @@ function BpmnViewerComponent({ isInstance }) {
               <Tooltip
                 title="Restart"
                 children={
-                  <button onClick={restartBefore} className="restart-button">
+                  <Button
+                    variant="light"
+                    border
+                    onClick={restartBefore}
+                    className="restart-button"
+                  >
                     {translate("Restart")}
-                  </button>
+                  </Button>
                 }
               />
             )}
@@ -496,21 +510,12 @@ function BpmnViewerComponent({ isInstance }) {
       </div>
       <div id="canvas-task"></div>
       {openSnackbar.open && (
-        <Snackbar
+        <Alert
           open={openSnackbar.open}
-          autoHideDuration={2000}
+          messageType={openSnackbar.messageType}
+          message={openSnackbar.message}
           onClose={handleSnackbarClose}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            onClose={handleSnackbarClose}
-            className="snackbarAlert"
-            severity={openSnackbar.messageType}
-          >
-            {translate(openSnackbar.message)}
-          </Alert>
-        </Snackbar>
+        />
       )}
       <Logo />
     </React.Fragment>

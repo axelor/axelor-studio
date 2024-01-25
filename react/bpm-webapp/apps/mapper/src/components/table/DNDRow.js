@@ -8,8 +8,8 @@ const dndItemTypes = {
 
 const useStyles = makeStyles({
   row: {
-    border: '1px dashed gray',
-    backgroundColor: 'white !important',
+    border: '1px dashed var(--bs-border-color)',
+    backgroundColor: 'var(--bs-body-bg) !important',
   },
 });
 

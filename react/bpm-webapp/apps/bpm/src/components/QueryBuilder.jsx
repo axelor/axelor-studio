@@ -1,28 +1,40 @@
 import React from "react";
-import { Button, Dialog, DialogTitle, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { translate } from "../utils";
+import { Button, Dialog, DialogHeader, DialogContent } from "@axelor/ui";
 
 import ExpressionBuilder from "generic-builder/src/expression-builder";
 
 const useStyles = makeStyles((theme) => ({
-  dialogPaper: {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    overflowY: "auto",
-    resize: "both",
-    minWidth: "70%",
-    height: 650,
+  dialog: {
+    margin: 20,
+    display: "flex",
+    maxHeight: "calc(100% - 40px)",
+    maxWidth: "calc(100% - 40px)",
+    "& > div": {
+      maxWidth: "100%",
+      minWidth: "70%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      "& > div": {
+        maxHeight: "100%",
+        resize: "both",
+        overflow: "auto",
+        minWidth: "80%",
+        minHeight: "80%",
+      },
+    },
+  },
+  dialogContent: {
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
   },
   cancelButton: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#fff",
-    borderColor: "#cccccc",
-    textTransform: "capitalize",
-    color: "#333333",
-    "&:hover": {
-      backgroundColor: "#e6e6e6",
-      borderColor: "#adadad",
-    },
+    textTransform: "none",
   },
 }));
 
@@ -47,43 +59,35 @@ function QueryBuilder({
     isParameterShow: false,
   };
   return (
-    <Dialog
-      onClose={(event, reason) => {
-        if (reason !== "backdropClick") {
-          close();
-        }
-      }}
-      aria-labelledby="simple-dialog-title"
-      open={open}
-      classes={{
-        paper: classes.dialogPaper,
-      }}
-    >
-      <DialogTitle id="simple-dialog-title">{translate(title)}</DialogTitle>
-      {ExpressionBuilder ? (
-        <ExpressionBuilder
-          parameters={parameters}
-          isBPMN={true}
-          isAllowButtons={true}
-          close={close}
-          setProperty={setProperty}
-          getExpression={getExpression}
-          defaultModel={defaultModel}
-          fetchModels={fetchModels}
-          dialogActionButton={
-            <Button
-              onClick={close}
-              variant="contained"
-              size="small"
-              className={classes.cancelButton}
-            >
-              {translate("Cancel")}
-            </Button>
-          }
-        />
-      ) : (
-        <ExpressionBuilderDummy />
-      )}
+    <Dialog backdrop open={open} className={classes.dialog}>
+      <DialogHeader onCloseClick={close}>
+        <h3>{translate(title)}</h3>
+      </DialogHeader>
+      <DialogContent className={classes.dialogContent}>
+        {ExpressionBuilder ? (
+          <ExpressionBuilder
+            parameters={parameters}
+            isBPMN={true}
+            isAllowButtons={true}
+            close={close}
+            setProperty={setProperty}
+            getExpression={getExpression}
+            defaultModel={defaultModel}
+            fetchModels={fetchModels}
+            dialogActionButton={
+              <Button
+                onClick={close}
+                className={classes.cancelButton}
+                variant="secondary"
+              >
+                {translate("Cancel")}
+              </Button>
+            }
+          />
+        ) : (
+          <ExpressionBuilderDummy />
+        )}
+      </DialogContent>
     </Dialog>
   );
 }

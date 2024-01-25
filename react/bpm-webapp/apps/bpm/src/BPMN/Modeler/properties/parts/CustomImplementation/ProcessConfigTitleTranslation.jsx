@@ -1,50 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Table,
-  TableContainer,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableBody,
-  Paper,
-  IconButton,
-} from "@material-ui/core";
-import { Close, Add } from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
 
 import { getTranslations } from "../../../../../services/api";
 import { TextField } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
+
+import {
+  Box,
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "#666",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-    borderTop: "1px dotted #ccc",
-  },
-  tableCell: {
-    textAlign: "left",
-  },
   tableHead: {
     fontWeight: 600,
-    fontSize: 12,
-    textAlign: "left",
+    fontSize: 14,
+    textAlign: "center",
   },
   iconButton: {
     margin: "5px 0px 5px 5px",
     borderRadius: 0,
     padding: 2,
-    color: "black",
+    color: "inherit !important",
     width: "fit-content",
     border: "1px solid #ccc",
   },
@@ -53,22 +35,11 @@ const useStyles = makeStyles({
   },
   table: {
     margin: "10px 0px",
-    background: "#F8F8F8",
+    overflow: "auto",
+    maxHeight: "65vh",
   },
   textRoot: {
     marginTop: 0,
-  },
-  confirm: {
-    color: "#727272",
-    width: "fit-content",
-    border: "1px solid #ccc",
-    height: 23,
-    fontSize: 12,
-    marginLeft: 5,
-    borderRadius: 0,
-    textTransform: "none",
-    marginBottom: 10,
-    padding: "0px 10px !important",
   },
 });
 
@@ -77,6 +48,7 @@ export default function ProcessConfigTitleTranslation({
   element,
   onChange,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [translations, setTranslations] = useState(null);
   const [removedTranslations, setRemovedTranslations] = useState(null);
@@ -138,22 +110,19 @@ export default function ProcessConfigTitleTranslation({
   }, [configKey]);
 
   return (
-    <div>
+    <Box w={100}>
       <React.Fragment>
-        <TableContainer component={Paper} className={classes.table}>
-          <Table size="small" aria-label="a dense table">
+        <Box bgColor="body" shadow rounded={2} className={classes.table}>
+          <Table size="sm" aria-label="a dense table">
             <TableHead>
               <TableRow>
-                <TableCell className={classes.tableHead} align="center">
+                <TableCell className={classes.tableHead}>
                   {translate("Translation")}
                 </TableCell>
-                <TableCell className={classes.tableHead} align="center">
+                <TableCell className={classes.tableHead}>
                   {translate("Language")} ({translate("Hint")}: en, fr)
                 </TableCell>
-                <TableCell
-                  className={classes.tableHead}
-                  align="center"
-                ></TableCell>
+                <TableCell className={classes.tableHead}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -161,12 +130,7 @@ export default function ProcessConfigTitleTranslation({
                 translations.length > 0 &&
                 translations.map((translateKey, index) => (
                   <TableRow key={index}>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      align="center"
-                      className={classes.tableCell}
-                    >
+                    <TableCell as="th" textAlign="center">
                       <TextField
                         rootClass={classes.textRoot}
                         element={element}
@@ -191,12 +155,7 @@ export default function ProcessConfigTitleTranslation({
                         isLabel={false}
                       />
                     </TableCell>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      align="center"
-                      className={classes.tableCell}
-                    >
+                    <TableCell as="th" textAlign="center">
                       <TextField
                         rootClass={classes.textRoot}
                         element={element}
@@ -222,37 +181,38 @@ export default function ProcessConfigTitleTranslation({
                         isLabel={false}
                       />
                     </TableCell>
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      align="center"
-                      className={classes.tableCell}
-                    >
-                      <IconButton
-                        className={classes.iconButton}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeTranslation(index);
-                        }}
-                      >
-                        <Close className={classes.clear} />
-                      </IconButton>
+                    <TableCell as="th" textAlign="center">
+                      <Box color="body">
+                        <IconButton
+                          className={classes.iconButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeTranslation(index);
+                          }}
+                        >
+                          <MaterialIcon
+                            icon="close"
+                            fontSize={16}
+                            className={classes.clear}
+                          />
+                        </IconButton>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </Box>
       </React.Fragment>
-      <div style={{ display: "flex", alignItems: "center" }}>
+      <Box d="flex" alignItems="center" color="body">
         <IconButton
           className={classes.iconButton}
           onClick={addTranslation}
           disabled={!configKey}
         >
-          <Add fontSize="small" />
+          <MaterialIcon icon="add" fontSize={14} />
         </IconButton>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

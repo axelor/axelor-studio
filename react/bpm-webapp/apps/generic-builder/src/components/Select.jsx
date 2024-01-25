@@ -1,23 +1,19 @@
 import React from 'react';
-import classnames from 'classnames';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-
+import { Select, Box } from '@axelor/ui';
 import { makeStyles } from '@material-ui/core/styles';
+
 import { translate } from '../utils';
+import classNames from 'classnames';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
+const useStyles = makeStyles({
   select: {
-    width: '150px',
+    '& > div': {
+      '& > input': {
+        width: '100%',
+      },
+    },
   },
-}));
-
+});
 export default function Selection({
   name,
   value = '',
@@ -29,26 +25,28 @@ export default function Selection({
   ...rest
 }) {
   const classes = useStyles();
+
   return (
-    <FormControl className={classnames(classes.formControl, className)}>
-      <InputLabel>{translate(title)}</InputLabel>
+    <Box d="flex" flexDirection="column">
       <Select
-        disableUnderline={disableUnderline}
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={value => onChange(value)}
         name={name}
-        style={{ marginRight: 8 }}
-        classes={{ select: classnames(classes.select, className) }}
+        options={options}
+        customOptions={
+          options?.length === 0
+            ? [{ title: 'No options', key: 'no options' }]
+            : []
+        }
+        placeholder={translate(title) || ''}
+        optionLabel={option => option.title}
+        optionKey={option => option.name}
+        optionName={option => option.name}
+        style={{ marginRight: 8, minWidth: 150 }}
+        className={classNames(className, classes.select)}
+        clearIcon={false}
         {...rest}
-      >
-        {options &&
-          Array.isArray(options) &&
-          options.map(({ name, title }, index) => (
-            <MenuItem value={name} key={index}>
-              {title}
-            </MenuItem>
-          ))}
-      </Select>
-    </FormControl>
+      />
+    </Box>
   );
 }

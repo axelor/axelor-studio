@@ -2,16 +2,6 @@ import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { isEventSubProcess } from "bpmn-js/lib/util/DiUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
-import { Edit } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 import QueryBuilder from "../../../../../components/QueryBuilder";
@@ -20,18 +10,29 @@ import {
   TextField,
   Textbox,
 } from "../../../../../components/properties/components";
+import Tooltip from "../../../../../components/Tooltip";
 import { translate, getBool } from "../../../../../utils";
 import { fetchModels } from "../../../../../services/api";
 import Select from "../../../../../components/Select";
 import { TASK_LISTENER_EVENT_TYPE_OPTION } from "../../../constants";
-import { setDummyProperty } from "./utils";
+
+import {
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Button,
+  InputLabel,
+  Box,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const conditionType = "script";
 
 const useStyles = makeStyles((theme) => ({
   newIcon: {
-    color: "#58B423",
     marginLeft: 5,
+    cursor: "pointer",
   },
   new: {
     cursor: "pointer",
@@ -42,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginBottom: "-8px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   expressionBuilder: {
     display: "flex",
@@ -54,21 +55,17 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    color: "white",
     textTransform: "none",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
+  },
+  content: {
+    padding: "8px 24px",
+    fontSize: 16,
   },
   scriptDialog: {
     width: "100%",
     height: "100%",
-    maxWidth: "100%",
   },
 }));
 
@@ -77,6 +74,7 @@ export default function ConditionalEventProps({
   conditionalEventDefinition,
   bpmnFactory,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [open, setOpen] = useState(false);
   const [openAlert, setAlert] = useState(false);
@@ -248,7 +246,9 @@ export default function ConditionalEventProps({
         is(element, "bpmn:StartEvent") && !isEventSubProcess(element.parent)
       ) && (
         <>
-          <label className={classes.label}>{translate("Variable event")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Variable event")}
+          </InputLabel>
           <Select
             multiple
             options={TASK_LISTENER_EVENT_TYPE_OPTION}
@@ -300,11 +300,11 @@ export default function ConditionalEventProps({
           }}
         />
         {conditionalEventDefinition && (
-          <div className={classes.new}>
+          <Box color="body" className={classes.new}>
             <Tooltip title="Enable" aria-label="enable">
               <i
                 className="fa fa-code"
-                style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
+                style={{ fontSize: 18, marginLeft: 5 }}
                 onClick={() => {
                   if (readOnly) {
                     setAlertMessage(
@@ -319,7 +319,12 @@ export default function ConditionalEventProps({
                 }}
               ></i>
             </Tooltip>
-            <Edit className={classes.newIcon} onClick={handleClickOpen} />
+            <MaterialIcon
+              icon="edit"
+              fontSize={18}
+              className={classes.newIcon}
+              onClick={handleClickOpen}
+            />
             {open && (
               <QueryBuilder
                 open={open}
@@ -330,7 +335,7 @@ export default function ConditionalEventProps({
                 fetchModels={() => fetchModels(element)}
               />
             )}
-          </div>
+          </Box>
         )}
       </div>
       {openScriptDialog && (
@@ -357,7 +362,7 @@ export default function ConditionalEventProps({
                 label: translate("Script"),
                 modelProperty: "script",
                 get: function () {
-                  return getCondition();
+                  return { script };
                 },
                 set: function (e, values) {
                   setScript(values?.script);
@@ -368,40 +373,27 @@ export default function ConditionalEventProps({
         />
       )}
       {openAlert && (
-        <Dialog
-          open={openAlert}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              setAlert(false);
-            }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">
-            {translate(alertTitle)}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {translate(alertMessage)}
-            </DialogContentText>
+        <Dialog open={openAlert} backdrop centered className={classes.dialog}>
+          <DialogHeader onCloseClick={() => setAlert(false)}>
+            <h3>{translate(alertTitle)}</h3>
+          </DialogHeader>
+          <DialogContent className={classes.content}>
+            {translate(alertMessage)}
           </DialogContent>
-          <DialogActions>
+          <DialogFooter>
             <Button
               onClick={() => {
                 setAlert(false);
                 setAlertMessage(null);
                 setAlertTitle(null);
                 setReadOnly(false);
+                setScript(getCondition()?.script);
                 setValue("scriptValue")(element, { scriptValue: undefined });
                 setValue("combinator")(element, { combinator: undefined });
                 setScript(getCondition()?.script);
                 setOpenScriptDialog(true);
               }}
-              color="primary"
+              variant="primary"
               className={classes.save}
             >
               {translate("OK")}
@@ -410,12 +402,12 @@ export default function ConditionalEventProps({
               onClick={() => {
                 setAlert(false);
               }}
-              color="primary"
+              variant="secondary"
               className={classes.save}
             >
               {translate("Cancel")}
             </Button>
-          </DialogActions>
+          </DialogFooter>
         </Dialog>
       )}
     </div>
