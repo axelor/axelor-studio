@@ -44,8 +44,7 @@ public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
     StudioApp studioApp = metaJsonField.getStudioApp();
     if (studioApp != null) {
       metaJsonField.setIncludeIf("__config__.app?.isApp('" + studioApp.getCode() + "')");
-    }
-    else{
+    } else {
       metaJsonField.setIncludeIf(null);
     }
     jsonFieldService.updateSelection(metaJsonField);
