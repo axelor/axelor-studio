@@ -1,5 +1,0 @@
----
-title: "BPM : Allow auto-import for process in config app"
-type: feature
-description: |
-  Add a new configuration to import process from sources and deploy them while deploying the application

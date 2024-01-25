@@ -1,5 +1,0 @@
----
-title: "APP BUILDER : A menu can't have itself as a parent"
-type: fix
-description : |
-  When using the menu builder a menu can't have itself as a parent.

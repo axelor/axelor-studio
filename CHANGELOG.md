@@ -1,3 +1,120 @@
+## 2.0.0 (2024-01-25)
+
+#### Feature
+
+* BPM: Align bpm studio groovy syntax with AOP groovy syntax
+* Web service: Track Webservices calls
+* Studio : Go to studio from grid or form
+* BPM : Add support of actions in service task
+* BPM : Support timer event with multi tenant
+* BPM: Pop-up on script
+
+  <details>
+  
+  Add a feature to open Script on a popup to edit in a more friendly way the code written.
+  
+  </details>
+
+* WS Connector: Add a new object for request order
+* StudioAction : Domain can't be longer than 255 characters
+* BPM : Get a visual feedback for the logs
+
+  <details>
+  
+  Get a maximum information when an error occurs in the BPM execution
+  
+  </details>
+
+* Menu Builder: Add view parameters
+* AppBuilder : Move app menus to main app configuration
+* BPM: Change The API endpoint to get and post the requests selected in the connector script
+* App Builder : Allow to migrate instances separately
+* APP BUILDER : Display 'code' field in select options of sourceVersion & targetVersion
+* BPM: Optimize available display
+* Studio : Change the studio react component path
+* BPM : Allow auto-import for process in config app
+
+  <details>
+  
+  Add a new configuration to import process from sources and deploy them while deploying the application
+  
+  </details>
+
+* BPM : Allow process instance modification in the runtime
+* Studio : migrate studio to axelor-ui
+* App builder : Migrate BPM & DMN & Studio to axelor-ui
+
+  <details>
+  
+  Migrate BPM designer to Axelor-ui template 
+  Migrate DMN editor to Axelor-ui template
+  Migrate Studio editor to Axelor-ui template
+  
+  </details>
+
+#### Fix
+
+* Remove user task conditions size limitation
+* App Builder : Fix all old bad practices that remains
+* AppBuilder : Fix French translations of studio, bpm, etc
+* Studio : Code optimisation
+* BPM : Fix french translations for studio bpm
+* Improve error message data to clickable link
+* BPM: Error when importing new BPM
+* WS Builder: Limited size of the field URL in WsRequest object
+* BPM: Ids in readonly for deployed BPM models
+* BPM: Newly inserted element is selected but its properties not
+* Menu Transformation is also called Request
+* WS Builder : Headers issue - Change the API end-point used to get the key-value-headers
+* WS Builder : Issue with authenticate button , the authentication done but the check box doesn't change to true
+* STUDIO MENU : Remove the top Menu for the AOP V7 version
+* StudioDashlet : colSpan not supported for AOP 7
+* APP BUILDER : Update custom view templates
+* BPM : Result Variable is not displayed after process deployment
+* APP BUILDER : Studio shouldn't be accessible from any view
+
+  <details>
+  
+  Added magic-wand icon to Open studio button
+  
+  </details>
+
+* BPM : Code editing popup not fully implemented
+
+  <details>
+  
+  The code editing popup should be available everywhere in the builder when a script can be used
+  
+  </details>
+
+* App Builder : Fix WkfInstanceMigrationHistory typos
+* App Builder : Duplicate StudioActionView on every save
+* BPM : Correct conditional events
+* BPM : Script dialog bug
+* BPM : Unable to access some models when configuring BPM process in studio
+* BPM : Non intuitive behavior on the DMN
+* APP BUILDER : Translations are not working in react views
+* BPM : Fix dirty tab feature
+* BPM : opening linked DMN view issue
+
+  <details>
+  
+  Linked DMN should be selected and loaded while opened from BPM
+  
+  </details>
+
+* STUDIO : Studio is crashing over tab removal
+* Allow the user to get messages from other models
+* APP BUILDER : A menu can't have itself as a parent
+
+  <details>
+  
+  When using the menu builder a menu can't have itself as a parent.
+  
+  </details>
+
+* App Builder : Migrate icons from font awesome to bootstrap icons
+
 ## 1.3.4 (2023-11-03)
 
 #### Fixed
