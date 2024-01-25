@@ -13,7 +13,7 @@ NOCOLOR="\033[0m"
 target_branch="main"
 
 usage() {
-  printf "Usage : ./release [OPTION] TAG\n\n"
+  printf "Usage : ./release [OPTION]\n\n"
   printf "This script does following steps :\n"
   printf "   * Update CHANGELOG.md\n"
   printf "   * Create commit release and tag\n"
@@ -62,7 +62,7 @@ if [[ ! "$response" =~ ^([yY])$ ]]; then
 fi
 
 stable_branch=$(echo "$tag" | sed -Ene's#(0|[1-9][0-9]*)\.(0|[1-9][0-9]*).*#\1.\2#p')
-repo_url=$(echo "$($git_path remote -v | grep -m1 '^origin')" | sed -Ene's#.*(git@[^[:space:]]*).*#\1#p' | sed -Ene's#git@(.*):(.*).git#https://\1/\2#p')
+repo_url=$($git_path remote -v | grep -m1 '^origin' | sed -Ene's#.*(git@[^[:space:]]*).*#\1#p' | sed -Ene's#git@(.*):(.*).git#https://\1/\2#p')
 
 ensure_on_target_branch() {
   if [ "$($git_path symbolic-ref --short HEAD)" != "$target_branch" ]; then
@@ -75,33 +75,26 @@ ensure_on_target_branch() {
 require_clean_work_tree() {
   $git_path rev-parse --verify HEAD >/dev/null || exit 1
   $git_path update-index -q --ignore-submodules --refresh
-  err=0
 
   if ! $git_path diff-files --quiet --ignore-submodules; then
     echo >&2 "You have unstaged changes."
-    err=1
   fi
 
   if ! $git_path diff-index --cached --quiet --ignore-submodules HEAD --; then
     echo >&2 "Your index contains uncommitted changes."
-    err=1
   fi
 
   if [ -n "$($git_path status --porcelain)" ]; then
     echo >&2 "You have untracked files."
-    err=1
-  fi
-
-  if test $err = 1; then
-    test -n "$2" && echo "$2" >&2
-    exit 1
   fi
 }
 
 ensure_tag_dont_exist() {
-  local remote=$($git_path ls-remote --tags origin $tag)
-  local local=$($git_path tag -l $tag)
-  if [ ! -z "$remote" ] || [ ! -z "$local" ]; then
+  local remote
+  local local
+  remote=$($git_path ls-remote --tags origin "$tag")
+  local=$($git_path tag -l "$tag")
+  if [ -n "$remote" ] || [ -n "$local" ]; then
     echo "Tag '$tag' exist on remote or on local"
     exit 1
   fi
@@ -141,9 +134,10 @@ prepare() {
 
   if [[ -f "CHANGELOG.md" ]]; then
     print_sub_step "  * Update CHANGELOG.md"
-    # TODO: Add changelog generation + version change sed
+    ./gradlew generateChangelog -PfinalRelease >/dev/null
   fi
 }
+
 
 release_source() {
   print_step "Pushing release $tag..."
@@ -154,11 +148,11 @@ release_source() {
   $git_path commit --quiet --allow-empty --signoff --message="Release $tag"
 
   print_sub_step "  * Create tag"
-  $git_path tag --annotate $tag --message="Release $tag"
+  $git_path tag --annotate "$tag" --message="Release $tag"
 
   print_sub_step "  * Push release commit and tag"
-  $git_path push --quiet origin $target_branch
-  $git_path push --quiet origin $tag
+  $git_path push --quiet origin "$target_branch"
+  $git_path push --quiet origin "$tag"
 }
 
 merge_in_stable() {
@@ -168,24 +162,25 @@ merge_in_stable() {
 
   print_step "Merging into stable branch $stable_branch..."
 
-  local existed_in_local=$($git_path branch --list $stable_branch)
+  local existed_in_local
+  existed_in_local=$($git_path branch --list "$stable_branch")
 
   if [[ -z ${existed_in_local} ]]; then
     print_sub_step "  * Creating stable branch"
-    $git_path checkout --quiet -b $stable_branch
+    $git_path checkout --quiet -b "$stable_branch"
   else
     print_sub_step "  * Checkout stable branch and reset from remote"
-    $git_path checkout --quiet $stable_branch
-    $git_path reset --quiet --hard origin/$stable_branch
+    $git_path checkout --quiet "$stable_branch"
+    $git_path reset --quiet --hard "origin/$stable_branch"
   fi
 
   print_sub_step "  * Merge release on stable branch"
-  $git_path merge --quiet --no-edit $target_branch
+  $git_path merge --quiet --no-edit "$target_branch"
 
   print_sub_step "  * Push stable branch"
-  $git_path push --quiet origin $stable_branch
+  $git_path push --quiet origin "$stable_branch"
 
-  $git_path checkout --quiet $target_branch
+  $git_path checkout --quiet "$target_branch"
 }
 
 check_prerequisites
