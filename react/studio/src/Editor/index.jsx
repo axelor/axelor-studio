@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from "react"
-import CircularProgress from "@mui/material/CircularProgress"
-
+import { Box, CircularProgress } from "@axelor/ui"
 import { Widget, Form } from "../components"
 import { IDS, MODEL_TYPE } from "../constants"
 import { useStore } from "../store/context"
@@ -32,43 +31,37 @@ function FormViewUI({ design }) {
 	}, [customFieldWidgetsExists])
 
 	return (
-		<div
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				alignSelf: "baseline",
-			}}
-		>
-			<div
+		<Box alignSelf="baseline" d="flex" flexDirection="column">
+			<Box
+				d="flex"
+				flexDirection="column"
+				pos="relative"
 				style={{
-					display: "flex",
-					flexDirection: "column",
 					height: "fit-content",
-					position: "relative",
 					...(!formInfo && !customFieldWidgets ? { minHeight: "24vh" } : {}),
 				}}
 				id="form-view"
 			>
 				{loader && (
-					<div
+					<Box
+						d="flex"
+						flexDirection="column"
+						justifyContent="center"
+						alignItems="center"
+						border={0}
+						bg="body-tertiary"
 						style={{
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
 							height: "100%",
 							position: "absolute",
 							zIndex: 1000,
-							border: "0px",
-							backgroundColor: "rgba(0,0,0,0.05)",
 							bottom: 0,
 							top: 0,
 							left: 0,
 							right: 0,
-							alignItems: "center",
 						}}
 					>
-						<CircularProgress />
-					</div>
+						<CircularProgress size={40} indeterminate />
+					</Box>
 				)}
 				{widgets && (
 					<Widget
@@ -119,8 +112,8 @@ function FormViewUI({ design }) {
 						/>
 					</div>
 				)}
-			</div>
-		</div>
+			</Box>
+		</Box>
 	)
 }
 

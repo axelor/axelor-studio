@@ -197,7 +197,7 @@ export const Sequence = IntegerField({
 /** Roles Fields */
 export const Roles = ObjectSelectionField({
   name: "roles",
-  title: "Roles",
+  title: " ",
   ref: "com.axelor.auth.db.Role",
   multiple: true,
   dependModelType: MODEL_TYPE.CUSTOM,
@@ -206,7 +206,7 @@ export const Roles = ObjectSelectionField({
 /** ValueExpr Fields */
 export const ValueExpression = {
   name: "valueExpr",
-  title: "Value expr",
+  title: " ",
   type: "text",
   dependModelType: MODEL_TYPE.CUSTOM,
 }

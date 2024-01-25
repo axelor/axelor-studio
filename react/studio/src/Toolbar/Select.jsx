@@ -1,8 +1,6 @@
 import React, { useState } from "react"
-import { TextField } from "@mui/material"
-import Autocomplete from "@mui/material/Autocomplete"
+import { Select, ClickAwayListener } from "@axelor/ui"
 import _ from "lodash"
-
 import AxelorService from "../services/api"
 import { useDebounceEffect } from "../common.func"
 import SearchView from "../components/SearchView"
@@ -10,7 +8,7 @@ import { translate } from "../utils"
 import { SHOW_MORE } from "../constants"
 import { useStoreState } from "../store/context"
 
-function Select({
+function Selection({
 	value,
 	label,
 	model,
@@ -23,20 +21,21 @@ function Select({
 	modelType,
 	onClose = () => {},
 	handleHighlightChange = () => {},
-	handleOutsideClick = () => {},
 	getOptionSelected = (option, value) => option.name === value.name,
 	open: showDropDown,
 	autoFocus,
+	disableClearable,
 	...props
 }) {
 	const { loader } = useStoreState()
-	const [open, setOpen] = useState(false)
+	const [open, setOpen] = useState(showDropDown ?? false)
 	const [searchText, setSearchText] = useState("")
 	const [loading, setLoading] = useState(false)
 	const [list, setList] = useState([])
 	const [searchMore, setSearchMore] = useState(false)
 	const [offset, setOffset] = useState(0)
 	const [total, setTotal] = useState(0)
+	const inputRef = React.useRef(null)
 
 	const localLimit = searchMore ? 6 : limit
 
@@ -71,7 +70,7 @@ function Select({
 					criteria.push({
 						fieldName: "name",
 						operator: "like",
-						value: searchText,
+						value: searchText || "",
 					})
 				}
 				const data = {
@@ -135,8 +134,9 @@ function Select({
 	}, [options])
 
 	const handleChange = React.useCallback(
-		(e, value) => {
+		(value) => {
 			if (value?.id === "studio_show_More_View") {
+				setSearchText("")
 				setSearchMore(true)
 			} else {
 				onChange(value)
@@ -156,138 +156,119 @@ function Select({
 		setSearchText("")
 	}, [])
 
+	const customOptions = React.useMemo(() => {
+		const optionList = options || list
+		if (loading) {
+			return [
+				{
+					key: "loading",
+					title: <span>{translate("Loading...")}</span>,
+					disabled: true,
+				},
+			]
+		}
+
+		if (!optionList.length) {
+			return [
+				{
+					key: "no-options",
+					title: <span>{translate("No options")}</span>,
+					disabled: true,
+				},
+			]
+		}
+		return []
+	}, [options, list, loading])
+
+	const findOptionLabel = (option) =>
+		typeof option === "string"
+			? option
+			: props.getOptionLabel
+			? props.getOptionLabel(option)
+			: option.name
+
 	useDebounceEffect(debounceHandler, 500, debounceInitializer)
+
+	//Temporary way to solve onBlur problem
+	React.useEffect(() => {
+		const handleMouseDownOutside = (event) => {
+			// Check if the mouse down is outside the listbox and combobox
+			const option = document.querySelector('[role="listbox"]')
+			const selection = document.querySelector('[role="combobox"]')
+			if (
+				option &&
+				!option.contains(event.target) &&
+				selection &&
+				!selection.contains(event.target)
+			) {
+				setOpen(false)
+			}
+		}
+		if (open) {
+			document.addEventListener("mousedown", handleMouseDownOutside)
+			return () => {
+				document.removeEventListener("mousedown", handleMouseDownOutside)
+			}
+		}
+	}, [open])
 
 	return (
 		<React.Fragment>
-			<Autocomplete
-				sx={{
-					marginLeft: 1,
-					"& .MuiInputBase-root": {
-						color: "#FFFFFF",
-					},
-					"& .Mui-disabled": { WebkitTextFillColor: "#959697 " },
-				}}
-				componentsProps={{
-					paper: {
-						sx: {
-							backgroundColor: "rgb(41, 56, 70) ",
-							WebkitTextFillColor: "#e7eaec ",
-							fontSize: 13,
-							"& ul, .MuiAutocomplete-noOptions , .MuiAutocomplete-loading": {
-								backgroundColor: "rgb(41, 56, 70) !important",
-								".modern-dark &": {
-									backgroundColor: "#1b1b1b !important",
-								},
-							},
-							"& li, .MuiAutocomplete-noOptions, .MuiAutocomplete-loading": {
-								color: "#e7eaec !important",
-								backgroundColor: "rgb(41, 56, 70) !important",
-								".modern-dark &": {
-									backgroundColor: "#1b1b1b !important",
-								},
-							},
-							"& li:hover, .MuiAutocomplete-noOptions, .MuiAutocomplete-loading":
-								{
-									color: "#e7eaec !important",
-									backgroundColor: "#2f4050 !important",
-									".modern-dark &": {
-										backgroundColor: "#323232 !important",
-									},
-								},
-							"& .Mui-focused": {
-								backgroundColor: "#2f4050 !important",
-								".modern-dark &": {
-									backgroundColor: "#323232 !important",
-								},
-							},
-						},
-					},
-					clearIndicator: {
-						sx: {
-							color: "#e7eaec",
-						},
-					},
-					popupIndicator: {
-						sx: {
-							color: "#e7eaec",
-						},
-					},
-				}}
-				autoComplete
-				disabled={loader}
-				onBlur={() => !searchMore && setSearchText("")}
-				open={showDropDown ?? open}
-				size="small"
-				onInputChange={(e, value, reason) => {
-					reason !== "reset" && setSearchText(value)
-				}}
-				onOpen={() => {
-					setOpen(true)
-					if (!options) {
-						setList([])
-						search(searchText)
+			<ClickAwayListener
+				onClickAway={() => {
+					if (open) {
+						!searchMore && setSearchText("")
+						setOpen(false)
 					}
 				}}
-				filterOptions={(options, { inputValue, getOptionLabel }) => {
-					return options.filter(
-						(option) =>
-							option.id === "studio_show_More_View" ||
-							getOptionLabel(option)
-								.toLowerCase()
-								.includes(inputValue.toLowerCase())
-					)
-				}}
-				onClose={(e, reason) => {
-					setOpen(false)
-					if (
-						!(
-							reason === "select-option" &&
-							e.target.innerText === translate(SHOW_MORE)
-						) &&
-						reason !== "toggleInput"
-					) {
-						setSearchText("")
-					}
-					if (reason === "blur") {
-						return handleOutsideClick(false)
-					}
-				}}
-				renderInput={(params) => {
-					return (
-						<TextField
-							{...params}
-							sx={{
-								width: "200px",
-								"& input": {
-									fontSize: "13px",
-								},
-								WebkitTextFillColor: "#e7eaec ",
-								"& .Mui-disabled": {
-									WebkitTextFillColor: "#959697 !important",
-								},
-							}}
-							placeholder={translate(label)}
-							fullWidth
-							autoFocus={autoFocus}
-							variant="standard"
-						/>
-					)
-				}}
-				options={loading ? [] : options ?? list}
-				loading={loading}
-				getOptionLabel={(option) =>
-					typeof option === "string"
-						? option
-						: props.getOptionLabel
-						? props.getOptionLabel(option)
-						: option.name
-				}
-				onChange={handleChange}
-				value={!options && open ? null : value}
-				isOptionEqualToValue={getOptionSelected}
-				{...props}
-			/>
+			>
+				<Select
+					ref={inputRef}
+					openOnFocus={true}
+					autoFocus={autoFocus}
+					autoComplete
+					disabled={loader || searchMore}
+					// onBlur={() => {!searchMore && setSearchText("")}} //TODO: Need to update in future with inputBlur prop.
+					open={open}
+					size="small"
+					onInputChange={(value) => setSearchText(value)}
+					onOpen={() => {
+						if (!open) {
+							setOpen(true)
+							if (!options) {
+								setList([])
+								search(searchText)
+							}
+						}
+					}}
+					placeholder={label}
+					onClose={() => open && setOpen(false)}
+					noOptionsMessage={"No options"}
+					clearOnBlur={searchMore}
+					removeOnBackspace={false}
+					clearOnEscape={false}
+					clearIcon={!disableClearable}
+					multiple={false}
+					customOptions={customOptions}
+					optionKey={(option) => option.id ?? findOptionLabel(option)}
+					optionLabel={(option) => findOptionLabel(option)}
+					optionValue={(option) => findOptionLabel(option)}
+					options={loading ? [] : options ?? list}
+					onChange={handleChange}
+					value={(!options && open) || searchMore ? null : value}
+					optionEqual={getOptionSelected}
+					optionMatch={(option, text) => {
+						const currentOption = findOptionLabel(option)
+						if (option.id === "studio_show_More_View")
+							return !loading && (options ?? list).length > 1
+						return currentOption
+							?.toString()
+							?.toLowerCase()
+							?.includes(text?.toLowerCase())
+					}}
+					{...props}
+				/>
+			</ClickAwayListener>
 			<SearchView
 				searchText={searchText}
 				list={list}
@@ -309,4 +290,4 @@ function Select({
 	)
 }
 
-export default React.memo(Select)
+export default React.memo(Selection)

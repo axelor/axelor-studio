@@ -1,10 +1,8 @@
 import React, { useImperativeHandle, useRef } from "react"
-import Chip from "@mui/material/Chip"
-import IconButton from "@mui/material/IconButton"
-import clsx from "clsx"
-import { styled } from "@mui/material/styles"
+import { Badge, TableCell, TableRow, TextField } from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
+import IconButton from "../../components/IconButton"
 import { useDrag, useDrop } from "react-dnd"
-import TextField from "@mui/material/TextField"
 import Select from "./Select"
 import fontAwesomeList from "../fa-icons"
 import { WKF_COLORS } from "../../constants"
@@ -12,17 +10,6 @@ import { WKF_COLORS } from "../../constants"
 const ItemTypes = {
 	CARD: "card",
 }
-
-const StyledIcons = styled("i")(() => ({
-	"& > i": {
-		height: "1.5em",
-		width: "1.5em",
-		fontSize: 16,
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-}))
 
 const Content = React.forwardRef(
 	(
@@ -97,8 +84,10 @@ const Content = React.forwardRef(
 		})
 
 		return (
-			<tr
-				style={{ display: "flex", alignItems: "center" }}
+			<TableRow
+				borderBottom
+				d="flex"
+				alignItems="center"
 				key={row.id || index}
 				ref={(el) => {
 					elementRef.current = el
@@ -111,10 +100,15 @@ const Content = React.forwardRef(
 						addRow()
 					}
 				}}
+				style={{ background: "var(--ax-theme-shell-bg)" }}
 			>
-				<td
-					className="one-to-many-col one-to-many-col-border"
-					style={{ maxWidth: "4%", display: "flex", justifyContent: "center" }}
+				<TableCell
+					className="one-to-many-col"
+					borderBottom={false}
+					d="flex"
+					color="body"
+					justifyContent="center"
+					style={{ maxWidth: "4%" }}
 				>
 					<IconButton
 						onClick={() => handleRow(row.id)}
@@ -122,66 +116,67 @@ const Content = React.forwardRef(
 						size="small"
 						disabled={!updateSelection}
 					>
-						<StyledIcons>
-							<i
-								className={clsx("fa fa-pencil")}
-								style={{
-									color: updateSelection ? "black" : "rgba(0, 0, 0, 0.26)",
-								}}
-							/>
-						</StyledIcons>
+						<MaterialIcon
+							icon="edit"
+							color={updateSelection ? "primary" : "var(--bs-secondary)"}
+						/>
 					</IconButton>
-				</td>
-				<td
+				</TableCell>
+				<TableCell
 					className="one-to-many-col one-to-many-col-border"
+					borderBottom={false}
+					color="body"
+					overflow="hidden"
 					style={{
 						maxWidth: "22%",
-						overflow: "hidden",
 						whiteSpace: "nowrap",
 						textOverflow: "ellipsis",
 					}}
 				>
 					{row.editable ? (
 						<TextField
-							variant="standard"
 							value={row?.value || ""}
 							name="value"
 							onChange={(e) => {
 								handleChange(row.id, "value", e.target.value)
 							}}
-							InputProps={{ sx: { fontSize: 13 } }}
+							fontSize={13}
 							autoFocus={true}
 						/>
 					) : (
 						row.value
 					)}
-				</td>
-				<td
+				</TableCell>
+				<TableCell
 					className="one-to-many-col one-to-many-col-border"
+					borderBottom={false}
+					color="body"
+					overflow="hidden"
 					style={{
 						maxWidth: "22%",
-						overflow: "hidden",
 						whiteSpace: "nowrap",
 						textOverflow: "ellipsis",
 					}}
 				>
 					{row.editable ? (
 						<TextField
-							variant="standard"
 							value={row?.title || ""}
 							name="title"
 							onChange={(e) => {
 								handleChange(row.id, "title", e.target.value)
 							}}
-							InputProps={{ sx: { fontSize: 13 } }}
+							fontSize={13}
 						/>
 					) : (
 						row.title
 					)}
-				</td>
-				<td
+				</TableCell>
+				<TableCell
 					className={"one-to-many-col one-to-many-col-border"}
-					style={{ overflow: "hidden", maxWidth: "22%" }}
+					borderBottom={false}
+					color="body"
+					overflow="hidden"
+					style={{ maxWidth: "22%" }}
 				>
 					{row.editable ? (
 						<Select
@@ -196,20 +191,23 @@ const Content = React.forwardRef(
 						/>
 					) : (
 						row?.color && (
-							<Chip
-								label={row.color?.title}
-								size="small"
+							<Badge
+								rounded="pill"
 								style={{
 									background: row.color?.color,
-									color: row.color?.border || "white",
+									color: row.color?.border || "var(--bs-white)",
 									fontWeight: 800,
 								}}
-							/>
+							>
+								{row.color?.title}
+							</Badge>
 						)
 					)}
-				</td>
-				<td
+				</TableCell>
+				<TableCell
 					className="one-to-many-col one-to-many-col-border"
+					borderBottom={false}
+					color="body"
 					style={{
 						maxWidth: "22%",
 						overflow: "hidden",
@@ -229,9 +227,13 @@ const Content = React.forwardRef(
 					) : (
 						row.icon
 					)}
-				</td>
-				<td
+				</TableCell>
+				<TableCell
 					className="one-to-many-col one-to-many-col-border"
+					borderBottom={false}
+					d="flex"
+					color="body"
+					justifyContent="center"
 					style={{ maxWidth: "4%" }}
 				>
 					<IconButton
@@ -240,18 +242,19 @@ const Content = React.forwardRef(
 						size="small"
 						disabled={!updateSelection}
 					>
-						<StyledIcons>
-							<i
-								className={clsx("fa fa-trash-o")}
-								style={{
-									color: updateSelection ? "black" : "rgba(0, 0, 0, 0.26)",
-								}}
-							/>
-						</StyledIcons>
+						<MaterialIcon
+							icon="clear"
+							fill
+							color={updateSelection ? "primary" : "var(--bs-secondary)"}
+						/>
 					</IconButton>
-				</td>
-				<td
+				</TableCell>
+				<TableCell
 					className="one-to-many-col one-to-many-col-border"
+					borderBottom={false}
+					d="flex"
+					color="body"
+					justifyContent="center"
 					style={{ maxWidth: "4%" }}
 				>
 					<IconButton
@@ -260,17 +263,14 @@ const Content = React.forwardRef(
 						size="small"
 						disabled={!updateSelection}
 					>
-						<StyledIcons>
-							<i
-								className={clsx("fa fa-bars")}
-								style={{
-									color: updateSelection ? "black" : "rgba(0, 0, 0, 0.26)",
-								}}
-							/>
-						</StyledIcons>
+						<MaterialIcon
+							icon="menu"
+							fill
+							color={updateSelection ? "primary" : "var(--bs-secondary)"}
+						/>
 					</IconButton>
-				</td>
-			</tr>
+				</TableCell>
+			</TableRow>
 		)
 	}
 )

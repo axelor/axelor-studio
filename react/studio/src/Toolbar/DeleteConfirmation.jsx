@@ -1,10 +1,13 @@
 import React from "react"
-import Button from "@mui/material/Button"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogContentText from "@mui/material/DialogContentText"
-import DialogTitle from "@mui/material/DialogTitle"
+import {
+	Box,
+	Button,
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@axelor/ui"
 import { translate } from "../utils"
 
 export default function DeleteConfirmation({
@@ -17,58 +20,23 @@ export default function DeleteConfirmation({
 	return (
 		<Dialog
 			open={open}
-			onClose={onClose}
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
-			sx={{
-				"& .MuiDialog-paper": {
-					minWidth: 300,
-				},
-			}}
 		>
-			<DialogTitle id="alert-dialog-title">{translate(title)}</DialogTitle>
+			<DialogHeader>
+				<DialogTitle id="alert-dialog-title">{translate(title)}</DialogTitle>
+			</DialogHeader>
 			<DialogContent>
-				<DialogContentText id="alert-dialog-description">
-					{translate(message)}
-				</DialogContentText>
+				<Box id="alert-dialog-description">{translate(message)}</Box>
 			</DialogContent>
-			<DialogActions>
-				<Button
-					onClick={onOk}
-					color="primary"
-					sx={{
-						textTransform: "none",
-						bgcolor: "#0275d8",
-						borderColor: "#0275d8",
-						color: "#fff",
-						"&:hover": {
-							bgcolor: "#0275d8",
-							borderColor: "#0275d8",
-							color: "#fff",
-						},
-					}}
-				>
+			<DialogFooter>
+				<Button onClick={onOk} variant="primary" size="sm">
 					{translate("Yes")}
 				</Button>
-				<Button
-					onClick={onClose}
-					color="primary"
-					autoFocus
-					sx={{
-						textTransform: "none",
-						bgcolor: "#0275d8",
-						borderColor: "#0275d8",
-						color: "#fff",
-						"&:hover": {
-							bgcolor: "#0275d8",
-							borderColor: "#0275d8",
-							color: "#fff",
-						},
-					}}
-				>
+				<Button onClick={onClose} variant="primary" autoFocus size="sm">
 					{translate("No")}
 				</Button>
-			</DialogActions>
+			</DialogFooter>
 		</Dialog>
 	)
 }

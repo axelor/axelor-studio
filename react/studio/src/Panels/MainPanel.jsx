@@ -1,26 +1,28 @@
 import React from "react"
 import classNames from "classnames"
 import Editor from "../Editor"
+import { Box, Scrollable } from "@axelor/ui"
 
 export default React.memo(function MainPanel({ toolbarOffset, className }) {
 	const [design] = React.useState(true)
 
 	return (
-		<div
+		<Box
 			className={classNames(className, "form-layout-container", {
 				"form-layout-design": design,
 			})}
+			d="flex"
+			justifyContent="center"
+			overflow="auto"
+			pos="relative"
+			w={100}
 			style={{
-				display: "flex",
-				width: "100%",
 				height: `calc(100vh - ${toolbarOffset}px)`,
-				justifyContent: "center",
-				overflow: "auto",
-				position: "relative",
-				paddingRight: "1em",
 			}}
 		>
-			<Editor design={design} />
-		</div>
+			<Scrollable w={100} h={100}>
+				<Editor design={design} />
+			</Scrollable>
+		</Box>
 	)
 })

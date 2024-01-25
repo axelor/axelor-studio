@@ -1,6 +1,5 @@
 import React from "react"
-import { Grid } from "@mui/material"
-import { createTheme, ThemeProvider, styled } from "@mui/material/styles"
+import { Box, ThemeProvider } from "@axelor/ui"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import MainPanel from "./Panels/MainPanel"
@@ -17,20 +16,7 @@ import {
 	fetchMetaViewService,
 	getCustomFieldsData,
 } from "./helpers/helpers"
-
-const StyledMainPanel = styled(MainPanel)(() => ({
-	height: "100vh",
-	overflow: "auto",
-	".modern-dark &": {
-		backgroundColor: "#202124",
-	},
-}))
-
-const theme = createTheme({
-	typography: {
-		fontFamily: '"Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
-	},
-})
+import { useAppTheme } from "./Theme/hooks/useAopTheme"
 
 function AppContent() {
 	const { update, state } = useStore()
@@ -246,15 +232,14 @@ function AppContent() {
 	}, [future.length, past.length])
 
 	return (
-		<Grid sx={{ display: "flex" }} ref={gridRef}>
-			<Grid container sx={{ overflow: "hidden" }}>
-				<Grid item xs={12} sx={{ paddingRight: "1rem" }} ref={toolbarRef}>
+		<Box d="flex" ref={gridRef}>
+			<Box w={100} overflow="hidden">
+				<Box w={100} ref={toolbarRef}>
 					<Toolbar />
-				</Grid>
-				<Grid
-					item
-					xs
-					sx={{ display: "flex", padding: "0 0 0 1rem" }}
+				</Box>
+				<Box
+					d="flex"
+					style={{ padding: "0 0 0 1rem", zIndex: "500" }}
 					ref={mainContainerRef}
 				>
 					<AddPanelView
@@ -262,21 +247,22 @@ function AppContent() {
 						isStudioLite={state.isStudioLite}
 						modelType={state.modelType}
 					/>
-					<StyledMainPanel toolbarOffset={toolbarHeight} />
-				</Grid>
-			</Grid>
-			<Grid>
+					<MainPanel toolbarOffset={toolbarHeight} />
+				</Box>
+			</Box>
+			<Box>
 				<PropertiesPanel />
-			</Grid>
-		</Grid>
+			</Box>
+		</Box>
 	)
 }
 
 export default function App() {
+	const { theme, options } = useAppTheme()
 	return (
 		<StudioProvider>
 			<DndProvider backend={HTML5Backend}>
-				<ThemeProvider theme={theme}>
+				<ThemeProvider theme={theme} options={options}>
 					<AppContent />
 				</ThemeProvider>
 			</DndProvider>
