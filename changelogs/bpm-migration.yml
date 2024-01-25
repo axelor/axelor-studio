@@ -2,6 +2,6 @@
 title: "App builder : Migrate BPM & DMN & Studio to axelor-ui"
 type: feature
 description: |
-  Migrate BPM  designer to Axelor-ui template 
+  Migrate BPM designer to Axelor-ui template 
   Migrate DMN editor to Axelor-ui template
   Migrate Studio editor to Axelor-ui template
