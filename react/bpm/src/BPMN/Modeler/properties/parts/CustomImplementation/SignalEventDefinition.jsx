@@ -15,9 +15,10 @@ import {
   DialogContent,
   DialogFooter,
   InputLabel,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./SignalEventDefinition.module.css";
+import styles from "./signal-event.module.css";
 
 export default function SignalEventProps({
   element,
@@ -239,7 +240,7 @@ export default function SignalEventProps({
       {open && (
         <Dialog open={open} backdrop centered className={styles.dialogPaper}>
           <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
-            <h3>{translate("Select Signal")}</h3>
+            <DialogTitle>{translate("Select Signal")}</DialogTitle>
           </DialogHeader>
           <DialogContent>
             <InputLabel color="body">{translate("BPM model")}</InputLabel>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ExpressionBuilder from './expression-builder';
+import ExpressionBuilder from './views';
 
 const getParams = () => {
   const params = new URL(document.location).searchParams;

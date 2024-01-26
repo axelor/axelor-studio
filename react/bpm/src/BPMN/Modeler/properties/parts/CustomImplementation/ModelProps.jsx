@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
+import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -17,9 +18,9 @@ import {
 import { translate, getBool } from "../../../../../utils";
 import { USER_TASKS_TYPES, DATA_STORE_TYPES } from "../../../constants";
 
-import { Box, Divider, InputLabel } from "@axelor/ui";
-import styles from "./ModelProps.module.css";
-
+import { InputLabel } from "@axelor/ui";
+import Title from "../../../Title";
+import styles from "./model-props.module.css";
 const GATEWAY = ["bpmn:EventBasedGateway"];
 
 const CONDITIONAL_SOURCES = [
@@ -374,12 +375,7 @@ export default function ModelProps(props) {
             subType === "bpmn:TerminateEventDefinition" ||
             GATEWAY.includes(element.type) ||
             (element?.type === "bpmn:EndEvent" && !subType)) && (
-            <React.Fragment>
-              {index > 0 && <Divider className={styles.divider} />}
-              <Box color="body" className={styles.groupLabel}>
-                {label}
-              </Box>
-            </React.Fragment>
+            <Title divider={index > 0} label={label} />
           )}
           {![
             "bpmn:Process",
@@ -550,12 +546,7 @@ export default function ModelProps(props) {
         </div>
       )}
       {HELP_TITLE_SOURCES.includes(element && element.type) && (
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-          <Box color="body" className={styles.groupLabel}>
-            {translate(label)}
-          </Box>
-        </React.Fragment>
+        <Title divider={index > 0} label={label} />
       )}
       <Textbox
         element={element}

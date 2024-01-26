@@ -7,7 +7,7 @@ import { Box, Button, Input, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import ScriptEditor from "../EditorConfig/SrciptEditor";
 import AlertDialog from "../../AlertDialog";
-import styles from "./TextField.module.css";
+import styles from "./textfield.module.css";
 
 export default function TextField({
   entry,

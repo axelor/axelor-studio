@@ -16,12 +16,12 @@ import {
   DialogHeader,
   DialogContent,
   DialogFooter,
-  Box,
-  Divider,
   InputLabel,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./MultiInstanceProps.module.css";
+import styles from "./multi-instance.module.css";
 
 function getProperty(element, propertyName) {
   let loopCharacteristics = getLoopCharacteristics(element);
@@ -246,12 +246,7 @@ export default function MultiInstanceLoopCharacteristics({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         {!collection && !loopCardinality && (
           <InputLabel color="body" className={styles.typography}>
             <MaterialIcon icon="report" fontSize={16} className={styles.icon} />
@@ -328,7 +323,7 @@ export default function MultiInstanceLoopCharacteristics({
         />
         <Dialog open={open} backdrop centered className={styles.dialog}>
           <DialogHeader onCloseClick={() => setOpen(false)}>
-            <h3>{translate("Collection")}</h3>
+            <DialogTitle>{translate("Collection")}</DialogTitle>
           </DialogHeader>
           <DialogContent className={styles.dialogContent}>
             <Selection
@@ -361,6 +356,16 @@ export default function MultiInstanceLoopCharacteristics({
           <DialogFooter>
             <Button
               onClick={() => {
+                setOpen(false);
+                setInitialValue();
+              }}
+              variant="secondary"
+              className={styles.save}
+            >
+              {translate("Cancel")}
+            </Button>
+            <Button
+              onClick={() => {
                 if (
                   field &&
                   !["ONE_TO_MANY", "MANY_TO_MANY"].includes(field.type)
@@ -387,26 +392,23 @@ export default function MultiInstanceLoopCharacteristics({
             >
               {translate("OK")}
             </Button>
-            <Button
-              onClick={() => {
-                setOpen(false);
-                setInitialValue();
-              }}
-              variant="secondary"
-              className={styles.save}
-            >
-              {translate("Cancel")}
-            </Button>
           </DialogFooter>
         </Dialog>
         <Dialog open={openExpressionAlert} backdrop className={styles.dialog}>
           <DialogHeader onCloseClick={() => setExpressionAlert(false)}>
-            <h3>{translate(errorTitle || "Warning")}</h3>
+            <DialogTitle>{translate(errorTitle || "Warning")}</DialogTitle>
           </DialogHeader>
           <DialogContent className={styles.content}>
             {translate(errorMessage)}
           </DialogContent>
           <DialogFooter>
+            <Button
+              onClick={() => setExpressionAlert(false)}
+              variant="secondary"
+              className={styles.save}
+            >
+              {translate("Cancel")}
+            </Button>
             <Button
               className={styles.save}
               onClick={() => {
@@ -417,13 +419,6 @@ export default function MultiInstanceLoopCharacteristics({
               variant="primary"
             >
               {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => setExpressionAlert(false)}
-              variant="secondary"
-              className={styles.save}
-            >
-              {translate("Cancel")}
             </Button>
           </DialogFooter>
         </Dialog>

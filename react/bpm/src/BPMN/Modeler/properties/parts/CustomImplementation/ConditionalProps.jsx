@@ -16,11 +16,12 @@ import {
   DialogContent,
   DialogFooter,
   Box,
-  Divider,
+  DialogTitle,
 } from "@axelor/ui";
 import Tooltip from "../../../../../components/Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ConditionalProps.module.css";
+import styles from "./conditional-props.module.css";
+import Title from "../../../Title";
 
 let CONDITIONAL_SOURCES = [
   "bpmn:Activity",
@@ -238,12 +239,7 @@ export default function ConditionalProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {label}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <div className={styles.expressionBuilder}>
           <Textbox
             element={element}
@@ -341,12 +337,21 @@ export default function ConditionalProps({
               className={styles.dialog}
             >
               <DialogHeader onCloseClick={() => setAlert(false)}>
-                <h3>{translate(alertTitle)}</h3>
+                <DialogTitle>{translate(alertTitle)}</DialogTitle>
               </DialogHeader>
               <DialogContent className={styles.content}>
                 {translate(alertMessage)}
               </DialogContent>
               <DialogFooter>
+                <Button
+                  onClick={() => {
+                    setAlert(false);
+                  }}
+                  variant="secondary"
+                  className={styles.save}
+                >
+                  {translate("Cancel")}
+                </Button>
                 <Button
                   onClick={() => {
                     setAlert(false);
@@ -362,15 +367,6 @@ export default function ConditionalProps({
                   className={styles.save}
                 >
                   {translate("OK")}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                  }}
-                  variant="secondary"
-                  className={styles.save}
-                >
-                  {translate("Cancel")}
                 </Button>
               </DialogFooter>
             </Dialog>

@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import update from 'immutability-helper';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -32,8 +31,7 @@ import Loader from './components/Loader';
 import DialogBox from './components/Dialog';
 import { Box, InputLabel, Switch } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
-import styles from './Builder.module.css';
-import { VAR_TYPES } from './constants';
+import styles from './builder.module.css';
 
 function isFieldInvalid(field) {
   const { from, selected, subFields } = field.value || {};

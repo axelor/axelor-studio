@@ -1,6 +1,8 @@
 html,
 body {
   height: '100%';
+  font-size: var(--bs-body-font-size);
+  font-family: var(--bs-body-font-family, 15px);
 }
 .App {
   text-align: center;
@@ -9,19 +11,4 @@ body {
 
 #root {
   height: '100%';
-}
-
-.App-header {
-  background-color: var(--bs-body-bg);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: var(--bs-body-color);
-}
-
-.App-link {
-  color: var(--bs-blue);
 }

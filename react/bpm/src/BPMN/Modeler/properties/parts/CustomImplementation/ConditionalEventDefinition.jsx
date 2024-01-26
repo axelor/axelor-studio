@@ -24,9 +24,10 @@ import {
   Button,
   InputLabel,
   Box,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ConditionalEventDefinition.module.css";
+import styles from "./conditional-event.module.css";
 
 const conditionType = "script";
 
@@ -347,12 +348,21 @@ export default function ConditionalEventProps({
       {openAlert && (
         <Dialog open={openAlert} backdrop centered className={styles.dialog}>
           <DialogHeader onCloseClick={() => setAlert(false)}>
-            <h3>{translate(alertTitle)}</h3>
+            <DialogTitle>{translate(alertTitle)}</DialogTitle>
           </DialogHeader>
           <DialogContent className={styles.content}>
             {translate(alertMessage)}
           </DialogContent>
           <DialogFooter>
+            <Button
+              onClick={() => {
+                setAlert(false);
+              }}
+              variant="secondary"
+              className={styles.save}
+            >
+              {translate("Cancel")}
+            </Button>
             <Button
               onClick={() => {
                 setAlert(false);
@@ -369,15 +379,6 @@ export default function ConditionalEventProps({
               className={styles.save}
             >
               {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
-                setAlert(false);
-              }}
-              variant="secondary"
-              className={styles.save}
-            >
-              {translate("Cancel")}
             </Button>
           </DialogFooter>
         </Dialog>

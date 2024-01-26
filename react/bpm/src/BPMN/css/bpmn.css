@@ -1,10 +1,6 @@
 html,
 body,
-#container,
-.App {
-  height: 100%;
-  height: 100%;
-  max-height: 100%;
+#root {
   padding: 0;
   margin: 0;
   overflow: hidden;
@@ -36,16 +32,16 @@ body,
   flex-direction: column;
 }
 
-#root,
-#container {
+#root {
   height: 100%;
-  overflow: hidden;
+
   background: var(--bs-body-bg);
 }
 
 #container {
   display: flex;
   flex: 1;
+  height: 100%;
 }
 
 #bpmnview {
@@ -62,23 +58,12 @@ body,
 #bpmncontainer {
   height: 100%;
   flex: 1;
-  background-color: var(--bs-body-bg);
 }
 
-.property-button,
-.zoom-buttons {
+.property-button {
   min-width: 50px;
 }
 
-.restart-button {
-  padding: 5px;
-  background: var(--bs-body-bg);
-  border: solid 1px var(--bs-border-color);
-  border-radius: 2px;
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-}
 
 #js-properties-panel {
   background: var(--bs-body-bg);
@@ -108,7 +93,7 @@ body,
   width: 95% !important;
 }
 
-h1 {
+/* h1 {
   position: absolute;
   top: 0;
   left: 0;
@@ -117,7 +102,7 @@ h1 {
   z-index: 1;
   background: var(--bs-body-bg);
   border: solid 1px var(--bs-border-color);
-}
+} */
 
 .diagram-note {
   color: var(--bs-body-bg);
@@ -243,44 +228,6 @@ h1 {
 
 .error-fix-btn:hover {
   background-color: var(--bs-link-hover-color);
-}
-
-.toolbar-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: left;
-  padding: 0px 20px;
-  position: relative;
-  width: 100%;
-  flex-wrap: wrap;
-}
-
-.zoom-buttons {
-  width: 50px;
-  padding: 5px;
-  background: var(--bs-blue);
-  border: solid 1px var(--bs-blue);
-  color: var(--bs-body-bg);
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-}
-
-.zoom-buttons:hover {
-  background-color: var(--bs-blue);
-  border-color: var(--bs-blue);
-}
-
-.snackbarAlert {
-  display: flex;
-  align-items: center;
-}
-
-.snackbarAlert > .MuiAlert-message {
-  font-size: 14px;
 }
 
 .bpmn-property-toggle {

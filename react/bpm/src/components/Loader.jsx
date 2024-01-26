@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, CircularProgress } from "@axelor/ui";
 import classNames from "classnames";
-import styles from "./Loader.module.css";
+import styles from "./loader.module.css";
 
 function Loader({ text = "Loading...", delay = 400, classes = "" }) {
   const [show, setShow] = useState(false);

@@ -52,10 +52,12 @@ import {
   Box,
   InputLabel,
   NavTabs,
-  Divider,
   Input,
   CommandBar,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "./Title";
+import styles from "./dmn-modeler.module.css";
 
 import Alert from "../components/Alert";
 import { useAppTheme } from "../custom-hooks/useAppTheme.jsx";
@@ -68,7 +70,6 @@ import "dmn-js/dist/assets/diagram-js.css";
 
 import "./css/dmnModeler.css";
 import Ids from "ids";
-import styles from "./DMNModeler.module.css";
 
 let dmnModeler = null;
 const DRAWER_WIDTH = 380;
@@ -317,11 +318,8 @@ function DMNModeler() {
       const latestDecision = definitions?.drgElement?.find(
         (d) => d.id === decision?.id
       );
-      const {
-        input: inputs,
-        output: outputs,
-        rule: elementRules,
-      } = latestDecision?.decisionLogic || {};
+      const { input: inputs, output: outputs, rule: elementRules } =
+        latestDecision?.decisionLogic || {};
       const { col, row } = cell || {};
       let column = inputs?.find((i) => i.id === col.id);
       const rules =
@@ -803,12 +801,7 @@ function DMNModeler() {
         ) : (
           group.entries.length > 0 && (
             <React.Fragment>
-              <React.Fragment>
-                {index > 0 && <Divider className={styles.divider} />}
-              </React.Fragment>
-              <Box color="body" className={styles.groupLabel}>
-                {translate(group.label)}
-              </Box>
+              <Title divider={index > 0} label={group.label} />
               <div>
                 {group.entries.map((entry, i) => (
                   <Entry entry={entry} key={i} />
@@ -934,7 +927,6 @@ function DMNModeler() {
             gap={4}
             style={{
               padding: "6px 20px 8px 20px",
-              backgroundColor: "var(--bs-tertiary-bg)",
             }}
           >
             <CommandBar
@@ -1128,7 +1120,7 @@ function DMNModeler() {
         className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setUploadDialog(false)}>
-          <h3>{translate("Upload")}</h3>
+          <DialogTitle>{translate("Upload")}</DialogTitle>
         </DialogHeader>
         <DialogContent>
           <input

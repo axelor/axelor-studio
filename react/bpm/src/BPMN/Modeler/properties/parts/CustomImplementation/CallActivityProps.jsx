@@ -34,10 +34,12 @@ import {
   InputLabel,
   Box,
   Divider,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import Alert from "../../../../../components/Alert";
-import styles from "./CallActivityProps.module.css";
+import styles from "./callactivity.module.css";
+import Title from "../../../Title";
 
 function nextId() {
   let ids = new Ids([32, 32, 1]);
@@ -393,12 +395,7 @@ export default function CallActivityProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <SelectBox
           element={element}
           entry={{
@@ -644,7 +641,7 @@ export default function CallActivityProps({
             className={styles.parentPathDialog}
           >
             <DialogHeader>
-              <h3>{translate("Parent path")}</h3>
+              <DialogTitle>{translate("Parent path")}</DialogTitle>
             </DialogHeader>
             <DialogContent d="flex" overflow="auto" alignItems="flex-end">
               <FieldEditor
@@ -663,22 +660,22 @@ export default function CallActivityProps({
               <Button
                 onClick={() => {
                   setOpenParentPath(false);
-                  setParentPath(parentPathDummy);
-                  setProperty("parentPath", parentPathDummy);
                 }}
                 variant="primary"
                 className={styles.save}
               >
-                {translate("OK")}
+                {translate("Cancel")}
               </Button>
               <Button
                 onClick={() => {
                   setOpenParentPath(false);
+                  setParentPath(parentPathDummy);
+                  setProperty("parentPath", parentPathDummy);
                 }}
                 variant="secondary"
                 className={styles.save}
               >
-                {translate("Cancel")}
+                {translate("OK")}
               </Button>
             </DialogFooter>
           </Dialog>
@@ -757,7 +754,7 @@ export default function CallActivityProps({
               className={styles.dialog}
             >
               <DialogHeader onCloseClick={() => setAlert(false)}>
-                <h3>{translate(alertTitle)}</h3>
+                <DialogTitle>{translate(alertTitle)}</DialogTitle>
               </DialogHeader>
               <DialogContent>
                 <Box as="p" color="body" fontSize={5}>
@@ -766,6 +763,15 @@ export default function CallActivityProps({
               </DialogContent>
               <DialogFooter>
                 <Button
+                  className={styles.save}
+                  onClick={() => {
+                    setAlert(false);
+                  }}
+                  variant="secondary"
+                >
+                  {translate("Cancel")}
+                </Button>
+                 <Button
                   onClick={() => {
                     setAlert(false);
                     setAlertMessage(null);
@@ -780,15 +786,6 @@ export default function CallActivityProps({
                   className={styles.save}
                 >
                   {translate("OK")}
-                </Button>
-                <Button
-                  className={styles.save}
-                  onClick={() => {
-                    setAlert(false);
-                  }}
-                  variant="secondary"
-                >
-                  {translate("Cancel")}
                 </Button>
               </DialogFooter>
             </Dialog>
@@ -832,7 +829,7 @@ export default function CallActivityProps({
         />
         <Dialog open={open} backdrop centered className={styles.dialogPaper}>
           <DialogHeader onCloseClick={() => setOpen(false)}>
-            <h3>{translate("Select BPMN")}</h3>
+            <DialogTitle>{translate("Select BPMN")}</DialogTitle>
           </DialogHeader>
           <DialogContent style={{ minHeight: 90 }}>
             <InputLabel color="body" className={styles.label}>

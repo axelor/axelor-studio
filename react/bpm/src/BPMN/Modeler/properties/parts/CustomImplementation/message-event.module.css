@@ -1,0 +1,23 @@
+.dialogPaper {
+  min-width: 450px;
+  overflow: auto;
+}
+
+.button {
+  margin: 8px;
+  text-transform: none;
+  min-width: 64px;
+}
+
+.label {
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+}
+
+.select {
+  width: 100%;
+}
+
+.newIcon {
+  cursor: pointer;
+}

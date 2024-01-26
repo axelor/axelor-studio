@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogFooter,
   Box,
+  DialogTitle,
 } from "@axelor/ui";
 import styles from "./index.module.css";
 
@@ -135,7 +136,7 @@ export default function ConnectorBuilder({
   return (
     <Dialog open={open} backdrop className={styles.dialog}>
       <DialogHeader onCloseClick={handleClose}>
-        <h3>{translate("Connector script")}</h3>
+        <DialogTitle>{translate("Connector script")}</DialogTitle>
       </DialogHeader>
       <DialogContent className={styles.dialogContent}>
         <Box
@@ -254,18 +255,18 @@ export default function ConnectorBuilder({
       </DialogContent>
       <DialogFooter>
         <Button
-          onClick={generateScript}
-          variant="primary"
-          className={styles.save}
-        >
-          {translate("OK")}
-        </Button>
-        <Button
           onClick={handleClose}
           variant="secondary"
           className={styles.save}
         >
           {translate("Cancel")}
+        </Button>
+        <Button
+          onClick={generateScript}
+          variant="primary"
+          className={styles.save}
+        >
+          {translate("OK")}
         </Button>
       </DialogFooter>
     </Dialog>

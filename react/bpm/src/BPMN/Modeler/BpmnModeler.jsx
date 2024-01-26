@@ -68,7 +68,7 @@ import "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
 import "../css/tokens.css";
-import styles from "./BpmnModeler.module.css";
+import styles from "./bpmn-modeler.module.css";
 import { openWebApp } from "./properties/parts/CustomImplementation/utils.js";
 import { createElement } from "../../utils/ElementUtil.js";
 import { getExtensionElements } from "../../utils/ExtensionElementsUtil.js";
@@ -1925,7 +1925,6 @@ function BpmnModelerComponent() {
               gap="4"
               style={{
                 padding: "6px 20px 8px 20px",
-                backgroundColor: "var(--bs-tertiary-bg)",
               }}
             >
               <CommandBar items={leftToolbar} className={styles.commandBar} />

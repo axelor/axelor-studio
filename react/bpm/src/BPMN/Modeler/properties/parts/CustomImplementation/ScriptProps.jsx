@@ -23,8 +23,6 @@ import {
 import Tooltip from "../../../../../components/Tooltip";
 import AlertDialog from "../../../../../components/AlertDialog";
 import { translate, getBool } from "../../../../../utils";
-import styles from "./ScriptProps.module.css";
-
 import {
   Button,
   Dialog,
@@ -33,10 +31,11 @@ import {
   DialogContent,
   Badge,
   InputLabel,
-  Box,
-  Divider,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import styles from "./script-props.module.css";
 
 const implementationOptions = [
   { name: translate("Script"), value: "script" },
@@ -420,12 +419,7 @@ export default function ScriptProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <SelectBox
           element={element}
           entry={{
@@ -585,12 +579,21 @@ export default function ScriptProps({
                 )}
             <Dialog open={openAlert} centered className={styles.Dialog}>
               <DialogHeader onCloseClick={() => setAlert(false)}>
-                <h3>{translate(alertTitle)}</h3>
+                <DialogTitle>{translate(alertTitle)}</DialogTitle>
               </DialogHeader>
               <DialogContent className={styles.content}>
                 {translate(alertMessage)}
               </DialogContent>
               <DialogFooter>
+                <Button
+                  onClick={() => {
+                    setAlert(false);
+                  }}
+                  variant="secondary"
+                  className={styles.save}
+                >
+                  {translate("Cancel")}
+                </Button>
                 <Button
                   onClick={() => {
                     setAlert(false);
@@ -608,15 +611,6 @@ export default function ScriptProps({
                   className={styles.save}
                 >
                   {translate("OK")}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                  }}
-                  variant="secondary"
-                  className={styles.save}
-                >
-                  {translate("Cancel")}
                 </Button>
               </DialogFooter>
             </Dialog>

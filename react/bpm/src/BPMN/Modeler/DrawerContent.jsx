@@ -7,7 +7,7 @@ import Tab from "./Tab";
 import { translate } from "../../utils";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil.js";
-import styles from "./DrawerContent.module.css";
+import styles from "./drawer.module.css";
 
 export default function DrawerContent({
   selectedElement,

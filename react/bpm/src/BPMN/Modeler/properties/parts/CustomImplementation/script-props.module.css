@@ -1,0 +1,78 @@
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  /* font-size: var(----ax-theme-panel-header-font-size, 1rem); */
+}
+
+.expressionBuilder {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.newIcon {
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.new {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.textbox {
+  width: 100%;
+  height: calc(100% - 10px);
+}
+
+.dialog {
+  min-width: 300px;
+}
+
+.title {
+  /* font-size: 18px; */
+  font-weight: bold;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.scriptDialog {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.script {
+  display: flex;
+  justify-content: space-between;
+}
+
+.content {
+  padding: 8px 24px;
+  /* font-size: 16px; */
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.dialogActions {
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
+  gap: 10px;
+}

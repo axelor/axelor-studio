@@ -8,7 +8,7 @@ import { getSubMetaField } from "../../../services/api";
 import { UI_TYPES } from "../../../DMN/constants";
 import Tooltip from "../../Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./FieldEditor.module.css";
+import styles from "./field-editor.module.css";
 
 export default function FieldEditor({
   initValue = "",

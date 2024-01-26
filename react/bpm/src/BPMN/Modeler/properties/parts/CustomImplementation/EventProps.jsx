@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
+import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
+import React, { useEffect, useState } from "react";
 
-import Message from "./MessageEventDefinition";
-import Signal from "./SignalEventDefinition";
-import Escalation from "./EscalationEventDefinition";
-import Timer from "./TimerEventDefinition";
-import Compensation from "./CompensateEventDefinition";
-import Condition from "./ConditionalEventDefinition";
-import Error from "./ErrorEventDefinition";
-import { Box, Divider } from "@axelor/ui";
-import { translate } from "../../../../../utils";
-import styles from "./EventProps.module.css";
 import {
   getCompensateEventDefinition,
+  getConditionalEventDefinition,
   getErrorEventDefinition,
   getEscalationEventDefinition,
   getMessageEventDefinition,
   getSignalEventDefinition,
-  getTimerEventDefinition,
-  getConditionalEventDefinition
+  getTimerEventDefinition
 } from "../../../../../utils/EventDefinitionUtil";
+import Title from "../../../Title";
+import Compensation from "./CompensateEventDefinition";
+import Condition from "./ConditionalEventDefinition";
+import Error from "./ErrorEventDefinition";
+import Escalation from "./EscalationEventDefinition";
+import Message from "./MessageEventDefinition";
+import Signal from "./SignalEventDefinition";
+import Timer from "./TimerEventDefinition";
 
 
 const events = [
@@ -287,12 +285,7 @@ export default function EventProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <div>{renderComponent()}</div>
       </div>
     )

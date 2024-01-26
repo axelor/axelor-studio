@@ -13,10 +13,11 @@ import {
 import { translate } from "../../../../../utils";
 import { Button, Box, Input } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./Comments.module.css";
+import styles from "./comments.module.css";
 
 const avatarColor = {};
 
+// here we have used colors
 const getColor = () => {
   let no = Math.round(Math.random() * 10) % COLORS.length;
   let values = Object.values(avatarColor) || [];
@@ -134,141 +135,150 @@ export default function Comments({ element, updateCommentsCount }) {
       )}
       <div>
         <div className={styles.reply}>
-          <Input
-            as="textarea"
-            placeholder={translate("Write your comment here")}
-            onChange={(e) => setComment(e.target.value)}
-            value={comment}
-            rows={2}
-          />
-          <Button
-            size="sm"
-            variant="primary"
-            className={styles.icon}
-            onClick={addNewComment}
-            disabled={!(comment || "").trim()}
-          >
-            {translate("Post")}
-          </Button>
-        </div>
-        <div className={styles.comments}>
-          {comments &&
-            Object.entries(comments).map(([key, value]) => (
-              <div key={key}>
-                <Box color="body" className={styles.label}>
-                  {renderKey(key)}
-                </Box>
-                <div>
-                  {value?.length > 0 &&
-                    value?.map((c, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          margin: "10px 0px",
-                        }}
-                      >
-                        <div style={{ marginRight: 10 }}>
-                          <Box
-                            d="flex"
-                            position="relative"
-                            alignItems="center"
-                            className={styles.small}
-                            style={{
-                              background: getAvatarColor(
-                                c && c[0] && c[0].charAt(0)
-                              ),
-                            }}
-                          >
-                            {c && c[0] && c[0].charAt(0)}
-                          </Box>
-                        </div>
-                        <div style={{ width: "calc(100% - 85px)" }}>
-                          <Box color="body">
-                            <Box d="flex" alignItems="center">
-                              <div
-                                style={{
-                                  fontWeight: "bold",
-                                  fontSize: 14,
-                                  marginRight: 20,
-                                }}
-                              >
-                                {(c && c[0]) || "Admin"}
-                              </div>
-                              <div>{c && c[2] && c[2].replace(".", ":")}</div>
+          <div className={styles.commentBox}>
+            <Input
+              as="textarea"
+              placeholder={translate("Write your comment here")}
+              onChange={(e) => setComment(e.target.value)}
+              value={comment}
+              rows={2}
+            />
+            <Button
+              size="sm"
+              variant="primary"
+              className={styles.icon}
+              onClick={addNewComment}
+              disabled={!(comment || "").trim()}
+            >
+              {translate("Post")}
+            </Button>
+          </div>
+          <div className={styles.comments}>
+            {comments &&
+              Object.entries(comments).map(([key, value]) => (
+                <div key={key}>
+                  <Box color="body" className={styles.label}>
+                    {renderKey(key)}
+                  </Box>
+                  <div>
+                    {value?.length > 0 &&
+                      value?.map((c, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            margin: "10px 0px",
+                          }}
+                        >
+                          <div style={{ marginRight: 10 }}>
+                            <Box
+                              d="flex"
+                              position="relative"
+                              alignItems="center"
+                              className={styles.small}
+                              style={{
+                                background: getAvatarColor(
+                                  c && c[0] && c[0].charAt(0)
+                                ),
+                              }}
+                            >
+                              {c && c[0] && c[0].charAt(0)}
                             </Box>
-                            {c && c[5] ? (
-                              <React.Fragment>
-                                <Input
-                                  as="textarea"
-                                  onChange={(e) =>
-                                    setEditComment(e.target.value)
-                                  }
-                                  defaultValue={c && c[3]}
-                                  placeholder={translate("Comment")}
-                                  rows={1}
-                                />
-                                <Button
-                                  className={styles.buttons}
-                                  variant="primary"
-                                  onClick={() => {
-                                    updateEdit(key, c && c[4], false, 5);
-                                    updateEdit(key, c && c[4], editComment, 3);
-                                    updateComment(element, c, editComment);
+                          </div>
+                          <div style={{ width: "calc(100% - 85px)" }}>
+                            <Box color="body">
+                              <Box d="flex" alignItems="center">
+                                <div
+                                  style={{
+                                    fontWeight: "bold",
+                                    fontSize: 14,
+                                    marginRight: 20,
                                   }}
                                 >
-                                  {translate("Update comment")}
-                                </Button>
-                                <Button
-                                  className={styles.buttons}
-                                  variant="primary"
-                                  onClick={() => {
-                                    updateEdit(key, c && c[4], false, 5);
+                                  {(c && c[0]) || "Admin"}
+                                </div>
+                                <div>{c && c[2] && c[2].replace(".", ":")}</div>
+                              </Box>
+                              {c && c[5] ? (
+                                <React.Fragment>
+                                  <Input
+                                    as="textarea"
+                                    onChange={(e) =>
+                                      setEditComment(e.target.value)
+                                    }
+                                    defaultValue={c && c[3]}
+                                    placeholder={translate("Comment")}
+                                    rows={1}
+                                  />
+                                  <Button
+                                    className={styles.buttons}
+                                    variant="primary"
+                                    onClick={() => {
+                                      updateEdit(key, c && c[4], false, 5);
+                                      updateEdit(
+                                        key,
+                                        c && c[4],
+                                        editComment,
+                                        3
+                                      );
+                                      updateComment(element, c, editComment);
+                                    }}
+                                  >
+                                    {translate("Update comment")}
+                                  </Button>
+                                  <Button
+                                    className={styles.buttons}
+                                    variant="primary"
+                                    onClick={() => {
+                                      updateEdit(key, c && c[4], false, 5);
+                                    }}
+                                  >
+                                    {translate("Cancel")}
+                                  </Button>
+                                </React.Fragment>
+                              ) : (
+                                <div
+                                  style={{
+                                    whiteSpace: "pre-wrap",
+                                    overflowWrap: "break-word",
                                   }}
                                 >
-                                  {translate("Cancel")}
-                                </Button>
-                              </React.Fragment>
-                            ) : (
-                              <div
-                                style={{
-                                  whiteSpace: "pre-wrap",
-                                  overflowWrap: "break-word",
-                                }}
-                              >
-                                {c && c[3]}
-                              </div>
-                            )}
+                                  {c && c[3]}
+                                </div>
+                              )}
+                            </Box>
+                          </div>
+                          <Box color="body" d="flex" alignItems="center">
+                            <Button
+                              size="sm"
+                              variant="light"
+                              className={styles.icon}
+                              onClick={() =>
+                                updateEdit(key, c && c[4], true, 5)
+                              }
+                            >
+                              <MaterialIcon icon="edit" fontSize={16} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="light"
+                              className={styles.icon}
+                              onClick={() => {
+                                removeNewComment(key, c && c[4]);
+                                removeComment(element, c);
+                                updateCommentsCount(false);
+                              }}
+                            >
+                              <MaterialIcon icon="delete" fontSize={16} />
+                            </Button>
                           </Box>
                         </div>
-                        <Box color="body" d="flex" alignItems="center">
-                          <Button
-                            size="sm"
-                            variant="light"
-                            className={styles.icon}
-                            onClick={() => updateEdit(key, c && c[4], true, 5)}
-                          >
-                            <MaterialIcon icon="edit" fontSize={16} />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="light"
-                            className={styles.icon}
-                            onClick={() => {
-                              removeNewComment(key, c && c[4]);
-                              removeComment(element, c);
-                              updateCommentsCount(false);
-                            }}
-                          >
-                            <MaterialIcon icon="delete" fontSize={16} />
-                          </Button>
-                        </Box>
-                      </div>
-                    ))}
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+          </div>
         </div>
       </div>
     </div>

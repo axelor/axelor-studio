@@ -6,10 +6,11 @@ import {
   DialogHeader,
   DialogContent,
   DialogFooter,
+  DialogTitle,
 } from "@axelor/ui";
 
 import { translate } from "../utils";
-import styles from "./AlertDialog.module.css";
+import styles from "./alert-dialog.module.css";
 
 export default function AlertDialog({
   openAlert,
@@ -29,7 +30,7 @@ export default function AlertDialog({
       className={classnames(styles.dialogPaper, className)}
     >
       <DialogHeader onCloseClick={alertClose}>
-        <h3>{translate(title)}</h3>
+        <DialogTitle>{translate(title)}</DialogTitle>
       </DialogHeader>
       <DialogContent className={styles.content}>
         {translate(message)}
@@ -37,18 +38,18 @@ export default function AlertDialog({
       </DialogContent>
       <DialogFooter>
         <Button
-          onClick={handleAlertOk}
-          className={styles.save}
-          variant="primary"
-        >
-          {translate("OK")}
-        </Button>
-        <Button
           onClick={alertClose}
           className={styles.save}
           variant="secondary"
         >
           {translate("Cancel")}
+        </Button>
+        <Button
+          onClick={handleAlertOk}
+          className={styles.save}
+          variant="primary"
+        >
+          {translate("OK")}
         </Button>
       </DialogFooter>
     </Dialog>

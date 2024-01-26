@@ -1,8 +1,5 @@
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import ReorderIcon from '@material-ui/icons/Reorder';
-import Close from '@material-ui/icons/Close';
-import AddRounded from '@material-ui/icons/AddRounded';
 import get from 'lodash/get';
 import classNames from 'classnames';
 
@@ -31,7 +28,8 @@ import {
   Box,
   TextField,
 } from '@axelor/ui';
-import styles from './DataTable.module.css';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
+import styles from './datatable.module.css';
 
 function DataTable(props) {
   const [searchText, setSearchText] = React.useState('');
@@ -132,23 +130,20 @@ function DataTable(props) {
               className={className}
               color="body"
             >
-              <TableCell
-                className={classNames(styles.move, styles.tableCell)}
-                ref={dragRef}
-              >
-                <div className={styles.flex}>
-                  <ReorderIcon />
-                </div>
+              <TableCell className={styles.move} ref={dragRef}>
+                <Box d="flex">
+                  <MaterialIcon icon="reorder" fontSize={16} />
+                </Box>
               </TableCell>
-              <TableCell className={styles.tableCell}>
+              <TableCell>
                 <ModelField item={row} handleAdd={onRowAdd} />
               </TableCell>
-              <TableCell className={styles.tableCell}>=</TableCell>
+              <TableCell>=</TableCell>
 
               <TableCell
                 className={classNames(
                   styles.valueInputContainer,
-                  styles.addFieldButton.tableCell
+                  styles.addFieldButton
                 )}
               >
                 <ValueField
@@ -168,7 +163,7 @@ function DataTable(props) {
                 />
               </TableCell>
               {isDMN && (
-                <TableCell size="small" className={styles.tableCell}>
+                <TableCell size="small">
                   {from === VALUE_FROM.DMN &&
                     ['many_to_one', 'json_many_to_one'].includes(
                       getType(row)
@@ -181,7 +176,7 @@ function DataTable(props) {
                     )}
                 </TableCell>
               )}
-              <TableCell className={styles.tableCell}>
+              <TableCell>
                 <ExpressionField
                   selected={row.condition}
                   onSelectedChange={getOnChange('condition')}
@@ -190,7 +185,7 @@ function DataTable(props) {
                 />
               </TableCell>
 
-              <TableCell size="small" className={styles.tableCell}>
+              <TableCell size="small">
                 <Selection
                   disableClearable
                   options={getOptions(
@@ -207,14 +202,14 @@ function DataTable(props) {
                   onChange={getOnChange('from')}
                 />
               </TableCell>
-              <TableCell className={styles.tableCell}>
+              <TableCell>
                 <IconButton
                   size="medium"
                   onClick={() => onRemove(row, index)}
                   className={styles.iconButton}
                 >
                   <Tooltip title="Remove field">
-                    <Close fontSize="small" className={styles.deleteIcon} />
+                    <MaterialIcon icon="close" color="body" fontSize={16} />
                   </Tooltip>
                 </IconButton>
               </TableCell>
@@ -224,6 +219,7 @@ function DataTable(props) {
       );
     },
     [
+      styles,
       styles,
       handleChange,
       metaFields,
@@ -267,7 +263,7 @@ function DataTable(props) {
             gap={4}
           >
             {translate('Add fields')}
-            <AddRounded style={{ fontSize: '1.25rem' }} />
+            <MaterialIcon icon="add" fontSize="1.25rem" />
           </Button>
           <TextField
             color="body"
@@ -305,26 +301,14 @@ function DataTable(props) {
           </colgroup>
           <TableHead pos="sticky" position="sticky">
             <TableRow>
-              <TableCell className={styles.tableCell}>&nbsp;</TableCell>
-              <TableCell className={styles.tableCell}>
-                {translate('Field name')}
-              </TableCell>
-              <TableCell className={styles.tableCell}></TableCell>
-              <TableCell className={styles.tableCell}>
-                {translate('Value')}
-              </TableCell>
-              {isDMN && (
-                <TableCell className={styles.tableCell}>
-                  {translate('Search field')}
-                </TableCell>
-              )}
-              <TableCell className={styles.tableCell}>
-                {translate('Condition')}
-              </TableCell>
-              <TableCell className={styles.tableCell}>
-                {translate('Value from')}
-              </TableCell>
-              <TableCell className={styles.tableCell}></TableCell>
+              <TableCell>&nbsp;</TableCell>
+              <TableCell>{translate('Field name')}</TableCell>
+              <TableCell></TableCell>
+              <TableCell>{translate('Value')}</TableCell>
+              {isDMN && <TableCell>{translate('Search field')}</TableCell>}
+              <TableCell>{translate('Condition')}</TableCell>
+              <TableCell>{translate('Value from')}</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

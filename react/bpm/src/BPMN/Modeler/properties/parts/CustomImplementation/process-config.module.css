@@ -1,0 +1,84 @@
+.button {
+  text-transform: none;
+}
+
+.newIcon {
+  margin-inline: 2px;
+  cursor: pointer;
+  overflow: inherit;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.clearClassName {
+  padding-left: 10px;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: center;
+  overflow: auto;
+}
+
+.grid {
+  padding: 0 15px 0 0;
+}
+
+.iconButton {
+  margin: 5px 0 5px 5px;
+  border-radius: 0;
+  border: 1px solid #ccc;
+  color: inherit;
+  padding: 2px;
+  width: fit-content;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+}
+
+.icon {
+  margin-right: 10px;
+  color: var(--red);
+}
+
+.textFieldRoot {
+  margin-top: 0;
+}
+
+.textFieldLabel {
+  margin-bottom: 0;
+}
+
+.checkbox {
+  margin-top: 0;
+  justify-content: center;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.checkboxLabel {
+  width: 100%;
+}
+
+.scriptDialog {
+  width: 100%;
+  height: 100%;
+}
+
+.processPathDialog > div {
+  max-width: 90%;
+  width: fit-content;
+  min-width: 500px;
+}

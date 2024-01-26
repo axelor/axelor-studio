@@ -3,7 +3,7 @@ import { translate } from '../../utils'
 import { Button, Dialog, DialogHeader, DialogContent } from "@axelor/ui";
 import styles from "../css/queryBuilder.module.css";
 
-import ExpressionBuilder from "generic-builder/src/expression-builder";
+import ExpressionBuilder from "generic-builder/src/views";
 
 function ExpressionBuilderDummy() {
   return <p>Integrate Generic builder</p>;

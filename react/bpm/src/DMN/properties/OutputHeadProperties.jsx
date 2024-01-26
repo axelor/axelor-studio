@@ -21,10 +21,11 @@ import {
   DialogContent,
   DialogFooter,
   Box,
+  DialogTitle,
 } from "@axelor/ui";
 import { BooleanRadio } from "../../components/BooleanRadio";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./OutputHeadProperties.module.css";
+import styles from "./output-head-properties.module.css";
 
 export default function OutputHeadProperties({
   element,
@@ -321,7 +322,7 @@ export default function OutputHeadProperties({
         className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setOpenOutputExpression(false)}>
-          <h3>{translate("Expression")}</h3>
+          <DialogTitle>{translate("Expression")}</DialogTitle>
         </DialogHeader>
         <DialogContent className={styles.dialogContent}>
           <BooleanRadio
@@ -408,6 +409,21 @@ export default function OutputHeadProperties({
         <DialogFooter>
           <Button
             onClick={() => {
+              setOpenOutputExpression(false);
+              setOutputField(null);
+              setModel(null);
+              setContextModel(null);
+              setMetaField(null);
+              setAllFields([]);
+              setRelationalField(null);
+            }}
+            variant="secondary"
+            className={styles.save}
+          >
+            {translate("Cancel")}
+          </Button>
+          <Button
+            onClick={() => {
               handleOk();
               setModel(null);
               setOpenOutputExpression(false);
@@ -424,21 +440,6 @@ export default function OutputHeadProperties({
             className={styles.save}
           >
             {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => {
-              setOpenOutputExpression(false);
-              setOutputField(null);
-              setModel(null);
-              setContextModel(null);
-              setMetaField(null);
-              setAllFields([]);
-              setRelationalField(null);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
           </Button>
         </DialogFooter>
       </Dialog>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { IconButton } from "@material-ui/core";
-import { Add, Close, ReportProblem } from "@material-ui/icons";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import Select from "../../../../../components/Select";
@@ -40,7 +39,8 @@ import {
   TableRow,
   TableHead,
 } from "@axelor/ui";
-import styles from "./ViewAttributePanel.module.css";
+import styles from "./view-attribute.module.css";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const valueObj = {
   model: null,
@@ -707,8 +707,9 @@ export default function ViewAttributePanel({
                                   color="danger"
                                   className={styles.typography}
                                 >
-                                  <ReportProblem
-                                    fontSize="small"
+                                  <MaterialIcon
+                                    icon="report"
+                                    fontSize={16}
                                     className={styles.icon}
                                   />
                                   {translate("Must provide attributes")}
@@ -729,12 +730,16 @@ export default function ViewAttributePanel({
                               </Box>
                               <Box style={{ textAlign: "right" }}>
                                 <Button
+                                  d="flex"
+                                  alignItems="center"
+                                  gap={2}
                                   className={styles.button}
                                   onClick={() => addItems(index)}
                                   disabled={!val?.model || false}
                                   variant="light"
                                 >
-                                  <Add /> {translate("New")}
+                                  <MaterialIcon icon="add" d="flex" />
+                                  {translate("New")}
                                 </Button>
                               </Box>
                             </Box>
@@ -1006,7 +1011,10 @@ export default function ViewAttributePanel({
                                                 }
                                                 style={{ color: "inherit" }}
                                               >
-                                                <Close fontSize="small" />
+                                                <MaterialIcon
+                                                  icon="close"
+                                                  fontSize={14}
+                                                />
                                               </IconButton>
                                             </TableCell>
                                           </TableRow>
@@ -1024,7 +1032,7 @@ export default function ViewAttributePanel({
                           className={styles.iconButton}
                           onClick={() => removeCard(index)}
                         >
-                          <Close fontSize="small" />
+                          <MaterialIcon icon="close" fontSize={14} />
                         </IconButton>
                       </Box>
                     </Box>
@@ -1035,7 +1043,7 @@ export default function ViewAttributePanel({
       )}
       <Box color="body" d="flex" alignItems="center">
         <IconButton className={styles.iconButton} onClick={addModelView}>
-          <Add fontSize="small" />
+          <MaterialIcon icon="add" fontSize={16} />
         </IconButton>
       </Box>
     </div>

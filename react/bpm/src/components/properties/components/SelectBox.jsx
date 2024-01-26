@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { translate } from "../../../utils";
 import Description from "./Description";
 import { Box, InputLabel, Select } from "@axelor/ui";
-import styles from "./SelectBox.module.css";
+import styles from "./selectbox.module.css";
 
 export default function SelectBox({ entry, element }) {
   const {
@@ -71,7 +71,7 @@ export default function SelectBox({ entry, element }) {
         placeholder={translate("Select a value")}
         options={options}
         onChange={handleChange}
-        optionKey={(x) => x.value}
+        optionKey={(x) => x.id || x.name}
         optionLabel={(x) => x.name}
         optionEqual={(o, v) => o.value === v.value}
         value={selectedOption}

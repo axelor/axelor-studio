@@ -3,7 +3,7 @@ import { translate } from "../../../utils";
 import { Box, Button, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import classnames from "classnames";
-import styles from "./ExtensionElementTable.module.css";
+import styles from "./extension-table.module.css";
 
 export default function ExtensionElementTable({
   entry,

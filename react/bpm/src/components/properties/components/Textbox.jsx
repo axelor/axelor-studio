@@ -8,7 +8,7 @@ import { translate } from "../../../utils";
 import { useStore } from "../../../store";
 import { getNameProperty } from "../../../BPMN/Modeler/extra";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import styles from "./Textbox.module.css";
+import styles from "./textbox.module.css";
 
 const getValue = (element) => {
   if (!element) return;

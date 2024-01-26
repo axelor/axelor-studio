@@ -1,9 +1,14 @@
 import React from "react";
 import { translate } from "../utils";
-import { Button, Dialog, DialogHeader, DialogContent } from "@axelor/ui";
-import styles from "./QueryBuilder.module.css";
-
-import ExpressionBuilder from "generic-builder/src/expression-builder";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogTitle,
+} from "@axelor/ui";
+import ExpressionBuilder from "generic-builder/src/views";
+import styles from "./query-builder.module.css";
 
 function ExpressionBuilderDummy() {
   return <p>Integrate Generic builder</p>;
@@ -30,7 +35,7 @@ function QueryBuilder({
   return (
     <Dialog backdrop open={open} className={styles.dialog}>
       <DialogHeader onCloseClick={close}>
-        <h3>{translate(title)}</h3>
+        <DialogTitle>{translate(title)}</DialogTitle>
       </DialogHeader>
       <DialogContent className={styles.dialogContent}>
         {ExpressionBuilder ? (

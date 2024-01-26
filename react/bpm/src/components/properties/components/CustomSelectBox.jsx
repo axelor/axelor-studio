@@ -7,7 +7,7 @@ import classnames from "classnames";
 import Select from "../../Select";
 import { translate } from "../../../utils";
 import { Box, Button, InputLabel } from "@axelor/ui";
-import styles from "./CustomSelectBox.module.css";
+import styles from "./custom-selectbox.module.css";
 
 function findElementById(eventDefinition, type, id) {
   var elements = findRootElementsByType(eventDefinition, type);

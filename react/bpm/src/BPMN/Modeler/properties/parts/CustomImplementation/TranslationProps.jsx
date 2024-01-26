@@ -21,12 +21,12 @@ import {
   TableHead,
   TableRow,
   TableBody,
-  Divider,
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import { useStore } from "../../../../../store";
 import { getNameProperty } from "../../../extra";
-import styles from "./TranslationProps.module.css";
+import styles from "./translation-props.module.css";
 
 const getValue = (element) => {
   if (!element) return;
@@ -207,12 +207,7 @@ export default function TranslationProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <div style={{ display: "flex", alignItems: "center" }}>
           <Checkbox
             element={element}

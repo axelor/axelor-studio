@@ -13,8 +13,7 @@ import {
   Checkbox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import { Box, Divider } from "@axelor/ui";
-import styles from "./VariableMapping.module.css";
+import Title from "../../../Title";
 
 const inOutTypeOptions = [
   {
@@ -257,12 +256,7 @@ export default function VariableMapping({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <ExtensionElementTable
           element={element}
           options={inOptions}

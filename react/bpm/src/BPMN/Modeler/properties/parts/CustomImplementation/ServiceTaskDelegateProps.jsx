@@ -1,6 +1,6 @@
+import { is } from "bpmn-js/lib/util/ModelUtil";
 import React, { useEffect, useState } from "react";
 import { getServiceTaskLikeBusinessObject, isServiceTaskLike } from "../../../../../utils/ImplementationTypeUtils";
-import { is } from "bpmn-js/lib/util/ModelUtil";
 
 import Select from "../../../../../components/Select";
 import {
@@ -20,19 +20,18 @@ import {
 import { getBool, translate } from "../../../../../utils";
 
 import {
-  Box,
   Button,
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  Divider,
-  InputLabel,
+  DialogTitle,
+  InputLabel
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import Title from "../../../Title";
+import styles from "./service-task.module.css";
 
-import { useStore } from "../../../../../store";
-import styles from "./ServiceTaskDelegateProps.module.css";
 import { openWebApp } from "./utils";
 const eventTypes = [
   "bpmn:StartEvent",
@@ -348,14 +347,7 @@ export default function ServiceTaskDelegateProps({
     isVisible && (
       <div>
         {element && element.type !== "bpmn:SendTask" && (
-          <React.Fragment>
-            <React.Fragment>
-              {index > 0 && <Divider className={styles.divider} />}
-            </React.Fragment>
-            <Box color="body" className={styles.groupLabel}>
-              {translate(label)}
-            </Box>
-          </React.Fragment>
+          <Title divider={index > 0} label={label} />
         )}
         {element && element.type === "bpmn:ServiceTask" && (
           <Checkbox
@@ -913,12 +905,10 @@ export default function ServiceTaskDelegateProps({
                   }}
                   canRemove={true}
                 />
-                <React.Fragment>
-                  {index > 0 && <Divider className={styles.divider} />}
-                </React.Fragment>
-                <Box color="body" className={styles.groupLabel}>
-                  {translate("External task configuration")}
-                </Box>
+                <Title
+                  divider={index > 0}
+                  label="External task configuration"
+                />
                 <TextField
                   element={element}
                   entry={{
@@ -1070,7 +1060,7 @@ export default function ServiceTaskDelegateProps({
 
         <Dialog open={open} centered backdrop className={styles.dialogPaper}>
           <DialogHeader onCloseClick={() => setOpen(false)}>
-            <h3>{translate("Select DMN")}</h3>
+            <DialogTitle>{translate("Select DMN")}</DialogTitle>
           </DialogHeader>
           <DialogContent>
             <InputLabel color="body" className={styles.label}>

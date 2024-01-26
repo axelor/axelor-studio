@@ -4,9 +4,8 @@ import classnames from "classnames";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import RenderComponent from "./RenderWidget";
 import { isHiddenProperty } from "./extra.js";
-import { translate } from "../../utils";
-import { Box, Divider } from "@axelor/ui";
-import styles from "./TabPanel.module.css";
+import styles from "./tabpanel.module.css";
+import Title from "./Title";
 
 const getProcessId = (element) => {
   const bo = getBusinessObject(element);
@@ -102,12 +101,7 @@ export default function TabPanel({
       ) : (
         group.entries.length > 0 && (
           <React.Fragment>
-            <React.Fragment>
-              {index > 0 && <Divider className={styles.divider} />}
-            </React.Fragment>
-            <Box color="body" className={styles.groupLabel}>
-              {translate(group.label)}
-            </Box>
+            <Title divider={index > 0} label={group.label} />
             <div>
               {group.entries.map((entry, i) => (
                 <Entry

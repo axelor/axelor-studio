@@ -172,7 +172,7 @@ export default function AutoComplete(props) {
               : checkValue(option) === checkValue(val);
           }}
           optionLabel={(option) => checkValue(option)}
-          optionKey={(option) => option.name}
+          optionKey={(option) => option.id || option.name}
           customOptions={customOptions}
           id={_uniqueId('select-widget')}
           open={open}

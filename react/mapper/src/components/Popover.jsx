@@ -10,8 +10,10 @@ import {
   TextField,
   Box,
   InputLabel,
+  DialogTitle,
 } from '@axelor/ui';
-import styles from './Popover.module.css';
+
+import styles from './popover.module.css';
 
 const getFilteredFields = (_list, text) => {
   const list = _list.sort((item1, item2) => {
@@ -106,7 +108,7 @@ function FieldPopoverComponent({
   return (
     <Dialog open={open} centered>
       <DialogHeader className={styles.dialogTitle} onCloseClick={handleClose}>
-        <h4>{translate('Select fields')}</h4>
+        <DialogTitle>{translate('Select fields')}</DialogTitle>
       </DialogHeader>
 
       <DialogContent px={0}>
@@ -175,17 +177,17 @@ function FieldPopoverComponent({
       <DialogFooter>
         <Button
           className={styles.save}
-          variant="primary"
-          onClick={handleSubmit}
-        >
-          {translate('OK')}
-        </Button>
-        <Button
-          className={styles.save}
           variant="secondary"
           onClick={handleClose}
         >
           {translate('Close')}
+        </Button>
+        <Button
+          className={styles.save}
+          variant="primary"
+          onClick={handleSubmit}
+        >
+          {translate('OK')}
         </Button>
       </DialogFooter>
     </Dialog>

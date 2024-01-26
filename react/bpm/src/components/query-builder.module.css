@@ -1,0 +1,34 @@
+.dialog {
+  margin: 20px;
+  display: flex;
+  max-height: calc(100% - 40px);
+  max-width: calc(100% - 40px);
+}
+
+.dialog > div {
+  max-width: 100%;
+  min-width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog > div > div {
+  max-height: 100%;
+  resize: both;
+  overflow: auto;
+  min-width: 80%;
+  min-height: 80%;
+}
+
+.dialogContent {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cancelButton {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}

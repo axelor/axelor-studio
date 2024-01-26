@@ -19,9 +19,10 @@ import {
   DialogHeader,
   DialogContent,
   DialogFooter,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./InputHeadProperties.module.css";
+import styles from "./input-head-properties.module.css";
 
 export default function InputHeadProperties({
   element,
@@ -281,7 +282,7 @@ export default function InputHeadProperties({
       {open && (
         <Dialog open={open} centered backdrop className={styles.dialog}>
           <DialogHeader onCloseClick={handleClose}>
-            <h3>{translate("Expression")}</h3>
+            <DialogTitle>{translate("Expression")}</DialogTitle>
           </DialogHeader>
           <DialogContent className={styles.dialogContent}>
             {models?.length > 1 && (
@@ -339,16 +340,6 @@ export default function InputHeadProperties({
           <DialogFooter>
             <Button
               onClick={() => {
-                handleOk();
-                handleClose();
-              }}
-              variant="primary"
-              className={styles.save}
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
                 handleClose();
                 setField(null);
                 setContextModel(null);
@@ -360,6 +351,16 @@ export default function InputHeadProperties({
               className={styles.save}
             >
               {translate("Cancel")}
+            </Button>
+            <Button
+              onClick={() => {
+                handleOk();
+                handleClose();
+              }}
+              variant="primary"
+              className={styles.save}
+            >
+              {translate("OK")}
             </Button>
           </DialogFooter>
         </Dialog>

@@ -339,7 +339,7 @@ export default function SelectComponent({
               ? customOptionLabel(option, isTranslated)
               : getOptionLabel(option)
           }
-          optionKey={(x) => x.id}
+          optionKey={(x) => x.id || x.name}
           {...rest}
         />
       </ClickAwayListener>

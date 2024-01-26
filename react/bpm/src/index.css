@@ -1,14 +1,9 @@
 body {
   margin: 0;
-  font-family: var(--bs-body-font-family);
-  color: var(--bs-body-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
+  font-size: var(--bs-body-font-size);
   font-family: var(--bs-body-font-family);
-  color: var(--bs-body-color);
 }
 
 ::-webkit-scrollbar {

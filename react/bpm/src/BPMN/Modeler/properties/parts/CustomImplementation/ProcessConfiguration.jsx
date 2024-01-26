@@ -41,10 +41,11 @@ import {
   DialogFooter,
   InputLabel,
   Box,
-  Divider,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ProcessConfiguration.module.css";
+import styles from "./process-config.module.css";
 
 const initialProcessConfigList = {
   isStartModel: "false",
@@ -391,15 +392,8 @@ export default function ProcessConfiguration({
 
   return (
     <div>
-      <React.Fragment>
-        {index > 0 && <Divider className={styles.divider} />}
-      </React.Fragment>
+      <Title divider={index > 0} label={label} />
       <div>
-        <Box d="flex" alignItems="center">
-          <InputLabel color="body" className={styles.groupLabel}>
-            {label}
-          </InputLabel>
-        </Box>
         <Box>
           {(!processConfigList?.length ||
             !!processConfigList?.find(
@@ -885,7 +879,7 @@ export default function ProcessConfiguration({
         className={styles.processPathDialog}
       >
         <DialogHeader onCloseClick={() => setOpenProcessDialog(false)}>
-          <h3>{translate("Process Path")}</h3>
+          <DialogTitle>{translate("Process Path")}</DialogTitle>
         </DialogHeader>
         <DialogContent className={styles.dialogContent}>
           <FieldEditor
@@ -921,6 +915,15 @@ export default function ProcessConfiguration({
         <DialogFooter>
           <Button
             onClick={() => {
+              setOpenProcessDialog(false);
+            }}
+            variant="secondary"
+            className={styles.save}
+          >
+            {translate("Cancel")}
+          </Button>
+          <Button
+            onClick={() => {
               if (
                 field &&
                 field.target !== (startModel && startModel.fullName) &&
@@ -948,15 +951,6 @@ export default function ProcessConfiguration({
             className={styles.save}
           >
             {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => {
-              setOpenProcessDialog(false);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
           </Button>
         </DialogFooter>
       </Dialog>
@@ -1010,7 +1004,7 @@ export default function ProcessConfiguration({
       )}
       <Dialog centered open={alert?.open} backdrop>
         <DialogHeader onCloseClick={() => setAlert({ open: false })}>
-          <h3>{translate(alert?.title || translate("Warning"))}</h3>
+          <DialogTitle>{translate(alert?.title || "Warning")}</DialogTitle>
         </DialogHeader>
         <DialogContent className={styles.dialogContent}>
           <Box as="p" color="body" fontSize={5}>
@@ -1018,6 +1012,13 @@ export default function ProcessConfiguration({
           </Box>
         </DialogContent>
         <DialogFooter>
+          <Button
+            onClick={() => setAlert({ open: false })}
+            variant="secondary"
+            className={styles.save}
+          >
+            {translate("Cancel")}
+          </Button>
           <Button
             className={styles.save}
             onClick={() => {
@@ -1027,13 +1028,6 @@ export default function ProcessConfiguration({
             variant="primary"
           >
             {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => setAlert({ open: false })}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
           </Button>
         </DialogFooter>
       </Dialog>
@@ -1050,7 +1044,7 @@ export default function ProcessConfiguration({
             setSelectedProcessConfig(null);
           }}
         >
-          <h3>{translate("User default Path")}</h3>
+          <DialogTitle>{translate("User default Path")}</DialogTitle>
         </DialogHeader>
         <DialogContent className={styles.dialogContent}>
           <FieldEditor
@@ -1086,6 +1080,15 @@ export default function ProcessConfiguration({
         <DialogFooter>
           <Button
             onClick={() => {
+              setOpenUserPathDialog(false);
+            }}
+            variant="secondary"
+            className={styles.save}
+          >
+            {translate("Cancel")}
+          </Button>
+          <Button
+            onClick={() => {
               if (field && field.target !== "com.axelor.auth.db.User") {
                 setAlert({
                   open: true,
@@ -1109,15 +1112,6 @@ export default function ProcessConfiguration({
           >
             {translate("OK")}
           </Button>
-          <Button
-            onClick={() => {
-              setOpenUserPathDialog(false);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
         </DialogFooter>
       </Dialog>
       <Dialog backdrop centered open={openTranslationDialog}>
@@ -1130,7 +1124,7 @@ export default function ProcessConfiguration({
             }
           }}
         >
-          <h3>{translate("Translations")}</h3>
+          <DialogTitle>{translate("Translations")}</DialogTitle>
         </DialogHeader>
         <DialogContent className={styles.dialogContent}>
           <ProcessConfigTitleTranslation
@@ -1149,9 +1143,6 @@ export default function ProcessConfiguration({
           />
         </DialogContent>
         <DialogFooter>
-          <Button onClick={onConfirm} variant="primary" className={styles.save}>
-            {translate("OK")}
-          </Button>
           <Button
             onClick={() => {
               setTranslationDialog(false);
@@ -1160,6 +1151,13 @@ export default function ProcessConfiguration({
             className={styles.save}
           >
             {translate("Cancel")}
+          </Button>
+          <Button
+            onClick={onConfirm}
+            variant="primary"
+            className={styles.save}
+          >
+            {translate("OK")}
           </Button>
         </DialogFooter>
       </Dialog>

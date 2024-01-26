@@ -16,7 +16,7 @@ import {
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import AlertDialog from "../../AlertDialog";
 import ScriptEditor from "../EditorConfig/SrciptEditor";
-import styles from "./Table.module.css";
+import styles from "./table.module.css";
 
 export default function Table({ entry }) {
   const {

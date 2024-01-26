@@ -18,9 +18,10 @@ import {
   DialogHeader,
   DialogContent,
   DialogFooter,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./MessageEventDefinition.module.css";
+import styles from "./message-event.module.css";
 
 const setProperty = (name, value, element) => {
   const bo = getBusinessObject(element);
@@ -284,11 +285,11 @@ export default function MessageProps({
       {open && (
         <Dialog open={open} centered backdrop className={styles.dialogPaper}>
           <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
-            <h3>{translate("Select Message")}</h3>
+            <DialogTitle>{translate("Select Message")}</DialogTitle>
           </DialogHeader>
           <DialogContent className={styles.dialogContent}>
             <InputLabel className={styles.label}>
-              {translate("BPM model")}
+              {translate("BPM model")} ssss
             </InputLabel>
             <Select
               className={styles.select}

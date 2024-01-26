@@ -1,0 +1,38 @@
+.tableCell {
+  text-align: left;
+}
+
+.tableHead {
+  /* font-weight: 600; */
+  /* font-size: 12px; */
+}
+
+.iconButton {
+  margin: 5px 0 5px 5px;
+  border-radius: 0;
+  padding: 2px;
+  color: inherit;
+  width: fit-content;
+  border: 1px solid #ccc;
+}
+
+.clear {
+  font-size: 1rem;
+}
+
+.textRoot {
+  margin-top: 0;
+}
+
+.confirm {
+  color: #727272;
+  width: fit-content;
+  border: 1px solid #ccc;
+  height: 23px;
+  /* font-size: 12px; */
+  margin-left: 5px;
+  border-radius: 0;
+  text-transform: none;
+  margin-bottom: 10px;
+  padding: 0 10px !important;
+}

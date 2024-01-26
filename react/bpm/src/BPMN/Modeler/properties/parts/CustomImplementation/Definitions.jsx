@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { IconButton } from "@material-ui/core";
 import classnames from "classnames";
-
+import IconButton from "../../../IconButton";
 import Select from "../../../../../components/Select";
 import StaticSelect from "../../../../../components/StaticSelect";
 import {
@@ -28,10 +27,11 @@ import {
   TableRow,
   TableHead,
   Collapse,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import Stepper from "./Stepper";
-import styles from "./Definitions.module.css";
+import styles from "./definition.module.css";
 
 function getSteps() {
   return [STATUS[1], STATUS[2], STATUS[3]];
@@ -385,17 +385,12 @@ export default function Definition({
               <Tooltip
                 title={translate("Refresh")}
                 children={
-                  <IconButton
-                    onClick={getVersionList}
-                    aria-label="Refresh"
-                    style={{ color: "inherit" }}
-                  >
+                  <IconButton conClick={getVersionList} aria-label="Refresh">
                     <MaterialIcon icon="refresh" fontSize={16} />
                   </IconButton>
                 }
               />
               <IconButton
-                style={{ color: "inherit" }}
                 className={classnames(styles.expand, {
                   [styles.expandOpen]: expanded,
                 })}
@@ -528,7 +523,7 @@ export default function Definition({
       {open && (
         <Dialog backdrop centered open={open}>
           <DialogHeader onCloseClick={() => setOpen(false)}>
-            <h3>{translate("Select process")}</h3>
+            <DialogTitle>{translate("Select process")}</DialogTitle>
           </DialogHeader>
           <DialogContent className={styles.cardContent}>
             <InputLabel color="body" className={styles.label}>

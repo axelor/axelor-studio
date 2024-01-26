@@ -1,0 +1,13 @@
+.logo {
+  padding: 0 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: var(--bs-tertiary-bg);
+}
+
+.axelorLogo {
+  margin-right: 10px;
+  cursor: pointer;
+}
+

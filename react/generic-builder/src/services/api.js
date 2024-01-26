@@ -1,7 +1,7 @@
 import services from './Service';
 import { uniqBy } from 'lodash';
-import { getItemsByType, sortBy } from '../utils';
-import { ALLOWED_TYPES, QUERY_CUSTOM_TYPES } from '../constants';
+import { getItemsByType, sortBy } from '../common/utils';
+import { ALLOWED_TYPES, QUERY_CUSTOM_TYPES } from '../common/constants';
 
 const getResultedFields = (
   res,

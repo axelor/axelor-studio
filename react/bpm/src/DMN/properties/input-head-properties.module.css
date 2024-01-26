@@ -1,0 +1,28 @@
+.MuiAutocompleteRoot {
+    width: 250px;
+    margin-right: 10px;
+  }
+  
+  .newIcon {
+    margin-left: 5px;
+    cursor: pointer;
+  }
+  
+  .dialog > div {
+    max-width: 90%;
+    width: fit-content;
+    min-width: 500px;
+  }
+  
+  .dialogContent {
+    display: flex;
+    align-items: center;
+    overflow: auto;
+  }
+  
+  .save {
+    min-width: 64px;
+    margin: 8px;
+    text-transform: none;
+  }
+  

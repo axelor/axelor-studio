@@ -18,10 +18,11 @@ import {
   DialogFooter,
   InputLabel,
   Box,
-  Divider,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./UserTaskProps.module.css";
+import styles from "./user-task.module.css";
 
 export default function UserTaskProps({
   element,
@@ -240,13 +241,7 @@ export default function UserTaskProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
-
+        <Title divider={index > 0} label={label} />
         <div className={styles.expressionBuilder}>
           <TextField
             element={element}
@@ -346,7 +341,7 @@ export default function UserTaskProps({
           />
           <Dialog open={openAlert} centered backdrop className={styles.dialog}>
             <DialogHeader onCloseClick={() => setAlert(false)}>
-              <h3>{translate(alertTitle)}</h3>
+              <DialogTitle>{translate(alertTitle)}</DialogTitle>
             </DialogHeader>
             <DialogContent className={styles.content}>
               <Box as="p" color="body" fontSize={5}>
@@ -354,6 +349,15 @@ export default function UserTaskProps({
               </Box>
             </DialogContent>
             <DialogFooter>
+              <Button
+                className={styles.save}
+                onClick={() => {
+                  setAlert(false);
+                }}
+                variant="secondary"
+              >
+                {translate("Cancel")}
+              </Button>
               <Button
                 onClick={() => {
                   setAlert(false);
@@ -369,15 +373,6 @@ export default function UserTaskProps({
                 className={styles.save}
               >
                 {translate("OK")}
-              </Button>
-              <Button
-                className={styles.save}
-                onClick={() => {
-                  setAlert(false);
-                }}
-                variant="secondary"
-              >
-                {translate("Cancel")}
               </Button>
             </DialogFooter>
           </Dialog>

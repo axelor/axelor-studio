@@ -218,11 +218,11 @@ function Actions({ onOK, onCancel, t, error }) {
           {capitalize(t(error))}
         </InputLabel>
       )}
-      <Button variant="primary" className={styles.button} onClick={onOK}>
-        {t("OK")}
-      </Button>
       <Button variant="secondary" className={styles.button} onClick={onCancel}>
         {t("Cancel")}
+      </Button>
+      <Button variant="primary" className={styles.button} onClick={onOK}>
+        {t("OK")}
       </Button>
     </>
   )

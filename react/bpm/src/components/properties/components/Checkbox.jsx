@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import classnames from "classnames";
 import { Input, InputLabel } from "@axelor/ui";
 import { translate } from "../../../utils";
-import styles from "./Checkbox.module.css";
+import styles from "./checkbox.module.css";
 import { useStore } from "../../../store";
 
 export default function Checkbox({

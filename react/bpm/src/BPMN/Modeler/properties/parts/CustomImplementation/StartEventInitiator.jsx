@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { getConditionalEventDefinition, getMessageEventDefinition, getSignalEventDefinition, getTimerEventDefinition } from "../../../../../utils/EventDefinitionUtil";
+import {
+  getConditionalEventDefinition,
+  getMessageEventDefinition,
+  getSignalEventDefinition,
+  getTimerEventDefinition,
+} from "../../../../../utils/EventDefinitionUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
 import { translate } from "../../../../../utils";
-import { Box, Divider } from "@axelor/ui";
-import styles from "./StartEventInitiator.module.css";
+import Title from "../../../Title";
 
 export default function StartEventInitiator({
   element,
@@ -18,23 +22,19 @@ export default function StartEventInitiator({
 
   const showLabel = () => {
     if (!element) return;
-    let messageEventDefinition =
-      getMessageEventDefinition(element);
+    let messageEventDefinition = getMessageEventDefinition(element);
     if (messageEventDefinition) {
       return false;
     }
-    let timerEventDefinition =
-      getTimerEventDefinition(element);
+    let timerEventDefinition = getTimerEventDefinition(element);
     if (timerEventDefinition) {
       return false;
     }
-    let signalEventDefinition =
-      getSignalEventDefinition(element);
+    let signalEventDefinition = getSignalEventDefinition(element);
     if (signalEventDefinition) {
       return false;
     }
-    let conditionalEventDefinition =
-      getConditionalEventDefinition(element);
+    let conditionalEventDefinition = getConditionalEventDefinition(element);
     if (conditionalEventDefinition) {
       return false;
     }
@@ -55,16 +55,7 @@ export default function StartEventInitiator({
   return (
     isVisible && (
       <div>
-        {showLabel() && (
-          <React.Fragment>
-            <React.Fragment>
-              {index > 0 && <Divider className={styles.divider} />}
-            </React.Fragment>
-            <Box color="body" className={styles.groupLabel}>
-              {translate(label)}
-            </Box>
-          </React.Fragment>
-        )}
+        {showLabel() && <Title divider={index > 0} label={label} />}
         <TextField
           element={element}
           entry={{

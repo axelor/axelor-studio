@@ -31,7 +31,7 @@ import {
 } from "../constants";
 
 import { InputLabel } from "@axelor/ui";
-import styles from "./RenderTypeProperties.module.css";
+import styles from "./render-type.module.css";
 
 const DISJUNCTION = "disjunction";
 const NEGATION = "negation";

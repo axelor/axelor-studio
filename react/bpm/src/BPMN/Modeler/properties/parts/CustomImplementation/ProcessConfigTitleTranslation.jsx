@@ -14,7 +14,7 @@ import {
   TableBody,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ProcessConfigTitleTranslation.module.css";
+import styles from "./process-config-title.module.css";
 
 export default function ProcessConfigTitleTranslation({
   configKey,

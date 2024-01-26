@@ -28,10 +28,11 @@ import {
   DialogContent,
   DialogFooter,
   Box,
-  Divider,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ListenerProps.module.css";
+import styles from "./listener-props.module.css";
 
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
 const CAMUNDA_TASK_LISTENER_ELEMENT = "camunda:TaskListener";
@@ -408,12 +409,7 @@ export default function ListenerProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         {showExecutionListener() && (
           <ExtensionElementTable
             element={element}
@@ -654,7 +650,7 @@ export default function ListenerProps({
                         className={styles.dialog}
                       >
                         <DialogHeader onCloseClick={() => setAlert(false)}>
-                          <h3>{translate("Warning")}</h3>
+                          <DialogTitle>{translate("Warning")}</DialogTitle>
                         </DialogHeader>
                         <DialogContent className={styles.content}>
                           {translate(
@@ -662,6 +658,15 @@ export default function ListenerProps({
                           )}
                         </DialogContent>
                         <DialogFooter>
+                          <Button
+                            onClick={() => {
+                              setAlert(false);
+                            }}
+                            variant="secondary"
+                            className={styles.save}
+                          >
+                            {translate("Cancel")}
+                          </Button>
                           <Button
                             onClick={() => {
                               setAlert(false);
@@ -675,15 +680,6 @@ export default function ListenerProps({
                             className={styles.save}
                           >
                             {translate("OK")}
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setAlert(false);
-                            }}
-                            variant="secondary"
-                            className={styles.save}
-                          >
-                            {translate("Cancel")}
                           </Button>
                         </DialogFooter>
                       </Dialog>

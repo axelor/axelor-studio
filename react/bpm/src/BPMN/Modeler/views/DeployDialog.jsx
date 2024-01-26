@@ -16,8 +16,9 @@ import {
   TableHead,
   TableRow,
   TableBody,
+  DialogTitle,
 } from "@axelor/ui";
-import styles from "./DeployDialog.module.css";
+import styles from "./deploy-dialog.module.css";
 
 export default function DeployDialog({
   open,
@@ -128,9 +129,9 @@ export default function DeployDialog({
   return (
     <Dialog open={open} backdrop centered className={styles.dialogPaper}>
       <DialogHeader onCloseClick={onClose}>
-        <h3>
+        <DialogTitle>
           <strong>{translate("Node mapping")}</strong>
-        </h3>
+        </DialogTitle>
       </DialogHeader>
       <DialogContent className={styles.dialogContent}>
         {(wkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
@@ -199,11 +200,19 @@ export default function DeployDialog({
           ))}
       </DialogContent>
       <DialogFooter>
-        <Button onClick={onConfirm} className={styles.button} variant="primary">
-          {translate("OK")}
-        </Button>
-        <Button onClick={onClose} variant="secondary" className={styles.button}>
+        <Button
+          onClick={onClose}
+          variant="secondary"
+          className={styles.button}
+        >
           {translate("Cancel")}
+        </Button>
+        <Button
+          onClick={onConfirm}
+          className={styles.button}
+          variant="primary"
+        >
+          {translate("OK")}
         </Button>
       </DialogFooter>
     </Dialog>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import NotInterested from "@material-ui/icons/NotInterested";
 
 import TimerBuilder from "../../../../../components/TimerBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
@@ -20,10 +19,11 @@ import {
   DialogContent,
   Input,
   InputLabel,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import moment from "moment";
-import styles from "./TimerEventDefinition.module.css";
+import styles from "./timer-event.module.css";
 
 const timerOptions = [
   { value: "timeDate", name: translate("Date") },
@@ -271,7 +271,9 @@ export default function TimerEventProps({
             endAdornment={
               <Box color="body" className={styles.new}>
                 <Tooltip title="Enable" aria-label="enable">
-                  <NotInterested
+                  <MaterialIcon
+                    icon="do_not_disturb"
+                    fontSize={16}
                     className={styles.newIcon}
                     onClick={() => {
                       if (isFromBuilder) {
@@ -305,7 +307,7 @@ export default function TimerEventProps({
               className={styles.timeDateDialog}
             >
               <DialogHeader onCloseClick={handleClose}>
-                <h3>{translate("Timer definition")}</h3>
+                <DialogTitle>{translate("Timer definition")}</DialogTitle>
               </DialogHeader>
               <DialogContent className={styles.timeDateContent}>
                 <InputLabel style={{ fontSize: 14 }}>
@@ -321,6 +323,13 @@ export default function TimerEventProps({
               <DialogFooter>
                 <Button
                   className={styles.button}
+                  variant="secondary"
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className={styles.button}
                   variant="primary"
                   onClick={() => {
                     handleChange(moment(date).format("YYYY-MM-DDTHH:mm"));
@@ -328,13 +337,6 @@ export default function TimerEventProps({
                   }}
                 >
                   OK
-                </Button>
-                <Button
-                  className={styles.button}
-                  variant="secondary"
-                  onClick={handleClose}
-                >
-                  Cancel
                 </Button>
               </DialogFooter>
             </Dialog>

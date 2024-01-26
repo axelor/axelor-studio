@@ -3,8 +3,7 @@ import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
 import { translate } from "../../../../../utils";
-import { Box, Divider } from "@axelor/ui";
-import styles from "./LinkProps.module.css";
+import Title from "../../../Title";
 
 var linkEvents = ["bpmn:IntermediateThrowEvent", "bpmn:IntermediateCatchEvent"];
 
@@ -51,10 +50,7 @@ export default function LinkProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box className={styles.groupLabel}>{translate(label)}</Box>
+        <Title divider={index > 0} label={label} />
         <TextField
           element={element}
           entry={{
