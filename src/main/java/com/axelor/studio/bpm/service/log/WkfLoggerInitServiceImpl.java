@@ -47,6 +47,7 @@ public class WkfLoggerInitServiceImpl implements WkfLoggerInitService {
   private LoggerContext context;
 
   private static final String DEFAULT_LOGGER = "org.camunda.bpm.engine.script";
+  private static final String DEFAULT_CONTEXT_LOGGER = "org.camunda.bpm.engine.context";
 
   private static final String ANSI_LOG_PATTERN =
       "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) "
@@ -128,6 +129,10 @@ public class WkfLoggerInitServiceImpl implements WkfLoggerInitService {
     Logger logger = context.getLogger(DEFAULT_LOGGER);
     logger.setLevel(Level.DEBUG);
     loggers.add(logger);
+
+    Logger contextLogger = context.getLogger((DEFAULT_CONTEXT_LOGGER));
+    contextLogger.setLevel(Level.DEBUG);
+    loggers.add(contextLogger);
 
     String loggerNames = appSettingsStudioService.getLoggers();
 
