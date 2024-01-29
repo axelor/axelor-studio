@@ -1,6 +1,5 @@
 import React, { useState } from "react"
-import Checkbox from "@mui/material/Checkbox"
-
+import { Input } from "@axelor/ui"
 import {
 	camleCaseString,
 	translate,
@@ -93,7 +92,8 @@ export default function CheckboxField(_props) {
 
 	return (
 		<React.Fragment>
-			<Checkbox
+			<Input
+				type="checkbox"
 				className={classNames}
 				checked={fieldValue}
 				disabled={disabled}

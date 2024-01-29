@@ -49,6 +49,7 @@ import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefi
 // helpers
 
 let isExternalTaskPriorityEnabled = function (element) {
+  if (!element) return;
   let businessObject = getBusinessObject(element);
 
   // show only if element is a process, a participant ...
@@ -59,8 +60,9 @@ let isExternalTaskPriorityEnabled = function (element) {
     return true;
   }
 
-  let externalBo =
-      ImplementationTypeHelper.getServiceTaskLikeBusinessObject(element),
+  let externalBo = ImplementationTypeHelper.getServiceTaskLikeBusinessObject(
+      element
+    ),
     isExternalTask =
       ImplementationTypeHelper.getImplementationType(externalBo) === "external";
 
@@ -71,6 +73,7 @@ let isExternalTaskPriorityEnabled = function (element) {
 };
 
 let isJobConfigEnabled = function (element) {
+  if (!element) return;
   let businessObject = getBusinessObject(element);
 
   if (
@@ -257,6 +260,7 @@ function createListenersTabGroups(
     id: "listener-details",
     entries: [],
     enabled: function (element, node) {
+      if (!element) return;
       return options.getSelectedListener(element, node);
     },
     label: function (element, node) {
@@ -278,6 +282,7 @@ function createListenersTabGroups(
     label: translate("Field injection"),
     entries: [],
     enabled: function (element, node) {
+      if (!element) return;
       return options.getSelectedListener(element, node);
     },
   };
@@ -344,6 +349,7 @@ export default function CustomPropertiesProvider(
         translate
       ),
       enabled: function (element) {
+        if (!element) return;
         return (
           !eventDefinitionHelper.getLinkEventDefinition(element) ||
           (!is(element, "bpmn:IntermediateThrowEvent") &&

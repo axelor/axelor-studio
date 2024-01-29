@@ -47,20 +47,9 @@ export function getModelName(value) {
   return conditionalModel[0]?.toUpperCase() + conditionalModel.slice(1);
 }
 
-export function setDummyProperty({ bpmnModeler, element, value }) {
-  if (!bpmnModeler || !element) return;
-  let modeling = bpmnModeler.get("modeling");
-  let elementRegistry = bpmnModeler.get("elementRegistry");
-  let shape = elementRegistry.get(element.id);
-  modeling &&
-    modeling.updateProperties(shape, {
-      [DUMMY]: value || true,
-    });
-}
-
 export function openTabView(view) {
   const scope = getAxelorScope();
-  scope && scope.$openTab && scope.$openTab(view);
+  scope && scope.openView && scope.openView(view);
 }
 
 export function openWebApp(url, title) {

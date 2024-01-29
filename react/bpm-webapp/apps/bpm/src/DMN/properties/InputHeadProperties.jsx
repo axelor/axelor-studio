@@ -1,15 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Edit, NotInterested } from "@material-ui/icons";
-
 import { EXPRESSION_LANGUAGE_OPTIONS, TYPES } from "../constants";
 import { getMetaFields } from "../../services/api";
 import {
@@ -23,6 +13,15 @@ import { RELATIONAL_TYPES, ALL_TYPES } from "../constants";
 import { getNameField } from "../services/api";
 import { Selection } from "../../components/expression-builder/components";
 import AlertDialog from "../../components/AlertDialog";
+import Tooltip from "../../components/Tooltip";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   MuiAutocompleteRoot: {
@@ -30,28 +29,25 @@ const useStyles = makeStyles((theme) => ({
     marginRight: "10px",
   },
   newIcon: {
-    color: "#58B423",
     marginLeft: 5,
     cursor: "pointer",
   },
   dialog: {
-    minWidth: 300,
+    "& > div": {
+      maxWidth: "90%",
+      width: "fit-content",
+      minWidth: 500,
+    },
   },
   dialogContent: {
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "center",
+    overflow: "auto",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
 }));
 
@@ -297,38 +293,31 @@ export default function InputHeadProperties({
         endAdornment={
           <>
             <Tooltip title="Enable" aria-label="enable">
-              <NotInterested
+              <MaterialIcon
+                icon="do_not_disturb"
                 className={classes.newIcon}
                 onClick={() => readOnly && setOpenAlert(true)}
               />
             </Tooltip>
-            <Edit className={classes.newIcon} onClick={handleClickOpen} />
+            <MaterialIcon
+              icon="edit"
+              className={classes.newIcon}
+              onClick={handleClickOpen}
+            />
           </>
         }
       />
       {open && (
-        <Dialog
-          open={open}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              handleClose();
-            }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">
-            {translate("Expression")}
-          </DialogTitle>
+        <Dialog open={open} centered backdrop className={classes.dialog}>
+          <DialogHeader onCloseClick={handleClose}>
+            <h3>{translate("Expression")}</h3>
+          </DialogHeader>
           <DialogContent className={classes.dialogContent}>
             {models?.length > 1 && (
               <Selection
                 name="model"
                 title="Model"
-                placeholder="model"
+                placeholder="Model"
                 fetchAPI={() => getData()}
                 optionLabelKey="name"
                 onChange={(e) => {
@@ -376,13 +365,13 @@ export default function InputHeadProperties({
               isParent={true}
             />
           </DialogContent>
-          <DialogActions>
+          <DialogFooter>
             <Button
               onClick={() => {
                 handleOk();
                 handleClose();
               }}
-              color="primary"
+              variant="primary"
               className={classes.save}
             >
               {translate("OK")}
@@ -396,14 +385,15 @@ export default function InputHeadProperties({
                 setAllFields([]);
                 setRelationalField(null);
               }}
-              color="primary"
+              variant="secondary"
               className={classes.save}
             >
               {translate("Cancel")}
             </Button>
-          </DialogActions>
+          </DialogFooter>
         </Dialog>
       )}
+
       <SelectBox
         element={element}
         entry={{
@@ -501,15 +491,13 @@ export default function InputHeadProperties({
           canRemove={true}
         />
       )}
-      {openAlert && (
-        <AlertDialog
-          openAlert={openAlert}
-          handleAlertOk={handleAlertOk}
-          alertClose={alertClose}
-          message="Script can't be managed using builder once changed manually."
-          title="Warning"
-        />
-      )}
+      <AlertDialog
+        openAlert={openAlert}
+        handleAlertOk={handleAlertOk}
+        alertClose={alertClose}
+        message="Script can't be managed using builder once changed manually."
+        title="Warning"
+      />
     </React.Fragment>
   );
 }

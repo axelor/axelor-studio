@@ -1,40 +1,39 @@
 import React from "react"
-import { Divider, Container, Grid, useMediaQuery } from "@mui/material"
-import { styled } from "@mui/material/styles"
+import { Box, Divider } from "@axelor/ui"
+import styled from "@axelor/ui/core/styled"
 import { getFields } from "../../fields"
 import FieldComponent from "../../components/FieldComponent"
 import Widget from "../../components/Widget"
 import Field from "./Field"
 import classNames from "classnames"
 
-const WidgetIcon = styled(Widget)({
-	"&&&": { border: "none !important", boxShadow: "none", padding: "5px 0" },
-})
+const Container = styled(Box)(({ display = "grid" }) => ({ display }))
 
 export default React.memo(function AddPanelView({
 	toolbarOffset,
 	isStudioLite,
 	modelType,
 }) {
-	const isResponsive = useMediaQuery(`(max-height: ${720 + toolbarOffset}px)`)
+	const mediaQueryString = `(max-height: ${720 + toolbarOffset}px)`
+	const isResponsive = window.matchMedia(mediaQueryString).matches
 	const fields = React.useMemo(() => getFields(modelType), [modelType])
 
 	const showField = (field) =>
 		!isStudioLite || (isStudioLite && field.name !== "oneToMany")
 
 	return (
-		<Container
+		<Box
 			className={classNames("toolbar-pallete")}
-			sx={{
-				width: "min-content !important",
-				height: "fit-content !important",
-				backgroundColor: "#fafafa",
-				border: "1px solid lightgray",
-				padding: "0 !important",
-				margin: "1rem 0",
-				borderRadius: "5px !important",
-				marginTop: "14px !important",
-				boxShadow: "1px 2px 8px 0px rgb(1 1 1 / 50%) !important",
+			border
+			shadow="lg"
+			p={0}
+			rounded="2"
+			mt="2"
+			bg="body-tertiary"
+			my={4}
+			style={{
+				width: "min-content ",
+				height: "fit-content ",
 			}}
 		>
 			{fields.map(
@@ -43,7 +42,10 @@ export default React.memo(function AddPanelView({
 						(isStudioLite &&
 							["Fields", "Relational fields"].includes(fieldType.name))) && (
 						<React.Fragment key={index}>
-							<Grid container style={{ width: isResponsive ? "80px" : "40px" }}>
+							<Container
+								gridTemplateColumns={isResponsive ? "50% 50%" : "100%"}
+								style={{ width: isResponsive ? "80px" : "40px" }}
+							>
 								{fieldType.value &&
 									fieldType.value.map((field, i) => {
 										if (
@@ -56,18 +58,13 @@ export default React.memo(function AddPanelView({
 											return null
 										}
 										return (
-											<Grid
-												item
-												xs={isResponsive ? 6 : 12}
-												sx={{
-													"&:hover": {
-														backgroundColor: "rgb(41 56 70 / 35%)",
-													},
-												}}
+											<Container
+												placeContent="center"
+												className="addPanelIcon"
 												key={i}
 											>
 												<Field key={i}>
-													<WidgetIcon
+													<Widget
 														id={field.id}
 														attrs={field}
 														design={true}
@@ -75,16 +72,14 @@ export default React.memo(function AddPanelView({
 														isPalleteField={true}
 													/>
 												</Field>
-											</Grid>
+											</Container>
 										)
 									})}
-							</Grid>
-							{index < fields.length - 1 && (
-								<Divider sx={{ margin: "4px", background: "gray" }} />
-							)}
+							</Container>
+							{index < fields.length - 1 && <Divider mt={1} />}
 						</React.Fragment>
 					)
 			)}
-		</Container>
+		</Box>
 	)
 })

@@ -1,7 +1,4 @@
 import React, { useCallback, useState } from "react"
-import { IconButton } from "@mui/material"
-import { styled } from "@mui/material/styles"
-import classnames from "classnames"
 import ViewSelection from "./ViewSelection"
 import { HISTORY, MODEL_TYPE, TYPE } from "../constants"
 import { useKeyPress } from "../custom-hooks/useKeyPress"
@@ -10,41 +7,37 @@ import { getWidgetElementId, translate } from "../utils"
 
 import Select from "./Select"
 import { useStore } from "../store/context"
+import { Box, ClickAwayListener } from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
+import IconButton from "../components/IconButton"
 
-const ToolbarContainer = styled("div")(() => ({
-	display: "flex",
-	flexWrap: "wrap",
-	justifyContent: "space-between",
-	width: "100%",
-	height: "inherit",
-	backgroundColor: "rgb(41, 56, 70)",
-	padding: "0.5rem 0.75rem",
-	[`&.modern-dark`]: {
-		backgroundColor: "#323232",
-	},
-}))
-const SelectionContainer = styled("div")(() => ({
-	display: "flex",
-	alignItems: "center",
-	flexWrap: "wrap",
-}))
-const ViewContainer = styled("div")(() => ({
-	display: "flex",
-	flex: 1,
-	alignItems: "center",
-	flexWrap: "wrap",
-}))
-const ToolbarActions = styled("div")(() => ({
-	justifyContent: "space-between",
-	display: "flex",
-	alignItems: "center",
-}))
-const CrudIcon = styled("i")(() => ({
-	height: "1em !important",
-	width: "1em !important",
-	cursor: "pointer",
-	fontSize: "0.5em !important",
-}))
+const ToolbarContainer = (props) => (
+	<Box
+		d="flex"
+		flexWrap="wrap"
+		justifyContent="space-between"
+		bg="body-tertiary"
+		py={2}
+		px={3}
+		w={100}
+		style={{
+			zIndex: "1000",
+			height: "inherit",
+		}}
+		{...props}
+	/>
+)
+const SelectionContainer = (props) => (
+	<Box d="flex" alignItems="center" flexWrap="wrap" {...props} />
+)
+
+const ViewContainer = (props) => (
+	<Box d="flex" alignItems="center" flexWrap="wrap" flex={1} {...props} />
+)
+
+const ToolbarActions = (props) => (
+	<Box d="flex" justifyContent="center" alignItems="center" {...props} />
+)
 
 function isStudioView(view) {
 	if (view && view.xmlId && view.xmlId.indexOf("studio-") === 0) {
@@ -54,19 +47,7 @@ function isStudioView(view) {
 }
 
 function ToolbarButton(props) {
-	return (
-		<IconButton
-			sx={{
-				color: "#fff",
-				padding: "5px 10px",
-				"&[disabled] > i": {
-					color: "#555",
-				},
-			}}
-			{...props}
-			size="large"
-		/>
-	)
+	return <IconButton {...props} size="large" />
 }
 
 const getOptionLabel = (option) => {
@@ -285,7 +266,6 @@ function Toolbar({
 			}
 			setIsComponentVisible(true)
 			onSelect({ id: -1 })
-
 			const allOptions = []
 			let options = getSearchOptions(widgets, items, false)
 			allOptions.push(...options)
@@ -367,6 +347,7 @@ function Toolbar({
 				draft
 			)
 		})
+		handleOutsideClick(false)
 	}, [update, onSelect])
 
 	const handleHighlightChangeRef = React.useRef(handleHighlightChange)
@@ -391,6 +372,28 @@ function Toolbar({
 			clearTimeout(timerRef.current)
 		}
 	}, [])
+
+	React.useEffect(() => {
+		const handleMouseOver = (event) => {
+			const hoveredElement = event.target
+			if (
+				hoveredElement.tagName === "DIV" &&
+				hoveredElement.getAttribute("role") === "option"
+			) {
+				const hoveredName =
+					hoveredElement.innerText.match(/\(([^)]+)\)/)?.[1]?.trim() || ""
+				const hoveredOption = options.find((op) => op.name === hoveredName)
+				if (hoveredOption) handleHighlightChange(hoveredOption)
+			}
+		}
+
+		if (isComponentVisible) {
+			document.addEventListener("mouseover", handleMouseOver)
+			return () => {
+				document.removeEventListener("mouseover", handleMouseOver)
+			}
+		}
+	}, [isComponentVisible])
 
 	const showConfirmation = React.useCallback(
 		(onOK) => {
@@ -458,34 +461,28 @@ function Toolbar({
 	)
 
 	return (
-		<ToolbarContainer>
-			<SelectionContainer
-				sx={{
-					display: "flex",
-					alignItems: "center",
-					flexWrap: "wrap",
-				}}
-			>
+		<ToolbarContainer border shadow="sm" className="toolbar-container">
+			<SelectionContainer>
 				{modelType !== MODEL_TYPE.BASE && (
 					<ToolbarButton
 						onClick={onNewWithConfirmation}
 						disabled={isNewDisabled}
 					>
-						<CrudIcon className={classnames("fa fa-plus")}></CrudIcon>
+						<MaterialIcon color="body" fontSize={20} icon="add" />
 					</ToolbarButton>
 				)}
 				<ToolbarButton onClick={save} disabled={loader}>
 					{" "}
-					<CrudIcon className={classnames("fa fa-floppy-o")}></CrudIcon>
+					<MaterialIcon color="body" fontSize={20} icon="save" />
 				</ToolbarButton>
 				{modelType === MODEL_TYPE.CUSTOM && (
 					<ToolbarButton onClick={removeView} disabled={isRemoveDisabled}>
-						<CrudIcon className={classnames("fa fa-trash-o")}></CrudIcon>
+						<MaterialIcon color="body" fontSize={20} icon="delete" />
 					</ToolbarButton>
 				)}
 			</SelectionContainer>
 			{!isStudioLite && (
-				<ViewContainer>
+				<ViewContainer gap={3}>
 					<ViewSelection
 						model={model}
 						update={update}
@@ -502,18 +499,20 @@ function Toolbar({
 			)}
 			<ToolbarActions>
 				{isComponentVisible ? (
-					<Select
-						options={options}
-						autoHighlight={true}
-						open={true}
-						autoFocus={true}
-						onChange={handleChange}
-						onClose={handleClose}
-						onHighlightChange={onHighlightChange}
-						handleOutsideClick={handleOutsideClick}
-						getOptionLabel={getOptionLabel}
-						isOptionEqualToValue={getOptionSelected}
-					/>
+					<ClickAwayListener onClickAway={() => handleOutsideClick(false)}>
+						<Box>
+							<Select
+								options={options}
+								autoHighlight={true}
+								open={true}
+								autoFocus={true}
+								onChange={handleChange}
+								onHighlightChange={onHighlightChange}
+								getOptionLabel={getOptionLabel}
+								isOptionEqualToValue={getOptionSelected}
+							/>
+						</Box>
+					</ClickAwayListener>
 				) : (
 					<ToolbarButton
 						onClick={handleSearch}
@@ -529,23 +528,23 @@ function Toolbar({
 						}
 					>
 						{" "}
-						<CrudIcon className={classnames("fa fa-search")}></CrudIcon>
+						<MaterialIcon color="body" fontSize={20} icon="search" />
 					</ToolbarButton>
 				)}
 				<ToolbarButton
 					onClick={handleRefreshWithConfirmation}
 					disabled={loader || (!customModel && !model)}
 				>
-					<CrudIcon className={classnames("fa fa-refresh")}></CrudIcon>
+					<MaterialIcon color="body" fontSize={20} icon="refresh" />
 				</ToolbarButton>
 				<ToolbarButton onClick={() => props.undo()} disabled={past.length <= 0}>
-					<CrudIcon className={classnames("fa fa-reply")}></CrudIcon>
+					<MaterialIcon color="body" fontSize={20} icon="undo" />
 				</ToolbarButton>
 				<ToolbarButton
 					onClick={() => props.redo()}
 					disabled={future.length <= 0}
 				>
-					<CrudIcon className={classnames("fa fa-share")}></CrudIcon>
+					<MaterialIcon color="body" fontSize={20} icon="redo" />
 				</ToolbarButton>
 			</ToolbarActions>
 		</ToolbarContainer>

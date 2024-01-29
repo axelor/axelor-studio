@@ -5,7 +5,7 @@
 
   <grid name="wkf-dmn-model-grid" title="DMN" model="com.axelor.studio.db.WkfDmnModel">
     <button name="openEditorBtn" title="Open editor"
-      onClick="action-wkf-dmn-view-open-editor" icon="fa-edit"/>
+      onClick="action-wkf-dmn-view-open-editor" icon="pencil-square"/>
     <field name="name"/>
   </grid>
 

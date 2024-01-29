@@ -11,13 +11,13 @@ import Timer from "./TimerEventDefinition";
 import Compensation from "./CompensateEventDefinition";
 import Condition from "./ConditionalEventDefinition";
 import Error from "./ErrorEventDefinition";
+import { Box, Divider } from "@axelor/ui";
 
 const useStyles = makeStyles({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -25,7 +25,6 @@ const useStyles = makeStyles({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
 });
 
@@ -73,6 +72,8 @@ export default function EventProps({
   bpmnFactory,
   bpmnModdle,
   bpmnModeler,
+  id,
+  setDummyProperty = () => {},
 }) {
   const [isVisible, setVisible] = useState(false);
   const [renderType, setRenderType] = useState(null);
@@ -89,6 +90,8 @@ export default function EventProps({
             messageEventDefinition={renderType.eventDefinition}
             bpmnModdle={bpmnModdle}
             bpmnModeler={bpmnModeler}
+            setDummyProperty={setDummyProperty}
+            id={id}
           />
         );
       case "signal":
@@ -99,6 +102,8 @@ export default function EventProps({
             bpmnModdle={bpmnModdle}
             bpmnModeler={bpmnModeler}
             signalEventDefinition={renderType.eventDefinition}
+            setDummyProperty={setDummyProperty}
+            id={id}
           />
         );
       case "escalation":
@@ -110,6 +115,7 @@ export default function EventProps({
             bpmnModeler={bpmnModeler}
             escalationEventDefinition={renderType.eventDefinition}
             showEscalationCodeVariable={renderType.showEscalationCodeVariable}
+            setDummyProperty={setDummyProperty}
           />
         );
       case "timer":
@@ -119,6 +125,7 @@ export default function EventProps({
             bpmnFactory={bpmnFactory}
             timerEventDefinition={renderType.eventDefinition}
             bpmnModeler={bpmnModeler}
+            setDummyProperty={setDummyProperty}
           />
         );
       case "compensation":
@@ -128,6 +135,7 @@ export default function EventProps({
             bpmnFactory={bpmnFactory}
             compensateEventDefinition={renderType.eventDefinition}
             bpmnModeler={bpmnModeler}
+            setDummyProperty={setDummyProperty}
           />
         );
       case "condition":
@@ -137,6 +145,7 @@ export default function EventProps({
             bpmnFactory={bpmnFactory}
             conditionalEventDefinition={renderType.eventDefinition}
             bpmnModeler={bpmnModeler}
+            setDummyProperty={setDummyProperty}
           />
         );
       case "error":
@@ -147,6 +156,7 @@ export default function EventProps({
             errorEventDefinition={renderType.eventDefinition}
             bpmnModdle={bpmnModdle}
             bpmnModeler={bpmnModeler}
+            setDummyProperty={setDummyProperty}
           />
         );
       default:
@@ -291,9 +301,11 @@ export default function EventProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{label}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {label}
+        </Box>
         <div>{renderComponent()}</div>
       </div>
     )

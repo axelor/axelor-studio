@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Table,
-  TableContainer,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableBody,
-  Paper,
-  IconButton,
-} from "@material-ui/core";
-import { Close, Add } from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import {
@@ -24,13 +14,22 @@ import {
   Checkbox,
 } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
+import {
+  Box,
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
+  Divider,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -38,7 +37,6 @@ const useStyles = makeStyles({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   tableCell: {
     textAlign: "left",
@@ -46,22 +44,17 @@ const useStyles = makeStyles({
   tableHead: {
     fontWeight: 600,
     fontSize: 12,
-    textAlign: "left",
   },
   iconButton: {
     margin: "5px 0px 5px 5px",
     borderRadius: 0,
     padding: 2,
-    color: "black",
+    color: "inherit",
     width: "fit-content",
     border: "1px solid #ccc",
   },
   clear: {
     fontSize: "1rem",
-  },
-  table: {
-    margin: "10px 0px",
-    background: "#F8F8F8",
   },
   textRoot: {
     marginTop: 0,
@@ -293,9 +286,11 @@ export default function TranslationProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{translate(label)}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {translate(label)}
+        </Box>
         <div style={{ display: "flex", alignItems: "center" }}>
           <Checkbox
             element={element}
@@ -343,115 +338,108 @@ export default function TranslationProps({
             }}
           />
           {isTranslations && (
-            <IconButton className={classes.iconButton} onClick={addTranslation}>
-              <Add fontSize="small" />
-            </IconButton>
+            <Box color="body">
+              <IconButton
+                className={classes.iconButton}
+                onClick={addTranslation}
+              >
+                <MaterialIcon icon="add" fontSize="1rem" />
+              </IconButton>
+            </Box>
           )}
         </div>
         {isTranslations && translations && translations.length > 0 && (
-          <React.Fragment>
-            <TableContainer component={Paper} className={classes.table}>
-              <Table size="small" aria-label="a dense table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.tableHead} align="center">
-                      {translate("Translation")}
-                    </TableCell>
-                    <TableCell className={classes.tableHead} align="center">
-                      {translate("Language")} ({translate("Hint")}: en, fr)
-                    </TableCell>
-                    <TableCell
-                      className={classes.tableHead}
-                      align="center"
-                    ></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {translations &&
-                    translations.length > 0 &&
-                    translations.map((translateKey, index) => (
-                      <TableRow key={index}>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          align="center"
-                          className={classes.tableCell}
-                        >
-                          <TextField
-                            rootClass={classes.textRoot}
-                            element={element}
-                            entry={{
-                              id: "message",
-                              modelProperty: "message",
-                              get: function () {
-                                return {
-                                  message: translateKey.message,
-                                };
-                              },
-                              set: function (e, values) {
-                                if (translateKey.message === values.message)
-                                  return;
-                                setProperty(
-                                  index,
-                                  "message",
-                                  values.message,
-                                  translateKey.id ? true : false
-                                );
-                              },
-                            }}
-                            isLabel={false}
-                          />
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          align="center"
-                          className={classes.tableCell}
-                        >
-                          <TextField
-                            element={element}
-                            rootClass={classes.textRoot}
-                            entry={{
-                              id: "language",
-                              modelProperty: "language",
-                              get: function () {
-                                return {
-                                  language: translateKey.language,
-                                };
-                              },
-                              set: function (e, values) {
-                                if (translateKey.language === values.language)
-                                  return;
-                                setProperty(
-                                  index,
-                                  "language",
-                                  values.language,
-                                  true
-                                );
-                              },
-                            }}
-                            isLabel={false}
-                          />
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          align="center"
-                          className={classes.tableCell}
-                        >
+          <Box rounded={2} bgColor="body" shadow style={{ margin: "10px 0" }}>
+            <Table size="sm" aria-label="a dense table">
+              <TableHead>
+                <TableRow>
+                  <TableCell textAlign="center" className={classes.tableHead}>
+                    {translate("Translation")}
+                  </TableCell>
+                  <TableCell textAlign="center" className={classes.tableHead}>
+                    {translate("Language")} ({translate("Hint")}: en, fr)
+                  </TableCell>
+                  <TableCell
+                    textAlign="center"
+                    className={classes.tableHead}
+                  ></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {translations &&
+                  translations.length > 0 &&
+                  translations.map((translateKey, index) => (
+                    <TableRow key={index}>
+                      <TableCell as="th" className={classes.tableCell}>
+                        <TextField
+                          rootClass={classes.textRoot}
+                          element={element}
+                          entry={{
+                            id: "message",
+                            modelProperty: "message",
+                            get: function () {
+                              return {
+                                message: translateKey.message,
+                              };
+                            },
+                            set: function (e, values) {
+                              if (translateKey.message === values.message)
+                                return;
+                              setProperty(
+                                index,
+                                "message",
+                                values.message,
+                                translateKey.id ? true : false
+                              );
+                            },
+                          }}
+                          isLabel={false}
+                        />
+                      </TableCell>
+                      <TableCell as="th" className={classes.tableCell}>
+                        <TextField
+                          element={element}
+                          rootClass={classes.textRoot}
+                          entry={{
+                            id: "language",
+                            modelProperty: "language",
+                            get: function () {
+                              return {
+                                language: translateKey.language,
+                              };
+                            },
+                            set: function (e, values) {
+                              if (translateKey.language === values.language)
+                                return;
+                              setProperty(
+                                index,
+                                "language",
+                                values.language,
+                                true
+                              );
+                            },
+                          }}
+                          isLabel={false}
+                        />
+                      </TableCell>
+                      <TableCell as="th" className={classes.tableCell}>
+                        <Box color="body">
                           <IconButton
                             className={classes.iconButton}
                             onClick={() => removeTranslation(index)}
                           >
-                            <Close className={classes.clear} />
+                            <MaterialIcon
+                              icon="close"
+                              className={classes.clear}
+                            />
                           </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </React.Fragment>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </Box>
         )}
       </div>
     )

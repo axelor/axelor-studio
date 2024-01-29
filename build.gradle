@@ -11,23 +11,31 @@ buildscript {
     }
     maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
   }
-  ext.aopVersion = '7.0.+'
+  ext.aopVersion = '7.0.0'
   repositories repos
+  buildscript.repositories repos
   dependencies {
     classpath "com.axelor:axelor-gradle:${aopVersion}"
+    classpath "com.adarshr:gradle-test-logger-plugin:2.+"
   }
 }
 
 repositories repos
+buildscript.repositories repos
 
 apply from: "version.gradle"
 apply plugin: "com.axelor.app"
+apply plugin: 'com.adarshr.test-logger'
 apply plugin: ChangelogSupport
 
 try {
   tasks.named("spotlessCheck")
 } catch (UnknownTaskException ignored) {
   apply from: './gradle/style.gradle'
+}
+
+testlogger {
+  theme 'mocha'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -49,12 +57,12 @@ dependencies {
   if (findProject(":modules:axelor-message") != null) {
     api project(":modules:axelor-message")
   } else {
-    implementation "com.axelor.addons:axelor-message:2.0.+"
+    implementation "com.axelor.addons:axelor-message:2.0.0"
   }
   if (findProject(":modules:axelor-utils") != null) {
     api project(":modules:axelor-utils")
   } else {
-    implementation "com.axelor.addons:axelor-utils:2.0.+"
+    implementation "com.axelor.addons:axelor-utils:2.0.0"
   }
 
   implementation "org.camunda.bpm:camunda-engine:7.17.0"
@@ -149,4 +157,32 @@ publishing {
       }
     }
   }
+}
+
+/*
+* Jacoco
+*/
+
+apply plugin: 'jacoco'
+
+jacoco {
+  toolVersion = '0.8.11'
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled true
+  }
+}
+
+test {
+  useJUnitPlatform()
+  // report is always generated after tests run
+  finalizedBy jacocoTestReport
+  maxHeapSize = '1G'
+}
+
+jacocoTestReport {
+  // tests are required to run before generating the report
+  dependsOn test
 }

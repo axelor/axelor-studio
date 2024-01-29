@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react"
 import classnames from "classnames"
-import { TextField, Chip } from "@mui/material"
-import Autocomplete from "@mui/material/Autocomplete"
-
+import { Badge, Box, Select } from "@axelor/ui"
 import { translate } from "../../utils"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 
 export default function StaticSelect({
 	value,
 	onChange,
 	options = [],
-	selectClassName,
 	className,
 	optionLabel,
 	optionValue,
@@ -18,23 +16,31 @@ export default function StaticSelect({
 }) {
 	const [val, setVal] = useState(value[optionValue] || value || "")
 
-	const onSelectUpdate = (e, value) => {
-		onChange(value, e)
+	const onSelectUpdate = (value) => {
+		onChange(value)
 		setVal(value)
 	}
 
-	const renderChip = (value) => {
-		let option = options.find((option) => option[optionValue] === value)
-		if (!option) return <React.Fragment>{value}</React.Fragment>
-		return (
-			<Chip
-				label={translate(option[optionLabel])}
-				size="small"
-				style={{
-					background: option && option.color,
-					color: (option && option.border) || "white",
-				}}
-			/>
+	const renderChip = (item) => {
+		return !optionValue && item ? (
+			<Box>
+				{name === "icon" && (
+					<i className={`fa ${item.option}`} style={{ marginRight: 4 }} />
+				)}
+				{item.option}
+			</Box>
+		) : (
+			<Box>
+				<Badge
+					rounded="pill"
+					style={{
+						background: item.option && item.option.color,
+						color: (item.option && item.option.border) || "var(--bs-white)",
+					}}
+				>
+					{translate(item.option[optionLabel])}
+				</Badge>
+			</Box>
 		)
 	}
 
@@ -47,50 +53,53 @@ export default function StaticSelect({
 	}, [optionValue, value])
 
 	return (
-		<Autocomplete
+		<Select
 			className={classnames(className)}
-			componentsProps={{
-				paper: { sx: { background: "#ffffff" } },
-			}}
+			openOnFocus={true}
 			value={val || ""}
 			onChange={onSelectUpdate}
 			renderValue={renderChip}
 			options={options}
-			getOptionLabel={(option) =>
+			optionLabel={(option) =>
 				typeof option === "object" ? option[optionValue] : option
 			}
+			optionKey={(option) =>
+				typeof option === "object" ? option[optionValue] : option
+			}
+			optionValue={(option) =>
+				typeof option === "object" ? option[optionValue] : option
+			}
+			optionMatch={(option, text) =>
+				(typeof option === "object" ? option[optionValue] : option)
+					?.toString()
+					?.toLowerCase()
+					?.includes(text?.toLowerCase())
+			}
 			label={translate(title)}
-			renderOption={(props, option) => {
+			clearIcon={true}
+			clearOnEscape={true}
+			placeholder={translate(title)}
+			renderOption={({ option }) => {
 				return !optionValue && option ? (
-					<li {...props}>
+					<Box>
 						{name === "icon" && (
 							<i className={`fa ${option}`} style={{ marginRight: 4 }} />
 						)}
 						{option}
-					</li>
+					</Box>
 				) : (
-					<li {...props}>
-						<Chip
-							key={option[optionValue]}
-							label={translate(option[optionLabel])}
-							size="small"
-							style={{
-								background: option && option.color,
-								color: (option && option.border) || "white",
-							}}
-						/>
-					</li>
+					<Badge
+						key={option[optionValue]}
+						rounded="pill"
+						style={{
+							background: option && option.color,
+							color: (option && option.border) || "var(--bs-white)",
+						}}
+					>
+						{translate(option[optionLabel])}
+					</Badge>
 				)
 			}}
-			renderInput={(params) => (
-				<TextField
-					{...params}
-					label={translate(title)}
-					autoComplete="off"
-					variant="standard"
-					sx={{ "& .MuiInputBase-input": { fontSize: 13 } }}
-				/>
-			)}
 		/>
 	)
 }

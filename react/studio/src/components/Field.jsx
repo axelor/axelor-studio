@@ -1,7 +1,9 @@
 import React from "react"
 import classNames from "classnames"
+import { Button, Input, Box } from "@axelor/ui"
 import { IDS, FIELD_TYPE, TYPE } from "../constants"
 import RelationalFieldGridView from "./RelationalFieldGridView"
+import { ReactComponent as NotFoundImage } from "../images/not_found.svg"
 import { translate } from "../utils"
 
 // filter html(tags) compatible attributes
@@ -21,7 +23,7 @@ const filterInputProps = (props) => {
 	return allowed.reduce((obj, attr) => {
 		if (props[attr] !== undefined) obj[attr] = props[attr]
 		if (attr === "required") {
-			obj[attr] = props[attr] === "true"
+			obj[attr] = props[attr] === "false"
 		}
 		return obj
 	}, {})
@@ -29,41 +31,48 @@ const filterInputProps = (props) => {
 
 // Plain Textbox
 export const TextInput = (props) => {
-	return (
-		<input type="text" autoComplete="off" {...props} className="text-input" />
-	)
+	return <Input autoComplete="off" {...props} />
 }
 
 // Multiline Textbox i.e. Textarea
 export const MultiTextInput = (props) => {
-	return <textarea rows={6} {...props} />
+	return <Input as="textarea" rows={6} {...props} />
 }
 
 // Blank Spacer to fill up space between two cells of Grid
-export const Spacer = (props) => <div className="spacer" />
+export const Spacer = () => <div className="spacer" />
 
-export const Separator = (props) => (
-	<div className="spacer">
+export const Separator = () => (
+	<div className="separator-container">
 		<hr className="separator-field" />
 	</div>
 )
 
 export const Boolean = ({ inputProps, ...props }) => (
-	<div className="boolean-wrapper">
-		<input {...inputProps} type="checkbox" />
-		<span className="boolean-text" title={translate(props.title || props.name)}>
+	<Box flexDirection="column" d="flex" py={2}>
+		<Box
+			overflow="hidden"
+			style={{ textOverflow: "ellipsis" }}
+			title={translate(props.title || props.name)}
+		>
 			{translate(props.title || props.name)}
-		</span>
-	</div>
+		</Box>
+		<Input mt={0} {...inputProps} type="checkbox" />
+	</Box>
 )
 
 // Button component
-export const Button = ({ title, ...props }) => (
-	<div className="button-container">
-		<button {...props} className="button-view" title={translate(title)}>
-			{translate(title)}
-		</button>
-	</div>
+export const ButtonWidget = ({ title, ...props }) => (
+	<Button
+		{...props}
+		color="light"
+		bgColor="primary"
+		overflow="hidden"
+		style={{ textOverflow: "ellipsis" }}
+		title={translate(title)}
+	>
+		{translate(title)}
+	</Button>
 )
 
 export const MenuItem = ({ title, ...props }) => (
@@ -95,26 +104,24 @@ function FieldComponent({ id, attrs }) {
 
 	const { name, title, serverType, multiline, type, autoTitle, widget } = attrs
 	const inputProps = filterInputProps(attrs)
+
 	let _type =
 		serverType && serverType !== "field" ? serverType.toLowerCase() : type
 	const DefaultWidget = () => (
 		<React.Fragment>
 			{
-				<label
+				<Box
+					color="body"
 					className="widget label"
 					title={translate(title || attrs.autoTitle || name)}
 				>
 					{translate(title || attrs.autoTitle || name)}
-				</label>
+				</Box>
 			}
 			{multiline ? (
 				<MultiTextInput {...inputProps} />
 			) : attrs.widget === "Image" ? (
-				<img
-					alt={title || attrs.autoTitle || name}
-					src="./images/not_found.png"
-					className="image-widget"
-				/>
+				<NotFoundImage style={{ height: "120px" }} />
 			) : (
 				<TextInput
 					type={serverType === FIELD_TYPE.number ? "number" : "text"}
@@ -143,10 +150,16 @@ function FieldComponent({ id, attrs }) {
 		case TYPE.menuItem:
 			return <MenuItem title={title} />
 		case FIELD_TYPE.button:
-			return <Button {...inputProps} title={title || name} />
+			return <ButtonWidget {...inputProps} title={title || name} />
 		case "selection":
 		case "label": {
-			return <span dangerouslySetInnerHTML={{ __html: title }} />
+			return (
+				<Box
+					d="inline"
+					color="body"
+					dangerouslySetInnerHTML={{ __html: title }}
+				/>
+			)
 		}
 		case "panel-dashlet":
 		case "panel-related":

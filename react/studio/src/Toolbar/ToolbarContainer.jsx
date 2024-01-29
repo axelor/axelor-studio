@@ -1,15 +1,6 @@
 import React from "react"
 import convert from "xml-js"
-import {
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	Button,
-} from "@mui/material"
 import _ from "lodash"
-import { styled } from "@mui/material/styles"
-
 import Toolbar from "./Toolbar"
 import { useStore } from "../store/context"
 import { generateView } from "../store/extensionGenerator"
@@ -58,6 +49,14 @@ import {
 	getUpdatedAttrsList,
 } from "../store/optimizeExtension"
 import { getPanel } from "../fields"
+import {
+	Button,
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@axelor/ui"
 
 const metaViewService = new AxelorService({
 	model: "com.axelor.meta.db.MetaView",
@@ -65,18 +64,6 @@ const metaViewService = new AxelorService({
 const customFieldService = new AxelorService({
 	model: "com.axelor.meta.db.MetaJsonField",
 })
-
-const StyledButton = styled(Button)(() => ({
-	textTransform: "none",
-	backgroundColor: "#0275d8",
-	borderColor: "#0275d8",
-	color: "#fff",
-	"&:hover": {
-		backgroundColor: "#0275d8",
-		borderColor: "#0275d8",
-		color: "#fff",
-	},
-}))
 
 const getCurrentTabIndex = (widgets) => {
 	if (!widgets) return
@@ -95,7 +82,7 @@ const getWidgets = ({ widgets, items }) => {
 	return widgets
 }
 
-function ToolbarContainer(props) {
+function ToolbarContainer() {
 	const {
 		state,
 		update,
@@ -985,29 +972,32 @@ function ToolbarContainer(props) {
 		return (
 			dialog && (
 				<Dialog open={!!message}>
-					<DialogTitle>{translate(title || "Alert")}</DialogTitle>
-					<DialogContent sx={{ minWidth: 250 }}>
+					<DialogHeader onCloseClick={handleClose}>
+						<DialogTitle>{translate(title || "Alert")}</DialogTitle>
+					</DialogHeader>
+					<DialogContent>
 						<div dangerouslySetInnerHTML={{ __html: translate(message) }}></div>
 					</DialogContent>
-					<DialogActions>
-						<StyledButton
+					<DialogFooter>
+						<Button
 							onClick={handleOK}
-							color="primary"
+							variant="primary"
+							size="sm"
 							autoFocus={type !== "confirm"}
 						>
 							{translate("OK")}
-						</StyledButton>
+						</Button>
 						{type === "confirm" && (
-							<StyledButton
+							<Button
 								onClick={handleClose}
-								variant="outlined"
-								color="primary"
+								variant="secondary"
+								size="sm"
 								autoFocus
 							>
 								{translate("Cancel")}
-							</StyledButton>
+							</Button>
 						)}
-					</DialogActions>
+					</DialogFooter>
 				</Dialog>
 			)
 		)

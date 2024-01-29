@@ -1,48 +1,45 @@
 import React from 'react';
 
-import Input from '@material-ui/core/Input';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import CreateIcon from '@material-ui/icons/Create';
 import IconButton from '@material-ui/core/IconButton';
-import Close from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
 
 import ExpressionBuilder from 'generic-builder/src/expression-builder';
-import classNames from 'classnames';
 import { fetchModelByFullName } from '../../services/api';
 import { translate } from '../../utils';
+import { Box, Button, Input, Dialog, DialogContent } from '@axelor/ui';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    display: 'flex',
-    flex: 1,
-    alignItems: 'center',
-    cursor: 'pointer',
-  },
   dialogPaper: {
-    minHeight: '50%',
-    maxHeight: '100%',
-    minWidth: '50%',
+    overflow: 'hidden',
     maxWidth: '100%',
-    resize: 'both',
+    maxHeight: '100%',
+    display: 'flex',
+    '& > div': {
+      maxWidth: '100%',
+      minWidth: '70%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      '& > div': {
+        maxWidth: '95%',
+        maxHeight: '95%',
+        overflow: 'auto',
+        resize: 'both',
+        minWidth: '70%',
+        minHeight: '70%',
+      },
+    },
   },
   cancelButton: {
     margin: theme.spacing(1),
-    backgroundColor: '#fff',
-    borderColor: '#cccccc',
     textTransform: 'capitalize',
-    color: '#333333',
-    '&:hover': {
-      backgroundColor: '#e6e6e6',
-      borderColor: '#adadad',
-    },
+    minWidth: 64,
   },
-  readOnly: {
-    color: '#7E7E7E',
-    backgroundColor: '#f5f5f5',
-    padding: '0 0.1rem',
+  dialogContent: {
+    overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
@@ -95,41 +92,35 @@ export default function ExpressionField({
   }, [target]);
 
   return (
-    <div className={classes.container}>
+    <Box color="body" d="flex" alignItems="center" gap={4}>
       <Input
+        type="text"
         value={selected || ''}
-        fullWidth={true}
+        flex={1}
         onChange={(e) => {
-          onSelectedChange(e.target.value);
+          const value = e?.target?.value;
+          onSelectedChange(value);
           onExpressionChange(null);
         }}
-        className={classNames({ [classes.readOnly]: parameters })}
+        readOnly={parameters}
         disabled={parameters && true}
         disableUnderline={parameters && !error && true}
-        error={error && (!selected || selected?.trim() === '')}
+        invalid={error && (!selected || selected?.trim() === '')}
       />
       {selected && parameters && (
         <IconButton size="small" onClick={handleRemove}>
-          <Close
-            color="action"
-            fontSize="small"
-            titleAccess={translate('Clear')}
-          />
+          <MaterialIcon icon="close" color="body" fontSize={16} />
         </IconButton>
       )}
-      <IconButton size="small" onClick={handleClickOpen}>
-        <CreateIcon
-          color="action"
-          fontSize="small"
-          titleAccess={translate('Edit')}
-        />
-      </IconButton>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        classes={{ paper: classes.dialogPaper }}
+      <IconButton
+        size="small"
+        onClick={handleClickOpen}
+        style={{ color: 'inherit' }}
       >
-        <DialogContent>
+        <MaterialIcon icon="edit" fontSize={16} style={{ marginLeft: 1.5 }} />
+      </IconButton>
+      <Dialog open={open} className={classes.dialogPaper}>
+        <DialogContent className={classes.dialogContent}>
           {ExpressionBuilder ? (
             <ExpressionBuilder
               parameters={parameters}
@@ -140,8 +131,7 @@ export default function ExpressionField({
               dialogActionButton={
                 <Button
                   onClick={handleClose}
-                  variant="contained"
-                  size="small"
+                  variant="secondary"
                   className={classes.cancelButton}
                 >
                   {translate('Cancel')}
@@ -153,6 +143,6 @@ export default function ExpressionField({
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </Box>
   );
 }

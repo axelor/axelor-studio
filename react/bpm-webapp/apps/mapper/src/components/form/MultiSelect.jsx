@@ -1,32 +1,10 @@
 import React from 'react';
-import Chip from '@material-ui/core/Chip';
-import { makeStyles } from '@material-ui/core/styles';
-import RightIcon from '@material-ui/icons/ArrowForward';
+import { Badge, Box } from '@axelor/ui';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 import Selection from './Selection';
 import { fetchFields, getModels } from '../../services/api';
 import { excludedFields, translate, dashToUnderScore } from '../../utils';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    listStyle: 'none',
-    padding: theme.spacing(0.5),
-    margin: 0,
-  },
-  chip: {
-    margin: theme.spacing(0.5),
-  },
-  rightIcon: {
-    width: '0.8em',
-    height: '0.8em',
-  },
-  selectContainer: {
-    width: '30%',
-  },
-}));
 
 const getProcessConfig = (element) => {
   const extensionElements = element && element.extensionElements;
@@ -81,19 +59,6 @@ const getProcessConfig = (element) => {
 
 const getKey = (key) => (key === '_selectId' ? 'id' : key);
 
-const getIndex = (value, newValue) => {
-  let index;
-  for (let i = 0; i < value.length; i++) {
-    const element = value[i];
-    const elemIndex = newValue.findIndex((val) => val.name === element.name);
-    if (elemIndex === -1) {
-      index = i;
-      break;
-    }
-  }
-  return index;
-};
-
 const builtInVars = [
   '__date__',
   '__time__',
@@ -124,9 +89,9 @@ function MultiSelector(props) {
     element,
     isProcessContext = false,
     type,
+    handleRemove = () => {},
     ...rest
   } = props;
-  const classes = useStyles();
 
   const getModel = () => {
     if (Array.isArray(value) && value.length) {
@@ -158,13 +123,16 @@ function MultiSelector(props) {
 
   const handleChange = React.useCallback(
     (newValue, reason) => {
+      let changeValue = newValue;
       if (reason === 'remove-option') {
-        const index = getIndex(value, newValue);
+        const index = value?.findIndex(
+          (val) => val.trackKey === newValue.trackKey
+        );
         if (index >= 0) {
-          newValue.splice(index);
+          changeValue = [...(value || [])].splice(0, index);
         }
       }
-      onChange(newValue);
+      onChange(changeValue);
     },
     [value, onChange]
   );
@@ -213,82 +181,112 @@ function MultiSelector(props) {
 
     return [...(metaModels || []), ...(metaJsonModels || [])];
   };
+
+  const fetchAPI = React.useCallback(
+    async (e) => {
+      if (sourceModel && value?.length === 1 && value[0]?.title === 'SOURCE') {
+        return [];
+      } else if (
+        isContext &&
+        value?.length === 1 &&
+        value[0]?.title === 'Built In Variables' &&
+        type
+      ) {
+        return (isBPMN
+          ? ['__date__', '__datetime__', '__studiouser__']
+          : builtInVars
+        ).map((ele) => ({ name: ele }));
+      } else {
+        let data;
+
+        if (isProcessContext && !hasValue()) {
+          data = await getProcessModelOptions();
+        } else if (isContext && !hasValue()) {
+          data = await getModels(e, undefined, [], true);
+        } else {
+          data = await fetchFields(getModel());
+        }
+
+        if (sourceModel && (!value || value.length < 1)) {
+          const object = { ...sourceModel, title: 'SOURCE' };
+          data = [object, ...data];
+        }
+
+        if (isContext && (!value || value.length < 1) && type) {
+          const object = { title: 'Built In Variables' };
+          data = [object, ...data];
+        }
+
+        if (isM2o && value && value.length > 0) {
+          data = data.filter(
+            (item) =>
+              ['many_to_one', 'one_to_one'].includes(item.type.toLowerCase()) &&
+              !excludedFields.includes(item.name)
+          );
+        }
+
+        if (hasValue() || targetModel || sourceModel) {
+          data = data.filter(
+            (d) =>
+              d.title === 'SOURCE' ||
+              allowedTypes[dashToUnderScore(type)]?.includes(
+                dashToUnderScore(d.type)
+              ) ||
+              dashToUnderScore(d.type) === dashToUnderScore(type) ||
+              ['many_to_one', 'one_to_one'].includes(dashToUnderScore(d.type))
+          );
+        }
+        return data;
+      }
+    },
+    [
+      sourceModel,
+      value,
+      type,
+      isBPMN,
+      builtInVars,
+      isProcessContext,
+      hasValue,
+      getProcessModelOptions,
+      getModels,
+      fetchFields,
+      getModel,
+    ]
+  );
+
   return (
     <div className={containerClassName}>
       <Selection
         title={translate(props.title)}
         isMulti={true}
-        fetchAPI={async (e) => {
-          if (sourceModel && value && value[0]) {
-            if (value[0].title === 'SOURCE') {
-              return [];
-            }
-          }
-          if (isContext && value && value[0] && value.length === 1 && type) {
-            if (value[0].title === 'Built In Variables') {
-              return (
-                isBPMN ? ['__date__', '__datetime__', '__studiouser__'] : builtInVars
-              ).map((ele) => {
-                return { name: ele };
-              });
-            }
-          }
-          let data =
-            isProcessContext && !hasValue()
-              ? await getProcessModelOptions()
-              : isContext && !hasValue()
-              ? await getModels(e, undefined, [], true)
-              : await fetchFields(getModel());
-          if (sourceModel && (!value || value.length < 1)) {
-            const object = Object.assign({}, sourceModel, {
-              title: `SOURCE`,
-            });
-            data = [object, ...data];
-          }
-          if (isContext && (!value || value.length < 1) && type) {
-            const object = {
-              title: `Built In Variables`,
-            };
-            data = [object, ...data];
-          }
-          if (isM2o && value && value.length > 0) {
-            data = data.filter(
-              (item) =>
-                ['many_to_one', 'one_to_one'].includes(
-                  item.type.toLowerCase()
-                ) && !excludedFields.includes(item.name)
-            );
-          }
-
-          if (hasValue() || targetModel || sourceModel) {
-            data = data.filter(
-              (d) =>
-                d.title === 'SOURCE' ||
-                allowedTypes[dashToUnderScore(type)]?.includes(
-                  dashToUnderScore(d.type)
-                ) ||
-                dashToUnderScore(d.type) === dashToUnderScore(type) ||
-                ['many_to_one', 'one_to_one'].includes(dashToUnderScore(d.type))
-            );
-          }
-          return data;
-        }}
+        fetchAPI={fetchAPI}
         value={value}
         onChange={handleChange}
-        renderTags={(tags, getTagProps) => {
-          return tags.map((tag, i) => (
-            <React.Fragment key={i}>
-              <Chip
-                title={tag[getKey(rest.optionValueKey)]}
-                label={checkValue(tag)}
-                className={classes.chip}
-                {...getTagProps({ index: i })}
-              />
-              {i < tags.length - 1 && (
-                <RightIcon className={classes.rightIcon} />
+        renderValue={({ option = {} }) => {
+          const lastIndex = value?.length - 1;
+          const showArrow = lastIndex >= 0 && option?.trackKey !== lastIndex;
+          return (
+            <>
+              <Badge bg="primary">
+                <Box d="flex" alignItems="center" g={1}>
+                  <Box as="span">{checkValue(option)}</Box>
+                  <Box as="span" style={{ cursor: 'pointer' }}>
+                    <MaterialIcon
+                      icon="close"
+                      fontSize="1rem"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleChange(option, 'remove-option');
+                      }}
+                    />
+                  </Box>
+                </Box>
+              </Badge>
+              {showArrow && (
+                <MaterialIcon icon="arrow_right_alt" fontSize={20} />
               )}
-            </React.Fragment>
-          ));
+            </>
+          );
         }}
         {...rest}
       />

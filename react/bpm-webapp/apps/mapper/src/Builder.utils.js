@@ -91,6 +91,7 @@ const getModelSubField = (subFields = []) => {
       (obj, key) => ({
         ...obj,
         ...(field[key] !== undefined ? { [key]: field[key] } : {}),
+        trackKey: field['trackKey'],
       }),
       {}
     )

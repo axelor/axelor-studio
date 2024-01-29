@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import classnames from "classnames";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import { makeStyles } from "@material-ui/styles";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-groovy";
@@ -11,6 +10,7 @@ import { Resizable } from "re-resizable";
 import Description from "./Description";
 import { getTranslations } from "../../../services/api";
 import { getBool } from "../../../utils";
+import { InputLabel, Input } from "@axelor/ui";
 
 const useStyles = makeStyles({
   root: {
@@ -23,36 +23,24 @@ const useStyles = makeStyles({
     */
   },
   label: {
-    fontWeight: "bolder",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginBottom: 3,
   },
   editor: {
     fontFamily: "monospace",
-    border: "1px solid rgb(118, 118, 118)",
+    background: "var(--bs-body-bg) !important",
+    border: "1px solid var(--bs-tertiary-bg) !important",
+    borderRadius: 4,
     "&.ace_focus": {
-      boxShadow: "rgba(82, 180, 21, 0.2) 0px 0px 1px 2px",
-      outline: "none",
-      border: "1px solid rgb(82, 180, 21)",
-    },
-  },
-  textarea: {
-    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-    resize: "vertical",
-    "&:focus, &.ace_focus": {
-      boxShadow: "rgba(82, 180, 21, 0.2) 0px 0px 1px 2px",
-      outline: "none",
-      borderColor: "rgb(82, 180, 21)",
+      border: "1px solid #666cff !important",
     },
   },
   error: {
     borderColor: "#cc3333 !important",
-    background: "#f0c2c2",
     "&:focus, &.ace_focus": {
-      boxShadow: "rgba(204,58,51, 0.2) 0px 0px 1px 2px !important",
-      outline: "none",
       borderColor: "#cc3333 !important",
     },
   },
@@ -245,7 +233,11 @@ export default function Textbox({
 
   return (
     <div className={classnames(classes.root, className)} ref={containerRef}>
-      {showLabel && <label className={classes.label}>{label}</label>}
+      {showLabel && (
+        <InputLabel className={classes.label} color="body">
+          {label}
+        </InputLabel>
+      )}
       {entry.id === "script" ? (
         <ScriptEditor
           id={`camunda_${modelProperty}`}
@@ -262,15 +254,11 @@ export default function Textbox({
           }}
         />
       ) : (
-        <TextareaAutosize
+        <Input
+          as="textarea"
           id={`camunda_${modelProperty}_${Date()}`}
           value={value || ""}
-          className={classnames(
-            classes.textarea,
-            isError && classes.error,
-            readOnly && classes.readOnly
-          )}
-          minRows={rows}
+          rows={rows}
           onBlur={(e) => {
             if (typeof readOnly === "function" ? !readOnly() : !readOnly) {
               updateProperty(e.target.value);
@@ -279,6 +267,7 @@ export default function Textbox({
           onChange={(e) => {
             setValue(e.target.value);
           }}
+          invalid={isError}
           readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
         />
       )}

@@ -2,21 +2,7 @@ import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Button,
-  Grid,
-  IconButton,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Tooltip,
-  Card,
-  CardContent,
-} from "@material-ui/core";
-import { Add, Edit, Close, ReportProblem } from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
 
 import Select from "../../../../../components/Select";
 import AlertDialog from "../../../../../components/AlertDialog";
@@ -27,6 +13,7 @@ import {
   FieldEditor,
   Textbox,
 } from "../../../../../components/properties/components";
+import Tooltip from "../../../../../components/Tooltip";
 import {
   getMetaModels,
   getCustomModels,
@@ -40,95 +27,76 @@ import {
   getProcessConfig,
   createProcessConfiguration,
   createParameter,
-  setDummyProperty,
 } from "./utils";
 import {
   addTranslations,
   removeAllTranslations,
 } from "../../../../../services/api";
 
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  InputLabel,
+  Box,
+  Divider,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
     fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
-    transition: "margin 0.218s linear",
     fontStyle: "italic",
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   button: {
     textTransform: "none",
   },
-  reportTypography: {
-    display: "flex",
-    alignItems: "center",
-    color: "#999",
-    margin: "10px 0px",
-  },
   newIcon: {
     marginInline: 2,
-    color: "#58B423",
     cursor: "pointer",
+    overflow: "inherit",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   clearClassName: {
     paddingLeft: 10,
   },
   dialogContent: {
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "center",
+    overflow: "auto",
   },
   grid: {
     padding: "0px 15px 0px 0px",
-  },
-  card: {
-    margin: "5px 0px 10px 0px",
-    boxShadow: "none",
-    width: "100%",
-    border: "1px solid #ccc",
-    background: "#f8f8f8",
-    borderRadius: 0,
-  },
-  cardContent: {
-    padding: "10px !important",
-  },
-  cardContainer: {
-    display: "flex",
-    alignItems: "flex-start",
   },
   iconButton: {
     margin: "5px 0px 5px 5px",
     borderRadius: 0,
     border: "1px solid #ccc",
+    color: "inherit",
     padding: 2,
     width: "fit-content",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   icon: {
     marginRight: 10,
+    color: "var(--red)",
   },
   textFieldRoot: {
     marginTop: 0,
@@ -151,7 +119,14 @@ const useStyles = makeStyles((theme) => ({
   scriptDialog: {
     width: "100%",
     height: "100%",
-    maxWidth: "100%",
+  },
+  content: { fontSize: 16 },
+  processPathDialog: {
+    "& > div": {
+      maxWidth: "90%",
+      width: "fit-content",
+      minWidth: 500,
+    },
   },
 }));
 
@@ -176,6 +151,7 @@ export default function ProcessConfiguration({
   label,
   bpmnFactory,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const classes = useStyles();
   const [processConfigList, setProcessConfigList] = useState(null);
@@ -501,493 +477,517 @@ export default function ProcessConfiguration({
   return (
     <div>
       <React.Fragment>
-        {index > 0 && <div className={classes.divider} />}
+        {index > 0 && <Divider className={classes.divider} />}
       </React.Fragment>
       <div>
-        <Grid container alignItems="center">
-          <Grid item xs={6}>
-            <div className={classes.groupLabel}>{label}</div>
-          </Grid>
-        </Grid>
-        <Grid>
-          {processConfigList && processConfigList.length > 0 && (
-            <Typography className={classes.reportTypography}>
-              <ReportProblem fontSize="small" className={classes.icon} />
+        <Box d="flex" alignItems="center">
+          <InputLabel color="body" className={classes.groupLabel}>
+            {label}
+          </InputLabel>
+        </Box>
+        <Box>
+          {(!processConfigList?.length ||
+            !!processConfigList?.find(
+              (l) => !l.metaJsonModel && !l.metaModel
+            )) && (
+            <InputLabel
+              d="flex"
+              alignItems="center"
+              style={{ margin: "10px 0", color: "var(--red)" }}
+            >
+              <MaterialIcon
+                icon="report"
+                fontSize={16}
+                className={classes.icon}
+              />
               {translate("Must provide meta model or custom model")}
-            </Typography>
+            </InputLabel>
           )}
-          {processConfigList && processConfigList.length > 0 && (
-            <Grid>
-              <Grid size="small" aria-label="a dense table">
-                <Grid>
-                  {processConfigList.map((processConfig, key) => (
-                    <div key={`card_${key}`} className={classes.cardContainer}>
-                      <Card className={classes.card}>
-                        <CardContent className={classes.cardContent}>
-                          <Grid key={key}>
-                            <Grid container className={classes.container}>
-                              <Grid
-                                item
-                                xs={12}
-                                style={{ justifyContent: "flex-end" }}
-                                className={classes.grid}
-                              >
-                                <label className={classes.label}>
-                                  {translate("Model")}
-                                </label>
-                                {(
-                                  processConfig.isCustom === undefined
-                                    ? processConfig.metaJsonModel
-                                      ? false
-                                      : true
-                                    : !getBool(processConfig.isCustom)
-                                ) ? (
-                                  <Select
-                                    fetchMethod={(criteria) =>
-                                      getMetaModels(criteria)
-                                    }
-                                    update={(value, label) => {
-                                      updateValue(
-                                        value,
-                                        "metaModel",
-                                        "name",
-                                        key,
-                                        label
-                                      );
-                                    }}
-                                    name="metaModel"
-                                    optionLabel="name"
-                                    optionLabelSecondary="title"
-                                    value={processConfig.metaModel || ""}
-                                    isLabel={false}
-                                  />
-                                ) : (
-                                  <Select
-                                    fetchMethod={(options) =>
-                                      getCustomModels(options)
-                                    }
-                                    update={(value, label) => {
-                                      updateValue(
-                                        value,
-                                        "metaJsonModel",
-                                        "name",
-                                        key,
-                                        label
-                                      );
-                                    }}
-                                    name="metaJsonModel"
-                                    value={processConfig.metaJsonModel || ""}
-                                    isLabel={false}
-                                    optionLabel="name"
-                                    optionLabelSecondary="title"
-                                  />
-                                )}
-                              </Grid>
-                            </Grid>
-                            <Grid container className={classes.container}>
-                              <Grid item xs={4} className={classes.grid}>
-                                <Checkbox
-                                  className={classes.checkbox}
-                                  labelClassName={classes.checkboxLabel}
-                                  entry={{
-                                    id: `custom-${key}`,
-                                    modelProperty: "isCustom",
-                                    label: translate("Custom"),
-                                    get: function () {
-                                      return {
-                                        isCustom:
-                                          processConfig.isCustom === undefined
-                                            ? processConfig.metaJsonModel
-                                              ? true
-                                              : false
-                                            : getBool(processConfig.isCustom),
-                                      };
-                                    },
-                                    set: function (e, values) {
-                                      updateValue(
-                                        !values.isCustom,
-                                        "isCustom",
-                                        undefined,
-                                        key
-                                      );
-                                    },
-                                  }}
-                                  element={element}
-                                />
-                              </Grid>
-                              <Grid item xs={4} className={classes.grid}>
-                                <Checkbox
-                                  className={classes.checkbox}
-                                  labelClassName={classes.checkboxLabel}
-                                  entry={{
-                                    id: `start-model-${key}`,
-                                    label: translate("Start model ?"),
-                                    modelProperty: "isStartModel",
-                                    get: function () {
-                                      return {
-                                        isStartModel: getBool(
-                                          processConfig.isStartModel
-                                        ),
-                                      };
-                                    },
-                                    set: function (e, values) {
-                                      updateValue(
-                                        !values.isStartModel,
-                                        "isStartModel",
-                                        undefined,
-                                        key
-                                      );
-                                      if (!values.isStartModel) {
-                                        updateStartModel(processConfig);
-                                      }
-                                    },
-                                  }}
-                                  element={element}
-                                />
-                              </Grid>
-                              <Grid item xs={4} className={classes.grid}>
-                                <Checkbox
-                                  className={classes.checkbox}
-                                  labelClassName={classes.checkboxLabel}
-                                  entry={{
-                                    id: `direct-creation-${key}`,
-                                    modelProperty: "isDirectCreation",
-                                    label: translate("Direct creation ?"),
-                                    get: function () {
-                                      return {
-                                        isDirectCreation: getBool(
-                                          processConfig.isDirectCreation
-                                        ),
-                                      };
-                                    },
-                                    set: function (e, values) {
-                                      updateValue(
-                                        !values.isDirectCreation,
-                                        "isDirectCreation",
-                                        undefined,
-                                        key
-                                      );
-                                    },
-                                  }}
-                                  element={element}
-                                />
-                              </Grid>
-                            </Grid>
-                            <Grid container className={classes.container}>
-                              <Grid item xs={6} className={classes.grid}>
-                                <label className={classes.label}>
-                                  {translate("Title")}
-                                </label>
-                                <TextField
-                                  element={element}
-                                  canRemove={
-                                    getBool(processConfig.isTranslations)
-                                      ? false
-                                      : true
-                                  }
-                                  rootClass={classes.textFieldRoot}
-                                  labelClass={classes.textFieldLabel}
-                                  clearClassName={classes.clearClassName}
-                                  disabled={getBool(
-                                    processConfig.isTranslations
-                                  )}
-                                  readOnly={getBool(
-                                    processConfig.isTranslations
-                                  )}
-                                  entry={{
-                                    id: `title_${key}`,
-                                    name: "title",
-                                    modelProperty: "title",
-                                    get: function () {
-                                      return {
-                                        title: processConfig.title,
-                                      };
-                                    },
-                                    set: function (e, value) {
-                                      if (value.title !== processConfig.title) {
-                                        updateValue(
-                                          value.title === ""
-                                            ? undefined
-                                            : value.title,
-                                          "title",
-                                          undefined,
-                                          key
-                                        );
-                                      }
-                                    },
-                                  }}
-                                  endAdornment={
-                                    <Edit
-                                      className={classes.newIcon}
-                                      onClick={() => {
-                                        setTranslationDialog(true);
-                                        setSelectedProcessConfig({
-                                          processConfig,
-                                          key,
-                                        });
-                                      }}
-                                    />
-                                  }
-                                />
-                              </Grid>
-                              <Grid item xs={6} className={classes.grid}>
-                                <label className={classes.label}>
-                                  {translate("Process path")}
-                                </label>
-                                <TextField
-                                  element={element}
-                                  canRemove={true}
-                                  rootClass={classes.textFieldRoot}
-                                  labelClass={classes.textFieldLabel}
-                                  clearClassName={classes.clearClassName}
-                                  disabled={getBool(processConfig.isStartModel)}
-                                  entry={{
-                                    id: `processPath_${key}`,
-                                    name: "processPath",
-                                    modelProperty: "processPath",
-                                    get: function () {
-                                      return {
-                                        processPath: processConfig.processPath,
-                                      };
-                                    },
-                                    set: function (e, value) {
-                                      if (
-                                        value.processPath !==
-                                        processConfig.processPath
-                                      ) {
-                                        updateValue(
-                                          value.processPath === ""
-                                            ? undefined
-                                            : value.processPath,
-                                          "processPath",
-                                          undefined,
-                                          key
-                                        );
-                                      }
-                                    },
-                                  }}
-                                  endAdornment={
-                                    <>
-                                      {!getBool(processConfig.isStartModel) && (
-                                        <Edit
-                                          className={classes.newIcon}
-                                          onClick={() => {
-                                            setOpenProcessDialog(true);
-                                            setSelectedProcessConfig({
-                                              processConfig,
-                                              key,
-                                            });
-                                            setField(null);
-                                            if (!startModel) {
-                                              const model =
-                                                processConfigList &&
-                                                processConfigList.find((f) =>
-                                                  getBool(f.isStartModel)
-                                                );
-                                              updateStartModel(model);
-                                            }
-                                          }}
-                                        />
-                                      )}
-                                    </>
-                                  }
-                                />
-                              </Grid>
-                            </Grid>
-                            <Grid container className={classes.container}>
-                              <Grid item xs={6} className={classes.grid}>
-                                <label className={classes.label}>
-                                  {translate("Condition")}
-                                </label>
-                                <TextField
-                                  element={element}
-                                  canRemove={true}
-                                  rootClass={classes.textFieldRoot}
-                                  labelClass={classes.textFieldLabel}
-                                  clearClassName={classes.clearClassName}
-                                  readOnly={
-                                    processConfig &&
-                                    processConfig.pathConditionValue
-                                      ? true
-                                      : false
-                                  }
-                                  entry={{
-                                    id: `pathCondition_${key}`,
-                                    name: "pathCondition",
-                                    modelProperty: "pathCondition",
-                                    get: function () {
-                                      return {
-                                        pathCondition:
-                                          processConfig.pathCondition || "",
-                                      };
-                                    },
-                                    set: function (e, values) {
-                                      if (
-                                        values.pathCondition !==
-                                        processConfig.pathCondition
-                                      ) {
-                                        updateValue(
-                                          values.pathCondition === ""
-                                            ? undefined
-                                            : values.pathCondition,
-                                          "pathCondition",
-                                          undefined,
-                                          key
-                                        );
-                                      }
-                                    },
-                                  }}
-                                  endAdornment={
-                                    <>
-                                      <Tooltip
-                                        title="Enable"
-                                        aria-label="enable"
-                                      >
-                                        <i
-                                          className="fa fa-code"
-                                          style={{
-                                            fontSize: 18,
-                                            color: "#58B423",
-                                            marginLeft: 5,
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setPathCondition({
-                                              key,
-                                              processConfig,
-                                            });
-                                            if (
-                                              processConfig &&
-                                              processConfig.pathConditionValue
-                                            ) {
-                                              setAlert({
-                                                open: true,
-                                                message:
-                                                  "Path condition can't be managed using builder once changed manually.",
-                                                title: "Warning",
-                                                callback: () => {
-                                                  updateValue(
-                                                    processConfig?.pathCondition,
-                                                    "pathCondition",
-                                                    undefined,
-                                                    key,
-                                                    undefined
-                                                  );
-                                                  setScript(
-                                                    processConfig?.pathCondition
-                                                  );
-                                                  setOpenScriptDialog(true);
-                                                },
-                                              });
-                                            } else {
-                                              setOpenScriptDialog(true);
-                                            }
-                                          }}
-                                        />
-                                      </Tooltip>
-                                      <Edit
-                                        className={classes.newIcon}
-                                        onClick={() => {
-                                          setSelectedProcessConfig({
-                                            processConfig,
-                                            key,
-                                          });
-                                          setExpressionBuilder(true);
-                                        }}
-                                      />
-                                    </>
-                                  }
-                                />
-                              </Grid>
-                              <Grid item xs={6} className={classes.grid}>
-                                <label className={classes.label}>
-                                  {translate("User default path")}
-                                </label>
-                                <TextField
-                                  element={element}
-                                  canRemove={true}
-                                  rootClass={classes.textFieldRoot}
-                                  labelClass={classes.textFieldLabel}
-                                  clearClassName={classes.clearClassName}
-                                  entry={{
-                                    id: `userDefaultPath_${key}`,
-                                    name: "userDefaultPath",
-                                    modelProperty: "userDefaultPath",
-                                    get: function () {
-                                      return {
-                                        userDefaultPath:
-                                          processConfig.userDefaultPath,
-                                      };
-                                    },
-                                    set: function (e, value) {
-                                      updateValue(
-                                        value.userDefaultPath,
-                                        "userDefaultPath",
-                                        undefined,
-                                        key
-                                      );
-                                    },
-                                  }}
-                                  endAdornment={
-                                    <Edit
-                                      className={classes.newIcon}
-                                      onClick={() => {
-                                        setOpenUserPathDialog(true);
-                                        setField(null);
-                                        setSelectedProcessConfig({
-                                          processConfig,
-                                          key,
-                                        });
-                                      }}
-                                    />
-                                  }
-                                />
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                      </Card>
-                      <Grid align="center" className={classes.Grid}>
-                        <IconButton
-                          className={classes.iconButton}
-                          onClick={() => {
-                            removeItem(key);
-                            removeElement(key);
-                          }}
+          {processConfigList?.length > 0 && (
+            <Box>
+              <Box>
+                {processConfigList.map((processConfig, key) => (
+                  <Box d="flex" alignItems="flex-start" key={`card_${key}`}>
+                    <Box
+                      w={100}
+                      rounded={2}
+                      border
+                      bg="body-tertiary"
+                      color="body"
+                      style={{ marginTop: 5, marginBottom: 10 }}
+                    >
+                      <Box key={key} style={{ padding: 10 }}>
+                        <Box d="flex" className={classes.container}>
+                          <Box
+                            flex="1"
+                            justifyContent="flex-end"
+                            className={classes.grid}
+                          >
+                            <InputLabel color="body" className={classes.label}>
+                              {translate("Model")}
+                            </InputLabel>
+                            {(
+                              processConfig.isCustom === undefined
+                                ? processConfig.metaJsonModel
+                                  ? false
+                                  : true
+                                : !getBool(processConfig.isCustom)
+                            ) ? (
+                              <Select
+                                fetchMethod={(criteria) =>
+                                  getMetaModels(criteria)
+                                }
+                                update={(value, label) => {
+                                  updateValue(
+                                    value,
+                                    "metaModel",
+                                    "name",
+                                    key,
+                                    label
+                                  );
+                                }}
+                                name="metaModel"
+                                optionLabel="name"
+                                optionLabelSecondary="title"
+                                value={processConfig.metaModel || ""}
+                                isLabel={false}
+                              />
+                            ) : (
+                              <Select
+                                fetchMethod={(options) =>
+                                  getCustomModels(options)
+                                }
+                                update={(value, label) => {
+                                  updateValue(
+                                    value,
+                                    "metaJsonModel",
+                                    "name",
+                                    key,
+                                    label
+                                  );
+                                }}
+                                name="metaJsonModel"
+                                value={processConfig.metaJsonModel || ""}
+                                isLabel={false}
+                                optionLabel="name"
+                                optionLabelSecondary="title"
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                        <Box
+                          d="flex"
+                          justifyContent="space-between"
+                          className={classes.container}
                         >
-                          <Close fontSize="small" />
-                        </IconButton>
-                      </Grid>
-                    </div>
-                  ))}
-                </Grid>
-              </Grid>
-            </Grid>
+                          <Box className={classes.grid}>
+                            <Checkbox
+                              className={classes.checkbox}
+                              labelClassName={classes.checkboxLabel}
+                              entry={{
+                                id: `custom-${key}`,
+                                modelProperty: "isCustom",
+                                label: translate("Custom"),
+                                get: function () {
+                                  return {
+                                    isCustom:
+                                      processConfig.isCustom === undefined
+                                        ? processConfig.metaJsonModel
+                                          ? true
+                                          : false
+                                        : getBool(processConfig.isCustom),
+                                  };
+                                },
+                                set: function (e, values) {
+                                  updateValue(
+                                    !values.isCustom,
+                                    "isCustom",
+                                    undefined,
+                                    key
+                                  );
+                                },
+                              }}
+                              element={element}
+                            />
+                          </Box>
+                          <Box className={classes.grid}>
+                            <Checkbox
+                              className={classes.checkbox}
+                              labelClassName={classes.checkboxLabel}
+                              entry={{
+                                id: `start-model-${key}`,
+                                label: translate("Start model ?"),
+                                modelProperty: "isStartModel",
+                                get: function () {
+                                  return {
+                                    isStartModel: getBool(
+                                      processConfig.isStartModel
+                                    ),
+                                  };
+                                },
+                                set: function (e, values) {
+                                  updateValue(
+                                    !values.isStartModel,
+                                    "isStartModel",
+                                    undefined,
+                                    key
+                                  );
+                                  if (!values.isStartModel) {
+                                    updateStartModel(processConfig);
+                                  }
+                                },
+                              }}
+                              element={element}
+                            />
+                          </Box>
+                          <Box className={classes.grid}>
+                            <Checkbox
+                              className={classes.checkbox}
+                              labelClassName={classes.checkboxLabel}
+                              entry={{
+                                id: `direct-creation-${key}`,
+                                modelProperty: "isDirectCreation",
+                                label: translate("Direct creation ?"),
+                                get: function () {
+                                  return {
+                                    isDirectCreation: getBool(
+                                      processConfig.isDirectCreation
+                                    ),
+                                  };
+                                },
+                                set: function (e, values) {
+                                  updateValue(
+                                    !values.isDirectCreation,
+                                    "isDirectCreation",
+                                    undefined,
+                                    key
+                                  );
+                                },
+                              }}
+                              element={element}
+                            />
+                          </Box>
+                        </Box>
+                        <Box d="flex" className={classes.container}>
+                          <Box
+                            style={{ width: "50%" }}
+                            className={classes.grid}
+                          >
+                            <InputLabel color="body" className={classes.label}>
+                              {translate("Title")}
+                            </InputLabel>
+                            <TextField
+                              element={element}
+                              canRemove={
+                                getBool(processConfig.isTranslations)
+                                  ? false
+                                  : true
+                              }
+                              rootClass={classes.textFieldRoot}
+                              labelClass={classes.textFieldLabel}
+                              clearClassName={classes.clearClassName}
+                              disabled={getBool(processConfig.isTranslations)}
+                              readOnly={getBool(processConfig.isTranslations)}
+                              entry={{
+                                id: `title_${key}`,
+                                name: "title",
+                                modelProperty: "title",
+                                get: function () {
+                                  return {
+                                    title: processConfig.title,
+                                  };
+                                },
+                                set: function (e, value) {
+                                  if (value.title !== processConfig.title) {
+                                    updateValue(
+                                      value.title === ""
+                                        ? undefined
+                                        : value.title,
+                                      "title",
+                                      undefined,
+                                      key
+                                    );
+                                  }
+                                },
+                              }}
+                              endAdornment={
+                                <MaterialIcon
+                                  fontSize={18}
+                                  icon="edit"
+                                  className={classes.newIcon}
+                                  onClick={() => {
+                                    setTranslationDialog(true);
+                                    setSelectedProcessConfig({
+                                      processConfig,
+                                      key,
+                                    });
+                                  }}
+                                />
+                              }
+                            />
+                          </Box>
+                          <Box
+                            style={{ width: "50%" }}
+                            className={classes.grid}
+                          >
+                            <InputLabel color="body" className={classes.label}>
+                              {translate("Process path")}
+                            </InputLabel>
+                            <TextField
+                              element={element}
+                              canRemove={true}
+                              rootClass={classes.textFieldRoot}
+                              labelClass={classes.textFieldLabel}
+                              clearClassName={classes.clearClassName}
+                              disabled={getBool(processConfig.isStartModel)}
+                              entry={{
+                                id: `processPath_${key}`,
+                                name: "processPath",
+                                modelProperty: "processPath",
+                                get: function () {
+                                  return {
+                                    processPath: processConfig.processPath,
+                                  };
+                                },
+                                set: function (e, value) {
+                                  if (
+                                    value.processPath !==
+                                    processConfig.processPath
+                                  ) {
+                                    updateValue(
+                                      value.processPath === ""
+                                        ? undefined
+                                        : value.processPath,
+                                      "processPath",
+                                      undefined,
+                                      key
+                                    );
+                                  }
+                                },
+                              }}
+                              endAdornment={
+                                <>
+                                  {!getBool(processConfig.isStartModel) && (
+                                    <MaterialIcon
+                                      icon="edit"
+                                      fontSize={18}
+                                      className={classes.newIcon}
+                                      onClick={() => {
+                                        setOpenProcessDialog(true);
+                                        setSelectedProcessConfig({
+                                          processConfig,
+                                          key,
+                                        });
+                                        setField(null);
+                                        if (!startModel) {
+                                          const model =
+                                            processConfigList &&
+                                            processConfigList.find((f) =>
+                                              getBool(f.isStartModel)
+                                            );
+                                          updateStartModel(model);
+                                        }
+                                      }}
+                                    />
+                                  )}
+                                </>
+                              }
+                            />
+                          </Box>
+                        </Box>
+                        <Box d="flex" className={classes.container}>
+                          <Box
+                            style={{ width: "50%" }}
+                            className={classes.grid}
+                          >
+                            <InputLabel color="body" className={classes.label}>
+                              {translate("Condition")}
+                            </InputLabel>
+                            <TextField
+                              element={element}
+                              canRemove={true}
+                              rootClass={classes.textFieldRoot}
+                              labelClass={classes.textFieldLabel}
+                              clearClassName={classes.clearClassName}
+                              readOnly={
+                                processConfig &&
+                                processConfig.pathConditionValue
+                                  ? true
+                                  : false
+                              }
+                              entry={{
+                                id: `pathCondition_${key}`,
+                                name: "pathCondition",
+                                modelProperty: "pathCondition",
+                                get: function () {
+                                  return {
+                                    pathCondition:
+                                      processConfig.pathCondition || "",
+                                  };
+                                },
+                                set: function (e, values) {
+                                  if (
+                                    values.pathCondition !==
+                                    processConfig.pathCondition
+                                  ) {
+                                    updateValue(
+                                      values.pathCondition === ""
+                                        ? undefined
+                                        : values.pathCondition,
+                                      "pathCondition",
+                                      undefined,
+                                      key
+                                    );
+                                  }
+                                },
+                              }}
+                              endAdornment={
+                                <>
+                                  <Tooltip title="Enable" aria-label="enable">
+                                    <i
+                                      className="fa fa-code"
+                                      style={{
+                                        fontSize: 18,
+                                        marginLeft: 5,
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() => {
+                                        setPathCondition({
+                                          key,
+                                          processConfig,
+                                        });
+                                        if (
+                                          processConfig &&
+                                          processConfig.pathConditionValue
+                                        ) {
+                                          setAlert({
+                                            open: true,
+                                            message:
+                                              "Path condition can't be managed using builder once changed manually.",
+                                            title: "Warning",
+                                            callback: () => {
+                                              updateValue(
+                                                processConfig?.pathCondition,
+                                                "pathCondition",
+                                                undefined,
+                                                key,
+                                                undefined
+                                              );
+                                              setScript(
+                                                processConfig?.pathCondition
+                                              );
+                                              setOpenScriptDialog(true);
+                                            },
+                                          });
+                                        } else {
+                                          setScript(
+                                            processConfig?.pathCondition
+                                          );
+                                          setOpenScriptDialog(true);
+                                        }
+                                      }}
+                                    />
+                                  </Tooltip>
+                                  <MaterialIcon
+                                    icon="edit"
+                                    fontSize={18}
+                                    className={classes.newIcon}
+                                    onClick={() => {
+                                      setSelectedProcessConfig({
+                                        processConfig,
+                                        key,
+                                      });
+                                      setExpressionBuilder(true);
+                                    }}
+                                  />
+                                </>
+                              }
+                            />
+                          </Box>
+                          <Box
+                            style={{ width: "50%" }}
+                            className={classes.grid}
+                          >
+                            <InputLabel color="body" className={classes.label}>
+                              {translate("User default path")}
+                            </InputLabel>
+                            <TextField
+                              element={element}
+                              canRemove={true}
+                              rootClass={classes.textFieldRoot}
+                              labelClass={classes.textFieldLabel}
+                              clearClassName={classes.clearClassName}
+                              entry={{
+                                id: `userDefaultPath_${key}`,
+                                name: "userDefaultPath",
+                                modelProperty: "userDefaultPath",
+                                get: function () {
+                                  return {
+                                    userDefaultPath:
+                                      processConfig.userDefaultPath,
+                                  };
+                                },
+                                set: function (e, value) {
+                                  updateValue(
+                                    value.userDefaultPath,
+                                    "userDefaultPath",
+                                    undefined,
+                                    key
+                                  );
+                                },
+                              }}
+                              endAdornment={
+                                <MaterialIcon
+                                  icon="edit"
+                                  fontSize={18}
+                                  className={classes.newIcon}
+                                  onClick={() => {
+                                    setOpenUserPathDialog(true);
+                                    setField(null);
+                                    setSelectedProcessConfig({
+                                      processConfig,
+                                      key,
+                                    });
+                                  }}
+                                />
+                              }
+                            />
+                          </Box>
+                        </Box>
+                      </Box>
+                    </Box>
+                    <Box color="body" align="center" className={classes.Grid}>
+                      <IconButton
+                        className={classes.iconButton}
+                        onClick={() => {
+                          removeItem(key);
+                          removeElement(key);
+                        }}
+                      >
+                        <MaterialIcon icon="close" fontSize={14} />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
           )}
-        </Grid>
-        <div className={classes.icons}>
+        </Box>
+        <Box color="body">
           <IconButton className={classes.iconButton} onClick={addItems}>
-            <Add fontSize="small" />
+            <MaterialIcon icon="add" fontSize={14} />
           </IconButton>
-        </div>
+        </Box>
       </div>
       <Dialog
         open={openProcessPathDialog}
-        onClose={(event, reason) => {
-          if (reason !== "backdropClick") {
-            setOpenProcessDialog(false);
-            setSelectedProcessConfig(null);
-          }
-        }}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        classes={{
-          paper: classes.dialog,
-        }}
+        backdrop
+        centered
+        className={classes.processPathDialog}
       >
-        <DialogTitle id="alert-dialog-title">
-          {translate("Process Path")}
-        </DialogTitle>
+        <DialogHeader onCloseClick={() => setOpenProcessDialog(false)}>
+          <h3>{translate("Process Path")}</h3>
+        </DialogHeader>
         <DialogContent className={classes.dialogContent}>
           <FieldEditor
             getMetaFields={() =>
@@ -1019,7 +1019,7 @@ export default function ProcessConfiguration({
             isParent={true}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogFooter>
           <Button
             onClick={() => {
               if (
@@ -1045,7 +1045,7 @@ export default function ProcessConfiguration({
                 );
               }
             }}
-            color="primary"
+            variant="primary"
             className={classes.save}
           >
             {translate("OK")}
@@ -1054,12 +1054,12 @@ export default function ProcessConfiguration({
             onClick={() => {
               setOpenProcessDialog(false);
             }}
-            color="primary"
+            variant="secondary"
             className={classes.save}
           >
             {translate("Cancel")}
           </Button>
-        </DialogActions>
+        </DialogFooter>
       </Dialog>
       {openExpressionBuilder && (
         <QueryBuilder
@@ -1098,7 +1098,7 @@ export default function ProcessConfiguration({
                 modelProperty: "script",
                 get: function () {
                   return {
-                    script: pathCondition?.processConfig?.pathCondition || "",
+                    script,
                   };
                 },
                 set: function (e, values) {
@@ -1109,189 +1109,165 @@ export default function ProcessConfiguration({
           }
         />
       )}
-      {alert?.open && (
-        <Dialog
-          open={alert?.open}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
+      <Dialog centered open={alert?.open} backdrop>
+        <DialogHeader onCloseClick={() => setAlert({ open: false })}>
+          <h3>{translate(alert?.title || "Warning")}</h3>
+        </DialogHeader>
+        <DialogContent className={classes.dialogContent}>
+          <Box as="p" color="body" fontSize={5}>
+            {translate(alert?.message)}
+          </Box>
+        </DialogContent>
+        <DialogFooter>
+          <Button
+            className={classes.save}
+            onClick={() => {
+              alert?.callback && alert.callback();
               setAlert({ open: false });
-            }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
-        >
-          <DialogTitle id="alert-dialog-title">
-            {translate(alert?.title)}
-          </DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {translate(alert?.message)}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              className={classes.save}
-              onClick={() => {
-                alert?.callback && alert.callback();
-                setAlert({ open: false });
-              }}
-              color="primary"
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => setAlert({ open: false })}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("Cancel")}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-      {openUserPathDialog && (
-        <Dialog
-          open={openUserPathDialog}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              setOpenUserPathDialog(false);
-              setSelectedProcessConfig(null);
-            }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
+            }}
+            variant="primary"
+          >
+            {translate("OK")}
+          </Button>
+          <Button
+            onClick={() => setAlert({ open: false })}
+            variant="secondary"
+            className={classes.save}
+          >
+            {translate("Cancel")}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+      <Dialog
+        open={openUserPathDialog}
+        backdrop
+        centered
+        className={classes.processPathDialog}
+      >
+        <DialogHeader
+          id="alert-dialog-title"
+          onCloseClick={() => {
+            setOpenUserPathDialog(false);
+            setSelectedProcessConfig(null);
           }}
         >
-          <DialogTitle id="alert-dialog-title">
-            {translate("User default Path")}
-          </DialogTitle>
-          <DialogContent className={classes.dialogContent}>
-            <FieldEditor
-              getMetaFields={() =>
-                getMetaFields(
-                  getData(
-                    selectedProcessConfig && selectedProcessConfig.processConfig
-                  )
+          <h3>{translate("User default Path")}</h3>
+        </DialogHeader>
+        <DialogContent className={classes.dialogContent}>
+          <FieldEditor
+            getMetaFields={() =>
+              getMetaFields(
+                getData(
+                  selectedProcessConfig && selectedProcessConfig.processConfig
                 )
-              }
-              onChange={(val, field) => {
-                setField(field);
-                setSelectedProcessConfig({
-                  processConfig: {
-                    ...((selectedProcessConfig &&
-                      selectedProcessConfig.processConfig) ||
-                      {}),
-                    userDefaultPath: val,
-                  },
-                  key: selectedProcessConfig && selectedProcessConfig.key,
+              )
+            }
+            onChange={(val, field) => {
+              setField(field);
+              setSelectedProcessConfig({
+                processConfig: {
+                  ...((selectedProcessConfig &&
+                    selectedProcessConfig.processConfig) ||
+                    {}),
+                  userDefaultPath: val,
+                },
+                key: selectedProcessConfig && selectedProcessConfig.key,
+              });
+            }}
+            value={{
+              fieldName:
+                selectedProcessConfig &&
+                selectedProcessConfig.processConfig &&
+                selectedProcessConfig.processConfig.userDefaultPath,
+            }}
+            isParent={true}
+            isUserPath={true}
+          />
+        </DialogContent>
+        <DialogFooter>
+          <Button
+            onClick={() => {
+              if (field && field.target !== "com.axelor.auth.db.User") {
+                setAlert({
+                  open: true,
+                  message: "Last subfield should be related to user",
                 });
-              }}
-              value={{
-                fieldName:
-                  selectedProcessConfig &&
+                return;
+              }
+              setOpenUserPathDialog(false);
+              if (selectedProcessConfig) {
+                updateValue(
                   selectedProcessConfig.processConfig &&
-                  selectedProcessConfig.processConfig.userDefaultPath,
-              }}
-              isParent={true}
-              isUserPath={true}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                if (field && field.target !== "com.axelor.auth.db.User") {
-                  setAlert({
-                    open: true,
-                    message: "Last subfield should be related to user",
-                  });
-                  return;
-                }
-                setOpenUserPathDialog(false);
-                if (selectedProcessConfig) {
-                  updateValue(
-                    selectedProcessConfig.processConfig &&
-                      selectedProcessConfig.processConfig.userDefaultPath,
-                    "userDefaultPath",
-                    undefined,
-                    selectedProcessConfig.key
-                  );
-                }
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
-                setOpenUserPathDialog(false);
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("Cancel")}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
-      {openTranslationDialog && (
-        <Dialog
-          open={openTranslationDialog}
-          onClose={(event, reason) => {
+                    selectedProcessConfig.processConfig.userDefaultPath,
+                  "userDefaultPath",
+                  undefined,
+                  selectedProcessConfig.key
+                );
+              }
+            }}
+            variant="primary"
+            className={classes.save}
+          >
+            {translate("OK")}
+          </Button>
+          <Button
+            onClick={() => {
+              setOpenUserPathDialog(false);
+            }}
+            variant="secondary"
+            className={classes.save}
+          >
+            {translate("Cancel")}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+      <Dialog backdrop centered open={openTranslationDialog}>
+        <DialogHeader
+          id="alert-dialog-title"
+          onCloseClick={(event, reason) => {
             if (reason !== "backdropClick") {
               setTranslationDialog(false);
               setSelectedProcessConfig(null);
             }
           }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
         >
-          <DialogTitle id="alert-dialog-title">
-            {translate("Translations")}
-          </DialogTitle>
-          <DialogContent className={classes.dialogContent}>
-            <ProcessConfigTitleTranslation
-              element={element}
-              configKey={
-                selectedProcessConfig &&
-                selectedProcessConfig.processConfig &&
-                selectedProcessConfig.processConfig.title
-              }
-              onChange={(translations, removedTranslations) => {
-                setTranslations(translations);
-                setRemovedTranslations(removedTranslations);
-              }}
-              bpmnModeler={bpmnModeler}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={onConfirm}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
-                setTranslationDialog(false);
-              }}
-              color="primary"
-              className={classes.save}
-            >
-              {translate("Cancel")}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+          <h3>{translate("Translations")}</h3>
+        </DialogHeader>
+        <DialogContent className={classes.dialogContent}>
+          <ProcessConfigTitleTranslation
+            element={element}
+            configKey={
+              selectedProcessConfig &&
+              selectedProcessConfig.processConfig &&
+              selectedProcessConfig.processConfig.title
+            }
+            onChange={(translations, removedTranslations) => {
+              setTranslations(translations);
+              setRemovedTranslations(removedTranslations);
+            }}
+            bpmnModeler={bpmnModeler}
+            setDummyProperty={setDummyProperty}
+          />
+        </DialogContent>
+        <DialogFooter>
+          <Button
+            onClick={onConfirm}
+            variant="primary"
+            className={classes.save}
+          >
+            {translate("OK")}
+          </Button>
+          <Button
+            onClick={() => {
+              setTranslationDialog(false);
+            }}
+            variant="secondary"
+            className={classes.save}
+          >
+            {translate("Cancel")}
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 }

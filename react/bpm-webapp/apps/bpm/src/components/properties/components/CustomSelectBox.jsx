@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import find from "lodash/find";
-import { makeStyles } from "@material-ui/styles";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import { makeStyles } from "@material-ui/core/styles";
+import classnames from "classnames";
 
+import Select from "../../Select";
 import { translate } from "../../../utils";
+import { Box, Button, InputLabel } from "@axelor/ui";
 
 const useStyles = makeStyles({
   root: {
@@ -15,11 +19,11 @@ const useStyles = makeStyles({
     width: "100%",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginBottom: 3,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   add: {
     top: "-23px !important",
@@ -27,26 +31,21 @@ const useStyles = makeStyles({
     height: 23,
     width: 24,
     overflow: "hidden",
-    cursor: "pointer",
-    backgroundColor: "#f8f8f8",
-    border: "1px solid #ccc",
     borderBottom: "none",
     right: 0,
+    borderRadius: 0,
+    padding: 0,
+    background: "var(--bs-body-bg)",
+    border: "none",
   },
-  clear: {
-    top: "-23px !important",
-    position: "absolute",
-    height: 23,
-    width: 24,
-    overflow: "hidden",
-    cursor: "pointer",
-    backgroundColor: "#f8f8f8",
-    border: "1px solid #ccc",
-    borderBottom: "none",
+  endAdornment: {
     right: 23,
   },
   container: {
     position: "relative",
+  },
+  select: {
+    width: "100%",
   },
 });
 
@@ -63,6 +62,7 @@ export default function CustomSelectBox({
   definition,
   bpmnModeler,
   defaultOptions = [],
+  endAdornment,
 }) {
   const classes = useStyles();
   const {
@@ -71,7 +71,6 @@ export default function CustomSelectBox({
     id,
     referenceProperty,
     set,
-    emptyParameter = true,
     elementType,
     newElementIdPrefix,
     get,
@@ -86,7 +85,8 @@ export default function CustomSelectBox({
   ]);
 
   const setSelectedElement = React.useCallback(
-    (id) => {
+    (option) => {
+      const { id } = option || {};
       let rootElements =
         bpmnModeler &&
         bpmnModeler.get("canvas").getRootElement().businessObject.$parent
@@ -122,16 +122,13 @@ export default function CustomSelectBox({
       selectedElement.$parent = root;
       definition[referenceProperty] = selectedElement;
     }
-
-    setOptions([
-      ...(options || []),
-      {
-        name: `${name} (id=${id})`,
-        value: name,
-        id: id,
-      },
-    ]);
-    setSelectedElement(id);
+    let opt = {
+      name: `${name} (id=${id})`,
+      value: name,
+      id: id,
+    };
+    setOptions([...(options || []), opt]);
+    setSelectedElement(opt);
   };
 
   useEffect(() => {
@@ -146,40 +143,42 @@ export default function CustomSelectBox({
   return (
     <div className={classes.root}>
       <div data-show={canBeHidden ? "hideElements" : ""}>
-        <label
+        <InputLabel
           htmlFor={`cam-extensionElements-${id}`}
+          color="body"
           className={classes.label}
         >
           {translate(label)}
-        </label>
-        <div className={classes.container}>
-          <select
-            id={`cam-extensionElements-${id}`}
-            className={classes.extensionElements}
+        </InputLabel>
+        <Box position="relative" d="flex" gap={5}>
+          <Select
             name="selectedExtensionElement"
-            data-list-entry-container
-            value={selectedOption || ""}
-            onChange={(e) => {
-              setSelectedElement(e.target.value);
-            }}
-          >
-            {options &&
-              options.length > 0 &&
-              options.map((option) => (
-                <option value={option.id} key={option.value}>
-                  {option.name}
-                </option>
-              ))}
-            {emptyParameter && <option value=""></option>}
-          </select>
-          <button
-            className={classes.add}
-            id={`cam-extensionElements-create-${id}`}
+            optionLabel="name"
+            optionLabelSecondary="title"
+            value={options?.find((o) => o?.id === selectedOption) || null}
+            className={classes.select}
+            update={(value) => setSelectedElement(value)}
+            isLabel={true}
+            options={options}
+            index={`cam-extensionElements-${id}`}
+            endAdornment={endAdornment}
+          />
+          <Button
+            variant="secondary"
+            outline
+            d="flex"
+            alignItems="center"
+            justifyContent="center"
+            className={classnames(
+              classes.add,
+              endAdornment && classes.endAdornment
+            )}
             onClick={addElement}
           >
-            <span>+</span>
-          </button>
-        </div>
+            <MaterialIcon icon="add" fontSize={16} />
+          </Button>
+          {endAdornment}
+        </Box>
       </div>
     </div>
   );

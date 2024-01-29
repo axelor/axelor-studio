@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { translate } from "../../../utils";
+import { Box, Button, InputLabel } from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import classnames from "classnames";
 
 const useStyles = makeStyles({
   root: {
@@ -10,40 +13,36 @@ const useStyles = makeStyles({
   },
   extensionElements: {
     width: "100%",
+    overflow: "auto",
+    border: "var(--ax-theme-panel-border, 1px solid var(--bs-border-color))",
+    borderRadius:
+      "var(--ax-theme-panel-border-radius, var(--bs-border-radius))",
+    padding: "var(--ax-theme-panel-body-padding, .5rem)",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginBottom: 3,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   add: {
-    top: "-23px !important",
-    position: "absolute",
-    height: 23,
-    width: 24,
-    overflow: "hidden",
-    cursor: "pointer",
-    backgroundColor: "#f8f8f8",
-    border: "1px solid #ccc",
-    borderBottom: "none",
     right: 0,
   },
   clear: {
-    top: "-23px !important",
-    position: "absolute",
-    height: 23,
-    width: 24,
-    overflow: "hidden",
-    cursor: "pointer",
-    backgroundColor: "#f8f8f8",
-    border: "1px solid #ccc",
-    borderBottom: "none",
-    right: 23,
+    right: 26,
   },
-  container: {
-    position: "relative",
+  icon: {
+    top: "-23px !important",
+    height: 23,
+    borderRadius: 0,
+    width: 24,
+    padding: 0,
+    background: "var(--bs-body-bg)",
+    border: "none",
+    justifyContent: "center",
+    display: "flex",
+    alignItems: "center",
   },
 });
 
@@ -92,51 +91,59 @@ export default function ExtensionElementTable({
 
   return (
     <div className={classes.root}>
-      <div>
-        <label
-          htmlFor={`cam-extensionElements-${id}`}
-          className={classes.label}
+      <InputLabel
+        color="body"
+        htmlFor={`cam-extensionElements-${id}`}
+        className={classes.label}
+      >
+        {translate(label)}
+      </InputLabel>
+      <Box position="relative">
+        <select
+          id={`cam-extensionElements-${id}`}
+          className={classes.extensionElements}
+          name="selectedExtensionElement"
+          size={defaultSize}
+          data-list-entry-container
+          value={selectedOption || ""}
+          onChange={() => {}}
         >
-          {translate(label)}
-        </label>
-        <div className={classes.container}>
-          <select
-            id={`cam-extensionElements-${id}`}
-            className={classes.extensionElements}
-            name="selectedExtensionElement"
-            size={defaultSize}
-            data-list-entry-container
-            value={selectedOption || ""}
-            onChange={() => {}}
-          >
-            {options &&
-              options.length > 0 &&
-              options.map((option) => (
-                <option
-                  key={option.id}
-                  value={option.id}
-                  onClick={handleChange}
-                >
-                  {option.text}
-                </option>
-              ))}
-          </select>
-          <button
-            className={classes.add}
-            id={`cam-extensionElements-create-${id}`}
-            onClick={addElement}
-          >
-            <span>+</span>
-          </button>
-          <button
-            className={classes.clear}
-            id={`cam-extensionElements-remove-${id}`}
-            onClick={removeElement}
-          >
-            <span style={{ fontSize: 10 }}>X</span>
-          </button>
-        </div>
-      </div>
+          {options &&
+            options.length > 0 &&
+            options.map((option) => (
+              <option
+                key={option.id}
+                value={option.id}
+                onClick={handleChange}
+                style={{ background: "var(--bs-tertiary-bg)" }}
+              >
+                {option.text}
+              </option>
+            ))}
+        </select>
+        <Button
+          className={classnames(classes.icon, classes.add)}
+          id={`cam-extensionElements-create-${id}`}
+          onClick={addElement}
+          variant="secondary"
+          overflow="hidden"
+          position="absolute"
+          outline
+        >
+          <MaterialIcon icon="add" fontSize={16} />
+        </Button>
+        <Button
+          className={classnames(classes.icon, classes.clear)}
+          id={`cam-extensionElements-remove-${id}`}
+          onClick={removeElement}
+          variant="secondary"
+          overflow="hidden"
+          position="absolute"
+          outline
+        >
+          <MaterialIcon icon="clear" fontSize={16} />
+        </Button>
+      </Box>
     </div>
   );
 }

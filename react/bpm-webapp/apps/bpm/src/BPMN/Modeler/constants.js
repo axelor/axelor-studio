@@ -164,7 +164,7 @@ export const RELATED_FIELDS = ["name", "processId", "wkfProcessConfigList"];
 
 export const STATUS = {
   1: "New",
-  2: "On going",
+  2: "On Going",
   3: "Terminated",
 };
 

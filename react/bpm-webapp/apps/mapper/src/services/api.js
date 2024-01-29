@@ -132,7 +132,7 @@ export async function getModels(
       type: 'metaJsonModel',
     });
   }
-  return allModels || [];
+  return uniqBy(allModels || [], 'id') || [];
 }
 
 export async function fetchModelByName(modelName) {
@@ -246,7 +246,7 @@ export async function getMetaModels(
     });
   });
 
-  return result;
+  return uniqBy(result, 'id') || [];
 }
 
 export async function getCustomModels(optionData = {}, criteria = []) {
@@ -493,4 +493,17 @@ export async function generateScriptString(jsonString, model) {
     return responseData[0].values._scriptString;
   }
   return undefined;
+}
+
+export async function loadTheme(theme) {
+  if (!theme) return;
+  const url = `js/theme/${theme}.json`;
+  const options = await services.get(url);
+  return { options, theme };
+}
+
+export async function getInfo() {
+  const url = `ws/public/app/info`;
+  const res = await services.get(url);
+  return res;
 }

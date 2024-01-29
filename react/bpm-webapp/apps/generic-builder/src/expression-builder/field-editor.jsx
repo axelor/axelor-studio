@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import CloseIcon from '@material-ui/icons/Close';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { Tooltip } from '../components';
 import { Selection } from '../components';
 import { getSubMetaField } from '../services/api';
 import { translate, isBPMQuery } from '../utils';
 import { JOIN_OPERATOR } from '../constants';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 const useStyles = makeStyles(() => ({
   MuiAutocompleteRoot: {
@@ -18,9 +17,6 @@ const useStyles = makeStyles(() => ({
   },
   iconButton: {
     marginRight: 10,
-  },
-  icon: {
-    color: '#0275d8',
   },
 }));
 
@@ -179,10 +175,9 @@ export default function FieldEditor({
     } else {
       let fields = [...(allField || [])];
       let fieldNames = (fieldName || '').split(JOIN_OPERATOR[expression]);
-      let initValues =
-        `${initValue}${JOIN_OPERATOR[expression]}${startValue}`.split(
-          JOIN_OPERATOR[expression]
-        );
+      let initValues = `${initValue}${JOIN_OPERATOR[expression]}${startValue}`.split(
+        JOIN_OPERATOR[expression]
+      );
       fieldNames &&
         fieldNames.length > 0 &&
         fieldNames.forEach(fName => {
@@ -261,7 +256,7 @@ export default function FieldEditor({
       <Selection
         name="fieldName"
         title="Field name"
-        placeholder="field name"
+        placeholder="Field name"
         options={fields}
         optionLabelKey="name"
         onChange={handleChange}
@@ -292,7 +287,7 @@ export default function FieldEditor({
               className={classes.iconButton}
             >
               <Tooltip title={translate('Remove sub field')}>
-                <CloseIcon className={classes.icon} fontSize="small" />
+                <MaterialIcon icon="close" color="body" fontSize={18} />
               </Tooltip>
             </IconButton>
           )}
@@ -327,7 +322,7 @@ export default function FieldEditor({
               className={classes.iconButton}
             >
               <Tooltip title={translate('Add sub field')}>
-                <ArrowForwardIcon className={classes.icon} fontSize="small" />
+                <MaterialIcon color="body" icon="arrow_forward" fontSize={18} />
               </Tooltip>
             </IconButton>
           )}

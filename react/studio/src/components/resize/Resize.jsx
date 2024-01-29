@@ -139,6 +139,7 @@ export default function ResizeColumn({
 			{...props}
 		>
 			<div
+				className="resize-container"
 				{...(width && canResize
 					? {
 							style: {

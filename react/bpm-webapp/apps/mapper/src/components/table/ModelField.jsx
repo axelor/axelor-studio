@@ -1,24 +1,7 @@
 import React from 'react';
-import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 
 import Popover from '../Popover';
-
-const useStyles = makeStyles({
-  input: {
-    width: '100%',
-    display: 'flex',
-    position: 'relative',
-    '& > div:before': {
-      border: 0,
-    },
-  },
-  fieldNameColumn: {
-    width: 'unset',
-  },
-});
+import { Box, InputLabel } from '@axelor/ui';
 
 const RelationalFieldList = [
   'one_to_one',
@@ -45,7 +28,6 @@ const getFields = (item) => {
 };
 
 function ModelFieldComponent(props) {
-  const classes = useStyles();
   const { item, handleAdd } = props;
   const [showSubField, setShowSubField] = React.useState(false);
   const fields = getFields(item);
@@ -60,12 +42,10 @@ function ModelFieldComponent(props) {
     return null;
   }
   return (
-    <div className={classNames(classes.input)}>
-      <Grid container direction="column" className={classes.fieldNameColumn}>
-        <Typography title={item['name']}>
-          {item['title'] || item['autoTitle'] || item['name']}
-        </Typography>
-      </Grid>
+    <Box d="flex" w={100}>
+      <InputLabel mb={0}>
+        {item['title'] || item['autoTitle'] || item['name']}
+      </InputLabel>
       <div>
         {fields && showSubField && (
           <Popover
@@ -76,7 +56,7 @@ function ModelFieldComponent(props) {
           />
         )}
       </div>
-    </div>
+    </Box>
   );
 }
 

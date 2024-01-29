@@ -1,13 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Paper,
-  Grid,
-} from "@material-ui/core";
 import jsStringEscape from "js-string-escape";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -18,30 +9,47 @@ import {
   InputField,
 } from "../../../components/expression-builder/components";
 import { translate } from "../../../utils";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Box,
+} from "@axelor/ui";
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
     maxWidth: "100%",
     maxHeight: "100%",
-    resize: "both",
-    width: "70%",
-    height: 650,
+    overflow: "hidden",
+    display: "flex",
+    "& > div": {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      maxWidth: "calc(100% - 40px)",
+      minWidth: "70%",
+      "& > div": {
+        maxHeight: "100%",
+        minWidth: "80%",
+        minHeight: "calc(80% - 20px)",
+        overflow: "auto",
+        resize: "both",
+      },
+    },
+  },
+  dialogContent: {
+    overflow: "auto",
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   MuiAutocompleteRoot: {
     width: "95%",
@@ -50,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     margin: theme.spacing(1),
     padding: theme.spacing(3, 2),
+  },
+  container: {
+    marginBlock: 10,
   },
 }));
 
@@ -79,8 +90,7 @@ export default function ConnectorBuilder({
     const criteria = [];
     if (requestIds.length) {
       criteria.push({ fieldName: "id", operator: "IN", value: requestIds });
-    }
-    else return [];
+    } else return [];
     const res = await Service.search("com.axelor.studio.db.WsRequestList", {
       data: {
         criteria,
@@ -88,7 +98,8 @@ export default function ConnectorBuilder({
       sortBy: ["sequence"],
     });
     const { data = [] } = res || {};
-    const newData = data && data.map((v, i) => ({ ...v?.wsRequest, index: i + 1 }));
+    const newData =
+      data && data.map((v, i) => ({ ...v?.wsRequest, index: i + 1 }));
     return newData || [];
   };
 
@@ -169,39 +180,31 @@ export default function ConnectorBuilder({
   }, [getDefaultValues]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={(event, reason) => {
-        if (reason !== "backdropClick") {
-          handleClose();
-        }
-      }}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-      classes={{
-        paper: classes.dialog,
-      }}
-    >
-      <DialogTitle id="alert-dialog-title">
-        <label className={classes.title}>{translate("Connector script")}</label>
-      </DialogTitle>
-      <DialogContent>
-        <Paper variant="outlined" className={classes.paper}>
-          <Grid container>
-            <Grid xs={6} item>
+    <Dialog open={open} backdrop className={classes.dialog}>
+      <DialogHeader onCloseClick={handleClose}>
+        <h3>{translate("Connector script")}</h3>
+      </DialogHeader>
+      <DialogContent className={classes.dialogContent}>
+        <Box
+          rounded={2}
+          shadow
+          bgColor="body-tertiary"
+          className={classes.paper}
+        >
+          <Box d="flex">
+            <Box w={50}>
               <Selection
                 name="connector"
-                title="Connector"
                 placeholder="Connector"
                 fetchAPI={fetchConnectors}
                 optionLabelKey="name"
                 value={connector}
                 onChange={(e) => setConnector(e)}
-                classes={{ root: classes.MuiAutocompleteRoot }}
+                className={classes.MuiAutocompleteRoot}
               />
-            </Grid>
+            </Box>
             {connector && (
-              <Grid xs={6} item>
+              <Box w={50}>
                 <Selection
                   name="request"
                   title="Request"
@@ -210,15 +213,15 @@ export default function ConnectorBuilder({
                   optionLabelKey="name"
                   value={request}
                   onChange={(e) => setRequest(e)}
-                  classes={{ root: classes.MuiAutocompleteRoot }}
+                  className={classes.MuiAutocompleteRoot}
                 />
-              </Grid>
+              </Box>
             )}
-          </Grid>
+          </Box>
           {connector && (
             <React.Fragment>
-              <Grid container style={{ margin: "10px 0px" }}>
-                <Grid xs={6} item>
+              <Box d="flex" className={classes.container}>
+                <Box w={50}>
                   <InputField
                     name="requestVariable"
                     onChange={(value) => setRequestVariable(value)}
@@ -226,8 +229,8 @@ export default function ConnectorBuilder({
                     value={requestVariable}
                     style={{ width: "95%" }}
                   />
-                </Grid>
-                <Grid xs={6} item>
+                </Box>
+                <Box w={50}>
                   <InputField
                     name="resultVariable"
                     title="Result variable"
@@ -235,10 +238,10 @@ export default function ConnectorBuilder({
                     value={resultVariable}
                     style={{ width: "95%" }}
                   />
-                </Grid>
-              </Grid>
-              <Grid container style={{ margin: "10px 0px" }}>
-                <Grid xs={6} item>
+                </Box>
+              </Box>
+              <Box d="flex" className={classes.container}>
+                <Box w={50}>
                   <InputField
                     name="returnVariable"
                     title="Return variable"
@@ -246,8 +249,8 @@ export default function ConnectorBuilder({
                     readOnly={true}
                     style={{ width: "95%" }}
                   />
-                </Grid>
-                <Grid xs={6} item>
+                </Box>
+                <Box w={50}>
                   <InputField
                     name="returnExpression"
                     title="Return expression"
@@ -255,9 +258,9 @@ export default function ConnectorBuilder({
                     value={returnExpression}
                     style={{ width: "95%" }}
                   />
-                </Grid>
-              </Grid>
-              <Grid style={{ marginTop: 10 }}>
+                </Box>
+              </Box>
+              <Box className={classes.container}>
                 <Table
                   entry={{
                     id: "menu-context",
@@ -291,23 +294,27 @@ export default function ConnectorBuilder({
                     },
                   }}
                 />
-              </Grid>
+              </Box>
             </React.Fragment>
           )}
-        </Paper>
+        </Box>
       </DialogContent>
-      <DialogActions>
+      <DialogFooter>
         <Button
           onClick={generateScript}
-          color="primary"
+          variant="primary"
           className={classes.save}
         >
           {translate("OK")}
         </Button>
-        <Button onClick={handleClose} color="primary" className={classes.save}>
+        <Button
+          onClick={handleClose}
+          variant="secondary"
+          className={classes.save}
+        >
           {translate("Cancel")}
         </Button>
-      </DialogActions>
+      </DialogFooter>
     </Dialog>
   );
 }

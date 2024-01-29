@@ -2,6 +2,13 @@
   color: #5eaeda !important;
 }
 
+.djs-palette .bpmn-icon-hand-tool,
+.djs-palette .bpmn-icon-lasso-tool,
+.djs-palette .bpmn-icon-space-tool,
+.djs-palette .bpmn-icon-connection-multi {
+  color: var(--bs-body-color) !important;
+}
+
 .djs-palette .bpmn-icon-start-event-none {
   color: #55c041 !important;
 }
@@ -86,11 +93,33 @@
   color: #a9b1bd !important;
 }
 
-.djs-label {
-  fill: black !important;
+.djs-context-pad .entry {
+  background-color: transparent !important;
+  box-shadow: 0 0 2px 1px transparent !important;
+}
+.djs-context-pad .entry:hover {
+  background-color: var(--ax-theme-table-active-bg) !important;
+  box-shadow: 0 0 2px 1px var(--ax-theme-table-active-bg) !important;
 }
 
-.djs-context-pad .entry {
-  background-color: transparent;
-  box-shadow: 0 0 2px 1px transparent;
+.djs-palette-entries {
+  background: var(--bs-tertiary-bg, #fafafa) !important;
+  border-radius: 0.2rem;
+}
+
+.djs-popup-body,
+.djs-popup,
+.bpmn-replace {
+  background: var(--bs-tertiary-bg) !important;
+}
+
+.djs-palette .separator {
+  border-color: currentColor !important;
+}
+
+.djs-palette {
+  border-color: var(--bs-border-color) !important;
+}
+body svg.new-parent {
+  background: var(--bs-tertiary-bg) !important;
 }

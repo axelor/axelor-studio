@@ -1,23 +1,40 @@
-import React from "react";
-import Tooltip from "@material-ui/core/Tooltip";
-import { makeStyles } from "@material-ui/core/styles";
-import { translate } from "../utils";
+import React, { cloneElement } from "react";
+import { Box, ClickAwayListener, Popper, usePopperTrigger } from "@axelor/ui";
+import styles from "./tooltip.module.css";
 
-const useStyles = makeStyles((theme) => ({
-  arrow: {
-    color: theme.palette.common.black,
-  },
-  tooltip: {
-    backgroundColor: theme.palette.common.black,
-    fontSize: "1em",
-  },
-}));
+export default function Tooltip({ title, children }) {
+  const { open, targetEl, setTargetEl, setContentEl, onClickAway } =
+    usePopperTrigger({
+      trigger: "hover",
+      interactive: true,
+      delay: {
+        open: 10,
+        close: 100,
+      },
+    });
 
-export default function BootstrapTooltip({ title, children }) {
-  const classes = useStyles();
   return (
-    <Tooltip arrow classes={classes} title={translate(title)}>
-      <div>{children}</div>
-    </Tooltip>
+    <>
+      {cloneElement(children, {
+        ref: setTargetEl,
+      })}
+      <Popper
+        id="simple-popover"
+        className={styles.tooltip}
+        open={open}
+        target={targetEl}
+        offset={[0, 4]}
+        placement="bottom"
+        arrow
+        shadow
+        rounded
+      >
+        <ClickAwayListener onClickAway={onClickAway}>
+          <Box ref={setContentEl} className={styles.container}>
+            {title && <Box className={styles.title}>{title}</Box>}
+          </Box>
+        </ClickAwayListener>
+      </Popper>
+    </>
   );
 }

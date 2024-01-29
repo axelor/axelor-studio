@@ -5,7 +5,6 @@ import {
   CustomSelectBox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
 
 export default function EscalationEventProps({
   element,
@@ -14,6 +13,7 @@ export default function EscalationEventProps({
   bpmnModdle,
   showEscalationCodeVariable,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [selectedEscalation, setSelectedEscalation] = useState(null);
   const [escalationOptions, setEscalationOptions] = useState([]);

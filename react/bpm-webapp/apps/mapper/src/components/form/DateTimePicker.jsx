@@ -1,83 +1,34 @@
-import React, { useState } from 'react';
-import MomentUtils from '@date-io/moment';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDateTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import React from 'react';
 import { translate } from '../../utils';
-
-const PICKERS = {
-  date: KeyboardDatePicker,
-  time: KeyboardTimePicker,
-  datetime: KeyboardDateTimePicker,
-};
-
-export const DATE_FORMAT = {
-  date: 'DD/MM/YYYY',
-  time: 'HH:mm:ss',
-  datetime: 'DD/MM/YYYY HH:mm',
-};
+import moment from 'moment';
+import { Input, InputFeedback } from '@axelor/ui';
 
 export default function DateTimePicker({ inline, type = 'date', ...props }) {
-  const [open, setOpen] = useState(false);
-  let valueRef = React.useRef();
-  const { name, title, format, error, onChange, row, ...other } = props;
-  const Picker = PICKERS[type];
+  const { name, title, format, value, error, onChange, row, ...other } = props;
   const { selected } = row?.value;
-
-  function onKeyDown(e) {
-    if (e.keyCode === 40) setOpen(true);
-  }
-
-  function onClose() {
-    onChange(valueRef.current);
-    setOpen(false);
-  }
-
-  React.useEffect(() => {
-    if (open) {
-      valueRef.current = other.value;
-    }
-  }, [open, other.value]);
+  const momentFormat = type === 'datetime' ? 'YYYY-MM-DDTHH:mm' : 'YYYY-MM-DD';
 
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
-      <Picker
-        autoOk={true}
-        open={open}
-        ampm={false}
-        views={
-          type === 'date'
-            ? ['date']
-            : type === 'datetime'
-            ? ['date', 'hours', 'minutes']
-            : type === 'time'
-            ? ['hours', 'minutes', 'seconds']
-            : ['date']
-        }
-        onChange={(value) => {
-          valueRef.current = value;
-          onChange(value);
+    <>
+      <Input
+        name={name}
+        type={type === 'datetime' ? 'datetime-local' : type}
+        onChange={(e) => onChange(moment(e?.target?.value))}
+        value={value ? moment(value).format(momentFormat) : ''}
+        invalid={error && !selected?.value}
+        style={{
+          width: '100%',
+          padding: '0.375rem 0.75rem',
+          ...(inline ? { margin: 0 } : {}),
         }}
-        PopoverProps={{
-          anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
-          transformOrigin: { vertical: 'top', horizontal: 'left' },
-        }}
-        disableToolbar
-        variant="inline"
-        {...(inline ? { invalidDateMessage: '' } : {})}
-        style={{ width: '100%', ...(inline ? { margin: 0 } : {}) }}
-        error={error && !selected?.value}
-        label={inline ? '' : translate(title)}
-        format={format || DATE_FORMAT[type]}
-        {...(type !== 'time' ? { animateYearScrolling: false } : {})}
+        format={format}
+        placeholder={inline ? '' : translate(title)}
+        rounded
         {...other}
-        onKeyDown={onKeyDown}
-        onClose={onClose}
-        onOpen={() => setOpen(true)}
       />
-    </MuiPickersUtilsProvider>
+      {error && !inline && !selected?.value && (
+        <InputFeedback invalid>Invalid date</InputFeedback>
+      )}
+    </>
   );
 }

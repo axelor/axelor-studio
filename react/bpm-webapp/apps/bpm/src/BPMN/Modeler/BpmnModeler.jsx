@@ -6,21 +6,20 @@ import propertiesProviderModule from "bpmn-js-properties-panel/lib/provider/camu
 import cmdHelper from "bpmn-js-properties-panel/lib/helper/CmdHelper";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
-import Alert from "@material-ui/lab/Alert";
 import tokenSimulation from "bpmn-js-token-simulation/lib/modeler";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { makeStyles } from "@material-ui/core/styles";
-import { Snackbar, Drawer, Divider } from "@material-ui/core";
 import { Resizable } from "re-resizable";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
+import { useAppTheme } from "../../custom-hooks/useAppTheme.jsx";
 import { Logo } from "../../components/Logo";
 import DrawerContent from "./DrawerContent";
 import propertiesCustomProviderModule from "./custom-provider";
 import camundaModdleDescriptor from "./resources/camunda.json";
 import Service from "../../services/Service";
 import AlertDialog from "../../components/AlertDialog";
-import Tooltip from "../../components/Tooltip";
 import DeployDialog from "./views/DeployDialog";
 import Select from "../../components/Select";
 import {
@@ -49,12 +48,12 @@ import {
   getBool,
   translate,
   convertSVGtoBase64,
+  lightenColor,
 } from "../../utils";
 import {
   FILL_COLORS,
   USER_TASKS_TYPES,
   STROKE_COLORS,
-  RELATIVE_FILL,
   CONDITIONAL_SOURCES,
 } from "./constants";
 import { ALL_ATTRIBUTES } from "./properties/parts/CustomImplementation/constants";
@@ -66,13 +65,13 @@ import "../css/bpmn.css";
 import "../css/colors.css";
 import { useKeyPress } from "../../custom-hooks/useKeyPress";
 import Ids from "ids";
+import Alert from "../../components/Alert";
+import { Box, CommandBar, Scrollable } from "@axelor/ui";
 
 const resizeStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  borderLeft: "solid 1px #ddd",
-  background: "#f0f0f0",
 };
 const drawerWidth = 380;
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
@@ -81,28 +80,29 @@ const TimerEvents = React.lazy(() => import("./TimerEvent"));
 
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
-    background: "#F8F8F8",
+    background: "var(--bs-tertiary-bg)",
+    padding: 0,
     width: "100%",
     position: "absolute",
-    borderLeft: "1px solid #ccc",
     overflow: "auto",
     height: "100%",
+    zIndex: 2,
   },
   drawerContainer: {
     padding: 10,
     height: "100%",
+    width: "100%",
   },
   select: {
     minWidth: 150,
-    marginLeft: 20,
     marginTop: 0,
-    border: "none",
   },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "rgba(0, 0, 0, 0.54)",
-    margin: "8px 0px 3px 25px",
+  commandBar: {
+    "& > div": {
+      "& > button": {
+        fontSize: 14,
+      },
+    },
   },
 }));
 
@@ -158,7 +158,6 @@ function BpmnModelerComponent() {
     title: "Error",
   });
   const [openDelopyDialog, setDelopyDialog] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(true);
   const [isTimerTask, setIsTimerTask] = useState(true);
   const [ids, setIds] = useState({
     oldIds: null,
@@ -179,6 +178,7 @@ function BpmnModelerComponent() {
   const [enableStudioApp, setEnableStudioApp] = useState(false);
   const [showError, setError] = useState(false);
   const [initialState, setInitialState] = useState(false);
+  const { theme } = useAppTheme();
 
   const classes = useStyles();
   const diagramXmlRef = React.useRef(null);
@@ -193,9 +193,14 @@ function BpmnModelerComponent() {
     setMenuAction(val);
   }, []);
 
-  const handleChange = React.useCallback((event, newValue) => {
-    setTabValue(newValue);
-  }, []);
+  const handleChange = React.useCallback(
+    (newValue) => {
+      const val = tabs.findIndex((tab) => tab.id === newValue?.id);
+      const tabValue = val > -1 ? val : 0;
+      setTabValue(tabValue);
+    },
+    [tabs]
+  );
 
   const alertOpen = (
     actions,
@@ -319,7 +324,7 @@ function BpmnModelerComponent() {
           addOldNodes(oldWkf, setWkf, bpmnModeler);
         }
         let canvas = bpmnModeler.get("canvas");
-        canvas.zoom("fit-viewport");
+        canvas.zoom("fit-viewport", "auto");
         const definitions = bpmnModeler._definitions;
         let attrs = definitions && definitions.$attrs;
         if (attrs) {
@@ -343,7 +348,7 @@ function BpmnModelerComponent() {
             });
           }
         }
-        let tabs = getTabs(bpmnModeler, definitions);
+        let tabs = getTabs(bpmnModeler, definitions, setDummyProperty);
         setTabs(tabs);
         setTabValue(0);
         setSelectedElement(definitions);
@@ -409,7 +414,7 @@ function BpmnModelerComponent() {
           console.error(error);
         }
       } catch (error) {
-        handleSnackbarClick("error", "Error! Can't import XML");
+        handleSnackbarClick("danger", "Error! Can't import XML");
       }
     },
     []
@@ -472,7 +477,7 @@ function BpmnModelerComponent() {
       files[0].name &&
       !files[0].name.includes(".bpmn")
     ) {
-      handleSnackbarClick("error", "Upload Bpmn files only");
+      handleSnackbarClick("danger", "Upload Bpmn files only");
       return;
     }
     reader.readAsText(files && files[0]);
@@ -605,7 +610,7 @@ function BpmnModelerComponent() {
 
     if (!name || !code) {
       handleSnackbarClick(
-        "error",
+        "danger",
         !name && !code
           ? "Name and code are required."
           : !name
@@ -635,7 +640,7 @@ function BpmnModelerComponent() {
         return null;
       });
       if (timerEvent && timerEvent.length > 0) {
-        handleSnackbarClick("error", "Timer events are not supported.");
+        handleSnackbarClick("danger", "Timer events are not supported.");
         return;
       }
     }
@@ -838,17 +843,17 @@ function BpmnModelerComponent() {
           let res = await fetchWkf(latestWkf?.id);
           setWkf(res);
           setId(res.id);
-          addDiagramProperties(res);
+          addDiagramProperties(res, false);
         } else {
           setWkf(res.data[0]);
           setId(res.data[0].id);
-          addDiagramProperties(res.data[0]);
+          addDiagramProperties(res.data[0], false);
         }
         setDirty(false);
         handleSnackbarClick("success", "Saved Successfully");
       } else {
         handleSnackbarClick(
-          "error",
+          "danger",
           (res && res.data && (res.data.message || res.data.title)) || "Error"
         );
       }
@@ -1050,7 +1055,7 @@ function BpmnModelerComponent() {
       fetchDiagram(newWkf.id, true);
     } else {
       handleSnackbarClick(
-        "error",
+        "danger",
         (actionRes?.data && actionRes?.data[0]?.error?.message) ||
           actionRes?.data?.title ||
           "Error"
@@ -1091,7 +1096,7 @@ function BpmnModelerComponent() {
       }
     } else {
       handleSnackbarClick(
-        "error",
+        "danger",
         actionStart?.data?.message || actionStart?.data?.title || "Error"
       );
     }
@@ -1153,7 +1158,7 @@ function BpmnModelerComponent() {
       return { context, res };
     } else {
       handleSnackbarClick(
-        "error",
+        "danger",
         res?.data?.message || res?.data?.title || "Error"
       );
     }
@@ -1223,7 +1228,7 @@ function BpmnModelerComponent() {
             processNames.some((item) => processIds && processIds.includes(item))
           )
         ) {
-          handleSnackbarClick("error", "Please provide unique process id");
+          handleSnackbarClick("danger", "Please provide unique process id");
           return;
         }
       }
@@ -1272,7 +1277,7 @@ function BpmnModelerComponent() {
         selectedElement && selectedElement.type
       )
         ? "white"
-        : RELATIVE_FILL[color.toLowerCase()];
+        : lightenColor(color, 0.85);
     }
     modeling.setColor(selectedElement, colors);
   };
@@ -1286,7 +1291,7 @@ function BpmnModelerComponent() {
             handleSnackbarClick("success", "Deleted Successfully");
             onNew(true);
           } else {
-            handleSnackbarClick("error", res);
+            handleSnackbarClick("danger", res);
           }
         },
       },
@@ -1317,7 +1322,7 @@ function BpmnModelerComponent() {
     }
   };
 
-  const addDiagramProperties = (wkfParam = wkf) => {
+  const addDiagramProperties = (wkfParam = wkf, resetElement = true) => {
     const definitions = bpmnModeler._definitions;
     let attrs = definitions && definitions.$attrs;
     if (attrs) {
@@ -1340,12 +1345,14 @@ function BpmnModelerComponent() {
         });
       }
     }
-    updateTabs(
-      {
-        element: definitions,
-      },
-      false
-    );
+    if (resetElement) {
+      updateTabs(
+        {
+          element: definitions,
+        },
+        false
+      );
+    }
   };
 
   const reloadView = () => {
@@ -1354,61 +1361,88 @@ function BpmnModelerComponent() {
     fetchDiagram(id);
   };
 
-  const toolBarButtons = [
+  const leftToolbar = [
     {
-      name: "New",
-      icon: <i className="fa fa-plus" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Add new",
+      key: "new",
+      iconOnly: true,
+      description: translate("Add new"),
+      iconProps: {
+        icon: "add",
+      },
       onClick: () => onNew(),
     },
     {
-      name: "Save",
-      icon: <i className="fa fa-floppy-o" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Save",
+      key: "save",
+      iconOnly: true,
+      description: translate("Save"),
+      iconProps: {
+        icon: "save",
+      },
       onClick: onSave,
     },
     {
-      name: "Delete",
-      icon: <i className="fa fa-trash-o" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Delete",
+      key: "delete",
+      iconOnly: true,
+      description: translate("Delete"),
+      iconProps: {
+        icon: "delete",
+      },
       onClick: onDelete,
     },
     {
-      name: "Image",
-      icon: <i className="fa fa-picture-o" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Download SVG",
-      onClick: () => saveSVG(bpmnModeler, wkf?.name),
+      key: "refresh",
+      iconOnly: true,
+      description: translate("Refresh"),
+      iconProps: {
+        icon: "refresh",
+      },
+      onClick: onRefresh,
     },
     {
-      name: "UploadXml",
-      icon: <i className="fa fa-upload" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Upload",
-      onClick: uploadXml,
-    },
-    {
-      name: "DownloadXml",
-      icon: <i className="fa fa-download" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Download",
-      onClick: () => downloadXml(bpmnModeler, wkf?.name),
-    },
-    {
-      name: "Deploy",
-      icon: <i className="fa fa-rocket" style={{ fontSize: 18 }}></i>,
-      tooltipText: wkf && wkf.statusSelect === 1 ? "Start" : "Deploy",
+      key: "deploy",
+      iconOnly: true,
+      description:
+        wkf && wkf.statusSelect === 1
+          ? translate("Start")
+          : translate("Deploy"),
+      iconProps: {
+        icon: "rocket",
+      },
       onClick: deployDiagram,
       disable: id ? false : true,
     },
     {
-      name: "Diagram properties",
-      icon: <i className="fa fa-bars" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Show diagram properties",
+      key: "properties",
+      iconOnly: true,
+      description: translate("Show diagram properties"),
+      iconProps: {
+        icon: "menu",
+      },
       onClick: addDiagramProperties,
     },
+  ];
+
+  const rightToolbar = [
     {
-      name: "Refresh",
-      icon: <i className="fa fa-refresh" style={{ fontSize: 18 }}></i>,
-      tooltipText: "Refresh",
-      onClick: onRefresh,
+      key: "upload",
+      iconOnly: true,
+      description: translate("Upload"),
+      iconProps: { icon: "upload" },
+      onClick: uploadXml,
+    },
+    {
+      key: "download",
+      iconOnly: true,
+      description: translate("Download"),
+      iconProps: { icon: "download" },
+      onClick: () => downloadXml(bpmnModeler, wkf?.name),
+    },
+    {
+      key: "image",
+      iconOnly: true,
+      description: translate("Download SVG"),
+      iconProps: { icon: "photo" },
+      onClick: () => saveSVG(bpmnModeler, wkf?.name),
     },
   ];
 
@@ -1600,7 +1634,7 @@ function BpmnModelerComponent() {
             addProperty("relatedField", relatedField.name);
             addProperty("relatedFieldLabel", relatedFieldLabel);
           }
-          if (roles.length > 0) {
+          if (roles?.length > 0) {
             const roleNames = roles.map((role) => role.name);
             addProperty("roles", roleNames.toString());
           }
@@ -1638,10 +1672,6 @@ function BpmnModelerComponent() {
     }
   };
 
-  const setCSSWidth = (width) => {
-    setDrawerOpen(width === "0px" ? false : true);
-  };
-
   const updateTabs = React.useCallback(
     (event, isAllowComments = true) => {
       let { element } = event;
@@ -1652,7 +1682,7 @@ function BpmnModelerComponent() {
         );
         element = newElement;
       }
-      let tabs = getTabs(bpmnModeler, element);
+      let tabs = getTabs(bpmnModeler, element, setDummyProperty);
       setTabValue(0);
       setTabs(tabs);
       setSelectedElement(element);
@@ -1661,7 +1691,6 @@ function BpmnModelerComponent() {
         setComments(commentsLength);
         checkMenuActionTab(element);
       }
-      setDrawerOpen(true);
     },
     [checkMenuActionTab]
   );
@@ -1683,6 +1712,11 @@ function BpmnModelerComponent() {
     }
   }
 
+  async function setDummyProperty() {
+    const isDirty = await checkIfUpdated();
+    setDirty(isDirty);
+  }
+
   useEffect(() => {
     window.top && window.top.addEventListener("beforeunload", alertUser);
     return () => {
@@ -1696,6 +1730,7 @@ function BpmnModelerComponent() {
         const isDirty = await checkIfUpdated();
         setDirty(isDirty);
       };
+      if (!bpmnModeler) return;
       const eventBus = bpmnModeler.get("eventBus");
       eventBus.on("elements.changed", checkDirty);
       return () => {
@@ -1790,43 +1825,28 @@ function BpmnModelerComponent() {
 
   return (
     <React.Fragment>
-      <div id="container">
+      <Box id="container">
         <React.Suspense fallback={<></>}>
           {!isTimerTask && <TimerEvents />}
         </React.Suspense>
-        <div id="bpmncontainer">
+        <Box id="bpmncontainer" color="body">
           <div id="propview"></div>
           <div id="bpmnview">
-            <div className="toolbar-buttons">
-              {toolBarButtons.map((btn) => (
-                <div key={btn.name}>
-                  {btn.name === "UploadXml" && (
-                    <input
-                      id="inputFile"
-                      type="file"
-                      name="file"
-                      onChange={uploadFile}
-                      style={{ display: "none" }}
-                    />
-                  )}
-                  <Tooltip
-                    title={btn.tooltipText}
-                    children={
-                      <button
-                        onClick={btn.onClick}
-                        disabled={btn.disable || false}
-                        className="property-button"
-                      >
-                        {btn.icon}
-                      </button>
-                    }
-                  />
-                </div>
-              ))}
-              <div style={{ width: "calc(100% - 450px)" }}>
-                <label className={classes.label}>
-                  {translate("BPM model")}
-                </label>
+            <Box
+              d="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              flexWrap="wrap"
+              rounded
+              border
+              gap="4"
+              style={{
+                padding: "6px 20px 8px 20px",
+                backgroundColor: "var(--bs-tertiary-bg)",
+              }}
+            >
+              <CommandBar items={leftToolbar} className={classes.commandBar} />
+              <Box flex="1">
                 <Select
                   className={classes.select}
                   disableClearable={true}
@@ -1843,12 +1863,20 @@ function BpmnModelerComponent() {
                   fetchMethod={(criteria) => getModels(criteria)}
                   disableUnderline={false}
                   isOptionEllipsis={true}
+                  placeholder={translate("BPM model")}
                 />
-              </div>
-            </div>
-            <Divider />
+              </Box>
+              <CommandBar items={rightToolbar} className={classes.commandBar} />
+              <input
+                id="inputFile"
+                type="file"
+                name="file"
+                onChange={uploadFile}
+                style={{ display: "none" }}
+              />
+            </Box>
           </div>
-        </div>
+        </Box>
         <div>
           <Resizable
             style={resizeStyle}
@@ -1856,24 +1884,12 @@ function BpmnModelerComponent() {
             onResizeStop={(e, direction, ref, d) => {
               setWidth((width) => width + d.width);
               setHeight(height + d.height);
-              setCSSWidth(width + d.width);
             }}
             minWidth={width === 0 ? width : drawerWidth}
             maxWidth={window.innerWidth - 150}
           >
-            <Drawer
-              variant="persistent"
-              anchor="right"
-              open={drawerOpen}
-              style={{
-                width: drawerWidth,
-              }}
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-              id="drawer"
-            >
-              <div className={classes.drawerContainer}>
+            <Scrollable className={classes.drawerPaper}>
+              <Box className={classes.drawerContainer}>
                 <DrawerContent
                   tabs={tabs}
                   tabValue={tabValue}
@@ -1895,18 +1911,24 @@ function BpmnModelerComponent() {
                   changeColor={changeColor}
                   bpmnModeler={bpmnModeler}
                   showError={showError}
+                  setDummyProperty={setDummyProperty}
                 />
-              </div>
-            </Drawer>
-            <div
+              </Box>
+            </Scrollable>
+            <Box
               className="bpmn-property-toggle"
+              color="body"
+              pos="absolute"
+              bg="body-tertiary"
+              userSelect="none"
+              roundedTop
+              fontSize={6}
               onClick={() => {
                 setWidth((width) => (width === 0 ? 380 : 0));
-                setCSSWidth(width === 0 ? 380 : 0);
               }}
             >
-              {translate("Properties panel")}
-            </div>
+              {translate("Properties")}
+            </Box>
           </Resizable>
           <div
             className="properties-panel-parent"
@@ -1914,25 +1936,12 @@ function BpmnModelerComponent() {
           ></div>
         </div>
         {openSnackbar.open && (
-          <Snackbar
+          <Alert
             open={openSnackbar.open}
-            autoHideDuration={2000}
+            message={openSnackbar.message}
+            messageType={openSnackbar.messageType}
             onClose={handleSnackbarClose}
-          >
-            <Alert
-              elevation={6}
-              variant="filled"
-              onClose={handleSnackbarClose}
-              className="snackbarAlert"
-              severity={openSnackbar.messageType}
-            >
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: openSnackbar.message,
-                }}
-              ></div>
-            </Alert>
-          </Snackbar>
+          />
         )}
         {openAlert?.open && (
           <AlertDialog
@@ -1956,7 +1965,7 @@ function BpmnModelerComponent() {
             wkf={wkf}
           />
         )}
-      </div>
+      </Box>
       <Logo />
     </React.Fragment>
   );

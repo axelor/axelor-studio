@@ -9,20 +9,20 @@ import {
 
 import { DateTimePicker } from "../../expression-builder/components";
 import { translate } from "../../../utils";
+import { InputLabel } from "@axelor/ui";
 
 const useStyles = makeStyles({
   input: {
     border: "1px solid #ccc",
     margin: "5px 0px",
     padding: "0px 5px",
-    background: "white",
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     marginTop: 5,
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
 });
 
@@ -70,7 +70,9 @@ function DatePicker({ type, entry }) {
   };
   return (
     <React.Fragment>
-      <label className={classes.label}>{translate(label)}</label>
+      <InputLabel color="body" className={classes.label}>
+        {translate(label)}
+      </InputLabel>
       <DateTimePicker
         type={type}
         className={classes.input}

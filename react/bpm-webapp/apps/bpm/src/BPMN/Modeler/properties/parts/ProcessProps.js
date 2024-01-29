@@ -2,7 +2,6 @@ import nameEntryFactory from "./implementation/Name";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
-import { setDummyProperty } from "./CustomImplementation/utils";
 import { getProcessBusinessObject, getFlowElements } from "../../extra";
 
 export default function ProcessProps(
@@ -10,7 +9,8 @@ export default function ProcessProps(
   element,
   translate,
   options,
-  bpmnModeler
+  bpmnModeler,
+  setDummyProperty = () => {}
 ) {
   let businessObject = getBusinessObject(element);
 
@@ -58,10 +58,9 @@ export default function ProcessProps(
           const elementRegistry = bpmnModeler.get("elementRegistry");
           callActivities?.forEach((activity) => {
             const element = elementRegistry.get(activity.id);
-            const camundaIn =
-              element?.businessObject?.extensionElements?.values?.find(
-                (v) => v.$type === "camunda:In"
-              );
+            const camundaIn = element?.businessObject?.extensionElements?.values?.find(
+              (v) => v.$type === "camunda:In"
+            );
             if (!camundaIn) return;
             camundaIn.source = values.processId;
             camundaIn.target = values.processId;

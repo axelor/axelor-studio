@@ -1,13 +1,13 @@
 .vertical-cron .c-host {
   display: flex;
   flex-direction: row;
-  font-family: Roboto;
+  font-family: var(--bs-body-font-family);
 }
 
 .vertical-cron .c-host .c-tabs {
   flex-direction: column;
   border: 0;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid var(--bs-border-color);
 }
 
 .vertical-cron .c-host .c-tabs .c-tab {

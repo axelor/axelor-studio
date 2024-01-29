@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import ReportProblemIcon from "@material-ui/icons/ReportProblem";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Button,
-} from "@material-ui/core";
-import { Edit } from "@material-ui/icons";
 
 import { Selection } from "../../../../../components/expression-builder/components";
 import { getModels, getMetaFields } from "../../../../../services/api";
@@ -22,12 +11,23 @@ import {
   FieldEditor,
 } from "../../../../../components/properties/components";
 
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Box,
+  Divider,
+  InputLabel,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -35,42 +35,42 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   typography: {
     display: "flex",
     alignItems: "center",
-    color: "#CC3333",
+    color: "var(--red) !important",
   },
   icon: {
+    color: "var(--red)",
     marginRight: 10,
   },
   newIcon: {
-    color: "#58B423",
     cursor: "pointer",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
   },
   dialog: {
-    maxWidth: "100%",
+    "& > div": {
+      maxWidth: "90%",
+      width: "fit-content",
+      minWidth: 500,
+    },
   },
   dialogContent: {
     display: "flex",
     alignItems: "flex-end",
+    overflow: "auto",
   },
   MuiAutocompleteRoot: {
     width: "250px",
     marginRight: "10px",
+  },
+  content: {
+    fontSize: 16,
   },
 }));
 
@@ -300,14 +300,20 @@ export default function MultiInstanceLoopCharacteristics({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{label}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {label}
+        </Box>
         {!collection && !loopCardinality && (
-          <Typography className={classes.typography}>
-            <ReportProblemIcon fontSize="small" className={classes.icon} />
+          <InputLabel color="body" className={classes.typography}>
+            <MaterialIcon
+              icon="report"
+              fontSize={16}
+              className={classes.icon}
+            />
             {translate("Must provide either loop cardinality or collection")}
-          </Typography>
+          </InputLabel>
         )}
         <TextField
           element={element}
@@ -369,141 +375,115 @@ export default function MultiInstanceLoopCharacteristics({
           }}
           canRemove={true}
           endAdornment={
-            <Edit className={classes.newIcon} onClick={() => setOpen(true)} />
+            <MaterialIcon
+              icon="edit"
+              fontSize={18}
+              className={classes.newIcon}
+              onClick={() => setOpen(true)}
+            />
           }
         />
-        {open && (
-          <Dialog
-            open={open}
-            onClose={(event, reason) => {
-              if (reason !== "backdropClick") {
-                setOpen(false);
-              }
-            }}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            classes={{
-              paper: classes.dialog,
-            }}
-          >
-            <DialogTitle id="alert-dialog-title">
-              {translate("Collection")}
-            </DialogTitle>
-            <DialogContent className={classes.dialogContent}>
-              <Selection
-                name="model"
-                title="Model"
-                placeholder="Model"
-                fetchAPI={() => getModels(getProcessConfig(element))}
-                onChange={(e) => {
-                  setModel(e);
+        <Dialog open={open} backdrop centered className={classes.dialog}>
+          <DialogHeader onCloseClick={() => setOpen(false)}>
+            <h3>{translate("Collection")}</h3>
+          </DialogHeader>
+          <DialogContent className={classes.dialogContent}>
+            <Selection
+              name="model"
+              title="Model"
+              placeholder="Model"
+              fetchAPI={() => getModels(getProcessConfig(element))}
+              onChange={(e) => {
+                setModel(e);
+              }}
+              optionLabelKey="name"
+              value={model}
+              classes={{ root: classes.MuiAutocompleteRoot }}
+            />
+            {model && (
+              <FieldEditor
+                getMetaFields={() => getMetaFields(getData())}
+                isCollection={true}
+                onChange={(val, field) => {
+                  setCollectionVal(val);
+                  setField(field);
                 }}
-                optionLabelKey="name"
-                value={model}
-                classes={{ root: classes.MuiAutocompleteRoot }}
+                value={{
+                  fieldName: collectionVal,
+                }}
+                isParent={true}
               />
-              {model && (
-                <FieldEditor
-                  getMetaFields={() => getMetaFields(getData())}
-                  isCollection={true}
-                  onChange={(val, field) => {
-                    setCollectionVal(val);
-                    setField(field);
-                  }}
-                  value={{
-                    fieldName: collectionVal,
-                  }}
-                  isParent={true}
-                />
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={() => {
-                  if (
-                    field &&
-                    !["ONE_TO_MANY", "MANY_TO_MANY"].includes(field.type)
-                  ) {
-                    setExpressionAlert(true);
-                    setErrorMessage(
-                      "Last subfield should be many to many or one to many field"
-                    );
-                    return;
-                  }
-                  const prefix = "${getIdList(";
-                  const value = `${prefix}${lowerCaseFirstLetter(model.name)}${
-                    collectionVal ? `.${collectionVal}` : ""
-                  })}`;
-                  setCollection(value);
-                  let loopCharacteristics = getLoopCharacteristics(element);
-                  if (!loopCharacteristics) return;
-                  loopCharacteristics.collection = value;
-                  loopCharacteristics["camunda:collection"] =
-                    value || undefined;
-                  setOpen(false);
-                }}
-                color="primary"
-                className={classes.save}
-              >
-                {translate("OK")}
-              </Button>
-              <Button
-                onClick={() => {
-                  setOpen(false);
-                  setInitialValue();
-                }}
-                color="primary"
-                className={classes.save}
-              >
-                {translate("Cancel")}
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
-        {openExpressionAlert && (
-          <Dialog
-            open={openExpressionAlert}
-            onClose={(event, reason) => {
-              if (reason !== "backdropClick") {
+            )}
+          </DialogContent>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                if (
+                  field &&
+                  !["ONE_TO_MANY", "MANY_TO_MANY"].includes(field.type)
+                ) {
+                  setExpressionAlert(true);
+                  setErrorMessage(
+                    "Last subfield should be many to many or one to many field"
+                  );
+                  return;
+                }
+                const prefix = "${getIdList(";
+                const value = `${prefix}${lowerCaseFirstLetter(model.name)}${
+                  collectionVal ? `.${collectionVal}` : ""
+                })}`;
+                setCollection(value);
+                let loopCharacteristics = getLoopCharacteristics(element);
+                if (!loopCharacteristics) return;
+                loopCharacteristics.collection = value;
+                loopCharacteristics["camunda:collection"] = value || undefined;
+                setOpen(false);
+              }}
+              variant="primary"
+              className={classes.save}
+            >
+              {translate("OK")}
+            </Button>
+            <Button
+              onClick={() => {
+                setOpen(false);
+                setInitialValue();
+              }}
+              variant="secondary"
+              className={classes.save}
+            >
+              {translate("Cancel")}
+            </Button>
+          </DialogFooter>
+        </Dialog>
+        <Dialog open={openExpressionAlert} backdrop className={classes.dialog}>
+          <DialogHeader onCloseClick={() => setExpressionAlert(false)}>
+            <h3>{translate(errorTitle || "Warning")}</h3>
+          </DialogHeader>
+          <DialogContent className={classes.content}>
+            {translate(errorMessage)}
+          </DialogContent>
+          <DialogFooter>
+            <Button
+              className={classes.save}
+              onClick={() => {
                 setExpressionAlert(false);
-              }
-            }}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            classes={{
-              paper: classes.dialog,
-            }}
-          >
-            <DialogTitle id="alert-dialog-title">
-              {translate(errorTitle)}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                {translate(errorMessage)}
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                className={classes.save}
-                onClick={() => {
-                  setExpressionAlert(false);
-                  setErrorMessage(null);
-                  setErrorTitle(null);
-                }}
-                color="primary"
-              >
-                {translate("OK")}
-              </Button>
-              <Button
-                onClick={() => setExpressionAlert(false)}
-                color="primary"
-                className={classes.save}
-              >
-                {translate("Cancel")}
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
+                setErrorMessage(null);
+                setErrorTitle(null);
+              }}
+              variant="primary"
+            >
+              {translate("OK")}
+            </Button>
+            <Button
+              onClick={() => setExpressionAlert(false)}
+              variant="secondary"
+              className={classes.save}
+            >
+              {translate("Cancel")}
+            </Button>
+          </DialogFooter>
+        </Dialog>
         <TextField
           element={element}
           entry={{

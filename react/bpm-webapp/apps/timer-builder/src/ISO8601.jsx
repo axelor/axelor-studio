@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react"
 import { parse } from "iso8601-duration"
-import { Typography, Grid, capitalize } from "@material-ui/core"
-import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers"
 import moment from "moment"
-import MomentUtils from "@date-io/moment"
+import { InputLabel, Input, Box } from "@axelor/ui"
 
 import {
   FIELDS,
@@ -79,21 +77,27 @@ function ISO8601({
 
   return (
     <>
-      <Typography variant="h5" align="center" style={{ marginBlock: "1rem" }}>
+      <InputLabel
+        fontSize={4}
+        d="flex"
+        justifyContent="center"
+        style={{ marginBlock: "1rem" }}
+      >
         {expression}
-      </Typography>
+      </InputLabel>
       {localError && (
-        <Typography
-          variant="h6"
-          align="center"
+        <InputLabel
+          d="flex"
+          justifyContent="center"
           style={{
             marginBlock: "0.5rem",
-            color: "red",
+            color: "var(--bs-red)",
             marginInlineEnd: "auto",
+            textTransform: "capitalize",
           }}
         >
-          {capitalize(t(localError))}
-        </Typography>
+          {t(localError)}
+        </InputLabel>
       )}
       {showRepeat && (
         <div
@@ -113,32 +117,32 @@ function ISO8601({
             integer
             allowNegetiveOne
           />
-          <MuiPickersUtilsProvider utils={MomentUtils}>
-            <Grid
-              style={{
-                gap: "0.5rem",
-                display: "inline-flex",
-                alignItems: "center",
-                flexDirection: "column",
+          <Box
+            display="inline-flex"
+            alignItems="center"
+            flexDirection="column"
+            style={{
+              gap: "0.5rem",
+              top: "-5px",
+              position: "relative",
+            }}
+          >
+            <Input
+              rounded
+              type="datetime-local"
+              id="startDateTime"
+              style={{ padding: "18.5px 14px", minWidth: 250 }}
+              onChange={e => {
+                const datetime = moment(e?.target?.value)
+                setDuration(duration => ({
+                  ...duration,
+                  startDateTime: datetime,
+                }))
               }}
-            >
-              <DateTimePicker
-                id="startDateTime"
-                clearable
-                value={duration.startDateTime}
-                inputVariant="outlined"
-                onChange={dateTime => {
-                  setDuration(duration => ({
-                    ...duration,
-                    startDateTime: dateTime,
-                  }))
-                }}
-              />
-              <Typography htmlFor={"startDateTime"} component="label">
-                {t("Start datetime")}
-              </Typography>
-            </Grid>
-          </MuiPickersUtilsProvider>
+              value={moment(duration.startDateTime).format("YYYY-MM-DDTHH:mm")}
+            />
+            <InputLabel>{t("Start datetime")}</InputLabel>
+          </Box>
         </div>
       )}
       <div

@@ -1,5 +1,6 @@
 import React from "react"
 import classNames from "classnames"
+import { Box } from "@axelor/ui"
 import Grid from "./Grid"
 import { TYPE } from "../constants"
 import { translate } from "../utils"
@@ -14,7 +15,8 @@ function PanelComponent({ id, attrs, design, isTab = false, ...rest }) {
 			{(attrs.title ||
 				isTab ||
 				[TYPE.toolbar, TYPE.menubar].includes(attrs.serverType)) && (
-				<div
+				<Box
+					color="body"
 					className={classNames("panel-header", {
 						inline: isTab,
 					})}
@@ -28,7 +30,7 @@ function PanelComponent({ id, attrs, design, isTab = false, ...rest }) {
 					{attrs.serverType === TYPE.menubar && (
 						<i className="fa fa-bars" title={translate("Menubar")} />
 					)}
-				</div>
+				</Box>
 			)}
 			{!isTab && (
 				<Grid

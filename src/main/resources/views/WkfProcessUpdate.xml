@@ -12,9 +12,9 @@
   <form name="wkf-process-update-form" model="com.axelor.studio.db.WkfProcessUpdate"
     title="Process update">
     <toolbar>
-      <button name="uploadBtn" icon="fa-upload"
+      <button name="uploadBtn" icon="upload"
         onClick="save,action.wkf.process.view.upload.file.popup"/>
-      <button name="downloadBtn" icon="fa-download"
+      <button name="downloadBtn" icon="download"
         onClick="action-wkf-process-update-method-export"/>
     </toolbar>
     <panel name="mainPanel">

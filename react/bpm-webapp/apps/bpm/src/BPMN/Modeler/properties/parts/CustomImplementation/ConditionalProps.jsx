@@ -4,30 +4,29 @@ import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
-import { Edit } from "@material-ui/icons";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
 
 import AlertDialog from "../../../../../components/AlertDialog";
 import { Textbox } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import { fetchModels } from "../../../../../services/api";
-import { setDummyProperty } from "./utils";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  Box,
+  Divider,
+} from "@axelor/ui";
+import Tooltip from "../../../../../components/Tooltip";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -35,10 +34,8 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   newIcon: {
-    color: "#58B423",
     marginLeft: 5,
   },
   new: {
@@ -55,21 +52,17 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    color: "white",
     textTransform: "none",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
+  },
+  content: {
+    padding: "8px 24px",
+    fontSize: 16,
   },
   scriptDialog: {
     width: "100%",
     height: "100%",
-    maxWidth: "100%",
   },
 }));
 
@@ -92,6 +85,7 @@ export default function ConditionalProps({
   label,
   bpmnFactory,
   bpmnModeler,
+  setDummyProperty = () => {},
 }) {
   const [isVisible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
@@ -310,9 +304,11 @@ export default function ConditionalProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{label}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {label}
+        </Box>
         <div className={classes.expressionBuilder}>
           <Textbox
             element={element}
@@ -331,11 +327,11 @@ export default function ConditionalProps({
               },
             }}
           />
-          <div className={classes.new}>
+          <Box color="body" className={classes.new}>
             <Tooltip title="Enable" aria-label="enable">
               <i
                 className="fa fa-code"
-                style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
+                style={{ fontSize: 18, marginLeft: 5 }}
                 onClick={() => {
                   if (readOnly) {
                     setAlertMessage(
@@ -350,7 +346,12 @@ export default function ConditionalProps({
                 }}
               ></i>
             </Tooltip>
-            <Edit className={classes.newIcon} onClick={handleClickOpen} />
+            <MaterialIcon
+              icon="edit"
+              fontSize={18}
+              className={classes.newIcon}
+              onClick={handleClickOpen}
+            />
             {open && (
               <QueryBuilder
                 open={open}
@@ -361,7 +362,7 @@ export default function ConditionalProps({
                 fetchModels={() => fetchModels(element)}
               />
             )}
-          </div>
+          </Box>
           {openScriptDialog && (
             <AlertDialog
               className={classes.scriptDialog}
@@ -386,7 +387,7 @@ export default function ConditionalProps({
                     label: translate("Script"),
                     modelProperty: "script",
                     get: function () {
-                      return getScript();
+                      return { script };
                     },
                     set: function (e, values) {
                       setScript(values?.script);
@@ -399,38 +400,29 @@ export default function ConditionalProps({
           {openAlert && (
             <Dialog
               open={openAlert}
-              onClose={(event, reason) => {
-                if (reason !== "backdropClick") {
-                  setAlert(false);
-                }
-              }}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-              classes={{
-                paper: classes.dialog,
-              }}
+              backdrop
+              centered
+              className={classes.dialog}
             >
-              <DialogTitle id="alert-dialog-title">
-                {translate(alertTitle)}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  {translate(alertMessage)}
-                </DialogContentText>
+              <DialogHeader onCloseClick={() => setAlert(false)}>
+                <h3>{translate(alertTitle)}</h3>
+              </DialogHeader>
+              <DialogContent className={classes.content}>
+                {translate(alertMessage)}
               </DialogContent>
-              <DialogActions>
+              <DialogFooter>
                 <Button
                   onClick={() => {
                     setAlert(false);
                     setAlertMessage(null);
                     setAlertTitle(null);
                     setReadOnly(false);
+                    setScript(getScript()?.script);
                     setProperty("camunda:conditionValue", undefined);
                     setProperty("camunda:conditionCombinator", undefined);
-                    setScript(getScript()?.script);
                     setOpenScriptDialog(true);
                   }}
-                  color="primary"
+                  variant="primary"
                   className={classes.save}
                 >
                   {translate("OK")}
@@ -439,12 +431,12 @@ export default function ConditionalProps({
                   onClick={() => {
                     setAlert(false);
                   }}
-                  color="primary"
+                  variant="secondary"
                   className={classes.save}
                 >
                   {translate("Cancel")}
                 </Button>
-              </DialogActions>
+              </DialogFooter>
             </Dialog>
           )}
         </div>

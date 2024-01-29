@@ -218,7 +218,7 @@ export function renderTabs(tabs = [], element) {
   return filteredTabs;
 }
 
-export function getTabs(bpmnModeler, element) {
+export function getTabs(bpmnModeler, element, setDummyProperty) {
   let canvas = bpmnModeler.get("canvas");
   let elementRegistry = bpmnModeler.get("elementRegistry");
   let bpmnFactory = bpmnModeler.get("bpmnFactory");
@@ -230,7 +230,8 @@ export function getTabs(bpmnModeler, element) {
     elementRegistry,
     elementTemplates,
     translate,
-    bpmnModeler
+    bpmnModeler,
+    setDummyProperty
   );
   let filteredTabs = renderTabs(tabs, element);
   return filteredTabs;

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react"
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete"
 import _ from "lodash"
-import { TextField, Typography, Box, Popper } from "@mui/material"
+import { Select, Badge, Box, InputLabel } from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 import AxelorService from "../services/api"
 import { camleCaseString, getDefaultGridFormName, translate } from "../utils"
 import { useDebounceEffect } from "../common.func"
 import SearchView from "./SearchView"
 import { useStore } from "../store/context"
 import { ACTIONS, SHOW_MORE } from "../constants"
-const filter = createFilterOptions()
 
 export default function SelectComponent(_props) {
 	const {
@@ -43,6 +42,7 @@ export default function SelectComponent(_props) {
 		return value
 	}, [propertyList, name, commaSeparated, type, valueField])
 
+	const [open, setOpen] = useState(false)
 	const [data, setData] = useState([...preData])
 	const [searchText, setsearchText] = useState(null)
 	const isMounted = React.useRef(true)
@@ -62,16 +62,15 @@ export default function SelectComponent(_props) {
 	const localLimit = moreDialog ? 6 : limit
 
 	const handleInputChange = useCallback(
-		(e, value, reason) => {
-			if (reason !== "reset") {
-				if (type === "objectSelection" && typeof value === "object") {
-					setsearchText(value[displayField])
-				} else {
-					setsearchText(value)
-				}
+		(value) => {
+			if (moreDialog) return
+			if (type === "objectSelection" && typeof value === "object") {
+				setsearchText(value[displayField])
+			} else {
+				setsearchText(value)
 			}
 		},
-		[type, displayField]
+		[moreDialog, type, displayField]
 	)
 
 	const getSelectValue = useCallback(
@@ -83,6 +82,13 @@ export default function SelectComponent(_props) {
 		},
 		[valueField, commaSeparated, ref]
 	)
+
+	const handleRemove = (removedOption) => {
+		const updatedData = _value?.filter(
+			(item) => item.name !== removedOption.name
+		)
+		handleChange([...updatedData])
+	}
 
 	const fetchOptions = useCallback(
 		(searchText = "", offset = 0) => {
@@ -210,17 +216,13 @@ export default function SelectComponent(_props) {
 					])
 
 					const data = await Promise.all(
-						fetchedData.map((result, index) =>
-							result.data
-								? result.data.map((action) => ({
-										...action,
-										type: translate(modelFilters[index].type),
-								  }))
-								: {
-										type: translate(modelFilters[index].type),
-										name: translate("No data found"),
-										id: "no_data_found",
-								  }
+						fetchedData.map(
+							(result, index) =>
+								result.data ||
+								[].map((action) => ({
+									...action,
+									type: translate(modelFilters[index].type),
+								}))
 						)
 					)
 					data.push({
@@ -228,6 +230,7 @@ export default function SelectComponent(_props) {
 						id: "studio_show_More_View",
 					})
 					setData(data.flat())
+					setIsLoading(false)
 				}
 				getActions()
 			} else {
@@ -327,18 +330,23 @@ export default function SelectComponent(_props) {
 		setOffset(0)
 	}, [])
 
+	const onShowCreate = (value) => {
+		handleChange([..._value, { id: value, name: value }])
+	}
+
 	const handleChange = React.useCallback(
-		async (e, _value) => {
+		async (_value, e) => {
 			if (_value?.id === "studio_show_More_View") {
 				setMoreDialog(true)
 				return
 			}
 			if (multiple) {
-				if (e.fromDialog) {
+				if (e?.fromDialog) {
 					_value = [...value, _value]
 					handleSearch("")
 				} else {
 					const hasMoreView =
+						_value &&
 						_value.findIndex((v) => v?.id === "studio_show_More_View") !== -1
 					if (hasMoreView) {
 						setMoreDialog(true)
@@ -347,11 +355,11 @@ export default function SelectComponent(_props) {
 						handleSearch("")
 					}
 					const isNoDataFound =
-						_value.findIndex((v) => v?.id === "no_data_found") !== -1
+						_value && _value.findIndex((v) => v?.id === "no_data_found") !== -1
 					if (isNoDataFound) return
 				}
 				_value = _value
-					.map((val) => {
+					?.map((val) => {
 						if (val?.id !== "studio_show_More_View") {
 							return getInputAsOption(val)
 						}
@@ -443,6 +451,47 @@ export default function SelectComponent(_props) {
 		inputProps.isTypeOnClick = isTypeOnClick
 	}
 
+	const _value = useMemo(
+		() => (multiple ? value || [] : getValue(value)),
+		[value, multiple, getValue]
+	)
+
+	const customOptions = React.useMemo(() => {
+		if (isLoading) {
+			return [
+				{
+					key: "loading",
+					id: `${translate("Loading...")}`,
+					title: <span> {translate("Loading...")}</span>,
+					disabled: true,
+				},
+			]
+		} else if (searchText && canAddNew) {
+			const existingOption = _value.find((item) => item.name === searchText)
+			return [
+				{
+					key: `create ${searchText}`,
+					id: searchText,
+					title: `${translate("Add")} "${searchText}"`,
+					type: translate("Add new"),
+					onClick: () => onShowCreate(searchText),
+					disabled: existingOption,
+				},
+			]
+		} else if (data.length === 0 || data[0].id === "studio_show_More_View") {
+			return [
+				{
+					key: "no-options",
+					id: "no_data_found",
+					title: <span> {translate("No options")}</span>,
+					disabled: true,
+				},
+			]
+		} else {
+			return []
+		}
+	}, [data, isLoading, setIsLoading])
+
 	useDebounceEffect(optionDebounceHandler, 500)
 
 	useEffect(() => {
@@ -451,11 +500,6 @@ export default function SelectComponent(_props) {
 			isMounted.current = false
 		}
 	}, [])
-
-	const _value = useMemo(
-		() => (multiple ? value || [] : getValue(value)),
-		[value, multiple, getValue]
-	)
 
 	useEffect(() => {
 		if (moreDialog) {
@@ -468,152 +512,38 @@ export default function SelectComponent(_props) {
 	}, [fetchOptions, moreDialog])
 
 	return (
-		<div
-			style={{
-				display: "flex",
-				flexDirection: "column",
-				width: "100%",
-			}}
-		>
-			<Autocomplete
-				sx={{
-					backgroundColor: "#293846",
-					marginTop: "15px",
-					"& .MuiFormLabel-root": {
-						color: "#e7eaec !important",
-						fontSize: 12,
-					},
-					"& .MuiChip-root": {
-						backgroundColor: "#e0e0e0",
-					},
-					...(disabled
-						? {}
-						: {
-								"& .MuiOutlinedInput-notchedOutline": {
-									borderColor: filled ? "green" : "rgba(0,0,0, 0.23)",
-								},
-								"&:hover .MuiOutlinedInput-notchedOutline": {
-									borderColor: "white",
-								},
-						  }),
-					"& .MuiInputBase-input, .MuiIconButton-root": {
-						color: "#fff !important",
-						fontSize: 13,
-					},
-					"& .Mui-disabled": {
-						fontSize: 12,
-						WebkitTextFillColor: "#a3a3a3 !important",
-					},
-				}}
-				componentsProps={{
-					paper: {
-						sx: {
-							fontSize: 13,
-							backgroundColor: "rgb(41, 56, 70)",
-							WebkitTextFillColor: "#e7eaec",
-							"& ul, .MuiAutocomplete-noOptions": {
-								backgroundColor: "rgb(41, 56, 70) !important",
-								".modern-dark &": {
-									backgroundColor: "#1b1b1b !important",
-								},
-							},
-							"& li, .MuiAutocomplete-noOptions": {
-								color: "#e7eaec !important",
-								backgroundColor: "rgb(41, 56, 70) !important",
-								".modern-dark &": {
-									backgroundColor: "#1b1b1b !important",
-								},
-							},
-							"& li:hover, .MuiAutocomplete-noOptions": {
-								color: "#e7eaec !important",
-								backgroundColor: "#2f4050 !important",
-								".modern-dark &": {
-									backgroundColor: "#323232 !important",
-								},
-							},
-							"& .Mui-focused": {
-								backgroundColor: "#2f4050 !important",
-								".modern-dark &": {
-									backgroundColor: "#323232 !important",
-								},
-							},
-						},
-					},
-				}}
+		<Box mt={2} d="flex" flexDirection="column" w={100}>
+			<InputLabel fontSize={7}>
+				{translate(camleCaseString(title || name))}
+			</InputLabel>
+			<Select
 				onOpen={() => {
-					ref && !shouldFetchInStart && !initialFetch && setData([])
-					ref && fetchOptions(searchText)
+					if (!open) {
+						ref && !shouldFetchInStart && !initialFetch && setData([])
+						ref && fetchOptions(searchText)
+						setOpen(true)
+					}
+				}}
+				onClose={() => {
+					if (open) {
+						!moreDialog && setsearchText(null)
+						setOpen(false)
+					}
 				}}
 				disabled={disabled || loader}
 				multiple={multiple}
 				options={data}
 				loading={isLoading}
-				groupBy={(option) => option.type}
-				forcePopupIcon={true}
-				freeSolo={type !== "objectSelection"}
+				customOptions={customOptions}
+				clearIcon={true}
+				removeOnBackspace={multiple}
 				clearOnBlur={moreDialog}
 				value={_value}
 				size="small"
 				onInputChange={handleInputChange}
-				{...{
-					filterOptions: (options, params) => {
-						const filtered = filter(options, params)
-						// Suggest the creation of a new value
-						if (searchText && canAddNew) {
-							filtered.splice(0, 0, {
-								inputValue: searchText,
-								name: searchText,
-								title: `${translate("Add")} "${searchText}"`,
-								type: translate("Add new"),
-							})
-						}
-						const showMore = options.find(
-							(o) => o.id === "studio_show_More_View"
-						)
-						if (
-							showMore &&
-							!["", null, undefined].includes(params.inputValue)
-						) {
-							const hasShowMore =
-								filtered.findIndex((o) => o.id === "studio_show_More_View") !==
-								-1
-
-							!hasShowMore && filtered.push({ ...showMore })
-						}
-
-						return filtered
-					},
-				}}
 				onChange={handleChange}
-				renderInput={(params) => (
-					<TextField
-						{...params}
-						autoComplete="off"
-						error={Boolean(error)}
-						variant="outlined"
-						label={translate(camleCaseString(title || name))}
-					/>
-				)}
-				renderGroup={(params) => (
-					<Box key={params.key}>
-						<Typography
-							sx={{
-								borderBottom: `${isTypeOnClick ? "2px solid gray" : "none"}`,
-								position: "sticky",
-								top: "-8px",
-								padding: "4px 10px",
-								color: "white",
-								fontSize: 14,
-								fontWeight: "bold",
-								backgroundColor: "#293846",
-							}}
-						>
-							{params.group}
-						</Typography>
-						{params.children}
-					</Box>
-				)}
-				getOptionLabel={(option) => {
+				invalid={Boolean(error)}
+				optionLabel={(option) => {
 					if (getOptionLabel) {
 						return getOptionLabel(option, data)
 					}
@@ -623,17 +553,74 @@ export default function SelectComponent(_props) {
 						? option
 						: option[displayField] || ""
 				}}
+				optionKey={(option) => {
+					if (getOptionLabel) {
+						return getOptionLabel(option, data)
+					}
+					return option.type === translate("Add new")
+						? option["title"]
+						: typeof option === "string"
+						? option
+						: option[displayField] || ""
+				}}
+				optionValue={(option) => {
+					if (getOptionLabel) {
+						return getOptionLabel(option, data)
+					}
+					return option.type === translate("Add new")
+						? option["title"]
+						: typeof option === "string"
+						? option
+						: option[displayField] || ""
+				}}
+				optionMatch={(option, text) => {
+					let op = null
+					if (getOptionLabel) {
+						op = getOptionLabel(option, data)
+					} else {
+						op =
+							option.type === translate("Add new")
+								? option["title"]
+								: typeof option === "string"
+								? option
+								: option[displayField] || ""
+					}
+					if (option.key === "no-options" || option.key === "loading")
+						return true
+					if (option.id === "studio_show_More_View") {
+						return !isLoading && data.length > 5
+					}
+					return op?.toString()?.toLowerCase()?.includes(text?.toLowerCase())
+				}}
+				renderValue={({ option }) =>
+					multiple ? (
+						<Badge bg="primary">
+							<Box d="flex" alignItems="center" g={1}>
+								{option.name}
+								<Box as="span" style={{ cursor: "pointer" }}>
+									<MaterialIcon
+										icon="close"
+										fontSize="1rem"
+										onClick={(e) => {
+											e.stopPropagation()
+											handleRemove(option)
+										}}
+									/>
+								</Box>
+							</Box>
+						</Badge>
+					) : null
+				}
 				/*
 				  reason for using popperComponent
 					https://redmine.axelor.com/issues/63206#note-9
 				  https://redmine.axelor.com/attachments/46790/Screencast%20from%202023-07-24%2019-00-03.webm
 				*/
-				PopperComponent={(props) => <Popper {...props} />}
 			/>
 			{error && (
-				<Typography sx={{ color: "red", fontSize: 13 }}>
+				<Box color="danger" fontSize={13}>
 					{translate(error)}
-				</Typography>
+				</Box>
 			)}
 			<SearchView
 				searchText={searchText}
@@ -648,10 +635,10 @@ export default function SelectComponent(_props) {
 				handleClose={handleClose}
 				setSearchText={handleSearch}
 				title={translate(camleCaseString(title || name))}
-				onChange={(value) => handleChange({ fromDialog: true }, value)}
+				onChange={(value) => handleChange(value, { fromDialog: true })}
 				isDataLoading={isLoading}
 				{...inputProps}
 			/>
-		</div>
+		</Box>
 	)
 }

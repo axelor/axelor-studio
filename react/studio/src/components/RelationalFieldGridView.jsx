@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import AxelorService from "../services/api"
+import { Box, Table, TableBody, TableCell, TableRow } from "@axelor/ui"
 import { fetchCustomModel } from "../Toolbar/api"
 import { translate, getDefaultGridFormName } from "../utils"
 
@@ -116,21 +117,22 @@ function RelationalFieldGridView({ attrs, id }) {
 
 	return (
 		<div>
-			<div className="one-to-many-header">
-				<span>{translate(title || gridTitle || autoTitle)}</span>
-			</div>
-			<table>
-				<tbody className="one-to-many-row">
-					{[...Array(3)].map((e, index) => (
-						<tr style={{ display: "flex" }} key={`row_${index}`}>
+			<Box color="body" className="one-to-many-header">
+				<Box color="body">{translate(title || gridTitle || autoTitle)}</Box>
+			</Box>
+			<Table>
+				<TableBody className="one-to-many-row">
+					{[...Array(2)].map((e, index) => (
+						<TableRow d="flex" key={`row_${index}`}>
 							{gridItems.map((item, i) => (
-								<td
+								<TableCell
 									className="one-to-many-col one-to-many-col-border"
+									color="body"
 									key={`td_${i}`}
 									{...(index === 0
 										? {
 												style: {
-													borderBottom: "1px solid #ddd",
+													borderBottom: "1px solid var(--bs-border-color)",
 													minHeight: "2rem",
 												},
 										  }
@@ -139,12 +141,12 @@ function RelationalFieldGridView({ attrs, id }) {
 									{index === 0 && item
 										? translate(item.title || item.autoTitle)
 										: ""}
-								</td>
+								</TableCell>
 							))}
-						</tr>
+						</TableRow>
 					))}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</div>
 	)
 }

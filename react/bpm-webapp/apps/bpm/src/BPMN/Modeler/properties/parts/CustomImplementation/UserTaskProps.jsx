@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { Edit } from "@material-ui/icons";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
 
 import Textbox from "../../../../../components/properties/components/Textbox";
 import TextField from "../../../../../components/properties/components/TextField";
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
 import Select from "../../../../../components/Select";
+import Tooltip from "../../../../../components/Tooltip";
 import { fetchModels, getButtons } from "../../../../../services/api";
 import { translate, getLowerCase, getBool } from "../../../../../utils";
-import { setDummyProperty } from "./utils";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+  InputLabel,
+  Box,
+  Divider,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const useStyles = makeStyles((theme) => ({
   groupLabel: {
     fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     fontSize: "120%",
     margin: "10px 0px",
     transition: "margin 0.218s linear",
@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginTop: 15,
-    borderTop: "1px dotted #ccc",
   },
   expressionBuilder: {
     display: "flex",
@@ -42,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   newIcon: {
-    color: "#58B423",
     marginLeft: 5,
   },
   new: {
@@ -53,11 +51,11 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 300,
   },
   label: {
-    fontWeight: "bolder",
     display: "inline-block",
     verticalAlign: "middle",
-    color: "#666",
     margin: "3px 0px",
+    color: "rgba(var(--bs-body-color-rgb),.65) !important",
+    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
   },
   allButtons: {
     paddingBottom: 10,
@@ -66,25 +64,26 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
   },
   save: {
+    minWidth: 64,
     margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
     textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
+  },
+  content: {
+    fontSize: 16,
   },
   scriptDialog: {
     width: "100%",
     height: "100%",
-    maxWidth: "100%",
   },
 }));
 
-export default function UserTaskProps({ element, index, label, bpmnModeler }) {
+export default function UserTaskProps({
+  element,
+  index,
+  label,
+  bpmnModeler,
+  setDummyProperty = () => {},
+}) {
   const [isVisible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [openAlert, setAlert] = useState(false);
@@ -297,9 +296,11 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <div className={classes.divider} />}
+          {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <div className={classes.groupLabel}>{translate(label)}</div>
+        <Box color="body" className={classes.groupLabel}>
+          {translate(label)}
+        </Box>
 
         <div className={classes.expressionBuilder}>
           <TextField
@@ -325,11 +326,11 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
             }}
             canRemove={true}
             endAdornment={
-              <div className={classes.new}>
+              <Box color="body" className={classes.new}>
                 <Tooltip title="Enable" aria-label="enable">
                   <i
                     className="fa fa-code"
-                    style={{ fontSize: 18, color: "#58B423", marginLeft: 5 }}
+                    style={{ fontSize: 18, marginLeft: 5 }}
                     onClick={() => {
                       if (readOnly) {
                         setAlertMessage(
@@ -344,7 +345,12 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
                     }}
                   ></i>
                 </Tooltip>
-                <Edit className={classes.newIcon} onClick={handleClickOpen} />
+                <MaterialIcon
+                  icon="edit"
+                  fontSize={16}
+                  className={classes.newIcon}
+                  onClick={handleClickOpen}
+                />
                 {open && (
                   <QueryBuilder
                     open={open}
@@ -355,100 +361,86 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
                     fetchModels={() => fetchModels(element)}
                   />
                 )}
-              </div>
+              </Box>
             }
           />
-          {openScriptDialog && (
-            <AlertDialog
-              className={classes.scriptDialog}
-              openAlert={openScriptDialog}
-              alertClose={() => {
-                setScript(getCompletedIf()?.completedIf);
-                setOpenScriptDialog(false);
-              }}
-              handleAlertOk={() => {
-                setProperty(
-                  "camunda:completedIf",
-                  (script || "").replace(/[\u200B-\u200D\uFEFF]/g, "")
-                );
-                setOpenScriptDialog(false);
-              }}
-              title={translate("Completed if")}
-              children={
-                <Textbox
-                  element={element}
-                  className={classes.textbox}
-                  showLabel={false}
-                  defaultHeight={window?.innerHeight - 205}
-                  entry={{
-                    id: "script",
-                    label: translate("Completed if"),
-                    modelProperty: "completedIf",
-                    get: function () {
-                      return getCompletedIf();
-                    },
-                    set: function (e, values) {
-                      setScript(values?.completedIf);
-                    },
-                  }}
-                />
-              }
-            />
-          )}
-          {openAlert && (
-            <Dialog
-              open={openAlert}
-              onClose={(event, reason) => {
-                if (reason !== "backdropClick") {
+          <AlertDialog
+            className={classes.scriptDialog}
+            openAlert={openScriptDialog}
+            alertClose={() => {
+              setScript(getCompletedIf()?.completedIf);
+              setOpenScriptDialog(false);
+            }}
+            handleAlertOk={() => {
+              setProperty(
+                "camunda:completedIf",
+                (script || "").replace(/[\u200B-\u200D\uFEFF]/g, "")
+              );
+              setOpenScriptDialog(false);
+            }}
+            title={translate("Completed if")}
+            children={
+              <Textbox
+                element={element}
+                className={classes.textbox}
+                showLabel={false}
+                defaultHeight={window?.innerHeight - 205}
+                entry={{
+                  id: "script",
+                  label: translate("Completed if"),
+                  modelProperty: "completedIf",
+                  get: function () {
+                    return { completedIf: script };
+                  },
+                  set: function (e, values) {
+                    setScript(values?.completedIf);
+                  },
+                }}
+              />
+            }
+          />
+          <Dialog open={openAlert} centered backdrop className={classes.dialog}>
+            <DialogHeader onCloseClick={() => setAlert(false)}>
+              <h3>{translate(alertTitle)}</h3>
+            </DialogHeader>
+            <DialogContent className={classes.content}>
+              <Box as="p" color="body" fontSize={5}>
+                {translate(alertMessage)}
+              </Box>
+            </DialogContent>
+            <DialogFooter>
+              <Button
+                onClick={() => {
                   setAlert(false);
-                }
-              }}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-              classes={{
-                paper: classes.dialog,
-              }}
-            >
-              <DialogTitle id="alert-dialog-title">
-                {translate(alertTitle)}
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  {translate(alertMessage)}
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                    setAlertMessage(null);
-                    setAlertTitle(null);
-                    setReadOnly(false);
-                    setProperty("camunda:completedIfValue", undefined);
-                    setProperty("camunda:completedIfCombinator", undefined);
-                    setScript(getCompletedIf()?.completedIf);
-                    setOpenScriptDialog(true);
-                  }}
-                  color="primary"
-                  className={classes.save}
-                >
-                  {translate("OK")}
-                </Button>
-                <Button
-                  className={classes.save}
-                  onClick={() => {
-                    setAlert(false);
-                  }}
-                  color="primary"
-                >
-                  {translate("Cancel")}
-                </Button>
-              </DialogActions>
-            </Dialog>
-          )}
+                  setAlertMessage(null);
+                  setAlertTitle(null);
+                  setReadOnly(false);
+                  setScript(getCompletedIf()?.completedIf);
+                  setProperty("camunda:completedIfValue", undefined);
+                  setProperty("camunda:completedIfCombinator", undefined);
+                  setOpenScriptDialog(true);
+                }}
+                variant="primary"
+                className={classes.save}
+              >
+                {translate("OK")}
+              </Button>
+              <Button
+                className={classes.save}
+                onClick={() => {
+                  setAlert(false);
+                }}
+                variant="secondary"
+              >
+                {translate("Cancel")}
+              </Button>
+            </DialogFooter>
+          </Dialog>
         </div>
         <div className={classes.allButtons}>
-          <label className={classes.label}>{translate("Buttons")}</label>
+          <InputLabel color="body" className={classes.label}>
+            {translate("Buttons")}
+          </InputLabel>
           <Select
             className={classes.select}
             update={(value) => {
@@ -459,7 +451,12 @@ export default function UserTaskProps({ element, index, label, bpmnModeler }) {
             name="buttons"
             value={buttons || []}
             multiple={true}
-            isLabel={false}
+            handleRemove={(option) => {
+              const value = buttons?.filter((r) => r.name !== option.name);
+              setButtons(value);
+              addButtons(value);
+            }}
+            optionEqual={(a, b) => a.name === b.name}
           />
         </div>
       </div>

@@ -45,6 +45,7 @@ import { translate } from "../../../utils";
 // helpers
 
 let isExternalTaskPriorityEnabled = function (element) {
+  if (!element) return;
   // show only if element is a process, a participant ...
   if (is(element, "bpmn:Process")) {
     return true;
@@ -63,6 +64,7 @@ let isExternalTaskPriorityEnabled = function (element) {
 };
 
 let isJobConfigEnabled = function (element) {
+  if (!element) return;
   let businessObject = getBusinessObject(element);
 
   if (
@@ -99,7 +101,8 @@ function createGeneralTabGroups(
   elementRegistry,
   elementTemplates,
   translate,
-  bpmnModeler
+  bpmnModeler,
+  setDummyProperty
 ) {
   // refer to target element for external labels
   element = element && (element.labelTarget || element);
@@ -127,7 +130,14 @@ function createGeneralTabGroups(
 
   idProps(generalGroup, element, translate, idOptions, bpmnModeler);
   nameProps(generalGroup, element, bpmnFactory, canvas, translate, bpmnModeler);
-  processProps(generalGroup, element, translate, processOptions, bpmnModeler);
+  processProps(
+    generalGroup,
+    element,
+    translate,
+    processOptions,
+    bpmnModeler,
+    setDummyProperty
+  );
   executableProps(generalGroup, element, translate, bpmnModeler);
   colorProps(generalGroup, element, translate, bpmnModeler);
 
@@ -361,7 +371,8 @@ export default function getTabs(
   elementRegistry,
   elementTemplates,
   translate,
-  bpmnModeler
+  bpmnModeler,
+  setDummyProperty
 ) {
   let definitionTab = {
     id: "definition",
@@ -384,7 +395,8 @@ export default function getTabs(
       elementRegistry,
       elementTemplates,
       translate,
-      bpmnModeler
+      bpmnModeler,
+      setDummyProperty
     ),
   };
 

@@ -59,9 +59,9 @@ export const getWkfDMNModels = async (options = {}) => {
   return wkf;
 };
 
-export const getWkfModels = async (options = {}) => {
+export const getWkfModels = async (options = {}, fields = []) => {
   let res = await Service.search("com.axelor.studio.db.WkfModel", {
-    fields: ["name"],
+    fields: ["name", ...fields],
     related: {
       wkfProcessList: RELATED_FIELDS,
     },
@@ -570,9 +570,16 @@ export async function getDMNModel(decisionId) {
 }
 
 export async function getInfo() {
-  const url = `ws/app/info`;
+  const url = `ws/public/app/info`;
   const res = await Service.get(url);
   return res;
+}
+
+export async function loadTheme(theme) {
+  if (!theme) return;
+  const url = `js/theme/${theme}.json`;
+  const options = await Service.get(url);
+  return { options, theme };
 }
 
 export async function getBamlModels(criteria = []) {
