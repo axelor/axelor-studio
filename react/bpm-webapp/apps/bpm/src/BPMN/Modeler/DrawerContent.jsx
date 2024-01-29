@@ -5,6 +5,7 @@ import TabPanel from "./TabPanel";
 import { isGroupVisible, isDefinition } from "./extra.js";
 import { Box } from "@axelor/ui";
 import Tab from "./Tab";
+import { translate } from "../../utils";
 
 const useStyles = makeStyles((theme) => ({
   nodeTitle: {
@@ -53,8 +54,8 @@ export default function DrawerContent({
     () =>
       tabs.map((t) => {
         return t.id === "comments" && comments
-          ? { ...t, title: `${t.label} (${comments})` }
-          : { ...t, title: t.label };
+          ? { ...t, title: `${translate(t.label)} (${comments})` }
+          : { ...t, title: translate(t.label) };
       }),
     [tabs, comments]
   );

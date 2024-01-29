@@ -62,7 +62,7 @@ function ButtonComp({
         gap={4}
         outline
       >
-        {title} <MaterialIcon icon={icon} fontSize={18} />
+        {translate(title)} <MaterialIcon icon={icon} fontSize={18} />
       </Button>
     );
 }

@@ -44,7 +44,7 @@ function InputField({
   }
   return (
     <Input
-      label={title || autoTitle}
+      placeholder={translate(title || autoTitle)}
       name={name}
       style={{ width: '100%', ...style }}
       onChange={(e) => setText(e.target.value)}

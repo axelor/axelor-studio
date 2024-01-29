@@ -244,8 +244,8 @@ const BUILT_IN_VARIABLES = [
 ];
 
 const BUTTON_TYPE_OPERATOR = [
-  { name: true, title: 'true' },
-  { name: false, title: 'false' },
+  { name: true, title: 'True' },
+  { name: false, title: 'False' },
 ];
 
 export {

@@ -71,7 +71,7 @@ export default function LinkProps({
         <React.Fragment>
           {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
-        <Box className={classes.groupLabel}>{label}</Box>
+        <Box className={classes.groupLabel}>{translate(label)}</Box>
         <TextField
           element={element}
           entry={{

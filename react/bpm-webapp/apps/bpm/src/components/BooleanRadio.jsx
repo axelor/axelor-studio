@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Input, InputLabel } from "@axelor/ui";
+import { translate } from "../utils";
 
 export function BooleanRadio({
   name,
@@ -22,7 +23,7 @@ export function BooleanRadio({
             me={2}
           />
           <InputLabel mb={0} htmlFor={value}>
-            {label}
+            {translate(label)}
           </InputLabel>
         </Box>
       ))}

@@ -12,6 +12,7 @@ import Compensation from "./CompensateEventDefinition";
 import Condition from "./ConditionalEventDefinition";
 import Error from "./ErrorEventDefinition";
 import { Box, Divider } from "@axelor/ui";
+import { translate } from "../../../../../utils";
 
 const useStyles = makeStyles({
   groupLabel: {
@@ -304,7 +305,7 @@ export default function EventProps({
           {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
         <Box color="body" className={classes.groupLabel}>
-          {label}
+          {translate(label)}
         </Box>
         <div>{renderComponent()}</div>
       </div>

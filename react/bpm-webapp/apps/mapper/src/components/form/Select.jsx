@@ -52,7 +52,7 @@ export default function Selection({
         invalid={error && !value}
         options={options}
         optionKey={(option) => option.name}
-        optionLabel={(option) => option.title}
+        optionLabel={(option) => translate(option.title)}
         {...rest}
       />
     </Box>

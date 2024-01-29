@@ -205,7 +205,7 @@ export default function Comments({ element, updateCommentsCount }) {
         <div className={classes.reply}>
           <Input
             as="textarea"
-            placeholder={translate("Write your commet here")}
+            placeholder={translate("Write your comment here")}
             onChange={(e) => setComment(e.target.value)}
             value={comment}
             rows={2}
@@ -296,7 +296,7 @@ export default function Comments({ element, updateCommentsCount }) {
                                     updateEdit(key, c && c[4], false, 5);
                                   }}
                                 >
-                                  Cancel
+                                  {translate("Cancel")}
                                 </Button>
                               </React.Fragment>
                             ) : (
