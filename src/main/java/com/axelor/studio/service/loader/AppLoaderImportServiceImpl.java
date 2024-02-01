@@ -23,7 +23,6 @@ import com.axelor.data.xml.XMLImporter;
 import com.axelor.db.Model;
 import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.AppLoader;
-import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.studio.utils.ConsumerListener;
 import com.google.inject.Inject;
@@ -141,15 +140,17 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
         final StringBuilder log = new StringBuilder();
         xmlImporter.addListener(
             new ConsumerListener(
-                    (num,app) -> {
-                      log.append("Import model: ");
-                      log.append(num);
-                      log.append("\n");
-                    }, model -> {
-              log.append("Import model: ");
-              log.append(((Model) model));
-              log.append("\n");
-            }, (model, e) -> pw.println("Error importing: " + model)));
+                (num, app) -> {
+                  log.append("Import model: ");
+                  log.append(num);
+                  log.append("\n");
+                },
+                model -> {
+                  log.append("Import model: ");
+                  log.append(((Model) model));
+                  log.append("\n");
+                },
+                (model, e) -> pw.println("Error importing: " + model)));
 
         xmlImporter.run();
       }
