@@ -195,9 +195,7 @@ function RenderSimpleWidget(props) {
     return (
       <Component
         name="fieldValue"
-        onChange={value =>
-          onChange({ name: 'fieldValue', value: value }, editor)
-        }
+        onChange={value => onChange({ name: 'fieldValue', value }, editor)}
         value={value}
         style={style}
         {...rest}
@@ -337,7 +335,11 @@ function RenderWidget({
         editor,
         internalProps: {
           ...(options
-            ? { options, classes, ...props }
+            ? {
+                options,
+                classes,
+                ...props,
+              }
             : {
                 type,
                 ...props,
@@ -609,10 +611,10 @@ const Rule = React.memo(function Rule(props) {
               : operatorsOptions
           }
           onChange={value => {
-            onChange({ name: 'operator', value: value?.name }, editor);
+            onChange({ name: 'operator', value }, editor);
             handleChange('isField', null);
           }}
-          value={OPERATORS.find(op => op.name === operator)}
+          value={operator}
           className={classes.operators}
         />
         {operator &&
@@ -981,10 +983,8 @@ const Rule = React.memo(function Rule(props) {
         (['button', 'menu-item'].includes(field.type) ? (
           <Select
             name="fieldValue"
-            onChange={value =>
-              onChange({ name: 'fieldValue', value: value?.name }, editor)
-            }
-            value={BUTTON_TYPE_OPERATOR.find(o => o.name === fieldValue)}
+            onChange={value => onChange({ name: 'fieldValue', value }, editor)}
+            value={fieldValue}
             options={BUTTON_TYPE_OPERATOR}
             className={classes.operators}
           />
@@ -1062,9 +1062,9 @@ export default function Editor({
               className={classes.combinator}
               disableUnderline
               options={COMBINATOR}
-              value={COMBINATOR.find(c => c.name === editor?.combinator)}
+              value={editor?.combinator}
               onChange={value => {
-                onChange({ name: 'combinator', value: value?.name }, editor);
+                onChange({ name: 'combinator', value }, editor);
               }}
             />
           }
