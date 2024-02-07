@@ -528,6 +528,7 @@ export default function ScriptProps({
             className={classes.textbox}
             rows={3}
             readOnly={isReadOnly}
+            minimap={false}
             entry={{
               id: "script",
               label: (

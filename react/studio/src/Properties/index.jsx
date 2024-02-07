@@ -1,6 +1,17 @@
 import React, { useState } from "react"
-import { TextField, Switch, Box } from "@axelor/ui"
+import {
+	TextField,
+	Switch,
+	Box,
+	Dialog,
+	DialogHeader,
+	DialogContent,
+	DialogFooter,
+	Button,
+} from "@axelor/ui"
 import { MaterialIcon } from "@axelor/ui/icons/material-icon"
+import _ from "lodash"
+
 import { options } from "./list"
 import {
 	camleCaseString,
@@ -23,7 +34,7 @@ import StaticSelection from "./widgets/StaticSelection"
 import SelectionWidget from "./widgets/SelectionWidget"
 import DialogConfirmation from "../Toolbar/DeleteConfirmation"
 import OnlyIfComponent from "./widgets/OnlyIf"
-
+import ScriptEditor from "./Editor.js/SrciptEditor"
 import Tooltip from "../components/tooltip/tooltip"
 
 const PropertiesContext = React.createContext()
@@ -58,7 +69,13 @@ const hasPropertyToShow = (list, type, editWidgetType) => {
 }
 
 function StringInput(_props) {
-	const { index, multiline = false, error, clearable = false } = _props
+	const {
+		index,
+		multiline = false,
+		error,
+		clearable = false,
+		language = false,
+	} = _props
 	const {
 		title,
 		name,
@@ -72,9 +89,11 @@ function StringInput(_props) {
 		icon,
 		...rest
 	} = _props.field
+	const [openEditor, setOpenEditor] = useState(false)
 	const props = React.useContext(PropertiesContext)
 	const { propertyList, setPropertyList, onChange, modelType, editWidgetType } =
 		props
+	const [editorValue, setEditorValue] = useState(null)
 	let label = Label(translate(camleCaseString(title || name)), _props.field)
 	let placeholder = null
 	if (name === "showIf" || name === "requiredIf") {
@@ -116,6 +135,26 @@ function StringInput(_props) {
 		})
 	}
 	const savedValue = React.useRef(value)
+	const handleEditorCancel = () => {
+		setEditorValue(null)
+		setOpenEditor(false)
+	}
+	const handleEditorSave = () => {
+		editorValue !== null &&
+			setPropertyList({
+				...(propertyList || {}),
+				...getProperty(
+					name,
+					editorValue,
+					parentField,
+					propertyList[parentField],
+					modelType === rest.modelType ||
+						editWidgetType === "customField" ||
+						!(rest.modelType || modelType === MODEL_TYPE.BASE)
+				),
+			})
+		setOpenEditor(false)
+	}
 	return (
 		<>
 			{!hide && (
@@ -218,10 +257,9 @@ function StringInput(_props) {
 					onFocus={() => {
 						savedValue.current = value
 					}}
-					icons={
+					icons={[
 						clearable &&
-						value && [
-							{
+							value && {
 								icon: "clear",
 								color: "body",
 								className: "clearIcon",
@@ -264,10 +302,49 @@ function StringInput(_props) {
 									}
 								},
 							},
-						]
-					}
+						language && {
+							icon: "code",
+							color: "body",
+							className: "clearIcon",
+							onClick: () => {
+								setOpenEditor(true)
+							},
+						},
+					].filter(Boolean)}
 				/>
 			)}
+			<Dialog size="xl" backdrop open={openEditor}>
+				<DialogHeader>
+					<Box d="flex" alignItems="center">
+						<b>{translate("Editor")}</b>{" "}
+						<i>
+							(
+							{translate(
+								_.capitalize(
+									_.toLower(name.replace(/([a-z])([A-Z])/g, "$1 $2"))
+								)
+							)}
+							)
+						</i>
+					</Box>
+				</DialogHeader>
+				<DialogContent>
+					<ScriptEditor
+						value={editorValue ?? value}
+						onChange={setEditorValue}
+						readOnly={disabled}
+						language={language}
+					/>
+				</DialogContent>
+				<DialogFooter>
+					<Button size="sm" variant="secondary" onClick={handleEditorCancel}>
+						{translate("Cancel")}
+					</Button>
+					<Button size="sm" variant="primary" onClick={handleEditorSave}>
+						{translate("Save")}
+					</Button>
+				</DialogFooter>
+			</Dialog>
 		</>
 	)
 }
@@ -419,8 +496,8 @@ function RenderPropertyField() {
 		parentPanel,
 		isStudioLite,
 		loader,
+		language,
 	} = props
-
 	return (
 		<>
 			{elements.map((field, index) => {
@@ -451,6 +528,7 @@ function RenderPropertyField() {
 								multiline={false}
 								error={errors[field.name]}
 								isStudioLite={isStudioLite}
+								language={language || field.language}
 							/>
 						)
 					case "integer":
@@ -515,6 +593,7 @@ function RenderPropertyField() {
 								index={key}
 								multiline={true}
 								error={errors[field.name]}
+								language={language}
 							/>
 						)
 					case "onlyIf":
@@ -533,6 +612,7 @@ function RenderPropertyField() {
 								key={key}
 								index={key}
 								error={errors[field.name]}
+								language={language}
 							/>
 						)
 				}
@@ -776,6 +856,7 @@ export default function Properties() {
 								<Box d="flex" flexDirection="column">
 									<PropertiesProvider
 										key={editWidget}
+										language={panel.language}
 										elements={panel.fields}
 										propertyList={propertyList}
 										setPropertyList={setPropertyList}

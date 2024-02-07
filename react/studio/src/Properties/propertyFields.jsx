@@ -34,6 +34,7 @@ const collapseIf = {
 	parentField: "widgetAttrs",
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
+	language: "javascript",
 	icon: <JavascriptIcon />,
 	tooltip:
 		"The panel can be collapsed or expanded based on the evaluation of the context.",
@@ -343,6 +344,7 @@ export const JsonRelationalField = BooleanField({
 export const Domain = StringField({
 	name: "domain",
 	title: "Domain",
+	language: "jpql",
 	icon: <JPQLIcon />,
 	tooltip:
 		"The JPQL expression is used to filter the records displayed when opening the view. It serves as the where clause of your query.",
@@ -619,6 +621,7 @@ export const CanSave = StringField({
 export const Css = StringField({
 	name: "css",
 	title: "Css",
+	language: "css",
 	parentField: "widgetAttrs",
 	modelType: MODEL_TYPE.CUSTOM,
 })

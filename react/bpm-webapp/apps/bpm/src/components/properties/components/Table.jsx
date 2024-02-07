@@ -12,8 +12,11 @@ import {
   TableRow,
   TableCell,
   Input,
+  TextField,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import AlertDialog from "../../AlertDialog";
+import ScriptEditor from "../EditorConfig/SrciptEditor";
 
 const useStyles = makeStyles({
   add: {
@@ -47,6 +50,9 @@ const useStyles = makeStyles({
     minWidth: 30,
     maxWidth: "95%",
     width: "100%",
+  },
+  editorIcon: {
+    cursor: "pointer",
   },
 });
 
@@ -160,13 +166,13 @@ export default function Table({ entry }) {
                                 />
                               </Box>
                             ) : (
-                              <Input
-                                className={classes.input}
-                                type="text"
-                                defaultValue={option[label] || ""}
-                                onBlur={(e) => {
-                                  update(e.target.value, label, optionIndex);
-                                }}
+                              <ValueCell
+                                label={label}
+                                optionIndex={optionIndex}
+                                index={index}
+                                option={option}
+                                classes={classes}
+                                update={update}
                               />
                             )}
                           </TableCell>
@@ -193,3 +199,52 @@ export default function Table({ entry }) {
     </Box>
   );
 }
+
+const ValueCell = ({ label, index, optionIndex, option, classes, update }) => {
+  const [open, setOpen] = useState(false);
+  const [editorValue, setEditorValue] = useState("");
+  const openEditor = () => {
+    setEditorValue(option[label] || "");
+    setOpen(true);
+  };
+  const handleOk = () => {
+    update(editorValue, label, optionIndex);
+    setOpen(false);
+  };
+  const handleEditorChange = (value) => {
+    setEditorValue(value);
+  };
+
+  return (
+    <Box>
+      <TextField
+        type="text"
+        defaultValue={option[label] || ""}
+        onBlur={(e) => {
+          update(e.target.value, label, optionIndex);
+        }}
+        icons={
+          index && [
+            {
+              icon: "code",
+              color: "body",
+              className: classes.editorIcon,
+              onClick: openEditor,
+            },
+          ]
+        }
+      />
+      <AlertDialog
+        openAlert={open}
+        alertClose={() => setOpen(false)}
+        handleAlertOk={handleOk}
+      >
+        <ScriptEditor
+          defaultHeight={window?.innerHeight - 205}
+          value={editorValue}
+          onChange={handleEditorChange}
+        />
+      </AlertDialog>
+    </Box>
+  );
+};

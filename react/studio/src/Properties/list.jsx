@@ -118,12 +118,14 @@ const uiSection = createSection({
 const conditionSection = createSection({
 	name: "conditions",
 	title: "Conditions",
+	language: "javascript",
 	icon: <JavascriptIcon />,
 })
 const valueExprSection = createSection({
 	name: "valueExpr",
 	title: "Value expr",
 	tooltip: "The expression is evaluated in the context and displayed.",
+	language: "javascript",
 	icon: <JavascriptIcon />,
 })
 const rolesSection = createSection({ name: "roles", title: "Roles" })

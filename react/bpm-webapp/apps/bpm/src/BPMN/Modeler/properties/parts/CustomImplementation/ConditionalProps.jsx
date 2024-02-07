@@ -315,6 +315,7 @@ export default function ConditionalProps({
             rows={3}
             className={classes.textbox}
             readOnly={readOnly}
+            minimap={false}
             entry={{
               id: "script",
               label: translate("Script"),
