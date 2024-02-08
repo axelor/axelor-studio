@@ -124,6 +124,8 @@ import com.axelor.studio.service.AppSettingsStudioServiceImpl;
 import com.axelor.studio.service.ChartRecordViewService;
 import com.axelor.studio.service.ChartRecordViewServiceImpl;
 import com.axelor.studio.service.CustomMetaService;
+import com.axelor.studio.service.ExportService;
+import com.axelor.studio.service.ExportServiceImpl;
 import com.axelor.studio.service.JsonFieldService;
 import com.axelor.studio.service.JsonFieldServiceImpl;
 import com.axelor.studio.service.StudioMetaService;
@@ -187,6 +189,7 @@ public class StudioModule extends AxelorModule {
     bind(ChartRecordViewService.class).to(ChartRecordViewServiceImpl.class);
     bind(AppSettingsStudioService.class).to(AppSettingsStudioServiceImpl.class);
     bind(AppSettingsMessageServiceImpl.class).to(AppSettingsStudioServiceImpl.class);
+    bind(ExportService.class).to(ExportServiceImpl.class);
 
     bind(WsConnectorService.class).to(WsConnectorServiceImpl.class);
     bind(WsAuthenticatorService.class).to(WsAuthenticatorServiceImpl.class);

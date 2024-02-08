@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <%		
 	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.StudioActionRepository' as Class).all()
+	export = com.axelor.inject.Beans.get('com.axelor.studio.service.ExportService' as Class)
 		
 	if(__ids__ != null) {
 		query = query.filter('self.studioApp.id in ?1',__ids__)
@@ -9,9 +10,9 @@
 	studioActions = ""
 	query.fetch().each({
 		action ->	
-				lines = com.axelor.studio.service.ExportService.exportStudioActionLines(action.lines, 4)
+				lines = export.exportStudioActionLines(action.lines, 4)
 				
-				viewParams = com.axelor.studio.service.ExportService.exportStudioActionLines(action.viewParams, 4)
+				viewParams = export.exportStudioActionLines(action.viewParams, 4)
 				
 				views = ""
 				action.studioActionViews.each{
