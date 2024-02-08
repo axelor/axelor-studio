@@ -31,6 +31,11 @@ export default function Selection({
   ...rest
 }) {
   const classes = useStyles();
+
+  const selectedValue = React.useMemo(() => {
+    return (options || []).find((op) => op.name === value) || null;
+  }, [value, options]);
+
   return (
     <Box
       d="flex"
@@ -38,8 +43,8 @@ export default function Selection({
       className={classnames(classes.formControl, className)}
     >
       <Select
-        value={value ?? null}
-        onChange={(value) => onChange(value)}
+        value={selectedValue}
+        onChange={(value) => onChange(value?.name)}
         name={name}
         className={classes.select}
         flex="1"
