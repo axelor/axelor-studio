@@ -78,6 +78,8 @@ import {
 } from "./fieldTypes"
 import { MODEL_TYPE } from "../constants"
 
+import { JavascriptIcon } from "./label-icon"
+
 const createSection = (sectionProps) => (fieldOptionProps) => ({
 	...sectionProps,
 	...fieldOptionProps,
@@ -116,10 +118,13 @@ const uiSection = createSection({
 const conditionSection = createSection({
 	name: "conditions",
 	title: "Conditions",
+	icon: <JavascriptIcon />,
 })
 const valueExprSection = createSection({
 	name: "valueExpr",
 	title: "Value expr",
+	tooltip: "The expression is evaluated in the context and displayed.",
+	icon: <JavascriptIcon />,
 })
 const rolesSection = createSection({ name: "roles", title: "Roles" })
 const widgetAttrSection = createSection({

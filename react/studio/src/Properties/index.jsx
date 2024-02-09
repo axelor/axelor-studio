@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { TextField, Switch, Box } from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 import { options } from "./list"
 import {
 	camleCaseString,
@@ -22,6 +23,8 @@ import StaticSelection from "./widgets/StaticSelection"
 import SelectionWidget from "./widgets/SelectionWidget"
 import DialogConfirmation from "../Toolbar/DeleteConfirmation"
 import OnlyIfComponent from "./widgets/OnlyIf"
+
+import Tooltip from "../components/tooltip/tooltip"
 
 const PropertiesContext = React.createContext()
 
@@ -65,6 +68,8 @@ function StringInput(_props) {
 		max,
 		min,
 		parentField,
+		tooltip,
+		icon,
 		...rest
 	} = _props.field
 	const props = React.useContext(PropertiesContext)
@@ -112,7 +117,7 @@ function StringInput(_props) {
 	}
 	const savedValue = React.useRef(value)
 	return (
-		<React.Fragment>
+		<>
 			{!hide && (
 				<TextField
 					value={value}
@@ -120,11 +125,20 @@ function StringInput(_props) {
 					key={index}
 					type={type === "integer" ? "number" : type}
 					autoComplete="off"
-					style={{
-						WebkitAppearance: "searchfield-cancel-button",
-						appearance: "searchfield-cancel-button",
-					}}
-					label={<Box mt={2}>{translate(label)}</Box>}
+					label={
+						<Box mt={2} d="flex" justifyContent="space-between">
+							<Box d="flex" alignItems="center">
+								{translate(label)}
+								{!!icon && icon}
+							</Box>
+
+							{title?.trim() && tooltip && (
+								<Tooltip title={translate(tooltip)} placement="bottom">
+									<MaterialIcon fontSize={13} icon="info" />
+								</Tooltip>
+							)}
+						</Box>
+					}
 					placeholder={translate(placeholder)}
 					onBlur={(e) => {
 						if (savedValue.current === value) return
@@ -254,7 +268,7 @@ function StringInput(_props) {
 					}
 				/>
 			)}
-		</React.Fragment>
+		</>
 	)
 }
 
@@ -731,8 +745,32 @@ export default function Properties() {
 									(panel.render ? (
 										panel.render()
 									) : (
-										<Box color="body" fontWeight="bold" variant="body1">
-											{translate(panel.title)}
+										<Box
+											color="body"
+											fontWeight="bold"
+											variant="body1"
+											d="flex"
+											justifyContent="space-between"
+										>
+											{panel?.tooltip ? (
+												<>
+													<Box d="flex" alignItems="center">
+														{translate(panel.title)}
+														{panel.icon}
+													</Box>
+													<Tooltip
+														title={translate(panel.tooltip)}
+														placement="bottom"
+													>
+														<MaterialIcon fontSize={13} icon="info" />
+													</Tooltip>
+												</>
+											) : (
+												<Box d="flex" alignItems="center">
+													{translate(panel.title)}
+													{panel.icon}
+												</Box>
+											)}
 										</Box>
 									))}
 								<Box d="flex" flexDirection="column">

@@ -9,6 +9,8 @@ import {
 import widgetList from "./widgetList"
 import { MODEL_TYPE, DataTypes, relationalFields, TYPE } from "../constants"
 import { getMenuBuilderTitle } from "./properties.helper"
+import { JPQLIcon } from "./label-icon"
+import { JavascriptIcon } from "./label-icon"
 
 const canCollapse = {
 	name: "canCollapse",
@@ -32,6 +34,9 @@ const collapseIf = {
 	parentField: "widgetAttrs",
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
+	icon: <JavascriptIcon />,
+	tooltip:
+		"The panel can be collapsed or expanded based on the evaluation of the context.",
 	isDisabled: ({ propertyList }) => {
 		const widgetAttrs = propertyList?.widgetAttrs
 		const isTab = widgetAttrs?.tab
@@ -338,6 +343,9 @@ export const JsonRelationalField = BooleanField({
 export const Domain = StringField({
 	name: "domain",
 	title: "Domain",
+	icon: <JPQLIcon />,
+	tooltip:
+		"The JPQL expression is used to filter the records displayed when opening the view. It serves as the where clause of your query.",
 })
 
 export const Prompt = StringField({
@@ -511,11 +519,15 @@ export const ShowIf = StringField({
 	name: "showIf",
 	title: "Show if",
 	dependModelType: MODEL_TYPE.CUSTOM,
+	tooltip:
+		"These conditions determine whether to show or hide the field based on the evaluation of the context.",
 })
 
 export const HideIf = StringField({
 	name: "hideIf",
 	title: "Hide if",
+	tooltip:
+		"These conditions determine whether to show or hide the field based on the evaluation of the context.",
 	isDisabled: (props) => {
 		const { propertyList } = props
 
@@ -535,6 +547,8 @@ export const If = StringField({
 export const RequiredIf = StringField({
 	name: "requiredIf",
 	title: "Required if",
+	tooltip:
+		"This condition sets the field as required or mandatory depending on the evaluation of the context.",
 	isDisabled: (props) => {
 		const { propertyList, editWidgetType, modelType } = props
 
@@ -550,6 +564,8 @@ export const RequiredIf = StringField({
 export const ReadOnlyIf = StringField({
 	name: "readonlyIf",
 	title: "Readonly if",
+	tooltip:
+		"This condition sets the field as read-only based on the evaluation of the context.",
 	isDisabled: (props) => {
 		const { propertyList, editWidgetType, modelType } = props
 		if (modelType === MODEL_TYPE.BASE && editWidgetType !== "customField") {
@@ -565,6 +581,8 @@ export const IncludeIf = StringField({
 	name: "includeIf",
 	title: "Include if",
 	dependModelType: MODEL_TYPE.CUSTOM,
+	tooltip:
+		"The expression is evaluated to determine whether to retrieve or omit the information from the backend.",
 })
 
 export const ValidIf = StringField({
@@ -573,6 +591,8 @@ export const ValidIf = StringField({
 	parentField: "widgetAttrs",
 	modelType: MODEL_TYPE.CUSTOM,
 	dependModelType: MODEL_TYPE.CUSTOM,
+	tooltip:
+		"This expression evaluates the context to determine whether the value for the field is valid or not.",
 })
 
 /* TODO: Error implementation in OnlyIf is wrong,
