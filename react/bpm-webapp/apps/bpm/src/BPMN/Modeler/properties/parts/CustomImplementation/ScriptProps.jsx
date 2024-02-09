@@ -174,7 +174,7 @@ export default function ScriptProps({
 
   const getter = () => {
     const value = getProperty("scriptValue");
-    const combinator = getBool(getProperty("scriptOperatorType") || false);
+    const combinator = getProperty("scriptOperatorType");
     const checked = getBool(getProperty("checked"));
     let values;
     if (value !== undefined) {
@@ -647,11 +647,7 @@ export default function ScriptProps({
                     element={element}
                   />
                 )}
-            <Dialog
-              open={openAlert}
-              centered
-              className={classes.Dialog}
-            >
+            <Dialog open={openAlert} centered className={classes.Dialog}>
               <DialogHeader onCloseClick={() => setAlert(false)}>
                 <h3>{translate(alertTitle)}</h3>
               </DialogHeader>

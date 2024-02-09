@@ -26,11 +26,15 @@ export default function Selection({
 }) {
   const classes = useStyles();
 
+  const selectedValue = React.useMemo(() => {
+    return (options || []).find(op => op.name === value) || null;
+  }, [options, value]);
+
   return (
     <Box d="flex" flexDirection="column">
       <Select
-        value={value}
-        onChange={value => onChange(value)}
+        value={selectedValue}
+        onChange={value => onChange(value?.name)}
         name={name}
         options={options}
         customOptions={

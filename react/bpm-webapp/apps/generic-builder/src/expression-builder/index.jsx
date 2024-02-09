@@ -1569,9 +1569,9 @@ function ExpressionBuilder({
                 <Select
                   className={classes.combinator}
                   name="expression"
-                  value={COMBINATORS.find(c => c.name === combinator)}
+                  value={combinator}
                   options={COMBINATORS}
-                  onChange={({ name }) => setCombinator(name)}
+                  onChange={value => setCombinator(value)}
                   disableUnderline={true}
                 />
               }
