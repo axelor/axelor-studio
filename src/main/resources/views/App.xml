@@ -127,7 +127,7 @@
 			  </div>
 			  <div class="app-cards__name" style="overflow:hidden" >
 			  <div style="display:flex;flex-wrap:nowrap;">
-			 	<div style="font-weight: 600;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;flex:1;" x-translate>
+			 	<div style="font-weight: 600;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;flex:1;">
 			 		{{$fmt('name')}}
 			 	</div>
 			   <div ng-show="record.appVersion" class="app-cards__version" style="font-size: 14px;margin-top:-1px;min-width:36px;margin-left:5px">
