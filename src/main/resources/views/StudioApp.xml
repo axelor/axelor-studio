@@ -23,7 +23,7 @@
         <field name="code" colSpan="3"/>
         <field name="name" colSpan="8"/>
         <field name="dependsOnSet" colSpan="12" widget="TagSelect" canNew="false"
-          canEdit="false"/>
+          canEdit="false" domain="self.code != :code"/>
         <field name="modules"/>
         <field name="sequence"/>
         <field name="generatedApp.active" hidden="true"/>
