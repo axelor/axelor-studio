@@ -1,3 +1,6 @@
 ---
 title: Remove x-translate from the name field of App model
 type: change
+description: |
+  This change imply to verify all the cards and forms views of your Axelor apps 
+  (all the models having a o2o relation with `com.axelor.studio.db.App`). 
