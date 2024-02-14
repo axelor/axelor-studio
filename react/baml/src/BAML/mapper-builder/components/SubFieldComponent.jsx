@@ -1,23 +1,10 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { Box } from "@axelor/ui";
 import { get } from "lodash";
-
 import Selection from "./Selection";
-
 import { fetchFields } from "../services/api";
 import { VALUE_FROM } from "../constant";
 import { isRelationalField } from "../utils";
-
-const useStyles = makeStyles({
-  container: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  selection: {
-    minWidth: 150,
-    marginRight: 20,
-  },
-});
 
 const getSubFieldModel = (row, defaultFrom) => {
   const from = get(row, "value.from", defaultFrom);
@@ -45,7 +32,6 @@ const isLastRelationalField = (record) => {
 };
 
 function SubFieldView({ onChange, row, data, defaultFrom }) {
-  const classes = useStyles();
   const handleChange = React.useCallback(
     (e, index) => {
       const newData = data ? [...data] : [];
@@ -76,7 +62,7 @@ function SubFieldView({ onChange, row, data, defaultFrom }) {
   );
 
   return (
-    <div className={classes.container}>
+    <Box d="flex">
       {data &&
         data.map((field, i) =>
           isLastRelationalField(data[i - 1]) ? (
@@ -89,25 +75,12 @@ function SubFieldView({ onChange, row, data, defaultFrom }) {
               concatValue={true}
               fetchAPI={() => fetchFields(getListedFieldModel(i), true)}
               value={field}
-              className={classes.selection}
               disableClearable={i === data.length - 1 ? true : false}
               onChange={(e) => handleChange(e, i)}
             />
           ) : null
         )}
-      {/* <Selection
-          name="metaModalField"
-          title="Model Field"
-          placeholder="Model field"
-          optionValueKey="name"
-          optionLabelKey="name"
-          fetchAPI={() => fetchFields(getSubFieldModel(row))}
-          value={null}
-          onChange={(e) =>
-            handleChange(e)
-          }
-        /> */}
-    </div>
+    </Box>
   );
 }
 

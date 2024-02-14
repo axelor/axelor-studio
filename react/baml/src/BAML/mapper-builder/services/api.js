@@ -145,8 +145,8 @@ export async function fetchModelFields(item, isSubField = false) {
 
 export async function fetchFields(item, excludeUIFields = false) {
   let fields = [];
-  const entity = `${item.fullName || item.target}`;
-  if (item.modelType === ModelType.CUSTOM || !entity) {
+  const entity = `${item?.fullName || item?.target}`;
+  if (item?.modelType === ModelType.CUSTOM || !entity) {
     const criteria = [
       { fieldName: "jsonModel.name", operator: "=", value: item.name },
     ];

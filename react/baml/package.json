@@ -3,14 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@axelor/ui": "^0.0.32",
     "@date-io/moment": "^1.3.6",
-    "@material-ui/core": "^4.10.2",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
-    "@material-ui/pickers": "^3.2.10",
-    "@material-ui/styles": "^4.11.5",
     "@vitejs/plugin-react": "^4.0.4",
-    "classnames": "^2.2.6",
     "css.escape": "^1.5.1",
     "diagram-js": "^6.8.0",
     "diagram-js-direct-editing": "^1.6.1",
@@ -33,7 +28,7 @@
     "saxen": "^8.1.2",
     "tiny-svg": "^3.0.1",
     "vite": "^4.4.9",
-    "vite-plugin-svgr": "^3.2.0"
+    "vite-plugin-svgr": "^4.2.0"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
@@ -70,5 +65,8 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "./"
+  "homepage": "./",
+  "devDependencies": {
+    "sass": "^1.70.0"
+  }
 }

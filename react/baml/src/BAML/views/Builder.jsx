@@ -1,59 +1,19 @@
 import React, { useEffect, useState } from "react";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
+  Box,
   Button,
-  Tooltip,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Edit, NotInterested } from "@material-ui/icons";
-
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import ExpressionBuilder from "../expression-builder/index";
 import { translate } from "../../utils";
 import { Textbox } from "../components";
 import { getModels } from "../../services/api";
-
-const useStyles = makeStyles((theme) => ({
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  newIcon: {
-    color: "#58B423",
-    marginLeft: 5,
-  },
-  new: {
-    cursor: "pointer",
-    marginTop: 18.6,
-    display: "flex",
-  },
-  textbox: {
-    width: "100%",
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  save: {
-    margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
-  },
-}));
+import Tooltip from "../components/tooltip/tooltip";
 
 export default function ExtendedQueryProps({ element, bpmnModeler }) {
   const [isReadOnly, setReadOnly] = useState(false);
@@ -62,7 +22,6 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [model, setModel] = useState(null);
-  const classes = useStyles();
 
   const setProperty = (name, value) => {
     if (!bpmnModeler) return;
@@ -116,10 +75,9 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
   }, [getProperty]);
 
   return (
-    <div className={classes.expressionBuilder}>
+    <Box d="flex" justifyContent="center" alignItems="center">
       <Textbox
         element={element}
-        className={classes.textbox}
         readOnly={isReadOnly}
         bpmnModeler={bpmnModeler}
         entry={{
@@ -144,10 +102,13 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
           },
         }}
       />
-      <div className={classes.new}>
+      <Box d="flex" mt={4} pt={2}>
         <Tooltip title={translate("Enable")} aria-label="enable">
-          <NotInterested
-            className={classes.newIcon}
+          <MaterialIcon
+            icon="code"
+            color={isReadOnly ? "primary" : "secondary"}
+            fontSize={20}
+            className="pointer"
             onClick={() => {
               if (isReadOnly) {
                 setAlertMessage(
@@ -159,8 +120,11 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
             }}
           />
         </Tooltip>
-        <Edit
-          className={classes.newIcon}
+        <MaterialIcon
+          icon="edit"
+          color="primary"
+          fontSize={18}
+          className="pointer"
           onClick={() => {
             handleOpen();
           }}
@@ -212,21 +176,25 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                 setAlert(false);
               }
             }}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-            classes={{
-              paper: classes.dialog,
-            }}
           >
-            <DialogTitle id="alert-dialog-title">
-              <label className={classes.title}>{translate(alertTitle)}</label>
-            </DialogTitle>
+            <DialogHeader>
+              <DialogTitle id="alert-dialog-title">
+                {translate(alertTitle)}
+              </DialogTitle>
+            </DialogHeader>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                {translate(alertMessage)}
-              </DialogContentText>
+              <Box id="alert-dialog-description">{translate(alertMessage)}</Box>
             </DialogContent>
-            <DialogActions>
+            <DialogFooter d="flex" justifyContent="end">
+              <Button
+                onClick={() => {
+                  setAlert(false);
+                }}
+                size="sm"
+                variant="secondary"
+              >
+                {translate("Cancel")}
+              </Button>
               <Button
                 onClick={() => {
                   setAlert(false);
@@ -235,25 +203,16 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                   setReadOnly(false);
                   setProperty("expressionValue", undefined);
                 }}
-                color="primary"
-                className={classes.save}
+                size="sm"
+                variant="primary"
                 autoFocus
               >
                 {translate("OK")}
               </Button>
-              <Button
-                onClick={() => {
-                  setAlert(false);
-                }}
-                color="primary"
-                className={classes.save}
-              >
-                {translate("Cancel")}
-              </Button>
-            </DialogActions>
+            </DialogFooter>
           </Dialog>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

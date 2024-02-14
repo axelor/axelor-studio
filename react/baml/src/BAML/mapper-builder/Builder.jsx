@@ -1,19 +1,4 @@
 import React from "react";
-import {
-  Grid,
-  Button,
-  Typography,
-  CircularProgress,
-  Switch,
-  Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import { makeStyles } from "@material-ui/core/styles";
 import Selection from "./components/Selection";
 import DataTable from "./DataTable";
 import {
@@ -37,130 +22,17 @@ import { set, get } from "lodash";
 import FieldPopover from "./components/FieldPopover";
 import MultiSelector from "./components/MultiSelector";
 import { translate } from "../../utils";
-
-const useStyles = makeStyles((theme) => ({
-  table: {
-    minWidth: 650,
-  },
-  input: {
-    width: "13%",
-    marginRight: 20,
-  },
-  metaFieldGrid: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  newRecordSwitch: {
-    marginTop: 2,
-  },
-  newRecordSwitchText: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  newRecordInputView: {
-    display: "flex",
-    flexDirection: "row",
-    marginTop: 5,
-  },
-  modelFieldSelection: {
-    // width: '30%',
-    marginRight: 20,
-    marginLeft: 50,
-  },
-  addModelFieldIcon: {
-    marginLeft: 15,
-  },
-  saveButton: {
-    marginLeft: 10,
-  },
-  cardContent: {
-    overflow: "auto",
-    height: 600,
-  },
-  cardContentItemText: {
-    lineHeight: 3,
-  },
-  cardActionView: {
-    justifyContent: "flex-end",
-  },
-  capitalizeText: {
-    textTransform: "capitalize",
-  },
-  saveButtonText: {
-    marginLeft: 10,
-  },
-  saveMessageAlert: {
-    width: "100%",
-    marginBottom: 10,
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  topView: {
-    margin: "10px 10px 0px 10px",
-  },
-  searchField: {
-    flexDirection: "row",
-    width: "12%",
-    "& input": {
-      paddingBottom: 0,
-    },
-  },
-  loaderView: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    height: "100%",
-    backgroundColor: "rgba(0,0,0,0.2)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: "999",
-  },
-  paper: {
-    margin: theme.spacing(1),
-    width: `calc(100% - 16px)`,
-    display: "flex",
-    height: "calc(100% - 50px)",
-    overflow: "hidden",
-  },
-  dialogPaper: {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    resize: "both",
-    width: "100%",
-    height: "90%",
-  },
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    height: "100%",
-    overflow: "hidden",
-  },
-  save: {
-    margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
-  },
-  selectContainer: {
-    minWidth: 150,
-  },
-  targetModelInputRoot: {
-    marginTop: "22px !important",
-  },
-}));
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Switch,
+} from "@axelor/ui";
 
 const getDefaultFrom = (sourceModel) => {
   return sourceModel ? VALUE_FROM.SOURCE : VALUE_FROM.NONE;
@@ -328,7 +200,6 @@ const clearChildrenParentValue = ({
 };
 
 function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
-  const classes = useStyles();
   const { state, update } = useStore();
   const { builderFields } = state;
   const [model, setModel] = React.useState();
@@ -515,11 +386,11 @@ function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
   );
 
   const getBuilderFields = React.useCallback(
-    async (data, _builderRecord = {}) => {
+    async (data) => {
       const builder = JSON.parse(params.resultMetaField || "{}");
       const jsonData = get(builder, "fields", []);
       const newFields = new Array(jsonData.length);
-      excludeFields([...data]).forEach((field, index) => {
+      excludeFields([...data]).forEach((field) => {
         const jsonFieldIndex = jsonData.findIndex((f) => f.name === field.name);
         const jsonField = jsonData[jsonFieldIndex] || {};
 
@@ -721,149 +592,133 @@ function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
 
   return (
     <Dialog
-      onClose={(e, reason) => {
-        if (reason !== "backdropClick") {
-          handleClose();
-        }
-      }}
+      backdrop
+      size="xl"
       aria-labelledby="simple-dialog-title"
       open={open}
-      classes={{
-        paper: classes.dialogPaper,
-      }}
     >
-      <DialogTitle id="simple-dialog-title">Script</DialogTitle>
-      <div className={classes.root}>
-        <Paper variant="outlined" className={classes.paper}>
-          <div style={{ height: "100%", width: "100%" }}>
-            <>
-              <Grid container style={{ height: "100%" }}>
-                <Grid container className={classes.topView}>
-                  <Grid
-                    container
-                    justifyContent="space-between"
-                    style={{ marginBottom: 10 }}
-                  >
-                    <Grid item className={classes.metaFieldGrid}>
-                      <Grid container>
-                        <FieldPopover
-                          data={builderFields}
-                          onSubmit={(data) => handleAdd(data)}
-                          open={manageField}
-                          onClose={handleCloseManageField}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid
-                    container
-                    style={{ marginBottom: 10, alignItems: "flex-end" }}
-                  >
-                    <Selection
-                      className={classes.input}
-                      name="metaModal"
-                      title="Target model"
-                      placeholder="Target model"
-                      fetchAPI={(e) => getMetaModels(e)}
-                      optionLabelKey="name"
-                      onChange={(e) => handleModelSelect(e)}
-                      value={model}
-                      inputRootClass={classes.targetModelInputRoot}
+      <DialogHeader onCloseClick={handleClose}>
+        <DialogTitle id="simple-dialog-title">Script</DialogTitle>
+      </DialogHeader>
+      <DialogContent style={{ maxHeight: "82vh" }} overflow="auto">
+        <Box border rounded style={{ height: "100%", width: "100%" }}>
+          <Box m={2}>
+            <Box>
+              <Box>
+                <Box d="flex" justifyContent="space-between" flex={1} mb={3}>
+                  <FieldPopover
+                    data={builderFields}
+                    onSubmit={(data) => handleAdd(data)}
+                    open={manageField}
+                    onClose={handleCloseManageField}
+                  />
+                </Box>
+                <Box mb={4} m={1} d="flex" flexWrap="wrap" gap={10}>
+                  <Selection
+                    name="metaModal"
+                    title="Target model"
+                    placeholder="Target model"
+                    fetchAPI={(e) => getMetaModels(e)}
+                    optionLabelKey="name"
+                    onChange={(e) => handleModelSelect(e)}
+                    value={model}
+                  />
+                  <MultiSelector
+                    title="Source model"
+                    optionValueKey="name"
+                    optionLabelKey="name"
+                    concatValue={true}
+                    isM2o={true}
+                    isContext={true}
+                    value={sourceModelList}
+                    onChange={(e) => {
+                      const list = e.map((item) => {
+                        if (!item.fullName && item.target) {
+                          return { ...item, fullName: item.target };
+                        }
+                        return item;
+                      });
+                      setSourceModelList([...list]);
+                      setSourceModel({ ...list[list.length - 1] });
+                    }}
+                  />
+                  <Box d="flex" mt={1} justifyContent="center">
+                    <Switch
+                      checked={newRecord}
+                      onChange={(e) => setNewRecord(e.target.checked)}
                     />
-                    <MultiSelector
-                      containerClassName={classes.selectContainer}
-                      title="Source model"
-                      optionValueKey="name"
-                      optionLabelKey="name"
-                      concatValue={true}
-                      isM2o={true}
-                      isContext={true}
-                      value={sourceModelList}
-                      onChange={(e) => {
-                        const list = e.map((item) => {
-                          if (!item.fullName && item.target) {
-                            return { ...item, fullName: item.target };
-                          }
-                          return item;
-                        });
-                        setSourceModelList([...list]);
-                        setSourceModel({ ...list[list.length - 1] });
-                      }}
-                    />
-                    <Grid item className={classes.newRecordInputView}>
-                      <Switch
-                        className={classes.newRecordSwitch}
-                        checked={newRecord}
-                        onChange={(e) => setNewRecord(e.target.checked)}
-                      />
-                      <Typography className={classes.newRecordSwitchText}>
-                        {translate("New record")}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <DataTable
-                  builderFields={builderFields}
-                  data={builderFields}
-                  onRowChange={handleRowChange}
-                  onRemove={handleRowRemove}
-                  metaFields={metaFields}
-                  errors={errors}
-                  onClearError={handleClearError}
-                  onSubFieldAdd={handleSubFieldAdd}
-                  handleAdd={handleAdd}
-                  sourceModel={sourceModel}
-                  targetModel={model}
-                  bpmnModeler={bpmnModeler}
-                  manageFieldClick={handleManageFieldClick}
-                  handleFieldSearch={handleFieldSearch}
-                  onReorder={handleReorder}
-                />
-              </Grid>
-              {loading && (
-                <div className={classes.loaderView}>
-                  <CircularProgress size={32} />
-                </div>
-              )}
-            </>
-          </div>
-        </Paper>
-        <div>
-          <Button className={classes.save} onClick={handleSave}>
-            OK
-          </Button>
-          <Button
-            className={classes.save}
-            onClick={onCancel}
-            style={{ textTransform: "none" }}
-          >
-            Cancel
-          </Button>
-        </div>
-      </div>
+                    <Box>{translate("New record")}</Box>
+                  </Box>
+                </Box>
+              </Box>
+              <DataTable
+                builderFields={builderFields}
+                data={builderFields}
+                onRowChange={handleRowChange}
+                onRemove={handleRowRemove}
+                metaFields={metaFields}
+                errors={errors}
+                onClearError={handleClearError}
+                onSubFieldAdd={handleSubFieldAdd}
+                handleAdd={handleAdd}
+                sourceModel={sourceModel}
+                targetModel={model}
+                bpmnModeler={bpmnModeler}
+                manageFieldClick={handleManageFieldClick}
+                handleFieldSearch={handleFieldSearch}
+                onReorder={handleReorder}
+              />
+            </Box>
+            {loading && (
+              <Box
+                pos="absolute"
+                h={100}
+                d="flex"
+                flex-direction="column"
+                justifyContent="center"
+                alignItems="center"
+                style={{
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                }}
+              >
+                <CircularProgress color="body" size={32} indeterminate />
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </DialogContent>
+      <DialogFooter>
+        <Button variant="primary" size="sm" onClick={handleSave}>
+          {translate("OK")}
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onCancel}
+          style={{ textTransform: "none" }}
+        >
+          {translate("Cancel")}
+        </Button>
+      </DialogFooter>
       {openAlert && (
         <Dialog
+          backdrop
           open={openAlert}
-          onClose={(e, reason) => {
-            if (reason !== "backdropClick") {
-              setAlert(false);
-            }
-          }}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
+          onClose={() => setAlert(false)}
+          size="md"
         >
-          <DialogTitle id="alert-dialog-title">
-            {alertConfig.alertTitle}
-          </DialogTitle>
+          <DialogHeader>
+            <DialogTitle id="alert-dialog-title">
+              {alertConfig.alertTitle}
+            </DialogTitle>
+          </DialogHeader>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {alertConfig.alertMessage}
-            </DialogContentText>
+            <Box id="alert-dialog-description">{alertConfig.alertMessage}</Box>
           </DialogContent>
-          <DialogActions>
+          <DialogFooter>
             <Button
               onClick={() => {
                 setAlert(false);
@@ -871,9 +726,9 @@ function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
                   handleClose();
                 }
               }}
-              color="primary"
+              variant="primary"
               autoFocus
-              className={classes.save}
+              size="sm"
             >
               {translate("OK")}
             </Button>
@@ -881,14 +736,14 @@ function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
               onClick={() => {
                 setAlert(false);
               }}
-              color="primary"
+              variant="secondary"
               autoFocus
+              size="sm"
               style={{ textTransform: "none" }}
-              className={classes.save}
             >
               {translate("Cancel")}
             </Button>
-          </DialogActions>
+          </DialogFooter>
         </Dialog>
       )}
     </Dialog>

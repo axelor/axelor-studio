@@ -1,54 +1,6 @@
 import React, { useEffect, useState } from "react";
-import classnames from "classnames";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
-import { makeStyles } from "@material-ui/styles";
-
-import Description from "./Description";
 import { translate } from "../../utils";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: 5,
-  },
-  label: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "#666",
-    marginBottom: 3,
-  },
-  textarea: {
-    fontFamily: "Helvetica Neue, Helvetica, Arial, sans-serif",
-    resize: "vertical",
-    borderColor: "#ccc",
-    "&:focus": {
-      boxShadow: "rgba(82, 180, 21, 0.2) 0px 0px 1px 2px",
-      outline: "none",
-      borderColor: "rgb(82, 180, 21)",
-    },
-  },
-  error: {
-    borderColor: "#cc3333 !important",
-    background: "#f0c2c2",
-    "&:focus": {
-      boxShadow: "rgba(204,58,51, 0.2) 0px 0px 1px 2px !important",
-      outline: "none",
-      borderColor: "#cc3333 !important",
-    },
-  },
-  readOnly: {
-    borderColor: "#ccc !important",
-    background: "#E3E3E3",
-    color: "#7E7E7E",
-    "&:focus": {
-      boxShadow: "none !important",
-      outline: "none",
-      borderColor: "#ccc !important",
-    },
-  },
-});
+import { Box, TextField } from "@axelor/ui";
 
 export default function Textbox({
   entry,
@@ -58,7 +10,6 @@ export default function Textbox({
   className,
   readOnly,
 }) {
-  const classes = useStyles();
   const { label, description, name, validate, get, set } = entry || {};
   const [value, setValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -125,17 +76,20 @@ export default function Textbox({
   }, [element, getProperty, entry]);
 
   return (
-    <div className={classnames(classes.root, className)}>
-      <label className={classes.label}>{translate(label)}</label>
-      <TextareaAutosize
+    <Box
+      d="flex"
+      style={{ width: "100%" }}
+      flexDirection="column"
+      mt={1}
+      className={className}
+    >
+      <TextField
+        style={{ height: "20px" }}
         id={`camunda_${name}_${Date()}`}
+        as="textarea"
         value={value || ""}
-        className={classnames(
-          classes.textarea,
-          isError && classes.error,
-          readOnly && classes.readOnly
-        )}
         minRows={rows}
+        label={translate(label)}
         onBlur={(e) => {
           if (!readOnly) {
             updateProperty(e.target.value);
@@ -145,9 +99,10 @@ export default function Textbox({
           setValue(e.target.value);
         }}
         readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
+        disabled={typeof readOnly === "function" ? readOnly() : readOnly}
+        invalid={errorMessage}
+        description={description}
       />
-      {errorMessage && <Description desciption={errorMessage} type="error" />}
-      {description && <Description desciption={description} />}
-    </div>
+    </Box>
   );
 }

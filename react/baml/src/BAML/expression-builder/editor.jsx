@@ -1,32 +1,13 @@
 import React, { useEffect, useState } from "react";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Paper from "@material-ui/core/Paper";
-import classNames from "classnames";
 import moment from "moment";
-import {
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  IconButton,
-  Tooltip,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Close, ArrowForward } from "@material-ui/icons";
-import {
-  TimelineContent,
-  TimelineItem,
-  TimelineConnector,
-  TimelineSeparator,
-  Timeline,
-  TimelineOppositeContent,
-  TimelineDot,
-} from "@material-ui/lab";
-
+import { Box, Button } from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import Tooltip from "../components/tooltip/tooltip";
+import { BooleanRadio } from "./components/booleanRadio";
 import { getModels } from "../../services/api";
 import {
   Select,
-  Button,
+  IconButton,
   Selection,
   DateTimePicker,
   NumberField,
@@ -50,73 +31,6 @@ import { isBPMQuery, lowerCaseFirstLetter } from "./extra/util";
 import FieldEditor from "./field-editor";
 import { translate } from "../../utils";
 
-const useStyles = makeStyles((theme) => ({
-  Container: {
-    display: "flex",
-  },
-  rulesGroupHeader: {
-    display: "flex",
-  },
-  paper: {
-    margin: theme.spacing(1, 0),
-    padding: theme.spacing(3, 2),
-    overflow: "auto",
-  },
-  rules: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "flex-start",
-    marginBottom: 15,
-  },
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-  disabled: {
-    pointerEvents: "none",
-    opacity: 0.5,
-  },
-  valueFrom: {
-    fontSize: 12,
-    color: "rgba(0, 0, 0, 0.54)",
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
-  radio: {
-    padding: "1px 9px",
-    color: "#0275d8",
-    "&.MuiRadio-colorSecondary.Mui-checked": {
-      color: "#0275d8",
-    },
-  },
-  operators: {
-    minWidth: 75,
-  },
-  iconButton: {
-    marginRight: 10,
-  },
-  timelineConnector: {
-    backgroundColor: "#0275d8",
-  },
-  combinator: {
-    width: "fit-content",
-  },
-  icon: {
-    color: "#0275d8",
-  },
-  timeline: {
-    height: "100%",
-    padding: 0,
-    margin: 0,
-  },
-  timelineOppositeContent: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    maxWidth: 60,
-    padding: 0,
-  },
-}));
-
 async function fetchField(metaModals, type) {
   const isQuery = isBPMQuery(type);
   const allFields = (await getMetaFieldsAPI(metaModals, isQuery)) || [];
@@ -130,7 +44,6 @@ async function fetchField(metaModals, type) {
 function RenderRelationalWidget(props) {
   const { operator, editor, internalProps, parentType } = props;
   const { onChange, value, ...rest } = internalProps;
-  const classes = useStyles();
   const { field = {} } = rest;
   const { targetName, target, targetModel, model, jsonTarget } = field;
   const [nameField, setNameField] = useState(null);
@@ -201,7 +114,6 @@ function RenderRelationalWidget(props) {
           onChange({ name: "fieldValue", value: value }, editor);
         }}
         value={value || []}
-        classes={{ root: classes.MuiAutocompleteRoot }}
       />
     );
   } else {
@@ -211,8 +123,7 @@ function RenderRelationalWidget(props) {
 
 function RenderSimpleWidget(props) {
   const { Component, operator, editor, internalProps } = props;
-  const { onChange, value, value2, classes, style, targetName, ...rest } =
-    internalProps;
+  const { onChange, value, value2, style, targetName, ...rest } = internalProps;
   if (["=", "!=", ">", ">=", "<", "<=", "like", "notLike"].includes(operator)) {
     return (
       <Component
@@ -259,7 +170,6 @@ function RenderSimpleWidget(props) {
           onChange({ name: "fieldValue", value: val }, editor);
         }}
         value={value || []}
-        classes={{ root: classes.MuiAutocompleteRoot }}
         optionValueKey="name"
         {...rest}
       />
@@ -274,7 +184,6 @@ function RenderWidget({
   operator,
   onChange,
   value,
-  classes,
   parentType,
   editor,
   ...rest
@@ -326,7 +235,6 @@ function RenderWidget({
               ),
             ...rest,
             margin: "none",
-            classes,
             style: { marginTop: "15px", width: "250px !important" },
           }}
         />
@@ -348,12 +256,11 @@ function RenderWidget({
         editor,
         internalProps: {
           ...(options
-            ? { options, classes, ...props }
+            ? { options, ...props }
             : {
                 type,
                 ...props,
                 margin: "none",
-                classes,
                 style: { marginTop: "15px", width: "250px !important" },
               }),
         },
@@ -371,7 +278,6 @@ function RenderWidget({
           editor={editor}
           internalProps={{
             options,
-            classes,
             ...props,
           }}
         />
@@ -390,9 +296,8 @@ function RenderWidget({
         editor,
         internalProps: {
           ...(options
-            ? { options, classes, ...props }
+            ? { options, ...props }
             : {
-                classes,
                 ...props,
                 margin: "none",
                 style: { marginTop: "15px", width: "250px !important" },
@@ -429,7 +334,6 @@ function Rule(props) {
     isShowMetaModelField: showMetaModelField,
     isShowElseMetaModelField: showElseMetaModelField,
   } = value;
-  const classes = useStyles();
   const type = fieldType && fieldType.toLowerCase().replaceAll("-", "_");
   const [isField, setField] = useState(
     isRelationalValue ? isRelationalValue : "none"
@@ -500,6 +404,18 @@ function Rule(props) {
     onChange({ name, value }, editor);
   };
 
+  const radioOptions = React.useMemo(() => {
+    let data = [];
+    if (!["isTrue", "isFalse"].includes(operator)) {
+      data = [
+        ...data,
+        { label: "Self", value: "self" },
+        { label: "Context", value: "context" },
+      ];
+    }
+    return [...data, { label: "None", value: "none" }];
+  }, [operator, parentType, isBPMQuery]);
+
   useEffect(() => {
     setField(isRelationalValue ? isRelationalValue : "none");
     setMetaModal(relatedValueModal || null);
@@ -562,7 +478,12 @@ function Rule(props) {
   }, [value]);
 
   return (
-    <div className={classes.rules}>
+    <Box
+      d="flex"
+      alignItems="flex-end"
+      justifyContent="flex-start"
+      marginBottom={4}
+    >
       <FieldEditor
         getMetaFields={getMetaFields}
         isField={isField}
@@ -600,12 +521,12 @@ function Rule(props) {
             setField(null);
           }}
           value={operator}
-          className={classes.operators}
         />
         {operator &&
           field.type !== "button" &&
           !["isNull", "isNotNull", "isTrue", "isFalse"].includes(operator) && (
-            <RadioGroup
+            <BooleanRadio
+              data={radioOptions}
               aria-label="radioType"
               name="radioType"
               value={isField || "none"}
@@ -653,24 +574,7 @@ function Rule(props) {
                   handleChange("relatedElseValueModal", null);
                 }
               }}
-            >
-              <label className={classes.valueFrom}>Value from</label>
-              <FormControlLabel
-                value="self"
-                control={<Radio className={classes.radio} size="small" />}
-                label={translate("Self")}
-              />
-              <FormControlLabel
-                value="context"
-                control={<Radio className={classes.radio} size="small" />}
-                label={translate("Context")}
-              />
-              <FormControlLabel
-                value="none"
-                control={<Radio className={classes.radio} size="small" />}
-                label={translate("None")}
-              />
-            </RadioGroup>
+            ></BooleanRadio>
           )}
       </React.Fragment>
       {isField &&
@@ -702,11 +606,10 @@ function Rule(props) {
                   }
                 }}
                 value={metaModal}
-                classes={{ root: classes.MuiAutocompleteRoot }}
               />
               {isShowMetaModelField && isField === "context" && (
-                <IconButton
-                  size="small"
+                <Button
+                  size="sm"
                   onClick={() => {
                     setIsShowMetaModelField(false);
                     handleChange("isShowMetaModelField", false);
@@ -718,12 +621,17 @@ function Rule(props) {
                     handleChange("relatedValueModal", metaModal);
                     handleChange("fieldValue", lowerCaseFirstLetter(model));
                   }}
-                  className={classes.iconButton}
+                  mr={2}
                 >
                   <Tooltip title={translate("Remove sub field")}>
-                    <Close color="primary" fontSize="small" />
+                    <MaterialIcon
+                      icon="close"
+                      color="primary"
+                      fontSize={20}
+                      className="pointer"
+                    />
                   </Tooltip>
-                </IconButton>
+                </Button>
               )}
             </React.Fragment>
           )}
@@ -736,10 +644,7 @@ function Rule(props) {
               }
               editor={editor}
               isField={isField}
-              onChange={(
-                { value, fieldNameValue, allField, isShow },
-                editor
-              ) => {
+              onChange={({ value, fieldNameValue, allField, isShow }) => {
                 setNameValue({
                   allField: allField,
                   field: value,
@@ -831,18 +736,23 @@ function Rule(props) {
             />
           )}
           {!isShowMetaModelField && metaModal && isField === "context" && (
-            <IconButton
-              size="small"
+            <Button
+              size="sm"
               onClick={() => {
                 setIsShowMetaModelField(true);
                 handleChange("isShowMetaModelField", true);
               }}
-              className={classes.iconButton}
+              mr={2}
             >
               <Tooltip title={translate("Add sub field")}>
-                <ArrowForward className={classes.icon} fontSize="small" />
+                <MaterialIcon
+                  icon="arrow_forward"
+                  color="primary"
+                  fontSize={20}
+                  className="pointer"
+                />
               </Tooltip>
-            </IconButton>
+            </Button>
           )}
           {["between", "notBetween"].includes(operator) && (
             <React.Fragment>
@@ -873,11 +783,10 @@ function Rule(props) {
                       }
                     }}
                     value={elseMetaModal}
-                    classes={{ root: classes.MuiAutocompleteRoot }}
                   />
                   {isShowElseMetaModelField && isField === "context" && (
-                    <IconButton
-                      size="small"
+                    <Button
+                      size="sm"
                       onClick={() => {
                         setIsShowElseMetaModelField(false);
                         handleChange("isShowElseMetaModelField", false);
@@ -892,12 +801,17 @@ function Rule(props) {
                           lowerCaseFirstLetter(model)
                         );
                       }}
-                      className={classes.iconButton}
+                      mr={2}
                     >
                       <Tooltip title={translate("Remove sub field")}>
-                        <Close color="primary" fontSize="small" />
+                        <MaterialIcon
+                          icon="close"
+                          color="primary"
+                          fontSize={20}
+                          className="pointer"
+                        />
                       </Tooltip>
-                    </IconButton>
+                    </Button>
                   )}
                 </React.Fragment>
               )}
@@ -906,10 +820,7 @@ function Rule(props) {
                   getMetaFields={() => fetchField(elseMetaModal, type)}
                   editor={editor}
                   isField={isField}
-                  onChange={(
-                    { value, fieldNameValue, allField, isShow },
-                    editor
-                  ) => {
+                  onChange={({ value, fieldNameValue, allField, isShow }) => {
                     setElseNameValue({
                       allField: allField,
                       field: value,
@@ -999,18 +910,23 @@ function Rule(props) {
               {!isShowElseMetaModelField &&
                 elseMetaModal &&
                 isField === "context" && (
-                  <IconButton
-                    size="small"
+                  <Button
+                    size="sm"
                     onClick={() => {
                       setIsShowElseMetaModelField(true);
                       handleChange("isShowElseMetaModelField", true);
                     }}
-                    className={classes.iconButton}
+                    mr={2}
                   >
                     <Tooltip title={translate("Add sub field")}>
-                      <ArrowForward className={classes.icon} fontSize="small" />
+                      <MaterialIcon
+                        icon="arrow_forward"
+                        color="primary"
+                        fontSize={20}
+                        className="pointer"
+                      />
                     </Tooltip>
-                  </IconButton>
+                  </Button>
                 )}
             </React.Fragment>
           )}
@@ -1028,7 +944,6 @@ function Rule(props) {
               { name: true, title: "true" },
               { name: false, title: "false" },
             ]}
-            className={classes.operators}
           />
         ) : (
           <RenderWidget
@@ -1042,14 +957,13 @@ function Rule(props) {
               handleChange("relatedValueModal", null);
             }}
             value={{ fieldValue, fieldValue2 }}
-            classes={classes}
             editor={editor}
             field={field}
           />
         ))
       )}
-      <Button Icon={DeleteIcon} onClick={onRemoveRule} />
-    </div>
+      <IconButton Icon="delete" mx={4} onClick={onRemoveRule} />
+    </Box>
   );
 }
 
@@ -1070,7 +984,6 @@ export default function Editor({
   element,
   isAllowButtons = false,
 }) {
-  const classes = useStyles();
   const [isBPM, setBPM] = useState(false);
   const { id, rules = [] } = editor;
   const childEditors = getChildEditors(editor.id);
@@ -1081,19 +994,20 @@ export default function Editor({
   }, [type]);
 
   return (
-    <Paper
-      variant="outlined"
-      className={classNames(classes.paper, isDisable && classes.disabled)}
+    <Box
+      rounded
+      shadow
+      p={3}
+      m={2}
+      style={{ width: "95%" }}
+      className={isDisable && "disabled"}
     >
-      <div className={classNames(classes.rulesGroupHeader)}>
-        <Timeline align="alternate" className={classes.timeline}>
-          <TimelineItem>
-            <TimelineOppositeContent
-              className={classes.timelineOppositeContent}
-            >
+      <Box d="flex">
+        <Box align="alternate">
+          <Box d="flex">
+            <Box d="flex" alignItems="center">
               <Select
                 name="combinator"
-                className={classes.combinator}
                 disableUnderline={true}
                 options={combinator}
                 value={editor.combinator || "and"}
@@ -1101,24 +1015,28 @@ export default function Editor({
                   onChange({ name: "combinator", value }, editor)
                 }
               />
-            </TimelineOppositeContent>
-            <TimelineSeparator>
-              <TimelineDot
-                variant="outlined"
-                style={{ borderColor: "#0275d8" }}
-              />
-              <TimelineConnector className={classes.timelineConnector} />
-            </TimelineSeparator>
-            <TimelineContent>
-              <Button
+            </Box>
+            <Box
+              d="flex"
+              mt={1}
+              me={1}
+              flexDirection="column"
+              alignItems="center"
+              gap={5}
+            >
+              <MaterialIcon icon="trip_origin" fontSize={17} color="primary" />
+              <Box bg="primary" style={{ width: "2px", height: "100%" }} />
+            </Box>
+            <Box p={1}>
+              <IconButton
                 title="Add group"
-                Icon={AddIcon}
+                Icon="add"
                 onClick={() => onAddGroup(id)}
               />
               {isRemoveGroup && (
-                <Button
+                <IconButton
                   title="Remove group"
-                  Icon={DeleteIcon}
+                  Icon="delete"
                   onClick={() => onRemoveGroup(id)}
                 />
               )}
@@ -1139,12 +1057,12 @@ export default function Editor({
                   />
                 </React.Fragment>
               ))}
-              <Button
+              <IconButton
                 title="Add rule"
-                Icon={AddIcon}
+                Icon="add"
                 onClick={() => onAddRule(id)}
               />
-              {childEditors.map((editor, i) => (
+              {childEditors.map((editor) => (
                 <React.Fragment key={editor.id}>
                   <Editor
                     isRemoveGroup={true}
@@ -1163,10 +1081,10 @@ export default function Editor({
                   />
                 </React.Fragment>
               ))}
-            </TimelineContent>
-          </TimelineItem>
-        </Timeline>
-      </div>
-    </Paper>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 }

@@ -1,20 +1,6 @@
 import React from "react";
-import classnames from "classnames";
-import MenuItem from "@material-ui/core/MenuItem";
-import { Select, FormControl, InputLabel } from "@material-ui/core";
-
-import { makeStyles } from "@material-ui/core/styles";
 import { translate } from "../../../utils";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  select: {
-    width: "150px",
-  },
-}));
+import { Box, InputLabel, Select } from "@axelor/ui";
 
 export default function Selection({
   name,
@@ -22,31 +8,31 @@ export default function Selection({
   onChange,
   options,
   title,
-  className,
-  disableUnderline = false,
   ...rest
 }) {
-  const classes = useStyles();
+  const valueOptions = options.find(({ name }) => name === value);
+  const isOperator = name !== "operator";
   return (
-    <FormControl className={classnames(classes.formControl, className)}>
-      <InputLabel>{translate(title)}</InputLabel>
+    <Box
+      d="flex"
+      flexDirection="column"
+      gap={8}
+      me={4}
+      style={{
+        width: "initial",
+        maxWidth: name !== "operator" ? "70px" : "120px",
+      }}
+    >
       <Select
-        disableUnderline={disableUnderline}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        name={name}
-        style={{ marginRight: 8 }}
-        classes={{ select: classnames(classes.select, className) }}
+        clearIcon={!isOperator}
+        placeholder={translate(title)}
+        options={options && Array.isArray(options) ? options : []}
+        optionKey={(op) => op.name}
+        optionLabel={(op) => op.title}
+        value={valueOptions || ""}
+        onChange={(value) => onChange(value?.name)}
         {...rest}
-      >
-        {options &&
-          Array.isArray(options) &&
-          options.map(({ name, title }, index) => (
-            <MenuItem value={name} key={index}>
-              {title}
-            </MenuItem>
-          ))}
-      </Select>
-    </FormControl>
+      />
+    </Box>
   );
 }

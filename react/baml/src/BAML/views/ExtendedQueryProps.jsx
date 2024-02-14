@@ -1,60 +1,20 @@
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Edit, NotInterested } from "@material-ui/icons";
-
 import ExpressionBuilder from "../expression-builder/index";
 import { translate } from "../../utils";
 import { Select, Checkbox, Textbox } from "../components";
 import { getBool } from "../../utils";
 import { getCustomModels, getMetaModels, getModels } from "../../services/api";
-
-const useStyles = makeStyles((theme) => ({
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  newIcon: {
-    color: "#58B423",
-    marginLeft: 5,
-  },
-  new: {
-    cursor: "pointer",
-    marginTop: 18.6,
-    display: "flex",
-  },
-  textbox: {
-    width: "100%",
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  save: {
-    margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
-  },
-}));
+import Tooltip from "../components/tooltip/tooltip";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 export default function ExtendedQueryProps({ element, bpmnModeler }) {
   const [isJson, setIsJson] = useState(false);
@@ -64,7 +24,6 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [model, setModel] = useState(null);
-  const classes = useStyles();
 
   const setProperty = (name, value) => {
     if (!bpmnModeler) return;
@@ -158,10 +117,9 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
           );
         }}
       />
-      <div className={classes.expressionBuilder}>
+      <Box d="flex" justifyContent="center" alignItems="center">
         <Textbox
           element={element}
-          className={classes.textbox}
           readOnly={isReadOnly || !model || model === "" ? true : false}
           bpmnModeler={bpmnModeler}
           entry={{
@@ -187,10 +145,13 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
           }}
         />
         {model && (
-          <div className={classes.new}>
+          <Box d="flex" mt={4} pt={2}>
             <Tooltip title={translate("Enable")} aria-label="enable">
-              <NotInterested
-                className={classes.newIcon}
+              <MaterialIcon
+                icon="code"
+                color={isReadOnly ? "primary" : "secondary"}
+                fontSize={20}
+                className="pointer"
                 onClick={() => {
                   if (isReadOnly) {
                     setAlertMessage(
@@ -202,8 +163,11 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                 }}
               />
             </Tooltip>
-            <Edit
-              className={classes.newIcon}
+            <MaterialIcon
+              icon="edit"
+              fontSize={18}
+              color="primary"
+              className="pointer"
               onClick={() => {
                 handleOpen();
               }}
@@ -251,28 +215,20 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
             {openAlert && (
               <Dialog
                 open={openAlert}
-                onClose={(e, reason) => {
-                  if (reason !== "backdropClick") {
-                    setAlert(false);
-                  }
-                }}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
-                classes={{
-                  paper: classes.dialog,
-                }}
               >
-                <DialogTitle id="alert-dialog-title">
-                  <label className={classes.title}>
+                <DialogHeader onCloseClick={() => setAlert(false)}>
+                  <DialogTitle id="alert-dialog-title">
                     {translate(alertTitle)}
-                  </label>
-                </DialogTitle>
+                  </DialogTitle>
+                </DialogHeader>
                 <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
+                  <Box id="alert-dialog-description">
                     {translate(alertMessage)}
-                  </DialogContentText>
+                  </Box>
                 </DialogContent>
-                <DialogActions>
+                <DialogFooter>
                   <Button
                     onClick={() => {
                       setAlert(false);
@@ -281,8 +237,8 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                       setReadOnly(false);
                       setProperty("expressionValue", undefined);
                     }}
-                    color="primary"
-                    className={classes.save}
+                    variant="primary"
+                    size="sm"
                     autoFocus
                   >
                     {translate("OK")}
@@ -291,17 +247,16 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                     onClick={() => {
                       setAlert(false);
                     }}
-                    color="primary"
-                    className={classes.save}
+                    variant="secondary"
                   >
                     {translate("Cancel")}
                   </Button>
-                </DialogActions>
+                </DialogFooter>
               </Dialog>
             )}
-          </div>
+          </Box>
         )}
-      </div>
+      </Box>
     </div>
   );
 }

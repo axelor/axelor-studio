@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Alert from "@material-ui/lab/Alert";
-import {
-  Drawer,
-  Typography,
-  IconButton,
-  Tooltip,
-  Snackbar,
-} from "@material-ui/core";
 import { Resizable } from "re-resizable";
-
 import Service from "../services/Service";
 import BpmnModeler from "./main/baml-js/lib/Modeler";
 import customControlsModule from "./custom";
@@ -19,61 +10,21 @@ import FieldBuilder from "./views/FieldBuilder";
 import { Textbox, TextField, SelectBox, Checkbox, Select } from "./components";
 import { tabProperty } from "./tabProperty";
 import { download, translate } from "../utils";
-import { Panorama, Publish, GetApp, Save, Code } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
 
 import "./main/baml-js/assets/diagram-js.css";
 import "../BAML/main/baml-font/css/bpmn.css";
 import "./css/bpmn.css";
+import { Alert, Box, Button } from "@axelor/ui";
+import Tooltip from "./components/tooltip/tooltip";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const resizeStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  borderLeft: "solid 1px #ddd",
-  background: "#f0f0f0",
+  borderLeft: " 1px solid var(--bs-border-color)",
+  background: "var(--bs-tertiary-bg)",
 };
-
-const useStyles = makeStyles(() => ({
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    background: "#F8F8F8",
-    width: "100%",
-    position: "absolute",
-    borderLeft: "1px solid #ccc",
-    overflow: "auto",
-    height: "100%",
-    textAlign: "left",
-  },
-  drawerContainer: {
-    padding: 10,
-    height: "100%",
-  },
-  nodeTitle: {
-    fontSize: "120%",
-    fontWeight: "bolder",
-  },
-  propertyLable: {
-    fontSize: 13,
-    fontWeight: "bolder",
-    margin: "10px 0px",
-  },
-  icon: {
-    color: "black",
-    width: "1.2em",
-    height: "1.2em",
-  },
-  btnContainer: {
-    border: "1px solid #dcdc",
-    background: "#F8F8F8",
-  },
-  iconButton: {
-    padding: "5px 15px",
-  },
-}));
 
 const drawerWidth = 380;
 
@@ -345,7 +296,6 @@ function BamlEditor() {
     messageType: null,
     message: null,
   });
-  const classes = useStyles();
 
   const setCSSWidth = (width) => {
     document.documentElement.style.setProperty(
@@ -387,7 +337,7 @@ function BamlEditor() {
           handleSnackbarClick("success", "Operation successful");
         } else {
           handleSnackbarClick(
-            "error",
+            "danger",
             (updatedRes &&
               updatedRes.data &&
               (updatedRes.data.message || updatedRes.data.title)) ||
@@ -410,17 +360,14 @@ function BamlEditor() {
         handleSnackbarClick("success", "Saved Successfully");
       } else {
         handleSnackbarClick(
-          "error",
+          "danger",
           (res && res.data && (res.data.message || res.data.title)) || "Error!"
         );
       }
     });
   };
 
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
+  const handleSnackbarClose = () => {
     setSnackbar({
       open: false,
       messageType: null,
@@ -431,33 +378,33 @@ function BamlEditor() {
   const toolBarButtons = [
     {
       name: "Save",
-      icon: <Save className={classes.icon} />,
+      icon: <MaterialIcon icon="save" color="body" />,
       tooltipText: "Save",
       onClick: onSave,
     },
     {
       name: "Image",
-      icon: <Panorama className={classes.icon} />,
+      icon: <MaterialIcon icon="image" color="body" />,
       tooltipText: "Download SVG",
       onClick: () => saveSVG(bpmnModeler),
     },
     {
+      name: "GenerateCode",
+      icon: <MaterialIcon icon="code" color="body" />,
+      tooltipText: "Generate code",
+      onClick: generateCode,
+    },
+    {
       name: "DownloadXml",
-      icon: <GetApp className={classes.icon} />,
+      icon: <MaterialIcon icon="download" color="body" />,
       tooltipText: "Download",
       onClick: () => downloadXml(bpmnModeler),
     },
     {
       name: "UploadXml",
-      icon: <Publish className={classes.icon} />,
+      icon: <MaterialIcon icon="upload" color="body" />,
       tooltipText: "Upload",
       onClick: uploadXml,
-    },
-    {
-      name: "GenerateCode",
-      icon: <Code className={classes.icon} />,
-      tooltipText: "Generate code",
-      onClick: generateCode,
     },
   ];
 
@@ -585,7 +532,28 @@ function BamlEditor() {
       messageType,
       message,
     });
+    setTimeout(() => {
+      handleSnackbarClose();
+    }, 3000);
   };
+
+  const renderItem = (btn) => (
+    <Box key={btn.name} bg="body-tertiary">
+      <Tooltip
+        title={translate(btn.tooltipText)}
+        children={
+          <Button
+            d="flex"
+            justifyContent="center"
+            alignItems="center"
+            onClick={btn.onClick}
+          >
+            {btn.icon}
+          </Button>
+        }
+      />
+    </Box>
+  );
 
   useEffect(() => {
     bpmnModeler = new BpmnModeler({
@@ -618,41 +586,46 @@ function BamlEditor() {
   }, []);
 
   return (
-    <div id="container">
+    <Box bg="body" id="container">
       <div id="bpmncontainer">
         <div id="propview"></div>
         <div id="bpmnview">
-          <div className="toolbar-buttons">
-            {toolBarButtons.map((btn) => (
-              <div key={btn.name} className={classes.btnContainer}>
-                {btn.name === "UploadXml" && (
-                  <input
-                    id="inputFile"
-                    type="file"
-                    name="file"
-                    onChange={uploadFile}
-                    style={{ display: "none" }}
-                  />
-                )}
-                <Tooltip
-                  title={translate(btn.tooltipText)}
-                  children={
-                    <IconButton
-                      fontSize="large"
-                      onClick={btn.onClick}
-                      className={classes.iconButton}
-                    >
-                      {btn.icon}
-                    </IconButton>
-                  }
-                />
-              </div>
-            ))}
-          </div>
+          <Box
+            d="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            ps={3}
+            p={1}
+            bg="body-tertiary"
+            pos="relative"
+            borderBottom
+          >
+            <Box d="flex">
+              {toolBarButtons.slice(0, 3).map((btn) => renderItem(btn))}
+            </Box>
+            <Box d="flex">
+              {toolBarButtons.slice(3, 5).map((btn) => renderItem(btn))}
+              <input
+                id="inputFile"
+                type="file"
+                name="file"
+                onChange={uploadFile}
+                style={{ display: "none" }}
+              />
+            </Box>
+          </Box>
         </div>
       </div>
       <div>
-        <div
+        <Box
+          bg="body-tertiary"
+          borderEnd
+          borderTop
+          borderStart
+          roundedTop
+          userSelect="none"
+          px={3}
+          py={2}
           className="bpmn-property-toggle"
           onClick={() => {
             setWidth((width) => (width === 0 ? 380 : 0));
@@ -660,7 +633,7 @@ function BamlEditor() {
           }}
         >
           {translate("Properties panel")}
-        </div>
+        </Box>
         <Resizable
           style={resizeStyle}
           size={{ width, height }}
@@ -671,50 +644,69 @@ function BamlEditor() {
           }}
           maxWidth={window.innerWidth - 150}
         >
-          <Drawer
+          <Box
             variant="persistent"
             anchor="right"
             open={drawerOpen}
             style={{
               width: drawerWidth,
             }}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
+            w={100}
+            bg="body-tertiary"
+            h={100}
+            flexDirection="column"
+            d="flex"
+            textAlign="start"
+            borderLeft
+            overflow="auto"
             id="drawer"
           >
-            <div className={classes.drawerContainer}>
-              <Typography className={classes.nodeTitle}>
+            <Box
+              bg="body-tertiary"
+              borderEnd
+              borderTop
+              borderStart
+              roundedTop
+              userSelect="none"
+              px={3}
+              py={2}
+              className="bpmn-property-toggle"
+              onClick={() => {
+                setWidth((width) => (width === 0 ? 380 : 0));
+                setCSSWidth(width === 0 ? 380 : 0);
+              }}
+            >
+              {translate("Properties panel")}
+            </Box>
+            <Box p={3} h={100}>
+              <Box as="h6" fontWeight="bolder">
                 {element && element.id}
-              </Typography>
-              <Typography className={classes.propertyLable}>
+              </Box>
+              <Box as="h6" fontSize={6} fontWeight="bold">
                 {translate("Properties")}
-              </Typography>
+              </Box>
               {getProperties().map((t, index) => (
                 <div key={index}>{renderComponent(t)}</div>
               ))}
-            </div>
-          </Drawer>
+            </Box>
+          </Box>
         </Resizable>
       </div>
       {openSnackbar.open && (
-        <Snackbar
-          open={openSnackbar.open}
-          autoHideDuration={2000}
-          onClose={handleSnackbarClose}
-        >
-          <Alert
-            elevation={6}
-            variant="filled"
-            onClose={handleSnackbarClose}
-            className="snackbarAlert"
-            severity={openSnackbar.messageType}
-          >
-            {translate(openSnackbar.message)}
-          </Alert>
-        </Snackbar>
+        <Alert variant={openSnackbar.messageType} className="snackbarAlert">
+          <Box alignItems="center" d="flex">
+            <Box>
+              <MaterialIcon
+                icon={
+                  openSnackbar.messageType === "danger" ? "error" : "beenhere"
+                }
+              />
+            </Box>
+            <Box ms={2}>{translate(openSnackbar.message)}</Box>
+          </Box>
+        </Alert>
       )}
-    </div>
+    </Box>
   );
 }
 
