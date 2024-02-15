@@ -48,21 +48,27 @@ public class ClearLogJob implements Job {
       List<WkfInstance> wkfInstanceList;
       Set<Long> processedIdSet = new HashSet<>();
       int offset = 0;
-      while (!(wkfInstanceList =
-              wkfInstanceRepo
-                  .all()
-                  .filter(
-                      "self.logText IS NOT NULL AND self.logText != '' AND self.id NOT IN (?1)",
-                      processedIdSet)
-                  .order("id")
-                  .fetch(FETCH_LIMIT, offset))
-          .isEmpty()) {
+      wkfInstanceList =
+          wkfInstanceRepo
+              .all()
+              .filter("self.logText IS NOT NULL AND self.logText != ''")
+              .order("id")
+              .fetch(FETCH_LIMIT, offset);
+      while (!wkfInstanceList.isEmpty()) {
         for (WkfInstance instance : wkfInstanceList) {
           processedIdSet.add(instance.getId());
           logService.clearLog(instance.getInstanceId());
           offset++;
         }
         JPA.clear();
+        wkfInstanceList =
+            wkfInstanceRepo
+                .all()
+                .filter(
+                    "self.logText IS NOT NULL AND self.logText != '' AND self.id NOT IN (?1)",
+                    processedIdSet)
+                .order("id")
+                .fetch(FETCH_LIMIT, offset);
       }
 
     } catch (Exception e) {
