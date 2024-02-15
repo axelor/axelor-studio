@@ -22,7 +22,9 @@ import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.google.inject.Inject;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -44,13 +46,29 @@ public class ClearLogJob implements Job {
   public void execute(JobExecutionContext context) throws JobExecutionException {
     try {
       List<WkfInstance> wkfInstanceList;
+      Set<Long> processedIdSet = new HashSet<>();
       int offset = 0;
-      while (!(wkfInstanceList = wkfInstanceRepo.all().fetch(FETCH_LIMIT, offset)).isEmpty()) {
+      wkfInstanceList =
+          wkfInstanceRepo
+              .all()
+              .filter("self.logText IS NOT NULL AND self.logText != ''")
+              .order("id")
+              .fetch(FETCH_LIMIT, offset);
+      while (!wkfInstanceList.isEmpty()) {
         for (WkfInstance instance : wkfInstanceList) {
+          processedIdSet.add(instance.getId());
           logService.clearLog(instance.getInstanceId());
           offset++;
         }
         JPA.clear();
+        wkfInstanceList =
+            wkfInstanceRepo
+                .all()
+                .filter(
+                    "self.logText IS NOT NULL AND self.logText != '' AND self.id NOT IN (?1)",
+                    processedIdSet)
+                .order("id")
+                .fetch(FETCH_LIMIT, offset);
       }
 
     } catch (Exception e) {
