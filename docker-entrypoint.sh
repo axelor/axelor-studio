@@ -165,7 +165,7 @@ check_tomcat_app_available() {
     sleep 20
   done
 
-  if [[ counter -gt 30 ]]; then
+  if [ "$counter" -gt 30 ]; then
     echo
     echo "ERROR: "
     echo "  Unable to reach instance. (code: ${code})"
