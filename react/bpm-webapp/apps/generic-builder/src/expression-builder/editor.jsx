@@ -497,7 +497,7 @@ const Rule = React.memo(function Rule(props) {
       if (isBPMN && !isBPMQuery(parentType)) {
         const obj = {
           title: translate('Built In Variables'),
-          name: 'Built In Variables',
+          name: translate('Built In Variables'),
         };
         data = [obj, ...(data || [])];
       }

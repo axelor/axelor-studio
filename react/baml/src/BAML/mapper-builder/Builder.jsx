@@ -750,7 +750,7 @@ function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
                           data={builderFields}
                           onSubmit={(data) => handleAdd(data)}
                           icon={<AddIcon />}
-                          buttonTitle={"Add fields"}
+                          buttonTitle={translate("Add fields")}
                           iconButton={true}
                           buttonClassName={classes.modelFieldSelection}
                           iconButtonClassName={classes.addModelFieldIcon}
