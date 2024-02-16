@@ -1,5 +1,5 @@
 ---
-title: Remove x-translate from the name field of App model
+title: "App builder: Remove x-translate from the name field of App model"
 type: change
 description: |
   This change imply to verify all the cards and forms views of your Axelor apps 
