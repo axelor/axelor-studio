@@ -1,3 +1,23 @@
+## 2.0.1 (2024-02-16)
+
+#### Change
+
+* App builder: Remove x-translate from the name field of App model
+
+  <details>
+  
+  This change imply to verify all the cards and forms views of your Axelor apps 
+  (all the models having a o2o relation with `com.axelor.studio.db.App`).
+  
+  </details>
+
+#### Fix
+
+* BPM : Order and filter records when clearing the process instance logs
+* App builder: Fix issue when importing apps with app loader
+* BPM: fix issue with Expression/Script builder generates a wrong condition with the integer selection field
+* App builder: All module selected internal server error
+
 ## 2.0.0 (2024-01-25)
 
 #### Feature
