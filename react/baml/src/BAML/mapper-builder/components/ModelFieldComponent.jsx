@@ -87,14 +87,7 @@ function ModelFieldComponent(props) {
       </Grid>
       <div>
         {fields && showSubField && (
-          <FieldPopover
-            data={fields}
-            iconButton={true}
-            onSubmit={(data) => handleAdd(data)}
-            icon={<AddIcon />}
-            buttonTitle={translate("Add fields")}
-            iconButtonClassName={classes.addFieldButton}
-          />
+          <FieldPopover data={fields} onSubmit={(data) => handleAdd(data)} />
         )}
       </div>
     </div>
