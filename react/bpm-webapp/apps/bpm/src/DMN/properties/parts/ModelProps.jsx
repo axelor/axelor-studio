@@ -144,7 +144,7 @@ export default function ModelProps({ element, label }) {
       <Box d="flex" flexDirection="column">
         <Divider className={classes.divider} />
         <Box color="body" className={classes.groupLabel}>
-          {label}
+          {translate(label)}
         </Box>
         <InputLabel color="body" className={classes.label}>
           {translate("Model")}

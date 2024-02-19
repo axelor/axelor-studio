@@ -623,7 +623,7 @@ function Builder({
         id={label}
       />
       <InputLabel color="body" htmlFor={label} className={classes.switchText}>
-        {label}
+        {translate(label)}
       </InputLabel>
     </Box>
   );

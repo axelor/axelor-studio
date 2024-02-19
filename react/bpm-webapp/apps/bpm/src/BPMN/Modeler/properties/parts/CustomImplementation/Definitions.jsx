@@ -552,7 +552,7 @@ export default function Definition({
           className={classes.save}
           onClick={openBPMState}
         >
-          {translate("BPM state")}
+          {translate("BPM State")}
         </Button>
         {statusSelect === 2 && (
           <Button

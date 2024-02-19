@@ -11,6 +11,7 @@ import Description from "./Description";
 import { getTranslations } from "../../../services/api";
 import { getBool } from "../../../utils";
 import { InputLabel, Input } from "@axelor/ui";
+import { translate } from "../../../utils";
 
 const useStyles = makeStyles({
   root: {
@@ -235,7 +236,7 @@ export default function Textbox({
     <div className={classnames(classes.root, className)} ref={containerRef}>
       {showLabel && (
         <InputLabel className={classes.label} color="body">
-          {label}
+          {translate(label)}
         </InputLabel>
       )}
       {entry.id === "script" ? (

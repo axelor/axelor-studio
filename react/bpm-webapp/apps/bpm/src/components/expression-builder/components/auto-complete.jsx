@@ -29,6 +29,7 @@ export default function AutoComplete(props) {
     readOnly = false,
     disabled = false,
     disableClearable = false,
+    placeholder = "",
     ...other
   } = props;
 
@@ -125,7 +126,7 @@ export default function AutoComplete(props) {
       return [
         {
           key: "loading",
-          title: "Loading...",
+          title: translate("Loading..."),
         },
       ];
     }
@@ -133,7 +134,7 @@ export default function AutoComplete(props) {
       return [
         {
           key: "no-options",
-          title: "No options",
+          title: translate("No options"),
         },
       ];
     }
@@ -158,6 +159,7 @@ export default function AutoComplete(props) {
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
+        placeholder={translate(placeholder || title)}
         value={
           selectedValue
             ? isMulti

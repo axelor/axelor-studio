@@ -20,7 +20,7 @@ export default function AutoComplete(props) {
     optionLabelKey = 'title',
     optionValueKey = 'id',
     isMulti = false,
-    title,
+    title = '',
     fetchAPI,
     inline,
     InputProps,
@@ -33,6 +33,7 @@ export default function AutoComplete(props) {
     isProcessContext = false,
     renderValue,
     disableClearable,
+    placeholder = '',
     ...other
   } = props;
 
@@ -143,7 +144,7 @@ export default function AutoComplete(props) {
       return [
         {
           key: 'loading',
-          title: 'Loading...',
+          title: translate('Loading...'),
         },
       ];
     }
@@ -151,7 +152,7 @@ export default function AutoComplete(props) {
       return [
         {
           key: 'no-options',
-          title: 'No options',
+          title: translate('No options'),
         },
       ];
     }
@@ -209,7 +210,7 @@ export default function AutoComplete(props) {
           renderValue={renderValue}
           onInputChange={(value) => delayChange(value)}
           removeOnDelete
-          placeholder={title}
+          placeholder={translate(placeholder || title)}
           clearIcon={!disableClearable}
           {...(isMulti ? { closeOnSelect: false } : {})}
           {...other}

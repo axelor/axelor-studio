@@ -749,11 +749,6 @@ function Builder({ params, onSave, handleClose, open, bpmnModeler }) {
                         <FieldPopover
                           data={builderFields}
                           onSubmit={(data) => handleAdd(data)}
-                          icon={<AddIcon />}
-                          buttonTitle={"Add fields"}
-                          iconButton={true}
-                          buttonClassName={classes.modelFieldSelection}
-                          iconButtonClassName={classes.addModelFieldIcon}
                           open={manageField}
                           onClose={handleCloseManageField}
                         />

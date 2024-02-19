@@ -18,6 +18,14 @@ function translate(str) {
   return str;
 }
 
+export const capitalizeFirst = (str = "") => {
+  if (!str || typeof str !== "string") return;
+  const string = str.replace(/([A-Z])/g, " $1");
+  const result =
+    string && string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  return result;
+};
+
 function getAxelorScope() {
   return window.top?.axelor;
 }
@@ -47,7 +55,7 @@ function sortBy(array = [], key) {
   });
 }
 
-export function filesToItems(files, maxFiles) {
+export function filesToItems(files, maxFiluitlses) {
   const CHUNK_SIZE = 512 * 1024;
   return Array.prototype.slice
     .call(files)

@@ -270,7 +270,7 @@ export default function ConnectorBuilder({
                       translate("Value"),
                     ],
                     modelProperties: ["key", "expression", "value"],
-                    addLabel: "Add payload",
+                    addLabel: translate("Add payload"),
                     getElements: function () {
                       return payload;
                     },

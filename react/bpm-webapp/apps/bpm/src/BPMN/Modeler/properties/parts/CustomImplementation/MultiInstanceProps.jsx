@@ -303,7 +303,7 @@ export default function MultiInstanceLoopCharacteristics({
           {index > 0 && <Divider className={classes.divider} />}
         </React.Fragment>
         <Box color="body" className={classes.groupLabel}>
-          {label}
+          {translate(label)}
         </Box>
         {!collection && !loopCardinality && (
           <InputLabel color="body" className={classes.typography}>

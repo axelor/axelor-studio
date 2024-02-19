@@ -1111,7 +1111,7 @@ export default function ProcessConfiguration({
       )}
       <Dialog centered open={alert?.open} backdrop>
         <DialogHeader onCloseClick={() => setAlert({ open: false })}>
-          <h3>{translate(alert?.title || "Warning")}</h3>
+          <h3>{translate(alert?.title || translate("Warning"))}</h3>
         </DialogHeader>
         <DialogContent className={classes.dialogContent}>
           <Box as="p" color="body" fontSize={5}>

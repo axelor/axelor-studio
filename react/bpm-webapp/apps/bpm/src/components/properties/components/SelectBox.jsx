@@ -82,7 +82,7 @@ export default function SelectBox({ entry, element }) {
         {translate(label)}
       </InputLabel>
       <Select
-        placeholder="Select a value"
+        placeholder={translate("Select a value")}
         options={options}
         onChange={handleChange}
         optionKey={(x) => x.value}

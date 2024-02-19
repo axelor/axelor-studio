@@ -36,12 +36,13 @@ export default function SelectComponent({
   defaultValue,
   isTranslated = true,
   skipFilter = false,
-  placeholder,
+  placeholder = "",
   validate,
   disabled = false,
   disableClearable = false,
   description,
   handleRemove,
+  title = "",
   ...rest
 }) {
   const [open, setOpen] = useState(false);
@@ -56,7 +57,7 @@ export default function SelectComponent({
       return [
         {
           key: "loading",
-          title: "Loading...",
+          title: translate("Loading..."),
         },
       ];
     }
@@ -64,7 +65,7 @@ export default function SelectComponent({
       return [
         {
           key: "no-options",
-          title: "No options",
+          title: translate("No options"),
         },
       ];
     }
@@ -210,7 +211,7 @@ export default function SelectComponent({
           className={className}
           options={loading ? [] : options}
           customOptions={customOptions}
-          placeholder={placeholder}
+          placeholder={translate(placeholder || title)}
           multiple={multiple}
           value={open ? (multiple ? oldValue ?? [] : "") : oldValue ?? null}
           disabled={disabled}

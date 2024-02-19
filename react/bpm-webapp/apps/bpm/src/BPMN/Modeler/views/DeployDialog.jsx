@@ -152,7 +152,7 @@ export default function DeployDialog({
           id={label}
         />
         <InputLabel htmlFor={label} color="body" mb={0}>
-          {label}
+          {translate(label)}
         </InputLabel>
       </Box>
     );

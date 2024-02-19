@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Alert } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import { translate } from "../utils";
 
 const ICON = {
   danger: "error",
@@ -59,7 +60,7 @@ export default function AlertComponent({
         style={{ cursor: "pointer" }}
       >
         <Box fontSize={5} flex={1}>
-          {message}
+          {translate(message)}
         </Box>
         <MaterialIcon fontSize={20} icon="close" onClick={onClose} />
       </Box>

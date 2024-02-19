@@ -16,12 +16,19 @@ import {
   getRoles,
   getMetaFields,
 } from "../../../../../services/api";
-import { translate, getBool, dashToUnderScore } from "../../../../../utils";
+import {
+  translate,
+  getBool,
+  dashToUnderScore,
+  capitalizeFirst,
+} from "../../../../../utils";
 import {
   BOOL_ATTRIBUTES,
   STR_ATTRIBUTES,
   NUM_ATTRIBUTES,
   ALL_ATTRIBUTES,
+  FIELD_ATTRS,
+  BOOLEAN_OPTIONS,
 } from "./constants";
 import Ids from "ids";
 import {
@@ -120,6 +127,34 @@ const useStyles = makeStyles({
     minWidth: 150,
   },
 });
+
+const attributes = Object.fromEntries(
+  Object.entries(FIELD_ATTRS).map(([key, value]) => [
+    key,
+    value.map((name = "") => ({
+      name,
+      title: translate(capitalizeFirst(name)),
+    })),
+  ])
+);
+
+const getAttributes = (itemName) => {
+  const { type, name, title, label, relationship } = itemName;
+  if (!name && !title && !label) return;
+  if (name === "self") {
+    return attributes["self"];
+  } else if (
+    ["one_to_many", "onetomany", "many_to_many", "manytomany"].includes(
+      dashToUnderScore(type || relationship)
+    )
+  ) {
+    return attributes["relational"];
+  } else if (attributes[type]) {
+    return attributes[type];
+  } else {
+    return attributes["others"];
+  }
+};
 
 export default function ViewAttributePanel({
   handleAdd,
@@ -511,90 +546,6 @@ export default function ViewAttributePanel({
     setRow(createData(values));
   }, [element]);
 
-  const attributes = {
-    panel: [
-      "hidden",
-      "hideIf",
-      "readonly",
-      "readonlyIf",
-      "collapse",
-      "collapseIf",
-      "css",
-      "icon",
-      "title",
-      "active",
-    ],
-    button: [
-      "hidden",
-      "hideIf",
-      "readonly",
-      "readonlyIf",
-      "prompt",
-      "css",
-      "icon",
-      "title",
-    ],
-    relational: [
-      "hidden",
-      "hideIf",
-      "required",
-      "requiredIf",
-      "readonly",
-      "readonlyIf",
-      "css",
-      "title",
-      "domain",
-      "url:set",
-      "value:set",
-      "value:add",
-      "value:del",
-    ],
-    self: ["readonly", "readonlyIf"],
-    others: [
-      "hidden",
-      "hideIf",
-      "requiredIf",
-      "readonly",
-      "required",
-      "readonlyIf",
-      "precision",
-      "scale",
-      "prompt",
-      "css",
-      "icon",
-      "selection-in",
-      "title",
-      "active",
-      "domain",
-      "refresh",
-      "url",
-      "value",
-    ],
-  };
-
-  const relationalList = [
-    "one_to_many",
-    "onetomany",
-    "many_to_many",
-    "manytomany",
-  ];
-
-  const getAttributes = (itemName) => {
-    const { type, name, title, label, relationship } = itemName;
-    if (!name && !title && !label) return;
-    if (name === "self") {
-      return attributes["self"];
-    } else if (
-      relationalList.includes(dashToUnderScore(type || relationship))
-    ) {
-      return attributes["relational"];
-    } else if (attributes[type]) {
-      return attributes[type];
-    } else {
-      return attributes["others"];
-    }
-  };
-
   const fetchItems = useCallback(async (data, val) => {
     const options = await getItems(
       val.view && val.view.name,
@@ -605,6 +556,14 @@ export default function ViewAttributePanel({
       (r) => r["title"] !== null || (r.type === "panel" && r["name"] !== null)
     );
   }, []);
+
+  const getSelectedAttribute = (item) => {
+    const { attributeName: name = "" } = item || {};
+    return {
+      name,
+      title: translate(capitalizeFirst(name)),
+    };
+  };
 
   return (
     <div>
@@ -680,7 +639,9 @@ export default function ViewAttributePanel({
                                   validate={(values) => {
                                     if (!values.model) {
                                       return {
-                                        model: "Must provide a value",
+                                        model: translate(
+                                          "Must provide a value"
+                                        ),
                                       };
                                     }
                                   }}
@@ -752,7 +713,9 @@ export default function ViewAttributePanel({
                                     validate={(values) => {
                                       if (!values.relatedField) {
                                         return {
-                                          relatedField: "Must provide a value",
+                                          relatedField: translate(
+                                            "Must provide a value"
+                                          ),
                                         };
                                       }
                                     }}
@@ -945,15 +908,19 @@ export default function ViewAttributePanel({
                                                   item?.itemName &&
                                                   getAttributes(item.itemName)
                                                 }
-                                                update={(value) =>
+                                                update={({
+                                                  name = "",
+                                                  title = "",
+                                                }) => {
                                                   handleItems(
-                                                    value,
+                                                    name,
                                                     "attributeName",
                                                     undefined,
                                                     index,
-                                                    key
-                                                  )
-                                                }
+                                                    key,
+                                                    title
+                                                  );
+                                                }}
                                                 name="attributeName"
                                                 validate={(values) => {
                                                   if (!values.attributeName) {
@@ -965,9 +932,16 @@ export default function ViewAttributePanel({
                                                   }
                                                 }}
                                                 value={
-                                                  item?.attributeName || null
+                                                  getSelectedAttribute(item)
+                                                    ?.title ??
+                                                  getSelectedAttribute(item)
+                                                    ?.name ??
+                                                  null
                                                 }
                                                 label="Attribute"
+                                                optionLabel="title"
+                                                optionLabelSecondary="id"
+                                                disableClearable
                                               />
                                             </TableCell>
                                             <TableCell
@@ -980,11 +954,11 @@ export default function ViewAttributePanel({
                                                   <Select
                                                     className={classes.select}
                                                     isLabel={false}
-                                                    options={["true", "false"]}
+                                                    options={BOOLEAN_OPTIONS}
                                                     disableClearable={true}
                                                     update={(value) => {
                                                       handleItems(
-                                                        value,
+                                                        value?.name,
                                                         "attributeValue",
                                                         undefined,
                                                         index,
@@ -993,10 +967,15 @@ export default function ViewAttributePanel({
                                                     }}
                                                     name="attributeValue"
                                                     value={
-                                                      item.attributeValue ||
-                                                      "false"
+                                                      BOOLEAN_OPTIONS.find(
+                                                        (op) =>
+                                                          op.name ===
+                                                          item.attributeValue
+                                                      ) || BOOLEAN_OPTIONS[1]
                                                     }
                                                     label="Attribute value"
+                                                    optionLabel="title"
+                                                    optionLabelSecondary="id"
                                                   />
                                                 )}
                                               {item.attributeName &&

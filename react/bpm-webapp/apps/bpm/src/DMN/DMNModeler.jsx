@@ -358,11 +358,8 @@ function DMNModeler() {
       const latestDecision = definitions?.drgElement?.find(
         (d) => d.id === decision?.id
       );
-      const {
-        input: inputs,
-        output: outputs,
-        rule: elementRules,
-      } = latestDecision?.decisionLogic || {};
+      const { input: inputs, output: outputs, rule: elementRules } =
+        latestDecision?.decisionLogic || {};
       const { col, row } = cell || {};
       let column = inputs?.find((i) => i.id === col.id);
       const rules =
@@ -581,8 +578,9 @@ function DMNModeler() {
             });
           });
           eventBus.on("shape.removed", () => {
-            const elementRegistry =
-              dmnModeler._viewers.drd.get("elementRegistry");
+            const elementRegistry = dmnModeler._viewers.drd.get(
+              "elementRegistry"
+            );
             const rootElement = elementRegistry.get(dmnModeler._activeView.id);
             if (!rootElement) return;
             updateTabs({
@@ -805,7 +803,11 @@ function DMNModeler() {
       iconProps: { icon: "download" },
       onClick: exportDiagram,
     },
-    { key: "export", text: translate("Export"), onClick: exportExcel },
+    {
+      key: "export",
+      text: translate("Export"),
+      onClick: exportExcel,
+    },
     {
       key: "import",
       text: translate("Import"),
@@ -1010,7 +1012,12 @@ function DMNModeler() {
                   </InputLabel>
                 )}
                 <NavTabs
-                  items={[{ title: "General", id: "general" }]}
+                  items={[
+                    {
+                      title: translate("General"),
+                      id: "general",
+                    },
+                  ]}
                   onItemClick={handleChange}
                   active={tabId}
                 />

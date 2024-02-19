@@ -307,7 +307,7 @@ function DataTable(props) {
             color="body"
             size="lg"
             className={classes.searchField}
-            placeholder="Filter field"
+            placeholder={translate("Filter field")}
             style={{ margin: '0 8px', minWidth: 250 }}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}

@@ -498,6 +498,7 @@ const Rule = React.memo(function Rule(props) {
         const obj = {
           title: translate('Built In Variables'),
           name: 'Built In Variables',
+          type: 'variable',
         };
         data = [obj, ...(data || [])];
       }

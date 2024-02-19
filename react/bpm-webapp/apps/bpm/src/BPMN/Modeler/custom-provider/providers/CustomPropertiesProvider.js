@@ -45,6 +45,7 @@ import externalTaskConfiguration from "bpmn-js-properties-panel/lib/provider/cam
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
+import { translate } from "../../../../utils";
 
 // helpers
 
@@ -112,8 +113,8 @@ let getListenerLabel = function (param, translate) {
   return "";
 };
 
-let PROCESS_KEY_HINT = "This maps to the process definition key.";
-let TASK_KEY_HINT = "This maps to the task definition key.";
+let PROCESS_KEY_HINT = translate("This maps to the process definition key.");
+let TASK_KEY_HINT = translate("This maps to the task definition key.");
 
 function createGeneralTabGroups(
   element,

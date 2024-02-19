@@ -22,6 +22,7 @@ export default function Selection({
   title,
   className,
   disableUnderline = false,
+  placeholder,
   ...rest
 }) {
   const classes = useStyles();
@@ -39,11 +40,11 @@ export default function Selection({
         options={options}
         customOptions={
           options?.length === 0
-            ? [{ title: 'No options', key: 'no options' }]
+            ? [{ title: translate('No options'), key: 'no options' }]
             : []
         }
-        placeholder={translate(title) || ''}
-        optionLabel={option => option.title}
+        placeholder={translate(placeholder || title) || ''}
+        optionLabel={option => translate(option.title)}
         optionKey={option => option.name}
         optionName={option => option.name}
         style={{ marginRight: 8, minWidth: 150 }}
