@@ -1,0 +1,7 @@
+.bjs-container {
+  height: calc(100% - 45px) !important;
+}
+
+.bts-toggle-mode {
+  border-radius: 8px;
+}

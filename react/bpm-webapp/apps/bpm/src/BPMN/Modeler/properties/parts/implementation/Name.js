@@ -19,9 +19,10 @@ export default function Name(element, options, translate, bpmnModeler) {
     label = options.label || translate("Name"),
     modelProperty = options.modelProperty || "name";
 
-  const get = function () {
-    let bo = getBusinessObject(element);
-    return { [modelProperty]: bo && bo.get([modelProperty]) };
+  const get = () => {
+    const bo = getBusinessObject(element);
+    if (!bo || !modelProperty) return null;
+    return { [modelProperty]: bo.get(modelProperty) };
   };
 
   const set = function (element, values, readOnly, translations) {

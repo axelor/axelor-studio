@@ -113,8 +113,9 @@ export const getFlowElements = (process, ele = []) => {
         });
       } else if (SUBPROCESS_TYPES.includes(getType(element))) {
         if (SUBPROCESS_TYPES.includes(getType(element))) {
-          const { isLoop, isSequential } =
-            ensureMultiInstanceSupported(element);
+          const { isLoop, isSequential } = ensureMultiInstanceSupported(
+            element
+          );
           elements.push({
             id: element.id,
             name: element.name || element.id,
@@ -195,27 +196,18 @@ export function isTabVisible(tab, element) {
 
 export function renderTabs(tabs = [], element) {
   const type = element.$type || element.type;
-  const subType =
-    element.businessObject &&
-    element.businessObject.eventDefinitions &&
-    element.businessObject.eventDefinitions[0].$type;
+  const subType = element?.businessObject?.eventDefinitions?.[0]?.$type;
+
   const bo =
     tabProperty.find((tab) => tab.type === type && tab.subType === subType) ||
     {};
+  const objectTabs = bo.tabs || [];
 
-  const objectTabs = bo && bo.tabs;
-  let filteredTabs = [];
-  tabs &&
-    tabs.forEach((tab) => {
-      if (!tab) return;
-      if (objectTabs && objectTabs.includes(tab.id)) {
-        const isEnable = isTabVisible(tab, element);
-        if (isEnable) {
-          filteredTabs.push(tab);
-        }
-      }
-    });
-  return filteredTabs;
+  return tabs.filter((tab) => {
+    if (!tab) return false;
+    const isEnable = isTabVisible(tab, element);
+    return objectTabs.includes(tab.id) && isEnable;
+  });
 }
 
 export function getTabs(bpmnModeler, element, setDummyProperty) {

@@ -21,7 +21,7 @@ code {
   background: var(--bs-border-color);
   background-clip: padding-box;
   border: 0;
-  border-radius: 4px;
+  border-radius: calc((6px / 3) * 2);
   box-shadow: none;
   min-height: 50px;
 }
