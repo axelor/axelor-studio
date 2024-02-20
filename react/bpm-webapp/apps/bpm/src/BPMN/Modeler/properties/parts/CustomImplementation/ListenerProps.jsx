@@ -647,7 +647,10 @@ export default function ListenerProps({
                     }}
                   ></i>
                 </Tooltip>
-                {(selectedExecutionEntity === 0 || selectedExecutionEntity) && (
+                {(selectedExecutionEntity === 0 ||
+                  selectedExecutionEntity ||
+                  selectedTaskEntity ||
+                  selectedTaskEntity === 0) && (
                   <>
                     <MaterialIcon
                       icon="edit"
