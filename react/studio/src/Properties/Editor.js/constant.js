@@ -2,7 +2,7 @@ export const CUSTOM_LANGUAGES = {
     JPQL: "jpql",
     GROOVY: "groovy",
   };
-  
+
   export const JPQL_KEYWORDS = [
     "SELECT",
     "FROM",
@@ -34,7 +34,7 @@ export const CUSTOM_LANGUAGES = {
     "self",
     "as",
   ];
-  
+
   export const JPQL_FUNCTIONS = [
     "COUNT",
     "SUM",
@@ -57,7 +57,7 @@ export const CUSTOM_LANGUAGES = {
     "DESC",
     "PARAMETER",
   ];
-  
+
   export const GROOVY_KEYWORDS = [
     "abstract",
     "as",
@@ -117,7 +117,7 @@ export const CUSTOM_LANGUAGES = {
     "volatile",
     "while",
   ];
-  
+
   export const GROOVY_FUNCTIONS = [
     "addAll",
     "asImmutable",
@@ -169,7 +169,7 @@ export const CUSTOM_LANGUAGES = {
     "withEagerDefault",
     "withLazyDefault",
   ];
-  
+
   export const COMMON_TOKENIZER = [
     [/\b\d+\b/, "number"],
     [/".*"/, "string"],
@@ -217,7 +217,7 @@ export const CUSTOM_LANGUAGES = {
       },
     },
   };
-  
+
   export const GROOVY_CONFIG = {
     comments: {
       lineComment: "//",
@@ -242,4 +242,3 @@ export const CUSTOM_LANGUAGES = {
     { token: "custom-special", foreground: "#ffa20c" },
     { token: "identifier", foreground: "800080" },
   ];
-  

@@ -9,7 +9,7 @@ import {
     STRING_TOKENIZER,
     THEME_RULES,
   } from "./constant";
-  
+
   const useLanguageConfig = (languageId) => {
     const getSuggestions = (KEYWORDS, FUNCTIONS, range) => {
       return [
@@ -48,7 +48,7 @@ import {
         languageConfig: JPQL_CONFIG,
         themeRules: THEME_RULES,
       },
-  
+
       groovy: {
         tokenizer: {
           root: [
@@ -71,6 +71,5 @@ import {
     };
     return config[languageId] || {};
   };
-  
+
   export default useLanguageConfig;
-  
