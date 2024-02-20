@@ -256,24 +256,15 @@ export default function ListenerProps({
 
   const removeElement = (type) => {
     return function (index) {
+      if (Number(index) < 0) return;
       let bo = getBusinessObject(element);
-      const extensionElements =
-        bo && bo.extensionElements && bo.extensionElements.values;
-      let count;
-      extensionElements &&
-        extensionElements.forEach((element, ind) => {
-          if (element.$type === type) {
-            if (count > -1) {
-              count++;
-            } else {
-              count = 0;
-            }
-          }
-          if (count === Number(index)) {
-            bo.extensionElements.values.splice(ind, 1);
-            return;
-          }
-        });
+      const extensionElements = bo?.extensionElements?.values;
+      const elements = extensionElements?.filter((e) => e.$type === type) || [];
+      elements.splice(index, 1);
+      bo.extensionElements.values = [
+        ...(extensionElements?.filter((e) => e.$type !== type) || []),
+        ...(elements || []),
+      ];
       addOptions(element);
       if (
         extensionElements &&
