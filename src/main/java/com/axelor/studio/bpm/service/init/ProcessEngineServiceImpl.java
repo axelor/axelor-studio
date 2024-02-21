@@ -130,6 +130,6 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
 
   @Override
   public String getWkfViewerUrl() {
-    return "wkf-editor/?%s&taskIds=%s&activityCount=%s";
+    return "wkf-editor/?%s&taskIds=%s&activityCount=%s&node=%s";
   }
 }
