@@ -64,7 +64,7 @@ export const STROKE_COLORS = {
   "bpmn:Lane": "#c8c8c8",
   "bpmn:Group": "#c8c8c8",
   "bpmn:Association": "#8095B3",
-  "bpmn:TextAnnotation": "#A9B1BD",
+  "bpmn:TextAnnotation": "#7D8187",
   "bpmn:BoundaryEvent": "#ff9800",
   "bpmn:DataObjectReference": "#a80ca8",
   "bpmn:DataStoreReference": "#e53935",
