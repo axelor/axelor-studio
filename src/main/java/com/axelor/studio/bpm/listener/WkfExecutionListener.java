@@ -143,6 +143,8 @@ public class WkfExecutionListener implements ExecutionListener {
     boolean blocking = blockingNode(type);
     String instanceId = execution.getProcessInstanceId();
 
+    setInstanceCurrentNode(instanceId, flowElement);
+
     log.debug("Executing: id={},name={}", flowElement.getId(), flowElement.getName());
     if (!blocking) {
       wkfLogService.createOrAttachAppender(instanceId);
@@ -158,6 +160,15 @@ public class WkfExecutionListener implements ExecutionListener {
       }
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
       wkfInstanceService.onNodeActivation(wkfTaskConfig, execution);
+    }
+  }
+
+  @Transactional(rollbackOn = Exception.class)
+  protected void setInstanceCurrentNode(String instanceId, FlowElement flowElement) {
+    WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(instanceId);
+    if (wkfInstance != null) {
+      wkfInstance.setNode(flowElement.getId());
+      wkfInstanceRepo.save(wkfInstance);
     }
   }
 
