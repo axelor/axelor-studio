@@ -6,7 +6,7 @@ import { ALLOWED_TYPES, QUERY_CUSTOM_TYPES } from '../constants';
 const getResultedFields = (
   res,
   isQuery,
-  isM2OField,
+  isAllowButtons = false,
   isContextValue = false
 ) => {
   const responseData = res && res.data;
@@ -15,10 +15,15 @@ const getResultedFields = (
     (responseData && responseData.jsonFields) || [{}]
   );
   let result = [];
+  const CLONE_ALLOWED_TYPES = [...ALLOWED_TYPES];
+  if (isAllowButtons) {
+    CLONE_ALLOWED_TYPES.push('button');
+  }
   result =
     (allFields &&
       allFields.filter(
-        f => !f.json && ALLOWED_TYPES.includes((f.type || '').toLowerCase())
+        f =>
+          !f.json && CLONE_ALLOWED_TYPES.includes((f.type || '').toLowerCase())
       )) ||
     [];
 
@@ -28,7 +33,7 @@ const getResultedFields = (
       let fields =
         nestedFields.filter(
           a =>
-            ALLOWED_TYPES.includes((a.type || '').toLowerCase()) &&
+            CLONE_ALLOWED_TYPES.includes((a.type || '').toLowerCase()) &&
             (a.type === 'many-to-many' ? a.targetName : true)
         ) || [];
       if (isQuery && !isContextValue) {
@@ -199,7 +204,7 @@ export async function getButtons(models = []) {
         const res = await services.get(
           `ws/meta/fields/com.axelor.meta.db.MetaJsonRecord?jsonModel=${modelNames[i]}`
         );
-        const fields = getResultedFields(res);
+        const fields = getResultedFields(res, null, true);
         const buttonFields = fields.filter(f => f.type === 'button');
         buttons = [...buttons, ...(buttonFields || [])];
       }
@@ -224,8 +229,7 @@ export async function getSubMetaField(
     ? `com.axelor.meta.db.MetaJsonRecord?jsonModel=${relationJsonModel}`
     : model;
   const res = await getFields(endpoint);
-  let result =
-    getResultedFields(res, isQuery, isM2OField, isContextValue) || [];
+  let result = getResultedFields(res, isQuery, false, isContextValue) || [];
   if (!result) return [];
   if (isQuery && !isContextValue && ALLOWED_TYPES.includes(targetField?.type)) {
     return [

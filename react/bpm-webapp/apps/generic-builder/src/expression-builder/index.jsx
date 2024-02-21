@@ -287,6 +287,8 @@ function ExpressionBuilder({
         'boolean',
         'long',
         'double',
+        'button',
+        'menu-item',
       ].includes(type);
       const isDateTime = ['date', 'time', 'datetime'].includes(type);
 
@@ -709,6 +711,8 @@ function ExpressionBuilder({
         'decimal',
         'boolean',
         'double',
+        'button',
+        'menu-item',
       ].includes(type);
       const isDateTime = ['date', 'time', 'datetime'].includes(type);
       const isRelational = [
