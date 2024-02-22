@@ -131,7 +131,7 @@ public class WkfLoggerInitServiceImpl implements WkfLoggerInitService {
     loggers.add(logger);
 
     Logger contextLogger = context.getLogger((DEFAULT_CONTEXT_LOGGER));
-    contextLogger.setLevel(Level.DEBUG);
+    contextLogger.setLevel(Level.ERROR);
     loggers.add(contextLogger);
 
     String loggerNames = appSettingsStudioService.getLoggers();
