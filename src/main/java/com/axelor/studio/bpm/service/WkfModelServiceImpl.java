@@ -110,7 +110,7 @@ public class WkfModelServiceImpl implements WkfModelService {
           Strings.isNullOrEmpty(wkfModel.getVersionTag())
               ? "1"
               : String.valueOf(Long.valueOf(wkfModel.getVersionTag()) + 1);
-      newVersion.setCode(getBpmCode(wkfModel.getCode(), newVersionTag, wkfModel.getVersionTag()));
+      newVersion.setCode(wkfModel.getCode());
       newVersion.setVersionTag(newVersionTag);
     }
 
@@ -488,15 +488,5 @@ public class WkfModelServiceImpl implements WkfModelService {
     processMap.put("processConfig", firstProcessConfig);
 
     return processMap;
-  }
-
-  protected String getBpmCode(String code, String newVersionTag, String oldVersionTag) {
-    if (code.endsWith("-" + oldVersionTag)) {
-      code = code.substring(0, code.lastIndexOf('-') + 1) + newVersionTag;
-    } else {
-      code += "-" + newVersionTag;
-    }
-
-    return code;
   }
 }
