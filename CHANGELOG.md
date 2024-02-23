@@ -1,3 +1,11 @@
+## 2.1.0 (2024-02-23)
+
+#### Fix
+
+* BPM : Missing translation in the BPM
+* BPM : Task listener script dialog issue
+* BPM : Fix studio wkf model versioning and use code and version as unique key instead of suffixing the code
+
 ## 2.0.1 (2024-02-16)
 
 #### Change
