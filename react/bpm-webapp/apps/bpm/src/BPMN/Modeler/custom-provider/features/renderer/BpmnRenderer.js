@@ -499,8 +499,12 @@ export default function BpmnRenderer(
     );
 
     var text = textRenderer.createText(label || "", options);
-
-    svgClasses(text).add("djs-label");
+    if (options?.box?.type === "bpmn:TextAnnotation") {
+      /** To avoid generic djs-label css */
+      svgClasses(text).add("djs-annotation-label");
+    } else {
+      svgClasses(text).add("djs-label");
+    }
 
     svgAppend(parentGfx, text);
 

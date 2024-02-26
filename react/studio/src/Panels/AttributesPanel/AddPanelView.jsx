@@ -9,17 +9,11 @@ import classNames from "classnames"
 
 const Container = styled(Box)(({ display = "grid" }) => ({ display }))
 
-export default React.memo(function AddPanelView({
-	toolbarOffset,
-	isStudioLite,
-	modelType,
-}) {
+const AddPanelView = React.memo((props) => {
+	const { toolbarOffset, modelType } = props
 	const mediaQueryString = `(max-height: ${720 + toolbarOffset}px)`
 	const isResponsive = window.matchMedia(mediaQueryString).matches
 	const fields = React.useMemo(() => getFields(modelType), [modelType])
-
-	const showField = (field) =>
-		!isStudioLite || (isStudioLite && field.name !== "oneToMany")
 
 	return (
 		<Box
@@ -37,26 +31,17 @@ export default React.memo(function AddPanelView({
 			}}
 		>
 			{fields.map(
-				(fieldType, index) =>
-					(!isStudioLite ||
-						(isStudioLite &&
-							["Fields", "Relational fields"].includes(fieldType.name))) && (
+				(section, index) =>
+					!section.isHidden?.(props) &&
+					!section.value?.every((field) => field.isHidden?.(props)) && (
 						<React.Fragment key={index}>
 							<Container
 								gridTemplateColumns={isResponsive ? "50% 50%" : "100%"}
 								style={{ width: isResponsive ? "80px" : "40px" }}
 							>
-								{fieldType.value &&
-									fieldType.value.map((field, i) => {
-										if (
-											field.editorType &&
-											!field.editorType.includes(modelType)
-										) {
-											return null
-										}
-										if (!showField(field)) {
-											return null
-										}
+								{section.value &&
+									section.value.map((field, i) => {
+										if (field.isHidden?.(props)) return null
 										return (
 											<Container
 												placeContent="center"
@@ -65,8 +50,8 @@ export default React.memo(function AddPanelView({
 											>
 												<Field key={i}>
 													<Widget
-														id={field.id}
-														attrs={field}
+														id={field.attrs.id}
+														attrs={field.attrs}
 														design={true}
 														component={FieldComponent}
 														isPalleteField={true}
@@ -83,3 +68,6 @@ export default React.memo(function AddPanelView({
 		</Box>
 	)
 })
+
+AddPanelView.displayName = "AddPanelView"
+export default AddPanelView

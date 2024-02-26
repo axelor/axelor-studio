@@ -602,6 +602,7 @@ export default function ListenerProps({
                 rows={3}
                 className={classes.textbox}
                 readOnly={() => getReadOnly()}
+                minimap={false}
                 entry={{
                   id: "script",
                   label: translate("Script"),

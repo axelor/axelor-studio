@@ -1,16 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import classnames from "classnames";
 import { makeStyles } from "@material-ui/styles";
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-groovy";
-import "ace-builds/src-noconflict/theme-chrome";
-import "ace-builds/src-noconflict/ext-language_tools";
-import { Resizable } from "re-resizable";
-
+import { InputLabel, Input } from "@axelor/ui";
+import ScriptEditor from "../EditorConfig/SrciptEditor";
 import Description from "./Description";
 import { getTranslations } from "../../../services/api";
 import { getBool } from "../../../utils";
-import { InputLabel, Input } from "@axelor/ui";
 import { translate } from "../../../utils";
 
 const useStyles = makeStyles({
@@ -30,31 +25,6 @@ const useStyles = makeStyles({
     verticalAlign: "middle",
     marginBottom: 3,
   },
-  editor: {
-    fontFamily: "monospace",
-    background: "var(--bs-body-bg) !important",
-    border: "1px solid var(--bs-tertiary-bg) !important",
-    borderRadius: 4,
-    "&.ace_focus": {
-      border: "1px solid #666cff !important",
-    },
-  },
-  error: {
-    borderColor: "#cc3333 !important",
-    "&:focus, &.ace_focus": {
-      borderColor: "#cc3333 !important",
-    },
-  },
-  readOnly: {
-    borderColor: "#ccc !important",
-    background: "#E3E3E3",
-    color: "#7E7E7E",
-    "&:focus , &.ace_focus": {
-      boxShadow: "none !important",
-      outline: "none",
-      borderColor: "#ccc !important",
-    },
-  },
 });
 
 export default function Textbox({
@@ -66,6 +36,7 @@ export default function Textbox({
   className,
   defaultHeight,
   showLabel = true,
+  minimap,
 }) {
   const classes = useStyles();
   const {
@@ -253,6 +224,7 @@ export default function Textbox({
               updateProperty((value ?? "").trim());
             }
           }}
+          minimap={minimap}
         />
       ) : (
         <Input
@@ -275,80 +247,5 @@ export default function Textbox({
       {errorMessage && <Description desciption={errorMessage} type="error" />}
       {description && <Description desciption={description} />}
     </div>
-  );
-}
-const PADDING = 2; // to make box shadow visible
-const FONT_SIZE = 12;
-const INITIAL_HEIGHT = 120;
-
-function ScriptEditor({
-  id,
-  value,
-  width: containerWidth,
-  onChange,
-  onBlur,
-  isError,
-  readOnly,
-  defaultHeight,
-}) {
-  const classes = useStyles();
-  const [height, setHeight] = useState(defaultHeight || INITIAL_HEIGHT);
-  const [width, setWidth] = useState(containerWidth - PADDING * 2);
-  const savedDimension = useRef({ width, height });
-
-  function handleChange(newValue) {
-    onChange(newValue);
-  }
-
-  useEffect(() => {
-    setWidth(containerWidth - PADDING * 2);
-  }, [containerWidth]);
-
-  return (
-    <Resizable
-      style={{ padding: PADDING }}
-      onResizeStart={(e, direction, element) => {
-        savedDimension.current = { width, height };
-      }}
-      enable={{
-        top: false,
-        right: false,
-        bottom: true,
-        left: false,
-        topRight: false,
-        bottomRight: false,
-        bottomLeft: false,
-        topLeft: false,
-      }}
-      onResize={(e, direction, ref, d) => {
-        setHeight(savedDimension.current.height + d.height);
-      }}
-    >
-      <AceEditor
-        className={classnames(
-          classes.editor,
-          isError && classes.error,
-          readOnly && classes.readOnly
-        )}
-        fontSize={FONT_SIZE}
-        onLoad={(editor) => {
-          editor.renderer.setScrollMargin(3);
-        }}
-        readOnly={readOnly}
-        mode="groovy"
-        theme="chrome"
-        onChange={handleChange}
-        name={id}
-        editorProps={{ $blockScrolling: true }}
-        value={value}
-        showGutter={width > 500}
-        wrapEnabled={true}
-        height={`${height}px`}
-        width={`${width}px`}
-        enableLiveAutocompletion
-        showPrintMargin={false}
-        onBlur={onBlur}
-      />
-    </Resizable>
   );
 }

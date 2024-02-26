@@ -925,6 +925,8 @@ export default function MenuActionPanel({
                       <TextField
                         element={element}
                         canRemove={true}
+                        isScript={true}
+                        language="jpql"
                         entry={{
                           id: "domain",
                           name: "domain",

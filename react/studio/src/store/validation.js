@@ -18,9 +18,10 @@ export function validate(field, modelType, isCustomField = false) {
     return errors
   }
 
-  const propertyList = Object.keys(property.value).reduce((lst = [], key) => {
-    return [...lst, ...property.value[key]]
+  const propertyList = property.value.reduce((lst = [], obj) => {
+    return lst.concat(obj.fields)
   }, [])
+
   propertyList.forEach((property) => {
     // For real form , do not validate if a property is ReadOnly
     if (modelType === MODEL_TYPE.BASE && !isCustomField && property.readOnly)
@@ -106,6 +107,7 @@ export const validateWidget = (draft, id, isCustomField) => {
   const widgets = isCustomField ? draft.customFieldWidgets : draft.widgets
   const errorKey = isCustomField ? "customErrorList" : "widgetErrorList"
   const widget = widgets[id]
+
   if (widget) {
     // Do not validate tabs-panel since it doesn't get saved in server
     if (widget.type === TYPE.tabs) return

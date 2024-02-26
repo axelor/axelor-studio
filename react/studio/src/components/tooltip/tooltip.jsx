@@ -16,24 +16,35 @@ export default function Tooltip({ children, title, placement = "bottom" }) {
 	return (
 		<>
 			{cloneElement(children, {
-				ref: setTargetEl,
+				ref: (el) => {
+					setTargetEl(el)
+					if (children.ref) {
+						if (typeof children.ref === "function") {
+							children.ref(el)
+						} else {
+							children.ref.current = el
+						}
+					}
+				},
 			})}
-			<Popper
-				id="simple-popover"
-				className={styles.tooltip}
-				open={open}
-				target={targetEl}
-				offset={[0, 4]}
-				placement={placement}
-				arrow
-				shadow
-			>
-				<ClickAwayListener onClickAway={onClickAway}>
-					<Box ref={setContentEl}>
-						{title && <Box className={styles.title}>{title}</Box>}
-					</Box>
-				</ClickAwayListener>
-			</Popper>
+			{title && (
+				<Popper
+					id="simple-popover"
+					className={styles.tooltip}
+					open={open}
+					target={targetEl}
+					offset={[0, 4]}
+					placement={placement}
+					arrow
+					shadow
+				>
+					<ClickAwayListener onClickAway={onClickAway}>
+						<Box ref={setContentEl}>
+							{title && <Box className={styles.title}>{title}</Box>}
+						</Box>
+					</ClickAwayListener>
+				</Popper>
+			)}
 		</>
 	)
 }

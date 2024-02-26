@@ -20,6 +20,5 @@ export function useAppTheme() {
       setLoading(false);
     })();
   }, [preferred]);
-
   return { ...themeOptions, loading };
 }

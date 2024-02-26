@@ -64,7 +64,7 @@ export const STROKE_COLORS = {
   "bpmn:Lane": "#c8c8c8",
   "bpmn:Group": "#c8c8c8",
   "bpmn:Association": "#8095B3",
-  "bpmn:TextAnnotation": "#A9B1BD",
+  "bpmn:TextAnnotation": "#7D8187",
   "bpmn:BoundaryEvent": "#ff9800",
   "bpmn:DataObjectReference": "#a80ca8",
   "bpmn:DataStoreReference": "#e53935",
@@ -232,16 +232,18 @@ export const CONDITIONAL_SOURCES = [
   "bpmn:Participant",
 ];
 export const TASK_LISTENER_EVENT_TYPE_OPTION = [
-  { name: translate("create"), value: "create" },
+  { name: translate("create"), value: "create", label: translate("create") },
   {
     name: translate("assignment"),
     value: "assignment",
+    label: translate("assignment"),
   },
   {
     name: translate("complete"),
     value: "complete",
+    label: translate("complete"),
   },
-  { name: translate("delete"), value: "delete" },
-  { name: translate("update"), value: "update" },
-  { name: translate("timeout"), value: "timeout" },
+  { name: translate("delete"), value: "delete", label: translate("delete") },
+  { name: translate("update"), value: "update", label: translate("update") },
+  { name: translate("timeout"), value: "timeout", label: translate("timeout") },
 ];

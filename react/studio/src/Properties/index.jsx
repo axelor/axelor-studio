@@ -1,12 +1,23 @@
 import React, { useState } from "react"
-import { TextField, Switch, Box } from "@axelor/ui"
+import {
+	TextField,
+	Switch,
+	Box,
+	Dialog,
+	DialogHeader,
+	DialogContent,
+	DialogFooter,
+	Button,
+} from "@axelor/ui"
+import { MaterialIcon } from "@axelor/ui/icons/material-icon"
+import _ from "lodash"
+
 import { options } from "./list"
 import {
 	camleCaseString,
 	translate,
 	getProperty,
 	getPropertyValue,
-	capitalizeFirst,
 } from "../utils"
 import SelectComponent from "../components/SelectComponent"
 import { MODEL_TYPE, TYPE, ENTITY_TYPE } from "../constants"
@@ -15,7 +26,6 @@ import {
 	FormView,
 	GridView,
 	JsonRelationalField,
-	SelectableType,
 	TargetJsonModel,
 	TargetModel,
 } from "./propertyFields"
@@ -24,6 +34,8 @@ import StaticSelection from "./widgets/StaticSelection"
 import SelectionWidget from "./widgets/SelectionWidget"
 import DialogConfirmation from "../Toolbar/DeleteConfirmation"
 import OnlyIfComponent from "./widgets/OnlyIf"
+import ScriptEditor from "./Editor.js/SrciptEditor"
+import Tooltip from "../components/tooltip/tooltip"
 
 const PropertiesContext = React.createContext()
 
@@ -61,9 +73,8 @@ function StringInput(_props) {
 		index,
 		multiline = false,
 		error,
-		parentPanel,
 		clearable = false,
-		isStudioLite,
+		language = false,
 	} = _props
 	const {
 		title,
@@ -74,17 +85,15 @@ function StringInput(_props) {
 		max,
 		min,
 		parentField,
+		tooltip,
+		icon,
 		...rest
 	} = _props.field
+	const [openEditor, setOpenEditor] = useState(false)
 	const props = React.useContext(PropertiesContext)
-	const {
-		propertyList,
-		setPropertyList,
-		onChange,
-		modelType,
-		metaFieldStore = [],
-		editWidgetType,
-	} = props
+	const { propertyList, setPropertyList, onChange, modelType, editWidgetType } =
+		props
+	const [editorValue, setEditorValue] = useState(null)
 	let label = Label(translate(camleCaseString(title || name)), _props.field)
 	let placeholder = null
 	if (name === "showIf" || name === "requiredIf") {
@@ -109,162 +118,234 @@ function StringInput(_props) {
 	if (rest.formatter) {
 		value = rest.formatter(value, propertyList)
 	}
+
 	let disabled = Boolean(readOnly)
+	let hide = false
 
 	if (rest.isDisabled) {
 		disabled = rest.isDisabled({
-			properties: propertyList,
-			metaFieldStore,
-			editWidgetType,
-			modelType,
-			parentPanel,
-			isStudioLite,
+			...props,
+			..._props,
 		})
 	}
-
+	if (rest.isHidden) {
+		hide = rest.isHidden({
+			...props,
+			..._props,
+		})
+	}
 	const savedValue = React.useRef(value)
+	const handleEditorCancel = () => {
+		setEditorValue(null)
+		setOpenEditor(false)
+	}
+	const handleEditorSave = () => {
+		editorValue !== null &&
+			setPropertyList({
+				...(propertyList || {}),
+				...getProperty(
+					name,
+					editorValue,
+					parentField,
+					propertyList[parentField],
+					modelType === rest.modelType ||
+						editWidgetType === "customField" ||
+						!(rest.modelType || modelType === MODEL_TYPE.BASE)
+				),
+			})
+		setOpenEditor(false)
+	}
 	return (
-		<React.Fragment>
-			<TextField
-				value={value}
-				as={multiline && "textarea"}
-				key={index}
-				type={type === "integer" ? "number" : type}
-				autoComplete="off"
-				style={{
-					WebkitAppearance: "searchfield-cancel-button",
-					appearance: "searchfield-cancel-button",
-				}}
-				label={<Box mt={2}>{translate(label)}</Box>}
-				placeholder={translate(placeholder)}
-				onBlur={(e) => {
-					if (savedValue.current === value) return
-					if (type === "integer" && isNaN(Number(e.target.value))) {
-						return
+		<>
+			{!hide && (
+				<TextField
+					value={value}
+					as={multiline && "textarea"}
+					key={index}
+					type={type === "integer" ? "number" : type}
+					autoComplete="off"
+					label={
+						<Box mt={2} d="flex" justifyContent="space-between">
+							<Box d="flex" alignItems="center">
+								{translate(label)}
+								{!!icon && icon}
+							</Box>
+
+							{title?.trim() && tooltip && (
+								<Tooltip title={translate(tooltip)} placement="bottom">
+									<MaterialIcon fontSize={13} icon="info" />
+								</Tooltip>
+							)}
+						</Box>
 					}
-					if (min && max) {
-						const value = Number(e.target.value)
-						if (value < min || value > max) {
+					placeholder={translate(placeholder)}
+					onBlur={(e) => {
+						if (savedValue.current === value) return
+						if (type === "integer" && isNaN(Number(e.target.value))) {
 							return
 						}
-					}
-					let _value = e.target.value
-					let flag = true
-					if (
-						rest.modelType === MODEL_TYPE.BASE &&
-						props.editWidgetType !== "customField"
-					) {
-						flag =
-							_value === ""
-								? propertyList[name] !== undefined
-									? true
-									: false
-								: true
-					}
-					if (
-						rest.modelType === MODEL_TYPE.CUSTOM &&
-						props.editWidgetType === "customField"
-					) {
-						// set null value when value is negative for custom view & custom fields
-						_value = _value || null
-					}
-					if (flag) {
-						onChange(
-							{
-								...(propertyList || {}),
-								...getProperty(
-									name,
-									_value?.trim(),
-									parentField,
-									propertyList[parentField],
-									!(modelType === rest.modelType) ||
-										editWidgetType === "customField"
-								),
+						if (min && max) {
+							const value = Number(e.target.value)
+							if (value < min || value > max) {
+								return
+							}
+						}
+						let _value = e.target.value
+						let flag = true
+						if (
+							rest.modelType === MODEL_TYPE.BASE &&
+							props.editWidgetType !== "customField"
+						) {
+							flag =
+								_value === ""
+									? propertyList[name] !== undefined
+										? true
+										: false
+									: true
+						}
+						if (
+							rest.modelType === MODEL_TYPE.CUSTOM &&
+							props.editWidgetType === "customField"
+						) {
+							// set null value when value is negative for custom view & custom fields
+							_value = _value || null
+						}
+						if (flag) {
+							onChange(
+								{
+									...(propertyList || {}),
+									...getProperty(
+										name,
+										_value?.trim(),
+										parentField,
+										propertyList[parentField],
+										!(modelType === rest.modelType) ||
+											editWidgetType === "customField"
+									),
+								},
+								name
+							)
+						}
+					}}
+					onChange={(e) => {
+						if (type === "integer" && isNaN(Number(e.target.value))) {
+							return
+						}
+						if (min && max) {
+							const value = Number(e.target.value)
+							if (value < min || value > max) {
+								return
+							}
+						}
+						let value = e.target.value
+						setPropertyList({
+							...(propertyList || {}),
+							...getProperty(
+								name,
+								value,
+								parentField,
+								propertyList[parentField],
+								modelType === rest.modelType ||
+									editWidgetType === "customField" ||
+									!(rest.modelType || modelType === MODEL_TYPE.BASE)
+							),
+						})
+					}}
+					invalid={(required && !value) || Boolean(error)}
+					description={error}
+					disabled={disabled}
+					onFocus={() => {
+						savedValue.current = value
+					}}
+					icons={[
+						clearable &&
+							value && {
+								icon: "clear",
+								color: "body",
+								className: "clearIcon",
+								onClick: () => {
+									let value = ""
+									let flag = true
+									if (
+										rest.modelType === MODEL_TYPE.BASE &&
+										props.editWidgetType !== "customField"
+									) {
+										flag =
+											value === ""
+												? propertyList[name] !== undefined
+													? true
+													: false
+												: true
+									}
+									if (
+										rest.modelType === MODEL_TYPE.CUSTOM &&
+										props.editWidgetType === "customField"
+									) {
+										// set null value when value is negative for custom view & custom fields
+										value = value || null
+									}
+									if (flag) {
+										onChange(
+											{
+												...(propertyList || {}),
+												...getProperty(
+													name,
+													value,
+													parentField,
+													propertyList[parentField],
+													!(modelType === rest.modelType) ||
+														editWidgetType === "customField"
+												),
+											},
+											name
+										)
+									}
+								},
 							},
-							name
-						)
-					}
-				}}
-				onChange={(e) => {
-					if (type === "integer" && isNaN(Number(e.target.value))) {
-						return
-					}
-					if (min && max) {
-						const value = Number(e.target.value)
-						if (value < min || value > max) {
-							return
-						}
-					}
-					let value = e.target.value
-					setPropertyList({
-						...(propertyList || {}),
-						...getProperty(
-							name,
-							value,
-							parentField,
-							propertyList[parentField],
-							modelType === rest.modelType ||
-								editWidgetType === "customField" ||
-								!(rest.modelType || modelType === MODEL_TYPE.BASE)
-						),
-					})
-				}}
-				invalid={(required && !value) || Boolean(error)}
-				description={error}
-				disabled={disabled}
-				onFocus={() => {
-					savedValue.current = value
-				}}
-				icons={
-					clearable &&
-					value && [
-						{
-							icon: "clear",
+						language && {
+							icon: "code",
 							color: "body",
 							className: "clearIcon",
 							onClick: () => {
-								let value = ""
-								let flag = true
-								if (
-									rest.modelType === MODEL_TYPE.BASE &&
-									props.editWidgetType !== "customField"
-								) {
-									flag =
-										value === ""
-											? propertyList[name] !== undefined
-												? true
-												: false
-											: true
-								}
-								if (
-									rest.modelType === MODEL_TYPE.CUSTOM &&
-									props.editWidgetType === "customField"
-								) {
-									// set null value when value is negative for custom view & custom fields
-									value = value || null
-								}
-								if (flag) {
-									onChange(
-										{
-											...(propertyList || {}),
-											...getProperty(
-												name,
-												value,
-												parentField,
-												propertyList[parentField],
-												!(modelType === rest.modelType) ||
-													editWidgetType === "customField"
-											),
-										},
-										name
-									)
-								}
+								setOpenEditor(true)
 							},
 						},
-					]
-				}
-			/>
-		</React.Fragment>
+					].filter(Boolean)}
+				/>
+			)}
+			<Dialog size="xl" backdrop open={openEditor}>
+				<DialogHeader>
+					<Box d="flex" alignItems="center">
+						<b>{translate("Editor")}</b>{" "}
+						<i>
+							(
+							{translate(
+								_.capitalize(
+									_.toLower(name.replace(/([a-z])([A-Z])/g, "$1 $2"))
+								)
+							)}
+							)
+						</i>
+					</Box>
+				</DialogHeader>
+				<DialogContent>
+					<ScriptEditor
+						value={editorValue ?? value}
+						onChange={setEditorValue}
+						readOnly={disabled}
+						language={language}
+					/>
+				</DialogContent>
+				<DialogFooter>
+					<Button size="sm" variant="secondary" onClick={handleEditorCancel}>
+						{translate("Cancel")}
+					</Button>
+					<Button size="sm" variant="primary" onClick={handleEditorSave}>
+						{translate("Save")}
+					</Button>
+				</DialogFooter>
+			</Dialog>
+		</>
 	)
 }
 
@@ -274,17 +355,8 @@ function BooleanField(_props) {
 	let { name, title, parentField, defaultValue, uncheckDialog, ...rest } =
 		_props.field
 	const props = React.useContext(PropertiesContext)
-	const {
-		propertyList,
-		setPropertyList,
-		onChange,
-		modelType,
-		editWidgetType,
-		metaFieldStore,
-		id,
-		hasOnlyOneNonSidebarItem,
-		parentPanel,
-	} = props
+	const { propertyList, setPropertyList, onChange, modelType, editWidgetType } =
+		props
 	let _value = getPropertyValue(
 		propertyList,
 		name,
@@ -300,20 +372,17 @@ function BooleanField(_props) {
 	let hide = false
 	if (rest.isDisabled) {
 		disabled = rest.isDisabled({
-			properties: propertyList,
-			metaFieldStore,
-			editWidgetType,
-			modelType,
-			id,
-			hasOnlyOneNonSidebarItem,
 			fieldValue,
+			...props,
 		})
 	}
 	if (rest.isHidden) {
-		hide = rest.isHidden({ parentPanel })
+		hide = rest.isHidden({
+			fieldValue,
+			...props,
+		})
 	}
 	title = translate(camleCaseString(title || name))
-
 	const handleOnChange = () => {
 		if (uncheckDialog) {
 			setAlertOpen(false)
@@ -427,6 +496,7 @@ function RenderPropertyField() {
 		parentPanel,
 		isStudioLite,
 		loader,
+		language,
 	} = props
 	return (
 		<>
@@ -458,6 +528,7 @@ function RenderPropertyField() {
 								multiline={false}
 								error={errors[field.name]}
 								isStudioLite={isStudioLite}
+								language={language || field.language}
 							/>
 						)
 					case "integer":
@@ -522,6 +593,7 @@ function RenderPropertyField() {
 								index={key}
 								multiline={true}
 								error={errors[field.name]}
+								language={language}
 							/>
 						)
 					case "onlyIf":
@@ -540,6 +612,7 @@ function RenderPropertyField() {
 								key={key}
 								index={key}
 								error={errors[field.name]}
+								language={language}
 							/>
 						)
 				}
@@ -556,7 +629,7 @@ function PropertiesProvider({ children, ...value }) {
 	)
 }
 
-export default function Properties(props) {
+export default function Properties() {
 	const { state, onWidgetChange } = useStore()
 	const {
 		widgets,
@@ -593,37 +666,14 @@ export default function Properties(props) {
 			selectedType = "zoneddatetime"
 		}
 	}
+
 	const [propertyList, setPropertyList] = useState({})
+
 	let property = options.find((option) => option.type === selectedType)
+
 	if (selectedType === "form") {
 		if (state.modelType === MODEL_TYPE.CUSTOM) {
 			property = options.find((option) => option.type === "modelForm")
-		}
-	}
-	if (isSelectionField) {
-		selectedType = ["string", "integer"].includes(widget && widget.type)
-			? widget.type
-			: selectedType
-		if (property && property.value) {
-			const { fieldOptions, widgetAttributes, overview } =
-				(property && property.value) || {}
-			// INFO: If property is manipulated here, how validation works?
-			// validation also imports property and it has no idea about this
-			property = {
-				...(property || {}),
-				value: {
-					...(property.value || {}),
-					overview: ([...overview] || []).map((item) =>
-						item.name === "type" ? SelectableType : item
-					),
-					fieldOptions: (fieldOptions || []).filter(
-						(f) => !["minSize", "maxSize", "regex"].includes(f.name)
-					),
-					widgetAttributes: (widgetAttributes || []).filter(
-						(f) => !["multiline"].includes(f.name)
-					),
-				},
-			}
 		}
 	}
 
@@ -748,57 +798,92 @@ export default function Properties(props) {
 	) {
 		return null
 	}
+	if (isSelectionField) {
+		selectedType = ["string", "integer"].includes(widget && widget.type)
+			? widget.type
+			: selectedType
+	}
 
 	return (
-		<Box d="grid" p={4}>
+		<Box d="flex" p={4} flexDirection="column" g={5}>
 			{type &&
 				property &&
 				!(
 					state.modelType === MODEL_TYPE.CUSTOM && property.type === TYPE.tabs
 				) &&
-				Object.keys(property.value).map((panel, i) => (
-					<Box key={i}>
-						<Box
-							color="body"
-							fontWeight="bold"
-							style={{
-								...(i !== 0 && { margin: "25px 0px 0px 0px" }),
-							}}
-							variant="body1"
-						>
-							{hasPropertyToShow(
-								property.value[panel],
-								modelType,
-								editWidgetType
-							) && translate(capitalizeFirst(panel))}
-						</Box>
-						<Box d="flex" flexDirection="column">
-							<PropertiesProvider
-								key={editWidget}
-								elements={property.value[panel]}
-								propertyList={propertyList}
-								setPropertyList={setPropertyList}
-								type={type}
-								onWidgetChange={onWidgetChange}
-								id={editWidget}
-								onChange={onChange}
-								modelType={modelType}
-								enableStudioApp={enableStudioApp}
-								editWidgetType={editWidgetType}
-								metaFieldStore={metaFieldStore}
-								errors={errors}
-								entityType={entityType}
-								actualType={actualType}
-								parentPanel={parentPanel}
-								isStudioLite={isStudioLite}
-								hasOnlyOneNonSidebarItem={hasOnlyOneNonSidebarItem}
-								loader={loader}
-							>
-								<RenderPropertyField />
-							</PropertiesProvider>
-						</Box>
-					</Box>
-				))}
+				property.value.map((panel, i) => {
+					let isHide = false
+
+					if (panel.isHidden) {
+						isHide = panel?.isHidden({ value: propertyList })
+					}
+
+					return (
+						!isHide && (
+							<Box key={i}>
+								{hasPropertyToShow(panel.fields, modelType, editWidgetType) &&
+									(panel.render ? (
+										panel.render()
+									) : (
+										<Box
+											color="body"
+											fontWeight="bold"
+											variant="body1"
+											d="flex"
+											justifyContent="space-between"
+										>
+											{panel?.tooltip ? (
+												<>
+													<Box d="flex" alignItems="center">
+														{translate(panel.title)}
+														{panel.icon}
+													</Box>
+													<Tooltip
+														title={translate(panel.tooltip)}
+														placement="bottom"
+													>
+														<MaterialIcon fontSize={13} icon="info" />
+													</Tooltip>
+												</>
+											) : (
+												<Box d="flex" alignItems="center">
+													{translate(panel.title)}
+													{panel.icon}
+												</Box>
+											)}
+										</Box>
+									))}
+								<Box d="flex" flexDirection="column">
+									<PropertiesProvider
+										key={editWidget}
+										language={panel.language}
+										elements={panel.fields}
+										propertyList={propertyList}
+										setPropertyList={setPropertyList}
+										type={type}
+										onWidgetChange={onWidgetChange}
+										id={editWidget}
+										onChange={onChange}
+										widget={widget}
+										modelType={modelType}
+										enableStudioApp={enableStudioApp}
+										editWidgetType={editWidgetType}
+										metaFieldStore={metaFieldStore}
+										errors={errors}
+										entityType={entityType}
+										actualType={actualType}
+										parentPanel={parentPanel}
+										isStudioLite={isStudioLite}
+										hasOnlyOneNonSidebarItem={hasOnlyOneNonSidebarItem}
+										loader={loader}
+									>
+										<RenderPropertyField />
+									</PropertiesProvider>
+								</Box>
+							</Box>
+						)
+					)
+				})}
 		</Box>
 	)
 }

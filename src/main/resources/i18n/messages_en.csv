@@ -2026,3 +2026,4 @@
 "wkf.terminate.btn","Terminate",,
 "yellow",,,
 "{{$fmt('name')}}",,,
+"Editor",,,

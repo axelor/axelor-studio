@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tableCell: {
     padding: "0px 10px",
+    verticalAlign: "baseline",
     textAlign: "center",
   },
   tableHead: {
@@ -91,11 +92,11 @@ export default function DeployDialog({
 
   const getCurrentElements = (processId, elementType) => {
     const currentProcess = currentElements[processId];
-    const elements =
-      currentProcess &&
-      currentProcess.elements &&
-      currentProcess.elements.filter((element) => element.type === elementType);
-    return elements || [];
+    return (
+      currentProcess?.elements?.filter(
+        (element) => element?.type === elementType
+      ) || []
+    );
   };
 
   const getCurrentElement = React.useCallback(
@@ -112,14 +113,18 @@ export default function DeployDialog({
 
   const getValue = React.useCallback(
     (processId, elementId) => {
+      const currentProcess = currentElements[processId];
       return (
-        (wkfMigrationMap &&
-          wkfMigrationMap[processId] &&
-          wkfMigrationMap[processId][elementId]) ||
-        getCurrentElement(processId, elementId)
+        currentProcess?.elements?.find(
+          (e) =>
+            e.id ===
+            (wkfMigrationMap &&
+              wkfMigrationMap[processId] &&
+              wkfMigrationMap[processId][elementId])
+        ) || getCurrentElement(processId, elementId)
       );
     },
-    [wkfMigrationMap, getCurrentElement]
+    [wkfMigrationMap, getCurrentElement, getCurrentElements]
   );
 
   useEffect(() => {
@@ -219,6 +224,8 @@ export default function DeployDialog({
                             value={getValue(key, oldEle.id)}
                             update={(value) => handleAdd(oldEle, value, key)}
                             isTranslated={false}
+                            optionLabel="name"
+                            optionLabelSecondary="id"
                           />
                         </TableCell>
                       </TableRow>

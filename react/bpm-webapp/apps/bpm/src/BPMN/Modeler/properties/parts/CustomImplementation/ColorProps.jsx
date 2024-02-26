@@ -3,7 +3,6 @@ const types = [
   "bpmn:Collaboration",
   "bpmn:SequenceFlow",
   "bpmn:MessageFlow",
-  "bpmn:TextAnnotation",
   "bpmn:DataOutputAssociation",
 ];
 

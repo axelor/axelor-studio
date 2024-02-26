@@ -6,6 +6,8 @@ import Description from "./Description";
 import { translate } from "../../../utils";
 import { Box, Button, Input, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import ScriptEditor from "../EditorConfig/SrciptEditor";
+import AlertDialog from "../../AlertDialog";
 
 const useStyles = makeStyles({
   root: {
@@ -51,6 +53,8 @@ export default function TextField({
   isDefinition = false,
   className,
   endAdornment,
+  isScript,
+  language,
 }) {
   const classes = useStyles();
   const {
@@ -66,7 +70,20 @@ export default function TextField({
   const [value, setValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isError, setError] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [editorValue, setEditorValue] = useState("");
 
+  const openEditor = () => {
+    setEditorValue(value || "");
+    setOpen(true);
+  };
+  const handleOk = () => {
+    updateProperty(editorValue);
+    setOpen(false);
+  };
+  const handleEditorChange = (value) => {
+    setEditorValue(value);
+  };
   const updateProperty = (value) => {
     if (!set && !setProperty) return;
     if (set) {
@@ -182,11 +199,31 @@ export default function TextField({
               <MaterialIcon icon="close" fontSize={16} />
             </Button>
           )}
+          {isScript && (
+            <Button
+              onClick={openEditor}
+              className={classnames(classes.clearButton, clearClassName)}
+            >
+              <MaterialIcon icon="code" fontSize={16} />
+            </Button>
+          )}
           {endAdornment}
         </Box>
         {errorMessage && <Description desciption={errorMessage} type="error" />}
       </div>
       {description && <Description desciption={description} />}
+      <AlertDialog
+        openAlert={open}
+        alertClose={() => setOpen(false)}
+        handleAlertOk={handleOk}
+      >
+        <ScriptEditor
+          defaultHeight={window?.innerHeight - 205}
+          value={editorValue}
+          onChange={handleEditorChange}
+          language={language}
+        />
+      </AlertDialog>
     </div>
   );
 }

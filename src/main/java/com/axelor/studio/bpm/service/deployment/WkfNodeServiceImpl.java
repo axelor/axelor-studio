@@ -46,6 +46,7 @@ import org.camunda.bpm.model.bpmn.instance.Activity;
 import org.camunda.bpm.model.bpmn.instance.CatchEvent;
 import org.camunda.bpm.model.bpmn.instance.ConditionalEventDefinition;
 import org.camunda.bpm.model.bpmn.instance.EndEvent;
+import org.camunda.bpm.model.bpmn.instance.EventBasedGateway;
 import org.camunda.bpm.model.bpmn.instance.ExtensionElements;
 import org.camunda.bpm.model.bpmn.instance.FlowNode;
 import org.camunda.bpm.model.bpmn.instance.Process;
@@ -92,7 +93,7 @@ public class WkfNodeServiceImpl implements WkfNodeService {
     activities.addAll(bpmInstance.getModelElementsByType(Activity.class));
     activities.addAll(bpmInstance.getModelElementsByType(CatchEvent.class));
     activities.addAll(bpmInstance.getModelElementsByType(EndEvent.class));
-
+    activities.addAll(bpmInstance.getModelElementsByType(EventBasedGateway.class));
     if (activities != null) {
       activities.forEach(
           activity -> {

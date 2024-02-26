@@ -20,8 +20,9 @@ import { USER_TASKS_TYPES, DATA_STORE_TYPES } from "../../../constants";
 
 import { Box, Divider, InputLabel } from "@axelor/ui";
 
+const GATEWAY = ["bpmn:EventBasedGateway"];
+
 const CONDITIONAL_SOURCES = [
-  "bpmn:EventBasedGateway",
   "bpmn:ExclusiveGateway",
   "bpmn:InclusiveGateway",
   "bpmn:ComplexGateway",
@@ -50,7 +51,6 @@ const TITLE_SOURCES = [
 
 const HELP_TITLE_SOURCES = [
   "bpmn:IntermediateThrowEvent",
-  "bpmn:EventBasedGateway",
   "bpmn:ExclusiveGateway",
   "bpmn:InclusiveGateway",
   "bpmn:ComplexGateway",
@@ -308,22 +308,21 @@ export default function ModelProps(props) {
   const addModels = (values) => {
     const displayOnModels = [],
       modelLabels = [];
-    if (Array.isArray(values)) {
-      if (values && values.length === 0) {
+    if (Array.isArray(values) || !values) {
+      if (values?.length === 0 || !values) {
         setProperty("displayOnModels", undefined);
         setProperty(`displayOnModelLabels`, undefined);
         return;
       }
-      values &&
-        values.forEach((value) => {
-          if (!value) {
-            setProperty("displayOnModels", undefined);
-            setProperty(`displayOnModelLabels`, undefined);
-            return;
-          }
-          displayOnModels.push(value.name);
-          modelLabels.push(value.title);
-        });
+      values?.forEach((value) => {
+        if (!value) {
+          setProperty("displayOnModels", undefined);
+          setProperty(`displayOnModelLabels`, undefined);
+          return;
+        }
+        displayOnModels.push(value.name);
+        modelLabels.push(value.title);
+      });
     }
     if (displayOnModels.length > 0) {
       setProperty("displayOnModels", displayOnModels.toString());
@@ -406,6 +405,7 @@ export default function ModelProps(props) {
         <div className={classes.root}>
           {(TITLE_SOURCES.includes(element?.type) ||
             subType === "bpmn:TerminateEventDefinition" ||
+            GATEWAY.includes(element.type) ||
             (element?.type === "bpmn:EndEvent" && !subType)) && (
             <React.Fragment>
               {index > 0 && <Divider className={classes.divider} />}
@@ -418,6 +418,7 @@ export default function ModelProps(props) {
             "bpmn:Process",
             "bpmn:Participant",
             "bpmn:SendTask",
+            ...GATEWAY,
             ...DATA_STORE_TYPES,
           ].includes(element && element.type) && (
             <React.Fragment>

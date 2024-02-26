@@ -6,7 +6,7 @@ import propertiesProviderModule from "bpmn-js-properties-panel/lib/provider/camu
 import cmdHelper from "bpmn-js-properties-panel/lib/helper/CmdHelper";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
-import tokenSimulation from "bpmn-js-token-simulation/lib/modeler";
+import TokenSimulationModule from "bpmn-js-token-simulation/lib/modeler";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { makeStyles } from "@material-ui/core/styles";
@@ -61,8 +61,10 @@ import { ALL_ATTRIBUTES } from "./properties/parts/CustomImplementation/constant
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import "bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css";
+import "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
+import "../css/tokens.css";
 import { useKeyPress } from "../../custom-hooks/useKeyPress";
 import Ids from "ids";
 import Alert from "../../components/Alert";
@@ -118,35 +120,21 @@ function nextId() {
 }
 
 function setColors(element, forceUpdate = false) {
-  if (
-    element.businessObject &&
-    element.businessObject.di &&
-    (element.businessObject.di.stroke || element.businessObject.di.fill) &&
-    !forceUpdate
-  ) {
+  if ((element?.di?.stroke || element?.di?.fill) && !forceUpdate) {
     return;
   }
   let modeling = bpmnModeler.get("modeling");
-  let colors = {};
-  if (is(element, ["bpmn:Gateway"])) {
-    colors.stroke = STROKE_COLORS["bpmn:Gateway"];
-    colors.fill = FILL_COLORS["bpmn:Gateway"];
-    element.businessObject.di.set("stroke", STROKE_COLORS["bpmn:Gateway"]);
-    element.businessObject.di.set("fill", FILL_COLORS["bpmn:Gateway"]);
+  if (is(element, "bpmn:Gateway")) {
+    modeling.setColor(element, {
+      stroke: STROKE_COLORS["bpmn:Gateway"],
+      fill: FILL_COLORS["bpmn:Gateway"],
+    });
   } else {
-    element.businessObject.di.set("stroke", STROKE_COLORS[element.type]);
-    colors.stroke = STROKE_COLORS[element.type];
-    if (
-      FILL_COLORS[element.type] &&
-      !["bpmn:SequenceFlow", "bpmn:MessageFlow", "bpmn:Association"].includes(
-        element.type
-      )
-    ) {
-      colors.fill = FILL_COLORS[element.type];
-      element.businessObject.di.set("fill", FILL_COLORS[element.type]);
-    }
+    modeling.setColor(element, {
+      stroke: STROKE_COLORS[element.type],
+      fill: FILL_COLORS[element.type],
+    });
   }
-  modeling.setColor(element, colors);
 }
 
 function BpmnModelerComponent() {
@@ -402,7 +390,7 @@ function BpmnModelerComponent() {
               : "name";
           let nameKey =
             element.businessObject.$attrs["camunda:key"] ||
-            (bo && bo.get([modelProperty]));
+            bo?.get(modelProperty);
           updateTranslations(element, bpmnModeler, nameKey);
         });
         try {
@@ -1750,9 +1738,15 @@ function BpmnModelerComponent() {
         propertiesPanelModule,
         propertiesProviderModule,
         propertiesCustomProviderModule,
-        tokenSimulation,
+        TokenSimulationModule,
         {
-          preserveElementColors: ["value", {}],
+          elementColors: [
+            "value",
+            {
+              add() {},
+              remove() {},
+            },
+          ],
         },
       ],
       moddleExtensions: {
