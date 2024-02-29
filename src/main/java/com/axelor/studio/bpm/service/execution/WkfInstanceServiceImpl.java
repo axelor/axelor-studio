@@ -212,6 +212,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     Map<String, Object> modelMap = new HashMap<String, Object>();
     modelMap.put(wkfService.getVarName(model), new FullContext(model));
+    modelMap.put("modelId", model.getId());
     builder.setVariables(wkfService.createVariables(modelMap));
     ProcessInstance processInstance = builder.executeWithVariablesInReturn();
     WkfInstance instance = wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
