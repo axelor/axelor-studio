@@ -30,7 +30,6 @@ import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.util.Collection;
-import java.util.List;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
@@ -121,7 +120,6 @@ public class WkfExecutionListener implements ExecutionListener {
   }
 
   protected void createWkfInstance(DelegateExecution execution) {
-    removeRelatedFailedInstance(execution);
     String instanceId = execution.getProcessInstanceId();
     WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(instanceId);
     log.debug("Process called with related wkfInstance: {}", wkfInstance);
@@ -130,30 +128,6 @@ public class WkfExecutionListener implements ExecutionListener {
           getProcessKey(execution, execution.getProcessDefinitionId()),
           execution.getProcessInstanceId());
       wkfInstance = createWkfInstance(execution, instanceId, wkfInstanceRepo);
-    }
-  }
-
-  @Transactional(rollbackOn = Exception.class)
-  protected void removeRelatedFailedInstance(DelegateExecution execution) {
-    Long modelId = (Long) execution.getVariable("modelId");
-    List<WkfInstance> instances =
-        wkfInstanceRepo
-            .all()
-            .filter(
-                "self.modelId = ? and self.wkfProcess.processId = ?",
-                modelId,
-                execution.getProcessDefinitionId())
-            .fetch();
-    for (WkfInstance instance : instances) {
-      if (execution
-              .getProcessEngine()
-              .getHistoryService()
-              .createHistoricProcessInstanceQuery()
-              .processInstanceId(instance.getInstanceId())
-              .singleResult()
-          == null) {
-        wkfInstanceRepo.remove(instance);
-      }
     }
   }
 
