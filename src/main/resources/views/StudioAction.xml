@@ -13,7 +13,7 @@
   </grid>
 
   <form name="studio-action-form" title="Action" model="com.axelor.studio.db.StudioAction"
-    width="large">
+    width="large" onSave="action-studio-action-validate-record">
     <panel name="mainPanel">
       <field name="isJson"
         onChange="action-studio-action-method-set-views,action-studio-action-type-select-change"
@@ -124,6 +124,10 @@
     <call class="com.axelor.studio.web.StudioActionController" method="setViews"
       if="typeSelect == 3"/>
   </action-method>
+
+  <action-validate name="action-studio-action-validate-record">
+    <alert message="Please fill the fields lines by the right values.\n No effect for this action will be triggered" if="eval: typeSelect == 0 &amp;&amp; (lines ==null || lines.isEmpty())"  />
+  </action-validate>
 
   <action-method name="action-mapper-method-create-script-from-json">
     <call class="com.axelor.studio.web.StudioActionController" method="createMapperScript"/>
