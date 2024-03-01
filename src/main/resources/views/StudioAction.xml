@@ -126,7 +126,9 @@
   </action-method>
 
   <action-validate name="action-studio-action-validate-record">
-    <alert message="Please fill the fields lines by the right values.\n No effect for this action will be triggered" if="eval: typeSelect == 0 &amp;&amp; (lines ==null || lines.isEmpty())"  />
+    <alert
+      message="Please fill the fields lines by the right values.\n No effect for this action will be triggered"
+      if="eval: (typeSelect == 0 || typeSelect == 1 ) &amp;&amp; (lines == null || lines.isEmpty())"/>
   </action-validate>
 
   <action-method name="action-mapper-method-create-script-from-json">
