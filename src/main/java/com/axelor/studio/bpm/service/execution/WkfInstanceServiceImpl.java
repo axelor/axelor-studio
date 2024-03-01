@@ -181,7 +181,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
                         finalProcessInstanceId));
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
-      removeRelatedFailedInstance(model, wkfProcess);
+      removeRelatedFailedInstance(model,wkfProcess);
       throw e;
     } finally {
       if (appender != null) {
@@ -824,23 +824,22 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  protected void removeRelatedFailedInstance(Model model, WkfProcess wkfProcess) {
+  protected void removeRelatedFailedInstance(Model model,WkfProcess wkfProcess) {
     List<WkfInstance> instances =
-        wkfInstanceRepository
-            .all()
-            .filter(
-                "self.modelId = ? and self.wkfProcess.processId = ?",
-                model.getId(),
-                wkfProcess.getProcessId())
-            .fetch();
+            wkfInstanceRepository
+                    .all()
+                    .filter(
+                            "self.modelId = ? and self.wkfProcess.processId = ?",
+                            model.getId(),
+                            wkfProcess.getProcessId())
+                    .fetch();
     for (WkfInstance instance : instances) {
-      if (engineService
-              .getEngine()
+      if (engineService.getEngine()
               .getHistoryService()
               .createHistoricProcessInstanceQuery()
               .processInstanceId(instance.getInstanceId())
               .singleResult()
-          == null) {
+              == null) {
         wkfInstanceRepository.remove(instance);
       }
     }
