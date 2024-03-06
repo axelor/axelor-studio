@@ -1,7 +1,5 @@
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
-import { getBool } from "../../../../../utils";
-
 /**
  * Create an entry to modify the name of an an element.
  *
@@ -25,7 +23,7 @@ export default function Name(element, options, translate, bpmnModeler) {
     return { [modelProperty]: bo.get(modelProperty) };
   };
 
-  const set = function (element, values, readOnly, translations) {
+  const set = function (element, values) {
     if (!bpmnModeler || !element) return;
     let elementRegistry = bpmnModeler.get("elementRegistry");
     let modeling = bpmnModeler.get("modeling");
@@ -36,28 +34,9 @@ export default function Name(element, options, translate, bpmnModeler) {
     } else {
       element[modelProperty] = values[modelProperty];
     }
-    if (!values[modelProperty]) {
-      modeling &&
-        modeling.updateProperties(shape, { [modelProperty]: undefined });
-      return;
-    }
-    let originalValue = `value:${values[modelProperty]}`;
-    let translatedValue = translate(`value:${values[modelProperty]}`);
-    let bo = getBusinessObject(element);
-    const isTranslation =
-      (bo && bo.$attrs && bo.$attrs["camunda:isTranslations"]) || false;
-    const isTranslated = getBool(isTranslation);
-    let value =
-      (translations && translations.length === 0) || !isTranslated
-        ? values[modelProperty]
-        : !readOnly
-        ? values[modelProperty]
-        : translatedValue === originalValue
-        ? values[modelProperty]
-        : translatedValue;
     modeling &&
       modeling.updateProperties(shape, {
-        [modelProperty]: value,
+        [modelProperty]: values[modelProperty],
       });
   };
 
@@ -68,6 +47,8 @@ export default function Name(element, options, translate, bpmnModeler) {
     widget: "textBox",
     get: options.get || get,
     set: options.set || set,
+    description:
+      "Disable 'Add translations' property or add respective language translation to change label",
   };
 
   return [nameEntry];

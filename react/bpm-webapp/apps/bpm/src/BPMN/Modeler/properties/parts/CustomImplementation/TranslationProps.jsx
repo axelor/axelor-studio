@@ -7,12 +7,13 @@ import {
   getTranslations,
   addTranslations,
   removeAllTranslations,
-  getInfo,
 } from "../../../../../services/api";
 import {
   TextField,
   Checkbox,
 } from "../../../../../components/properties/components";
+import Select from "../../../../../components/Select";
+import Alert from "../../../../../components/Alert";
 import { translate, getBool } from "../../../../../utils";
 import {
   Box,
@@ -24,6 +25,8 @@ import {
   Divider,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import { useStore } from "../../../../../store";
+import { getNameProperty } from "../../../extra";
 
 const useStyles = makeStyles({
   groupLabel: {
@@ -71,72 +74,99 @@ const useStyles = makeStyles({
     marginBottom: 10,
     padding: "0px 10px !important",
   },
+  select: {
+    width: "100%",
+  },
 });
+
+const getValue = (element) => {
+  if (!element) return;
+  const bo = getBusinessObject(element);
+  return bo?.[getNameProperty(element)];
+};
+
+const getKey = (element) => {
+  if (!element) return;
+  const bo = getBusinessObject(element);
+  return bo?.$attrs["camunda:key"] || bo?.[getNameProperty(element)];
+};
 
 export default function TranslationProps({
   element,
   bpmnModeler,
   index,
   label,
+  setDummyProperty = () => {},
 }) {
   const [isTranslations, setIsTranslations] = useState(false);
-  const [value, setValue] = useState(null);
   const [translations, setTranslations] = useState(null);
   const [isVisible, setVisible] = useState(false);
-  const [info, setInfo] = useState(null);
+  const { state } = useStore();
+  const { element: storeElement, info, languages } = state;
+  const [openSnackbar, setSnackbar] = useState({
+    open: false,
+    messageType: null,
+    message: null,
+  });
   const classes = useStyles();
 
-  const setDiagramValue = (val, isCheckbox = false) => {
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbar({
+      open: false,
+      messageType: null,
+      message: null,
+    });
+  };
+  const setDiagramValue = (val) => {
     if (!element) return;
-    const bo = getBusinessObject(element);
-    const isTranslation =
-      (bo && bo.$attrs && bo.$attrs["camunda:isTranslations"]) || false;
-    if (!getBool(isTranslation) && !isCheckbox) return;
-    const elementType = element && element.type;
-    let modelProperty =
-      elementType === "bpmn:TextAnnotation"
-        ? "text"
-        : elementType === "bpmn:Group"
-        ? "categoryValue"
-        : "name";
-    element.businessObject[modelProperty] = val;
+    const modelProperty = getNameProperty(element);
     let elementRegistry = bpmnModeler?.get("elementRegistry");
     let modeling = bpmnModeler?.get("modeling");
     let shape = elementRegistry.get(element.id);
     if (!shape) return;
-    modeling &&
-      modeling.updateProperties(shape, {
-        [modelProperty]: val,
-      });
+    modeling?.updateProperties(shape, {
+      [modelProperty]: val,
+    });
+    setDummyProperty();
   };
 
-  const onConfirm = async (translations) => {
-    const res = await addTranslations(translations);
-    setTranslations(res);
-    if (translations && translations.length > 0) {
-      const language = info && info["user.lang"];
-      if (language) {
-        const selectedTranslation = translations.find(
-          (t) => t.language === language
-        );
-        const value = selectedTranslation && selectedTranslation.message;
-        const bo = element && element.businessObject;
-        const elementType = element && element.type;
-        let modelProperty =
-          elementType === "bpmn:TextAnnotation"
-            ? "text"
-            : elementType === "bpmn:Group"
-            ? "categoryValue"
-            : "name";
-        const name = bo[modelProperty];
-        const key = bo.$attrs["camunda:key"];
-        element.businessObject.$attrs["camunda:key"] = key || name;
-        const diagramValue = value || key || name;
-        if (diagramValue) {
-          setDiagramValue(diagramValue);
-        }
+  const showTranslations = React.useCallback(
+    (translations) => {
+      const bo = getBusinessObject(element);
+      if (translations?.length <= 0) {
+        const diagramValue =
+          bo?.$attrs["camunda:key"] || bo?.[getNameProperty(element)];
+        if (!diagramValue) return;
+        setDiagramValue(diagramValue);
+        return;
       }
-    }
+      const language = info?.user?.lang;
+      if (!language) return;
+      const selectedTranslation = translations?.find(
+        (t) => t.language === language
+      );
+      const diagramValue =
+        selectedTranslation?.message ||
+        bo?.$attrs["camunda:key"] ||
+        bo?.[getNameProperty(element)];
+      if (!diagramValue) return;
+      setDiagramValue(diagramValue);
+    },
+    [element]
+  );
+
+  const onConfirm = async (translationsData) => {
+    const res = await addTranslations(
+      translationsData?.map((t) => ({
+        ...t,
+        key: t.key || `value:${getKey(element)}`,
+      }))
+    );
+    setTranslations(res?.length ? res : translations);
+    showTranslations(translationsData);
   };
 
   const addTranslation = () => {
@@ -145,7 +175,6 @@ export default function TranslationProps({
       {
         message: "",
         language: "",
-        key: `value:${value}`,
       },
     ]);
   };
@@ -153,65 +182,27 @@ export default function TranslationProps({
   const removeTranslation = async (index) => {
     const cloneTranslations = [...(translations || [])];
     const removedTranslations = [cloneTranslations[index]];
-    cloneTranslations.splice(index, 1);
-    if (
-      removedTranslations &&
-      removedTranslations.length > 0 &&
-      removedTranslations[0].id
-    ) {
-      const res = await removeAllTranslations(removedTranslations);
-      if (res) {
-        const bo = element && element.businessObject;
-        const elementType = element && element.type;
-        let modelProperty =
-          elementType === "bpmn:TextAnnotation"
-            ? "text"
-            : elementType === "bpmn:Group"
-            ? "categoryValue"
-            : "name";
-
-        const name = bo[modelProperty];
-        const key = bo.$attrs["camunda:key"];
-        if (cloneTranslations && cloneTranslations.length === 0) {
-          setDiagramValue(key || name);
-        }
-        if (cloneTranslations && cloneTranslations.length > 0) {
-          const language = info && info["user.lang"];
-          if (language) {
-            const selectedTranslation = cloneTranslations.find(
-              (t) => t.language === language
-            );
-            const value = selectedTranslation && selectedTranslation.message;
-            const bo = element && element.businessObject;
-            const elementType = element && element.type;
-            let modelProperty =
-              elementType === "bpmn:TextAnnotation"
-                ? "text"
-                : elementType === "bpmn:Group"
-                ? "categoryValue"
-                : "name";
-            const name = bo[modelProperty];
-            const key = bo.$attrs["camunda:key"];
-            element.businessObject.$attrs["camunda:key"] = key || name;
-            const diagramValue = value || key || name;
-            if (diagramValue) {
-              setDiagramValue(diagramValue);
-            }
-          }
-        }
+    if (removedTranslations?.length > 0) {
+      cloneTranslations.splice(index, 1);
+      const res =
+        removedTranslations?.[0]?.id &&
+        (await removeAllTranslations(removedTranslations));
+      if (res || !removedTranslations?.[0]?.id) {
+        setDummyProperty();
+        setTranslations(cloneTranslations);
+        showTranslations(cloneTranslations);
       }
     }
-    setTranslations(cloneTranslations);
   };
 
-  const setProperty = (index, label, value, callConfirm = false) => {
+  const setProperty = (index, label, value, { message, language }) => {
     const cloneTranslations = [...(translations || [])];
     cloneTranslations[index] = {
       ...cloneTranslations[index],
       [label]: value,
     };
     setTranslations(cloneTranslations);
-    if (callConfirm) {
+    if (message && language) {
       onConfirm(cloneTranslations);
     }
   };
@@ -220,39 +211,18 @@ export default function TranslationProps({
     let isSubscribed = true;
     async function getAllTranslations() {
       if (!element) return;
-      const bo = element.businessObject;
+      const bo = getBusinessObject(element);
       if (!bo) return;
-      const elementType = element && element.type;
-      let modelProperty =
-        elementType === "bpmn:TextAnnotation"
-          ? "text"
-          : elementType === "bpmn:Group"
-          ? "categoryValue"
-          : "name";
-      const name = bo[modelProperty];
-      const key = bo.$attrs["camunda:key"];
-      const value = key || name;
+      const value = bo?.$attrs["camunda:key"] || bo[getNameProperty(element)];
       const translations = await getTranslations(value);
       if (isSubscribed) {
-        setValue(value);
         setTranslations(translations);
+        showTranslations(translations);
       }
     }
-    getAllTranslations();
+    isTranslations && getAllTranslations();
     return () => (isSubscribed = false);
-  }, [element]);
-
-  useEffect(() => {
-    let isSubscribed = true;
-    async function getUserInfo() {
-      const info = await getInfo();
-      if (isSubscribed) {
-        setInfo(info);
-      }
-    }
-    getUserInfo();
-    return () => (isSubscribed = false);
-  }, []);
+  }, [element, isTranslations]);
 
   useEffect(() => {
     let isSubscribed = true;
@@ -270,7 +240,11 @@ export default function TranslationProps({
     if (!canvas) return;
     let isSubscribed = true;
     let rootElement = canvas.getRootElement();
-    if ((element && element.id) !== (rootElement && rootElement.id)) {
+
+    if (
+      (element && element.id) !== (rootElement && rootElement.id) &&
+      getValue(storeElement)
+    ) {
       if (isSubscribed) {
         setVisible(true);
       } else {
@@ -280,7 +254,7 @@ export default function TranslationProps({
       setVisible(false);
     }
     return () => (isSubscribed = false);
-  }, [element, bpmnModeler]);
+  }, [element, bpmnModeler, getValue(storeElement)]);
 
   return (
     isVisible && (
@@ -306,6 +280,7 @@ export default function TranslationProps({
               set: function (e, value) {
                 const isTranslations = !value.isTranslations;
                 setIsTranslations(isTranslations);
+                setDummyProperty();
                 const bo = getBusinessObject(element);
                 if (!bo) return;
                 if (bo.$attrs) {
@@ -313,26 +288,12 @@ export default function TranslationProps({
                 } else {
                   bo.$attrs = { "camunda:isTranslations": isTranslations };
                 }
-
-                const language = info && info["user.lang"];
-                const selectedTranslation =
-                  translations &&
-                  translations.find((t) => t.language === language);
-                if (!language || !selectedTranslation) return;
-                const message =
-                  selectedTranslation && selectedTranslation.message;
-                const modelProperty =
-                  element && element.type === "bpmn:TextAnnotation"
-                    ? "text"
-                    : "name";
-                const name = bo[modelProperty];
-                const key = bo.$attrs["camunda:key"];
-                element.businessObject.$attrs["camunda:key"] = key || name;
-                const diagramValue = !isTranslations
-                  ? key || name
-                  : message || key || name;
-                if (diagramValue) {
-                  setDiagramValue(diagramValue, true);
+                if (isTranslations) {
+                  bo.$attrs["camunda:key"] = bo[getNameProperty(element)];
+                } else {
+                  bo[getNameProperty()] = bo?.$attrs["camunda:key"];
+                  setDiagramValue(bo?.[getNameProperty()]);
+                  delete bo.$attrs["camunda:key"];
                 }
               },
             }}
@@ -385,41 +346,45 @@ export default function TranslationProps({
                             set: function (e, values) {
                               if (translateKey.message === values.message)
                                 return;
-                              setProperty(
-                                index,
-                                "message",
-                                values.message,
-                                translateKey.id ? true : false
-                              );
+                              setProperty(index, "message", values.message, {
+                                ...translateKey,
+                                message: values?.message,
+                              });
                             },
                           }}
                           isLabel={false}
                         />
                       </TableCell>
                       <TableCell as="th" className={classes.tableCell}>
-                        <TextField
-                          element={element}
-                          rootClass={classes.textRoot}
-                          entry={{
-                            id: "language",
-                            modelProperty: "language",
-                            get: function () {
-                              return {
-                                language: translateKey.language,
-                              };
-                            },
-                            set: function (e, values) {
-                              if (translateKey.language === values.language)
-                                return;
-                              setProperty(
-                                index,
-                                "language",
-                                values.language,
-                                true
-                              );
-                            },
+                        <Select
+                          className={classes.select}
+                          isTranslated={true}
+                          update={(value) => {
+                            if (translateKey.language === value?.code) return;
+                            const isLang = translations.find(
+                              (t) => t.language === value?.code
+                            );
+                            if (isLang) {
+                              setSnackbar({
+                                open: true,
+                                messageType: "danger",
+                                message: translate(
+                                  "Duplicate languages are not allowed"
+                                ),
+                              });
+                              return;
+                            }
+                            setProperty(index, "language", value?.code, {
+                              ...translateKey,
+                              language: value?.code,
+                            });
                           }}
+                          name="language"
+                          value={languages?.find(
+                            (l) => l.code === translateKey.language
+                          )}
                           isLabel={false}
+                          options={languages}
                         />
                       </TableCell>
                       <TableCell as="th" className={classes.tableCell}>
@@ -440,6 +405,14 @@ export default function TranslationProps({
               </TableBody>
             </Table>
           </Box>
+        )}
+        {openSnackbar.open && (
+          <Alert
+            open={openSnackbar.open}
+            message={openSnackbar.message}
+            messageType={openSnackbar.messageType}
+            onClose={handleSnackbarClose}
+          />
         )}
       </div>
     )
