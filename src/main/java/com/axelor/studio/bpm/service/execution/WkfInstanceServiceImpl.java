@@ -824,7 +824,9 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  protected void removeRelatedFailedInstance(Model model,WkfProcess wkfProcess) {
+  protected void removeRelatedFailedInstance(Model model, WkfProcess wkfProcess) {
+    JPA.em().refresh(model);
+    JPA.em().refresh(wkfProcess);
     List<WkfInstance> instances =
             wkfInstanceRepository
                     .all()
