@@ -158,7 +158,8 @@ function ViewSelection({
 								fetchJSONFields(
 									fields.map((f) => f.id),
 									rest,
-									update
+									update,
+									draft
 								)
 								draft.customModel = record
 							}

@@ -46,7 +46,7 @@ export const getSchemaData = (views, fields, attrsList) => {
   return data
 }
 
-export const fetchJSONFields = (ids, record, update) => {
+export const fetchJSONFields = (ids, record, update, draft) => {
   const criteria = []
   if (ids.length) {
     criteria.push({ fieldName: "id", operator: "in", value: ids })
@@ -73,7 +73,6 @@ export const fetchJSONFields = (ids, record, update) => {
     })
   } else {
     const schema = generateCustomModelSchema([], record)
-    update((draft) => {
       draft.widgets = {
         ...schema.widgets,
       }
@@ -84,7 +83,6 @@ export const fetchJSONFields = (ids, record, update) => {
       draft.editWidget = -1
       draft.editWidgetType = null
       validateWidgets(draft, schema.widgets, false)
-    })
   }
 }
 
