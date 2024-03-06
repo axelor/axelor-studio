@@ -433,10 +433,10 @@ export default function CallActivityProps({
   }, [element]);
 
   useEffect(() => {
-    if (!element) return;
+    if (!element || !isVisible) return;
     const bo = getBusinessObject(element);
     updateModel(bo.calledElement);
-  }, [element, updateModel]);
+  }, [element, updateModel, isVisible]);
 
   useEffect(() => {
     const conditionValue = getProperty("conditionValue");
@@ -819,49 +819,51 @@ export default function CallActivityProps({
               </>
             }
           />
-          <Dialog
-            open={openAlert}
-            backdrop
-            centered
-            scrollable
-            className={classes.dialog}
-          >
-            <DialogHeader onCloseClick={() => setAlert(false)}>
-              <h3>{translate(alertTitle)}</h3>
-            </DialogHeader>
-            <DialogContent>
-              <Box as="p" color="body" fontSize={5}>
-                {translate(alertMessage)}
-              </Box>
-            </DialogContent>
-            <DialogFooter>
-              <Button
-                onClick={() => {
-                  setAlert(false);
-                  setAlertMessage(null);
-                  setAlertTitle(null);
-                  setReadOnly(false);
-                  setScript(getCallLinkCondition()?.condition);
-                  setProperty("conditionValue", undefined);
-                  setProperty("conditionCombinator", undefined);
-                  setOpenScriptDialog(true);
-                }}
-                variant="primary"
-                className={classes.save}
-              >
-                {translate("OK")}
-              </Button>
-              <Button
-                className={classes.save}
-                onClick={() => {
-                  setAlert(false);
-                }}
-                variant="secondary"
-              >
-                {translate("Cancel")}
-              </Button>
-            </DialogFooter>
-          </Dialog>
+          {openAlert && (
+            <Dialog
+              open={openAlert}
+              backdrop
+              centered
+              scrollable
+              className={classes.dialog}
+            >
+              <DialogHeader onCloseClick={() => setAlert(false)}>
+                <h3>{translate(alertTitle)}</h3>
+              </DialogHeader>
+              <DialogContent>
+                <Box as="p" color="body" fontSize={5}>
+                  {translate(alertMessage)}
+                </Box>
+              </DialogContent>
+              <DialogFooter>
+                <Button
+                  onClick={() => {
+                    setAlert(false);
+                    setAlertMessage(null);
+                    setAlertTitle(null);
+                    setReadOnly(false);
+                    setScript(getCallLinkCondition()?.condition);
+                    setProperty("conditionValue", undefined);
+                    setProperty("conditionCombinator", undefined);
+                    setOpenScriptDialog(true);
+                  }}
+                  variant="primary"
+                  className={classes.save}
+                >
+                  {translate("OK")}
+                </Button>
+                <Button
+                  className={classes.save}
+                  onClick={() => {
+                    setAlert(false);
+                  }}
+                  variant="secondary"
+                >
+                  {translate("Cancel")}
+                </Button>
+              </DialogFooter>
+            </Dialog>
+          )}
           <Divider className={classes.divider} />
         </React.Fragment>
         <AlertDialog

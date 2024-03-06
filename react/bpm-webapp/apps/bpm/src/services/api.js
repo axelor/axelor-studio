@@ -503,6 +503,7 @@ export async function getSubMenus(parentMenu) {
 }
 
 export async function getTranslations(key) {
+  if (!key) return;
   const res = await Service.search("com.axelor.meta.db.MetaTranslation", {
     data: {
       _domain: "self.key = :key",
@@ -809,3 +810,26 @@ export async function getActions(criteria = []) {
   const { data = [] } = res || {};
   return data;
 }
+
+export const getLanguages = async (options) => {
+  const res = await Service.search(
+    "com.axelor.apps.base.db.Localization",
+    options
+  );
+  const { data = [] } = res || {};
+  if (res.status === -1) {
+    return [
+      {
+        code: "en",
+        name: "English",
+        id: "en",
+      },
+      {
+        code: "fr",
+        name: "French",
+        id: "fr",
+      },
+    ];
+  }
+  return data;
+};

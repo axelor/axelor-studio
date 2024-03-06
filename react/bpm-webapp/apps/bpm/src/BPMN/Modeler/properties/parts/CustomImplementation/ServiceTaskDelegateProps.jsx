@@ -279,8 +279,8 @@ export default function ServiceTaskDelegateProps({
         setBamlModel(bamlModel[0]);
       }
     }
-    fetchModel();
-  }, [getProperty]);
+    isVisible && fetchModel();
+  }, [getProperty, isVisible]);
 
   useEffect(() => {
     const bo = getBusinessObject(element);

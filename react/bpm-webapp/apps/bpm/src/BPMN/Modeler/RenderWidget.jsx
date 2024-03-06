@@ -14,6 +14,7 @@ export default function RenderComponent({
   changeColor,
   bpmnModeler,
   readOnly,
+  setDummyProperty,
 }) {
   if (!entry && entry.widget) return;
   switch (entry.widget) {
@@ -24,6 +25,7 @@ export default function RenderComponent({
           element={selectedElement}
           readOnly={readOnly}
           canRemove={true}
+          setDummyProperty={setDummyProperty}
         />
       );
     case "textBox":
@@ -32,18 +34,32 @@ export default function RenderComponent({
           entry={entry}
           bpmnModeler={bpmnModeler}
           element={selectedElement}
+          setDummyProperty={setDummyProperty}
         />
       );
     case "selectBox":
-      return <SelectBox entry={entry} element={selectedElement} />;
+      return (
+        <SelectBox
+          entry={entry}
+          element={selectedElement}
+          setDummyProperty={setDummyProperty}
+        />
+      );
     case "checkbox":
-      return <Checkbox entry={entry} element={selectedElement} />;
+      return (
+        <Checkbox
+          entry={entry}
+          element={selectedElement}
+          setDummyProperty={setDummyProperty}
+        />
+      );
     case "colorPicker":
       return (
         <ColorPicker
           changeColor={changeColor}
           entry={entry}
           element={selectedElement}
+          setDummyProperty={setDummyProperty}
         />
       );
     default:
@@ -52,6 +68,7 @@ export default function RenderComponent({
           entry={entry}
           element={selectedElement}
           bpmnModeler={bpmnModeler}
+          setDummyProperty={setDummyProperty}
         />
       );
   }

@@ -319,6 +319,14 @@ export function isDefinition(element) {
   return element && element.$type === "bpmn:Definitions";
 }
 
+export function getNameProperty(element) {
+  return element?.type === "bpmn:TextAnnotation"
+    ? "text"
+    : element?.type === "bpmn:Group"
+    ? "categoryValue"
+    : "name";
+}
+
 const methods = {
   fetchId,
   uploadXml,
@@ -334,6 +342,7 @@ const methods = {
   getComments,
   getCommentsLength,
   isDefinition,
+  getNameProperty,
 };
 
 export default methods;
