@@ -2027,3 +2027,4 @@
 "yellow",,,
 "{{$fmt('name')}}",,,
 "Editor",,,
+"Disable 'Add translations' property or add respective language translation to change label",,,
