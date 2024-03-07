@@ -17,6 +17,7 @@
     <string name="logText" title="Log" large="true"/>
     <string name="node" title="Node"/>
     <boolean name="instanceError" title="Instance error"/>
+    <string name="currentError" title="Error"/>
     <many-to-one name="wkfProcess" ref="WkfProcess"/>
     <one-to-many ref="com.axelor.studio.db.WkfInstanceMigrationHistory"
       name="wkfInstanceMigrationHistory" title="Migration History" mappedBy="wkfInstance"
