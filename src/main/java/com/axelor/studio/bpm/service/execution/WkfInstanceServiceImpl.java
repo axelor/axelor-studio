@@ -157,7 +157,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         if (wkfInstance == null) {
           return helpText;
         }
-        setWkfInstanceError(wkfInstance, false);
+        setWkfInstanceError(wkfInstance, false, null);
         try {
           ProcessInstance processInstance =
               findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
@@ -168,7 +168,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
             helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
           }
         } catch (Exception e) {
-          setWkfInstanceError(wkfInstance, true);
+          setWkfInstanceError(wkfInstance, true, e.getMessage());
           throw e;
         }
       }
@@ -854,8 +854,9 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value) {
+  protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value,String error) {
     wkfInstance.setInstanceError(value);
+    wkfInstance.setCurrentError(error);
     wkfInstanceRepository.save(wkfInstance);
   }
 }
