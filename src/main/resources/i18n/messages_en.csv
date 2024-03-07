@@ -2035,3 +2035,4 @@
 "The panel can be collapsed or expanded based on the evaluation of the context.",,,
 "The expression is evaluated in the context and displayed",,,
 "This expression evaluates the context to determine whether the value for the field is valid or not.",,,
+"Disable 'Add translations' property or add respective language translation to change label",,,

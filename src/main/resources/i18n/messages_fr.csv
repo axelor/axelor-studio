@@ -2077,3 +2077,4 @@
 "The panel can be collapsed or expanded based on the evaluation of the context.","Le panneau peut être réduit ou étendu en fonction de l'évaluation du contexte.",,
 "The expression is evaluated in the context and displayed","L'expression est évaluée dans le contexte et affichée.",,
 "This expression evaluates the context to determine whether the value for the field is valid or not.","Cette expression évalue le contexte pour déterminer si la valeur du champ est valide ou non.",,
+"Disable 'Add translations' property or add respective language translation to change label","Désactiver la propriété 'Ajouter des traductions' ou ajouter la traduction dans la langue respective pour modifier l'étiquette.",,
