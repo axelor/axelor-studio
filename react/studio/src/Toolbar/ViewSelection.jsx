@@ -442,6 +442,7 @@ function ViewSelection({
 				label="Type"
 				onChange={handleTypeSelect}
 				disableClearable
+				autoComplete={false}
 			/>
 			<Select
 				key={modelType}

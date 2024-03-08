@@ -942,5 +942,5 @@ div[role="listbox"] {
 }
 
 .toolbar-container div[role="combobox"] {
-  max-width: 230px;
+  width: 230px;
 }
