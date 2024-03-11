@@ -109,6 +109,7 @@ const fetchId = (isInstance, propUrl) => {
   const regexBPMNTask = /[?&]taskIds=([^&#]*)/g; // ?id=1&taskIds=1,2
   const regexBPMNActivityCounts = /[?&]activityCount=([^&#]*)/g; // ?id=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1
   const regexBPMNInstanceId = /[?&]instanceId=([^&#]*)/g; // ?instanceId=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1
+  const regexBPMNErrorNode = /[?&]node=([^&#]*)/g; // ?instanceId=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1&node=activity1
 
   const url = propUrl || window.location.href;
   let matchBPMNId,
@@ -117,7 +118,9 @@ const fetchId = (isInstance, propUrl) => {
     activityCounts,
     matchInstanceId,
     id,
-    taskIds;
+    taskIds,
+    matchErrorNode,
+    errorNode;
 
   while ((matchBPMNTasksId = regexBPMNTask.exec(url))) {
     let ids = matchBPMNTasksId[1];
@@ -127,30 +130,32 @@ const fetchId = (isInstance, propUrl) => {
   while ((matchActivityCounts = regexBPMNActivityCounts.exec(url))) {
     activityCounts = matchActivityCounts[1];
   }
-
+  while ((matchErrorNode = regexBPMNErrorNode.exec(url))) {
+    errorNode = matchErrorNode[1];
+  }
   if (isInstance) {
     while ((matchInstanceId = regexBPMNInstanceId.exec(url))) {
       id = matchInstanceId[1];
-      return { id, taskIds, activityCounts };
+      return { id, taskIds, activityCounts, errorNode };
     }
   } else {
     while ((matchBPMNId = regexBPMN.exec(url))) {
       id = matchBPMNId[1];
-      return { id, taskIds, activityCounts };
+      return { id, taskIds, activityCounts, errorNode };
     }
   }
 };
 
-const fetchDiagram = async (id, taskIds, activityCounts) => {
+const fetchDiagram = async (id, taskIds, activityCounts, errorNode) => {
   if (id) {
     let res = await Service.fetchId("com.axelor.studio.db.WkfModel", id);
     const wkf = (res && res.data && res.data[0]) || {};
     const { diagramXml } = wkf;
-    openDiagramImage(taskIds, diagramXml, activityCounts);
+    openDiagramImage(taskIds, diagramXml, activityCounts, errorNode);
   }
 };
 
-const fetchInstanceDiagram = async (id, taskIds, activityCounts) => {
+const fetchInstanceDiagram = async (id, taskIds, activityCounts, errorNode) => {
   if (id) {
     let actionRes = await Service.action({
       model: "com.axelor.studio.db.WkfModel",
@@ -169,12 +174,12 @@ const fetchInstanceDiagram = async (id, taskIds, activityCounts) => {
       actionRes.data[0].values
     ) {
       const { xml } = actionRes.data[0].values;
-      openDiagramImage(taskIds, xml, activityCounts);
+      openDiagramImage(taskIds, xml, activityCounts, errorNode);
     }
   }
 };
 
-const openDiagramImage = (taskIds, diagramXml, activityCounts) => {
+const openDiagramImage = (taskIds, diagramXml, activityCounts, errorNode) => {
   if (!diagramXml) return;
   bpmnViewer.importXML(diagramXml, (err) => {
     if (err) {
@@ -240,6 +245,24 @@ const openDiagramImage = (taskIds, diagramXml, activityCounts) => {
         },
         html: `<div class="diagram-note">${overlayActivity.count}</div>`,
       });
+
+      overlayActivity.id === errorNode &&
+        overlays.add(overlayActivity.id, "note", {
+          position: {
+            bottom: 18,
+            right: 44,
+          },
+          html: `<div class="diagram-error-note">
+        <div class="error-count">!<div>
+        <div class="error-message">
+        <h2>Error: Failed BPMN Process</h2>
+        <div class="error-details">
+          <p class="error-code">Node:  ${errorNode}</p>
+          <p>The process failed due to an error.</p>
+        </div>
+      </div>
+        </div>`,
+        });
     });
   });
 };
@@ -347,8 +370,8 @@ function BpmnViewerComponent({ isInstance }) {
     ) {
       handleSnackbarClick("success", "Restarted successfully");
       const { updatedUrl } = actionRes?.data[0]?.values || {};
-      const { taskIds, activityCounts } = fetchId(true, updatedUrl);
-      fetchInstanceDiagram(id, taskIds, activityCounts);
+      const { taskIds, activityCounts, errorNode } = fetchId(true, updatedUrl);
+      fetchInstanceDiagram(id, taskIds, activityCounts, errorNode);
     } else {
       handleSnackbarClick(
         "danger",
@@ -395,7 +418,7 @@ function BpmnViewerComponent({ isInstance }) {
       container: "#canvas-task",
       additionalModules: [readOnlyModule],
     });
-    let { id, taskIds, activityCounts } = fetchId(isInstance) || {};
+    let { id, taskIds, activityCounts, errorNode } = fetchId(isInstance) || {};
     setId(id);
     setTaskIds(taskIds);
     setActivityCounts(activityCounts);
@@ -409,9 +432,9 @@ function BpmnViewerComponent({ isInstance }) {
         }
       });
       setActivityIds(ids);
-      fetchInstanceDiagram(id, taskIds, activityCounts);
+      fetchInstanceDiagram(id, taskIds, activityCounts, errorNode);
     } else {
-      fetchDiagram(id, taskIds, activityCounts);
+      fetchDiagram(id, taskIds, activityCounts, errorNode);
     }
   }, [isInstance]);
 
