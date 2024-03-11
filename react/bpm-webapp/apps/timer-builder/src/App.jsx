@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import { makeStyles } from "@material-ui/core"
+import Tooltip from "./components/Tooltip"
 import { parse } from "iso8601-duration"
 import cronValidate from "cron-validate"
 
@@ -67,7 +68,9 @@ function Cron({
 }) {
   const [localError, setLocalError] = useState("") //Errors that happen while changing values
   const isFirstRender = useRef(true)
-
+  const copy = () => {
+    navigator.clipboard.writeText(timerDefinition || originalExpression)
+  }
   useEffect(() => {
     isFirstRender.current = false
   }, [])
@@ -102,28 +105,24 @@ function Cron({
 
   return (
     <div className={className}>
-      <InputLabel
-        fontSize={4}
-        d="flex"
-        justifyContent="center"
-        style={{ marginBlock: "1rem" }}
-      >
-        {timerDefinition || originalExpression}
-      </InputLabel>
-
+      <Tooltip title={t("Copy to clipboard")} >
+        <InputLabel w="100" fontSize="4" textAlign="center" style={{ marginBlock: "1rem", cursor: "pointer" }} onClick={copy}>
+          {timerDefinition || originalExpression}
+        </InputLabel>
+      </Tooltip>
       {localError && (
         <InputLabel
-          d="flex"
-          justifyContent="center"
-          textTransform="capitalize"
-          color="var(--bs-red)"
+          w="100"
+          fontSize="5"
+          textAlign="center"
+          fontWeight="bold"
           style={{
             marginBlock: "0.5rem",
             color: "red",
             marginInlineEnd: "auto",
           }}
         >
-          {t(localError)}
+          {capitalize(t(localError))}
         </InputLabel>
       )}
       <ReQuartzCron
@@ -137,11 +136,12 @@ function Cron({
         }
         {...(lang
           ? {
-              localization: localization[lang],
-            }
+            localization: localization[lang],
+          }
           : {})}
       />
     </div>
+
   )
 }
 
@@ -170,6 +170,8 @@ const TABS = [
 
 const TIMER_DEFINITION_TYPE_TABS = {
   timeDuration: [1],
+  iso: [2],
+  cron: [3],
   timeCycle: [2, 3],
 }
 
@@ -254,11 +256,11 @@ function Actions({ onOK, onCancel, t, error }) {
 }
 
 function App({
-  timerDefinitionType,
+  timerDefinitionType = "cron",
   isDialog = false,
   open,
-  onClose = () => {},
-  onChange = () => {},
+  onClose = () => { },
+  onChange = () => { },
   t = e => e,
   value: originalExpression,
 }) {
