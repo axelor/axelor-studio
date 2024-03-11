@@ -65,7 +65,7 @@ public class WkfRequestListener {
   }
 
   public void onBeforeTransactionComplete(@Observes BeforeTransactionComplete event)
-      throws Exception {
+      throws ClassNotFoundException {
 
     String tenantId = BpmTools.getCurentTenant();
     if (!WkfCache.WKF_MODEL_CACHE.containsKey(tenantId)) {
@@ -76,9 +76,10 @@ public class WkfRequestListener {
     processDeleted(event, tenantId);
   }
 
-  private void processUpdated(BeforeTransactionComplete event, String tenantId) throws Exception {
+  private void processUpdated(BeforeTransactionComplete event, String tenantId)
+      throws ClassNotFoundException {
 
-    Set<? extends Model> updated = new HashSet<Model>(event.getUpdated());
+    Set<? extends Model> updated = new HashSet<>(event.getUpdated());
 
     for (Model model : updated) {
       String modelName = EntityHelper.getEntityClass(model).getName();
@@ -94,7 +95,7 @@ public class WkfRequestListener {
   }
 
   @SuppressWarnings("unchecked")
-  public void onRequest(@Observes PostAction postAction) throws Exception {
+  public void onRequest(@Observes PostAction postAction) throws ClassNotFoundException {
 
     Context context = postAction.getContext();
 
@@ -174,7 +175,7 @@ public class WkfRequestListener {
   @Transactional(rollbackOn = Exception.class)
   public void processDeleted(BeforeTransactionComplete event, String tenantId) {
 
-    Set<? extends Model> deleted = new HashSet<Model>(event.getDeleted());
+    Set<? extends Model> deleted = new HashSet<>(event.getDeleted());
 
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();
