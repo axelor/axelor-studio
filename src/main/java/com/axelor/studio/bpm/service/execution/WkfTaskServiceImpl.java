@@ -18,25 +18,24 @@
 package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.auth.AuthUtils;
-import com.axelor.auth.db.User;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.db.MetaJsonRecord;
-import com.axelor.studio.app.service.AppService;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
+import com.axelor.studio.bpm.service.app.AppBpmService;
+import com.axelor.studio.db.AppBpm;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
-import com.axelor.studio.db.repo.WkfInstanceRepository;
-import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
-import com.axelor.studio.translation.ITranslation;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import java.lang.invoke.MethodHandles;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -44,6 +43,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -54,42 +54,35 @@ import org.slf4j.LoggerFactory;
 
 public class WkfTaskServiceImpl implements WkfTaskService {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfTaskServiceImpl.class);
-
-  protected static final int RECURSIVE_TASK_EXECUTION_COUNT_LIMIT = 100;
-
-  protected static final int RECURSIVE_TASK_EXECUTION_SECONDS_LIMIT = 10;
-
-  protected WkfTaskConfigRepository wkfTaskConfigRepository;
-
-  protected WkfInstanceService wkfInstanceService;
-
-  protected WkfInstanceRepository wkfInstanceRepository;
-
-  protected WkfProcessRepository wkfProcessRepository;
-
-  protected WkfCommonService wkfService;
-
-  protected AppService appService;
+  protected static final int DEFAULT_RECURSIVE_TASK_EXECUTION_DEPTH_LIMIT = 100;
+  protected static final int DEFAULT_RECURSIVE_TASK_EXECUTION_DURATION_LIMIT = 10;
 
   protected int recursiveTaskExecutionCount = 0;
-
   protected LocalTime recursiveTaskExecutionTime = LocalTime.now();
+
+  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  protected WkfTaskConfigRepository wkfTaskConfigRepository;
+  protected WkfInstanceService wkfInstanceService;
+  protected WkfCommonService wkfService;
+  protected AppBpmService appBpmService;
 
   @Inject
   public WkfTaskServiceImpl(
       WkfTaskConfigRepository wkfTaskConfigRepository,
       WkfInstanceService wkfInstanceService,
-      WkfInstanceRepository wkfInstanceRepository,
-      WkfProcessRepository wkfProcessRepository,
       WkfCommonService wkfService,
-      AppService appService) {
+      AppBpmService appBpmService) {
     this.wkfTaskConfigRepository = wkfTaskConfigRepository;
     this.wkfInstanceService = wkfInstanceService;
-    this.wkfInstanceRepository = wkfInstanceRepository;
-    this.wkfProcessRepository = wkfProcessRepository;
     this.wkfService = wkfService;
-    this.appService = appService;
+    this.appBpmService = appBpmService;
+  }
+
+  @Override
+  public void reset() {
+    recursiveTaskExecutionTime = LocalTime.now();
+    recursiveTaskExecutionCount = 0;
   }
 
   @Override
@@ -142,45 +135,43 @@ public class WkfTaskServiceImpl implements WkfTaskService {
       }
 
       if (expressionVariables == null) {
-        expressionVariables = new HashMap<String, Object>();
+        expressionVariables = new HashMap<>();
         expressionVariables.putAll(processVariables);
         expressionVariables.putAll(context);
       }
 
-      if (!validButtons.isEmpty() || config.getExpression() != null) {
-
-        Map<String, Object> btnVariables = new HashMap<String, Object>();
-        validButtons.forEach(button -> btnVariables.put(button, button.equals(signal)));
-
-        Map<String, Object> variables = wkfService.createVariables(btnVariables);
-        variables.putAll(ctxVariables);
-
-        if (config.getExpression() != null) {
-          expressionVariables.putAll(engine.getTaskService().getVariables(task.getId()));
-          expressionVariables.entrySet().removeIf(it -> Strings.isNullOrEmpty(it.getKey()));
-          Boolean validExpr =
-              (Boolean) wkfService.evalExpression(expressionVariables, config.getExpression());
-          if (validExpr == null || !validExpr) {
-            log.debug("Not a valid expr: {}", config.getExpression());
-            if (!validButtons.isEmpty()) {
-              helpText = config.getHelpText();
-            }
-            continue;
-          }
-
-          log.debug("Valid expr: {}", config.getExpression());
-        }
-
-        User user = AuthUtils.getUser();
-        if (user != null) {
-          engine.getTaskService().setAssignee(task.getId(), user.getId().toString());
-        } else {
-          engine.getTaskService().setAssignee(task.getId(), "0");
-        }
-
-        engine.getTaskService().complete(task.getId(), variables);
-        taskExecuted = true;
+      if (validButtons.isEmpty() && config.getExpression() == null) {
+        continue;
       }
+
+      Map<String, Object> btnVariables = new HashMap<>();
+      validButtons.forEach(button -> btnVariables.put(button, button.equals(signal)));
+
+      Map<String, Object> variables = wkfService.createVariables(btnVariables);
+      variables.putAll(ctxVariables);
+
+      if (config.getExpression() != null) {
+        expressionVariables.putAll(engine.getTaskService().getVariables(task.getId()));
+        expressionVariables.entrySet().removeIf(it -> Strings.isNullOrEmpty(it.getKey()));
+        Boolean validExpr =
+            (Boolean) wkfService.evalExpression(expressionVariables, config.getExpression());
+        if (validExpr == null || !validExpr) {
+          log.debug("Not a valid expr: {}", config.getExpression());
+          if (!validButtons.isEmpty()) {
+            helpText = config.getHelpText();
+          }
+          continue;
+        }
+
+        log.debug("Valid expr: {}", config.getExpression());
+      }
+
+      String userId =
+          Optional.ofNullable(AuthUtils.getUser()).map(Model::getId).orElse(0L).toString();
+      engine.getTaskService().setAssignee(task.getId(), userId);
+
+      engine.getTaskService().complete(task.getId(), variables);
+      taskExecuted = true;
     }
 
     Execution execution =
@@ -194,13 +185,27 @@ public class WkfTaskServiceImpl implements WkfTaskService {
       engine.getRuntimeService().setVariables(execution.getId(), ctxVariables);
     }
 
-    recursiveTaskExecutionCount++;
+    AppBpm appBpm = appBpmService.getAppBpm();
 
-    if (recursiveTaskExecutionCount >= RECURSIVE_TASK_EXECUTION_COUNT_LIMIT
-        && ChronoUnit.SECONDS.between(recursiveTaskExecutionTime, LocalTime.now())
-            <= RECURSIVE_TASK_EXECUTION_SECONDS_LIMIT) {
-      throw new IllegalStateException(I18n.get(ITranslation.INFINITE_EXECUTION));
+    Integer taskExecutionRecursivityTimeLimit =
+        Optional.ofNullable(appBpm.getTaskExecutionRecursivityDurationLimit())
+            .orElse(DEFAULT_RECURSIVE_TASK_EXECUTION_DURATION_LIMIT);
+    boolean hasExceededMaxTime =
+        Integer.signum(taskExecutionRecursivityTimeLimit) >= 0
+            && ChronoUnit.SECONDS.between(recursiveTaskExecutionTime, LocalTime.now())
+                >= taskExecutionRecursivityTimeLimit;
+
+    Integer taskExecutionRecursivityDepthLimit =
+        Optional.ofNullable(appBpm.getTaskExecutionRecursivityDepthLimit())
+            .orElse(DEFAULT_RECURSIVE_TASK_EXECUTION_DEPTH_LIMIT);
+    boolean hasExceededMaxDepth =
+        Integer.signum(taskExecutionRecursivityDepthLimit) >= 0
+            && ++recursiveTaskExecutionCount >= taskExecutionRecursivityDepthLimit;
+
+    if (hasExceededMaxDepth && hasExceededMaxTime) {
+      throw new IllegalStateException(I18n.get(BpmExceptionMessage.INFINITE_EXECUTION));
     }
+
     if (taskExecuted
         && wkfInstanceService.isActiveProcessInstance(
             processInstance.getId(), engine.getRuntimeService())) {
@@ -213,15 +218,15 @@ public class WkfTaskServiceImpl implements WkfTaskService {
 
   protected List<String> getValidButtons(String signal, String button) {
 
-    if (button != null) {
-      List<String> buttons = Arrays.asList(button.split(","));
-      if (buttons.contains(signal)) {
-        return buttons;
-      }
-      return null;
+    if (button == null) {
+      return new ArrayList<>();
     }
 
-    return new ArrayList<String>();
+    List<String> buttons = Arrays.asList(button.split(","));
+    if (buttons.contains(signal)) {
+      return buttons;
+    }
+    return null;
   }
 
   protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {

@@ -49,6 +49,9 @@ public final class BpmExceptionMessage {
   public static final String CANT_RESTART_INACTIVE_PROCESS = /*$$(*/
       "Can't restart inactive process" /*)*/;
 
+  public static final String INFINITE_EXECUTION = /*$$(*/
+      "Infinite loop execution suspsected"; /*)*/
+
   // BPM studio
   public static final String BPM_STUDIO_TEXT = /*$$(*/ "Text" /*)*/;
   public static final String BPM_STUDIO_ENABLE = /*$$(*/ "Enable" /*)*/;
