@@ -833,3 +833,38 @@ export const getLanguages = async (options) => {
   }
   return data;
 };
+export async function getProcessInstance(instanceId) {
+  if(!instanceId) return
+  const entity = `com.axelor.studio.db.WkfInstance`;
+  const payload={
+    offset: 0,
+    fields: [
+        "instanceId",
+      "currentError",
+      "wkfProcess.wkfModel"
+    ],
+    limit: 40,
+    data: {
+        _domain: null,
+        _domainContext: {
+            _model: "com.axelor.studio.db.WkfInstance",
+            _id: null
+        },
+        criteria: [
+            {
+                operator: "and",
+                criteria: [
+                    {
+                        fieldName: "instanceId",
+                        value: instanceId,
+                        operator: "="
+                    }
+                ]
+            }
+        ]
+    }
+}
+  const res = await Service.search(entity, payload);
+  const { data = [] } = res || {};
+  return data[0];
+}

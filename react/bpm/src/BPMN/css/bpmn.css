@@ -111,9 +111,10 @@ h1 {
 }
 
 .diagram-note {
-  color: var(--bs-body-color);
+  color: var(--bs-body-bg);
   height: 25px;
   width: fit-content;
+  font-size: 12px;
   min-width: 25px;
   background-color: var(--bs-green);
   border-radius: 50%;
@@ -121,6 +122,115 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.diagram-error-note {
+  position: relative;
+  display: inline-block;
+}
+
+.error-count {
+  color: var(--bs-body-bg);
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+  font-size: 12px;
+  background-color: var(--bs-danger);
+  font-weight: 500;
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.error-popup {
+  background-color: var(--bs-danger-bg-subtle);
+  border: 1px solid var(--bs-danger-border-subtle);
+  border-radius: var(--bs-border-radius);
+  padding: 8px;
+  display: block;
+  width: 300px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) scaleY(0);
+  z-index: 1;
+  transition: transform 0.3s ease;
+  color: var(--bs-emphasis-color);
+}
+
+/* Arrow-like tooltip */
+.error-popup::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  max-height: 400px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent var(--bs-danger-border-subtle)
+    transparent;
+  transform: translateX(-50%);
+}
+
+.diagram-error-note:hover .error-popup {
+  transform: translateX(-50%) scaleY(1);
+}
+
+.diagram-error-note .above {
+  transform-origin: bottom center;
+  bottom: 30px;
+}
+
+.diagram-error-note .below {
+  transform-origin: top center;
+  top: calc(100% + 10px);
+}
+
+.error-popup.above::before {
+  bottom: -16px;
+  border-color: var(--bs-danger-border-subtle) transparent transparent
+    transparent;
+}
+.error-popup.below::before {
+  border-color: transparent transparent var(--bs-danger-border-subtle)
+    transparent;
+}
+
+.error-popup h2 {
+  font-size: var(--bs-body-font-size) / 2;
+  font-weight: 600;
+  color: var(--bs-danger);
+}
+.error-popup .error-message {
+  padding: 0 !important;
+  margin: 0 !important;
+  font-weight: 500;
+  height: 70px;
+  overflow-y: auto;
+  resize: vertical;
+  overflow-x: hidden;
+}
+
+.error-code {
+  font-weight: bold !important;
+}
+
+.error-fix-btn {
+  padding: 1;
+  background-color: var(--bs-link-color);
+  color: var(--bs-white);
+  border-radius: 5.625px;
+  box-shadow: none;
+  border: none;
+  padding: 4px 8px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.error-fix-btn:hover {
+  background-color: var(--bs-link-hover-color);
 }
 
 .toolbar-buttons {

@@ -145,6 +145,11 @@ function BpmnModelerComponent() {
 
   const diagramXmlRef = React.useRef(null);
 
+  const getQueryParamValue = (key = "") => {
+    const params = new URL(document.location).searchParams;
+    return params.get(key);
+  };
+
   const getBase64SVG = async () => {
     const { svg } = await bpmnModeler.saveSVG({ format: true });
     const base64SVG = await convertSVGtoBase64(svg);
@@ -299,7 +304,19 @@ function BpmnModelerComponent() {
         let tabs = getTabs(bpmnModeler, definitions, setDummyProperty);
         setTabs(tabs);
         setTabValue(0);
-        setSelectedElement(definitions);
+        const focusedNodeId = getQueryParamValue("node");
+        const focusedNode = bpmnModeler
+          .get("elementRegistry")
+          .get(focusedNodeId);
+        if (focusedNode) {
+          let selectionService = bpmnModeler.get("selection");
+          selectionService?.select(focusedNode);
+          updateTabs({
+            element: focusedNode,
+          });
+        } else {
+          setSelectedElement(definitions);
+        }
         let elementRegistry = bpmnModeler.get("elementRegistry");
         let modeling = bpmnModeler.get("modeling");
         let nodes = elementRegistry && elementRegistry._elements;

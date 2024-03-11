@@ -854,7 +854,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value,String error) {
+  protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value, String error) {
     wkfInstance.setInstanceError(value);
     wkfInstance.setCurrentError(error);
     wkfInstanceRepository.save(wkfInstance);
