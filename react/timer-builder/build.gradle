@@ -1,4 +1,4 @@
-description = 'Axelor\'s BPM webapp'
+description = 'Axelor\'s Timer builder'
 
 buildscript {
     repositories {
@@ -42,78 +42,38 @@ node {
     download = true
 }
 
-tasks.register('bpmBuild', PnpmTask) {
+tasks.register('timerBuild', PnpmTask) {
     group = 'axelor'
-    description = 'Build BPM webapp'
+    description = 'Build Timer builder'
     environment = [
             CI: 'false'
     ]
 
-    outputs.dir("$projectDir/apps/bpm/build")
-    inputs.files("$projectDir/package.json", "$projectDir/pnpm-lock.yaml",
-            "$projectDir/apps/bpm/package.json", "$projectDir/apps/bpm/pnpm-lock.yaml",
-            "$projectDir/apps/generic-builder/package.json", "$projectDir/apps/generic-builder/pnpm-lock.yaml",
-            "$projectDir/apps/mapper/package.json", "$projectDir/apps/mapper/pnpm-lock.yaml",
-            "$projectDir/apps/timer-builder/package.json")
-    inputs.dir("$projectDir/apps/bpm/src")
-    inputs.dir("$projectDir/apps/bpm/public")
-    inputs.dir("$projectDir/apps/generic-builder/src")
-    inputs.dir("$projectDir/apps/generic-builder/public")
-    inputs.dir("$projectDir/apps/mapper/src")
-    inputs.dir("$projectDir/apps/mapper/public")
-    inputs.dir("$projectDir/apps/timer-builder/src")
-    inputs.dir("$projectDir/apps/timer-builder/public")
+    outputs.dir("$projectDir/build")
+    inputs.files("$projectDir/package.json", "$projectDir/pnpm-lock.yaml")
+    inputs.dir("$projectDir/src")
+    inputs.dir("$projectDir/public")
 
-    dependsOn 'bpmInstall'
-    mustRunAfter 'bpmInstall'
+    dependsOn 'timerInstall'
+    mustRunAfter 'timerInstall'
     args = ["build"]
 }
 
-tasks.register('bpmInstall', PnpmTask) {
+tasks.register('timerInstall', PnpmTask) {
     group = 'axelor'
-    description = 'Install BPM webapp dependencies'
-
-    args = ["install"]
-}
-
-tasks.register('mapperBuild', PnpmTask) {
-    group = 'axelor'
-    description = 'Build BPM webapp'
+    description = 'Install Timer builder dependencies'
     environment = [
             CI: 'false'
     ]
-
-    workingDir = file("apps/mapper")
-
-    outputs.dir("$projectDir/apps/mapper/build")
-    inputs.files("$projectDir/apps/mapper/package.json", "$projectDir/apps/mapper/pnpm-lock.yaml")
-    inputs.dir("$projectDir/apps/mapper/src")
-    inputs.dir("$projectDir/apps/mapper/public")
-
-    dependsOn 'mapperInstall'
-    mustRunAfter 'mapperInstall'
-    args = ["build"]
-}
-
-tasks.register('mapperInstall', PnpmTask) {
-    group = 'axelor'
-    description = 'Install BPM webapp dependencies'
-    environment = [
-            CI: 'false'
-    ]
-
-    workingDir = file("apps/mapper")
 
     args = ["install"]
 }
 
 
 tasks.register("reactBuild", GradleBuild) {
-    tasks = ["bpmBuild", "mapperBuild"]
+    tasks = ["timerBuild"]
 }
 
 tasks.register("reactClean", Delete) {
-    delete "build", "node_modules",
-            "apps/bpm/build", "apps/bpm/node_modules",
-            "apps/mapper/build", "apps/mapper/node_modules"
+    delete "build", "node_modules"
 }
