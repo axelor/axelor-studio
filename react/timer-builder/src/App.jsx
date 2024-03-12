@@ -258,7 +258,7 @@ function Actions({ onOK, onCancel, t, error }) {
 function App({
   timerDefinitionType = "cron",
   isDialog = false,
-  open,
+  open = true,
   onClose = () => { },
   onChange = () => { },
   t = e => e,

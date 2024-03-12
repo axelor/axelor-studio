@@ -48,7 +48,6 @@
     "react-dnd": "^14.0.2",
     "react-dnd-html5-backend": "^14.0.0",
     "react-dom": "^18.2.0",
-    "sass": "^1.67.0",
     "styled-components": "^5.2.0",
     "table-js": "^8.0.2",
     "timer-builder": "link:../timer-builder",
@@ -79,5 +78,8 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "./"
+  "homepage": "./",
+  "devDependencies": {
+    "sass": "^1.71.1"
+  }
 }
