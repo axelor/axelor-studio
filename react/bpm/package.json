@@ -57,7 +57,10 @@
     "xml2js": "^0.6.2"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
+    "install:generic-builder": "cd ../generic-builder && pnpm install",
+    "install:mapper": "cd ../mapper && pnpm install",
+    "install:timer-builder": "cd ../timer-builder && pnpm install",
+    "preinstall": "npx only-allow pnpm && pnpm run install:generic-builder && pnpm run install:mapper && pnpm run install:timer-builder",
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -81,5 +84,8 @@
   "homepage": "./",
   "devDependencies": {
     "sass": "^1.71.1"
+  },
+  "peerDependencies": {
+    "only-allow": "^1.2.1"
   }
 }

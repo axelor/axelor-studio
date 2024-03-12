@@ -33,7 +33,8 @@
     "yarn": "^1.22.10"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
+    "install:generic-builder": "cd ../generic-builder && pnpm install",
+    "preinstall": "npx only-allow pnpm && pnpm run install:generic-builder",
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -60,5 +61,8 @@
   "devDependencies": {
     "prettier": "^2.0.5",
     "sass": "^1.71.1"
+  },
+  "peerDependencies": {
+    "only-allow": "^1.2.1"
   }
 }
