@@ -122,6 +122,75 @@ h1 {
   align-items: center;
   justify-content: center;
 }
+.diagram-error-note {
+  position: relative;
+  display: inline-block;
+}
+
+.error-count {
+  color: var(--bs-body-color);
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+  background-color: var(--bs-danger);
+  font-weight: 550;
+  border-radius: 50%;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.error-message {
+  background-color: var(--bs-danger-bg-subtle);
+  border: 1px solid var(--bs-danger-border-subtle);
+  border-radius: var(--bs-border-radius);
+  padding: 8px;
+  display: block;
+  width: 250px;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: top center;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+/* Arrow-like tooltip */
+.error-message::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent var(--bs-danger-border-subtle)
+    transparent;
+  transform: translateX(-50%);
+}
+
+.diagram-error-note:hover .error-message {
+  transform: translateX(-50%) scaleY(1);
+}
+
+.error-message h2 {
+  font-size: var(--bs-body-font-size) / 2;
+  font-weight: 600;
+  color: var(--bs-danger);
+  margin-bottom: 4px !important;
+}
+.error-message p {
+  padding: 0 !important;
+  margin: 0 !important;
+  font-weight: 500;
+}
+
+.error-code {
+  font-weight: bold !important;
+}
 
 .toolbar-buttons {
   display: flex;
