@@ -21,5 +21,6 @@ gradle.ext.componentPaths = [
     [from: "react/studio/build", to: "webapp/studio"],
     [from: "react/bpm/build", to: "webapp/wkf-editor"],
     [from: "react/mapper/build", to: "webapp/mapper"],
-    [from: "react/webservices-builder/build", to: "webapp/ws-builder"]
+    [from: "react/webservices-builder/build", to: "webapp/ws-builder"],
+    [from: "react/timer-builder/build", to: "webapp/timer-builder"]
 ]

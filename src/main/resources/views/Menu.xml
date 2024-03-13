@@ -281,6 +281,13 @@
     <view type="grid" name="wkf-process-update-grid"/>
     <view type="form" name="wkf-process-update-form"/>
   </action-view>
+  <menuitem name="studio-app-cron-builder" title="CRON builder"
+    parent="menu-job-management" action="action-view-cron-builder" order="41"/>
+
+  <action-view name="action-view-cron-builder" title="CRON builder">
+    <view type="html" name="timer-builder"/>
+  </action-view>
+
 
 
 
