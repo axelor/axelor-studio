@@ -24,7 +24,6 @@ import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.CallMethod;
-import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
@@ -50,6 +49,7 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -78,26 +78,16 @@ import org.slf4j.LoggerFactory;
 
 public class WkfInstanceServiceImpl implements WkfInstanceService {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfInstanceServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected ProcessEngineService engineService;
-
   protected WkfInstanceRepository wkfInstanceRepository;
-
   protected WkfCommonService wkfService;
-
-  protected MetaFiles metaFiles;
-
   protected WkfTaskConfigRepository wkfTaskConfigRepository;
-
   protected WkfTaskService wkfTaskService;
-
   protected WkfEmailService wkfEmailService;
-
   protected WkfUserActionService wkfUserActionService;
-
   protected BpmErrorMessageService bpmErrorMessageService;
-
   protected WkfLogService wkfLogService;
 
   @Inject
@@ -105,7 +95,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       ProcessEngineService engineService,
       WkfInstanceRepository wkfInstanceRepository,
       WkfCommonService wkfService,
-      MetaFiles metaFiles,
       WkfTaskConfigRepository wkfTaskConfigRepository,
       WkfTaskService wkfTaskService,
       WkfEmailService wkfEmailService,
@@ -115,7 +104,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
-    this.metaFiles = metaFiles;
     this.wkfTaskConfigRepository = wkfTaskConfigRepository;
     this.wkfTaskService = wkfTaskService;
     this.wkfEmailService = wkfEmailService;
@@ -134,40 +122,42 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     OutputStreamAppender<ILoggingEvent> appender = null;
     String processInstanceId = null;
+    String modelProcessInstanceId = model.getProcessInstanceId();
+
     try {
-      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+      if (Strings.isNullOrEmpty(modelProcessInstanceId)) {
         checkSubProcess(model);
       }
 
-      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+      if (Strings.isNullOrEmpty(modelProcessInstanceId)) {
         addRelatedProcessInstanceId(model);
-        log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
+        log.debug("Model process instanceId added: {}", modelProcessInstanceId);
       }
 
-      if (!Strings.isNullOrEmpty(model.getProcessInstanceId())) {
-
-        ProcessEngine engine = engineService.getEngine();
-
-        WkfInstance wkfInstance =
-            wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
-
-        if (wkfInstance == null) {
-          return helpText;
-        }
-
-        ProcessInstance processInstance =
-            findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
-
-        if (processInstance != null && !processInstance.isEnded()) {
-          processInstanceId = processInstance.getId();
-          appender = wkfLogService.createOrAttachAppender(processInstanceId);
-          helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
-        }
+      if (Strings.isNullOrEmpty(modelProcessInstanceId)) {
+        return helpText;
       }
+
+      ProcessEngine engine = engineService.getEngine();
+
+      WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(modelProcessInstanceId);
+
+      if (wkfInstance == null) {
+        return helpText;
+      }
+
+      ProcessInstance processInstance =
+          findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
+
+      if (processInstance != null && !processInstance.isEnded()) {
+        processInstanceId = processInstance.getId();
+        appender = wkfLogService.createOrAttachAppender(processInstanceId);
+        helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
+      }
+
     } catch (Exception e) {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
-        final String finalProcessInstanceId = model.getProcessInstanceId();
         ForkJoinPool.commonPool()
             .submit(
                 () ->
@@ -175,10 +165,12 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
                         null,
                         e.getMessage(),
                         EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                        finalProcessInstanceId));
+                        modelProcessInstanceId));
       }
       throw e;
+
     } finally {
+      wkfTaskService.reset();
       if (appender != null) {
         wkfLogService.writeLog(processInstanceId);
       }

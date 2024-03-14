@@ -50,6 +50,8 @@ import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.WkfDisplayServiceImpl;
 import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.WkfModelServiceImpl;
+import com.axelor.studio.bpm.service.app.AppBpmService;
+import com.axelor.studio.bpm.service.app.AppBpmServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardService;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardTaskService;
@@ -128,6 +130,8 @@ import com.axelor.studio.service.JsonFieldService;
 import com.axelor.studio.service.JsonFieldServiceImpl;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.app.AppStudioService;
+import com.axelor.studio.service.app.AppStudioServiceImpl;
 import com.axelor.studio.service.builder.ReportBuilderService;
 import com.axelor.studio.service.builder.ReportBuilderServiceImpl;
 import com.axelor.studio.service.builder.StudioActionEmailService;
@@ -164,7 +168,10 @@ import com.axelor.studio.service.mapper.MapperScriptGeneratorService;
 import com.axelor.studio.service.mapper.MapperScriptGeneratorServiceImpl;
 import com.axelor.studio.service.transformation.TransformationService;
 import com.axelor.studio.service.transformation.TransformationServiceImpl;
-import com.axelor.studio.service.ws.*;
+import com.axelor.studio.service.ws.WsAuthenticatorService;
+import com.axelor.studio.service.ws.WsAuthenticatorServiceImpl;
+import com.axelor.studio.service.ws.WsConnectorService;
+import com.axelor.studio.service.ws.WsConnectorServiceImpl;
 
 public class StudioModule extends AxelorModule {
 
@@ -181,6 +188,7 @@ public class StudioModule extends AxelorModule {
     bind(MetaJsonFieldRepository.class).to(MetaJsonFieldRepo.class);
     bind(MetaJsonModelRepository.class).to(MetaJsonModelRepo.class);
     bind(StudioSelectionRepository.class).to(StudioSelectionRepo.class);
+    bind(AppStudioService.class).to(AppStudioServiceImpl.class);
     bind(MapperScriptGeneratorService.class).to(MapperScriptGeneratorServiceImpl.class);
     bind(AppLoaderImportService.class).to(AppLoaderImportServiceImpl.class);
     bind(AppLoaderExportService.class).to(AppLoaderExportServiceImpl.class);
@@ -207,6 +215,7 @@ public class StudioModule extends AxelorModule {
     bind(WkfInstanceRepository.class).to(BpmWkfInstanceRepository.class);
     bind(WkfModelRepository.class).to(BpmWkfModelRepository.class);
     bind(WkfDmnModelRepository.class).to(BpmWkfDmnModelRepository.class);
+    bind(AppBpmService.class).to(AppBpmServiceImpl.class);
     bind(WkfCommonService.class).to(WkfCommonServiceImpl.class);
     bind(WkfDisplayService.class).to(WkfDisplayServiceImpl.class);
     bind(WkfModelService.class).to(WkfModelServiceImpl.class);

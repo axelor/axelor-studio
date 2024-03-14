@@ -28,7 +28,10 @@
     <boolean name="isCustom" title="Custom"/>
     <boolean name="isExperimental" title="Experimental"/>
 
-    <one-to-one ref="com.axelor.studio.db.AppStudio" name="appStudio" mappedBy="app"/>
+    <one-to-one name="appStudio" title="App Studio" ref="com.axelor.studio.db.AppStudio"
+      mappedBy="app"/>
+    <one-to-one name="appBpm" title="App BPM" ref="com.axelor.studio.db.AppBpm"
+      mappedBy="app"/>
 
     <boolean name="isInAppView" title="Add the application to the App Management"/>
 

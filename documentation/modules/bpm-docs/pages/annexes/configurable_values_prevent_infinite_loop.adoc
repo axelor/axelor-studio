@@ -1,0 +1,16 @@
+=  Utiliser des valeurs configurables pour détecter une boucle infinie potentielle
+:toc-title:
+:page-pagination:
+:experimental:
+
+Il existe un énorme potentiel d'avoir une boucle infinie lors de l'exécution de tâches bpm.
+Lorsque le moteur BPM évalue une tâche, certains mécanismes garantissent que nous n'entrons pas dans une boucle infinie. Ce mécanisme est basé sur un temps d'exécution maximal et une profondeur maximale (pour éviter une récursion infinie).
+Ces valeurs sont désormais configurables dans `App BPM`, mais les valeurs par défaut sont conservées pour des raisons de compatibilité ascendante.
+Cette fonctionnalité permettra à la configuration personnalisée de détecter une boucle infinie potentielle dans l'évaluation des tâches.
+
+Veuillez accéder à ** Administration -> Gestion des applications -> Application BPM -> config **
+
+image::bpm-config.png[BPM config]
+
+* **Durée maximale (en secondes) pour l'exécution des tâches :**  Une valeur négative permet de ne pas mettre de limite de temps dans l'évaluation récursive des tâches. Veuillez n'utiliser une telle valeur seulement si vous connaissez les impacts.
+* **Profondeur maximale de récursion lors de l'exécution des tâches :**  Une valeur négative permet de ne pas mettre de limite de profondeur dans l'évaluation récursive des tâches. Veuillez n'utiliser une telle valeur seulement si vous connaissez les impacts.
