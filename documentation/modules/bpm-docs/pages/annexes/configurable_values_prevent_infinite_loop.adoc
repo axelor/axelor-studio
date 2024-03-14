@@ -6,7 +6,7 @@
 Il existe un énorme potentiel d'avoir une boucle infinie lors de l'exécution de tâches bpm.
 Lorsque le moteur BPM évalue une tâche, certains mécanismes garantissent que nous n'entrons pas dans une boucle infinie. Ce mécanisme est basé sur un temps d'exécution maximal et une profondeur maximale (pour éviter une récursion infinie).
 Ces valeurs sont désormais configurables dans `App BPM`, mais les valeurs par défaut sont conservées pour des raisons de compatibilité ascendante.
-cette fonctionnalité permettra à la configuration personnalisée de détecter une boucle infinie potentielle dans l'évaluation des tâches.
+Cette fonctionnalité permettra à la configuration personnalisée de détecter une boucle infinie potentielle dans l'évaluation des tâches.
 
 Veuillez accéder à ** Administration -> Gestion des applications -> Application BPM -> config **
 
