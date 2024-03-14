@@ -1,3 +1,17 @@
+## 2.2.0 (2024-03-14)
+
+#### Feature
+
+* BPM: Allow custom configuration to detect potential infinite loop in task evaluation
+
+  <details>
+  
+  When the BPM engine evaluates a task, there are some mechanisms to ensure we don't enter a infinite loop. This mechanism is based on a maximal time execution and a maximal depth (to prevent an infinite recursion).
+  These values are now configurable in 'App BPM', but the default values are kept for backward compatibility.
+  
+  </details>
+
+
 ## 2.1.0 (2024-02-23)
 
 #### Fix
