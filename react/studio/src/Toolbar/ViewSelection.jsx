@@ -158,7 +158,8 @@ function ViewSelection({
 								fetchJSONFields(
 									fields.map((f) => f.id),
 									rest,
-									update
+									update,
+									draft
 								)
 								draft.customModel = record
 							}
@@ -441,6 +442,7 @@ function ViewSelection({
 				label="Type"
 				onChange={handleTypeSelect}
 				disableClearable
+				autoComplete={false}
 			/>
 			<Select
 				key={modelType}
