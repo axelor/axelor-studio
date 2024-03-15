@@ -35,7 +35,14 @@ const getProcessId = (element) => {
   return processRef?.id || bo?.id;
 };
 
-function Entry({ entry, selectedElement, changeColor, bpmnModeler, readOnly }) {
+function Entry({
+  entry,
+  selectedElement,
+  changeColor,
+  bpmnModeler,
+  readOnly,
+  setDummyProperty,
+}) {
   return (
     !isHiddenProperty(selectedElement, entry) && (
       <div key={entry.id}>
@@ -45,6 +52,7 @@ function Entry({ entry, selectedElement, changeColor, bpmnModeler, readOnly }) {
           changeColor={changeColor}
           bpmnModeler={bpmnModeler}
           readOnly={readOnly}
+          setDummyProperty={setDummyProperty}
         />
       </div>
     )

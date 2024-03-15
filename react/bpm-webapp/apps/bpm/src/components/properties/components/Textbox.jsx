@@ -4,9 +4,11 @@ import { makeStyles } from "@material-ui/styles";
 import { InputLabel, Input } from "@axelor/ui";
 import ScriptEditor from "../EditorConfig/SrciptEditor";
 import Description from "./Description";
-import { getTranslations } from "../../../services/api";
 import { getBool } from "../../../utils";
 import { translate } from "../../../utils";
+import { useStore } from "../../../store";
+import { getNameProperty } from "../../../BPMN/Modeler/extra";
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 const useStyles = makeStyles({
   root: {
@@ -27,16 +29,30 @@ const useStyles = makeStyles({
   },
 });
 
+const getValue = (element) => {
+  if (!element) return;
+  const bo = getBusinessObject(element);
+  if (!bo) return;
+  return getBool(bo?.$attrs?.["camunda:isTranslations"]);
+};
+
+const getName = (element) => {
+  if (!element) return;
+  const bo = getBusinessObject(element);
+  if (!bo) return;
+  return bo?.[getNameProperty(element)];
+};
+
 export default function Textbox({
   entry,
   element,
   rows = 1,
-  bpmnModeler,
   readOnly: parentReadOnly = false,
   className,
   defaultHeight,
   showLabel = true,
   minimap,
+  setDummyProperty = () => {},
 }) {
   const classes = useStyles();
   const {
@@ -48,26 +64,26 @@ export default function Textbox({
     getProperty,
     setProperty,
     validate,
-    id,
   } = entry || {};
   const [value, setValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isError, setError] = useState(false);
   const [readOnly, setReadOnly] = useState(parentReadOnly);
-  const [translations, setTranslations] = useState(null);
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const { state } = useStore();
+  const { element: storeElement } = state;
 
   const updateProperty = (value) => {
     if (!set && !setProperty) return;
+    setDummyProperty();
     if (set) {
       set(
         element,
         {
           [modelProperty]: value,
         },
-        readOnly,
-        translations
+        readOnly
       );
       setValue(value);
     } else {
@@ -102,69 +118,6 @@ export default function Textbox({
 
   useEffect(() => {
     let isSubscribed = true;
-    async function getAllTranslations() {
-      if (!element || !["name", "text"].includes(modelProperty)) return;
-      let bo = element.businessObject;
-      const elementType = element && element.type;
-      if (
-        elementType === "bpmn:Participant" &&
-        modelProperty === "name" &&
-        id === "process-name"
-      ) {
-        bo = bo && bo.processRef;
-      }
-      let propertyName =
-        elementType === "bpmn:TextAnnotation"
-          ? "text"
-          : elementType === "bpmn:Group"
-          ? "categoryValue"
-          : "name";
-
-      if (!bo) return;
-      const name = bo[propertyName];
-      const key = bo.$attrs && bo.$attrs["camunda:key"];
-      const value = key || name;
-      const translations = await getTranslations(value);
-      if (isSubscribed) {
-        setValue(value);
-        setTranslations(translations);
-      }
-      if (translations && translations.length > 0) {
-        if (value && element.businessObject && element.businessObject.$attrs) {
-          element.businessObject.$attrs["camunda:key"] = value;
-        }
-        const isTranslation =
-          (bo.$attrs && bo.$attrs["camunda:isTranslations"]) || false;
-        const isTranslated = getBool(isTranslation);
-        if (isTranslated) {
-          const directEditing = bpmnModeler.get("directEditing");
-          if (isSubscribed) {
-            setReadOnly(true);
-          }
-          if (!bpmnModeler) {
-            return;
-          }
-          directEditing && directEditing.cancel();
-        } else {
-          if (isSubscribed) {
-            setReadOnly(false);
-          }
-        }
-      } else {
-        if (key && element.businessObject && element.businessObject.$attrs) {
-          element.businessObject.$attrs["camunda:key"] = key;
-        }
-        if (isSubscribed) {
-          setValue(name);
-        }
-      }
-    }
-    getAllTranslations();
-    return () => (isSubscribed = false);
-  }, [element, modelProperty, id, bpmnModeler]);
-
-  useEffect(() => {
-    let isSubscribed = true;
     const isError = getValidation();
     if (!isSubscribed) return;
     setError(isError);
@@ -181,14 +134,16 @@ export default function Textbox({
     if (!isSubscribed) return;
     setValue(value);
     return () => (isSubscribed = false);
-  }, [element, modelProperty, get, getProperty]);
+  }, [element, modelProperty, get, getProperty, getName(storeElement)]);
 
   useEffect(() => {
     let isSubscribed = true;
     if (!isSubscribed) return;
-    setReadOnly(parentReadOnly);
+    const readonly =
+      getValue(storeElement) && modelProperty === getNameProperty(element);
+    setReadOnly(readonly || parentReadOnly);
     return () => (isSubscribed = false);
-  }, [parentReadOnly]);
+  }, [parentReadOnly, getValue(storeElement)]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -241,11 +196,16 @@ export default function Textbox({
             setValue(e.target.value);
           }}
           invalid={isError}
+          disabled={readOnly}
           readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
         />
       )}
       {errorMessage && <Description desciption={errorMessage} type="error" />}
-      {description && <Description desciption={description} />}
+      {description &&
+        (modelProperty !== getNameProperty(element) ||
+          (readOnly && modelProperty === getNameProperty(element))) && (
+          <Description desciption={description} />
+        )}
     </div>
   );
 }

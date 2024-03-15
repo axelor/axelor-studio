@@ -76,7 +76,7 @@ const updateTranslations = async (nodes) => {
       const translations = await getTranslations(key);
       if (translations && translations.length > 0) {
         const info = await getInfo();
-        const language = info && info["user.lang"];
+        const language = info?.user?.lang;
         if (!language) return;
         const selectedTranslation = translations.find(
           (t) => t.language === language

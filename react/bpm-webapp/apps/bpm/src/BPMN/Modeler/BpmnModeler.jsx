@@ -31,6 +31,7 @@ import {
   getTabs,
   addOldNodes,
   getCommentsLength,
+  getNameProperty,
 } from "./extra.js";
 import {
   getTranslations,
@@ -57,6 +58,11 @@ import {
   CONDITIONAL_SOURCES,
 } from "./constants";
 import { ALL_ATTRIBUTES } from "./properties/parts/CustomImplementation/constants";
+import { useStore } from "../../store.jsx";
+import { useKeyPress } from "../../custom-hooks/useKeyPress";
+import Ids from "ids";
+import Alert from "../../components/Alert";
+import { Box, CommandBar, Scrollable } from "@axelor/ui";
 
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
@@ -65,10 +71,6 @@ import "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
 import "../css/tokens.css";
-import { useKeyPress } from "../../custom-hooks/useKeyPress";
-import Ids from "ids";
-import Alert from "../../components/Alert";
-import { Box, CommandBar, Scrollable } from "@axelor/ui";
 
 const resizeStyle = {
   display: "flex",
@@ -166,7 +168,8 @@ function BpmnModelerComponent() {
   const [enableStudioApp, setEnableStudioApp] = useState(false);
   const [showError, setError] = useState(false);
   const [initialState, setInitialState] = useState(false);
-  const { theme } = useAppTheme();
+  const { update, state } = useStore();
+  const { info } = state || {};
 
   const classes = useStyles();
   const diagramXmlRef = React.useRef(null);
@@ -240,44 +243,30 @@ function BpmnModelerComponent() {
     });
   };
 
-  const updateTranslations = async (element, bpmnModeler, key) => {
-    if (!key) return;
+  const updateTranslations = async (element, bpmnModeler) => {
+    if (!element) return;
     const bo = getBusinessObject(element);
     if (!bo) return;
-    const isTranslation =
-      (bo.$attrs && bo.$attrs["camunda:isTranslations"]) || false;
-    if (!getBool(isTranslation)) return;
-    const translations = await getTranslations(key);
-    if (translations && translations.length > 0) {
-      const info = await getInfo();
-      const language = info && info["user.lang"];
-      if (!language) return;
-      const selectedTranslation = translations.find(
-        (t) => t.language === language
-      );
-      if (!element) return;
-      const value = selectedTranslation && selectedTranslation.message;
-      const bo = element && element.businessObject;
-      const elementType = element && element.type;
-      let modelProperty =
-        elementType === "bpmn:TextAnnotation"
-          ? "text"
-          : elementType === "bpmn:Group"
-          ? "categoryValue"
-          : "name";
-      const name = bo[modelProperty];
-      const newKey = bo.$attrs["camunda:key"];
-      const diagramValue = value || newKey || name;
-      element.businessObject[modelProperty] = diagramValue;
-      let elementRegistry = bpmnModeler.get("elementRegistry");
-      let modeling = bpmnModeler.get("modeling");
-      let shape = elementRegistry.get(element.id);
-      if (!shape) return;
-      modeling &&
-        modeling.updateProperties(shape, {
-          [modelProperty]: diagramValue,
-        });
-    }
+    if (!getBool(bo?.$attrs?.["camunda:isTranslations"])) return;
+    if (!bo?.$attrs?.["camunda:key"]) return;
+    const translations = await getTranslations(bo?.$attrs?.["camunda:key"]);
+    if (translations?.length <= 0) return;
+    const modelProperty = getNameProperty(element);
+    const userInfo = info || (await getInfo());
+    const language = userInfo?.user?.lang;
+    if (!language) return;
+    const selectedTranslation = translations?.find(
+      (t) => t.language === language
+    );
+    const diagramValue =
+      selectedTranslation?.message || bo?.$attrs["camunda:key"];
+    if (!diagramValue) return;
+    let elementRegistry = bpmnModeler.get("elementRegistry");
+    let modeling = bpmnModeler.get("modeling");
+    let shape = elementRegistry.get(element.id);
+    modeling?.updateProperties(shape, {
+      [modelProperty]: diagramValue,
+    });
   };
 
   const getProperty = (element, name) => {
@@ -380,18 +369,7 @@ function BpmnModelerComponent() {
               bo.$attrs["camunda:displayStatus"] = true;
             }
           }
-          let bo = getBusinessObject(element);
-          const elementType = element && element.type;
-          let modelProperty =
-            elementType === "bpmn:TextAnnotation"
-              ? "text"
-              : elementType === "bpmn:Group"
-              ? "categoryValue"
-              : "name";
-          let nameKey =
-            element.businessObject.$attrs["camunda:key"] ||
-            bo?.get(modelProperty);
-          updateTranslations(element, bpmnModeler, nameKey);
+          updateTranslations(element, bpmnModeler);
         });
         try {
           const { xml } = await bpmnModeler.saveXML({ format: true });
@@ -1702,6 +1680,10 @@ function BpmnModelerComponent() {
 
   async function setDummyProperty() {
     const isDirty = await checkIfUpdated();
+    update((state) => ({
+      ...state,
+      element: selectedElement,
+    }));
     setDirty(isDirty);
   }
 
@@ -1762,6 +1744,15 @@ function BpmnModelerComponent() {
 
   useEffect(() => {
     if (!bpmnModeler) return;
+    let bo = getBusinessObject(selectedElement);
+    if (!bo) return;
+    bpmnModeler.get("eventBus").on("directEditing.complete", () => {
+      setDummyProperty();
+    });
+  }, [selectedElement]);
+
+  useEffect(() => {
+    if (!bpmnModeler) return;
     bpmnModeler.on("commandStack.connection.create.postExecuted", (event) => {
       const element = event?.context?.target;
       setColors(event && event.context && event.context.connection);
@@ -1784,6 +1775,20 @@ function BpmnModelerComponent() {
       });
     bpmnModeler.on("element.click", (event) => {
       updateTabs(event);
+    });
+    bpmnModeler.on("element.dblclick", (event) => {
+      const { element } = event;
+      let bo = element.businessObject;
+      const isTranslation =
+        (bo.$attrs && bo.$attrs["camunda:isTranslations"]) || false;
+      const isTranslated = getBool(isTranslation);
+      if (isTranslated) {
+        handleSnackbarClick(
+          "danger",
+          "Disable 'Add translations' property or add respective language translation to change label"
+        );
+        bpmnModeler.get("directEditing").cancel();
+      }
     });
     bpmnModeler.on("shape.removed", () => {
       const elementRegistry = bpmnModeler.get("elementRegistry");
