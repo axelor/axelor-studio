@@ -1,15 +1,7 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { TextField } from "@material-ui/core";
-
-const useStyles = makeStyles({
-  input: {
-    width: "100%",
-  },
-});
+import { Input } from "@axelor/ui";
 
 function ModelFieldComponent(props) {
-  const classes = useStyles();
   const { value, onChange, onClearError } = props;
   const [text, setText] = React.useState("");
 
@@ -34,8 +26,7 @@ function ModelFieldComponent(props) {
 
   return (
     <React.Fragment>
-      <TextField
-        className={classes.input}
+      <Input
         name="value"
         value={text}
         onBlur={handleBlur}

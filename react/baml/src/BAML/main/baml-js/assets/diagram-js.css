@@ -15,12 +15,12 @@
 }
 
 .djs-element.selected .djs-outline {
-  stroke: #8888ff;
+  stroke: var(--bs-info);
   stroke-width: 1px;
 }
 
 .djs-element.hover .djs-outline {
-  stroke: #ff8888;
+  stroke: var(--bs-primary);
   stroke-width: 1px;
 }
 
@@ -41,18 +41,14 @@ svg.drop-not-ok {
   background: #f9dee5 /* light-red */ !important;
 }
 
-svg.new-parent {
-  background: #f7f9ff /* light-blue */ !important;
-}
-
 .djs-connection.connect-ok .djs-visual > :nth-child(1),
 .djs-connection.drop-ok .djs-visual > :nth-child(1) {
-  stroke: #90dd5f /* light-green */ !important;
+  stroke: var(--bs-success) /* light-green */ !important;
 }
 
 .djs-connection.connect-not-ok .djs-visual > :nth-child(1),
 .djs-connection.drop-not-ok .djs-visual > :nth-child(1) {
-  stroke: #e56283 /* light-red */ !important;
+  stroke: var(--bs-info) /* light-red */ !important;
 }
 
 .drop-not-ok,
@@ -62,13 +58,13 @@ svg.new-parent {
 
 .djs-element.attach-ok .djs-visual > :nth-child(1) {
   stroke-width: 5px !important;
-  stroke: rgba(255, 116, 0, 0.7) !important;
+  stroke: var(--bs-primary) !important;
 }
 
 .djs-frame.connect-not-ok .djs-visual > :nth-child(1),
 .djs-frame.drop-not-ok .djs-visual > :nth-child(1) {
   stroke-width: 3px !important;
-  stroke: #e56283 /* light-red */ !important;
+  stroke: var(--bs-info) /* light-red */ !important;
   fill: none !important;
 }
 
@@ -77,11 +73,11 @@ svg.new-parent {
 *
 */
 .djs-lasso-overlay {
-  fill: rgb(255, 116, 0);
+  fill: var(--bs-primary);
   fill-opacity: 0.1;
 
   stroke-dasharray: 5 1 3 1;
-  stroke: rgb(255, 116, 0);
+  stroke: var(--bs-primary);
 
   shape-rendering: crispEdges;
   pointer-events: none;
@@ -94,7 +90,7 @@ svg.new-parent {
   fill: none;
 
   stroke-dasharray: 5 1 3 1;
-  stroke: rgb(255, 116, 0);
+  stroke: var(--bs-primary);
 
   pointer-events: none;
 }
@@ -156,12 +152,12 @@ svg.new-parent {
  */
 .djs-dragger * {
   fill: none !important;
-  stroke: rgb(255, 116, 0) !important;
+  stroke: var(--bs-primary) !important;
 }
 
 .djs-dragger tspan,
 .djs-dragger text {
-  fill: rgb(255, 116, 0) !important;
+  fill: var(--bs-primary) !important;
   stroke: none !important;
 }
 
@@ -170,14 +166,14 @@ marker.djs-dragger path,
 marker.djs-dragger polygon,
 marker.djs-dragger polyline,
 marker.djs-dragger rect {
-  fill: rgb(255, 116, 0) !important;
+  fill: var(--bs-primary) !important;
   stroke: none !important;
 }
 
 marker.djs-dragger text,
 marker.djs-dragger tspan {
   fill: none !important;
-  stroke: rgb(255, 116, 0) !important;
+  stroke: var(--bs-primary) !important;
 }
 
 .djs-dragging {
@@ -300,10 +296,8 @@ marker.djs-dragger tspan {
 .djs-palette .separator {
   margin: 0 5px;
   padding-top: 5px;
-
   border: none;
-  border-bottom: solid 1px #ddd;
-
+  border-bottom: solid 1px var(--bs-border-color);
   clear: both;
 }
 
@@ -317,7 +311,7 @@ marker.djs-dragger tspan {
 
 .djs-palette .entry,
 .djs-palette .djs-palette-toggle {
-  color: #333;
+  color: var(--bs-body-color);
   font-size: 30px;
 
   text-align: center;
@@ -342,11 +336,11 @@ marker.djs-dragger tspan {
 }
 
 .djs-palette .entry:hover {
-  color: rgb(255, 116, 0);
+  color: var(--bs-primary);
 }
 
 .djs-palette .highlighted-entry {
-  color: rgb(255, 116, 0) !important;
+  color: var(--bs-primary) !important;
 }
 
 .djs-palette .entry,
@@ -398,14 +392,13 @@ marker.djs-dragger tspan {
   display: inline-block;
   font-size: 22px;
   margin: 0 2px 2px 0;
-
   border-radius: 3px;
-
   cursor: default;
-
   background-color: #fefefe;
-  box-shadow: 0 0 2px 1px #fefefe;
   pointer-events: all;
+  background-color: var(--bs-secondary-bg);
+  box-shadow: none !important;
+  transition: transform 0.5s ease;
 }
 
 .djs-context-pad .entry:before {
@@ -458,8 +451,8 @@ marker.djs-dragger tspan {
 }
 
 .djs-popup .djs-popup-header .entry.active {
-  color: rgb(255, 116, 0);
-  border: solid 1px rgb(255, 116, 0);
+  color: var(--bs-primary);
+  border: solid 1px var(--bs-primary);
   background-color: #f6f6f6;
 }
 
@@ -493,8 +486,8 @@ marker.djs-dragger tspan {
  */
 .djs-popup,
 .djs-palette {
-  background: #fafafa;
-  border: solid 1px #ccc;
+  background-color: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-secondary-bg);
   border-radius: 2px;
 }
 
@@ -619,7 +612,6 @@ marker.djs-dragger tspan {
 
 .djs-tooltip-error > * {
   width: 160px;
-
   background: rgb(252, 236, 240);
   color: rgb(158, 76, 76);
   padding: 3px 7px;
@@ -662,12 +654,13 @@ marker.djs-dragger tspan {
   font-size: 1.05em;
   width: 100%;
   padding: 6px 10px;
-  border: 1px solid #ccc;
+  background-color: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
 }
 
 .djs-search-input input:focus {
   outline: none;
-  border-color: #52b415;
+  border-color: var(-bs);
 }
 
 .djs-search-results {
@@ -677,20 +670,20 @@ marker.djs-dragger tspan {
 }
 
 .djs-search-results:hover {
-  /*background: #fffdd7;*/
+  background: var(--ax-theme-dropdown-link-active-bg);
   cursor: pointer;
 }
 
 .djs-search-result {
   width: 100%;
   padding: 6px 10px;
-  background: white;
+  background: var(--bs-tertiary-bg);
   border-bottom: solid 1px #aaa;
   border-radius: 1px;
 }
 
 .djs-search-highlight {
-  color: black;
+  color: var(--bs-body-color);
 }
 
 .djs-search-result-primary {
@@ -703,19 +696,19 @@ marker.djs-dragger tspan {
 }
 
 .djs-search-result:hover {
-  background: #fdffd6;
+  background: var(--ax-theme-dropdown-link-active-bg);
 }
 
 .djs-search-result-selected {
-  background: #fffcb0;
+  background: var(--ax-theme-dropdown-link-active-bg);
 }
 
 .djs-search-result-selected:hover {
-  background: #f7f388;
+  background: var(--ax-theme-dropdown-link-active-bg);
 }
 
 .djs-search-overlay {
-  background: yellow;
+  background: var(--ax-theme-dropdown-link-active-bg);
   opacity: 0.3;
 }
 
@@ -727,4 +720,12 @@ marker.djs-dragger tspan {
 .djs-element-hidden .djs-outline,
 .djs-label-hidden .djs-label {
   display: none !important;
+}
+
+svg.new-parent {
+  box-shadow: var(--bs-box-shadow);
+  background-color: var(--bs-secondary-bg) !important;
+}
+.djs-context-pad .entry {
+  background-color: var(--bs-body) !important;
 }

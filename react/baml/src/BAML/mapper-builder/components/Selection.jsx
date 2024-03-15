@@ -1,34 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { TextField, CircularProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import _uniqueId from "lodash/uniqueId";
-
 import { translate, useDebounce } from "../utils";
+import { Badge, Box, InputLabel, Select } from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 const getKey = (key) => (key === "_selectId" ? "id" : key);
 
-const useStyles = makeStyles((theme) => ({
-  listbox: {
-    maxHeight: "300px !important",
-  },
-  input: {
-    width: "100% !important",
-  },
-  inputSelected: {
-    width: "100% !important",
-    color: "rgba(0, 0, 0, 0.87)",
-    border: "1px solid #e0e0e0",
-    padding: "0px 12px",
-    borderRadius: 25,
-    background: "#e0e0e0",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    textAlign: "center",
-    fontSize: "0.8125rem",
-  },
-}));
 export default function AutoComplete(props) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
@@ -44,20 +21,14 @@ export default function AutoComplete(props) {
     isMulti = false,
     title,
     fetchAPI,
-    inline,
-    InputProps,
     error,
     filterSelectedOptions = false,
-    disableCloseOnSelect = true,
     readOnly = false,
     concatValue,
-    isProcessContext = false,
-    inputRootClass = "",
-    ...other
+    disableClearable,
   } = props;
 
-  const classes = useStyles();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const findOption = React.useCallback(
     (option) => {
@@ -76,6 +47,84 @@ export default function AutoComplete(props) {
   }
 
   const delayChange = useDebounce(onInputChange, 400);
+
+  function handleChange(item) {
+    if (typeof value === "string") {
+      isMulti
+        ? onChange(
+            item.map((i) => i && i[getKey(optionValueKey)]).join(",") || []
+          )
+        : onChange(item && item[getKey(optionValueKey)]);
+    } else {
+      onChange(item ?? []);
+    }
+  }
+
+  const checkValue = (option) => {
+    return (option && option.type) === "metaJsonModel"
+      ? `${
+          option && option[getKey(optionLabelKey)]
+            ? option[getKey(optionLabelKey)]
+            : ""
+        } (Custom model)` || ""
+      : name === "fieldName"
+      ? `${translate(option && option["title"] ? option["title"] : "")} (${
+          option && option[getKey(optionLabelKey)]
+        })`
+      : option
+      ? option[getKey(optionLabelKey)] &&
+        concatValue &&
+        option[getKey(optionValueKey)]
+        ? `${option[getKey(optionLabelKey)]} (${
+            option[getKey(optionValueKey)]
+          })`
+        : option[getKey(optionLabelKey)]
+        ? option[getKey(optionLabelKey)]
+        : option["name"]
+        ? option["name"]
+        : option["id"]
+        ? option["id"].toString()
+        : ""
+      : "";
+  };
+
+  const customOptions = React.useMemo(() => {
+    const key = inputValue.toLowerCase();
+    const filteredOptions = options.filter((option) =>
+      checkValue(option)?.includes(key)
+    );
+    if (loading && !filteredOptions?.length) {
+      return [
+        {
+          key: "loading",
+          id: `${translate("Loading...")}`,
+          title: <span> {translate("Loading...")}</span>,
+          disabled: true,
+        },
+      ];
+    } else if (!filteredOptions || filteredOptions.length === 0) {
+      return [
+        {
+          key: "no-options",
+          id: "no_data_found",
+          title: <span> {translate("No options")}</span>,
+          disabled: true,
+        },
+      ];
+    } else {
+      return [];
+    }
+  }, [options, loading, setLoading, inputValue]);
+
+  const handleRemove = (option) => {
+    const indexToRemove = selectedValue.findIndex(
+      (op) => checkValue(op) === checkValue(option)
+    );
+    if (indexToRemove !== -1) {
+      const newOptions = selectedValue.slice(0, indexToRemove);
+      onChange(newOptions);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -112,131 +161,111 @@ export default function AutoComplete(props) {
     }
   }, [value, isMulti, findOption]);
 
-  function onKeyDown(e) {
-    if (e.key === "Backspace") {
-      if (
-        selectedValue &&
-        selectedValue[getKey(optionLabelKey)] === inputValue
-      ) {
-        onChange(null, "backspace");
-      }
-    }
-  }
-
-  function handleChange(item, reason) {
-    if (typeof value === "string") {
-      isMulti
-        ? onChange(
-            item.map((i) => i && i[getKey(optionValueKey)]).join(",") || [],
-            reason
-          )
-        : onChange(item && item[getKey(optionValueKey)], reason);
-    } else {
-      onChange(item, reason);
-    }
-  }
-
-  const checkValue = (option) => {
-    return (option && option.type) === "metaJsonModel"
-      ? `${
-          option && option[getKey(optionLabelKey)]
-            ? option[getKey(optionLabelKey)]
-            : ""
-        } (Custom model)` || ""
-      : name === "fieldName"
-      ? `${translate(option && option["title"] ? option["title"] : "")} (${
-          option && option[getKey(optionLabelKey)]
-        })`
-      : option
-      ? option[getKey(optionLabelKey)] &&
-        concatValue &&
-        option[getKey(optionValueKey)]
-        ? `${option[getKey(optionLabelKey)]} (${
-            option[getKey(optionValueKey)]
-          })`
-        : option[getKey(optionLabelKey)]
-        ? option[getKey(optionLabelKey)]
-        : option["name"]
-        ? option["name"]
-        : option["id"]
-        ? option["id"].toString()
-        : ""
-      : "";
-  };
-
   return (
-    <Autocomplete
-      getOptionSelected={(option, value) => {
-        return isMulti
-          ? option[getKey(optionValueKey)] === value[getKey(optionValueKey)]
-          : checkValue(option) === checkValue(value);
+    <Box
+      d="flex"
+      flex={1}
+      flexDirection="column"
+      gap={8}
+      style={{
+        width: "initial",
+        minWidth: isMulti && "400px",
       }}
-      getOptionLabel={(option) => {
-        return checkValue(option);
-      }}
-      loading={loading}
-      id={_uniqueId("select-widget")}
-      open={open}
-      onOpen={() => setOpen(true)}
-      onClose={() => setOpen(false)}
-      disabled={readOnly}
-      value={
-        selectedValue
-          ? isMulti
-            ? Array.isArray(selectedValue)
-              ? selectedValue
-              : []
-            : selectedValue
-          : isMulti
-          ? []
-          : null
-      }
-      onChange={(event, newValue, reason) => handleChange(newValue, reason)}
-      options={options || []}
-      multiple={isMulti}
-      filterSelectedOptions={filterSelectedOptions}
-      onInputChange={(e, value) => delayChange(value)}
-      classes={{
-        option: "menu-item",
-        input: isProcessContext
-          ? selectedValue
-            ? classes.inputSelected
-            : classes.input
-          : "",
-        inputRoot: inputRootClass,
-      }}
-      renderInput={(params) => {
-        return (
-          <TextField
-            {...params}
-            error={error}
-            label={inline ? "" : translate(title)}
-            fullWidth
-            onClick={() => {
-              if (readOnly) return;
-              setOpen(true);
-            }}
-            InputProps={{
-              ...InputProps,
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress
-                      className={classes.circularProgress}
-                      size={15}
+    >
+      <Select
+        style={{ maxHeight: "100px", overflow: "scroll" }}
+        optionEqual={(option, value) => {
+          return isMulti
+            ? option[optionValueKey] === value[optionValueKey]
+            : checkValue(option) === checkValue(value);
+        }}
+        optionLabel={(option) => {
+          return checkValue(option);
+        }}
+        optionMatch={(option, text = "") => {
+          if (text === "") return true;
+          if (option?.key === "loading" || option?.key === "no-options") {
+            return true;
+          }
+          const key = text.toLowerCase();
+          const name = option?.name?.toLowerCase() || "";
+          const title = option?.title?.toLowerCase() || "";
+          if (name.includes(key) || title.includes(key)) {
+            return true;
+          }
+          return false;
+        }}
+        clearOnEscape
+        optionKey={(op) => checkValue(op)}
+        customOptions={customOptions}
+        id={_uniqueId("select-widget")}
+        clearIcon={!disableClearable}
+        openOnFocus
+        closeOnSelect={!isMulti}
+        onOpen={() => !open && setOpen(true)}
+        onClose={() => !isMulti && open && setOpen(false)}
+        disabled={readOnly}
+        placeholder={translate(title)}
+        value={
+          selectedValue
+            ? isMulti
+              ? Array.isArray(selectedValue)
+                ? selectedValue
+                : []
+              : selectedValue
+            : isMulti
+            ? []
+            : null
+        }
+        onChange={(newValue) => handleChange(newValue)}
+        options={options || []}
+        multiple={isMulti}
+        onInputChange={(value) => delayChange(value)}
+        error={error}
+        removeOnBackspace
+        filterSelectedOptions={filterSelectedOptions}
+        renderValue={({ option = {} }) => {
+          if (!isMulti) return;
+          const lastIndex = selectedValue?.length - 1;
+          const currentIndex = selectedValue.findIndex(
+            (op) => checkValue(op) === checkValue(option)
+          );
+          const showArrow = lastIndex !== currentIndex;
+          return (
+            <>
+              <Badge bg="primary" px={2} py={1} rounded="pill">
+                <Box d="flex" alignItems="center" g={1}>
+                  <Box
+                    as="span"
+                    style={{
+                      maxWidth: "150px",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      fontSize: "0.6rem",
+                    }}
+                  >
+                    {checkValue(option)}
+                  </Box>
+                  <Box as="span" style={{ cursor: "pointer" }}>
+                    <MaterialIcon
+                      icon="close"
+                      fontSize={14}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemove(option);
+                      }}
                     />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-            {...(isMulti ? {} : { onKeyDown: onKeyDown })}
-          />
-        );
-      }}
-      {...(isMulti ? { disableCloseOnSelect } : {})}
-      {...other}
-    />
+                  </Box>
+                </Box>
+              </Badge>
+              {showArrow && (
+                <MaterialIcon icon="arrow_right_alt" fontSize={13} />
+              )}
+            </>
+          );
+        }}
+      />
+    </Box>
   );
 }

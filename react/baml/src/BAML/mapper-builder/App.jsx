@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-
-import "./App.css";
 import Builder from "./Builder";
 import BuilderProvider from "./store/context";
 
@@ -15,7 +13,7 @@ function AppContent({ params, onSave, handleClose, open, bpmnModeler }) {
   }, [params]);
 
   return (
-    <div className="App">
+    <div>
       <Builder
         onSave={onSave}
         params={values}
