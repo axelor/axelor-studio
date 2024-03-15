@@ -2027,6 +2027,8 @@
 "yellow",,,
 "{{$fmt('name')}}",,,
 "Editor",,,
+"Disable 'Add translations' property or add respective language translation to change label",,,
+
 "The JPQL expression is used to filter the records displayed when opening the view. It serves as the where clause of your query.",,,
 "These conditions determine whether to show or hide the field based on the evaluation of the context.",,,
 "This condition sets the field as required or mandatory depending on the evaluation of the context.",,,

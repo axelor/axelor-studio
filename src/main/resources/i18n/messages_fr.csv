@@ -2069,6 +2069,8 @@
 "Select signal","Selectionner un signal",,
 "Select message","Selectionner un message",,
 "Editor","Éditeur",,
+"Disable 'Add translations' property or add respective language translation to change label","Désactiver la propriété 'Ajouter des traductions' ou ajouter la traduction dans la langue respective pour modifier l'étiquette.",,
+
 "The JPQL expression is used to filter the records displayed when opening the view. It serves as the where clause of your query.","L'expression JPQL est utilisée pour filtrer les enregistrements affichés lors de l'ouverture de la vue. C’est la clause “where” de votre requête.",,
 "These conditions determine whether to show or hide the field based on the evaluation of the context.","Ces conditions déterminent s'il faut afficher ou masquer le champ en fonction de l'évaluation du contexte.",,
 "This condition sets the field as required or mandatory depending on the evaluation of the context.","Cette condition définit le champ comme requis ou obligatoire en fonction de l'évaluation du contexte.",,
