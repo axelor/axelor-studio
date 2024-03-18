@@ -5,6 +5,7 @@ import DMNModeler from "./DMN/DMNModeler";
 import { useAppTheme } from "./custom-hooks/useAppTheme";
 import Loader from "./components/Loader";
 import { ThemeProvider } from "@axelor/ui";
+import StoreProvider from "./store";
 
 let isInstance = false;
 
@@ -49,20 +50,22 @@ function App() {
   }
 
   return (
-    <ThemeProvider options={options} theme={theme}>
-      {(() => {
-        switch (type) {
-          case "dmnModeler":
-            return <DMNModeler />;
-          case "bpmnModeler":
-            return <BpmnModelerComponent />;
-          case "bpmnViewer":
-            return <BpmnViewerComponent isInstance={isInstance} />;
-          default:
-            return <BpmnModelerComponent />;
-        }
-      })()}
-    </ThemeProvider>
+    <StoreProvider>
+      <ThemeProvider options={options} theme={theme}>
+        {(() => {
+          switch (type) {
+            case "dmnModeler":
+              return <DMNModeler />;
+            case "bpmnModeler":
+              return <BpmnModelerComponent />;
+            case "bpmnViewer":
+              return <BpmnViewerComponent isInstance={isInstance} />;
+            default:
+              return <BpmnModelerComponent />;
+          }
+        })()}
+      </ThemeProvider>
+    </StoreProvider>
   );
 }
 export default App;

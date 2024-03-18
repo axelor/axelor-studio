@@ -1,24 +1,11 @@
 import React from "react";
-import classnames from "classnames";
-import { makeStyles } from "@material-ui/styles";
-
 import { translate } from "../../utils";
+import { Box } from "@axelor/ui";
 
-const useStyles = makeStyles({
-  desciption: {
-    marginTop: 5,
-    color: "#999",
-  },
-  error: {
-    color: "#CC3333",
-  },
-});
-
-export default function Description({ desciption, type }) {
-  const classes = useStyles();
+export default function Description({ description, type }) {
   return (
-    <div className={classnames(classes.desciption, type && classes.error)}>
-      {translate(desciption)}
-    </div>
+    <Box mt={1} color={type ? "danger" : "body"}>
+      {translate(description)}
+    </Box>
   );
 }

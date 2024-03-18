@@ -1,55 +1,10 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import classNames from "classnames";
-import { Typography, Grid } from "@material-ui/core";
 import { RelationalFieldList } from "../constant";
 import FieldPopover from "./FieldPopover";
-import AddIcon from "@material-ui/icons/AddCircleOutline";
+import { Box } from "@axelor/ui";
 
 import { translate } from "../../../utils";
-
-const useStyles = makeStyles({
-  container: {
-    display: "flex",
-  },
-  input: {
-    width: "100%",
-    display: "flex",
-    position: "relative",
-    "& > div:before": {
-      border: 0,
-    },
-  },
-  parentField: {
-    marginRight: 5,
-    color: "#3f51b5",
-  },
-  clickableView: {
-    cursor: "pointer",
-    "& input": {
-      cursor: "pointer",
-    },
-    // '&:hover': {
-    //   '& $addFieldView': {
-    //     visibility: 'visible',
-    //   },
-    // }
-  },
-  fieldName: {
-    fontSize: 12,
-  },
-  fieldNameColumn: {
-    width: "unset",
-  },
-  // addFieldView: {
-  //   visibility: 'hidden',
-  // },
-  addFieldButton: {
-    padding: 0,
-    marginLeft: 5,
-  },
-});
-
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 const isRelationalField = (row) => {
   const type = row.type.replace(/-/g, "_").toLowerCase();
   return RelationalFieldList.indexOf(type) !== -1;
@@ -64,7 +19,6 @@ const getFields = (item) => {
 };
 
 function ModelFieldComponent(props) {
-  const classes = useStyles();
   const { item, handleAdd } = props;
   const [showSubField, setShowSubField] = React.useState(false);
   const fields = getFields(item);
@@ -79,18 +33,29 @@ function ModelFieldComponent(props) {
     return null;
   }
   return (
-    <div className={classNames(classes.input)}>
-      <Grid container direction="column" className={classes.fieldNameColumn}>
-        <Typography title={item["name"]}>
-          {item["title"] || item["autoTitle"] || item["name"]}
-        </Typography>
-      </Grid>
+    <Box w={100} d="flex" pos="relative" color="body">
+      <Box direction="column" style={{ width: "unset" }}>
+        <Box>{item["title"] || item["autoTitle"] || item["name"]} </Box>
+      </Box>
       <div>
         {fields && showSubField && (
-          <FieldPopover data={fields} onSubmit={(data) => handleAdd(data)} />
+          <FieldPopover
+            data={fields}
+            iconButton={true}
+            onSubmit={(data) => handleAdd(data)}
+            icon={
+              <MaterialIcon
+                icon="add"
+                color="body"
+                fontSize={20}
+                className="pointer"
+              />
+            }
+            buttonTitle={translate("Add fields")}
+          />
         )}
       </div>
-    </div>
+    </Box>
   );
 }
 

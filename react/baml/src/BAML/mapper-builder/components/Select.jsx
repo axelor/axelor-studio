@@ -1,20 +1,6 @@
 import React from "react";
-import classnames from "classnames";
-import MenuItem from "@material-ui/core/MenuItem";
-import { Select, FormControl, InputLabel } from "@material-ui/core";
-
-import { makeStyles } from "@material-ui/core/styles";
 import { translate } from "../../../utils";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  select: {
-    width: "100%",
-  },
-}));
+import { Box, InputLabel, Select } from "@axelor/ui";
 
 export default function Selection({
   name,
@@ -22,29 +8,23 @@ export default function Selection({
   onChange,
   options,
   title,
-  className,
-  ...rest
 }) {
-  const classes = useStyles();
+  const optionValue = options.find((option) => option.name === value);
   return (
-    <FormControl className={classnames(classes.formControl, className)}>
+    <Box d="flex" flexDirection="column" gap={8} style={{ width: "initial" }}>
       <InputLabel>{translate(title)}</InputLabel>
       <Select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        value={optionValue ?? {}}
+        onChange={({ name }) => {
+          onChange(name);
+        }}
         name={name}
         style={{ marginRight: 8 }}
-        classes={{ select: classes.select }}
-        {...rest}
-      >
-        {options &&
-          Array.isArray(options) &&
-          options.map(({ name, title }, index) => (
-            <MenuItem value={name} key={index}>
-              {title}
-            </MenuItem>
-          ))}
-      </Select>
-    </FormControl>
+        options={options && Array.isArray(options) ? options : []}
+        optionKey={(op) => op.name}
+        optionLabel={(op) => op.title}
+        clearIcon={false}
+      />
+    </Box>
   );
 }

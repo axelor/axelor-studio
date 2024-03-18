@@ -1,0 +1,33 @@
+.container {
+  width: auto;
+}
+
+.title {
+  padding: 0.5rem;
+  margin: 0;
+  font-weight: 00;
+  background-color: var(--bs-tertiary-bg);
+  border-top-left-radius: var(--bs-border-radius);
+  border-top-right-radius: var(--bs-border-radius);
+}
+
+.content {
+  padding: 0;
+}
+
+span[data-popper-arrow]::before {
+  background: var(--bs-tertiary-bg);
+}
+
+.tooltip {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  z-index: 99999999;
+}
+
+.tooltip[data-popper-placement^="bottom"],
+.tooltip[data-popper-placement^="top"],
+.tooltip[data-popper-placement^="left"],
+.tooltip[data-popper-placement^="right"] {
+  opacity: 1;
+}

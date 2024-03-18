@@ -130,6 +130,10 @@ export class Service {
     const url = `ws/rest/${entity}/${id}/fetch`;
     return this.post(url, data);
   }
+  info() {
+    const url = "ws/public/app/info"
+    return this.get(url)
+  }
 }
 
 export default new Service();

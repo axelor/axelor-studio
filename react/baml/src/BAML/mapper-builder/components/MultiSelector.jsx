@@ -1,30 +1,9 @@
 import React from "react";
-import Chip from "@material-ui/core/Chip";
-import { makeStyles } from "@material-ui/core/styles";
-import RightIcon from "@material-ui/icons/ArrowForward";
-
 import Selection from "./Selection";
 import { fetchFields, getModels } from "../services/api";
 import { translate } from "../utils";
 import { excludedFields } from "../constant";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    listStyle: "none",
-    padding: theme.spacing(0.5),
-    margin: 0,
-  },
-  chip: {
-    margin: theme.spacing(0.5),
-  },
-  rightIcon: {
-    width: "0.8em",
-    height: "0.8em",
-  },
-}));
+import { Box } from "@axelor/ui";
 
 const getKey = (key) => (key === "_selectId" ? "id" : key);
 
@@ -55,7 +34,6 @@ function MultiSelector(props) {
     containerClassName = "",
     ...rest
   } = props;
-  const classes = useStyles();
 
   const getModel = () => {
     if (Array.isArray(value) && value.length) {
@@ -126,7 +104,7 @@ function MultiSelector(props) {
       : "";
   };
   return (
-    <div className={containerClassName}>
+    <Box>
       <Selection
         title={props.title}
         isMulti={true}
@@ -160,25 +138,9 @@ function MultiSelector(props) {
         }}
         value={value}
         onChange={handleChange}
-        renderTags={(tags, getTagProps) => {
-          return tags.map((tag, i) => (
-            <React.Fragment key={i}>
-              <Chip
-                key={i}
-                title={tag[getKey(rest.optionValueKey)]}
-                label={checkValue(tag)}
-                className={classes.chip}
-                {...getTagProps({ index: i })}
-              />
-              {i < tags.length - 1 && (
-                <RightIcon className={classes.rightIcon} />
-              )}
-            </React.Fragment>
-          ));
-        }}
         {...rest}
       />
-    </div>
+    </Box>
   );
 }
 

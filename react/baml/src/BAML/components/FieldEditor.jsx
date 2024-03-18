@@ -1,32 +1,16 @@
 import React, { useEffect, useState } from "react";
-import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
-import { Close, ArrowForward } from "@material-ui/icons";
-import { IconButton, Tooltip } from "@material-ui/core";
-
 import { translate } from "../../utils";
 import { Selection } from "../expression-builder/components";
 import { getSubMetaField } from "../../services/api";
-
-const useStyles = makeStyles(() => ({
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-  iconButton: {
-    marginRight: 10,
-  },
-  icon: {
-    color: "#0275d8",
-  },
-}));
+import Tooltip from "./tooltip/tooltip";
+import { Button } from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 export default function FieldEditor({
   initValue = "",
   getMetaFields,
   onChange,
   value,
-  classNames,
   isParent = false,
   isUserPath = false,
   startModel,
@@ -40,7 +24,6 @@ export default function FieldEditor({
   const [isShow, setShow] = useState(true);
   const [isButton, setButton] = useState(true);
   const [allFieldValues, setAllFieldValues] = useState(null);
-  const classes = useStyles();
   const values = fieldName && fieldName.split(".");
   const [startValue] = values || [];
   const hasManyValues =
@@ -177,12 +160,6 @@ export default function FieldEditor({
         optionLabelKey="name"
         onChange={(value) => handleChange(value)}
         value={transformValue}
-        classes={{
-          root: classnames(
-            classes.MuiAutocompleteRoot,
-            classNames && classNames.root
-          ),
-        }}
       />
       {hasManyValues &&
         relationModel &&
@@ -193,8 +170,8 @@ export default function FieldEditor({
           : true) && (
           <React.Fragment>
             {isShow && (
-              <IconButton
-                size="small"
+              <Button
+                size="sm"
                 onClick={() => {
                   setShow((isShow) => !isShow);
                   if (fields && fields.length > 0 && startValue) {
@@ -206,12 +183,18 @@ export default function FieldEditor({
                     });
                   }
                 }}
-                className={classes.iconButton}
+                px={0}
+                me={2}
               >
                 <Tooltip title={translate("Remove sub field")}>
-                  <Close className={classes.icon} fontSize="small" />
+                  <MaterialIcon
+                    icon="close"
+                    size="12"
+                    color="primary"
+                    className="pointer"
+                  />
                 </Tooltip>
-              </IconButton>
+              </Button>
             )}
             {isShow && (
               <FieldEditor
@@ -229,7 +212,6 @@ export default function FieldEditor({
                   allFields,
                 }}
                 onChange={onChange}
-                classNames={classNames}
                 isParent={relationModel ? true : false}
                 isUserPath={isUserPath}
                 isDatePath={isDatePath}
@@ -239,15 +221,22 @@ export default function FieldEditor({
               />
             )}
             {!isShow && isButton && (
-              <IconButton
-                size="small"
+              <Button
                 onClick={() => setShow((isShow) => !isShow)}
-                className={classes.iconButton}
+                mt={3}
+                pt={4}
+                me={2}
+                size="sm"
               >
                 <Tooltip title={translate("Add sub field")}>
-                  <ArrowForward className={classes.icon} fontSize="small" />
+                  <MaterialIcon
+                    icon="arrow_forward"
+                    color="primary"
+                    size="12"
+                    className="pointer"
+                  />
                 </Tooltip>
-              </IconButton>
+              </Button>
             )}
           </React.Fragment>
         )}

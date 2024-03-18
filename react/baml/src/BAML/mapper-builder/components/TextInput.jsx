@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Input from "@material-ui/core/Input";
-import { TextField } from "@material-ui/core";
+import { Input, TextField } from "@axelor/ui";
 
 function InputField({
   name,

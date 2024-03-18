@@ -1,67 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Edit } from "@material-ui/icons";
-
 import { Selection } from "../expression-builder/components";
 import { getModels, getMetaFields } from "../../services/api";
 import { FieldEditor } from "../components";
 import { translate, lowerCaseFirstLetter } from "../../utils";
 import { Textbox } from "../components";
-
-const useStyles = makeStyles((theme) => ({
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  newIcon: {
-    color: "#58B423",
-    marginLeft: 5,
-  },
-  new: {
-    cursor: "pointer",
-    marginTop: 18.6,
-    display: "flex",
-  },
-  textbox: {
-    width: "100%",
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  save: {
-    margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    textTransform: "none",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
-  },
-  dialogContent: {
-    display: "flex",
-    alignItems: "flex-end",
-  },
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-}));
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 export default function FieldBuilder({ element, bpmnModeler }) {
   const [openAlert, setAlert] = useState(false);
@@ -72,8 +24,6 @@ export default function FieldBuilder({ element, bpmnModeler }) {
   const [expressionPathDummy, setExpressionPathDummy] = useState(null);
   const [field, setField] = useState(null);
   const [model, setModel] = useState(null);
-
-  const classes = useStyles();
 
   const setProperty = (name, value) => {
     if (!bpmnModeler) return;
@@ -141,10 +91,9 @@ export default function FieldBuilder({ element, bpmnModeler }) {
   }, [getProperty]);
 
   return (
-    <div className={classes.expressionBuilder}>
+    <Box d="flex" alignItems="center" justifyContent="space-between">
       <Textbox
         element={element}
-        className={classes.textbox}
         bpmnModeler={bpmnModeler}
         entry={{
           id: "expression",
@@ -173,9 +122,12 @@ export default function FieldBuilder({ element, bpmnModeler }) {
           },
         }}
       />
-      <div className={classes.new}>
-        <Edit
-          className={classes.newIcon}
+      <Box d="flex" ps={1} mt={4} pt={2}>
+        <MaterialIcon
+          icon="edit"
+          color="primary"
+          fontSize={18}
+          className="pointer"
           onClick={() => {
             handleOpen();
           }}
@@ -183,61 +135,59 @@ export default function FieldBuilder({ element, bpmnModeler }) {
         {openExpressionBuilder && (
           <Dialog
             open={openExpressionBuilder}
-            onClose={(event, reason) => {
-              if (reason !== "backdropClick") {
-                handleClose();
-              }
-            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
-            classes={{
-              paper: classes.dialog,
-            }}
+            size="lg"
+            backdrop
+            centered
           >
-            <DialogTitle id="alert-dialog-title">
-              {translate("Expression")}
-            </DialogTitle>
-            <DialogContent className={classes.dialogContent}>
-              <Selection
-                name="model"
-                title="Model"
-                placeholder="Model"
-                fetchAPI={() => getModels()}
-                onChange={(e) => {
-                  if (!e) {
-                    setExpressionPathDummy(null);
-                  }
-                  setModel(e);
-                }}
-                optionLabelKey="name"
-                value={model}
-                classes={{ root: classes.MuiAutocompleteRoot }}
-              />
-              {model && (
-                <FieldEditor
-                  getMetaFields={() => getMetaFields(getData())}
-                  isCollection={true}
-                  onChange={(val, field) => {
-                    if (val && val !== "") {
-                      setExpressionPathDummy(
-                        `${model && lowerCaseFirstLetter(model.name)}?.${val}`
-                      );
-                    } else {
+            <DialogHeader onCloseClick={handleClose}>
+              <DialogTitle id="alert-dialog-title">
+                {translate("Expression")}
+              </DialogTitle>
+            </DialogHeader>
+            <DialogContent d="flex" p={2}>
+              <Box d="flex" p={2} overflow="auto">
+                <Selection
+                  name="model"
+                  title="Model"
+                  placeholder="Model"
+                  fetchAPI={() => getModels()}
+                  onChange={(e) => {
+                    if (!e) {
                       setExpressionPathDummy(null);
                     }
-                    setField(field);
+                    setModel(e);
                   }}
-                  value={{
-                    fieldName:
-                      expressionPathDummy &&
-                      expressionPathDummy.split("?.") &&
-                      expressionPathDummy.split("?.")[1],
-                  }}
-                  isParent={true}
+                  optionLabelKey="name"
+                  value={model}
                 />
-              )}
+                {model && (
+                  <FieldEditor
+                    getMetaFields={() => getMetaFields(getData())}
+                    isCollection={true}
+                    onChange={(val, field) => {
+                      if (val && val !== "") {
+                        setExpressionPathDummy(
+                          `${model && lowerCaseFirstLetter(model.name)}?.${val}`
+                        );
+                      } else {
+                        setExpressionPathDummy(null);
+                      }
+                      setField(field);
+                    }}
+                    value={{
+                      fieldName:
+                        expressionPathDummy &&
+                        expressionPathDummy.split("?.") &&
+                        expressionPathDummy.split("?.")[1],
+                    }}
+                    isParent={true}
+                  />
+                )}
+              </Box>
             </DialogContent>
-            <DialogActions>
+            <DialogFooter>
               <Button
                 onClick={() => {
                   if (
@@ -249,6 +199,7 @@ export default function FieldBuilder({ element, bpmnModeler }) {
                     setAlertMessage(
                       "Last field selected  must be of O2M or M2M type"
                     );
+                    setAlertTitle("Error");
                     setAlert(true);
                     return;
                   }
@@ -256,9 +207,9 @@ export default function FieldBuilder({ element, bpmnModeler }) {
                   setProperty("expression", expressionPathDummy);
                   handleClose();
                 }}
-                color="primary"
+                variant="primary"
                 autoFocus
-                className={classes.save}
+                size="sm"
               >
                 {translate("OK")}
               </Button>
@@ -267,46 +218,38 @@ export default function FieldBuilder({ element, bpmnModeler }) {
                   setExpressionPathDummy(expression);
                   handleClose();
                 }}
-                color="primary"
-                className={classes.save}
+                variant="secondary"
+                autoFocus
+                size="sm"
               >
                 {translate("Cancel")}
               </Button>
-            </DialogActions>
+            </DialogFooter>
           </Dialog>
         )}
         {openAlert && (
           <Dialog
             open={openAlert}
-            onClose={(e, reason) => {
-              if (reason !== "backdropClick") {
-                setAlert(false);
-              }
-            }}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
-            classes={{
-              paper: classes.dialog,
-            }}
           >
-            <DialogTitle id="alert-dialog-title">
-              <label className={classes.title}>{translate(alertTitle)}</label>
-            </DialogTitle>
+            <DialogHeader onCloseClick={() => setAlert(false)}>
+              <DialogTitle id="alert-dialog-title">
+                {translate(alertTitle)}
+              </DialogTitle>
+            </DialogHeader>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                {translate(alertMessage)}
-              </DialogContentText>
+              <Box color="body">{translate(alertMessage)}</Box>
             </DialogContent>
-            <DialogActions>
+            <DialogFooter>
               <Button
                 onClick={() => {
                   setAlert(false);
                   setAlertMessage(null);
                   setAlertTitle(null);
                 }}
-                color="primary"
-                className={classes.save}
-                autoFocus
+                variant="primary"
+                size="sm"
               >
                 {translate("OK")}
               </Button>
@@ -314,15 +257,15 @@ export default function FieldBuilder({ element, bpmnModeler }) {
                 onClick={() => {
                   setAlert(false);
                 }}
-                color="primary"
-                className={classes.save}
+                variant="secondary"
+                size="sm"
               >
                 {translate("Cancel")}
               </Button>
-            </DialogActions>
+            </DialogFooter>
           </Dialog>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
