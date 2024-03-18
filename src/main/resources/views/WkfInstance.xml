@@ -38,6 +38,11 @@
           onClick="action-wkf-instance-method-clear-log" colSpan="3"/>
         <field name="logText" colSpan="12" showTitle="false" widget="code-editor"/>
       </panel>
+      <panel name="varPanel" title="Variables"
+        onTabSelect="action-wkf-instance-method-show-vars">
+        <field name="$variableList" title="Variables" type="one-to-many"
+          target="com.axelor.studio.db.WkfInstanceVariable" colSpan="12"/>
+      </panel>
     </panel-tabs>
   </form>
 
@@ -96,5 +101,10 @@
   <action-method name="action-wkf-instance-method-clear-log">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="clearInstanceLog"/>
   </action-method>
+
+  <action-method name="action-wkf-instance-method-show-vars">
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="showInstanceVariables"/>
+  </action-method>
+
 
 </object-views>

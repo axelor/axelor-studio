@@ -35,6 +35,7 @@ import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceMigrationHistory;
+import com.axelor.studio.db.WkfInstanceVariable;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
@@ -62,6 +63,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
@@ -70,6 +72,7 @@ import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
+import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.Variables.SerializationDataFormats;
 import org.camunda.bpm.model.bpmn.impl.BpmnModelConstants;
@@ -765,6 +768,36 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     instance.setMigrationStatusSelect(migrationStatus);
     wkfInstanceRepository.save(instance);
+  }
+
+  @Override
+  public List<WkfInstanceVariable> getWkfInstanceVariables(WkfInstance instance) {
+    String processInstanceId = instance.getInstanceId();
+    ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+    RuntimeService runtimeService = processEngine.getRuntimeService();
+    ProcessInstance processInstance =
+        runtimeService
+            .createProcessInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .singleResult();
+    List<WkfInstanceVariable> wkfInstanceVariables = new ArrayList<>();
+    if (processInstance != null) {
+      getVariables(processInstanceId, runtimeService, wkfInstanceVariables);
+    }
+    return wkfInstanceVariables;
+  }
+
+  protected void getVariables(
+      String processInstanceId,
+      RuntimeService runtimeService,
+      List<WkfInstanceVariable> wkfInstanceVariables) {
+    VariableMap variables = runtimeService.getVariablesLocalTyped(processInstanceId);
+    variables.forEach(
+        (name, value) -> {
+          WkfInstanceVariable instanceVariable = new WkfInstanceVariable(name);
+          instanceVariable.setValue(String.valueOf(value));
+          wkfInstanceVariables.add(instanceVariable);
+        });
   }
 
   protected WkfInstanceMigrationHistory createMigrationHistory(
