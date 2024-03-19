@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IconButton } from "@material-ui/core";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
 
 import Select from "../../../../../components/Select";
 import StaticSelect from "../../../../../components/StaticSelect";
@@ -32,52 +31,7 @@ import {
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import Stepper from "./Stepper";
-
-const useStyles = makeStyles((theme) => ({
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  select: {
-    margin: 0,
-  },
-  tableCell: {
-    padding: "3px !important",
-  },
-  tableHead: {
-    padding: "3px !important",
-    margin: "3px 0px",
-    textAlign: "center",
-  },
-  linkIcon: {
-    color: "inherit",
-    marginLeft: 5,
-    cursor: "pointer",
-  },
-  save: {
-    margin: theme.spacing(1),
-    textTransform: "none",
-    width: "100%",
-  },
-  cardContent: {
-    overflow: "auto",
-    maxHeight: "80%",
-    minWidth: 250,
-  },
-  expand: {
-    transform: "rotate(0deg)",
-    marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: "rotate(180deg)",
-  },
-}));
+import styles from "./Definitions.module.css";
 
 function getSteps() {
   return [STATUS[1], STATUS[2], STATUS[3]];
@@ -102,7 +56,6 @@ export default function Definition({
   const [expanded, setExpanded] = useState(true);
   const { statusSelect = 1, isActive } = wkf || {};
   const steps = getSteps();
-  const classes = useStyles();
 
   const handleClose = () => {
     setOpen(false);
@@ -343,11 +296,11 @@ export default function Definition({
       />
       {enableStudioApp && (
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("App")}
           </InputLabel>
           <Select
-            className={classes.select}
+            className={styles.select}
             update={(value, label) => {
               setStudioApp(value);
               setProperty("studioApp", value?.code);
@@ -392,7 +345,7 @@ export default function Definition({
           },
         }}
       />
-      <InputLabel color="body" className={classes.label}>
+      <InputLabel color="body" className={styles.label}>
         {translate("Wkf status color")}
       </InputLabel>
       <br />
@@ -425,7 +378,7 @@ export default function Definition({
       {wkfModelList && wkfModelList.length > 0 && (
         <React.Fragment>
           <Box d="flex" alignItems="center" justifyContent="space-between">
-            <InputLabel className={classes.label} style={{ marginTop: 10 }}>
+            <InputLabel className={styles.label} style={{ marginTop: 10 }}>
               {translate("Previous versions")}
             </InputLabel>
             <Box color="body">
@@ -443,8 +396,8 @@ export default function Definition({
               />
               <IconButton
                 style={{ color: "inherit" }}
-                className={classnames(classes.expand, {
-                  [classes.expandOpen]: expanded,
+                className={classnames(styles.expand, {
+                  [styles.expandOpen]: expanded,
                 })}
                 onClick={() => {
                   setExpanded((expanded) => !expanded);
@@ -475,20 +428,20 @@ export default function Definition({
                 </colgroup>
                 <TableHead>
                   <TableRow>
-                    <TableCell className={classes.tableHead}></TableCell>
-                    <TableCell className={classes.tableHead}>
+                    <TableCell className={styles.tableHead}></TableCell>
+                    <TableCell className={styles.tableHead}>
                       {translate("Code")}
                     </TableCell>
-                    <TableCell className={classes.tableHead}>
+                    <TableCell className={styles.tableHead}>
                       {translate("Name")}
                     </TableCell>
-                    <TableCell className={classes.tableHead}>
+                    <TableCell className={styles.tableHead}>
                       {translate("Version tag")}
                     </TableCell>
-                    <TableCell className={classes.tableHead}>
+                    <TableCell className={styles.tableHead}>
                       {translate("Status")}
                     </TableCell>
-                    <TableCell className={classes.tableHead}>
+                    <TableCell className={styles.tableHead}>
                       {translate("App")}
                     </TableCell>
                   </TableRow>
@@ -500,7 +453,7 @@ export default function Definition({
                         <MaterialIcon
                           icon="open_in_new"
                           fontSize={16}
-                          className={classes.linkIcon}
+                          className={styles.linkIcon}
                           onClick={() => {
                             openWebApp(
                               `wkf-editor/?id=${model?.id || ""}`,
@@ -530,18 +483,14 @@ export default function Definition({
       )}
       <Box d="flex" flexDirection="column" alignItems="center">
         {statusSelect === 2 && isActive && (
-          <Button
-            variant="primary"
-            className={classes.save}
-            onClick={terminate}
-          >
+          <Button variant="primary" className={styles.save} onClick={terminate}>
             {translate("wkf.terminate.btn")}
           </Button>
         )}
         {statusSelect === 3 && isActive && (
           <Button
             variant="primary"
-            className={classes.save}
+            className={styles.save}
             onClick={backToDraft}
           >
             {translate("Back to draft")}
@@ -549,7 +498,7 @@ export default function Definition({
         )}
         <Button
           variant="primary"
-          className={classes.save}
+          className={styles.save}
           onClick={openBPMState}
         >
           {translate("BPM State")}
@@ -557,7 +506,7 @@ export default function Definition({
         {statusSelect === 2 && (
           <Button
             variant="primary"
-            className={classes.save}
+            className={styles.save}
             onClick={() => addNewVersion(wkf)}
           >
             {translate("New version")}
@@ -565,7 +514,7 @@ export default function Definition({
         )}
         <Button
           variant="primary"
-          className={classes.save}
+          className={styles.save}
           onClick={() => {
             if (wkf && wkf.wkfProcessList) {
               setOpen(true);
@@ -581,12 +530,12 @@ export default function Definition({
           <DialogHeader onCloseClick={() => setOpen(false)}>
             <h3>{translate("Select process")}</h3>
           </DialogHeader>
-          <DialogContent className={classes.cardContent}>
-            <InputLabel color="body" className={classes.label}>
+          <DialogContent className={styles.cardContent}>
+            <InputLabel color="body" className={styles.label}>
               {translate("Process")}
             </InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               options={wkf && wkf.wkfProcessList}
               update={(value) => {
                 setProcess(value);
@@ -600,7 +549,7 @@ export default function Definition({
             {process && (
               <Button
                 variant="primary"
-                className={classes.save}
+                className={styles.save}
                 onClick={showDashboard}
               >
                 {translate("Show")}
@@ -608,7 +557,7 @@ export default function Definition({
             )}
             <Button
               variant="primary"
-              className={classes.save}
+              className={styles.save}
               onClick={handleClose}
             >
               {translate("Close")}

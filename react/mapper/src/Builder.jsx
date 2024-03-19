@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import update from 'immutability-helper';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 
 import DataTable from './DataTable';
 import { Selection, MultiSelection } from './components/form';
@@ -33,33 +32,7 @@ import Loader from './components/Loader';
 import DialogBox from './components/Dialog';
 import { Box, InputLabel, Switch } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
-
-const useStyles = makeStyles({
-  input: {
-    width: '13%',
-    marginRight: 20,
-  },
-  switchText: {
-    marginRight: 16,
-    marginTop: 6,
-  },
-  topView: {
-    margin: '10px 10px 0px 10px',
-    alignItems: 'center',
-  },
-  saveIcon: {},
-  selectContainer: {
-    minWidth: 150,
-    marginRight: 20,
-  },
-  selectContainerBPMN: {
-    minWidth: '30%',
-  },
-  targetModelInputRoot: {},
-  process: {
-    marginRight: 20,
-  },
-});
+import styles from './Builder.module.css';
 
 function isFieldInvalid(field) {
   const { from, selected, subFields } = field.value || {};
@@ -198,8 +171,6 @@ function Builder({
   isDMNAllow,
   getDMNValues,
 }) {
-  const classes = useStyles();
-
   const [loading, setLoading] = React.useState(false);
   const [builderRecord, setBuilderRecord] = React.useState({});
 
@@ -622,7 +593,7 @@ function Builder({
         onChange={onChange}
         id={label}
       />
-      <InputLabel color="body" htmlFor={label} className={classes.switchText}>
+      <InputLabel color="body" htmlFor={label} className={styles.switchText}>
         {translate(label)}
       </InputLabel>
     </Box>
@@ -640,22 +611,22 @@ function Builder({
   function UI() {
     return (
       <Box w={100} h={100} overflow="hidden">
-        <Box className={classes.topView}>
+        <Box className={styles.topView}>
           <Box style={{ marginBottom: 10 }}>
             <Box d="flex" flexWrap="wrap" alignItems="center">
               {!isBPMN && (
                 <IconButton
-                  classes={{ colorPrimary: classes.saveIcon }}
+                  classes={{ colorPrimary: styles.saveIcon }}
                   color="primary"
                   onClick={handleSave}
-                  className={classNames(classes.iconButtonClassName)}
+                  className={classNames(styles.iconButtonClassName)}
                   disabled={!model}
                 >
                   <MaterialIcon icon="save" fontSize={20} />
                 </IconButton>
               )}
               <Selection
-                className={classes.input}
+                className={styles.input}
                 name="metaModal"
                 title="Target model"
                 placeholder="Target model"
@@ -666,11 +637,11 @@ function Builder({
                   setBuilderFields([]);
                 }}
                 value={model}
-                inputRootClass={classes.targetModelInputRoot}
+                inputRootClass={styles.targetModelInputRoot}
               />
               {!isBPMN && (
                 <MultiSelection
-                  containerClassName={classes.selectContainer}
+                  containerClassName={styles.selectContainer}
                   title="Source model"
                   optionValueKey="name"
                   optionLabelKey="title"
@@ -748,7 +719,7 @@ function Builder({
               >
                 <Selection
                   disableClearable
-                  className={classes.input}
+                  className={styles.input}
                   options={[
                     { title: translate('Context'), id: VALUE_FROM.CONTEXT },
                     { title: translate('Process'), id: VALUE_FROM.PROCESS },
@@ -763,7 +734,7 @@ function Builder({
                 />
                 {modelFrom?.id === VALUE_FROM.CONTEXT ? (
                   <MultiSelection
-                    containerClassName={classes.selectContainerBPMN}
+                    containerClassName={styles.selectContainerBPMN}
                     title="Source model"
                     optionValueKey="name"
                     optionLabelKey="title"
@@ -782,7 +753,7 @@ function Builder({
                       optionLabelKey="title"
                       concatValue={true}
                       title="Process id"
-                      className={classes.process}
+                      className={styles.process}
                       options={getProcesses()}
                       value={processId}
                       isProcessContext={true}

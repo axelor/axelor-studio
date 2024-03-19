@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
-import { makeStyles } from "@material-ui/core/styles";
 import { is } from "bpmn-js/lib/util/ModelUtil";
 
 import Select from "../../../../../components/Select";
@@ -29,6 +28,7 @@ import {
   Divider,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import styles from "./ServiceTaskDelegateProps.module.css";
 
 const eventTypes = [
   "bpmn:StartEvent",
@@ -65,66 +65,6 @@ const bindingOptions = [
   },
 ];
 
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  groupContainer: {
-    marginTop: 10,
-  },
-  divider: {
-    marginTop: 15,
-  },
-  linkIcon: {
-    marginLeft: 5,
-  },
-  link: {
-    cursor: "pointer",
-  },
-  dmn: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-  },
-  dialogPaper: {
-    padding: 5,
-    minWidth: 450,
-    overflow: "auto",
-  },
-  button: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  actionContainer: {
-    margin: "5px 0px 0px",
-  },
-  actionSelect: {
-    margin: "3px 0px",
-  },
-  baml: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  select: {
-    width: "100%",
-  },
-}));
-
 const implementationOptions = [
   { name: translate("Java class"), value: "class" },
   { name: translate("Expression"), value: "expression" },
@@ -151,8 +91,6 @@ export default function ServiceTaskDelegateProps({
   const [isBaml, setBaml] = useState(false);
   const [compulsory, setCompulsory] = useState(true);
   const [actions, setActions] = useState([]);
-
-  const classes = useStyles();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -347,9 +285,9 @@ export default function ServiceTaskDelegateProps({
         {element && element.type !== "bpmn:SendTask" && (
           <React.Fragment>
             <React.Fragment>
-              {index > 0 && <Divider className={classes.divider} />}
+              {index > 0 && <Divider className={styles.divider} />}
             </React.Fragment>
-            <Box color="body" className={classes.groupLabel}>
+            <Box color="body" className={styles.groupLabel}>
               {translate(label)}
             </Box>
           </React.Fragment>
@@ -387,12 +325,12 @@ export default function ServiceTaskDelegateProps({
         )}
         {isBaml && (
           <React.Fragment>
-            <InputLabel color="body" className={classes.label}>
+            <InputLabel color="body" className={styles.label}>
               {translate("BAML model")}
             </InputLabel>
-            <div className={classes.baml}>
+            <div className={styles.baml}>
               <Select
-                className={classes.select}
+                className={styles.select}
                 update={(value) => {
                   setBamlModel(value);
                   if (value) {
@@ -418,12 +356,12 @@ export default function ServiceTaskDelegateProps({
                       translate("BAML editor")
                     );
                   }}
-                  className={classes.link}
+                  className={styles.link}
                 >
                   <MaterialIcon
                     icon="open_in_new"
                     fontSize={18}
-                    className={classes.linkIcon}
+                    className={styles.linkIcon}
                   />
                 </div>
               )}
@@ -663,11 +601,11 @@ export default function ServiceTaskDelegateProps({
                   canRemove={true}
                   endAdornment={
                     <>
-                      <div onClick={handleClickOpen} className={classes.link}>
+                      <div onClick={handleClickOpen} className={styles.link}>
                         <MaterialIcon
                           icon="add"
                           fontSize={18}
-                          className={classes.linkIcon}
+                          className={styles.linkIcon}
                         />
                       </div>
                       {dmnModel &&
@@ -681,12 +619,12 @@ export default function ServiceTaskDelegateProps({
                                 translate("DMN editor")
                               );
                             }}
-                            className={classes.link}
+                            className={styles.link}
                           >
                             <MaterialIcon
                               icon="open_in_new"
                               fontSize={18}
-                              className={classes.linkIcon}
+                              className={styles.linkIcon}
                             />
                           </div>
                         )}
@@ -740,9 +678,8 @@ export default function ServiceTaskDelegateProps({
                       modelProperty: "decisionRefVersion",
                       get: function () {
                         return {
-                          decisionRefVersion: getPropertyValue(
-                            "decisionRefVersion"
-                          ),
+                          decisionRefVersion:
+                            getPropertyValue("decisionRefVersion"),
                         };
                       },
                       set: function (e, values) {
@@ -898,9 +835,9 @@ export default function ServiceTaskDelegateProps({
                   canRemove={true}
                 />
                 <React.Fragment>
-                  {index > 0 && <Divider className={classes.divider} />}
+                  {index > 0 && <Divider className={styles.divider} />}
                 </React.Fragment>
-                <Box color="body" className={classes.groupLabel}>
+                <Box color="body" className={styles.groupLabel}>
                   {translate("External task configuration")}
                 </Box>
                 <TextField
@@ -934,12 +871,12 @@ export default function ServiceTaskDelegateProps({
               </React.Fragment>
             )}
             {implementationType === "actions" && (
-              <div className={classes.actionContainer}>
-                <InputLabel color="body" className={classes.label}>
+              <div className={styles.actionContainer}>
+                <InputLabel color="body" className={styles.label}>
                   {translate("Actions")}
                 </InputLabel>
                 <Select
-                  className={classes.actionSelect}
+                  className={styles.actionSelect}
                   update={(value) => {
                     setActions(value);
                     updateAction(value);
@@ -968,16 +905,16 @@ export default function ServiceTaskDelegateProps({
           </React.Fragment>
         )}
 
-        <Dialog open={open} centered backdrop className={classes.dialogPaper}>
+        <Dialog open={open} centered backdrop className={styles.dialogPaper}>
           <DialogHeader onCloseClick={() => setOpen(false)}>
             <h3>{translate("Select DMN")}</h3>
           </DialogHeader>
           <DialogContent>
-            <InputLabel color="body" className={classes.label}>
+            <InputLabel color="body" className={styles.label}>
               {translate("DMN")}
             </InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               update={(value) => {
                 setDmnModel(value);
               }}
@@ -992,14 +929,14 @@ export default function ServiceTaskDelegateProps({
           <DialogFooter>
             <Button
               onClick={handleClose}
-              className={classes.button}
+              className={styles.button}
               variant="secondary"
             >
               {translate("Cancel")}
             </Button>
             <Button
               onClick={onConfirm}
-              className={classes.button}
+              className={styles.button}
               variant="primary"
             >
               {translate("OK")}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/styles";
 
 import Description from "./Description";
 import { translate } from "../../../utils";
@@ -8,35 +7,7 @@ import { Box, Button, Input, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import ScriptEditor from "../EditorConfig/SrciptEditor";
 import AlertDialog from "../../AlertDialog";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    width: "100%",
-  },
-  label: {
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginBottom: 3,
-  },
-  fieldWrapper: {
-    position: "relative",
-    flexGrow: 1,
-  },
-  clearButton: {
-    background: "transparent",
-    border: "none",
-    height: 23,
-    overflow: "hidden",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    flexShrink: 0,
-  },
-});
+import styles from "./TextField.module.css";
 
 export default function TextField({
   entry,
@@ -56,7 +27,6 @@ export default function TextField({
   isScript,
   language,
 }) {
-  const classes = useStyles();
   const {
     label,
     description,
@@ -155,16 +125,16 @@ export default function TextField({
   }, [element, modelProperty, get, getProperty]);
 
   return (
-    <div className={classnames(classes.root, rootClass)}>
+    <div className={classnames(styles.root, rootClass)}>
       {isLabel && (
         <InputLabel
-          className={classnames(classes.label, labelClass)}
+          className={classnames(styles.label, labelClass)}
           color="body"
         >
           {translate(label)}
         </InputLabel>
       )}
-      <div className={classes.fieldWrapper}>
+      <div className={styles.fieldWrapper}>
         <Box d="flex" alignItems="center">
           <Input
             flex="1"
@@ -193,7 +163,7 @@ export default function TextField({
           {canRemove && !readOnly && (
             <Button
               onClick={handleClear}
-              className={classnames(classes.clearButton, clearClassName)}
+              className={classnames(styles.clearButton, clearClassName)}
               style={{ visibility: value ? "visible" : "hidden" }}
             >
               <MaterialIcon icon="close" fontSize={16} />
@@ -202,7 +172,7 @@ export default function TextField({
           {isScript && (
             <Button
               onClick={openEditor}
-              className={classnames(classes.clearButton, clearClassName)}
+              className={classnames(styles.clearButton, clearClassName)}
             >
               <MaterialIcon icon="code" fontSize={16} />
             </Button>

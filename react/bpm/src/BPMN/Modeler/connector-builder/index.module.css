@@ -1,0 +1,51 @@
+.dialog {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+}
+
+.dialog > div {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  max-width: calc(100% - 40px) !important;
+  min-width: 70% !important;
+}
+
+.dialog > div > div {
+  max-height: 100% !important;
+  min-width: 80% !important;
+  min-height: calc(80% - 20px) !important;
+  overflow: auto !important;
+  resize: both !important;
+}
+
+.dialogContent {
+  overflow: auto !important;
+}
+
+.title {
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+.save {
+  min-width: 64px !important;
+  margin: 8px !important;
+  text-transform: none !important;
+}
+
+.MuiAutocompleteRoot {
+  width: 95% !important;
+  margin-right: 10px !important;
+}
+
+.paper {
+  margin: 8px !important;
+  padding: 24px !important;
+}
+
+.container {
+  margin-block: 10px !important;
+}

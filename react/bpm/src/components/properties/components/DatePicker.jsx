@@ -1,30 +1,14 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { makeStyles } from "@material-ui/core/styles";
 
 import {
   parseString,
   getDateString,
 } from "dmn-js-decision-table/lib/features/simple-date-edit/Utils";
-
 import { DateTimePicker } from "../../expression-builder/components";
 import { translate } from "../../../utils";
 import { InputLabel } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  input: {
-    border: "1px solid #ccc",
-    margin: "5px 0px",
-    padding: "0px 5px",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginTop: 5,
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-});
+import styles from "./DatePicker.module.css";
 
 const formats = {
   date: "YYYY/MM/DD",
@@ -44,8 +28,6 @@ const dateFormat = (date, type) => {
 
 function DatePicker({ type, entry }) {
   const { label, set, get } = entry || {};
-
-  const classes = useStyles();
 
   const [date, setDate] = useState(null);
 
@@ -70,12 +52,12 @@ function DatePicker({ type, entry }) {
   };
   return (
     <React.Fragment>
-      <InputLabel color="body" className={classes.label}>
+      <InputLabel color="body" className={styles.label}>
         {translate(label)}
       </InputLabel>
       <DateTimePicker
         type={type}
-        className={classes.input}
+        className={styles.input}
         disableUnderline={true}
         onChange={(value) => handleChange(value)}
         value={date}

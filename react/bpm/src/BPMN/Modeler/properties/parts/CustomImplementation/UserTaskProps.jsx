@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import Textbox from "../../../../../components/properties/components/Textbox";
@@ -21,61 +20,7 @@ import {
   Divider,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-  },
-  newIcon: {
-    marginLeft: 5,
-  },
-  new: {
-    cursor: "pointer",
-    display: "flex",
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  allButtons: {
-    paddingBottom: 10,
-  },
-  select: {
-    margin: 0,
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  content: {
-    fontSize: 16,
-  },
-  scriptDialog: {
-    width: "100%",
-    height: "100%",
-  },
-}));
+import styles from "./UserTaskProps.module.css";
 
 export default function UserTaskProps({
   element,
@@ -93,7 +38,6 @@ export default function UserTaskProps({
   const [readOnly, setReadOnly] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
-  const classes = useStyles();
 
   const getProperty = React.useCallback(
     (name) => {
@@ -296,13 +240,13 @@ export default function UserTaskProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
 
-        <div className={classes.expressionBuilder}>
+        <div className={styles.expressionBuilder}>
           <TextField
             element={element}
             readOnly={readOnly}
@@ -326,7 +270,7 @@ export default function UserTaskProps({
             }}
             canRemove={true}
             endAdornment={
-              <Box color="body" className={classes.new}>
+              <Box color="body" className={styles.new}>
                 <Tooltip title="Enable" aria-label="enable">
                   <i
                     className="fa fa-code"
@@ -348,7 +292,7 @@ export default function UserTaskProps({
                 <MaterialIcon
                   icon="edit"
                   fontSize={16}
-                  className={classes.newIcon}
+                  className={styles.newIcon}
                   onClick={handleClickOpen}
                 />
                 {open && (
@@ -365,7 +309,7 @@ export default function UserTaskProps({
             }
           />
           <AlertDialog
-            className={classes.scriptDialog}
+            className={styles.scriptDialog}
             openAlert={openScriptDialog}
             alertClose={() => {
               setScript(getCompletedIf()?.completedIf);
@@ -382,7 +326,7 @@ export default function UserTaskProps({
             children={
               <Textbox
                 element={element}
-                className={classes.textbox}
+                className={styles.textbox}
                 showLabel={false}
                 defaultHeight={window?.innerHeight - 205}
                 entry={{
@@ -399,11 +343,11 @@ export default function UserTaskProps({
               />
             }
           />
-          <Dialog open={openAlert} centered backdrop className={classes.dialog}>
+          <Dialog open={openAlert} centered backdrop className={styles.dialog}>
             <DialogHeader onCloseClick={() => setAlert(false)}>
               <h3>{translate(alertTitle)}</h3>
             </DialogHeader>
-            <DialogContent className={classes.content}>
+            <DialogContent className={styles.content}>
               <Box as="p" color="body" fontSize={5}>
                 {translate(alertMessage)}
               </Box>
@@ -421,12 +365,12 @@ export default function UserTaskProps({
                   setOpenScriptDialog(true);
                 }}
                 variant="primary"
-                className={classes.save}
+                className={styles.save}
               >
                 {translate("OK")}
               </Button>
               <Button
-                className={classes.save}
+                className={styles.save}
                 onClick={() => {
                   setAlert(false);
                 }}
@@ -437,12 +381,12 @@ export default function UserTaskProps({
             </DialogFooter>
           </Dialog>
         </div>
-        <div className={classes.allButtons}>
-          <InputLabel color="body" className={classes.label}>
+        <div className={styles.allButtons}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Buttons")}
           </InputLabel>
           <Select
-            className={classes.select}
+            className={styles.select}
             update={(value) => {
               setButtons(value);
               addButtons(value);

@@ -1,0 +1,56 @@
+.drawerPaper {
+  background: var(--bs-tertiary-bg);
+  width: 100%;
+  position: absolute;
+  overflow: auto;
+  height: 100%;
+  z-index: 2;
+}
+
+.drawerContainer {
+  padding: 10px;
+  height: 100%;
+  text-align: left;
+}
+
+.groupLabel {
+  font-weight: bolder;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 120%;
+  margin: 10px 0;
+  transition: margin 0.218s linear;
+  font-style: italic;
+}
+
+.groupContainer {
+  margin-top: 10px;
+}
+
+.divider {
+  margin-top: 15px;
+}
+
+.dialog {
+  min-width: 300px;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+}
+
+.save {
+  min-width: 64px;
+}
+
+.select {
+  min-width: 150px;
+  margin-top: 0;
+}
+
+.commandBar > div > button {
+  font-size: 14px;
+}

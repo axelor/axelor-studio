@@ -11,7 +11,6 @@ import {
 } from "../../../../../components/properties/components";
 import Select from "../../../../../components/Select";
 import { translate } from "../../../../../utils";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   Button,
   InputLabel,
@@ -21,29 +20,7 @@ import {
   DialogFooter,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  dialogPaper: {
-    minWidth: 450,
-    overflow: "auto",
-  },
-  button: {
-    margin: theme.spacing(1),
-    textTransform: "none",
-    minWidth: 64,
-  },
-  label: {
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  select: {
-    width: "100%",
-  },
-  newIcon: {
-    cursor: "pointer",
-  },
-}));
+import styles from "./MessageEventDefinition.module.css";
 
 const setProperty = (name, value, element) => {
   const bo = getBusinessObject(element);
@@ -76,7 +53,6 @@ export default function MessageProps({
   const [ele, setEle] = useState(null);
   const [open, setOpen] = useState(false);
   const [catchMsgObj, setMsgObj] = useState(null);
-  const classes = useStyles();
 
   const getModels = React.useCallback((options) => {
     return getWkfModels(options, ["diagramXml", "code"]);
@@ -215,7 +191,7 @@ export default function MessageProps({
           <MaterialIcon
             icon="edit"
             fontSize={16}
-            className={classes.newIcon}
+            className={styles.newIcon}
             onClick={() => {
               handleClickOpen();
             }}
@@ -306,16 +282,16 @@ export default function MessageProps({
         />
       )}
       {open && (
-        <Dialog open={open} centered backdrop className={classes.dialogPaper}>
+        <Dialog open={open} centered backdrop className={styles.dialogPaper}>
           <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
             <h3>{translate("Select Message")}</h3>
           </DialogHeader>
-          <DialogContent className={classes.dialogContent}>
-            <InputLabel className={classes.label}>
+          <DialogContent className={styles.dialogContent}>
+            <InputLabel className={styles.label}>
               {translate("BPM model")}
             </InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               disableClearable={true}
               update={(value) => {
                 setMsgObj((msgObj) => ({ ...(msgObj || {}), wkf: value }));
@@ -345,11 +321,11 @@ export default function MessageProps({
             />
             {catchMsgObj?.wkf && (
               <>
-                <InputLabel className={classes.label}>
+                <InputLabel className={styles.label}>
                   {translate("Messages")}
                 </InputLabel>
                 <Select
-                  className={classes.select}
+                  className={styles.select}
                   disableClearable={true}
                   update={(value) => {
                     setMsgObj((msgObj) => ({
@@ -372,7 +348,7 @@ export default function MessageProps({
           <DialogFooter>
             <Button
               onClick={handleClose}
-              className={classes.button}
+              className={styles.button}
               variant="secondary"
             >
               {translate("Cancel")}
@@ -383,7 +359,7 @@ export default function MessageProps({
                 setMsgObj(null);
                 handleClose();
               }}
-              className={classes.button}
+              className={styles.button}
               variant="primary"
             >
               {translate("OK")}

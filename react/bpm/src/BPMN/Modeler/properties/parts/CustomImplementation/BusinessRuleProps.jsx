@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
-import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import {
@@ -9,21 +8,7 @@ import {
 } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
 import { Box, Divider } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-});
+import styles from "./BusinessRuleProps.module.css";
 
 export default function BusinessRuleTaskProps({
   element,
@@ -35,8 +20,6 @@ export default function BusinessRuleTaskProps({
   const [searchWith, setSearchWith] = useState(null);
   const [ifMultiple, setIfMultiple] = useState(null);
   const [assignOutputToFields, setAssignOutputToFields] = useState(null);
-
-  const classes = useStyles();
 
   const setProperty = (name, value) => {
     setDummyProperty({ bpmnModeler, element, value });
@@ -144,9 +127,9 @@ export default function BusinessRuleTaskProps({
         {assignOutputToFields && (
           <React.Fragment>
             <React.Fragment>
-              {index > 0 && <Divider className={classes.divider} />}
+              {index > 0 && <Divider className={styles.divider} />}
             </React.Fragment>
-            <Box color="body" className={classes.groupLabel}>
+            <Box color="body" className={styles.groupLabel}>
               {translate("Relational field search")}
             </Box>
             <SelectBox

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
 
 import { translate } from "../../../utils";
@@ -9,16 +8,7 @@ import { getSubMetaField } from "../../../services/api";
 import { UI_TYPES } from "../../../DMN/constants";
 import Tooltip from "../../Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles(() => ({
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-  iconButton: {
-    marginRight: 10,
-  },
-}));
+import styles from "./FieldEditor.module.css";
 
 export default function FieldEditor({
   initValue = "",
@@ -39,7 +29,6 @@ export default function FieldEditor({
   const [isShow, setShow] = useState(true);
   const [isButton, setButton] = useState(true);
   const [allFieldValues, setAllFieldValues] = useState(null);
-  const classes = useStyles();
   const values = fieldName && fieldName.split(".");
   const [startValue] = values || [];
   const hasManyValues =
@@ -178,7 +167,7 @@ export default function FieldEditor({
         optionLabelKey="name"
         onChange={(value) => handleChange(value)}
         value={transformValue}
-        classes={classnames(classes.MuiAutocompleteRoot, classNames)}
+        classes={classnames(styles.MuiAutocompleteRoot, classNames)}
       />
       {hasManyValues &&
         relationModel &&
@@ -202,7 +191,7 @@ export default function FieldEditor({
                     });
                   }
                 }}
-                className={classes.iconButton}
+                className={styles.iconButton}
               >
                 <Tooltip title={translate("Remove sub field")}>
                   <MaterialIcon
@@ -247,7 +236,7 @@ export default function FieldEditor({
               <IconButton
                 size="small"
                 onClick={() => setShow((isShow) => !isShow)}
-                className={classes.iconButton}
+                className={styles.iconButton}
               >
                 <Tooltip title={translate("Add sub field")}>
                   <MaterialIcon

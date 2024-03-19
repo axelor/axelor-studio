@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { translate } from '../utils';
 import {
   Button,
@@ -12,32 +11,7 @@ import {
   Box,
   InputLabel,
 } from '@axelor/ui';
-
-const useStyles = makeStyles({
-  dialogTitle: {
-    padding: '16px 24px',
-  },
-  subHeaderRow: {
-    borderBottom: '1px solid var(--bs-border-color)',
-    paddingLeft: 16,
-    paddingRight: 16,
-    paddingBottom: 8,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  fieldListViewContainer: {
-    padding: '8px 2px 0px 16px',
-    overflowY: 'auto',
-    height: '53.8vh',
-  },
-  searchField: {
-    width: '75%',
-  },
-  save: {
-    minWidth: 64,
-    textTransform: 'capitalize',
-  },
-});
+import styles from './Popover.module.css';
 
 const getFilteredFields = (_list, text) => {
   const list = _list.sort((item1, item2) => {
@@ -69,14 +43,13 @@ function FieldPopoverComponent({
   open,
   onClose,
 }) {
-  const classes = useStyles();
   const [selected, setSelected] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
 
-  const selectAll = React.useMemo(() => selected.length === data.length, [
-    data,
-    selected,
-  ]);
+  const selectAll = React.useMemo(
+    () => selected.length === data.length,
+    [data, selected]
+  );
 
   useEffect(() => {
     // reset state
@@ -93,6 +66,7 @@ function FieldPopoverComponent({
     },
     [onClose]
   );
+  styles;
 
   const handleSubmit = (e) => {
     e.stopPropagation();
@@ -131,12 +105,12 @@ function FieldPopoverComponent({
 
   return (
     <Dialog open={open} centered>
-      <DialogHeader className={classes.dialogTitle} onCloseClick={handleClose}>
+      <DialogHeader className={styles.dialogTitle} onCloseClick={handleClose}>
         <h4>{translate('Select fields')}</h4>
       </DialogHeader>
 
       <DialogContent px={0}>
-        <Box className={classes.subHeaderRow}>
+        <Box className={styles.subHeaderRow}>
           <Input
             fontSize={5}
             type="checkbox"
@@ -147,13 +121,13 @@ function FieldPopoverComponent({
           />
           <Box w={100}>
             <TextField
-              className={classes.searchField}
+              className={styles.searchField}
               placeholder={translate('Search fields')}
               onChange={(e) => handleFieldSearch(e)}
             />
           </Box>
         </Box>
-        <div className={classes.fieldListViewContainer}>
+        <div className={styles.fieldListViewContainer}>
           {getFilteredFields(data, searchText).map((field, i) => (
             <Box d="flex" alignItems="center" gap={8} key={i}>
               <Input
@@ -200,14 +174,14 @@ function FieldPopoverComponent({
       </DialogContent>
       <DialogFooter>
         <Button
-          className={classes.save}
+          className={styles.save}
           variant="primary"
           onClick={handleSubmit}
         >
           {translate('OK')}
         </Button>
         <Button
-          className={classes.save}
+          className={styles.save}
           variant="secondary"
           onClick={handleClose}
         >

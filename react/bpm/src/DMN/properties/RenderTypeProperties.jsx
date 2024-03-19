@@ -11,7 +11,6 @@ import {
   getRangeString,
 } from "dmn-js-decision-table/lib/features/simple-number-edit/Utils";
 import moment from "moment";
-import { makeStyles } from "@material-ui/core/styles";
 
 import DateTimePicker from "../../components/expression-builder/components/datetime-picker";
 import NumberInput from "../../components/expression-builder/components/number";
@@ -32,24 +31,10 @@ import {
 } from "../constants";
 
 import { InputLabel } from "@axelor/ui";
+import styles from "./RenderTypeProperties.module.css";
 
 const DISJUNCTION = "disjunction";
 const NEGATION = "negation";
-
-const useStyles = makeStyles(() => ({
-  input: {
-    border: "1px solid #ccc",
-    margin: "8px 0px",
-    padding: "0px 5px",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginBottom: 3,
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-}));
 
 const dateFormat = (date, type) => {
   if (!date) return;
@@ -82,7 +67,6 @@ export default function RenderTypeProperties({
   nameCol,
   numberValue,
 }) {
-  const classes = useStyles();
   const { targetName, target, fullName, name, targetModel, model, jsonTarget } =
     relationalField || metaField || {};
   const [metaFieldName, setMetaFieldName] = useState(null);
@@ -117,8 +101,11 @@ export default function RenderTypeProperties({
       );
     } else if (["date", "datetime", "time"].includes(type)) {
       const parsedInput = parseDate(ruleValue?.text);
-      const { type: parsedType = "exact", date, dates: parsedDates } =
-        parsedInput || {};
+      const {
+        type: parsedType = "exact",
+        date,
+        dates: parsedDates,
+      } = parsedInput || {};
       if (ruleValue?.text) {
         setValueType(
           "defaultTypeValue",
@@ -206,7 +193,7 @@ export default function RenderTypeProperties({
         <React.Fragment>
           {valueFrom === "model" && isOutput ? (
             <React.Fragment>
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Select value")}
               </InputLabel>
               <Select
@@ -236,7 +223,7 @@ export default function RenderTypeProperties({
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Edit string")}
               </InputLabel>
               {!isOutput && (
@@ -322,7 +309,7 @@ export default function RenderTypeProperties({
     case "boolean":
       return (
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Value")}
           </InputLabel>
           <Select
@@ -342,7 +329,7 @@ export default function RenderTypeProperties({
         <DateTimePicker
           type={type}
           disableUnderline={true}
-          className={classes.input}
+          className={styles.input}
           value={dates && dates[0] ? moment(dates[0]) : null}
           onChange={(value) => {
             if (value) {
@@ -358,7 +345,7 @@ export default function RenderTypeProperties({
         />
       ) : (
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Edit")}
           </InputLabel>
           <Select
@@ -389,12 +376,12 @@ export default function RenderTypeProperties({
           />
           {defaultType && defaultType.id === "between" ? (
             <React.Fragment>
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Value")}
               </InputLabel>
               <DateTimePicker
                 disableUnderline={true}
-                className={classes.input}
+                className={styles.input}
                 type={type}
                 value={dates && dates[0] ? moment(dates[0]) : null}
                 onChange={(value) => {
@@ -417,7 +404,7 @@ export default function RenderTypeProperties({
               />
               <DateTimePicker
                 disableUnderline={true}
-                className={classes.input}
+                className={styles.input}
                 type={type}
                 value={dates && dates[1] ? moment(dates[1]) : null}
                 onChange={(value) => {
@@ -439,12 +426,12 @@ export default function RenderTypeProperties({
           ) : (
             defaultType && (
               <React.Fragment>
-                <InputLabel color="body" className={classes.label}>
+                <InputLabel color="body" className={styles.label}>
                   {translate("Value")}
                 </InputLabel>
                 <DateTimePicker
                   disableUnderline={true}
-                  className={classes.input}
+                  className={styles.input}
                   type={type}
                   value={dates && dates[0] ? moment(dates[0]) : null}
                   onChange={(value) => {
@@ -472,7 +459,7 @@ export default function RenderTypeProperties({
     case "decimal":
       return isOutput ? (
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Value")}
           </InputLabel>
           <NumberInput
@@ -487,7 +474,7 @@ export default function RenderTypeProperties({
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Edit number")}
           </InputLabel>
           <Select
@@ -528,7 +515,7 @@ export default function RenderTypeProperties({
           />
           {defaultType?.id === "range" ? (
             <React.Fragment>
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Start value")}
               </InputLabel>
               <Select
@@ -550,7 +537,7 @@ export default function RenderTypeProperties({
                 isLabel={false}
                 disableClearable
               />
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Value")}
               </InputLabel>
               <NumberInput
@@ -571,7 +558,7 @@ export default function RenderTypeProperties({
                   );
                 }}
               />
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("End value")}
               </InputLabel>
               <Select
@@ -593,7 +580,7 @@ export default function RenderTypeProperties({
                 isLabel={false}
                 disableClearable
               />
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Value")}
               </InputLabel>
               <NumberInput
@@ -638,7 +625,7 @@ export default function RenderTypeProperties({
                 isLabel={false}
                 disableClearable
               />
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Value")}
               </InputLabel>
               <NumberInput
@@ -678,11 +665,11 @@ export default function RenderTypeProperties({
       };
       return (
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Select value")}
           </InputLabel>
           <Select
-            className={classes.select}
+            className={styles.select}
             update={(value) => {
               updateValue(value);
             }}
@@ -756,7 +743,7 @@ export default function RenderTypeProperties({
         <React.Fragment>
           {!isOutput && (
             <React.Fragment>
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Edit string")}
               </InputLabel>
               <Select
@@ -779,11 +766,11 @@ export default function RenderTypeProperties({
               />
             </React.Fragment>
           )}
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Select value")}
           </InputLabel>
           <Select
-            className={classes.select}
+            className={styles.select}
             multiple={true}
             fetchMethod={() => fetchData()}
             update={(value) => {
@@ -803,7 +790,7 @@ export default function RenderTypeProperties({
     default:
       return (
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Edit string")}
           </InputLabel>
           {!isOutput && (

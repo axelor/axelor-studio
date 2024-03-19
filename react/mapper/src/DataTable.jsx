@@ -3,7 +3,6 @@ import IconButton from '@material-ui/core/IconButton';
 import ReorderIcon from '@material-ui/icons/Reorder';
 import Close from '@material-ui/icons/Close';
 import AddRounded from '@material-ui/icons/AddRounded';
-import { makeStyles } from '@material-ui/core/styles';
 import get from 'lodash/get';
 import classNames from 'classnames';
 
@@ -32,42 +31,9 @@ import {
   Box,
   TextField,
 } from '@axelor/ui';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    height: '100%',
-  },
-  table: {
-    minWidth: 650,
-  },
-  tableCell: {
-    textAlign: 'center',
-    verticalAlign: 'middle',
-  },
-  valueInputContainer: {
-    position: 'relative',
-  },
-  iconButton: {
-    padding: '8px',
-  },
-  deleteIcon: {
-    color: 'var(--bs-body-color)',
-  },
-  addFieldButton: {
-    margin: theme.spacing(1),
-    textTransform: 'none',
-  },
-  move: {
-    cursor: 'move',
-  },
-  flex: {
-    display: 'flex',
-  },
-}));
+import styles from './DataTable.module.css';
 
 function DataTable(props) {
-  const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
   const [popover, setPopover] = React.useState(false);
   const {
@@ -167,26 +133,26 @@ function DataTable(props) {
               color="body"
             >
               <TableCell
-                className={classNames(classes.move, classes.tableCell)}
+                className={classNames(styles.move, styles.tableCell)}
                 ref={dragRef}
               >
-                <div className={classes.flex}>
+                <div className={styles.flex}>
                   <ReorderIcon />
                 </div>
               </TableCell>
-              <TableCell className={classes.tableCell}>
+              <TableCell className={styles.tableCell}>
                 <ModelField item={row} handleAdd={onRowAdd} />
               </TableCell>
-              <TableCell className={classes.tableCell}>=</TableCell>
+              <TableCell className={styles.tableCell}>=</TableCell>
 
               <TableCell
                 className={classNames(
-                  classes.valueInputContainer,
-                  classes.addFieldButton.tableCell
+                  styles.valueInputContainer,
+                  styles.addFieldButton.tableCell
                 )}
               >
                 <ValueField
-                  classes={classes}
+                  classes={styles}
                   values={values}
                   row={row}
                   isBPMN={isBPMN}
@@ -202,7 +168,7 @@ function DataTable(props) {
                 />
               </TableCell>
               {isDMN && (
-                <TableCell size="small" className={classes.tableCell}>
+                <TableCell size="small" className={styles.tableCell}>
                   {from === VALUE_FROM.DMN &&
                     ['many_to_one', 'json_many_to_one'].includes(
                       getType(row)
@@ -215,7 +181,7 @@ function DataTable(props) {
                     )}
                 </TableCell>
               )}
-              <TableCell className={classes.tableCell}>
+              <TableCell className={styles.tableCell}>
                 <ExpressionField
                   selected={row.condition}
                   onSelectedChange={getOnChange('condition')}
@@ -224,7 +190,7 @@ function DataTable(props) {
                 />
               </TableCell>
 
-              <TableCell size="small" className={classes.tableCell}>
+              <TableCell size="small" className={styles.tableCell}>
                 <Selection
                   disableClearable
                   options={getOptions(
@@ -241,14 +207,14 @@ function DataTable(props) {
                   onChange={getOnChange('from')}
                 />
               </TableCell>
-              <TableCell className={classes.tableCell}>
+              <TableCell className={styles.tableCell}>
                 <IconButton
                   size="medium"
                   onClick={() => onRemove(row, index)}
-                  className={classes.iconButton}
+                  className={styles.iconButton}
                 >
                   <Tooltip title="Remove field">
-                    <Close fontSize="small" className={classes.deleteIcon} />
+                    <Close fontSize="small" className={styles.deleteIcon} />
                   </Tooltip>
                 </IconButton>
               </TableCell>
@@ -258,7 +224,7 @@ function DataTable(props) {
       );
     },
     [
-      classes,
+      styles,
       handleChange,
       metaFields,
       sourceModel,
@@ -287,14 +253,14 @@ function DataTable(props) {
   }, [data, metaFields, newRecord]);
 
   return (
-    <Box shadow rounded={2} bgColor="body-tertiary" className={classes.root}>
+    <Box shadow rounded={2} bgColor="body-tertiary" className={styles.root}>
       {targetModel && (
         <Box d="flex" alignItems="center" justifyContent="space-between">
           <Button
             border
             color="body"
             bgColor="body"
-            className={classes.addFieldButton}
+            className={styles.addFieldButton}
             onClick={openPopover}
             d="flex"
             alignItems="center"
@@ -306,8 +272,8 @@ function DataTable(props) {
           <TextField
             color="body"
             size="lg"
-            className={classes.searchField}
-            placeholder={translate("Filter field")}
+            className={styles.searchField}
+            placeholder={translate('Filter field')}
             style={{ margin: '0 8px', minWidth: 250 }}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -316,7 +282,7 @@ function DataTable(props) {
       )}
       <Box overflow="auto" maxH={100} maxW={100}>
         <Table
-          className={classes.table}
+          className={styles.table}
           aria-label="simple table"
           rounded="pill"
           overflow="auto"
@@ -339,26 +305,26 @@ function DataTable(props) {
           </colgroup>
           <TableHead pos="sticky" position="sticky">
             <TableRow>
-              <TableCell className={classes.tableCell}>&nbsp;</TableCell>
-              <TableCell className={classes.tableCell}>
+              <TableCell className={styles.tableCell}>&nbsp;</TableCell>
+              <TableCell className={styles.tableCell}>
                 {translate('Field name')}
               </TableCell>
-              <TableCell className={classes.tableCell}></TableCell>
-              <TableCell className={classes.tableCell}>
+              <TableCell className={styles.tableCell}></TableCell>
+              <TableCell className={styles.tableCell}>
                 {translate('Value')}
               </TableCell>
               {isDMN && (
-                <TableCell className={classes.tableCell}>
+                <TableCell className={styles.tableCell}>
                   {translate('Search field')}
                 </TableCell>
               )}
-              <TableCell className={classes.tableCell}>
+              <TableCell className={styles.tableCell}>
                 {translate('Condition')}
               </TableCell>
-              <TableCell className={classes.tableCell}>
+              <TableCell className={styles.tableCell}>
                 {translate('Value from')}
               </TableCell>
-              <TableCell className={classes.tableCell}></TableCell>
+              <TableCell className={styles.tableCell}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

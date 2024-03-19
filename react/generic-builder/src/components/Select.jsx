@@ -1,19 +1,10 @@
 import React from 'react';
 import { Select, Box } from '@axelor/ui';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { translate } from '../utils';
 import classNames from 'classnames';
+import styles from './Select.module.css';
 
-const useStyles = makeStyles({
-  select: {
-    '& > div': {
-      '& > input': {
-        width: '100%',
-      },
-    },
-  },
-});
 export default function Selection({
   name,
   value = '',
@@ -25,8 +16,6 @@ export default function Selection({
   placeholder,
   ...rest
 }) {
-  const classes = useStyles();
-
   const selectedValue = React.useMemo(() => {
     return (options || []).find(op => op.name === value) || null;
   }, [options, value]);
@@ -48,7 +37,7 @@ export default function Selection({
         optionKey={option => option.name}
         optionName={option => option.name}
         style={{ marginRight: 8, minWidth: 150 }}
-        className={classNames(className, classes.select)}
+        className={classNames(className, styles.select)}
         clearIcon={false}
         {...rest}
       />

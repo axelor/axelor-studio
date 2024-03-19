@@ -3,7 +3,6 @@ import filter from "lodash/filter";
 import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
 import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -15,21 +14,7 @@ import {
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
 import { Box, Divider } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-});
+import styles from "./VariableMapping.module.css";
 
 const inOutTypeOptions = [
   {
@@ -51,9 +36,8 @@ const CAMUNDA_IN_EXTENSION_ELEMENT = "camunda:In",
 
 function getCamundaInOutMappings(element, type) {
   let bo = getBusinessObject(element);
-  let signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
-    bo
-  );
+  let signalEventDefinition =
+    eventDefinitionHelper.getSignalEventDefinition(bo);
   return (
     extensionElementsHelper.getExtensionElements(
       signalEventDefinition || bo,
@@ -135,7 +119,6 @@ export default function VariableMapping({
   const [type, setType] = useState("source");
   const [inOptions, setInOptions] = useState(null);
   const [outOptions, setOutOptions] = useState(null);
-  const classes = useStyles();
 
   const newElement = (type) => {
     return function (e, extensionEle, value) {
@@ -253,9 +236,8 @@ export default function VariableMapping({
   }, [element, addOptions]);
 
   useEffect(() => {
-    const signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
-      element
-    );
+    const signalEventDefinition =
+      eventDefinitionHelper.getSignalEventDefinition(element);
     setSignalEventDefinition(signalEventDefinition);
     if (is(element, "camunda:CallActivity") && !signalEventDefinition) {
       setVisible(true);
@@ -276,9 +258,9 @@ export default function VariableMapping({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
         <ExtensionElementTable
@@ -425,13 +407,14 @@ export default function VariableMapping({
                           : !values["sourceExpression"]
                       ) {
                         return {
-                          [type === "source"
-                            ? "source"
-                            : "sourceExpression"]: translate(
-                            `Mapping must have a ${
-                              type === "source" ? "source" : "source expression"
-                            }`
-                          ),
+                          [type === "source" ? "source" : "sourceExpression"]:
+                            translate(
+                              `Mapping must have a ${
+                                type === "source"
+                                  ? "source"
+                                  : "source expression"
+                              }`
+                            ),
                         };
                       }
                     },

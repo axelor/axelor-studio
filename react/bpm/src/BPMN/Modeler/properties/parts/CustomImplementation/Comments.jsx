@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { nanoid } from "nanoid";
-import { makeStyles } from "@material-ui/core/styles";
 
 import { getInfo } from "../../../../../services/api";
 import { COLORS } from "../../../constants";
@@ -14,72 +13,7 @@ import {
 import { translate } from "../../../../../utils";
 import { Button, Box, Input } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: "100%",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    padding: 10,
-  },
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(--ax-theme-panel-header-font-size, 1rem)",
-  },
-  comments: {
-    overflowY: "auto",
-    overflowX: "hidden",
-  },
-  reply: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  icon: {
-    marginLeft: "0.5rem",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  small: {
-    width: 32,
-    height: 32,
-    borderRadius: "50%",
-    overflow: "hidden",
-    fontSize: "1.25rem",
-    flexShrink: 0,
-    lineHeight: 1,
-    userSelect: "none",
-    justifyContent: "center",
-    color: "var(--white)",
-  },
-  sublabel: {
-    fontSize: 14,
-    margin: "10px 0px",
-    fontStyle: "italic",
-  },
-  buttons: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-}));
+import styles from "./Comments.module.css";
 
 const avatarColor = {};
 
@@ -109,7 +43,6 @@ export default function Comments({ element, updateCommentsCount }) {
   const [editComment, setEditComment] = useState(null);
   const [comments, setComments] = useState(null);
   const [user, setUser] = useState(null);
-  const classes = useStyles();
 
   const getCommentGroups = (comments) => {
     const groups = comments.reduce((groups, game) => {
@@ -183,17 +116,15 @@ export default function Comments({ element, updateCommentsCount }) {
   }, [element]);
 
   return (
-    <div className={classes.root}>
+    <div className={styles.root}>
       {comments && Object.keys(comments).length === 0 && (
         <Box color="body" d="flex" alignItems="center">
           <div style={{ marginRight: 20 }}>
             <MaterialIcon icon="add_comment" fontSize={25} />
           </div>
           <div>
-            <div className={classes.groupLabel}>
-              {translate("Add comments")}
-            </div>
-            <div className={classes.sublabel}>
+            <div className={styles.groupLabel}>{translate("Add comments")}</div>
+            <div className={styles.sublabel}>
               {translate(
                 "You can add comments about diagrams or specific BPMN elements."
               )}
@@ -202,7 +133,7 @@ export default function Comments({ element, updateCommentsCount }) {
         </Box>
       )}
       <div>
-        <div className={classes.reply}>
+        <div className={styles.reply}>
           <Input
             as="textarea"
             placeholder={translate("Write your comment here")}
@@ -213,18 +144,18 @@ export default function Comments({ element, updateCommentsCount }) {
           <Button
             size="sm"
             variant="primary"
-            className={classes.icon}
+            className={styles.icon}
             onClick={addNewComment}
             disabled={!(comment || "").trim()}
           >
             {translate("Post")}
           </Button>
         </div>
-        <div className={classes.comments}>
+        <div className={styles.comments}>
           {comments &&
             Object.entries(comments).map(([key, value]) => (
               <div key={key}>
-                <Box color="body" className={classes.label}>
+                <Box color="body" className={styles.label}>
                   {renderKey(key)}
                 </Box>
                 <div>
@@ -243,7 +174,7 @@ export default function Comments({ element, updateCommentsCount }) {
                             d="flex"
                             position="relative"
                             alignItems="center"
-                            className={classes.small}
+                            className={styles.small}
                             style={{
                               background: getAvatarColor(
                                 c && c[0] && c[0].charAt(0)
@@ -279,7 +210,7 @@ export default function Comments({ element, updateCommentsCount }) {
                                   rows={1}
                                 />
                                 <Button
-                                  className={classes.buttons}
+                                  className={styles.buttons}
                                   variant="primary"
                                   onClick={() => {
                                     updateEdit(key, c && c[4], false, 5);
@@ -290,7 +221,7 @@ export default function Comments({ element, updateCommentsCount }) {
                                   {translate("Update comment")}
                                 </Button>
                                 <Button
-                                  className={classes.buttons}
+                                  className={styles.buttons}
                                   variant="primary"
                                   onClick={() => {
                                     updateEdit(key, c && c[4], false, 5);
@@ -315,7 +246,7 @@ export default function Comments({ element, updateCommentsCount }) {
                           <Button
                             size="sm"
                             variant="light"
-                            className={classes.icon}
+                            className={styles.icon}
                             onClick={() => updateEdit(key, c && c[4], true, 5)}
                           >
                             <MaterialIcon icon="edit" fontSize={16} />
@@ -323,7 +254,7 @@ export default function Comments({ element, updateCommentsCount }) {
                           <Button
                             size="sm"
                             variant="light"
-                            className={classes.icon}
+                            className={styles.icon}
                             onClick={() => {
                               removeNewComment(key, c && c[4]);
                               removeComment(element, c);

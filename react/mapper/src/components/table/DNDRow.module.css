@@ -1,0 +1,4 @@
+.row {
+  border: 1px dashed var(--bs-border-color);
+  background-color: var(--bs-body-bg) !important;
+}

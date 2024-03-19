@@ -2,52 +2,12 @@ import React, { useState, useEffect } from "react";
 import utils from "bpmn-js-properties-panel/lib/Utils";
 import find from "lodash/find";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import { makeStyles } from "@material-ui/core/styles";
 import classnames from "classnames";
 
 import Select from "../../Select";
 import { translate } from "../../../utils";
 import { Box, Button, InputLabel } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: 10,
-  },
-  extensionElements: {
-    width: "100%",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginBottom: 3,
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  add: {
-    top: "-23px !important",
-    position: "absolute",
-    height: 23,
-    width: 24,
-    overflow: "hidden",
-    borderBottom: "none",
-    right: 0,
-    borderRadius: 0,
-    padding: 0,
-    background: "var(--bs-body-bg)",
-    border: "none",
-  },
-  endAdornment: {
-    right: 23,
-  },
-  container: {
-    position: "relative",
-  },
-  select: {
-    width: "100%",
-  },
-});
+import styles from "./CustomSelectBox.module.css";
 
 function findElementById(eventDefinition, type, id) {
   var elements = utils.findRootElementsByType(eventDefinition, type);
@@ -64,7 +24,6 @@ export default function CustomSelectBox({
   defaultOptions = [],
   endAdornment,
 }) {
-  const classes = useStyles();
   const {
     label,
     canBeHidden,
@@ -141,12 +100,12 @@ export default function CustomSelectBox({
   }, [defaultOptions]);
 
   return (
-    <div className={classes.root}>
+    <div className={styles.root}>
       <div data-show={canBeHidden ? "hideElements" : ""}>
         <InputLabel
           htmlFor={`cam-extensionElements-${id}`}
           color="body"
-          className={classes.label}
+          className={styles.label}
         >
           {translate(label)}
         </InputLabel>
@@ -156,7 +115,7 @@ export default function CustomSelectBox({
             optionLabel="name"
             optionLabelSecondary="title"
             value={options?.find((o) => o?.id === selectedOption) || null}
-            className={classes.select}
+            className={styles.select}
             update={(value) => setSelectedElement(value)}
             isLabel={true}
             options={options}
@@ -170,8 +129,8 @@ export default function CustomSelectBox({
             alignItems="center"
             justifyContent="center"
             className={classnames(
-              classes.add,
-              endAdornment && classes.endAdornment
+              styles.add,
+              endAdornment && styles.endAdornment
             )}
             onClick={addElement}
           >

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import NotInterested from "@material-ui/icons/NotInterested";
 
@@ -24,37 +23,13 @@ import {
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import moment from "moment";
+import styles from "./TimerEventDefinition.module.css";
 
 const timerOptions = [
   { value: "timeDate", name: translate("Date") },
   { value: "timeDuration", name: translate("Duration") },
   { value: "timeCycle", name: translate("Cycle") },
 ];
-
-const useStyles = makeStyles(() => ({
-  newIcon: {
-    cursor: "pointer",
-    margin: 5,
-  },
-  new: {
-    cursor: "pointer",
-    display: "flex",
-  },
-  timeDateDialog: {
-    "& > div": {
-      maxWidth: "90%",
-      width: "fit-content",
-      minWidth: 500,
-    },
-  },
-  timeDateContent: {
-    minHeight: 300,
-  },
-  button: {
-    minWidth: 64,
-    textTransform: "capitalize",
-  },
-}));
 
 function getTimerDefinitionType(timer) {
   if (!timer) {
@@ -103,7 +78,6 @@ export default function TimerEventProps({
     title: "Error",
   });
   const [date, setDate] = useState();
-  const classes = useStyles();
 
   function createTimerEventDefinition(bo) {
     let eventDefinitions = bo.get("eventDefinitions") || [],
@@ -295,10 +269,10 @@ export default function TimerEventProps({
               },
             }}
             endAdornment={
-              <Box color="body" className={classes.new}>
+              <Box color="body" className={styles.new}>
                 <Tooltip title="Enable" aria-label="enable">
                   <NotInterested
-                    className={classes.newIcon}
+                    className={styles.newIcon}
                     onClick={() => {
                       if (isFromBuilder) {
                         setAlert({
@@ -317,7 +291,7 @@ export default function TimerEventProps({
                 <MaterialIcon
                   icon="edit"
                   fontSize={16}
-                  className={classes.newIcon}
+                  className={styles.newIcon}
                   onClick={handleClickOpen}
                 />
               </Box>
@@ -328,12 +302,12 @@ export default function TimerEventProps({
               centered
               backdrop
               open={open}
-              className={classes.timeDateDialog}
+              className={styles.timeDateDialog}
             >
               <DialogHeader onCloseClick={handleClose}>
                 <h3>{translate("Timer definition")}</h3>
               </DialogHeader>
-              <DialogContent className={classes.timeDateContent}>
+              <DialogContent className={styles.timeDateContent}>
                 <InputLabel style={{ fontSize: 14 }}>
                   {translate("Select datetime")}
                 </InputLabel>
@@ -346,7 +320,7 @@ export default function TimerEventProps({
               </DialogContent>
               <DialogFooter>
                 <Button
-                  className={classes.button}
+                  className={styles.button}
                   variant="primary"
                   onClick={() => {
                     handleChange(moment(date).format("YYYY-MM-DDTHH:mm"));
@@ -356,7 +330,7 @@ export default function TimerEventProps({
                   OK
                 </Button>
                 <Button
-                  className={classes.button}
+                  className={styles.button}
                   variant="secondary"
                   onClick={handleClose}
                 >

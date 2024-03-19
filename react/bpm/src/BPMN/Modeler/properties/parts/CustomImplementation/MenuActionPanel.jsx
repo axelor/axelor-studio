@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { makeStyles } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
 
 import Select from "../../../../../components/Select";
@@ -39,61 +38,7 @@ import {
   Box,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  main: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  container: {
-    marginTop: 10,
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  select: {
-    margin: "0px 5px 0px 0px",
-  },
-  iconButton: {
-    margin: "5px 0px 5px 5px",
-    borderRadius: 0,
-    border: "1px solid #ccc",
-    padding: 2,
-    color: "inherit",
-    width: "fit-content",
-  },
-  newIcon: {
-    marginLeft: 4,
-    cursor: "pointer",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  dialogContent: {
-    display: "flex",
-    alignItems: "flex-end",
-    overflow: "auto",
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  content: {
-    fontSize: 16,
-  },
-  teamFieldPathDialog: {
-    "& > div": {
-      maxWidth: "90%",
-      width: "fit-content",
-      minWidth: 500,
-    },
-  },
-}));
+import styles from "./MenuActionPanel.module.css";
 
 const menuObj = {
   menuName: null,
@@ -144,7 +89,6 @@ export default function MenuActionPanel({
   const [teamField, setTeamField] = useState(null);
   const [teamFieldDummy, setTeamFieldDummy] = useState(null);
   const [menus, setMenus] = useState([]);
-  const classes = useStyles();
 
   const getFields = React.useCallback(() => {
     return getMetaFields(model);
@@ -566,8 +510,8 @@ export default function MenuActionPanel({
   }, [emailNotification, setProperty, emailEvent]);
 
   return (
-    <div className={classes.main}>
-      <div className={classes.container}>
+    <div className={styles.main}>
+      <div className={styles.container}>
         <Checkbox
           element={element}
           entry={{
@@ -596,11 +540,11 @@ export default function MenuActionPanel({
         />
         {createUserAction && (
           <React.Fragment>
-            <InputLabel color="body" className={classes.label}>
+            <InputLabel color="body" className={styles.label}>
               {translate("Role")}
             </InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               update={(value, label) => {
                 setRole(value);
                 updateMenuValue("role", value, label, "name");
@@ -612,7 +556,7 @@ export default function MenuActionPanel({
             />
           </React.Fragment>
         )}
-        <div className={classes.container}>
+        <div className={styles.container}>
           <Checkbox
             element={element}
             entry={{
@@ -642,11 +586,11 @@ export default function MenuActionPanel({
         </div>
         {emailNotification && (
           <React.Fragment>
-            <InputLabel color="body" className={classes.label}>
+            <InputLabel color="body" className={styles.label}>
               {translate("Email event")}
             </InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               update={(value, label) => {
                 setEmailEvent(value?.name);
                 updateMenuValue("emailEvent", value, label, "name");
@@ -664,11 +608,11 @@ export default function MenuActionPanel({
         )}
         {emailNotification && (
           <React.Fragment>
-            <InputLabel color="body" className={classes.label}>
+            <InputLabel color="body" className={styles.label}>
               {translate("Template")}
             </InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               update={(value, label) => {
                 setTemplate(value);
                 updateMenuValue("template", value, label, "name");
@@ -742,7 +686,7 @@ export default function MenuActionPanel({
               <MaterialIcon
                 fontSize={16}
                 icon="edit"
-                className={classes.newIcon}
+                className={styles.newIcon}
                 onClick={() => {
                   setOpenUserPathDialog(true);
                 }}
@@ -782,7 +726,7 @@ export default function MenuActionPanel({
               <MaterialIcon
                 fontSize={16}
                 icon="edit"
-                className={classes.newIcon}
+                className={styles.newIcon}
                 onClick={() => {
                   setOpenTeamPathDialog(true);
                 }}
@@ -812,7 +756,7 @@ export default function MenuActionPanel({
             <MaterialIcon
               fontSize={16}
               icon="edit"
-              className={classes.newIcon}
+              className={styles.newIcon}
               onClick={() => {
                 setOpenDeadlinePathDialog(true);
               }}
@@ -821,7 +765,7 @@ export default function MenuActionPanel({
         />
       </div>
       <div>
-        <InputLabel color="body" className={classes.label}>
+        <InputLabel color="body" className={styles.label}>
           {translate("Add menus")}
         </InputLabel>
         {menus?.map(
@@ -871,11 +815,11 @@ export default function MenuActionPanel({
                         />
                       </Box>
                       <Box w={50}>
-                        <InputLabel color="body" className={classes.label}>
+                        <InputLabel color="body" className={styles.label}>
                           {translate("Menu parent")}
                         </InputLabel>
                         <Select
-                          className={classes.select}
+                          className={styles.select}
                           update={(value) => {
                             updateValue(value, "menuParent", "name", key);
                           }}
@@ -888,11 +832,11 @@ export default function MenuActionPanel({
                     </Box>
                     <Box d="flex" alignItems="center" color="body">
                       <Box w={50}>
-                        <InputLabel color="body" className={classes.label}>
+                        <InputLabel color="body" className={styles.label}>
                           {translate("Position")}
                         </InputLabel>
                         <Select
-                          className={classes.select}
+                          className={styles.select}
                           update={(value) => {
                             updateValue(value, "position", "name", key);
                           }}
@@ -906,11 +850,11 @@ export default function MenuActionPanel({
                         />
                       </Box>
                       <Box w={50}>
-                        <InputLabel color="body" className={classes.label}>
+                        <InputLabel color="body" className={styles.label}>
                           {translate("Position menu")}
                         </InputLabel>
                         <Select
-                          className={classes.select}
+                          className={styles.select}
                           update={(value) => {
                             updateValue(value, "positionMenu", "name", key);
                           }}
@@ -944,11 +888,11 @@ export default function MenuActionPanel({
                       />
                     </div>
                     <div>
-                      <InputLabel color="body" className={classes.label}>
+                      <InputLabel color="body" className={styles.label}>
                         {translate("Roles")}
                       </InputLabel>
                       <Select
-                        className={classes.select}
+                        className={styles.select}
                         update={(value) => {
                           updateValue(value, "roles", "name", key);
                         }}
@@ -1045,11 +989,11 @@ export default function MenuActionPanel({
                     {model?.type === "metaModel" && (
                       <Box d="flex" alignItems="center" color="body">
                         <Box w={50}>
-                          <InputLabel color="body" className={classes.label}>
+                          <InputLabel color="body" className={styles.label}>
                             {translate("Grid view")}
                           </InputLabel>
                           <Select
-                            className={classes.select}
+                            className={styles.select}
                             update={(value) => {
                               updateValue(value, "gridView", "name", key);
                             }}
@@ -1063,11 +1007,11 @@ export default function MenuActionPanel({
                           />
                         </Box>
                         <Box w={50}>
-                          <InputLabel color="body" className={classes.label}>
+                          <InputLabel color="body" className={styles.label}>
                             {translate("Form view")}
                           </InputLabel>
                           <Select
-                            className={classes.select}
+                            className={styles.select}
                             update={(value) => {
                               updateValue(value, "formView", "name", key);
                             }}
@@ -1113,7 +1057,7 @@ export default function MenuActionPanel({
                 </Box>
                 <Box color="body">
                   <IconButton
-                    className={classes.iconButton}
+                    className={styles.iconButton}
                     onClick={() => {
                       removeItem(key);
                       removeElement(key);
@@ -1122,7 +1066,7 @@ export default function MenuActionPanel({
                     <MaterialIcon icon="close" fontSize={16} />
                   </IconButton>
                   <IconButton
-                    className={classes.iconButton}
+                    className={styles.iconButton}
                     onClick={() => openMenu(menu)}
                   >
                     <MaterialIcon icon="open_in_new" fontSize={16} />
@@ -1132,7 +1076,7 @@ export default function MenuActionPanel({
             )
         )}
         <Box d="flex" alignItems="center" color="body">
-          <IconButton className={classes.iconButton} onClick={addItems}>
+          <IconButton className={styles.iconButton} onClick={addItems}>
             <MaterialIcon icon="add" fontSize={16} />
           </IconButton>
         </Box>
@@ -1142,12 +1086,12 @@ export default function MenuActionPanel({
         open={openTeamPathDialog}
         backdrop
         centered
-        className={classes.teamFieldPathDialog}
+        className={styles.teamFieldPathDialog}
       >
         <DialogHeader onCloseClick={() => setOpenTeamPathDialog(false)}>
           <h3>{translate("Team field path")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <FieldEditor
             getMetaFields={getFields}
             onChange={(val, field) => {
@@ -1174,7 +1118,7 @@ export default function MenuActionPanel({
               setProperty("teamFieldPath", teamFieldDummy);
             }}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
@@ -1184,7 +1128,7 @@ export default function MenuActionPanel({
               setTeamFieldDummy(teamFieldPath);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>
@@ -1195,12 +1139,12 @@ export default function MenuActionPanel({
         open={openDeadlinePathDialog}
         backdrop
         centered
-        className={classes.dialog}
+        className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setOpenDeadlinePathDialog(false)}>
           <h3>{translate("Deadline field path")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <FieldEditor
             getMetaFields={getFields}
             onChange={(val, field) => {
@@ -1231,7 +1175,7 @@ export default function MenuActionPanel({
               setProperty("deadlineFieldPath", deadlineFieldPathDummy);
             }}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
@@ -1241,7 +1185,7 @@ export default function MenuActionPanel({
               setDeadlineFieldPathDummy(userFieldPath);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>
@@ -1251,12 +1195,12 @@ export default function MenuActionPanel({
         open={openUserPathDialog}
         backdrop
         centered
-        className={classes.dialog}
+        className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setOpenUserPathDialog(false)}>
           <h3>{translate("User field path")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <FieldEditor
             getMetaFields={getFields}
             onChange={(val, field) => {
@@ -1283,7 +1227,7 @@ export default function MenuActionPanel({
               setProperty("userFieldPath", userFieldPathDummy);
             }}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
@@ -1293,7 +1237,7 @@ export default function MenuActionPanel({
               setUserFieldPathDummy(userFieldPath);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>
@@ -1303,26 +1247,26 @@ export default function MenuActionPanel({
         open={openExpressionAlert}
         backdrop
         centered
-        className={classes.dialog}
+        className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setExpressionAlert(false)}>
           <h3>{translate("Error")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.content}>
+        <DialogContent className={styles.content}>
           {translate(alertMessage)}
         </DialogContent>
         <DialogFooter>
           <Button
             onClick={() => setExpressionAlert(false)}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
           <Button
             onClick={() => setExpressionAlert(false)}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>

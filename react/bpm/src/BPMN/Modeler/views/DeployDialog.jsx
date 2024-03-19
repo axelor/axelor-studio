@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 import Select from "../../../components/Select";
 import { translate, getBool } from "../../../utils";
@@ -18,43 +17,7 @@ import {
   TableRow,
   TableBody,
 } from "@axelor/ui";
-
-const useStyles = makeStyles((theme) => ({
-  dialogPaper: {
-    padding: 5,
-    minWidth: 450,
-  },
-  dialogContent: {
-    maxHeight: "50vh",
-    overflow: "auto",
-  },
-  button: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  select: {
-    minWidth: 250,
-    marginLeft: 10,
-  },
-  tableCell: {
-    padding: "0px 10px",
-    verticalAlign: "baseline",
-    textAlign: "center",
-  },
-  tableHead: {
-    fontWeight: 600,
-    fontSize: 12,
-    textAlign: "center",
-  },
-  process: {
-    marginTop: 10,
-  },
-  processHeader: {
-    marginBottom: 10,
-    fontSize: 12,
-  },
-}));
+import styles from "./DeployDialog.module.css";
 
 export default function DeployDialog({
   open,
@@ -69,7 +32,6 @@ export default function DeployDialog({
   const [wkfMigrationMap, setWkfMigrationMap] = useState({});
   const [isMigrateOld, setIsMigrateOld] = useState(false);
   const [removeOldVersionMenu, setRemoveOldVersionMenu] = useState(false);
-  const classes = useStyles();
 
   const handleAdd = (oldEle, newEle, processId) => {
     const cloneWkfMigrationMap = { ...wkfMigrationMap };
@@ -164,13 +126,13 @@ export default function DeployDialog({
   };
 
   return (
-    <Dialog open={open} backdrop centered className={classes.dialogPaper}>
+    <Dialog open={open} backdrop centered className={styles.dialogPaper}>
       <DialogHeader onCloseClick={onClose}>
         <h3>
           <strong>{translate("Node mapping")}</strong>
         </h3>
       </DialogHeader>
-      <DialogContent className={classes.dialogContent}>
+      <DialogContent className={styles.dialogContent}>
         {(wkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
           oldElements && (
             <Box d="flex" justifyContent="space-around">
@@ -194,18 +156,18 @@ export default function DeployDialog({
           )}
         {oldElements &&
           Object.entries(oldElements).map(([key, value]) => (
-            <Box color="body" key={key} className={classes.process}>
-              <InputLabel fontWeight="bolder" className={classes.processHeader}>
+            <Box color="body" key={key} className={styles.process}>
+              <InputLabel fontWeight="bolder" className={styles.processHeader}>
                 {key}
               </InputLabel>
               <Box rounded={2} bgColor="body-tertiary" shadow>
                 <Table size="sm" aria-label="a dense table">
                   <TableHead>
                     <TableRow>
-                      <TableCell className={classes.tableHead} F>
+                      <TableCell className={styles.tableHead} F>
                         {translate("Source node")}
                       </TableCell>
-                      <TableCell className={classes.tableHead}>
+                      <TableCell className={styles.tableHead}>
                         {translate("Target node")}
                       </TableCell>
                     </TableRow>
@@ -213,12 +175,12 @@ export default function DeployDialog({
                   <TableBody>
                     {value?.elements?.map((oldEle, index) => (
                       <TableRow key={index}>
-                        <TableCell as="th" className={classes.tableCell}>
+                        <TableCell as="th" className={styles.tableCell}>
                           {oldEle.name}
                         </TableCell>
-                        <TableCell as="th" className={classes.tableCell}>
+                        <TableCell as="th" className={styles.tableCell}>
                           <Select
-                            className={classes.select}
+                            className={styles.select}
                             isLabel={false}
                             options={getCurrentElements(key, oldEle.type)}
                             value={getValue(key, oldEle.id)}
@@ -237,18 +199,10 @@ export default function DeployDialog({
           ))}
       </DialogContent>
       <DialogFooter>
-        <Button
-          onClick={onConfirm}
-          className={classes.button}
-          variant="primary"
-        >
+        <Button onClick={onConfirm} className={styles.button} variant="primary">
           {translate("OK")}
         </Button>
-        <Button
-          onClick={onClose}
-          variant="secondary"
-          className={classes.button}
-        >
+        <Button onClick={onClose} variant="secondary" className={styles.button}>
           {translate("Cancel")}
         </Button>
       </DialogFooter>

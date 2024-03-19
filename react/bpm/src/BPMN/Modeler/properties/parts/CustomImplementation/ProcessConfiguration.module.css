@@ -1,0 +1,100 @@
+.groupLabel {
+  font-weight: bolder;
+  font-size: 120%;
+  margin: 10px 0px;
+  font-style: italic;
+}
+
+.divider {
+  margin-top: 15px;
+}
+
+.button {
+  text-transform: none;
+}
+
+.newIcon {
+  margin-inline: 2px;
+  cursor: pointer;
+  overflow: inherit;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.clearClassName {
+  padding-left: 10px;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: center;
+  overflow: auto;
+}
+
+.grid {
+  padding: 0px 15px 0px 0px;
+}
+
+.iconButton {
+  margin: 5px 0px 5px 5px !important;
+  border-radius: 0 !important;
+  border: 1px solid #ccc !important;
+  color: inherit !important;
+  padding: 2px !important;
+  width: fit-content !important;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0px;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: 1rem;
+}
+
+.icon {
+  margin-right: 10px;
+  color: var(--red);
+}
+
+.textFieldRoot {
+  margin-top: 0;
+}
+
+.textFieldLabel {
+  margin-bottom: 0;
+}
+
+.checkbox {
+  margin-top: 0;
+  justify-content: center;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.checkboxLabel {
+  width: 100%;
+}
+
+.scriptDialog {
+  width: 100%;
+  height: 100%;
+}
+
+.content {
+  font-size: 16px;
+}
+
+.processPathDialog > div {
+  max-width: 90%;
+  width: fit-content;
+  min-width: 500px;
+}

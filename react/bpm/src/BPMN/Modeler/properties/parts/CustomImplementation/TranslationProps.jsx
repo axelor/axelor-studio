@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
@@ -27,57 +26,7 @@ import {
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import { useStore } from "../../../../../store";
 import { getNameProperty } from "../../../extra";
-
-const useStyles = makeStyles({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  tableCell: {
-    textAlign: "left",
-  },
-  tableHead: {
-    fontWeight: 600,
-    fontSize: 12,
-  },
-  iconButton: {
-    margin: "5px 0px 5px 5px",
-    borderRadius: 0,
-    padding: 2,
-    color: "inherit",
-    width: "fit-content",
-    border: "1px solid #ccc",
-  },
-  clear: {
-    fontSize: "1rem",
-  },
-  textRoot: {
-    marginTop: 0,
-  },
-  confirm: {
-    color: "#727272",
-    width: "fit-content",
-    border: "1px solid #ccc",
-    height: 23,
-    fontSize: 12,
-    marginLeft: 5,
-    borderRadius: 0,
-    textTransform: "none",
-    marginBottom: 10,
-    padding: "0px 10px !important",
-  },
-  select: {
-    width: "100%",
-  },
-});
+import styles from "./TranslationProps.module.css";
 
 const getValue = (element) => {
   if (!element) return;
@@ -108,7 +57,6 @@ export default function TranslationProps({
     messageType: null,
     message: null,
   });
-  const classes = useStyles();
 
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -260,9 +208,9 @@ export default function TranslationProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -301,7 +249,7 @@ export default function TranslationProps({
           {isTranslations && (
             <Box color="body">
               <IconButton
-                className={classes.iconButton}
+                className={styles.iconButton}
                 onClick={addTranslation}
               >
                 <MaterialIcon icon="add" fontSize="1rem" />
@@ -314,15 +262,15 @@ export default function TranslationProps({
             <Table size="sm" aria-label="a dense table">
               <TableHead>
                 <TableRow>
-                  <TableCell textAlign="center" className={classes.tableHead}>
+                  <TableCell textAlign="center" className={styles.tableHead}>
                     {translate("Translation")}
                   </TableCell>
-                  <TableCell textAlign="center" className={classes.tableHead}>
+                  <TableCell textAlign="center" className={styles.tableHead}>
                     {translate("Language")} ({translate("Hint")}: en, fr)
                   </TableCell>
                   <TableCell
                     textAlign="center"
-                    className={classes.tableHead}
+                    className={styles.tableHead}
                   ></TableCell>
                 </TableRow>
               </TableHead>
@@ -331,9 +279,9 @@ export default function TranslationProps({
                   translations.length > 0 &&
                   translations.map((translateKey, index) => (
                     <TableRow key={index}>
-                      <TableCell as="th" className={classes.tableCell}>
+                      <TableCell as="th" className={styles.tableCell}>
                         <TextField
-                          rootClass={classes.textRoot}
+                          rootClass={styles.textRoot}
                           element={element}
                           entry={{
                             id: "message",
@@ -355,9 +303,9 @@ export default function TranslationProps({
                           isLabel={false}
                         />
                       </TableCell>
-                      <TableCell as="th" className={classes.tableCell}>
+                      <TableCell as="th" className={styles.tableCell}>
                         <Select
-                          className={classes.select}
+                          className={styles.select}
                           isTranslated={true}
                           update={(value) => {
                             if (translateKey.language === value?.code) return;
@@ -387,15 +335,15 @@ export default function TranslationProps({
                           options={languages}
                         />
                       </TableCell>
-                      <TableCell as="th" className={classes.tableCell}>
+                      <TableCell as="th" className={styles.tableCell}>
                         <Box color="body">
                           <IconButton
-                            className={classes.iconButton}
+                            className={styles.iconButton}
                             onClick={() => removeTranslation(index)}
                           >
                             <MaterialIcon
                               icon="close"
-                              className={classes.clear}
+                              className={styles.clear}
                             />
                           </IconButton>
                         </Box>

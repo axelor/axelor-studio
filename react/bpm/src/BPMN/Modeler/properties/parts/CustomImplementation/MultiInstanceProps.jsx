@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
-import { makeStyles } from "@material-ui/core/styles";
 
 import { Selection } from "../../../../../components/expression-builder/components";
 import { getModels, getMetaFields } from "../../../../../services/api";
@@ -22,57 +21,7 @@ import {
   InputLabel,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  typography: {
-    display: "flex",
-    alignItems: "center",
-    color: "var(--red) !important",
-  },
-  icon: {
-    color: "var(--red)",
-    marginRight: 10,
-  },
-  newIcon: {
-    cursor: "pointer",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  dialog: {
-    "& > div": {
-      maxWidth: "90%",
-      width: "fit-content",
-      minWidth: 500,
-    },
-  },
-  dialogContent: {
-    display: "flex",
-    alignItems: "flex-end",
-    overflow: "auto",
-  },
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-  content: {
-    fontSize: 16,
-  },
-}));
+import styles from "./MultiInstanceProps.module.css";
 
 function getProperty(element, propertyName) {
   let loopCharacteristics = getLoopCharacteristics(element);
@@ -252,8 +201,6 @@ export default function MultiInstanceLoopCharacteristics({
   const [errorMessage, setErrorMessage] = useState(null);
   const [errorTitle, setErrorTitle] = useState(null);
 
-  const classes = useStyles();
-
   const getData = () => {
     return model
       ? {
@@ -300,18 +247,14 @@ export default function MultiInstanceLoopCharacteristics({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
         {!collection && !loopCardinality && (
-          <InputLabel color="body" className={classes.typography}>
-            <MaterialIcon
-              icon="report"
-              fontSize={16}
-              className={classes.icon}
-            />
+          <InputLabel color="body" className={styles.typography}>
+            <MaterialIcon icon="report" fontSize={16} className={styles.icon} />
             {translate("Must provide either loop cardinality or collection")}
           </InputLabel>
         )}
@@ -378,16 +321,16 @@ export default function MultiInstanceLoopCharacteristics({
             <MaterialIcon
               icon="edit"
               fontSize={18}
-              className={classes.newIcon}
+              className={styles.newIcon}
               onClick={() => setOpen(true)}
             />
           }
         />
-        <Dialog open={open} backdrop centered className={classes.dialog}>
+        <Dialog open={open} backdrop centered className={styles.dialog}>
           <DialogHeader onCloseClick={() => setOpen(false)}>
             <h3>{translate("Collection")}</h3>
           </DialogHeader>
-          <DialogContent className={classes.dialogContent}>
+          <DialogContent className={styles.dialogContent}>
             <Selection
               name="model"
               title="Model"
@@ -398,7 +341,7 @@ export default function MultiInstanceLoopCharacteristics({
               }}
               optionLabelKey="name"
               value={model}
-              classes={{ root: classes.MuiAutocompleteRoot }}
+              classes={{ root: styles.MuiAutocompleteRoot }}
             />
             {model && (
               <FieldEditor
@@ -440,7 +383,7 @@ export default function MultiInstanceLoopCharacteristics({
                 setOpen(false);
               }}
               variant="primary"
-              className={classes.save}
+              className={styles.save}
             >
               {translate("OK")}
             </Button>
@@ -450,22 +393,22 @@ export default function MultiInstanceLoopCharacteristics({
                 setInitialValue();
               }}
               variant="secondary"
-              className={classes.save}
+              className={styles.save}
             >
               {translate("Cancel")}
             </Button>
           </DialogFooter>
         </Dialog>
-        <Dialog open={openExpressionAlert} backdrop className={classes.dialog}>
+        <Dialog open={openExpressionAlert} backdrop className={styles.dialog}>
           <DialogHeader onCloseClick={() => setExpressionAlert(false)}>
             <h3>{translate(errorTitle || "Warning")}</h3>
           </DialogHeader>
-          <DialogContent className={classes.content}>
+          <DialogContent className={styles.content}>
             {translate(errorMessage)}
           </DialogContent>
           <DialogFooter>
             <Button
-              className={classes.save}
+              className={styles.save}
               onClick={() => {
                 setExpressionAlert(false);
                 setErrorMessage(null);
@@ -478,7 +421,7 @@ export default function MultiInstanceLoopCharacteristics({
             <Button
               onClick={() => setExpressionAlert(false)}
               variant="secondary"
-              className={classes.save}
+              className={styles.save}
             >
               {translate("Cancel")}
             </Button>

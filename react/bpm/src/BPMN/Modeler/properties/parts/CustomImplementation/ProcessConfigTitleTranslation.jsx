@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
 
 import { getTranslations } from "../../../../../services/api";
@@ -15,33 +14,7 @@ import {
   TableBody,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles({
-  tableHead: {
-    fontWeight: 600,
-    fontSize: 14,
-    textAlign: "center",
-  },
-  iconButton: {
-    margin: "5px 0px 5px 5px",
-    borderRadius: 0,
-    padding: 2,
-    color: "inherit !important",
-    width: "fit-content",
-    border: "1px solid #ccc",
-  },
-  clear: {
-    fontSize: "1rem",
-  },
-  table: {
-    margin: "10px 0px",
-    overflow: "auto",
-    maxHeight: "65vh",
-  },
-  textRoot: {
-    marginTop: 0,
-  },
-});
+import styles from "./ProcessConfigTitleTranslation.module.css";
 
 export default function ProcessConfigTitleTranslation({
   configKey,
@@ -52,8 +25,6 @@ export default function ProcessConfigTitleTranslation({
 }) {
   const [translations, setTranslations] = useState(null);
   const [removedTranslations, setRemovedTranslations] = useState(null);
-
-  const classes = useStyles();
 
   const addTranslation = () => {
     setTranslations([
@@ -112,17 +83,17 @@ export default function ProcessConfigTitleTranslation({
   return (
     <Box w={100}>
       <React.Fragment>
-        <Box bgColor="body" shadow rounded={2} className={classes.table}>
+        <Box bgColor="body" shadow rounded={2} className={styles.table}>
           <Table size="sm" aria-label="a dense table">
             <TableHead>
               <TableRow>
-                <TableCell className={classes.tableHead}>
+                <TableCell className={styles.tableHead}>
                   {translate("Translation")}
                 </TableCell>
-                <TableCell className={classes.tableHead}>
+                <TableCell className={styles.tableHead}>
                   {translate("Language")} ({translate("Hint")}: en, fr)
                 </TableCell>
-                <TableCell className={classes.tableHead}></TableCell>
+                <TableCell className={styles.tableHead}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -132,7 +103,7 @@ export default function ProcessConfigTitleTranslation({
                   <TableRow key={index}>
                     <TableCell as="th" textAlign="center">
                       <TextField
-                        rootClass={classes.textRoot}
+                        rootClass={styles.textRoot}
                         element={element}
                         entry={{
                           id: "message",
@@ -157,7 +128,7 @@ export default function ProcessConfigTitleTranslation({
                     </TableCell>
                     <TableCell as="th" textAlign="center">
                       <TextField
-                        rootClass={classes.textRoot}
+                        rootClass={styles.textRoot}
                         element={element}
                         entry={{
                           id: "language",
@@ -184,7 +155,7 @@ export default function ProcessConfigTitleTranslation({
                     <TableCell as="th" textAlign="center">
                       <Box color="body">
                         <IconButton
-                          className={classes.iconButton}
+                          className={styles.iconButton}
                           onClick={(e) => {
                             e.stopPropagation();
                             removeTranslation(index);
@@ -193,7 +164,7 @@ export default function ProcessConfigTitleTranslation({
                           <MaterialIcon
                             icon="close"
                             fontSize={16}
-                            className={classes.clear}
+                            className={styles.clear}
                           />
                         </IconButton>
                       </Box>
@@ -206,7 +177,7 @@ export default function ProcessConfigTitleTranslation({
       </React.Fragment>
       <Box d="flex" alignItems="center" color="body">
         <IconButton
-          className={classes.iconButton}
+          className={styles.iconButton}
           onClick={addTranslation}
           disabled={!configKey}
         >

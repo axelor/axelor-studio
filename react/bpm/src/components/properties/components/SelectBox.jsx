@@ -1,27 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/styles";
 
 import { translate } from "../../../utils";
 import Description from "./Description";
 import { Box, InputLabel, Select } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: 5,
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginBottom: 3,
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-});
+import styles from "./SelectBox.module.css";
 
 export default function SelectBox({ entry, element }) {
-  const classes = useStyles();
   const {
     id,
     selectOptions,
@@ -73,11 +57,11 @@ export default function SelectBox({ entry, element }) {
   }, [selectOptions, element]);
 
   return (
-    <Box className={classes.root}>
+    <Box className={styles.root}>
       <InputLabel
         htmlFor={`camunda-${id}`}
         color="body"
-        className={classes.label}
+        className={styles.label}
       >
         {translate(label)}
       </InputLabel>

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 import { TYPES } from "../constants";
 import { getAllModels, getMetaFields, getNameColumn } from "../../services/api";
@@ -25,46 +24,7 @@ import {
 } from "@axelor/ui";
 import { BooleanRadio } from "../../components/BooleanRadio";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  newIcon: {
-    marginLeft: 5,
-    cursor: "pointer",
-  },
-  dialog: {
-    "& > div": {
-      maxWidth: "90%",
-      width: "fit-content",
-      minWidth: 500,
-    },
-  },
-  dialogContent: {
-    display: "flex",
-    alignItems: "flex-end",
-    flexDirection: "column",
-    overflow: "auto",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  radio: {
-    padding: "1px 9px",
-    color: "var(--bs-blue)",
-    "&.MuiRadio-colorSecondary.Mui-checked": {
-      color: "var(--bs-blue)",
-    },
-  },
-  group: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-}));
+import styles from "./OutputHeadProperties.module.css";
 
 export default function OutputHeadProperties({
   element,
@@ -88,8 +48,6 @@ export default function OutputHeadProperties({
   const models = useMemo(() => getData && getData(), [getData]);
   const [type, setType] = useState("string");
   const [defaultValue, setDefaultValue] = useState(null);
-
-  const classes = useStyles();
 
   const setProperty = React.useCallback(
     (context, field) => {
@@ -343,13 +301,13 @@ export default function OutputHeadProperties({
             <Tooltip title="Enable" aria-label="enable">
               <MaterialIcon
                 icon="do_not_disturb"
-                className={classes.newIcon}
+                className={styles.newIcon}
                 onClick={() => readOnly && setOpenAlert(true)}
               />
             </Tooltip>
             <MaterialIcon
               icon="edit"
-              className={classes.newIcon}
+              className={styles.newIcon}
               onClick={handleClickOpen}
             />
           </>
@@ -360,12 +318,12 @@ export default function OutputHeadProperties({
         open={openOutputExpression}
         backdrop
         centered
-        className={classes.dialog}
+        className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setOpenOutputExpression(false)}>
           <h3>{translate("Expression")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <BooleanRadio
             name="radioType"
             onChange={(e) => setValueFrom(e?.target?.value)}
@@ -388,7 +346,7 @@ export default function OutputHeadProperties({
                   setOutputField(e && e.name);
                 }}
                 value={model}
-                classes={{ root: classes.MuiAutocompleteRoot }}
+                classes={{ root: styles.MuiAutocompleteRoot }}
               />
             ) : (
               <React.Fragment>
@@ -408,7 +366,7 @@ export default function OutputHeadProperties({
                       setOutputField(null);
                     }}
                     value={contextModel}
-                    classes={{ root: classes.MuiAutocompleteRoot }}
+                    classes={{ root: styles.MuiAutocompleteRoot }}
                   />
                 )}
                 <FieldEditor
@@ -463,7 +421,7 @@ export default function OutputHeadProperties({
               }
             }}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
@@ -478,7 +436,7 @@ export default function OutputHeadProperties({
               setRelationalField(null);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>

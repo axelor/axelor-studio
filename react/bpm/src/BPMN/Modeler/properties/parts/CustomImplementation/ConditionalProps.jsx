@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -21,50 +20,8 @@ import {
 } from "@axelor/ui";
 import Tooltip from "../../../../../components/Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import styles from "./ConditionalProps.module.css"
 
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  newIcon: {
-    marginLeft: 5,
-  },
-  new: {
-    cursor: "pointer",
-    marginTop: 18.6,
-    display: "flex",
-  },
-  textbox: {
-    width: "100%",
-  },
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  content: {
-    padding: "8px 24px",
-    fontSize: 16,
-  },
-  scriptDialog: {
-    width: "100%",
-    height: "100%",
-  },
-}));
 
 let CONDITIONAL_SOURCES = [
   "bpmn:Activity",
@@ -96,7 +53,6 @@ export default function ConditionalProps({
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
 
-  const classes = useStyles();
 
   const handleClickOpen = () => {
     setAlertMessage("Add all values");
@@ -304,16 +260,16 @@ export default function ConditionalProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {label}
         </Box>
-        <div className={classes.expressionBuilder}>
+        <div className={styles.expressionBuilder}>
           <Textbox
             element={element}
             rows={3}
-            className={classes.textbox}
+            className={styles.textbox}
             readOnly={readOnly}
             minimap={false}
             entry={{
@@ -328,7 +284,7 @@ export default function ConditionalProps({
               },
             }}
           />
-          <Box color="body" className={classes.new}>
+          <Box color="body" className={styles.new}>
             <Tooltip title="Enable" aria-label="enable">
               <i
                 className="fa fa-code"
@@ -350,7 +306,7 @@ export default function ConditionalProps({
             <MaterialIcon
               icon="edit"
               fontSize={18}
-              className={classes.newIcon}
+              className={styles.newIcon}
               onClick={handleClickOpen}
             />
             {open && (
@@ -366,7 +322,7 @@ export default function ConditionalProps({
           </Box>
           {openScriptDialog && (
             <AlertDialog
-              className={classes.scriptDialog}
+              className={styles.scriptDialog}
               openAlert={openScriptDialog}
               alertClose={() => {
                 setScript(getScript()?.script);
@@ -380,7 +336,7 @@ export default function ConditionalProps({
               children={
                 <Textbox
                   element={element}
-                  className={classes.textbox}
+                  className={styles.textbox}
                   showLabel={false}
                   defaultHeight={window?.innerHeight - 205}
                   entry={{
@@ -403,12 +359,12 @@ export default function ConditionalProps({
               open={openAlert}
               backdrop
               centered
-              className={classes.dialog}
+              className={styles.dialog}
             >
               <DialogHeader onCloseClick={() => setAlert(false)}>
                 <h3>{translate(alertTitle)}</h3>
               </DialogHeader>
-              <DialogContent className={classes.content}>
+              <DialogContent className={styles.content}>
                 {translate(alertMessage)}
               </DialogContent>
               <DialogFooter>
@@ -424,7 +380,7 @@ export default function ConditionalProps({
                     setOpenScriptDialog(true);
                   }}
                   variant="primary"
-                  className={classes.save}
+                  className={styles.save}
                 >
                   {translate("OK")}
                 </Button>
@@ -433,7 +389,7 @@ export default function ConditionalProps({
                     setAlert(false);
                   }}
                   variant="secondary"
-                  className={classes.save}
+                  className={styles.save}
                 >
                   {translate("Cancel")}
                 </Button>

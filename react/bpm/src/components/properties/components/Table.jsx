@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { IconButton } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 
 import { translate } from "../../../utils";
 import {
@@ -17,47 +16,9 @@ import {
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import AlertDialog from "../../AlertDialog";
 import ScriptEditor from "../EditorConfig/SrciptEditor";
-
-const useStyles = makeStyles({
-  add: {
-    border: "1px solid #ccc",
-    width: "fit-content",
-    color: "inherit",
-    overflow: "hidden",
-    cursor: "pointer",
-    borderRadius: 0,
-  },
-  clear: {
-    width: "fit-content",
-    overflow: "hidden",
-    color: "inherit",
-    border: "1px solid #ccc",
-    borderRadius: 0,
-  },
-  label: {
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-    verticalAlign: "middle",
-    marginBottom: 3,
-    marginRight: 10,
-  },
-  tableHead: {
-    verticalAlign: "middle",
-    textAlign: "center",
-  },
-  input: {
-    padding: "3px 0px 3px 6px",
-    minWidth: 30,
-    maxWidth: "95%",
-    width: "100%",
-  },
-  editorIcon: {
-    cursor: "pointer",
-  },
-});
+import styles from "./Table.module.css";
 
 export default function Table({ entry }) {
-  const classes = useStyles();
   const {
     id,
     addLabel,
@@ -110,10 +71,10 @@ export default function Table({ entry }) {
   return (
     <Box d="flex" flexDirection="column" style={{ margin: "5px 0" }}>
       <Box d="flex" alignItems="center" color="body">
-        <InputLabel className={classes.label}>{translate(addLabel)}</InputLabel>
+        <InputLabel className={styles.label}>{translate(addLabel)}</InputLabel>
         <IconButton
           size="small"
-          className={classes.add}
+          className={styles.add}
           id={`cam-extensionElements-create-${id}`}
           onClick={addNewElement}
         >
@@ -131,11 +92,11 @@ export default function Table({ entry }) {
             <TableHead>
               <TableRow>
                 {labels.map((label) => (
-                  <TableCell as="th" key={label} className={classes.tableHead}>
+                  <TableCell as="th" key={label} className={styles.tableHead}>
                     {translate(label)}
                   </TableCell>
                 ))}
-                <TableCell as="th" key="add" className={classes.tableHead} />
+                <TableCell as="th" key="add" className={styles.tableHead} />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -151,7 +112,7 @@ export default function Table({ entry }) {
                                 d="flex"
                                 alignItems="center"
                                 justifyContent="center"
-                                className={classes.input}
+                                className={styles.input}
                               >
                                 <Input
                                   type="checkbox"
@@ -171,7 +132,7 @@ export default function Table({ entry }) {
                                 optionIndex={optionIndex}
                                 index={index}
                                 option={option}
-                                classes={classes}
+                                classes={styles}
                                 update={update}
                               />
                             )}
@@ -180,7 +141,7 @@ export default function Table({ entry }) {
                       <TableCell>
                         <IconButton
                           size="small"
-                          className={classes.clear}
+                          className={styles.clear}
                           id={`cam-extensionElements-remove-${id}`}
                           onClick={() => {
                             remove(optionIndex);
@@ -228,7 +189,7 @@ const ValueCell = ({ label, index, optionIndex, option, classes, update }) => {
             {
               icon: "code",
               color: "body",
-              className: classes.editorIcon,
+              className: styles.editorIcon,
               onClick: openEditor,
             },
           ]

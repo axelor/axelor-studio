@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -19,6 +18,7 @@ import { translate, getBool } from "../../../../../utils";
 import { USER_TASKS_TYPES, DATA_STORE_TYPES } from "../../../constants";
 
 import { Box, Divider, InputLabel } from "@axelor/ui";
+import styles from "./ModelProps.module.css";
 
 const GATEWAY = ["bpmn:EventBasedGateway"];
 
@@ -68,38 +68,6 @@ function isConditionalSource(element) {
   return isAny(element, CONDITIONAL_SOURCES);
 }
 
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  select: {
-    margin: 0,
-  },
-  metajsonModel: {
-    marginTop: 10,
-  },
-});
-
 export default function ModelProps(props) {
   const {
     element,
@@ -119,7 +87,6 @@ export default function ModelProps(props) {
   const [isDefaultFormVisible, setDefaultFormVisible] = useState(false);
   const [isModelsDisable, setModelsDisable] = useState(false);
   const [isCustom, setIsCustom] = useState(false);
-  const classes = useStyles();
 
   const subType =
     element?.businessObject &&
@@ -402,14 +369,14 @@ export default function ModelProps(props) {
   return (
     <>
       {isVisible && (
-        <div className={classes.root}>
+        <div className={styles.root}>
           {(TITLE_SOURCES.includes(element?.type) ||
             subType === "bpmn:TerminateEventDefinition" ||
             GATEWAY.includes(element.type) ||
             (element?.type === "bpmn:EndEvent" && !subType)) && (
             <React.Fragment>
-              {index > 0 && <Divider className={classes.divider} />}
-              <Box color="body" className={classes.groupLabel}>
+              {index > 0 && <Divider className={styles.divider} />}
+              <Box color="body" className={styles.groupLabel}>
                 {label}
               </Box>
             </React.Fragment>
@@ -422,12 +389,12 @@ export default function ModelProps(props) {
             ...DATA_STORE_TYPES,
           ].includes(element && element.type) && (
             <React.Fragment>
-              <InputLabel color="body" className={classes.label}>
+              <InputLabel color="body" className={styles.label}>
                 {translate("Model")}
               </InputLabel>
               {!isModelsDisable && (
                 <Checkbox
-                  className={classes.checkbox}
+                  className={styles.checkbox}
                   entry={{
                     id: `custom-model`,
                     modelProperty: "isCustom",
@@ -452,7 +419,7 @@ export default function ModelProps(props) {
               )}
               {isCustom ? (
                 <Select
-                  className={classnames(classes.select, classes.metajsonModel)}
+                  className={classnames(styles.select, styles.metajsonModel)}
                   fetchMethod={() =>
                     getCustomModels(getProcessConfig("metaJsonModel"))
                   }
@@ -471,7 +438,7 @@ export default function ModelProps(props) {
                 />
               ) : (
                 <Select
-                  className={classes.select}
+                  className={styles.select}
                   fetchMethod={() =>
                     getMetaModels(getProcessConfig("metaModel"))
                   }
@@ -491,20 +458,17 @@ export default function ModelProps(props) {
               )}
               {isDefaultFormVisible && (
                 <React.Fragment>
-                  <InputLabel className={classes.label}>
+                  <InputLabel className={styles.label}>
                     {translate("Default form")}
                   </InputLabel>
                   <div
-                    className={classes.studio}
+                    className={styles.studio}
                     style={{
                       alignItems: "flex-end",
                     }}
                   >
                     <Select
-                      className={classnames(
-                        classes.select,
-                        classes.studioSelect
-                      )}
+                      className={classnames(styles.select, styles.studioSelect)}
                       update={(value, label) => {
                         setDefaultForm(value);
                         setProperty(
@@ -527,7 +491,7 @@ export default function ModelProps(props) {
               )}
             </React.Fragment>
           )}
-          <div className={classes.container}>
+          <div className={styles.container}>
             {!DATA_STORE_TYPES.includes(element && element.type) && (
               <Checkbox
                 element={element}
@@ -556,11 +520,11 @@ export default function ModelProps(props) {
               !DATA_STORE_TYPES.includes(element && element.type) && (
                 <React.Fragment>
                   <div>
-                    <InputLabel className={classes.label}>
+                    <InputLabel className={styles.label}>
                       {translate("Display on models")}
                     </InputLabel>
                     <Select
-                      className={classes.select}
+                      className={styles.select}
                       update={(value) => {
                         setModels(value);
                         addModels(value);
@@ -587,15 +551,15 @@ export default function ModelProps(props) {
       )}
       {HELP_TITLE_SOURCES.includes(element && element.type) && (
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
-          <Box color="body" className={classes.groupLabel}>
+          {index > 0 && <Divider className={styles.divider} />}
+          <Box color="body" className={styles.groupLabel}>
             {translate(label)}
           </Box>
         </React.Fragment>
       )}
       <Textbox
         element={element}
-        className={classes.textbox}
+        className={styles.textbox}
         rows={3}
         entry={{
           id: "help",

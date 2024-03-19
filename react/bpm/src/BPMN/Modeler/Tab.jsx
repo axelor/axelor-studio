@@ -1,15 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { NavTabs } from "@axelor/ui";
-import { makeStyles } from "@material-ui/core";
 import { Box } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  navDisable: {
-    cursor: "default",
-    pointerEvents: "none",
-    opacity: 0.6,
-  },
-});
+import styles from "./Tab.module.css";
 
 const Tab = ({
   onItemClick,
@@ -18,7 +10,6 @@ const Tab = ({
   isMenuActionDisable = false,
 }) => {
   const tabRef = useRef(null);
-  const classes = useStyles();
 
   useEffect(() => {
     const value = "menu-action-tab";
@@ -27,7 +18,7 @@ const Tab = ({
     );
 
     if (childElement) {
-      childElement.classList.toggle(classes.navDisable, isMenuActionDisable);
+      childElement.classList.toggle(styles.navDisable, isMenuActionDisable);
     }
   }, [isMenuActionDisable]);
 

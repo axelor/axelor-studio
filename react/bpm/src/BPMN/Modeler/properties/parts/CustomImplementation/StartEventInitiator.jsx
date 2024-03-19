@@ -1,26 +1,11 @@
 import React, { useEffect, useState } from "react";
 import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
-import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
 import { translate } from "../../../../../utils";
 import { Box, Divider } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-});
+import styles from "./StartEventInitiator.module.css";
 
 export default function StartEventInitiator({
   element,
@@ -30,31 +15,26 @@ export default function StartEventInitiator({
   setDummyProperty = () => {},
 }) {
   const [isVisible, setVisible] = useState(false);
-  const classes = useStyles();
 
   const showLabel = () => {
     if (!element) return;
-    let messageEventDefinition = eventDefinitionHelper.getMessageEventDefinition(
-      element
-    );
+    let messageEventDefinition =
+      eventDefinitionHelper.getMessageEventDefinition(element);
     if (messageEventDefinition) {
       return false;
     }
-    let timerEventDefinition = eventDefinitionHelper.getTimerEventDefinition(
-      element
-    );
+    let timerEventDefinition =
+      eventDefinitionHelper.getTimerEventDefinition(element);
     if (timerEventDefinition) {
       return false;
     }
-    let signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
-      element
-    );
+    let signalEventDefinition =
+      eventDefinitionHelper.getSignalEventDefinition(element);
     if (signalEventDefinition) {
       return false;
     }
-    let conditionalEventDefinition = eventDefinitionHelper.getConditionalEventDefinition(
-      element
-    );
+    let conditionalEventDefinition =
+      eventDefinitionHelper.getConditionalEventDefinition(element);
     if (conditionalEventDefinition) {
       return false;
     }
@@ -78,9 +58,9 @@ export default function StartEventInitiator({
         {showLabel() && (
           <React.Fragment>
             <React.Fragment>
-              {index > 0 && <Divider className={classes.divider} />}
+              {index > 0 && <Divider className={styles.divider} />}
             </React.Fragment>
-            <Box color="body" className={classes.groupLabel}>
+            <Box color="body" className={styles.groupLabel}>
               {translate(label)}
             </Box>
           </React.Fragment>

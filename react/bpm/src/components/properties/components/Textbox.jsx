@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/styles";
 import { InputLabel, Input } from "@axelor/ui";
 import ScriptEditor from "../EditorConfig/SrciptEditor";
 import Description from "./Description";
@@ -9,25 +8,7 @@ import { translate } from "../../../utils";
 import { useStore } from "../../../store";
 import { getNameProperty } from "../../../BPMN/Modeler/extra";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: 5,
-    overflow: "hidden",
-    /* not adding overflow:hidden would cause horizontal scrollbar to appear when
-     decreasing the size of the sidebar when scriptEditor is displayed
-    */
-  },
-  label: {
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginBottom: 3,
-  },
-});
+import styles from "./Textbox.module.css";
 
 const getValue = (element) => {
   if (!element) return;
@@ -54,7 +35,6 @@ export default function Textbox({
   minimap,
   setDummyProperty = () => {},
 }) {
-  const classes = useStyles();
   const {
     label,
     description,
@@ -159,9 +139,9 @@ export default function Textbox({
   }, []);
 
   return (
-    <div className={classnames(classes.root, className)} ref={containerRef}>
+    <div className={classnames(styles.root, className)} ref={containerRef}>
       {showLabel && (
-        <InputLabel className={classes.label} color="body">
+        <InputLabel className={styles.label} color="body">
           {translate(label)}
         </InputLabel>
       )}

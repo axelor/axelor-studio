@@ -1,0 +1,41 @@
+.dialogPaper {
+  padding: 5px;
+  min-width: 450px;
+}
+
+.dialogContent {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.button {
+  min-width: 64px;
+  margin: 8px; /* Assuming theme.spacing(1) equals 8px */
+  text-transform: none;
+}
+
+.select {
+  min-width: 250px;
+  margin-left: 10px;
+}
+
+.tableCell {
+  padding: 0px 10px;
+  vertical-align: baseline;
+  text-align: center;
+}
+
+.tableHead {
+  font-weight: 600;
+  font-size: 12px;
+  text-align: center;
+}
+
+.process {
+  margin-top: 10px;
+}
+
+.processHeader {
+  margin-bottom: 10px;
+  font-size: 12px;
+}

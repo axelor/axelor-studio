@@ -7,7 +7,6 @@ import propertiesProviderModule from "dmn-js-properties-panel/lib/provider/camun
 import camundaModdleDescriptor from "camunda-dmn-moddle/resources/camunda";
 import classnames from "classnames";
 import { Resizable } from "re-resizable";
-import { makeStyles } from "@material-ui/core/styles";
 
 import AlertDialog from "../components/AlertDialog";
 import Select from "../components/Select";
@@ -68,6 +67,8 @@ import "dmn-js/dist/assets/diagram-js.css";
 
 import "./css/dmnModeler.css";
 import Ids from "ids";
+import styles from "./DMNModeler.module.css";
+
 let dmnModeler = null;
 const drawerWidth = 380;
 
@@ -76,60 +77,6 @@ const resizeStyle = {
   alignItems: "center",
   justifyContent: "center",
 };
-
-const useStyles = makeStyles((theme) => ({
-  drawerPaper: {
-    background: "var(--bs-tertiary-bg)",
-    width: "100%",
-    position: "absolute",
-    overflow: "auto",
-    height: "100%",
-    zIndex: 2,
-  },
-  drawerContainer: {
-    padding: 10,
-    height: "100%",
-    textAlign: "left",
-  },
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  groupContainer: {
-    marginTop: 10,
-  },
-  divider: {
-    marginTop: 15,
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  save: {
-    minWidth: 64,
-  },
-  select: {
-    minWidth: 150,
-    marginTop: 0,
-  },
-  commandBar: {
-    "& > div": {
-      "& > button": {
-        fontSize: 14,
-      },
-    },
-  },
-}));
 
 function nextId(prefix) {
   let ids = new Ids([32, 32, 1]);
@@ -219,7 +166,6 @@ function DMNModeler() {
   const [openAlert, setAlert] = useState(false);
   const [id, setId] = useState(null);
   const [nameCol, setNameCol] = useState(null);
-  const classes = useStyles();
   const diagramXmlRef = React.useRef(null);
   const tab = tabs && tabs[tabValue];
   const { groups = [], id: tabId = "" } = tab || {};
@@ -358,8 +304,11 @@ function DMNModeler() {
       const latestDecision = definitions?.drgElement?.find(
         (d) => d.id === decision?.id
       );
-      const { input: inputs, output: outputs, rule: elementRules } =
-        latestDecision?.decisionLogic || {};
+      const {
+        input: inputs,
+        output: outputs,
+        rule: elementRules,
+      } = latestDecision?.decisionLogic || {};
       const { col, row } = cell || {};
       let column = inputs?.find((i) => i.id === col.id);
       const rules =
@@ -578,9 +527,8 @@ function DMNModeler() {
             });
           });
           eventBus.on("shape.removed", () => {
-            const elementRegistry = dmnModeler._viewers.drd.get(
-              "elementRegistry"
-            );
+            const elementRegistry =
+              dmnModeler._viewers.drd.get("elementRegistry");
             const rootElement = elementRegistry.get(dmnModeler._activeView.id);
             if (!rootElement) return;
             updateTabs({
@@ -826,7 +774,7 @@ function DMNModeler() {
       <div
         key={group.id}
         data-group={group.id}
-        className={classnames(classes.groupContainer, classes[group.className])}
+        className={classnames(styles.groupContainer, styles[group.className])}
       >
         {group.component ? (
           <group.component
@@ -839,9 +787,9 @@ function DMNModeler() {
           group.entries.length > 0 && (
             <React.Fragment>
               <React.Fragment>
-                {index > 0 && <Divider className={classes.divider} />}
+                {index > 0 && <Divider className={styles.divider} />}
               </React.Fragment>
-              <Box color="body" className={classes.groupLabel}>
+              <Box color="body" className={styles.groupLabel}>
                 {translate(group.label)}
               </Box>
               <div>
@@ -960,11 +908,11 @@ function DMNModeler() {
                     ]
                   : leftToolbar
               }
-              className={classes.commandBar}
+              className={styles.commandBar}
             />
             <Box color="body" textAlign="left" flex="1">
               <Select
-                className={classes.select}
+                className={styles.select}
                 disableClearable={true}
                 update={(value) => {
                   const { diagramXml, id } = value || {};
@@ -984,7 +932,7 @@ function DMNModeler() {
                 placeholder={translate("DMN model")}
               />
             </Box>
-            <CommandBar items={rightToolbar} className={classes.commandBar} />
+            <CommandBar items={rightToolbar} className={styles.commandBar} />
             <Input
               id="inputFile"
               type="file"
@@ -1004,8 +952,8 @@ function DMNModeler() {
             }}
             maxWidth={window.innerWidth - 150}
           >
-            <Box className={classes.drawerPaper} id="drawer">
-              <Box className={classes.drawerContainer}>
+            <Box className={styles.drawerPaper} id="drawer">
+              <Box className={styles.drawerContainer}>
                 {selectedElement && selectedElement.id !== "__implicitroot" && (
                   <InputLabel fontSize={5} fontWeight="bold">
                     {selectedElement && selectedElement.id}
@@ -1117,7 +1065,7 @@ function DMNModeler() {
         open={openUploadDialog}
         centered
         backdrop
-        className={classes.dialog}
+        className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setUploadDialog(false)}>
           <h3>{translate("Upload")}</h3>
@@ -1136,7 +1084,7 @@ function DMNModeler() {
               <Button
                 variant={theme}
                 onClick={uploadExcelFile}
-                className={classnames(classes.textButton, "property-button")}
+                className={classnames(styles.textButton, "property-button")}
               >
                 <i className="fa fa-upload" style={{ fontSize: 18 }}></i>
               </Button>
@@ -1150,7 +1098,7 @@ function DMNModeler() {
         </DialogContent>
         <DialogFooter>
           <Button
-            className={classes.save}
+            className={styles.save}
             onClick={importExcel}
             variant="primary"
           >
@@ -1161,7 +1109,7 @@ function DMNModeler() {
               setUploadDialog(false);
             }}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
@@ -1170,7 +1118,7 @@ function DMNModeler() {
               setUploadDialog(false);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>

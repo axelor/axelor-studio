@@ -1,21 +1,13 @@
 import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { makeStyles } from '@material-ui/core/styles';
+import styles from './DNDRow.module.css';
 
 const dndItemTypes = {
   ROW: 'row',
 };
 
-const useStyles = makeStyles({
-  row: {
-    border: '1px dashed var(--bs-border-color)',
-    backgroundColor: 'var(--bs-body-bg) !important',
-  },
-});
-
 export default function DNDRow({ id, text, index, onMove, ...props }) {
   const ref = useRef(null);
-  const classes = useStyles();
 
   const [{ handlerId }, drop] = useDrop({
     accept: dndItemTypes.ROW,
@@ -78,7 +70,7 @@ export default function DNDRow({ id, text, index, onMove, ...props }) {
     dragRef: ref,
     dropRef: drop,
     previewRef: preview,
-    className: classes.row,
+    className: styles.row,
     style: { opacity: isDragging ? 0 : 1 },
     handlerId,
   });

@@ -4,7 +4,6 @@ import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
 import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
 import find from "lodash/find";
-import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 
 import AlertDialog from "../../../../../components/AlertDialog";
@@ -28,49 +27,7 @@ import {
   Divider,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  editIcon: {
-    marginLeft: 5,
-  },
-  edit: {
-    cursor: "pointer",
-    marginTop: 18.6,
-    display: "flex",
-  },
-  mapperBuilder: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  textbox: {
-    width: "100%",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  content: {
-    fontSize: 16,
-  },
-  scriptDialog: {
-    width: "100%",
-    height: "100%",
-  },
-}));
+import styles from "./ListenerProps.module.css";
 
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
 const CAMUNDA_TASK_LISTENER_ELEMENT = "camunda:TaskListener";
@@ -150,7 +107,6 @@ export default function ListenerProps({
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
 
-  const classes = useStyles();
   const isSequenceFlow = ImplementationTypeHelper.isSequenceFlow(element);
 
   const handleClickOpen = () => {
@@ -213,14 +169,13 @@ export default function ListenerProps({
   };
 
   const getExecutionOptions = () => {
-    const executionListenerEventTypeOptions = ImplementationTypeHelper.isSequenceFlow(
-      element
-    )
-      ? [{ name: translate("take"), value: "take" }]
-      : [
-          { name: translate("start"), value: "start" },
-          { name: translate("end"), value: "end" },
-        ];
+    const executionListenerEventTypeOptions =
+      ImplementationTypeHelper.isSequenceFlow(element)
+        ? [{ name: translate("take"), value: "take" }]
+        : [
+            { name: translate("start"), value: "start" },
+            { name: translate("end"), value: "end" },
+          ];
     return executionListenerEventTypeOptions;
   };
 
@@ -320,9 +275,8 @@ export default function ListenerProps({
     return function (index) {
       let listeners = getListeners(bo, type);
       let listener = listeners[index];
-      let listenerType = ImplementationTypeHelper.getImplementationType(
-        listener
-      );
+      let listenerType =
+        ImplementationTypeHelper.getImplementationType(listener);
       if (!listener) return "";
       let event = listener.get("event")
         ? listener.get("event")
@@ -458,9 +412,9 @@ export default function ListenerProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
         {showExecutionListener() && (
@@ -596,11 +550,11 @@ export default function ListenerProps({
                 }}
               />
             )}
-            <div className={classes.mapperBuilder}>
+            <div className={styles.mapperBuilder}>
               <Textbox
                 element={element}
                 rows={3}
-                className={classes.textbox}
+                className={styles.textbox}
                 readOnly={() => getReadOnly()}
                 minimap={false}
                 entry={{
@@ -623,7 +577,7 @@ export default function ListenerProps({
                   },
                 }}
               />
-              <Box color="body" className={classes.edit}>
+              <Box color="body" className={styles.edit}>
                 <Tooltip title="Enable" aria-label="enable">
                   <i
                     className="fa fa-code"
@@ -647,7 +601,7 @@ export default function ListenerProps({
                     <MaterialIcon
                       icon="edit"
                       fontSize={16}
-                      className={classes.editIcon}
+                      className={styles.editIcon}
                       onClick={handleClickOpen}
                     />
                     {open && (
@@ -662,7 +616,7 @@ export default function ListenerProps({
                     )}
                     {openScriptDialog && (
                       <AlertDialog
-                        className={classes.scriptDialog}
+                        className={styles.scriptDialog}
                         openAlert={openScriptDialog}
                         alertClose={() => {
                           const listener = getListener();
@@ -677,7 +631,7 @@ export default function ListenerProps({
                         children={
                           <Textbox
                             element={element}
-                            className={classes.textbox}
+                            className={styles.textbox}
                             showLabel={false}
                             defaultHeight={window?.innerHeight - 205}
                             entry={{
@@ -700,12 +654,12 @@ export default function ListenerProps({
                         open={openAlert}
                         backdrop
                         centered
-                        className={classes.dialog}
+                        className={styles.dialog}
                       >
                         <DialogHeader onCloseClick={() => setAlert(false)}>
                           <h3>{translate("Warning")}</h3>
                         </DialogHeader>
-                        <DialogContent className={classes.content}>
+                        <DialogContent className={styles.content}>
                           {translate(
                             "Script can't be managed using builder once changed manually."
                           )}
@@ -721,7 +675,7 @@ export default function ListenerProps({
                               setOpenScriptDialog(true);
                             }}
                             variant="primary"
-                            className={classes.save}
+                            className={styles.save}
                           >
                             {translate("OK")}
                           </Button>
@@ -730,7 +684,7 @@ export default function ListenerProps({
                               setAlert(false);
                             }}
                             variant="secondary"
-                            className={classes.save}
+                            className={styles.save}
                           >
                             {translate("Cancel")}
                           </Button>

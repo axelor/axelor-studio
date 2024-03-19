@@ -1,0 +1,17 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  overflow: hidden;
+  /* not adding overflow:hidden would cause horizontal scrollbar to appear when
+       decreasing the size of the sidebar when scriptEditor is displayed
+    */
+}
+
+.label {
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}

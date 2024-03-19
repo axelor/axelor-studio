@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { makeStyles } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
 
 import Select from "../../../../../components/Select";
@@ -44,91 +43,7 @@ import {
   Divider,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    fontSize: "120%",
-    margin: "10px 0px",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  button: {
-    textTransform: "none",
-  },
-  newIcon: {
-    marginInline: 2,
-    cursor: "pointer",
-    overflow: "inherit",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  clearClassName: {
-    paddingLeft: 10,
-  },
-  dialogContent: {
-    display: "flex",
-    alignItems: "center",
-    overflow: "auto",
-  },
-  grid: {
-    padding: "0px 15px 0px 0px",
-  },
-  iconButton: {
-    margin: "5px 0px 5px 5px",
-    borderRadius: 0,
-    border: "1px solid #ccc",
-    color: "inherit",
-    padding: 2,
-    width: "fit-content",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  icon: {
-    marginRight: 10,
-    color: "var(--red)",
-  },
-  textFieldRoot: {
-    marginTop: 0,
-  },
-  textFieldLabel: {
-    marginBottom: 0,
-  },
-  checkbox: {
-    marginTop: 0,
-    justifyContent: "center",
-  },
-  container: {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  checkboxLabel: {
-    width: "100%",
-  },
-  scriptDialog: {
-    width: "100%",
-    height: "100%",
-  },
-  content: { fontSize: 16 },
-  processPathDialog: {
-    "& > div": {
-      maxWidth: "90%",
-      width: "fit-content",
-      minWidth: 500,
-    },
-  },
-}));
+import styles from "./ProcessConfiguration.module.css";
 
 const initialProcessConfigList = {
   isStartModel: "false",
@@ -153,7 +68,6 @@ export default function ProcessConfiguration({
   bpmnModeler,
   setDummyProperty = () => {},
 }) {
-  const classes = useStyles();
   const [processConfigList, setProcessConfigList] = useState(null);
   const [openProcessPathDialog, setOpenProcessDialog] = useState(false);
   const [openUserPathDialog, setOpenUserPathDialog] = useState(false);
@@ -477,11 +391,11 @@ export default function ProcessConfiguration({
   return (
     <div>
       <React.Fragment>
-        {index > 0 && <Divider className={classes.divider} />}
+        {index > 0 && <Divider className={styles.divider} />}
       </React.Fragment>
       <div>
         <Box d="flex" alignItems="center">
-          <InputLabel color="body" className={classes.groupLabel}>
+          <InputLabel color="body" className={styles.groupLabel}>
             {label}
           </InputLabel>
         </Box>
@@ -498,7 +412,7 @@ export default function ProcessConfiguration({
               <MaterialIcon
                 icon="report"
                 fontSize={16}
-                className={classes.icon}
+                className={styles.icon}
               />
               {translate("Must provide meta model or custom model")}
             </InputLabel>
@@ -517,13 +431,13 @@ export default function ProcessConfiguration({
                       style={{ marginTop: 5, marginBottom: 10 }}
                     >
                       <Box key={key} style={{ padding: 10 }}>
-                        <Box d="flex" className={classes.container}>
+                        <Box d="flex" className={styles.container}>
                           <Box
                             flex="1"
                             justifyContent="flex-end"
-                            className={classes.grid}
+                            className={styles.grid}
                           >
-                            <InputLabel color="body" className={classes.label}>
+                            <InputLabel color="body" className={styles.label}>
                               {translate("Model")}
                             </InputLabel>
                             {(
@@ -578,12 +492,12 @@ export default function ProcessConfiguration({
                         <Box
                           d="flex"
                           justifyContent="space-between"
-                          className={classes.container}
+                          className={styles.container}
                         >
-                          <Box className={classes.grid}>
+                          <Box className={styles.grid}>
                             <Checkbox
-                              className={classes.checkbox}
-                              labelClassName={classes.checkboxLabel}
+                              className={styles.checkbox}
+                              labelClassName={styles.checkboxLabel}
                               entry={{
                                 id: `custom-${key}`,
                                 modelProperty: "isCustom",
@@ -610,10 +524,10 @@ export default function ProcessConfiguration({
                               element={element}
                             />
                           </Box>
-                          <Box className={classes.grid}>
+                          <Box className={styles.grid}>
                             <Checkbox
-                              className={classes.checkbox}
-                              labelClassName={classes.checkboxLabel}
+                              className={styles.checkbox}
+                              labelClassName={styles.checkboxLabel}
                               entry={{
                                 id: `start-model-${key}`,
                                 label: translate("Start model ?"),
@@ -640,10 +554,10 @@ export default function ProcessConfiguration({
                               element={element}
                             />
                           </Box>
-                          <Box className={classes.grid}>
+                          <Box className={styles.grid}>
                             <Checkbox
-                              className={classes.checkbox}
-                              labelClassName={classes.checkboxLabel}
+                              className={styles.checkbox}
+                              labelClassName={styles.checkboxLabel}
                               entry={{
                                 id: `direct-creation-${key}`,
                                 modelProperty: "isDirectCreation",
@@ -668,12 +582,9 @@ export default function ProcessConfiguration({
                             />
                           </Box>
                         </Box>
-                        <Box d="flex" className={classes.container}>
-                          <Box
-                            style={{ width: "50%" }}
-                            className={classes.grid}
-                          >
-                            <InputLabel color="body" className={classes.label}>
+                        <Box d="flex" className={styles.container}>
+                          <Box style={{ width: "50%" }} className={styles.grid}>
+                            <InputLabel color="body" className={styles.label}>
                               {translate("Title")}
                             </InputLabel>
                             <TextField
@@ -683,9 +594,9 @@ export default function ProcessConfiguration({
                                   ? false
                                   : true
                               }
-                              rootClass={classes.textFieldRoot}
-                              labelClass={classes.textFieldLabel}
-                              clearClassName={classes.clearClassName}
+                              rootClass={styles.textFieldRoot}
+                              labelClass={styles.textFieldLabel}
+                              clearClassName={styles.clearClassName}
                               disabled={getBool(processConfig.isTranslations)}
                               readOnly={getBool(processConfig.isTranslations)}
                               entry={{
@@ -714,7 +625,7 @@ export default function ProcessConfiguration({
                                 <MaterialIcon
                                   fontSize={18}
                                   icon="edit"
-                                  className={classes.newIcon}
+                                  className={styles.newIcon}
                                   onClick={() => {
                                     setTranslationDialog(true);
                                     setSelectedProcessConfig({
@@ -726,19 +637,16 @@ export default function ProcessConfiguration({
                               }
                             />
                           </Box>
-                          <Box
-                            style={{ width: "50%" }}
-                            className={classes.grid}
-                          >
-                            <InputLabel color="body" className={classes.label}>
+                          <Box style={{ width: "50%" }} className={styles.grid}>
+                            <InputLabel color="body" className={styles.label}>
                               {translate("Process path")}
                             </InputLabel>
                             <TextField
                               element={element}
                               canRemove={true}
-                              rootClass={classes.textFieldRoot}
-                              labelClass={classes.textFieldLabel}
-                              clearClassName={classes.clearClassName}
+                              rootClass={styles.textFieldRoot}
+                              labelClass={styles.textFieldLabel}
+                              clearClassName={styles.clearClassName}
                               disabled={getBool(processConfig.isStartModel)}
                               entry={{
                                 id: `processPath_${key}`,
@@ -771,7 +679,7 @@ export default function ProcessConfiguration({
                                     <MaterialIcon
                                       icon="edit"
                                       fontSize={18}
-                                      className={classes.newIcon}
+                                      className={styles.newIcon}
                                       onClick={() => {
                                         setOpenProcessDialog(true);
                                         setSelectedProcessConfig({
@@ -795,20 +703,17 @@ export default function ProcessConfiguration({
                             />
                           </Box>
                         </Box>
-                        <Box d="flex" className={classes.container}>
-                          <Box
-                            style={{ width: "50%" }}
-                            className={classes.grid}
-                          >
-                            <InputLabel color="body" className={classes.label}>
+                        <Box d="flex" className={styles.container}>
+                          <Box style={{ width: "50%" }} className={styles.grid}>
+                            <InputLabel color="body" className={styles.label}>
                               {translate("Condition")}
                             </InputLabel>
                             <TextField
                               element={element}
                               canRemove={true}
-                              rootClass={classes.textFieldRoot}
-                              labelClass={classes.textFieldLabel}
-                              clearClassName={classes.clearClassName}
+                              rootClass={styles.textFieldRoot}
+                              labelClass={styles.textFieldLabel}
+                              clearClassName={styles.clearClassName}
                               readOnly={
                                 processConfig &&
                                 processConfig.pathConditionValue
@@ -891,7 +796,7 @@ export default function ProcessConfiguration({
                                   <MaterialIcon
                                     icon="edit"
                                     fontSize={18}
-                                    className={classes.newIcon}
+                                    className={styles.newIcon}
                                     onClick={() => {
                                       setSelectedProcessConfig({
                                         processConfig,
@@ -904,19 +809,16 @@ export default function ProcessConfiguration({
                               }
                             />
                           </Box>
-                          <Box
-                            style={{ width: "50%" }}
-                            className={classes.grid}
-                          >
-                            <InputLabel color="body" className={classes.label}>
+                          <Box style={{ width: "50%" }} className={styles.grid}>
+                            <InputLabel color="body" className={styles.label}>
                               {translate("User default path")}
                             </InputLabel>
                             <TextField
                               element={element}
                               canRemove={true}
-                              rootClass={classes.textFieldRoot}
-                              labelClass={classes.textFieldLabel}
-                              clearClassName={classes.clearClassName}
+                              rootClass={styles.textFieldRoot}
+                              labelClass={styles.textFieldLabel}
+                              clearClassName={styles.clearClassName}
                               entry={{
                                 id: `userDefaultPath_${key}`,
                                 name: "userDefaultPath",
@@ -940,7 +842,7 @@ export default function ProcessConfiguration({
                                 <MaterialIcon
                                   icon="edit"
                                   fontSize={18}
-                                  className={classes.newIcon}
+                                  className={styles.newIcon}
                                   onClick={() => {
                                     setOpenUserPathDialog(true);
                                     setField(null);
@@ -956,9 +858,9 @@ export default function ProcessConfiguration({
                         </Box>
                       </Box>
                     </Box>
-                    <Box color="body" align="center" className={classes.Grid}>
+                    <Box color="body" align="center" className={styles.Grid}>
                       <IconButton
-                        className={classes.iconButton}
+                        className={styles.iconButton}
                         onClick={() => {
                           removeItem(key);
                           removeElement(key);
@@ -974,7 +876,7 @@ export default function ProcessConfiguration({
           )}
         </Box>
         <Box color="body">
-          <IconButton className={classes.iconButton} onClick={addItems}>
+          <IconButton className={styles.iconButton} onClick={addItems}>
             <MaterialIcon icon="add" fontSize={14} />
           </IconButton>
         </Box>
@@ -983,12 +885,12 @@ export default function ProcessConfiguration({
         open={openProcessPathDialog}
         backdrop
         centered
-        className={classes.processPathDialog}
+        className={styles.processPathDialog}
       >
         <DialogHeader onCloseClick={() => setOpenProcessDialog(false)}>
           <h3>{translate("Process Path")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <FieldEditor
             getMetaFields={() =>
               getMetaFields(
@@ -1046,7 +948,7 @@ export default function ProcessConfiguration({
               }
             }}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
@@ -1055,7 +957,7 @@ export default function ProcessConfiguration({
               setOpenProcessDialog(false);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>
@@ -1073,7 +975,7 @@ export default function ProcessConfiguration({
       )}
       {openScriptDialog && (
         <AlertDialog
-          className={classes.scriptDialog}
+          className={styles.scriptDialog}
           openAlert={openScriptDialog}
           alertClose={() => setOpenScriptDialog(false)}
           handleAlertOk={() => {
@@ -1089,7 +991,7 @@ export default function ProcessConfiguration({
           children={
             <Textbox
               element={element}
-              className={classes.textbox}
+              className={styles.textbox}
               showLabel={false}
               defaultHeight={window?.innerHeight - 205}
               entry={{
@@ -1113,14 +1015,14 @@ export default function ProcessConfiguration({
         <DialogHeader onCloseClick={() => setAlert({ open: false })}>
           <h3>{translate(alert?.title || translate("Warning"))}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <Box as="p" color="body" fontSize={5}>
             {translate(alert?.message)}
           </Box>
         </DialogContent>
         <DialogFooter>
           <Button
-            className={classes.save}
+            className={styles.save}
             onClick={() => {
               alert?.callback && alert.callback();
               setAlert({ open: false });
@@ -1132,7 +1034,7 @@ export default function ProcessConfiguration({
           <Button
             onClick={() => setAlert({ open: false })}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>
@@ -1142,7 +1044,7 @@ export default function ProcessConfiguration({
         open={openUserPathDialog}
         backdrop
         centered
-        className={classes.processPathDialog}
+        className={styles.processPathDialog}
       >
         <DialogHeader
           id="alert-dialog-title"
@@ -1153,7 +1055,7 @@ export default function ProcessConfiguration({
         >
           <h3>{translate("User default Path")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <FieldEditor
             getMetaFields={() =>
               getMetaFields(
@@ -1206,7 +1108,7 @@ export default function ProcessConfiguration({
               }
             }}
             variant="primary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("OK")}
           </Button>
@@ -1215,7 +1117,7 @@ export default function ProcessConfiguration({
               setOpenUserPathDialog(false);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>
@@ -1233,7 +1135,7 @@ export default function ProcessConfiguration({
         >
           <h3>{translate("Translations")}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           <ProcessConfigTitleTranslation
             element={element}
             configKey={
@@ -1250,11 +1152,7 @@ export default function ProcessConfiguration({
           />
         </DialogContent>
         <DialogFooter>
-          <Button
-            onClick={onConfirm}
-            variant="primary"
-            className={classes.save}
-          >
+          <Button onClick={onConfirm} variant="primary" className={styles.save}>
             {translate("OK")}
           </Button>
           <Button
@@ -1262,7 +1160,7 @@ export default function ProcessConfiguration({
               setTranslationDialog(false);
             }}
             variant="secondary"
-            className={classes.save}
+            className={styles.save}
           >
             {translate("Cancel")}
           </Button>

@@ -1,0 +1,9 @@
+.button {
+  text-transform: none;
+  min-width: 64px;
+  max-width: fit-content;
+}
+
+.buttonLabel {
+  max-height: 30px;
+}

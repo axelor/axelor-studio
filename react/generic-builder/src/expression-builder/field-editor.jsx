@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { Tooltip } from '../components';
 import { Selection } from '../components';
@@ -9,16 +8,7 @@ import { getSubMetaField } from '../services/api';
 import { translate, isBPMQuery } from '../utils';
 import { JOIN_OPERATOR } from '../constants';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
-
-const useStyles = makeStyles(() => ({
-  MuiAutocompleteRoot: {
-    width: '250px',
-    marginRight: '10px',
-  },
-  iconButton: {
-    marginRight: 10,
-  },
-}));
+import styles from './field-editor.module.css';
 
 export default function FieldEditor({
   initValue = '',
@@ -37,7 +27,6 @@ export default function FieldEditor({
 }) {
   const { fieldName = '', allField = [] } = value || {};
   const [fields, setFields] = useState([]);
-  const classes = useStyles();
   const isContextValue = isField === 'context' && isBPMQuery(type) && isBPM;
   const expression = isBPMQuery(type) ? 'BPM' : parentExpression;
   const [isShow, setShow] = useState(null);
@@ -175,9 +164,10 @@ export default function FieldEditor({
     } else {
       let fields = [...(allField || [])];
       let fieldNames = (fieldName || '').split(JOIN_OPERATOR[expression]);
-      let initValues = `${initValue}${JOIN_OPERATOR[expression]}${startValue}`.split(
-        JOIN_OPERATOR[expression]
-      );
+      let initValues =
+        `${initValue}${JOIN_OPERATOR[expression]}${startValue}`.split(
+          JOIN_OPERATOR[expression]
+        );
       fieldNames &&
         fieldNames.length > 0 &&
         fieldNames.forEach(fName => {
@@ -263,7 +253,7 @@ export default function FieldEditor({
         value={transformValue()}
         classes={{
           root: classnames(
-            classes.MuiAutocompleteRoot,
+            styles.MuiAutocompleteRoot,
             classNames && classNames.root
           ),
         }}
@@ -284,7 +274,7 @@ export default function FieldEditor({
                   });
                 }
               }}
-              className={classes.iconButton}
+              className={styles.iconButton}
             >
               <Tooltip title={translate('Remove sub field')}>
                 <MaterialIcon icon="close" color="body" fontSize={18} />
@@ -319,7 +309,7 @@ export default function FieldEditor({
             <IconButton
               size="small"
               onClick={() => setShow(isShow => !isShow)}
-              className={classes.iconButton}
+              className={styles.iconButton}
             >
               <Tooltip title={translate('Add sub field')}>
                 <MaterialIcon color="body" icon="arrow_forward" fontSize={18} />

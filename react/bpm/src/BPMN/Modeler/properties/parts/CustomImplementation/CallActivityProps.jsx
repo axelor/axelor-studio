@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import AlertDialog from "../../../../../components/AlertDialog";
@@ -37,79 +36,12 @@ import {
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import Alert from "../../../../../components/Alert";
+import styles from "./CallActivityProps.module.css";
 
 function nextId() {
   let ids = new Ids([32, 32, 1]);
   return ids.nextPrefixed("Process_");
 }
-
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  linkIcon: {
-    marginLeft: 5,
-  },
-  link: {
-    cursor: "pointer",
-  },
-  dialogPaper: {
-    padding: 5,
-    minWidth: 450,
-    overflow: "auto",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginTop: 3,
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(--ax-theme-panel-header-font-size, 1rem)",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  newIcon: {
-    marginLeft: 5,
-  },
-  new: {
-    cursor: "pointer",
-    display: "flex",
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  select: {
-    margin: 0,
-  },
-  dialogContent: {
-    display: "flex",
-    alignItems: "flex-end",
-    minWidth: 300,
-    fontSize: 16,
-  },
-  scriptDialog: {
-    width: "100%",
-    height: "100%",
-  },
-  parentPathDialog: {
-    "& > div": {
-      maxWidth: "90%",
-      width: "fit-content",
-      minWidth: 500,
-    },
-  },
-}));
 
 function getCallableType(bo) {
   let boCalledElement = bo.get("calledElement"),
@@ -152,7 +84,6 @@ export default function CallActivityProps({
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
 
-  const classes = useStyles();
   const id = nextId();
   const handleClickOpen = () => {
     setOpen(true);
@@ -462,9 +393,9 @@ export default function CallActivityProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
         <SelectBox
@@ -533,23 +464,23 @@ export default function CallActivityProps({
                 <Box
                   color="body"
                   onClick={handleClickOpen}
-                  className={classes.link}
+                  className={styles.link}
                 >
                   <MaterialIcon
                     icon="edit"
                     fontSize={16}
-                    className={classes.linkIcon}
+                    className={styles.linkIcon}
                   />
                 </Box>
                 <Box
                   color="body"
                   onClick={addNewBPMRecord}
-                  className={classes.link}
+                  className={styles.link}
                 >
                   <MaterialIcon
                     icon="add"
                     fontSize={16}
-                    className={classes.linkIcon}
+                    className={styles.linkIcon}
                   />
                 </Box>
                 {wkfModel && (
@@ -560,12 +491,12 @@ export default function CallActivityProps({
                         translate("BPM editor")
                       );
                     }}
-                    className={classes.link}
+                    className={styles.link}
                   >
                     <MaterialIcon
                       fontSize={16}
                       icon="open_in_new"
-                      className={classes.linkIcon}
+                      className={styles.linkIcon}
                     />
                   </div>
                 )}
@@ -603,7 +534,7 @@ export default function CallActivityProps({
             canRemove={true}
           />
         )}
-        <Divider className={classes.divider} />
+        <Divider className={styles.divider} />
         <Checkbox
           element={element}
           entry={{
@@ -622,12 +553,12 @@ export default function CallActivityProps({
             },
           }}
         />
-        <InputLabel color="body" className={classes.label}>
+        <InputLabel color="body" className={styles.label}>
           {translate("Call model")}
         </InputLabel>
         {custom ? (
           <Select
-            className={classnames(classes.select, classes.metajsonModel)}
+            className={classnames(styles.select, styles.metajsonModel)}
             fetchMethod={(options) => getCustomModels(options)}
             update={(value, label) => {
               setModel(
@@ -645,7 +576,7 @@ export default function CallActivityProps({
           />
         ) : (
           <Select
-            className={classes.select}
+            className={styles.select}
             fetchMethod={(options) => getMetaModels(options)}
             update={(value, label) => {
               const val = value
@@ -664,15 +595,15 @@ export default function CallActivityProps({
           />
         )}
         <React.Fragment>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Call link")}
           </InputLabel>
           <TextField
             element={element}
             canRemove={true}
-            rootClass={classes.textFieldRoot}
-            labelClass={classes.textFieldLabel}
-            clearClassName={classes.clearClassName}
+            rootClass={styles.textFieldRoot}
+            labelClass={styles.textFieldLabel}
+            clearClassName={styles.clearClassName}
             readOnly={model ? false : true}
             entry={{
               id: `parentPath`,
@@ -691,11 +622,11 @@ export default function CallActivityProps({
             endAdornment={
               <>
                 {model && (
-                  <Box color="body" className={classes.new}>
+                  <Box color="body" className={styles.new}>
                     <MaterialIcon
                       icon="edit"
                       fontSize={16}
-                      className={classes.newIcon}
+                      className={styles.newIcon}
                       onClick={() => {
                         setOpenParentPath(true);
                       }}
@@ -709,7 +640,7 @@ export default function CallActivityProps({
             open={openParentPath}
             centered
             backdrop
-            className={classes.parentPathDialog}
+            className={styles.parentPathDialog}
           >
             <DialogHeader>
               <h3>{translate("Parent path")}</h3>
@@ -735,7 +666,7 @@ export default function CallActivityProps({
                   setProperty("parentPath", parentPathDummy);
                 }}
                 variant="primary"
-                className={classes.save}
+                className={styles.save}
               >
                 {translate("OK")}
               </Button>
@@ -744,7 +675,7 @@ export default function CallActivityProps({
                   setOpenParentPath(false);
                 }}
                 variant="secondary"
-                className={classes.save}
+                className={styles.save}
               >
                 {translate("Cancel")}
               </Button>
@@ -775,7 +706,7 @@ export default function CallActivityProps({
             endAdornment={
               <>
                 {model && (
-                  <Box color="body" className={classes.new}>
+                  <Box color="body" className={styles.new}>
                     <Tooltip title="Enable" aria-label="enable">
                       <i
                         className="fa fa-code"
@@ -800,7 +731,7 @@ export default function CallActivityProps({
                     <MaterialIcon
                       icon="edit"
                       fontSize={16}
-                      className={classes.newIcon}
+                      className={styles.newIcon}
                       onClick={() => setOpenCondition(true)}
                     />
                     {openCondition && (
@@ -825,7 +756,7 @@ export default function CallActivityProps({
               backdrop
               centered
               scrollable
-              className={classes.dialog}
+              className={styles.dialog}
             >
               <DialogHeader onCloseClick={() => setAlert(false)}>
                 <h3>{translate(alertTitle)}</h3>
@@ -848,12 +779,12 @@ export default function CallActivityProps({
                     setOpenScriptDialog(true);
                   }}
                   variant="primary"
-                  className={classes.save}
+                  className={styles.save}
                 >
                   {translate("OK")}
                 </Button>
                 <Button
-                  className={classes.save}
+                  className={styles.save}
                   onClick={() => {
                     setAlert(false);
                   }}
@@ -864,10 +795,10 @@ export default function CallActivityProps({
               </DialogFooter>
             </Dialog>
           )}
-          <Divider className={classes.divider} />
+          <Divider className={styles.divider} />
         </React.Fragment>
         <AlertDialog
-          className={classes.scriptDialog}
+          className={styles.scriptDialog}
           openAlert={openScriptDialog}
           alertClose={() => {
             setScript(getCallLinkCondition()?.condition);
@@ -884,7 +815,7 @@ export default function CallActivityProps({
           children={
             <Textbox
               element={element}
-              className={classes.textbox}
+              className={styles.textbox}
               showLabel={false}
               defaultHeight={window?.innerHeight - 205}
               entry={{
@@ -901,16 +832,16 @@ export default function CallActivityProps({
             />
           }
         />
-        <Dialog open={open} backdrop centered className={classes.dialogPaper}>
+        <Dialog open={open} backdrop centered className={styles.dialogPaper}>
           <DialogHeader onCloseClick={() => setOpen(false)}>
             <h3>{translate("Select BPMN")}</h3>
           </DialogHeader>
           <DialogContent style={{ minHeight: 90 }}>
-            <InputLabel color="body" className={classes.label}>
+            <InputLabel color="body" className={styles.label}>
               {translate("BPMN")}
             </InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               update={(value) => {
                 if (!value) return;
                 setWkfModel({
@@ -942,14 +873,14 @@ export default function CallActivityProps({
           <DialogFooter>
             <Button
               onClick={handleClose}
-              className={classes.save}
+              className={styles.save}
               variant="secondary"
             >
               {translate("Cancel")}
             </Button>
             <Button
               onClick={onConfirm}
-              className={classes.save}
+              className={styles.save}
               variant="primary"
             >
               {translate("OK")}

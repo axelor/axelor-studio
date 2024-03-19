@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { EXPRESSION_LANGUAGE_OPTIONS, TYPES } from "../constants";
 import { getMetaFields } from "../../services/api";
 import {
@@ -22,34 +21,7 @@ import {
   DialogFooter,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-  newIcon: {
-    marginLeft: 5,
-    cursor: "pointer",
-  },
-  dialog: {
-    "& > div": {
-      maxWidth: "90%",
-      width: "fit-content",
-      minWidth: 500,
-    },
-  },
-  dialogContent: {
-    display: "flex",
-    alignItems: "center",
-    overflow: "auto",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-}));
+import styles from "./InputHeadProperties.module.css";
 
 export default function InputHeadProperties({
   element,
@@ -57,7 +29,6 @@ export default function InputHeadProperties({
   dmnModeler,
   getData,
 }) {
-  const classes = useStyles();
   const [input, setInput] = useState(null);
   const [open, setOpen] = useState(false);
   const [field, setField] = useState(false);
@@ -295,24 +266,24 @@ export default function InputHeadProperties({
             <Tooltip title="Enable" aria-label="enable">
               <MaterialIcon
                 icon="do_not_disturb"
-                className={classes.newIcon}
+                className={styles.newIcon}
                 onClick={() => readOnly && setOpenAlert(true)}
               />
             </Tooltip>
             <MaterialIcon
               icon="edit"
-              className={classes.newIcon}
+              className={styles.newIcon}
               onClick={handleClickOpen}
             />
           </>
         }
       />
       {open && (
-        <Dialog open={open} centered backdrop className={classes.dialog}>
+        <Dialog open={open} centered backdrop className={styles.dialog}>
           <DialogHeader onCloseClick={handleClose}>
             <h3>{translate("Expression")}</h3>
           </DialogHeader>
-          <DialogContent className={classes.dialogContent}>
+          <DialogContent className={styles.dialogContent}>
             {models?.length > 1 && (
               <Selection
                 name="model"
@@ -331,7 +302,7 @@ export default function InputHeadProperties({
                   setField(null);
                 }}
                 value={contextModel}
-                classes={{ root: classes.MuiAutocompleteRoot }}
+                classes={{ root: styles.MuiAutocompleteRoot }}
               />
             )}
             <FieldEditor
@@ -372,7 +343,7 @@ export default function InputHeadProperties({
                 handleClose();
               }}
               variant="primary"
-              className={classes.save}
+              className={styles.save}
             >
               {translate("OK")}
             </Button>
@@ -386,7 +357,7 @@ export default function InputHeadProperties({
                 setRelationalField(null);
               }}
               variant="secondary"
-              className={classes.save}
+              className={styles.save}
             >
               {translate("Cancel")}
             </Button>

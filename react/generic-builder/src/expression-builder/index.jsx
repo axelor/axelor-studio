@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 
 import produce from 'immer';
 import moment from 'moment';
@@ -37,38 +36,7 @@ import {
   InputLabel,
 } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
-
-const useStyles = makeStyles({
-  paper: {
-    padding: '24px 16px',
-    minWidth: `calc(100% - 55px)`,
-    margin: '10px',
-    overflow: 'auto',
-    maxWidth: '100%',
-  },
-  root: {
-    flex: 1,
-    overflow: 'auto',
-  },
-  expression: {
-    display: 'flex',
-    alignItems: 'flex-start',
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  dialogContent: {
-    fontSize: 16,
-  },
-
-  combinator: {
-    width: 'fit-content',
-  },
-  save: {
-    margin: 8,
-    minWidth: 64,
-  },
-});
+import styles from './index.module.css';
 
 let paramCount = 0;
 let count = 0;
@@ -108,7 +76,6 @@ function ExpressionBuilder({
   const [expressionComponents, setExpressionComponents] = useState([{}]);
   const [singleResult, setSingleResult] = useState(false);
   const [generateWithId, setGenerateWithId] = useState(false);
-  const classes = useStyles();
 
   function onAddExpressionEditor() {
     setExpressionComponents(
@@ -1549,13 +1516,8 @@ function ExpressionBuilder({
 
   return (
     <Box d="flex" flexDirection="column" overflow="hidden" flex="1">
-      <Box
-        d="flex"
-        flexDirection="column"
-        color="body"
-        className={classes.root}
-      >
-        <Box rounded={2} border className={classes.paper}>
+      <Box d="flex" flexDirection="column" color="body" className={styles.root}>
+        <Box rounded={2} border className={styles.paper}>
           <Box maxH={100} maxW={100}>
             {isBPMN &&
               !isBPMQuery(parentType) &&
@@ -1571,7 +1533,7 @@ function ExpressionBuilder({
               isBPMN={isBPMN}
               title={
                 <Select
-                  className={classes.combinator}
+                  className={styles.combinator}
                   name="expression"
                   value={combinator}
                   options={COMBINATORS}
@@ -1641,7 +1603,7 @@ function ExpressionBuilder({
         <Button
           variant="primary"
           title="Save"
-          className={classes.save}
+          className={styles.save}
           onClick={() => generateExpression(combinator, parentType)}
         />
         {dialogActionButton && (
@@ -1649,11 +1611,11 @@ function ExpressionBuilder({
         )}
       </Box>
 
-      <Dialog centered open={openAlert} className={classes.dialog}>
+      <Dialog centered open={openAlert} className={styles.dialog}>
         <DialogHeader onCloseClick={() => setAlert(false)}>
           <h3>{translate('Error')}</h3>
         </DialogHeader>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent className={styles.dialogContent}>
           {translate('Add all values')}
         </DialogContent>
         <DialogFooter>

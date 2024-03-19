@@ -1,33 +1,12 @@
 import React from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import RenderComponent from "./RenderWidget";
 import { isHiddenProperty } from "./extra.js";
 import { translate } from "../../utils";
 import { Box, Divider } from "@axelor/ui";
-
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  groupContainer: {
-    marginTop: 10,
-  },
-  divider: {
-    marginTop: 15,
-  },
-  businessRuleTask: {
-    marginTop: 0,
-  },
-}));
+import styles from "./TabPanel.module.css";
 
 const getProcessId = (element) => {
   const bo = getBusinessObject(element);
@@ -79,8 +58,6 @@ export default function TabPanel({
   showError,
   setDummyProperty,
 }) {
-  const classes = useStyles();
-
   const getReadOnly = React.useCallback(
     (entry) => {
       const proceedId = getProcessId(selectedElement);
@@ -98,7 +75,7 @@ export default function TabPanel({
     <div
       key={group.id}
       data-group={group.id}
-      className={classnames(classes.groupContainer, classes[group.className])}
+      className={classnames(styles.groupContainer, styles[group.className])}
     >
       {group.component ? (
         <group.component
@@ -126,9 +103,9 @@ export default function TabPanel({
         group.entries.length > 0 && (
           <React.Fragment>
             <React.Fragment>
-              {index > 0 && <Divider className={classes.divider} />}
+              {index > 0 && <Divider className={styles.divider} />}
             </React.Fragment>
-            <Box color="body" className={classes.groupLabel}>
+            <Box color="body" className={styles.groupLabel}>
               {translate(group.label)}
             </Box>
             <div>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import jsStringEscape from "js-string-escape";
-import { makeStyles } from "@material-ui/core/styles";
 
 import { Table } from "../../../components/properties/components";
 import Service from "../../../services/Service";
@@ -17,52 +16,7 @@ import {
   DialogFooter,
   Box,
 } from "@axelor/ui";
-
-const useStyles = makeStyles((theme) => ({
-  dialog: {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    overflow: "hidden",
-    display: "flex",
-    "& > div": {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      maxWidth: "calc(100% - 40px)",
-      minWidth: "70%",
-      "& > div": {
-        maxHeight: "100%",
-        minWidth: "80%",
-        minHeight: "calc(80% - 20px)",
-        overflow: "auto",
-        resize: "both",
-      },
-    },
-  },
-  dialogContent: {
-    overflow: "auto",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  MuiAutocompleteRoot: {
-    width: "95%",
-    marginRight: "10px",
-  },
-  paper: {
-    margin: theme.spacing(1),
-    padding: theme.spacing(3, 2),
-  },
-  container: {
-    marginBlock: 10,
-  },
-}));
+import styles from "./index.module.css";
 
 export default function ConnectorBuilder({
   open,
@@ -76,7 +30,6 @@ export default function ConnectorBuilder({
   const [requestVariable, setRequestVariable] = useState(null);
   const [resultVariable, setResultVariable] = useState(null);
   const [returnExpression, setReturnExpression] = useState(null);
-  const classes = useStyles();
 
   const fetchConnectors = async () => {
     const res = await Service.search("com.axelor.studio.db.WsConnector");
@@ -180,16 +133,16 @@ export default function ConnectorBuilder({
   }, [getDefaultValues]);
 
   return (
-    <Dialog open={open} backdrop className={classes.dialog}>
+    <Dialog open={open} backdrop className={styles.dialog}>
       <DialogHeader onCloseClick={handleClose}>
         <h3>{translate("Connector script")}</h3>
       </DialogHeader>
-      <DialogContent className={classes.dialogContent}>
+      <DialogContent className={styles.dialogContent}>
         <Box
           rounded={2}
           shadow
           bgColor="body-tertiary"
-          className={classes.paper}
+          className={styles.paper}
         >
           <Box d="flex">
             <Box w={50}>
@@ -200,7 +153,7 @@ export default function ConnectorBuilder({
                 optionLabelKey="name"
                 value={connector}
                 onChange={(e) => setConnector(e)}
-                className={classes.MuiAutocompleteRoot}
+                className={styles.MuiAutocompleteRoot}
               />
             </Box>
             {connector && (
@@ -213,14 +166,14 @@ export default function ConnectorBuilder({
                   optionLabelKey="name"
                   value={request}
                   onChange={(e) => setRequest(e)}
-                  className={classes.MuiAutocompleteRoot}
+                  className={styles.MuiAutocompleteRoot}
                 />
               </Box>
             )}
           </Box>
           {connector && (
             <React.Fragment>
-              <Box d="flex" className={classes.container}>
+              <Box d="flex" className={styles.container}>
                 <Box w={50}>
                   <InputField
                     name="requestVariable"
@@ -240,7 +193,7 @@ export default function ConnectorBuilder({
                   />
                 </Box>
               </Box>
-              <Box d="flex" className={classes.container}>
+              <Box d="flex" className={styles.container}>
                 <Box w={50}>
                   <InputField
                     name="returnVariable"
@@ -260,7 +213,7 @@ export default function ConnectorBuilder({
                   />
                 </Box>
               </Box>
-              <Box className={classes.container}>
+              <Box className={styles.container}>
                 <Table
                   entry={{
                     id: "menu-context",
@@ -303,14 +256,14 @@ export default function ConnectorBuilder({
         <Button
           onClick={generateScript}
           variant="primary"
-          className={classes.save}
+          className={styles.save}
         >
           {translate("OK")}
         </Button>
         <Button
           onClick={handleClose}
           variant="secondary"
-          className={classes.save}
+          className={styles.save}
         >
           {translate("Cancel")}
         </Button>

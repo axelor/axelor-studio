@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import BpmnModeler from "bpmn-js/lib/Modeler";
-import { makeStyles } from "@material-ui/core/styles";
 
 import Select from "../../../../../components/Select";
 import {
@@ -18,30 +17,7 @@ import {
   InputLabel,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  dialogPaper: {
-    padding: 5,
-    minWidth: 450,
-    overflow: "auto",
-  },
-  button: {
-    margin: theme.spacing(1),
-    textTransform: "none",
-    minWidth: 64,
-  },
-  label: {
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  select: {
-    width: "100%",
-  },
-  newIcon: {
-    cursor: "pointer",
-  },
-}));
+import styles from "./SignalEventDefinition.module.css";
 
 export default function SignalEventProps({
   element,
@@ -57,7 +33,6 @@ export default function SignalEventProps({
   const [ele, setEle] = useState(null);
   const [open, setOpen] = useState(false);
   const [catchSignalObj, setSignalObj] = useState(null);
-  const classes = useStyles();
 
   const getModels = React.useCallback((options) => {
     return getWkfModels(options, ["diagramXml", "code"]);
@@ -193,7 +168,7 @@ export default function SignalEventProps({
           <MaterialIcon
             icon="edit"
             fontSize={15}
-            className={classes.newIcon}
+            className={styles.newIcon}
             onClick={() => {
               handleClickOpen();
             }}
@@ -262,14 +237,14 @@ export default function SignalEventProps({
         />
       )}
       {open && (
-        <Dialog open={open} backdrop centered className={classes.dialogPaper}>
+        <Dialog open={open} backdrop centered className={styles.dialogPaper}>
           <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
             <h3>{translate("Select Signal")}</h3>
           </DialogHeader>
           <DialogContent>
             <InputLabel color="body">{translate("BPM model")}</InputLabel>
             <Select
-              className={classes.select}
+              className={styles.select}
               disableClearable={true}
               update={(value) => {
                 setSignalObj((signalObj) => ({
@@ -302,11 +277,11 @@ export default function SignalEventProps({
             />
             {catchSignalObj?.wkf && (
               <>
-                <InputLabel color="body" className={classes.label}>
+                <InputLabel color="body" className={styles.label}>
                   {translate("Signals")}
                 </InputLabel>
                 <Select
-                  className={classes.select}
+                  className={styles.select}
                   disableClearable={true}
                   update={(value) => {
                     setSignalObj((signalObj) => ({
@@ -329,7 +304,7 @@ export default function SignalEventProps({
           <DialogFooter>
             <Button
               onClick={handleClose}
-              className={classes.button}
+              className={styles.button}
               variant="secondary"
             >
               {translate("Cancel")}
@@ -340,7 +315,7 @@ export default function SignalEventProps({
                 setSignalObj(null);
                 handleClose();
               }}
-              className={classes.button}
+              className={styles.button}
               variant="primary"
             >
               {translate("OK")}

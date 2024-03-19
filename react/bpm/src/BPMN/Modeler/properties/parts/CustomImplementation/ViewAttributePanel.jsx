@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { IconButton } from "@material-ui/core";
 import { Add, Close, ReportProblem } from "@material-ui/icons";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
@@ -41,6 +40,7 @@ import {
   TableRow,
   TableHead,
 } from "@axelor/ui";
+import styles from "./ViewAttributePanel.module.css";
 
 const valueObj = {
   model: null,
@@ -66,67 +66,6 @@ function createData(values = []) {
     values: [...values],
   };
 }
-
-const useStyles = makeStyles({
-  button: {
-    minWidth: 64,
-    textTransform: "none",
-  },
-  grid: {
-    padding: "0px 5px 0px 0px",
-  },
-  tableCell: {
-    padding: "6px !important",
-    width: "33%",
-    textAlign: "center",
-  },
-  tableHead: {
-    padding: "6px !important",
-    margin: "3px 0px",
-    textAlign: "center",
-  },
-  attributes: {
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  iconButton: {
-    margin: "5px 0px 5px 5px",
-    borderRadius: 0,
-    border: "1px solid #ccc",
-    color: "inherit",
-    padding: 2,
-    width: "fit-content",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  typography: {
-    display: "flex",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  icon: {
-    color: "inherit",
-    marginRight: 10,
-  },
-  checkbox: {
-    justifyContent: "center",
-  },
-  select: {
-    '& input[type="text"]': {
-      width: "100%",
-      textOverflow: "ellipsis",
-    },
-  },
-  textField: {
-    minWidth: 150,
-  },
-});
 
 const attributes = Object.fromEntries(
   Object.entries(FIELD_ATTRS).map(([key, value]) => [
@@ -162,7 +101,6 @@ export default function ViewAttributePanel({
   bpmnModeler,
   setDummyProperty = () => {},
 }) {
-  const classes = useStyles();
   const [row, setRow] = useState(null);
   const [processModels, setProcessModels] = useState([]);
 
@@ -591,11 +529,11 @@ export default function ViewAttributePanel({
                             <Box d="flex">
                               <div
                                 style={{ width: "50%" }}
-                                className={classes.grid}
+                                className={styles.grid}
                               >
                                 <InputLabel
                                   color="body"
-                                  className={classes.label}
+                                  className={styles.label}
                                 >
                                   {translate("Model")}
                                 </InputLabel>
@@ -647,18 +585,18 @@ export default function ViewAttributePanel({
                                   }}
                                   value={val.model}
                                   isLabel={false}
-                                  className={classes.select}
+                                  className={styles.select}
                                 />
                               </div>
                               <div
                                 style={{ width: "50%" }}
-                                className={classes.grid}
+                                className={styles.grid}
                               >
                                 {val.model && (
                                   <div>
                                     <InputLabel
                                       color="body"
-                                      className={classes.label}
+                                      className={styles.label}
                                     >
                                       {translate("View")}
                                     </InputLabel>
@@ -680,7 +618,7 @@ export default function ViewAttributePanel({
                                       }}
                                       name="view"
                                       value={val.view || null}
-                                      className={classes.select}
+                                      className={styles.select}
                                       isLabel={false}
                                     />
                                   </div>
@@ -692,7 +630,7 @@ export default function ViewAttributePanel({
                                 <div>
                                   <InputLabel
                                     color="body"
-                                    className={classes.label}
+                                    className={styles.label}
                                   >
                                     {translate("Related field")}
                                   </InputLabel>
@@ -720,7 +658,7 @@ export default function ViewAttributePanel({
                                       }
                                     }}
                                     name="relatedField"
-                                    className={classes.select}
+                                    className={styles.select}
                                     value={val?.relatedField || null}
                                   />
                                 </div>
@@ -729,7 +667,7 @@ export default function ViewAttributePanel({
                               <div>
                                 <InputLabel
                                   color="body"
-                                  className={classes.label}
+                                  className={styles.label}
                                 >
                                   {translate("Roles")}
                                 </InputLabel>
@@ -759,7 +697,7 @@ export default function ViewAttributePanel({
                                   value={val.roles || []}
                                   multiple={true}
                                   isLabel={false}
-                                  className={classes.select}
+                                  className={styles.select}
                                 />
                               </div>
                             )}
@@ -767,11 +705,11 @@ export default function ViewAttributePanel({
                               (!val.items || val.items.length === 0) && (
                                 <InputLabel
                                   color="danger"
-                                  className={classes.typography}
+                                  className={styles.typography}
                                 >
                                   <ReportProblem
                                     fontSize="small"
-                                    className={classes.icon}
+                                    className={styles.icon}
                                   />
                                   {translate("Must provide attributes")}
                                 </InputLabel>
@@ -784,14 +722,14 @@ export default function ViewAttributePanel({
                               <Box>
                                 <InputLabel
                                   color="body"
-                                  className={classes.attributes}
+                                  className={styles.attributes}
                                 >
                                   {translate("Attributes")}
                                 </InputLabel>
                               </Box>
                               <Box style={{ textAlign: "right" }}>
                                 <Button
-                                  className={classes.button}
+                                  className={styles.button}
                                   onClick={() => addItems(index)}
                                   disabled={!val?.model || false}
                                   variant="light"
@@ -807,33 +745,25 @@ export default function ViewAttributePanel({
                                   bgColor="body"
                                   shadow
                                   color="body"
-                                  className={classes.tableContainer}
+                                  className={styles.tableContainer}
                                 >
                                   <Table size="sm" aria-label="a dense table">
                                     <TableHead>
                                       <TableRow>
-                                        <TableCell
-                                          className={classes.tableHead}
-                                        >
+                                        <TableCell className={styles.tableHead}>
                                           {translate("Item")}
                                         </TableCell>
-                                        <TableCell
-                                          className={classes.tableHead}
-                                        >
+                                        <TableCell className={styles.tableHead}>
                                           {translate("Name")}
                                         </TableCell>
-                                        <TableCell
-                                          className={classes.tableHead}
-                                        >
+                                        <TableCell className={styles.tableHead}>
                                           {translate("Value")}
                                         </TableCell>
-                                        <TableCell
-                                          className={classes.tableHead}
-                                        >
+                                        <TableCell className={styles.tableHead}>
                                           {translate("Permanent ?")}
                                         </TableCell>
                                         <TableCell
-                                          className={classes.tableHead}
+                                          className={styles.tableHead}
                                         ></TableCell>
                                       </TableRow>
                                     </TableHead>
@@ -846,10 +776,10 @@ export default function ViewAttributePanel({
                                           >
                                             <TableCell
                                               as="td"
-                                              className={classes.tableCell}
+                                              className={styles.tableCell}
                                             >
                                               <Select
-                                                className={classes.select}
+                                                className={styles.select}
                                                 isLabel={false}
                                                 skipFilter={true}
                                                 fetchMethod={(data) =>
@@ -899,10 +829,10 @@ export default function ViewAttributePanel({
                                               />
                                             </TableCell>
                                             <TableCell
-                                              className={classes.tableCell}
+                                              className={styles.tableCell}
                                             >
                                               <Select
-                                                className={classes.select}
+                                                className={styles.select}
                                                 isLabel={false}
                                                 options={
                                                   item?.itemName &&
@@ -945,14 +875,14 @@ export default function ViewAttributePanel({
                                               />
                                             </TableCell>
                                             <TableCell
-                                              className={classes.tableCell}
+                                              className={styles.tableCell}
                                             >
                                               {item.attributeName &&
                                                 BOOL_ATTRIBUTES.includes(
                                                   item.attributeName
                                                 ) && (
                                                   <Select
-                                                    className={classes.select}
+                                                    className={styles.select}
                                                     isLabel={false}
                                                     options={BOOLEAN_OPTIONS}
                                                     disableClearable={true}
@@ -988,9 +918,7 @@ export default function ViewAttributePanel({
                                                   <TextField
                                                     element={element}
                                                     canRemove={true}
-                                                    className={
-                                                      classes.textField
-                                                    }
+                                                    className={styles.textField}
                                                     type={
                                                       NUM_ATTRIBUTES.includes(
                                                         item.attributeName
@@ -1029,9 +957,10 @@ export default function ViewAttributePanel({
                                                           !values.attributeValue
                                                         ) {
                                                           return {
-                                                            attributeValue: translate(
-                                                              "Must provide a value"
-                                                            ),
+                                                            attributeValue:
+                                                              translate(
+                                                                "Must provide a value"
+                                                              ),
                                                           };
                                                         }
                                                       },
@@ -1040,10 +969,10 @@ export default function ViewAttributePanel({
                                                 )}
                                             </TableCell>
                                             <TableCell
-                                              className={classes.tableCell}
+                                              className={styles.tableCell}
                                             >
                                               <Checkbox
-                                                className={classes.checkbox}
+                                                className={styles.checkbox}
                                                 entry={{
                                                   id: `permanent-model-${key}`,
                                                   modelProperty: "permanent",
@@ -1068,10 +997,10 @@ export default function ViewAttributePanel({
                                               />
                                             </TableCell>
                                             <TableCell
-                                              className={classes.tableCell}
+                                              className={styles.tableCell}
                                             >
                                               <IconButton
-                                                className={classes.iconButton}
+                                                className={styles.iconButton}
                                                 onClick={() =>
                                                   removeItem(index, key)
                                                 }
@@ -1092,7 +1021,7 @@ export default function ViewAttributePanel({
                       </Box>
                       <Box color="body">
                         <IconButton
-                          className={classes.iconButton}
+                          className={styles.iconButton}
                           onClick={() => removeCard(index)}
                         >
                           <Close fontSize="small" />
@@ -1105,7 +1034,7 @@ export default function ViewAttributePanel({
         </div>
       )}
       <Box color="body" d="flex" alignItems="center">
-        <IconButton className={classes.iconButton} onClick={addModelView}>
+        <IconButton className={styles.iconButton} onClick={addModelView}>
           <Add fontSize="small" />
         </IconButton>
       </Box>

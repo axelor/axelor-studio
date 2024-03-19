@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { isEventSubProcess } from "bpmn-js/lib/util/DiUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { makeStyles } from "@material-ui/core/styles";
 
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
@@ -26,48 +25,9 @@ import {
   Box,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import styles from "./ConditionalEventDefinition.module.css";
 
 const conditionType = "script";
-
-const useStyles = makeStyles((theme) => ({
-  newIcon: {
-    marginLeft: 5,
-    cursor: "pointer",
-  },
-  new: {
-    cursor: "pointer",
-    marginTop: 18.6,
-    display: "flex",
-  },
-  textbox: {
-    width: "100%",
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    marginBottom: "-8px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  content: {
-    padding: "8px 24px",
-    fontSize: 16,
-  },
-  scriptDialog: {
-    width: "100%",
-    height: "100%",
-  },
-}));
 
 export default function ConditionalEventProps({
   element,
@@ -84,7 +44,6 @@ export default function ConditionalEventProps({
   const [variableEventValue, setVariableEventValue] = useState("");
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
-  const classes = useStyles();
 
   const getter = () => {
     const { scriptValue: value } = getValue("scriptValue")(element);
@@ -211,7 +170,8 @@ export default function ConditionalEventProps({
           setValue("checked")(element, { checked });
         }
       } else {
-        element.businessObject.conditionExpression = conditionOrConditionExpression;
+        element.businessObject.conditionExpression =
+          conditionOrConditionExpression;
       }
     }
   };
@@ -246,7 +206,7 @@ export default function ConditionalEventProps({
         is(element, "bpmn:StartEvent") && !isEventSubProcess(element.parent)
       ) && (
         <>
-          <InputLabel color="body" className={classes.label}>
+          <InputLabel color="body" className={styles.label}>
             {translate("Variable event")}
           </InputLabel>
           <Select
@@ -276,11 +236,11 @@ export default function ConditionalEventProps({
           />
         </>
       )}
-      <div className={classes.expressionBuilder}>
+      <div className={styles.expressionBuilder}>
         <Textbox
           element={element}
           rows={3}
-          className={classes.textbox}
+          className={styles.textbox}
           readOnly={readOnly}
           minimap={false}
           entry={{
@@ -301,7 +261,7 @@ export default function ConditionalEventProps({
           }}
         />
         {conditionalEventDefinition && (
-          <Box color="body" className={classes.new}>
+          <Box color="body" className={styles.new}>
             <Tooltip title="Enable" aria-label="enable">
               <i
                 className="fa fa-code"
@@ -323,7 +283,7 @@ export default function ConditionalEventProps({
             <MaterialIcon
               icon="edit"
               fontSize={18}
-              className={classes.newIcon}
+              className={styles.newIcon}
               onClick={handleClickOpen}
             />
             {open && (
@@ -341,7 +301,7 @@ export default function ConditionalEventProps({
       </div>
       {openScriptDialog && (
         <AlertDialog
-          className={classes.scriptDialog}
+          className={styles.scriptDialog}
           openAlert={openScriptDialog}
           alertClose={() => {
             setScript(getCondition()?.script);
@@ -355,7 +315,7 @@ export default function ConditionalEventProps({
           children={
             <Textbox
               element={element}
-              className={classes.textbox}
+              className={styles.textbox}
               showLabel={false}
               defaultHeight={window?.innerHeight - 205}
               entry={{
@@ -374,11 +334,11 @@ export default function ConditionalEventProps({
         />
       )}
       {openAlert && (
-        <Dialog open={openAlert} backdrop centered className={classes.dialog}>
+        <Dialog open={openAlert} backdrop centered className={styles.dialog}>
           <DialogHeader onCloseClick={() => setAlert(false)}>
             <h3>{translate(alertTitle)}</h3>
           </DialogHeader>
-          <DialogContent className={classes.content}>
+          <DialogContent className={styles.content}>
             {translate(alertMessage)}
           </DialogContent>
           <DialogFooter>
@@ -395,7 +355,7 @@ export default function ConditionalEventProps({
                 setOpenScriptDialog(true);
               }}
               variant="primary"
-              className={classes.save}
+              className={styles.save}
             >
               {translate("OK")}
             </Button>
@@ -404,7 +364,7 @@ export default function ConditionalEventProps({
                 setAlert(false);
               }}
               variant="secondary"
-              className={classes.save}
+              className={styles.save}
             >
               {translate("Cancel")}
             </Button>

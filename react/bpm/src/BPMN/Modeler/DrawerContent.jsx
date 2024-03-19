@@ -1,29 +1,11 @@
 import React, { useMemo } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 
 import TabPanel from "./TabPanel";
 import { isGroupVisible, isDefinition } from "./extra.js";
 import { Box } from "@axelor/ui";
 import Tab from "./Tab";
 import { translate } from "../../utils";
-
-const useStyles = makeStyles((theme) => ({
-  nodeTitle: {
-    fontSize: "120%",
-    fontWeight: "bolder",
-  },
-  navDisable: {
-    cursor: "default",
-    pointerEvents: "none",
-    opacity: 0.8,
-  },
-  tabContent: {
-    border: "var(--ax-theme-panel-border, 1px solid var(--bs-border-color))",
-    borderRadius:
-      "var(--ax-theme-panel-border-radius, var(--bs-border-radius))",
-    padding: "var(--ax-theme-panel-body-padding, .5rem)",
-  },
-}));
+import styles from "./DrawerContent.module.css";
 
 export default function DrawerContent({
   selectedElement,
@@ -48,8 +30,6 @@ export default function DrawerContent({
   showError,
   setDummyProperty,
 }) {
-  const classes = useStyles();
-
   const tabItems = useMemo(
     () =>
       tabs.map((t) => {
@@ -65,7 +45,7 @@ export default function DrawerContent({
 
   return (
     <React.Fragment>
-      <Box color="body" className={classes.nodeTitle}>
+      <Box color="body" className={styles.nodeTitle}>
         {selectedElement
           ? isDefinition(selectedElement)
             ? ""
@@ -79,7 +59,7 @@ export default function DrawerContent({
         isMenuActionDisable={isMenuActionDisable}
         setDummyProperty={setDummyProperty}
       />
-      <Box className={classes.tabContent}>
+      <Box className={styles.tabContent}>
         {groups.map((group, index) => (
           <React.Fragment key={group.id}>
             {isGroupVisible(group, selectedElement) && (

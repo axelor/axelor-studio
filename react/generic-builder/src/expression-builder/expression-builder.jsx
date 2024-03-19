@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import { makeStyles } from '@material-ui/core/styles';
 
 import { Box } from '@axelor/ui';
 
@@ -10,31 +9,7 @@ import { getButtons, getMetaFields, getPackageFields } from '../services/api';
 import { useMetaModelSearch } from './utils';
 import { isBPMQuery } from '../utils';
 import { ALLOWED_TYPES } from '../constants';
-
-const useStyles = makeStyles(theme => ({
-  container: {
-    width: '100%',
-  },
-  flex: {
-    display: 'flex',
-  },
-  paper: {
-    margin: theme.spacing(1),
-    padding: theme.spacing(3, 2),
-  },
-  content: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-  },
-  hide: {
-    display: 'none',
-  },
-  MuiAutocompleteRoot: {
-    width: '50%',
-    marginRight: '10px',
-  },
-}));
+import styles from './expression-builder.module.css';
 
 let id = 1;
 
@@ -68,7 +43,6 @@ function ExpressionBuilder(props) {
   } = props;
   const { metaModals, rules } = value || defaultState;
   const expression = 'GROOVY';
-  const classes = useStyles();
 
   const update = React.useCallback(
     updater => {
@@ -240,10 +214,10 @@ function ExpressionBuilder(props) {
   );
 
   return (
-    <div className={classes.container}>
-      <Box border className={classes.paper}>
-        <div className={classes.content}>
-          <div className={classes.flex}>
+    <div className={styles.container}>
+      <Box border className={styles.paper}>
+        <div className={styles.content}>
+          <div className={styles.flex}>
             {(isBPMQuery(type) ? (index === 0 ? true : false) : true) && (
               <Selection
                 name="metaModal"
@@ -251,13 +225,12 @@ function ExpressionBuilder(props) {
                 placeholder="Meta model"
                 fetchAPI={fetchAPI}
                 className={classNames({
-                  [classes.hide]:
-                    (isCondition && isBPMQuery(type)) || isPackage,
+                  [styles.hide]: (isCondition && isBPMQuery(type)) || isPackage,
                 })}
                 optionLabelKey="name"
                 onChange={setMetaModal}
                 value={metaModals}
-                classes={{ root: classes.MuiAutocompleteRoot }}
+                classes={{ root: styles.MuiAutocompleteRoot }}
                 readOnly={
                   (queryModel && isBPMQuery(type)) || (isBPMN && defaultModel)
                     ? true

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
-import { makeStyles } from "@material-ui/core/styles";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -13,21 +12,7 @@ import Condition from "./ConditionalEventDefinition";
 import Error from "./ErrorEventDefinition";
 import { Box, Divider } from "@axelor/ui";
 import { translate } from "../../../../../utils";
-
-const useStyles = makeStyles({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-});
+import styles from "./EventProps.module.css";
 
 const events = [
   "bpmn:StartEvent",
@@ -78,7 +63,6 @@ export default function EventProps({
 }) {
   const [isVisible, setVisible] = useState(false);
   const [renderType, setRenderType] = useState(null);
-  const classes = useStyles();
 
   const renderComponent = () => {
     if (!renderType && !renderType.type) return;
@@ -170,12 +154,10 @@ export default function EventProps({
     // Message and Signal Event Definition
     events.forEach((event) => {
       if (is(element, event)) {
-        let messageEventDefinition = eventDefinitionHelper.getMessageEventDefinition(
-            element
-          ),
-          signalEventDefinition = eventDefinitionHelper.getSignalEventDefinition(
-            element
-          );
+        let messageEventDefinition =
+            eventDefinitionHelper.getMessageEventDefinition(element),
+          signalEventDefinition =
+            eventDefinitionHelper.getSignalEventDefinition(element);
 
         if (messageEventDefinition) {
           renderType = {
@@ -212,9 +194,8 @@ export default function EventProps({
 
     errorEvents.forEach((event) => {
       if (is(element, event)) {
-        let errorEventDefinition = eventDefinitionHelper.getErrorEventDefinition(
-          element
-        );
+        let errorEventDefinition =
+          eventDefinitionHelper.getErrorEventDefinition(element);
 
         if (errorEventDefinition) {
           renderType = {
@@ -231,9 +212,8 @@ export default function EventProps({
           is(element, "bpmn:StartEvent") || is(element, "bpmn:BoundaryEvent");
 
         // get business object
-        let escalationEventDefinition = eventDefinitionHelper.getEscalationEventDefinition(
-          element
-        );
+        let escalationEventDefinition =
+          eventDefinitionHelper.getEscalationEventDefinition(element);
 
         if (escalationEventDefinition) {
           renderType = {
@@ -248,9 +228,8 @@ export default function EventProps({
     timerEvents.forEach((event) => {
       if (is(element, event)) {
         // get business object
-        let timerEventDefinition = eventDefinitionHelper.getTimerEventDefinition(
-          element
-        );
+        let timerEventDefinition =
+          eventDefinitionHelper.getTimerEventDefinition(element);
 
         if (timerEventDefinition) {
           renderType = {
@@ -264,9 +243,8 @@ export default function EventProps({
     compensationEvents.forEach((event) => {
       if (is(element, event)) {
         // get business object
-        let compensateEventDefinition = eventDefinitionHelper.getCompensateEventDefinition(
-          element
-        );
+        let compensateEventDefinition =
+          eventDefinitionHelper.getCompensateEventDefinition(element);
 
         if (compensateEventDefinition) {
           renderType = {
@@ -279,9 +257,8 @@ export default function EventProps({
 
     if (isAny(element, conditionalEvents)) {
       // get business object
-      let conditionalEventDefinition = eventDefinitionHelper.getConditionalEventDefinition(
-        element
-      );
+      let conditionalEventDefinition =
+        eventDefinitionHelper.getConditionalEventDefinition(element);
 
       if (conditionalEventDefinition) {
         renderType = {
@@ -302,9 +279,9 @@ export default function EventProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
         <div>{renderComponent()}</div>

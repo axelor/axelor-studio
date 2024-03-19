@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "dmn-js-shared/lib/util/ModelUtil";
 
 import { Checkbox } from "../../../components/properties/components";
@@ -9,41 +8,13 @@ import { getCustomModels, getMetaModels } from "../../../services/api";
 import { translate, getBool, splitWithComma } from "../../../utils";
 
 import { Box, Divider, InputLabel } from "@axelor/ui";
-
-const useStyles = makeStyles({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  select: {
-    margin: 0,
-  },
-  metajsonModel: {
-    marginTop: 10,
-  },
-});
+import styles from "./ModelProps.module.css";
 
 export default function ModelProps({ element, label }) {
   const [isVisible, setVisible] = useState(false);
   const [metaModel, setMetaModel] = useState(null);
   const [metaJsonModel, setMetaJsonModel] = useState(null);
   const [isCustom, setIsCustom] = useState(false);
-  const classes = useStyles();
 
   const setProperty = React.useCallback(
     (name, value) => {
@@ -142,15 +113,15 @@ export default function ModelProps({ element, label }) {
   return (
     isVisible && (
       <Box d="flex" flexDirection="column">
-        <Divider className={classes.divider} />
-        <Box color="body" className={classes.groupLabel}>
+        <Divider className={styles.divider} />
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
-        <InputLabel color="body" className={classes.label}>
+        <InputLabel color="body" className={styles.label}>
           {translate("Model")}
         </InputLabel>
         <Checkbox
-          className={classes.checkbox}
+          className={styles.checkbox}
           entry={{
             id: `custom-model`,
             modelProperty: "isCustom",
@@ -174,7 +145,7 @@ export default function ModelProps({ element, label }) {
         />
         {isCustom ? (
           <Select
-            className={classnames(classes.select, classes.metajsonModel)}
+            className={classnames(styles.select, styles.metajsonModel)}
             fetchMethod={(options) => getCustomModels(options)}
             update={(value, label) => {
               setMetaJsonModel(value);
@@ -196,7 +167,7 @@ export default function ModelProps({ element, label }) {
           />
         ) : (
           <Select
-            className={classes.select}
+            className={styles.select}
             fetchMethod={(options) => getMetaModels(options)}
             update={(value, label) => {
               setMetaModel(value);

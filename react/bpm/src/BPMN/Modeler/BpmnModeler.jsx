@@ -9,7 +9,6 @@ import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/Extensi
 import TokenSimulationModule from "bpmn-js-token-simulation/lib/modeler";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
-import { makeStyles } from "@material-ui/core/styles";
 import { Resizable } from "re-resizable";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
@@ -71,6 +70,7 @@ import "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
 import "../css/tokens.css";
+import styles from "./BpmnModeler.module.css";
 
 const resizeStyle = {
   display: "flex",
@@ -81,34 +81,6 @@ const drawerWidth = 380;
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
 
 const TimerEvents = React.lazy(() => import("./TimerEvent"));
-
-const useStyles = makeStyles((theme) => ({
-  drawerPaper: {
-    background: "var(--bs-tertiary-bg)",
-    padding: 0,
-    width: "100%",
-    position: "absolute",
-    overflow: "auto",
-    height: "100%",
-    zIndex: 2,
-  },
-  drawerContainer: {
-    padding: 10,
-    height: "100%",
-    width: "100%",
-  },
-  select: {
-    minWidth: 150,
-    marginTop: 0,
-  },
-  commandBar: {
-    "& > div": {
-      "& > button": {
-        fontSize: 14,
-      },
-    },
-  },
-}));
 
 let bpmnModeler = null;
 
@@ -171,7 +143,6 @@ function BpmnModelerComponent() {
   const { update, state } = useStore();
   const { info } = state || {};
 
-  const classes = useStyles();
   const diagramXmlRef = React.useRef(null);
 
   const getBase64SVG = async () => {
@@ -1844,10 +1815,10 @@ function BpmnModelerComponent() {
                 backgroundColor: "var(--bs-tertiary-bg)",
               }}
             >
-              <CommandBar items={leftToolbar} className={classes.commandBar} />
+              <CommandBar items={leftToolbar} className={styles.commandBar} />
               <Box flex="1">
                 <Select
-                  className={classes.select}
+                  className={styles.select}
                   disableClearable={true}
                   update={(value, label, oldValue) => {
                     /**Removing wkf model to avoid flickering of updated value await */
@@ -1865,7 +1836,7 @@ function BpmnModelerComponent() {
                   placeholder={translate("BPM model")}
                 />
               </Box>
-              <CommandBar items={rightToolbar} className={classes.commandBar} />
+              <CommandBar items={rightToolbar} className={styles.commandBar} />
               <input
                 id="inputFile"
                 type="file"
@@ -1887,8 +1858,8 @@ function BpmnModelerComponent() {
             minWidth={width === 0 ? width : drawerWidth}
             maxWidth={window.innerWidth - 150}
           >
-            <Scrollable className={classes.drawerPaper}>
-              <Box className={classes.drawerContainer}>
+            <Scrollable className={styles.drawerPaper}>
+              <Box className={styles.drawerContainer}>
                 <DrawerContent
                   tabs={tabs}
                   tabValue={tabValue}

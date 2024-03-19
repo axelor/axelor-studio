@@ -1,47 +1,13 @@
 import React from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 
 import ExpressionBuilder from 'generic-builder/src/expression-builder';
 import { fetchModelByFullName } from '../../services/api';
 import { translate } from '../../utils';
 import { Box, Button, Input, Dialog, DialogContent } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
-
-const useStyles = makeStyles((theme) => ({
-  dialogPaper: {
-    overflow: 'hidden',
-    maxWidth: '100%',
-    maxHeight: '100%',
-    display: 'flex',
-    '& > div': {
-      maxWidth: '100%',
-      minWidth: '70%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      '& > div': {
-        maxWidth: '95%',
-        maxHeight: '95%',
-        overflow: 'auto',
-        resize: 'both',
-        minWidth: '70%',
-        minHeight: '70%',
-      },
-    },
-  },
-  cancelButton: {
-    margin: theme.spacing(1),
-    textTransform: 'capitalize',
-    minWidth: 64,
-  },
-  dialogContent: {
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-}));
+import styles from './ExpressionField.module.css';
 
 function ExpressionBuilderDummy() {
   return <p>Integrate Generic builder</p>;
@@ -56,8 +22,6 @@ export default function ExpressionField({
   onExpressionChange,
   error,
 }) {
-  const classes = useStyles();
-
   const [open, setOpen] = React.useState(false);
   const [defaultModel, setDefaultModel] = React.useState(null);
 
@@ -119,8 +83,8 @@ export default function ExpressionField({
       >
         <MaterialIcon icon="edit" fontSize={16} style={{ marginLeft: 1.5 }} />
       </IconButton>
-      <Dialog open={open} className={classes.dialogPaper}>
-        <DialogContent className={classes.dialogContent}>
+      <Dialog open={open} className={styles.dialogPaper}>
+        <DialogContent className={styles.dialogContent}>
           {ExpressionBuilder ? (
             <ExpressionBuilder
               parameters={parameters}
@@ -132,7 +96,7 @@ export default function ExpressionField({
                 <Button
                   onClick={handleClose}
                   variant="secondary"
-                  className={classes.cancelButton}
+                  className={styles.cancelButton}
                 >
                   {translate('Cancel')}
                 </Button>

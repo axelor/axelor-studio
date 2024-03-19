@@ -1,23 +1,8 @@
 import React, { useState } from "react";
 import Tooltip from "./Tooltip";
-import { makeStyles } from "@material-ui/core/styles";
 import { translate } from "../utils";
 import { Box, Dialog, DialogHeader } from "@axelor/ui";
-
-const useStyles = makeStyles((theme) => ({
-  logo: {
-    padding: "0 20px",
-    height: "3%",
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    background: "var(--bs-tertiary-bg)",
-  },
-  axelorLogo: {
-    marginRight: 10,
-    cursor: "pointer",
-  },
-}));
+import styles from "./Logo.module.css";
 
 const BPMLogo = React.forwardRef((props, ref) => {
   return (
@@ -48,7 +33,6 @@ export const Logo = React.memo(function Logo() {
     open: false,
     type: "bpm",
   });
-  const classes = useStyles();
 
   const handleClose = () => {
     setOpenDialog({
@@ -66,7 +50,7 @@ export const Logo = React.memo(function Logo() {
   const AxelorLogo = React.forwardRef((props, ref) => {
     return (
       <Box
-        className={classes.axelorLogo}
+        className={styles.axelorLogo}
         onClick={() => handleOpen("axelor")}
         ref={ref}
       >
@@ -117,7 +101,7 @@ export const Logo = React.memo(function Logo() {
   );
 
   return (
-    <Box className={classes.logo}>
+    <Box className={styles.logo}>
       <TooltipWrapper
         logoType="axelor"
         tooltipTitle={translate("Powered by Axelor")}

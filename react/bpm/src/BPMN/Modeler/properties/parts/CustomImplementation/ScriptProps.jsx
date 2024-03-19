@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import Select from "../../../../../components/Select";
@@ -23,6 +22,7 @@ import {
 import Tooltip from "../../../../../components/Tooltip";
 import AlertDialog from "../../../../../components/AlertDialog";
 import { translate, getBool } from "../../../../../utils";
+import styles from "./ScriptProps.module.css";
 
 import {
   Button,
@@ -36,70 +36,6 @@ import {
   Divider,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-const useStyles = makeStyles((theme) => ({
-  groupLabel: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    fontSize: "120%",
-    margin: "10px 0px",
-    transition: "margin 0.218s linear",
-    fontStyle: "italic",
-  },
-  divider: {
-    marginTop: 15,
-  },
-  label: {
-    display: "inline-block",
-    verticalAlign: "middle",
-    margin: "3px 0px",
-    color: "rgba(var(--bs-body-color-rgb),.65) !important",
-    fontSize: "var(----ax-theme-panel-header-font-size, 1rem)",
-  },
-  expressionBuilder: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  newIcon: {
-    marginLeft: 5,
-  },
-  new: {
-    cursor: "pointer",
-    marginTop: 18.6,
-    display: "flex",
-  },
-  textbox: {
-    width: "100%",
-    height: "calc(100% - 10px)",
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  save: {
-    minWidth: 64,
-    margin: theme.spacing(1),
-    textTransform: "none",
-  },
-  scriptDialog: {
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-  },
-  script: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  content: {
-    padding: "8px 24px",
-    fontSize: 16,
-  },
-}));
 
 const implementationOptions = [
   { name: translate("Script"), value: "script" },
@@ -136,7 +72,6 @@ export default function ScriptProps({
   const [type, setType] = useState("script");
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
-  const classes = useStyles();
 
   const handleClickOpen = () => {
     setAlertMessage("Add all values");
@@ -485,9 +420,9 @@ export default function ScriptProps({
     isVisible && (
       <div>
         <React.Fragment>
-          {index > 0 && <Divider className={classes.divider} />}
+          {index > 0 && <Divider className={styles.divider} />}
         </React.Fragment>
-        <Box color="body" className={classes.groupLabel}>
+        <Box color="body" className={styles.groupLabel}>
           {translate(label)}
         </Box>
         <SelectBox
@@ -522,17 +457,17 @@ export default function ScriptProps({
             },
           }}
         />
-        <div className={classes.expressionBuilder}>
+        <div className={styles.expressionBuilder}>
           <Textbox
             element={element}
-            className={classes.textbox}
+            className={styles.textbox}
             rows={3}
             readOnly={isReadOnly}
             minimap={false}
             entry={{
               id: "script",
               label: (
-                <div className={classes.script}>
+                <div className={styles.script}>
                   <div>{translate("Script")}</div>
                   <div style={{ display: "flex" }}>
                     <Badge
@@ -573,7 +508,7 @@ export default function ScriptProps({
               },
             }}
           />
-          <div className={classes.new}>
+          <div className={styles.new}>
             <Tooltip title="Enable" aria-label="enable">
               {/* Code icon is not available in material icons */}
               <i
@@ -596,7 +531,7 @@ export default function ScriptProps({
             <MaterialIcon
               icon="edit"
               fontSize={18}
-              className={classes.newIcon}
+              className={styles.newIcon}
               onClick={() => {
                 type === "connector"
                   ? setOpenConnector(true)
@@ -648,11 +583,11 @@ export default function ScriptProps({
                     element={element}
                   />
                 )}
-            <Dialog open={openAlert} centered className={classes.Dialog}>
+            <Dialog open={openAlert} centered className={styles.Dialog}>
               <DialogHeader onCloseClick={() => setAlert(false)}>
                 <h3>{translate(alertTitle)}</h3>
               </DialogHeader>
-              <DialogContent className={classes.content}>
+              <DialogContent className={styles.content}>
                 {translate(alertMessage)}
               </DialogContent>
               <DialogFooter>
@@ -670,7 +605,7 @@ export default function ScriptProps({
                     }
                   }}
                   variant="primary"
-                  className={classes.save}
+                  className={styles.save}
                 >
                   {translate("OK")}
                 </Button>
@@ -679,7 +614,7 @@ export default function ScriptProps({
                     setAlert(false);
                   }}
                   variant="secondary"
-                  className={classes.save}
+                  className={styles.save}
                 >
                   {translate("Cancel")}
                 </Button>
@@ -687,7 +622,7 @@ export default function ScriptProps({
             </Dialog>
             {openScriptDialog && (
               <AlertDialog
-                className={classes.scriptDialog}
+                className={styles.scriptDialog}
                 openAlert={openScriptDialog}
                 alertClose={() => setOpenScriptDialog(false)}
                 handleAlertOk={() => {
@@ -698,7 +633,7 @@ export default function ScriptProps({
                 children={
                   <Textbox
                     element={element}
-                    className={classes.textbox}
+                    className={styles.textbox}
                     showLabel={false}
                     defaultHeight={window?.innerHeight - 205}
                     entry={{
@@ -751,11 +686,11 @@ export default function ScriptProps({
         )}
         {type !== "request" && (
           <React.Fragment>
-            <InputLabel color="body" className={classes.label}>
+            <InputLabel color="body" className={styles.label}>
               {translate("Model")}
             </InputLabel>
             <Checkbox
-              className={classes.checkbox}
+              className={styles.checkbox}
               entry={{
                 id: `custom-model`,
                 modelProperty: "isCustom",
@@ -779,7 +714,7 @@ export default function ScriptProps({
             />
             {isCustom ? (
               <Select
-                className={classnames(classes.select, classes.metajsonModel)}
+                className={classnames(styles.select, styles.metajsonModel)}
                 fetchMethod={() =>
                   getCustomModels(getProcessConfig("metaJsonModel"))
                 }
@@ -796,7 +731,7 @@ export default function ScriptProps({
               />
             ) : (
               <Select
-                className={classes.select}
+                className={styles.select}
                 fetchMethod={() => getMetaModels(getProcessConfig("metaModel"))}
                 update={(value, label) => {
                   setMetaModel(value);
@@ -812,11 +747,11 @@ export default function ScriptProps({
             )}
             {isDefaultFormVisible && (
               <React.Fragment>
-                <InputLabel color="body" className={classes.label}>
+                <InputLabel color="body" className={styles.label}>
                   {translate("Default form")}
                 </InputLabel>
                 <Select
-                  className={classes.select}
+                  className={styles.select}
                   update={(value, label) => {
                     setDefaultForm(value);
                     setProperty("defaultForm", value ? value.name : undefined);
@@ -833,7 +768,7 @@ export default function ScriptProps({
                 />
               </React.Fragment>
             )}
-            <div className={classes.container}>
+            <div className={styles.container}>
               <Checkbox
                 element={element}
                 entry={{
@@ -859,12 +794,12 @@ export default function ScriptProps({
               />
               {displayStatus && (
                 <React.Fragment>
-                  <div className={classes.allModels}>
-                    <InputLabel color="body" className={classes.label}>
+                  <div className={styles.allModels}>
+                    <InputLabel color="body" className={styles.label}>
                       {translate("Display on models")}
                     </InputLabel>
                     <Select
-                      className={classes.select}
+                      className={styles.select}
                       update={(value) => {
                         setModels(value);
                         addModels(value);

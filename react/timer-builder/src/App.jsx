@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
-import { makeStyles } from "@material-ui/core"
 import Tooltip from "./components/Tooltip"
 import { parse } from "iso8601-duration"
 import cronValidate from "cron-validate"
@@ -23,37 +22,8 @@ import {
   NavTabs,
   InputLabel,
 } from "@axelor/ui"
+import styles from "./App.module.css";
 
-const useStyle = makeStyles({
-  root: {
-    textTransform: "none",
-    color: "black",
-  },
-  background: {
-    backgroundColor: "#fafafa",
-  },
-  dialogPaper: {
-    minHeight: "min(600px , calc(100% - 64px))",
-  },
-  dialogTitle: {
-    padding: 0,
-  },
-  dialogActions: {
-    paddingInline: "1rem",
-  },
-  dialogContent: {
-    paddingInline: 0,
-    maxHeight: "70vh",
-    overflow: "auto",
-  },
-  button: {
-    minWidth: 64,
-    textTransform: "capitalize",
-  },
-  tabs: {
-    fontSize: 14,
-  },
-})
 
 const CRON_INITIAL_VALUE = "* * * ? * * *"
 function Cron({
@@ -105,8 +75,14 @@ function Cron({
 
   return (
     <div className={className}>
-      <Tooltip title={t("Copy to clipboard")} >
-        <InputLabel w="100" fontSize="4" textAlign="center" style={{ marginBlock: "1rem", cursor: "pointer" }} onClick={copy}>
+      <Tooltip title={t("Copy to clipboard")}>
+        <InputLabel
+          w="100"
+          fontSize="4"
+          textAlign="center"
+          style={{ marginBlock: "1rem", cursor: "pointer" }}
+          onClick={copy}
+        >
           {timerDefinition || originalExpression}
         </InputLabel>
       </Tooltip>
@@ -136,12 +112,11 @@ function Cron({
         }
         {...(lang
           ? {
-            localization: localization[lang],
-          }
+              localization: localization[lang],
+            }
           : {})}
       />
     </div>
-
   )
 }
 
@@ -176,7 +151,6 @@ const TIMER_DEFINITION_TYPE_TABS = {
 }
 
 function TabBar({ tabs, tabIndex, onChange, t }) {
-  const classes = useStyle()
   const navItems = React.useMemo(
     () =>
       TABS.filter(tab => tabs.includes(tab.id)).map(tab => {
@@ -187,7 +161,7 @@ function TabBar({ tabs, tabIndex, onChange, t }) {
   return (
     <Box color="body">
       <NavTabs
-        className={classes.tabs}
+        className={styles.tabs}
         items={navItems}
         onItemClick={onChange}
         active={tabs[tabIndex]}
@@ -228,7 +202,6 @@ function Panels({
 }
 
 function Actions({ onOK, onCancel, t, error }) {
-  const classes = useStyle()
   return (
     <>
       {error && (
@@ -245,10 +218,10 @@ function Actions({ onOK, onCancel, t, error }) {
           {capitalize(t(error))}
         </InputLabel>
       )}
-      <Button variant="primary" className={classes.button} onClick={onOK}>
+      <Button variant="primary" className={styles.button} onClick={onOK}>
         {t("OK")}
       </Button>
-      <Button variant="secondary" className={classes.button} onClick={onCancel}>
+      <Button variant="secondary" className={styles.button} onClick={onCancel}>
         {t("Cancel")}
       </Button>
     </>
@@ -259,8 +232,8 @@ function App({
   timerDefinitionType = "cron",
   isDialog = false,
   open = true,
-  onClose = () => { },
-  onChange = () => { },
+  onClose = () => {},
+  onChange = () => {},
   t = e => e,
   value: originalExpression,
 }) {
@@ -282,7 +255,6 @@ function App({
     }
   }, [originalExpression])
 
-  const classes = useStyle()
   const [lang, setLang] = useState("en")
   const [tabIndex, setTabIndex] = useState(
     timerDefinitionType === "timeCycle" && expressionType === TYPE.cron ? 1 : 0
@@ -315,7 +287,7 @@ function App({
 
   return isDialog ? (
     <Dialog open={open} backdrop centered>
-      <DialogHeader className={classes.dialogTitle}>
+      <DialogHeader className={styles.dialogTitle}>
         <TabBar
           tabs={tabIds}
           tabIndex={tabIndex}
@@ -323,7 +295,7 @@ function App({
           t={t}
         />
       </DialogHeader>
-      <DialogContent className={classes.dialogContent}>
+      <DialogContent className={styles.dialogContent}>
         <Panels
           tabs={tabIds}
           tabIndex={tabIndex}
@@ -336,7 +308,7 @@ function App({
           expressionType={expressionType}
         />
       </DialogContent>
-      <DialogFooter className={classes.dialogActions}>
+      <DialogFooter className={styles.dialogActions}>
         <Actions onCancel={onClose} onOK={handleOK} t={t} error={error} />
       </DialogFooter>
     </Dialog>

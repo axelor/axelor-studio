@@ -1,0 +1,15 @@
+.root {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.label {
+  margin-bottom: 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+}
+
+.checkbox {
+  margin: 3px 3px 3px 0;
+}
