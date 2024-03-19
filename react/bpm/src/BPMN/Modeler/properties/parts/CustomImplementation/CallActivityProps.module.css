@@ -1,0 +1,76 @@
+.groupLabel {
+  font-weight: bolder;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 120%;
+  margin: 10px 0px;
+  transition: margin 0.218s linear;
+  font-style: italic;
+}
+
+.divider {
+  margin-top: 15px;
+}
+
+.linkIcon {
+  margin-left: 5px;
+}
+
+.link {
+  cursor: pointer;
+}
+
+.dialogPaper {
+  padding: 5px;
+  min-width: 450px;
+  overflow: auto;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 3px;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(--ax-theme-panel-header-font-size, 1rem);
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.newIcon {
+  margin-left: 5px;
+}
+
+.new {
+  cursor: pointer;
+  display: flex;
+}
+
+.dialog {
+  min-width: 300px;
+}
+
+.select {
+  margin: 0;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: flex-end;
+  min-width: 300px;
+  font-size: 16px;
+}
+
+.scriptDialog {
+  width: 100%;
+  height: 100%;
+}
+
+.parentPathDialog > div {
+  max-width: 90%;
+  width: fit-content;
+  min-width: 500px;
+}

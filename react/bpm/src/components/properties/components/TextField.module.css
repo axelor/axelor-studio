@@ -1,0 +1,29 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.label {
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}
+
+.fieldWrapper {
+  position: relative;
+  flex-grow: 1;
+}
+
+.clearButton {
+  background: transparent;
+  border: none;
+  height: 23px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}

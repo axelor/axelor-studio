@@ -1,0 +1,35 @@
+.root {
+  text-transform: none;
+  color: black;
+}
+
+.background {
+  background-color: #fafafa;
+}
+
+.dialogPaper {
+  min-height: min(600px, calc(100% - 64px));
+}
+
+.dialogTitle {
+  padding: 0;
+}
+
+.dialogActions {
+  padding-inline: 1rem;
+}
+
+.dialogContent {
+  padding-inline: 0;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.button {
+  min-width: 64px;
+  text-transform: capitalize;
+}
+
+.tabs {
+  font-size: 14px;
+}

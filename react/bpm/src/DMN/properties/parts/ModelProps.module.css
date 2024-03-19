@@ -1,0 +1,29 @@
+.groupLabel {
+  font-weight: bolder;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 120%;
+  margin: 10px 0;
+  transition: margin 0.218s linear;
+  font-style: italic;
+}
+
+.divider {
+  margin-top: 15px;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+}
+
+.select {
+  margin: 0;
+}
+
+.metajsonModel {
+  margin-top: 10px;
+}

@@ -1,0 +1,27 @@
+.container {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.paper {
+  margin: 8px;
+  padding: 24px 16px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.hide {
+  display: none;
+}
+
+.MuiAutocompleteRoot {
+  width: 50%;
+  margin-right: 10px;
+}

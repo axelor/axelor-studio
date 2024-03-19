@@ -1,0 +1,43 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.extensionElements {
+  width: 100%;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 3px;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+}
+
+.add {
+  top: -23px !important;
+  position: absolute;
+  height: 23px;
+  width: 24px;
+  overflow: hidden;
+  border-bottom: none;
+  right: 0;
+  border-radius: 0;
+  padding: 0;
+  background: var(--bs-body-bg);
+  border: none;
+}
+
+.endAdornment {
+  right: 23px;
+}
+
+.container {
+  position: relative;
+}
+
+.select {
+  width: 100%;
+}
