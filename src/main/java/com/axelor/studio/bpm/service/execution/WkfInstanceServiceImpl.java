@@ -180,6 +180,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
                         EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
                         finalProcessInstanceId));
       }
+      WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
+      removeRelatedFailedInstance(model, wkfProcess);
       throw e;
     } finally {
       if (appender != null) {
@@ -212,6 +214,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     Map<String, Object> modelMap = new HashMap<String, Object>();
     modelMap.put(wkfService.getVarName(model), new FullContext(model));
+    modelMap.put("modelId", model.getId());
     builder.setVariables(wkfService.createVariables(modelMap));
     ProcessInstance processInstance = builder.executeWithVariablesInReturn();
     WkfInstance instance = wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
@@ -818,5 +821,30 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
 
     return migrationHistory;
+  }
+
+  @Transactional(rollbackOn = Exception.class)
+  protected void removeRelatedFailedInstance(Model model, WkfProcess wkfProcess) {
+    JPA.em().refresh(model);
+    JPA.em().refresh(wkfProcess);
+    List<WkfInstance> instances =
+        wkfInstanceRepository
+            .all()
+            .filter(
+                "self.modelId = ? and self.wkfProcess.processId = ?",
+                model.getId(),
+                wkfProcess.getProcessId())
+            .fetch();
+    for (WkfInstance instance : instances) {
+      if (engineService
+              .getEngine()
+              .getHistoryService()
+              .createHistoricProcessInstanceQuery()
+              .processInstanceId(instance.getInstanceId())
+              .singleResult()
+          == null) {
+        wkfInstanceRepository.remove(instance);
+      }
+    }
   }
 }

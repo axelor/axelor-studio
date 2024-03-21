@@ -120,7 +120,6 @@ public class WkfExecutionListener implements ExecutionListener {
   }
 
   protected void createWkfInstance(DelegateExecution execution) {
-
     String instanceId = execution.getProcessInstanceId();
     WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(instanceId);
     log.debug("Process called with related wkfInstance: {}", wkfInstance);
@@ -250,6 +249,7 @@ public class WkfExecutionListener implements ExecutionListener {
             .fetchOne();
     wkfInstance.setName(wkfProcess.getProcessId() + " : " + instanceId);
     wkfInstance.setWkfProcess(wkfProcess);
+    wkfInstance.setModelId((Long) execution.getVariable("modelId"));
     return instanceRepo.save(wkfInstance);
   }
 
