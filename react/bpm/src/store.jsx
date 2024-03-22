@@ -18,6 +18,7 @@ function StoreProvider({ children }) {
         id: "fr",
       },
     ],
+    execute: false,
   });
 
   const value = useMemo(

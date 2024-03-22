@@ -2,9 +2,11 @@ import React, { useMemo } from "react";
 
 import TabPanel from "./TabPanel";
 import { isGroupVisible, isDefinition } from "./extra.js";
-import { Box } from "@axelor/ui";
+import { Box, Badge } from "@axelor/ui";
 import Tab from "./Tab";
 import { translate } from "../../utils";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil.js";
 import styles from "./DrawerContent.module.css";
 
 export default function DrawerContent({
@@ -42,15 +44,40 @@ export default function DrawerContent({
 
   const tab = tabItems && tabItems[tabValue];
   const { groups = [], id: tabId = "" } = tab || {};
+  const bo = getBusinessObject(selectedElement);
 
   return (
     <React.Fragment>
       <Box color="body" className={styles.nodeTitle}>
-        {selectedElement
-          ? isDefinition(selectedElement)
-            ? ""
-            : selectedElement?.id
-          : ""}
+        {selectedElement ? (
+          isDefinition(selectedElement) ? (
+            ""
+          ) : (
+            <>
+              {selectedElement?.id}
+              {bo && bo?.$type === "bpmn:Participant" && (
+                <Badge
+                  bg={
+                    bo && bo?.processRef?.isExecutable ? "primary" : "secondary"
+                  }
+                  className={styles.executableBadge}
+                  px={2}
+                  py={1}
+                  rounded="pill"
+                >
+                  <MaterialIcon icon="bolt" />
+                  <Box className={styles.executableText}>
+                    {bo && bo?.processRef?.isExecutable
+                      ? translate("Executable")
+                      : translate("Non-Executable")}
+                  </Box>
+                </Badge>
+              )}
+            </>
+          )
+        ) : (
+          ""
+        )}
       </Box>
       <Tab
         onItemClick={handleChange}

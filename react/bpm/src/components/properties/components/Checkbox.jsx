@@ -3,6 +3,7 @@ import classnames from "classnames";
 import { Input, InputLabel } from "@axelor/ui";
 import { translate } from "../../../utils";
 import styles from "./Checkbox.module.css";
+import { useStore } from "../../../store";
 
 export default function Checkbox({
   entry,
@@ -12,10 +13,14 @@ export default function Checkbox({
 }) {
   const { id, label, modelProperty, get, set } = entry || {};
   const [value, setValue] = useState(false);
-
+  const { update } = useStore();
   const updateValue = () => {
     setValue((value) => !value);
     set(element, { [modelProperty]: value });
+    update((prevState) => ({
+      ...prevState,
+      execute: !prevState.execute,
+    }));
   };
 
   useEffect(() => {
