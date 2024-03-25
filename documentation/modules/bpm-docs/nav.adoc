@@ -46,4 +46,3 @@
 
 ** xref:/annexes/[Annexes]
 *** xref:/annexes/astuce_espace_travail.adoc[Astuces sur l’espace de travail]
-

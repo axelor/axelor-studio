@@ -19,4 +19,3 @@ Pour obtenir plus de détails sur une erreur spécifique, un clic sur le token s
 
 === Correction des erreurs dans l'éditeur BPM :
 Après l’identification d’une erreur, un bouton "Fix in BPM editor" est disponible dans la fenêtre contextuelle. En cliquant sur ce bouton, l’utilisateur est redirigé vers l'éditeur BPM correspondant, en mettant en évidence le nœud contenant l'erreur, et il peut alors effectuer les modifications nécessaires pour résoudre l'erreur.
-
