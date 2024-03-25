@@ -1,0 +1,60 @@
+.main {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  margin-top: 10px;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0px;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+}
+
+.select {
+  margin: 0px 5px 0px 0px;
+}
+
+.iconButton {
+  margin: 5px 0px 5px 5px;
+  border-radius: 0;
+  border: 1px solid #ccc;
+  padding: 2px;
+  color: inherit;
+  width: fit-content;
+}
+
+.newIcon {
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: flex-end;
+  overflow: auto;
+}
+
+.dialog {
+  min-width: 300px;
+}
+
+.content {
+  font-size: 16px;
+}
+
+.teamFieldPathDialog > div {
+  max-width: 90%;
+  width: fit-content;
+  min-width: 500px;
+}

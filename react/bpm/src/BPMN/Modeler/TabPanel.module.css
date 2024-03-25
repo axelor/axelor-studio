@@ -1,0 +1,21 @@
+.groupLabel {
+  font-weight: bolder;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 120%;
+  margin: 10px 0px;
+  transition: margin 0.218s linear;
+  font-style: italic;
+}
+
+.groupContainer {
+  margin-top: 10px;
+}
+
+.divider {
+  margin-top: 15px;
+}
+
+.businessRuleTask {
+  margin-top: 0;
+}

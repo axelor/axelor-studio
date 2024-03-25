@@ -1,0 +1,11 @@
+.formControl {
+  width: 100%;
+}
+
+.select {
+  margin-right: 8px;
+}
+
+.select > div > input {
+  width: 100%;
+}

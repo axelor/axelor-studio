@@ -1,0 +1,37 @@
+body {
+  margin: 0;
+  font-family: var(--bs-body-font-family);
+  color: var(--bs-body-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: var(--bs-body-font-family);
+  color: var(--bs-body-color);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bs-border-color);
+  background-clip: padding-box;
+  border: 0;
+  border-radius: calc((6px / 3) * 2);
+  box-shadow: none;
+  min-height: 50px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track:hover {
+  background: none;
+  border: none;
+}
+
+.decorationsOverviewRuler {
+  background-color: var(--bs-body-bg);
+}

@@ -1,26 +1,11 @@
 import React, { useEffect, useState } from "react";
-import classnames from "classnames";
-import { IconButton, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Close, ArrowForward } from "@material-ui/icons";
-
 import { Selection } from "./components";
 import { getSubMetaField } from "./services/api";
 import { isBPMQuery, join_operator } from "./extra/util";
 import { translate } from "../../utils";
-
-const useStyles = makeStyles(() => ({
-  MuiAutocompleteRoot: {
-    width: "250px",
-    marginRight: "10px",
-  },
-  iconButton: {
-    marginRight: 10,
-  },
-  icon: {
-    color: "#0275d8",
-  },
-}));
+import Tooltip from "../components/tooltip/tooltip";
+import { Button } from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 export default function FieldEditor({
   initValue = "",
@@ -28,7 +13,6 @@ export default function FieldEditor({
   editor,
   onChange,
   value,
-  classNames,
   expression: parentExpression = "GROOVY",
   type,
   isParent = false,
@@ -39,7 +23,6 @@ export default function FieldEditor({
 }) {
   const { fieldName = "", allField = [], isShow: propIsShow } = value || {};
   const [fields, setFields] = useState([]);
-  const classes = useStyles();
   const isContextValue = isField === "context" && isBPMQuery(type) && isBPM;
   const expression = isBPMQuery(type) ? "BPM" : parentExpression;
   const values =
@@ -242,18 +225,12 @@ export default function FieldEditor({
         optionLabelKey="name"
         onChange={(value) => handleChange(value)}
         value={transformValue}
-        classes={{
-          root: classnames(
-            classes.MuiAutocompleteRoot,
-            classNames && classNames.root
-          ),
-        }}
       />
       {hasManyValues && relationModel && (
         <React.Fragment>
           {isShow && !isOneToOne && (
-            <IconButton
-              size="small"
+            <Button
+              size="sm"
               onClick={() => {
                 setShow((isShow) => !isShow);
                 if (allField && allField.length > 0 && startValue) {
@@ -265,12 +242,17 @@ export default function FieldEditor({
                   });
                 }
               }}
-              className={classes.iconButton}
+              me={2}
             >
               <Tooltip title={translate("Remove sub field")}>
-                <Close className={classes.icon} fontSize="small" />
+                <MaterialIcon
+                  icon="close"
+                  className="pointer"
+                  fontSize={20}
+                  color="primary"
+                />
               </Tooltip>
-            </IconButton>
+            </Button>
           )}
           {(isShow || isOneToOne) && (
             <FieldEditor
@@ -302,7 +284,6 @@ export default function FieldEditor({
                 allField,
               }}
               onChange={onChange}
-              classNames={classNames}
               expression={expression}
               type={type}
               isParent={relationModel ? true : false}
@@ -313,15 +294,20 @@ export default function FieldEditor({
             />
           )}
           {!isShow && !isOneToOne && (
-            <IconButton
-              size="small"
+            <Button
+              size="sm"
               onClick={() => setShow((isShow) => !isShow)}
-              className={classes.iconButton}
+              me={2}
             >
               <Tooltip title={translate("Add sub field")}>
-                <ArrowForward className={classes.icon} fontSize="small" />
+                <MaterialIcon
+                  icon="arrow_forward"
+                  className="pointer"
+                  fontSize={20}
+                  color="primary"
+                />
               </Tooltip>
-            </IconButton>
+            </Button>
           )}
         </React.Fragment>
       )}

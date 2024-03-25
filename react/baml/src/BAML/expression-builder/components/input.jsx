@@ -1,10 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Input from "@material-ui/core/Input";
-import classnames from "classnames";
-import { TextField } from "@material-ui/core";
-
 import { translate } from "../../../utils";
+import { Input, TextField } from "@axelor/ui";
+
 function InputField({
   name,
   title,
@@ -24,9 +22,7 @@ function InputField({
     return (
       <Input
         style={{ width: "100%", ...style }}
-        className={className}
         placeholder={translate(title)}
-        inputProps={{ "aria-label": title, disableUnderline }}
         name={name}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
@@ -49,7 +45,6 @@ function InputField({
       autoComplete="off"
       InputProps={{ readOnly, ...InputProps, disableUnderline }}
       value={value || ""}
-      className={classnames(other.className, className)}
       {...other}
     />
   );

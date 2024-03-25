@@ -1,35 +1,11 @@
 import React, { useEffect, useState } from "react";
 import jsStringEscape from "js-string-escape";
-import { makeStyles } from "@material-ui/core/styles";
-import {
-  Dialog,
-  DialogTitle,
-  Checkbox,
-  FormControlLabel,
-  DialogContent,
-  DialogActions,
-  DialogContentText,
-  Button as MaterialButton,
-  Paper,
-} from "@material-ui/core";
-import {
-  TimelineContent,
-  TimelineItem,
-  TimelineConnector,
-  TimelineSeparator,
-  Timeline,
-  TimelineOppositeContent,
-  TimelineDot,
-} from "@material-ui/lab";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
 import produce from "immer";
 import moment from "moment";
 import { isEmpty } from "lodash";
 import _ from "lodash";
-
 import ExpressionComponent from "./expression-builder";
-import { Button, Select } from "./components";
+import { IconButton, Select } from "./components";
 import {
   combinator as combinators,
   map_operator,
@@ -47,84 +23,17 @@ import {
   getJsonExpression,
 } from "./extra/util";
 import { translate } from "../../utils";
-
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    margin: theme.spacing(1),
-    padding: theme.spacing(3, 2),
-    width: `calc(100% - 50px)`,
-    display: "flex",
-    height: "calc(100% - 50px)",
-    overflow: "auto",
-  },
-  expressionContainer: {
-    display: "flex",
-    alignItems: "center",
-    width: "100%",
-  },
-  dialogPaper: {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    resize: "both",
-    width: "70%",
-    height: 650,
-  },
-  dialog: {
-    minWidth: 300,
-  },
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    height: "100%",
-    overflow: "hidden",
-  },
-  combinator: {
-    width: "fit-content",
-  },
-  timelineConnector: {
-    backgroundColor: "#0275d8",
-  },
-  save: {
-    margin: theme.spacing(1),
-    backgroundColor: "#0275d8",
-    borderColor: "#0267bf",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#025aa5",
-      borderColor: "#014682",
-      color: "white",
-    },
-  },
-  timeline: {
-    width: "100%",
-    padding: 0,
-    margin: 0,
-    justifyContent: "flex-start",
-  },
-  timelineOppositeContent: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    maxWidth: 60,
-    padding: 0,
-  },
-  checkbox: {
-    color: "#0275d8",
-    "&.MuiCheckbox-colorSecondary.Mui-checked": {
-      color: "#0275d8",
-    },
-  },
-  timelineItem: {
-    "&.MuiTimelineItem-missingOppositeContent:before": {
-      padding: 0,
-    },
-  },
-  expression: {
-    height: "100%",
-    width: "100%",
-  },
-}));
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 
 function ExpressionBuilder({
   handleClose,
@@ -154,7 +63,6 @@ function ExpressionBuilder({
   const [isClose, setClose] = useState(false);
   const [initialValues, setInitialValues] = useState(null);
 
-  const classes = useStyles();
   function onAddExpressionEditor() {
     setExpressionComponents(
       produce((draft) => {
@@ -1430,69 +1338,81 @@ function ExpressionBuilder({
 
   return (
     <Dialog
-      onClose={(event, reason) => {
-        if (reason !== "backdropClick") {
-          handleClose();
-        }
-      }}
+      size="xl"
+      backdrop
       aria-labelledby="simple-dialog-title"
       open={open}
-      classes={{
-        paper: classes.dialogPaper,
-      }}
     >
-      <DialogTitle id="simple-dialog-title">{translate(title)}</DialogTitle>
-      <div className={classes.root}>
-        <Paper variant="outlined" className={classes.paper}>
-          <div
+      <DialogHeader onCloseClick={handleClose}>
+        <DialogTitle id="simple-dialog-title">{translate(title)}</DialogTitle>
+      </DialogHeader>
+      <Box
+        d="flex"
+        flexDirection="column"
+        alignItems="flex-start"
+        color="body"
+        overflow="hidden"
+        w={100}
+        style={{ height: "100%" }}
+      >
+        <DialogContent
+          rounded={2}
+          m={1}
+          py={3}
+          px={2}
+          overflow="auto"
+          style={{
+            width: "100%",
+          }}
+        >
+          <Box
             style={{
               height: "100%",
-              width: "100%",
+              minWidth: "100%",
+              maxHeight: `80vh`,
             }}
           >
-            <div className={classes.expression}>
+            <Box style={{ minWidth: "100%" }}>
               {!isBPMQuery(parentType) && (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={generateWithId}
-                      onChange={(e) => setGenerateWithId(e.target.checked)}
-                      name="generateWithId"
-                      className={classes.checkbox}
-                    />
-                  }
-                  style={{ color: "#0275d8", padding: "0px 15px" }}
-                  label={translate("Generate with saved record")}
-                />
+                <Box d="flex" alignItems="center" gap={8} px={4} py={2}>
+                  <Input
+                    type="checkbox"
+                    checked={generateWithId}
+                    name="generateWithId"
+                    onChange={(e) => setGenerateWithId(e.target.checked)}
+                  />
+                  <Box a="span" pt={1}>
+                    {translate("Generate with saved record")}
+                  </Box>
+                </Box>
               )}
-              <Timeline
+              <Box
                 align="alternate"
-                className={classes.timeline}
-                style={{
-                  border:
-                    expression === "BPM"
-                      ? "none"
-                      : "1px solid rgba(0, 0, 0, 0.12)",
-                }}
+                d="flex"
+                m={0}
+                p={0}
+                justifyContent="flex-start"
               >
                 {isBPMQuery(parentType) ? (
-                  <TimelineItem
-                    className={classes.timelineItem}
+                  <Box
+                    d="flex"
+                    m={0}
+                    p={0}
+                    justifyContent="flex-start"
                     style={{
-                      width: "100%",
+                      minHeight: "100%",
+                      width: "auto",
                     }}
                   >
-                    <div
-                      style={{
-                        width: "100%",
-                      }}
-                    >
+                    <div>
                       {expressionComponents &&
                         expressionComponents.map(
                           ({ Component, value }, index) => {
                             return (
-                              <div
-                                className={classes.expressionContainer}
+                              <Box
+                                d="flex"
+                                alignItems="center"
+                                w={100}
                                 key={index}
                               >
                                 <Component
@@ -1507,42 +1427,60 @@ function ExpressionBuilder({
                                   bpmnModeler={bpmnModeler}
                                   defaultModel={defaultModel}
                                 />
-                              </div>
+                              </Box>
                             );
                           }
                         )}
                     </div>
-                  </TimelineItem>
+                  </Box>
                 ) : (
-                  <TimelineItem style={{ minHeight: "100%", width: "89%" }}>
-                    <TimelineOppositeContent
-                      className={classes.timelineOppositeContent}
-                      style={{ paddingLeft: 16 }}
+                  <Box
+                    ms={5}
+                    d="flex"
+                    style={{
+                      minHeight: "100%",
+                      width: "auto",
+                    }}
+                  >
+                    <Box
+                      d="flex"
+                      alignItems="center"
+                      justifyContent="flex-end"
+                      p={0}
+                      ms={5}
                     >
                       <Select
                         name="expression"
                         options={combinators}
                         value={combinator || "and"}
                         disableUnderline={true}
-                        className={classes.combinator}
                         onChange={(value) => {
                           setCombinator(value);
                         }}
                       />
-                    </TimelineOppositeContent>
-                    <TimelineSeparator>
-                      <TimelineDot
-                        variant="outlined"
-                        style={{ borderColor: "#0275d8" }}
+                    </Box>
+                    <Box
+                      d="flex"
+                      mt={1}
+                      me={1}
+                      flexDirection="column"
+                      alignItems="center"
+                      gap={5}
+                    >
+                      <MaterialIcon
+                        icon="trip_origin"
+                        fontSize={17}
+                        color="primary"
                       />
-                      <TimelineConnector
-                        className={classes.timelineConnector}
+                      <Box
+                        bg="primary"
+                        style={{ width: "2px", height: "100%" }}
                       />
-                    </TimelineSeparator>
-                    <TimelineContent style={{ width: "100%" }}>
-                      <Button
+                    </Box>
+                    <Box style={{ width: "100%" }}>
+                      <IconButton
                         title="Add expression"
-                        Icon={AddIcon}
+                        Icon="add"
                         onClick={() => onAddExpressionEditor()}
                       />
                       <div>
@@ -1550,8 +1488,10 @@ function ExpressionBuilder({
                           expressionComponents.map(
                             ({ Component, value }, index) => {
                               return (
-                                <div
-                                  className={classes.expressionContainer}
+                                <Box
+                                  d="flex"
+                                  alignItems="center"
+                                  w={100}
                                   key={index}
                                 >
                                   <Component
@@ -1567,82 +1507,81 @@ function ExpressionBuilder({
                                     defaultModel={defaultModel}
                                   />
                                   {!isBPMQuery(parentType) && (
-                                    <Button
-                                      Icon={DeleteIcon}
+                                    <IconButton
+                                      Icon="delete"
+                                      mx={1}
                                       onClick={() =>
                                         onRemoveExpressionEditor(index)
                                       }
                                     />
                                   )}
-                                </div>
+                                </Box>
                               );
                             }
                           )}
                       </div>
-                    </TimelineContent>
-                  </TimelineItem>
+                    </Box>
+                  </Box>
                 )}
-              </Timeline>
-            </div>
-          </div>
-        </Paper>
-        <div>
+              </Box>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogFooter w={100} bg="body" style={{ zIndex: "999" }}>
           <Button
-            title="OK"
-            className={classes.save}
             onClick={() => generateExpression(combinator, parentType)}
-          />
-          <Button title="Cancel" className={classes.save} onClick={onCancel} />
-        </div>
-      </div>
+            variant="primary"
+            autoFocus
+            size="sm"
+          >
+            {translate("OK")}
+          </Button>
+          <Button onClick={onCancel} variant="secondary" size="sm">
+            {translate("Cancel")}
+          </Button>
+        </DialogFooter>
+      </Box>
       {openAlert && (
         <Dialog
           open={openAlert}
-          onClose={(event, reason) => {
-            if (reason !== "backdropClick") {
-              setAlert(false);
-            }
-          }}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
-          classes={{
-            paper: classes.dialog,
-          }}
         >
-          <DialogTitle id="alert-dialog-title">
-            {translate(alertConfig.alertTitle)}
-          </DialogTitle>
+          <DialogHeader onCloseClick={() => setAlert(false)}>
+            <DialogTitle id="alert-dialog-title">
+              {translate(alertConfig.alertTitle)}
+            </DialogTitle>
+          </DialogHeader>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
+            <Box color="body" id="alert-dialog-description">
               {translate(alertConfig.alertMessage)}
-            </DialogContentText>
+            </Box>
           </DialogContent>
-          <DialogActions>
-            <MaterialButton
+          <DialogFooter style={{ zIndex: 10 }}>
+            <Button
               onClick={() => {
                 setAlert(false);
                 if (isClose) {
                   handleClose();
                 }
               }}
-              color="primary"
+              variant="primary"
               autoFocus
-              className={classes.save}
+              size="sm"
             >
               {translate("OK")}
-            </MaterialButton>
-            <MaterialButton
+            </Button>
+            <Button
               onClick={() => {
                 setAlert(false);
               }}
-              color="primary"
+              variant="secondary"
               autoFocus
-              style={{ textTransform: "none" }}
-              className={classes.save}
+              size="sm"
             >
               {translate("Cancel")}
-            </MaterialButton>
-          </DialogActions>
+            </Button>
+          </DialogFooter>
         </Dialog>
       )}
     </Dialog>

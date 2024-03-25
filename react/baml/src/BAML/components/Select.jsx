@@ -1,10 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import classnames from "classnames";
-import AutoComplete from "@material-ui/lab/Autocomplete";
-import { TextField, CircularProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-
 import { translate } from "../../utils";
+import { Box, InputLabel, Select } from "@axelor/ui";
 
 function useDebounceEffect(handler, interval) {
   const isMounted = useRef(false);
@@ -17,60 +13,9 @@ function useDebounceEffect(handler, interval) {
   }, [handler, interval]);
 }
 
-const useStyles = makeStyles((theme) => ({
-  autoComplete: {
-    "& > div > label": {
-      fontSize: 14,
-    },
-    "& > div > div": {
-      paddingRight: "15px !important",
-    },
-    // margin: "8px 0px",
-    background: "white",
-    border: "1px solid #ccc",
-    padding: "0px 5px",
-  },
-  input: {
-    fontSize: 14,
-    color: theme.palette.common.black,
-    padding: "3px 0 3px !important",
-  },
-  label: {
-    fontSize: 14,
-  },
-  endAdornment: {
-    top: 0,
-  },
-  circularProgress: {
-    color: "#0A73FA",
-  },
-  error: {
-    borderColor: "#cc3333 !important",
-    background: "#f0c2c2",
-    "&:focus": {
-      boxShadow: "rgba(204,58,51, 0.2) 0px 0px 1px 2px !important",
-      outline: "none",
-      borderColor: "#cc3333 !important",
-    },
-  },
-  errorDescription: {
-    marginTop: 5,
-    color: "#CC3333",
-  },
-  labelTitle: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "#666",
-    marginBottom: 3,
-  },
-  container: {
-    marginTop: 10,
-  },
-}));
-
 export default function SelectComponent({
   optionLabel = "name",
+  optionKey = "name",
   multiple = false,
   index,
   value,
@@ -79,11 +24,9 @@ export default function SelectComponent({
   type,
   options: propOptions,
   entry,
-  isLabel = false,
+  isLabel = true,
   error = false,
-  className,
   defaultValue,
-  placeholder,
   validate,
   bpmnModeler,
   element,
@@ -95,7 +38,7 @@ export default function SelectComponent({
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isError, setError] = useState(false);
-  const classes = useStyles();
+  const [selectedValue, setSelectedValue] = useState(null);
   const { name, label, fetchMethod } = entry;
 
   const setProperty = (value, valueObj) => {
@@ -130,7 +73,7 @@ export default function SelectComponent({
       }
       return fetchMethod(criteria).then((res) => {
         if (res) {
-          setOptions(res || []);
+          setOptions(res);
           setLoading(false);
         }
       });
@@ -166,6 +109,52 @@ export default function SelectComponent({
     }
   }, [validate, value, name]);
 
+  function handleKeyDown(event) {
+    if (event.keyCode === 8) {
+      setSelectedValue(null);
+    }
+  }
+
+  const getLabel = (option) => {
+    let optionName = "";
+    optionName = option[optionLabel]
+      ? option[optionLabel]
+      : option["title"]
+      ? option["title"]
+      : typeof option === "object"
+      ? ""
+      : option;
+    return optionName;
+  };
+
+  const customOptions = React.useMemo(() => {
+    const key = searchText?.toLowerCase() || "";
+    const filteredOptions = options.filter((option) =>
+      getLabel(option)?.toLowerCase()?.includes(key)
+    );
+    if (loading && !filteredOptions?.length) {
+      return [
+        {
+          key: "loading",
+          id: `${translate("Loading...")}`,
+          title: <span> {translate("Loading...")}</span>,
+          disabled: true,
+        },
+      ];
+    } else if (!filteredOptions || filteredOptions.length === 0) {
+      return [
+        {
+          key: "no-options",
+          id: "no_data_found",
+          title: <span> {translate("No options")}</span>,
+          disabled: true,
+        },
+      ];
+    } else {
+      return [];
+    }
+  }, [options, loading, searchText]);
+
   useEffect(() => {
     const isError = getValidation();
     setError(isError);
@@ -195,60 +184,42 @@ export default function SelectComponent({
     }
   }, [propOptions]);
 
+  useEffect(() => {
+    setSelectedValue(defaultValue ?? getProperty() ?? null);
+  }, [getProperty, defaultValue]);
+
   return (
-    <div className={classes.container}>
-      <label className={classes.labelTitle}>{translate(label)}</label>
-      <AutoComplete
-        classes={{
-          inputFocused: classes.input,
-          clearIndicator: classes.input,
-          popupIndicator: classes.input,
-          endAdornment: classes.endAdornment,
-        }}
-        size="small"
-        key={index}
-        open={open}
-        onOpen={(e) => {
-          e && e.stopPropagation();
-          setOpen(true);
-        }}
-        onClose={(e) => {
-          e && e.stopPropagation();
-          setOpen(false);
-        }}
-        onClick={(e) => {
-          e && e.stopPropagation();
-          setOpen(true);
-        }}
-        loading={loading}
-        defaultValue={() => {
-          if (defaultValue) {
-            return defaultValue;
-          } else {
-            return getProperty();
+    <Box mt={2} onKeyDown={handleKeyDown}>
+      {isLabel && <InputLabel color="body">{translate(label)}</InputLabel>}
+      <Select
+        openOnFocus
+        customOptions={customOptions}
+        removeOnBackspace
+        clearIcon={true}
+        options={options || []}
+        optionKey={(op) => `${op.packageName || ""}.${op[optionKey]}`}
+        optionMatch={(option, text = "") => {
+          if (option?.key === "loading" || option?.key === "no-options") {
+            return true;
           }
+          const key = text?.toLowerCase() || "";
+          const label = getLabel(option).toLowerCase() || "";
+          return label.includes(key);
         }}
+        key={index}
+        invalid={error || isError}
+        value={selectedValue}
         clearOnEscape
         autoComplete
-        className={classnames(
-          classes.autoComplete,
-          className,
-          isError && classes.error
-        )}
-        options={options}
         multiple={multiple}
-        value={value}
-        getOptionSelected={(option, val) => {
-          if (!val) return;
-          let optionName = "";
-          optionName = option[optionLabel]
-            ? optionLabel
-            : option["title"]
-            ? "title"
-            : "name";
-          return option[optionName] === (val.id ? val[optionName] : val);
+        onOpen={() => {
+          !open && setOpen(true);
         }}
-        onChange={(e, value) => {
+        onClose={() => {
+          open && setOpen(false);
+        }}
+        onInputChange={(val) => setsearchText(val)}
+        onChange={(value) => {
           let values = value;
           if (type === "multiple") {
             values =
@@ -265,64 +236,10 @@ export default function SelectComponent({
             setProperty(value && value[optionLabel], value);
           }
         }}
-        name={name}
-        onInputChange={(e, val) => setsearchText(val)}
-        renderInput={(params) => (
-          <TextField
-            error={error}
-            helperText={error ? translate("Required") : ""}
-            className={isError ? classes.error : ""}
-            fullWidth
-            {...params}
-            InputProps={{
-              ...(params.InputProps || {}),
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress
-                      className={classes.circularProgress}
-                      size={15}
-                    />
-                  ) : null}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-              onClick: (e) => e && e.stopPropagation(),
-              disableUnderline: true,
-            }}
-            inputProps={{
-              ...(params.inputProps || {}),
-              onClick: (e) => {
-                e && e.stopPropagation();
-                params.inputProps &&
-                  params.inputProps.onClick &&
-                  params.inputProps.onClick(e);
-              },
-            }}
-            placeholder={translate(placeholder || label || "")}
-            InputLabelProps={{
-              className: classes && classes.label,
-            }}
-            label={isLabel ? translate(label) : undefined}
-          />
-        )}
-        getOptionLabel={(option) => {
-          let optionName = "";
-          optionName = option[optionLabel]
-            ? option[optionLabel]
-            : option["title"]
-            ? option["title"]
-            : typeof option === "object"
-            ? ""
-            : option;
-          return optionName;
-        }}
+        optionValue={getLabel}
+        optionLabel={getLabel}
       />
-      {errorMessage && (
-        <div className={classes.errorDescription}>
-          {translate(errorMessage)}
-        </div>
-      )}
-    </div>
+      {errorMessage && <Box color="danger">{translate(errorMessage)}</Box>}
+    </Box>
   );
 }

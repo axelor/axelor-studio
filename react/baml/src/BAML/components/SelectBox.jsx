@@ -1,30 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/styles";
-
 import Description from "./Description";
 import { translate } from "../../utils";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: 5,
-  },
-  label: {
-    fontWeight: "bolder",
-    display: "inline-block",
-    verticalAlign: "middle",
-    color: "#666",
-    marginBottom: 3,
-  },
-});
+import { Box, InputLabel, Select } from "@axelor/ui";
 
 export default function SelectBox({ entry, element }) {
-  const classes = useStyles();
   const {
     id,
     name,
-    emptyParameter,
     selectOptions,
     canBeDisabled,
     canBeHidden,
@@ -36,7 +18,7 @@ export default function SelectBox({ entry, element }) {
   } = entry || {};
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
-
+  const value = options.find((val) => val.value === selectedOption);
   const setProperty = (value) => {
     element.businessObject[name] = value;
   };
@@ -46,14 +28,14 @@ export default function SelectBox({ entry, element }) {
   }, [element, name]);
 
   const handleChange = (e) => {
-    setSelectedOption(e.target.value);
+    setSelectedOption(e?.value);
     if (!set && !setProperty) return;
     if (set) {
       set(element, {
-        [modelProperty]: e.target.value,
+        [modelProperty]: e?.value,
       });
     } else {
-      setProperty(e.target.value);
+      setProperty(e?.value);
     }
   };
 
@@ -78,27 +60,16 @@ export default function SelectBox({ entry, element }) {
   }, [selectOptions, element]);
 
   return (
-    <div className={classes.root}>
-      <label htmlFor={`camunda-${id}`} className={classes.label}>
-        {translate(label)}
-      </label>
-      <select
-        id={`camunda-${id}-select`}
-        name={modelProperty}
-        data-disable={canBeDisabled ? "isDisabled" : ""}
-        data-show={canBeHidden ? "isHidden" : ""}
-        value={selectedOption || ""}
+    <Box d="flex" flexDirection="column">
+      <InputLabel htmlFor={`camunda-${id}`}>{translate(label)}</InputLabel>
+      <Select
+        optionLabel={(op) => op.name}
+        optionKey={(op) => op.name}
+        options={options}
         onChange={handleChange}
-      >
-        {options &&
-          options.map((option, index) => (
-            <option value={option.value} key={index}>
-              {option.name ? option.name : ""}{" "}
-            </option>
-          ))}
-        {emptyParameter && <option value=""></option>}
-      </select>
+        value={value || ""}
+      />
       {description && <Description desciption={description} />}
-    </div>
+    </Box>
   );
 }

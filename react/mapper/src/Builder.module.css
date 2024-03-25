@@ -1,0 +1,27 @@
+.input {
+  width: 13%;
+  margin-right: 20px;
+}
+
+.switchText {
+  margin-right: 16px;
+  margin-top: 6px;
+}
+
+.topView {
+  margin: 10px 10px 0px 10px;
+  align-items: center;
+}
+
+.selectContainer {
+  min-width: 150px;
+  margin-right: 20px;
+}
+
+.selectContainerBPMN {
+  min-width: 30%;
+}
+
+.process {
+  margin-right: 20px;
+}

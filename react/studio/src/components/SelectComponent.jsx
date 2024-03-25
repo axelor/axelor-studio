@@ -458,9 +458,23 @@ export default function SelectComponent(_props) {
 		() => (multiple ? value || [] : getValue(value)),
 		[value, multiple, getValue]
 	)
+	const getLabel = (option) => {
+		if (getOptionLabel) {
+			return getOptionLabel(option, data)
+		}
+		return option.type === translate("Add new")
+			? option["title"]
+			: typeof option === "string"
+			? option
+			: option[displayField] || ""
+	}
 
 	const customOptions = React.useMemo(() => {
-		if (isLoading) {
+		const filteredOptions = data.filter((op) =>
+			getLabel(op)?.toLowerCase()?.includes(searchText?.toLowerCase())
+		)
+
+		if (isLoading && (!shouldFetchInStart || filteredOptions.length)) {
 			return [
 				{
 					key: "loading",
@@ -470,7 +484,9 @@ export default function SelectComponent(_props) {
 				},
 			]
 		} else if (searchText && canAddNew) {
-			const existingOption = _value.find((item) => item.name === searchText)
+			const existingOption = _value.find(
+				(item) => getLabel(item)?.toLowerCase() === searchText?.toLowerCase()
+			)
 			return [
 				{
 					key: `create ${searchText}`,
@@ -481,7 +497,10 @@ export default function SelectComponent(_props) {
 					disabled: existingOption,
 				},
 			]
-		} else if (data.length === 0 || data[0].id === "studio_show_More_View") {
+		} else if (
+			!filteredOptions.length ||
+			filteredOptions[0]?.id === "studio_show_More_View"
+		) {
 			return [
 				{
 					key: "no-options",
@@ -493,7 +512,7 @@ export default function SelectComponent(_props) {
 		} else {
 			return []
 		}
-	}, [data, isLoading, setIsLoading])
+	}, [data, isLoading, setIsLoading, searchText, shouldFetchInStart])
 
 	useDebounceEffect(optionDebounceHandler, 500)
 
@@ -559,38 +578,11 @@ export default function SelectComponent(_props) {
 						? option
 						: option[displayField] || ""
 				}}
-				optionKey={(option) => {
-					if (getOptionLabel) {
-						return getOptionLabel(option, data)
-					}
-					return option.type === translate("Add new")
-						? option["title"]
-						: typeof option === "string"
-						? option
-						: option[displayField] || ""
-				}}
-				optionValue={(option) => {
-					if (getOptionLabel) {
-						return getOptionLabel(option, data)
-					}
-					return option.type === translate("Add new")
-						? option["title"]
-						: typeof option === "string"
-						? option
-						: option[displayField] || ""
-				}}
+				optionKey={getLabel}
+				optionValue={getLabel}
 				optionMatch={(option, text) => {
 					let op = null
-					if (getOptionLabel) {
-						op = getOptionLabel(option, data)
-					} else {
-						op =
-							option.type === translate("Add new")
-								? option["title"]
-								: typeof option === "string"
-								? option
-								: option[displayField] || ""
-					}
+					op = getLabel(option)
 					if (option.key === "no-options" || option.key === "loading")
 						return true
 					if (option.id === "studio_show_More_View") {

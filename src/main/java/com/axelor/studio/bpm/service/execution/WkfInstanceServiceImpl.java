@@ -35,6 +35,7 @@ import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceMigrationHistory;
+import com.axelor.studio.db.WkfInstanceVariable;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
@@ -62,6 +63,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
@@ -70,6 +72,7 @@ import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
+import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.Variables.SerializationDataFormats;
 import org.camunda.bpm.model.bpmn.impl.BpmnModelConstants;
@@ -182,6 +185,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
                         EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
                         finalProcessInstanceId));
       }
+      WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
+      removeRelatedFailedInstance(model, wkfProcess);
       throw e;
     } finally {
       if (appender != null) {
@@ -214,6 +219,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     Map<String, Object> modelMap = new HashMap<String, Object>();
     modelMap.put(wkfService.getVarName(model), new FullContext(model));
+    modelMap.put("modelId", model.getId());
     builder.setVariables(wkfService.createVariables(modelMap));
     ProcessInstance processInstance = builder.executeWithVariablesInReturn();
     WkfInstance instance = wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
@@ -772,6 +778,36 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     wkfInstanceRepository.save(instance);
   }
 
+  @Override
+  public List<WkfInstanceVariable> getWkfInstanceVariables(WkfInstance instance) {
+    String processInstanceId = instance.getInstanceId();
+    ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+    RuntimeService runtimeService = processEngine.getRuntimeService();
+    ProcessInstance processInstance =
+        runtimeService
+            .createProcessInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .singleResult();
+    List<WkfInstanceVariable> wkfInstanceVariables = new ArrayList<>();
+    if (processInstance != null) {
+      getVariables(processInstanceId, runtimeService, wkfInstanceVariables);
+    }
+    return wkfInstanceVariables;
+  }
+
+  protected void getVariables(
+      String processInstanceId,
+      RuntimeService runtimeService,
+      List<WkfInstanceVariable> wkfInstanceVariables) {
+    VariableMap variables = runtimeService.getVariablesLocalTyped(processInstanceId);
+    variables.forEach(
+        (name, value) -> {
+          WkfInstanceVariable instanceVariable = new WkfInstanceVariable(name);
+          instanceVariable.setValue(String.valueOf(value));
+          wkfInstanceVariables.add(instanceVariable);
+        });
+  }
+
   protected WkfInstanceMigrationHistory createMigrationHistory(
       WkfInstance instance, WkfModel currentModel) {
     WkfModel previousModel = instance.getWkfProcess().getWkfModel();
@@ -790,6 +826,31 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
 
     return migrationHistory;
+  }
+
+  @Transactional(rollbackOn = Exception.class)
+  protected void removeRelatedFailedInstance(Model model, WkfProcess wkfProcess) {
+    JPA.em().refresh(model);
+    JPA.em().refresh(wkfProcess);
+    List<WkfInstance> instances =
+        wkfInstanceRepository
+            .all()
+            .filter(
+                "self.modelId = ? and self.wkfProcess.processId = ?",
+                model.getId(),
+                wkfProcess.getProcessId())
+            .fetch();
+    for (WkfInstance instance : instances) {
+      if (engineService
+              .getEngine()
+              .getHistoryService()
+              .createHistoricProcessInstanceQuery()
+              .processInstanceId(instance.getInstanceId())
+              .singleResult()
+          == null) {
+        wkfInstanceRepository.remove(instance);
+      }
+    }
   }
 
   @Transactional(rollbackOn = Exception.class)

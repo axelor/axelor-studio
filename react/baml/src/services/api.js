@@ -56,6 +56,10 @@ export async function getSubMetaField(
     );
   }
 }
+export async function fetchUserPreferences() {
+  const userInfo = await Service.info()
+  return userInfo
+}
 
 export async function getMetaFields(model) {
   if (!model) return [];

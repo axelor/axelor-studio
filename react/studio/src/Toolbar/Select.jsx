@@ -25,6 +25,7 @@ function Selection({
 	open: showDropDown,
 	autoFocus,
 	disableClearable,
+	autoComplete = true,
 	...props
 }) {
 	const { loader } = useStoreState()
@@ -226,7 +227,7 @@ function Selection({
 					ref={inputRef}
 					openOnFocus={true}
 					autoFocus={autoFocus}
-					autoComplete
+					autoComplete={autoComplete}
 					disabled={loader || searchMore}
 					// onBlur={() => {!searchMore && setSearchText("")}} //TODO: Need to update in future with inputBlur prop.
 					open={open}

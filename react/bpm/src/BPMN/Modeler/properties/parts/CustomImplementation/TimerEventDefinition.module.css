@@ -1,0 +1,24 @@
+.newIcon {
+  cursor: pointer;
+  margin: 5px;
+}
+
+.new {
+  cursor: pointer;
+  display: flex;
+}
+
+.timeDateDialog > div {
+  max-width: 90%;
+  width: fit-content;
+  min-width: 500px;
+}
+
+.timeDateContent {
+  min-height: 300px;
+}
+
+.button {
+  min-width: 64px;
+  text-transform: capitalize;
+}

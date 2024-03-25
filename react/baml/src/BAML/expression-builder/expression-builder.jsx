@@ -1,57 +1,12 @@
 import React, { useState, useEffect } from "react";
 import produce from "immer";
-import { makeStyles } from "@material-ui/core/styles";
-import { Paper } from "@material-ui/core";
-
 import Editor from "./editor";
 import { getMetaFields } from "./services/api";
 import { getButtons, getDMNFields, getModels } from "../../services/api";
 import { isBPMQuery } from "./extra/util";
 import { allowed_types } from "./extra/data";
 import { Selection } from "./components";
-
-const useStyles = makeStyles((theme) => ({
-  Container: {
-    display: "flex",
-  },
-  rulesGroupHeader: {
-    display: "flex",
-  },
-  paper: {
-    margin: theme.spacing(1),
-    padding: theme.spacing(3, 2),
-  },
-  rules: {
-    display: "flex",
-  },
-  MuiAutocompleteRoot: {
-    width: "100%",
-    marginRight: "10px",
-  },
-  MuiAutocompleteRoot1: {
-    width: "500px",
-  },
-  title: {
-    flexGrow: 1,
-  },
-  disabled: {
-    pointerEvents: "none",
-    opacity: 0.5,
-  },
-  popoverContainer: {
-    display: "flex",
-    flexDirection: "column",
-    padding: theme.spacing(2),
-  },
-  typography: {
-    display: "flex",
-  },
-  popoverHeader: {
-    display: "flex",
-    alignItems: "center",
-    borderBottom: "solid 1px #DDD",
-  },
-}));
+import { Box } from "@axelor/ui";
 
 let id = 0;
 
@@ -82,7 +37,6 @@ function ExpressionBuilder(props) {
   const [expression] = useState("GROOVY");
   const [metaModals, setMetaModals] = useState(model || defaultModel);
   const [rules, setRules] = useState(r);
-  const classes = useStyles();
 
   function onAddGroup(parentId) {
     id = (rules ? rules.length : id) + 1;
@@ -211,18 +165,10 @@ function ExpressionBuilder(props) {
 
   return (
     <div style={{ width: "100%" }}>
-      <Paper
-        variant="outlined"
-        className={classes.paper}
-        style={{
-          border: isBPMQuery(type) ? "none" : "1px solid rgba(0, 0, 0, 0.12)",
-        }}
-      >
+      <Box overflow="auto" style={{ width: "100%" }} rounded p={3}>
         {!isBPMQuery(type) && (
-          <div
-            style={{ display: "flex", width: "100%", flexDirection: "column" }}
-          >
-            <div style={{ display: "flex" }}>
+          <Box d="flex" flexDirection="column">
+            <Box d="flex">
               <Selection
                 name="metaModal"
                 title="Model"
@@ -235,10 +181,9 @@ function ExpressionBuilder(props) {
                 }}
                 readOnly={defaultModel ? true : false}
                 value={metaModals}
-                classes={{ root: classes.MuiAutocompleteRoot }}
               />
-            </div>
-          </div>
+            </Box>
+          </Box>
         )}
         {rules
           .filter((e) => e.parentId === -1)
@@ -266,7 +211,7 @@ function ExpressionBuilder(props) {
               </React.Fragment>
             );
           })}
-      </Paper>
+      </Box>
     </div>
   );
 }

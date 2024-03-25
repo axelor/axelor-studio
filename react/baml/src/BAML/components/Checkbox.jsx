@@ -1,26 +1,8 @@
 import React, { useEffect, useState } from "react";
-import classnames from "classnames";
-import { makeStyles } from "@material-ui/styles";
-
 import { getBool, translate } from "../../utils";
-
-const useStyles = makeStyles({
-  root: {
-    display: "flex",
-    alignItems: "center",
-    marginTop: 5,
-  },
-  label: {
-    fontWeight: "bolder",
-    color: "#666",
-  },
-  checkbox: {
-    margin: "3px 3px 3px 0px",
-  },
-});
+import { Box, Input, InputLabel } from "@axelor/ui";
 
 export default function Checkbox({ entry, element, className }) {
-  const classes = useStyles();
   const {
     id,
     name,
@@ -70,20 +52,17 @@ export default function Checkbox({ entry, element, className }) {
   }, [element, modelProperty, get, getProperty, setProperty]);
 
   return (
-    <div className={classnames(classes.root, className)}>
-      <input
+    <Box d="flex" gap={4}>
+      <Input
         id={`camunda-${id}`}
         type="checkbox"
         name={modelProperty}
         checked={value}
         onChange={updateValue}
-        className={classes.checkbox}
       />
       {label && (
-        <label htmlFor={`camunda-${id}`} className={classes.label}>
-          {translate(label)}
-        </label>
+        <InputLabel htmlFor={`camunda-${id}`}>{translate(label)}</InputLabel>
       )}
-    </div>
+    </Box>
   );
 }

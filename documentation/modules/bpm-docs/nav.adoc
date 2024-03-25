@@ -43,3 +43,4 @@
 ** xref:/annexes/[Annexes]
 *** xref:/annexes/display-logs.adoc[Affichage des logs]
 *** xref:/annexes/astuce_espace_travail.adoc[Astuces sur l’espace de travail]
+*** xref:/annexes/process_variables_visualization.adoc[Visualisation des variables de processus]

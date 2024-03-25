@@ -1,16 +1,4 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Table, IconButton, Tooltip, TextField, Grid } from "@material-ui/core";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-
-import ReorderIcon from "@material-ui/icons/Reorder";
-import { Close, AddRounded } from "@material-ui/icons";
-
-import moment from "moment";
 import { get } from "lodash";
 
 import Selection from "./components/Selection";
@@ -31,76 +19,22 @@ import { VALUE_FROM, DATE_FORMAT } from "./constant";
 import { isRelationalField } from "./utils";
 import MultiSelector from "./components/MultiSelector";
 import { translate } from "../../utils";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    overflowX: "auto",
-    height: "calc(100% - 120px)",
-    overflowY: "auto",
-  },
-  table: {
-    minWidth: 650,
-    "& td": {
-      padding: "0px 16px !important",
-    },
-  },
-  tableRowRoot: {
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
-    },
-    "& .MuiInput-underline:before": {
-      borderBottom: 0,
-    },
-  },
-  input: {
-    width: "100%",
-  },
-  error: {
-    fontSize: "0.7em",
-    position: "absolute",
-    paddingTop: 1,
-    color: "red",
-    fontWeight: "bold",
-  },
-  valueInputContainer: {
-    position: "relative",
-  },
-  radioInput: {
-    padding: 4,
-  },
-  iconButton: {
-    // border: '1px solid #0267bf',
-    padding: "8px",
-    marginTop: 7,
-  },
-  deleteIcon: {
-    color: "#0275d8",
-  },
-  headerTitle: {
-    paddingLeft: 0,
-    textAlign: "center",
-  },
-  rightIcon: {
-    width: "0.8em",
-    height: "0.8em",
-  },
-  addFieldButton: {
-    left: 10,
-    top: 7,
-    textTransform: "capitalize",
-  },
-  searchField: {
-    marginLeft: 20,
-    "&>div": {
-      marginTop: 10,
-    },
-  },
-}));
+import {
+  Box,
+  Button,
+  Input,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import Tooltip from "../components/tooltip/tooltip";
 
 const getType = (row) => {
   const { type } = row;
-  return type.replace(/-/g, "_").toLowerCase();
+  return type?.replace(/-/g, "_").toLowerCase();
 };
 
 const getOptions = (isRoot, parentRow, defaultFrom) => {
@@ -211,7 +145,6 @@ const getTargetName = (row, value, nameField) => {
 function RenderRelationalWidget(props) {
   const { editor, internalProps } = props;
   const { onChange, value, ...rest } = internalProps;
-  const classes = useStyles();
   const { field = {} } = rest;
   const { targetName, target, targetModel } = field;
   const [nameField, setNameField] = useState(null);
@@ -233,6 +166,7 @@ function RenderRelationalWidget(props) {
     <Selection
       name="fieldValue"
       title="Value"
+      inline={true}
       placeholder="Value"
       fetchAPI={fetchData}
       isMulti={false}
@@ -242,15 +176,14 @@ function RenderRelationalWidget(props) {
         onChange({ name: "fieldValue", value: value, nameField }, editor);
       }}
       value={_value || []}
-      classes={{ root: classes.MuiAutocompleteRoot }}
     />
   );
 }
 
 function RenderSimpleWidget(props) {
   const { Component, editor, internalProps } = props;
-  const { onChange, value, value2, classes, style, targetName, ...rest } =
-    internalProps;
+  const { onChange, value, value2, style, targetName, ...rest } = internalProps;
+
   return (
     <Component
       name="fieldValue"
@@ -269,7 +202,6 @@ const RenderWidget = React.memo(function RenderWidgetMemo({
   operator = "=",
   onChange,
   value,
-  classes,
   parentType,
   editor,
   ...rest
@@ -303,8 +235,6 @@ const RenderWidget = React.memo(function RenderWidgetMemo({
     case "date":
     case "time":
     case "datetime":
-      const stringToDate = (value) =>
-        value ? moment(value, DATE_FORMAT[type]) : null;
       return (
         <RenderSimpleWidget
           Component={DateTimePicker}
@@ -312,16 +242,12 @@ const RenderWidget = React.memo(function RenderWidgetMemo({
           editor={editor}
           internalProps={{
             type,
-            value: stringToDate(value.fieldValue),
+            value: value.fieldValue,
             onChange: ({ name, value }, index) => {
-              return onChange(
-                { name, value: value && value.format(DATE_FORMAT[type]) },
-                index
-              );
+              return onChange({ name, value: value }, index);
             },
             ...rest,
             margin: "none",
-            classes,
             style: { width: "250px !important" },
           }}
         />
@@ -342,12 +268,11 @@ const RenderWidget = React.memo(function RenderWidgetMemo({
         editor,
         internalProps: {
           ...(options
-            ? { options, classes, ...props }
+            ? { options, ...props }
             : {
                 type,
                 ...props,
                 margin: "none",
-                classes,
                 style: { width: "250px !important" },
               }),
         },
@@ -365,7 +290,6 @@ const RenderWidget = React.memo(function RenderWidgetMemo({
           editor={editor}
           internalProps={{
             options,
-            classes,
             ...props,
           }}
         />
@@ -401,13 +325,10 @@ const RenderWidget = React.memo(function RenderWidgetMemo({
           ...(options
             ? {
                 options,
-                classes,
                 ...props,
                 value: value.fieldValue,
-                className: classes.input,
               }
             : {
-                classes,
                 ...props,
                 onBlur: (e) => props.onChange(e.target),
                 margin: "none",
@@ -420,7 +341,6 @@ const RenderWidget = React.memo(function RenderWidgetMemo({
 });
 
 function DataTable(props) {
-  const classes = useStyles();
   const {
     onRowChange,
     data = [],
@@ -512,22 +432,27 @@ function DataTable(props) {
             <TableRow
               data-handler-id={handlerId}
               ref={preview}
-              style={{ ...style }}
-              classes={{ root: classes.tableRowRoot }}
+              style={{ width: "100%" }}
+              w={100}
             >
-              <TableCell align="left" ref={ref} style={{ cursor: "move" }}>
-                <div>
-                  <ReorderIcon />
-                </div>
+              <TableCell
+                align="left"
+                ref={ref}
+                style={{ cursor: "move", width: "3%" }}
+              >
+                <Box mt={2}>
+                  <MaterialIcon icon="reorder" color="primary" />
+                </Box>
               </TableCell>
               <TableCell
                 style={{
                   ...getCustomStyle(row),
+                  width: "25%",
+                  maxWidth: "200px",
                 }}
               >
                 <ModelFieldComponent
                   name="name"
-                  className={classes.input}
                   item={row}
                   onChange={(e) => handleChange(e, "name", index)}
                   onSubFieldAdd={onSubFieldAdd}
@@ -537,12 +462,9 @@ function DataTable(props) {
                   }}
                 />
               </TableCell>
-              <TableCell>=</TableCell>
+              <TableCell style={{ width: "15px" }}>=</TableCell>
 
-              <TableCell
-                style={{ ...getCustomStyle(row) }}
-                className={classes.valueInputContainer}
-              >
+              <TableCell style={{ width: "400px" }}>
                 {from === VALUE_FROM.SELF ? (
                   <MultiSelector
                     optionValueKey="name"
@@ -624,12 +546,17 @@ function DataTable(props) {
                       fieldValue: getExpressionValue(row),
                       fieldValue2: "",
                     }}
-                    classes={classes}
                     field={row.subFieldName || row}
                   />
                 )}
               </TableCell>
-              <TableCell style={{ ...getCustomStyle(row) }} size="small">
+              <TableCell
+                style={{
+                  ...getCustomStyle(row),
+                  maxWidth: "150px",
+                }}
+                size="small"
+              >
                 <Selection
                   disableClearable
                   options={getOptions(level === 0, parentRow, getDefaultFrom())}
@@ -654,15 +581,11 @@ function DataTable(props) {
                     : { ...getCustomStyle(row) }
                 }
               >
-                <IconButton
-                  size="medium"
-                  onClick={() => handleRemove(row)}
-                  className={classes.iconButton}
-                >
+                <Box onClick={() => handleRemove(row)} className="pointer">
                   <Tooltip title={translate("Remove field")}>
-                    <Close fontSize="small" className={classes.deleteIcon} />
+                    <MaterialIcon icon="delete" color="danger" fontSize={22} />
                   </Tooltip>
-                </IconButton>
+                </Box>
               </TableCell>
             </TableRow>
           )}
@@ -670,7 +593,6 @@ function DataTable(props) {
       );
     },
     [
-      classes,
       handleRemove,
       handleChange,
       metaFields,
@@ -683,55 +605,60 @@ function DataTable(props) {
     ]
   );
   return (
-    <Paper className={classes.root}>
-      <Grid container style={{ backgroundColor: "#FAFAFA" }}>
-        <IconButton
-          variant="contained"
-          color="primary"
-          className={classes.addFieldButton}
+    <Box rounded border overflow="scroll">
+      <Box
+        d="flex"
+        bg="body-tertiary"
+        alignItems="center"
+        justifyContent="space-between"
+        p={1}
+      >
+        <Button
+          mx={2}
+          d="flex"
+          alignItems="center"
+          bg="body"
+          border
+          gap={1}
+          outline={false}
           onClick={manageFieldClick}
           title={translate("Add fields")}
         >
-          <AddRounded />
-        </IconButton>
-        <TextField
-          classes={{ root: classes.searchField }}
+          {translate("Add Fields")}
+          <MaterialIcon icon="add" color="primary" className="pointer" />
+        </Button>
+        <Input
+          w={25}
           placeholder={translate("Search fields")}
           onChange={(e) => handleFieldSearch(e)}
         />
-      </Grid>
+      </Box>
       <Table
-        className={classes.table}
         aria-label="simple table"
         stickyHeader={true}
+        verticalAlign="middle"
       >
-        <colgroup>
-          <col style={{ width: "3%" }} />
-          <col style={{ width: "27%", minWidth: 300 }} />
-          <col style={{ width: "15px" }} />
-          <col style={{ width: "50%", minWidth: 200 }} />
-          <col style={{ width: "210px", minWidth: 230 }} />
-          <col style={{ width: "5%" }} />
-        </colgroup>
         <TableHead>
           <TableRow>
             <TableCell align="left">&nbsp;</TableCell>
-            <TableCell className={classes.headerTitle}>
-              {translate("Field name")}
-            </TableCell>
-            <TableCell className={classes.headerTitle}></TableCell>
-            <TableCell className={classes.headerTitle}>
-              {translate("Value")}
-            </TableCell>
-            <TableCell className={classes.headerTitle}>
-              {translate("Value from")}
-            </TableCell>
-            <TableCell className={classes.headerTitle}></TableCell>
+            <TableCell>{translate("Field name")}</TableCell>
+            <TableCell textAlign="center"></TableCell>
+            <TableCell textAlign="center">{translate("Value")}</TableCell>
+            <TableCell textAlign="center">{translate("Value from")}</TableCell>
+            <TableCell textAlign="center"></TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{data.map((row, index) => renderRow(row, index))}</TableBody>
+        <TableBody
+          overflow="auto"
+          style={{
+            maxHeight: "50vh",
+            display: "table-caption",
+          }}
+        >
+          {data.map((row, index) => renderRow(row, index))}
+        </TableBody>
       </Table>
-    </Paper>
+    </Box>
   );
 }
 
