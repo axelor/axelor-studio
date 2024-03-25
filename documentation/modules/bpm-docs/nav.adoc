@@ -38,6 +38,7 @@
 *** xref:/documentation-general/creation_modele_dmn.adoc[Création des modèles DMN]
 *** xref:/documentation-general/create_model_baml.adoc[Création des modèles BAML]
 *** xref:/documentation-general/process_runtime_modification.adoc[Modification d'instance de processus en cours d'exécution]
+*** xref:/documentation-general/colorize_diagram_errors.adoc[Indication des erreurs sur les nœuds des diagrammes.]
 
 
 ** xref:/annexes/[Annexes]
