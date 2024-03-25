@@ -6,13 +6,17 @@
 == Description de la fonctionnalité
 Cette fonctionnalité permet aux utilisateurs de repérer facilement les erreurs sur le diagramme d’instance lors de l'exécution d'un processus. Les erreurs sont visuellement signalées par des tokens rouges placés sur le nœud concerné. Les rreurs peuvent être détaillés en cliquant sur le token.
 
+image::instance-error-visualization.png[erreur BPM,align="left"]
 
 == Utilisation
 === Visualisation des erreurs sur le diagramme d'instance :
 Lors de l'exécution d' un processus et qu'une erreur se produit, des tokens rouges sont automatiquement placés sur les nœuds correspondants sur le diagramme d'instance. Ce qui permet de repérer facilement les parties du processus nécessitant une attention particulière.
+
+
 
 === Consultation des détails des erreurs :
 Pour obtenir plus de détails sur une erreur spécifique, un clic sur le token situé à côté du nœud contenant l'erreur affichera une fenêtre contextuelle (popup) contenant des informations détaillées sur l'erreur rencontrée.
 
 === Correction des erreurs dans l'éditeur BPM :
 Après l’identification d’une erreur, un bouton "Fix in BPM editor" est disponible dans la fenêtre contextuelle. En cliquant sur ce bouton, l’utilisateur est redirigé vers l'éditeur BPM correspondant, en mettant en évidence le nœud contenant l'erreur, et il peut alors effectuer les modifications nécessaires pour résoudre l'erreur.
+
