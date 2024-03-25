@@ -157,14 +157,19 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         if (wkfInstance == null) {
           return helpText;
         }
+        setWkfInstanceError(wkfInstance, false, null);
+        try {
+          ProcessInstance processInstance =
+              findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
 
-        ProcessInstance processInstance =
-            findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
-
-        if (processInstance != null && !processInstance.isEnded()) {
-          processInstanceId = processInstance.getId();
-          appender = wkfLogService.createOrAttachAppender(processInstanceId);
-          helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
+          if (processInstance != null && !processInstance.isEnded()) {
+            processInstanceId = processInstance.getId();
+            appender = wkfLogService.createOrAttachAppender(processInstanceId);
+            helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
+          }
+        } catch (Exception e) {
+          setWkfInstanceError(wkfInstance, true, e.getMessage());
+          throw e;
         }
       }
     } catch (Exception e) {
@@ -846,5 +851,12 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         wkfInstanceRepository.remove(instance);
       }
     }
+  }
+
+  @Transactional(rollbackOn = Exception.class)
+  protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value, String error) {
+    wkfInstance.setInstanceError(value);
+    wkfInstance.setCurrentError(error);
+    wkfInstanceRepository.save(wkfInstance);
   }
 }

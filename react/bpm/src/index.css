@@ -31,3 +31,7 @@ code {
   background: none;
   border: none;
 }
+
+.decorationsOverviewRuler {
+  background-color: var(--bs-body-bg);
+}

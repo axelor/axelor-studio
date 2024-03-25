@@ -6,7 +6,11 @@ import Service from "../../services/Service";
 import Tooltip from "../../components/Tooltip";
 import readOnlyModule from "./custom/readonly";
 import { download, getBool, translate } from "../../utils";
-import { getInfo, getTranslations } from "../../services/api";
+import {
+  getInfo,
+  getProcessInstance,
+  getTranslations,
+} from "../../services/api";
 import { Logo } from "../../components/Logo";
 import { getElements } from "../Modeler/extra";
 import Alert from "../../components/Alert";
@@ -109,6 +113,7 @@ const fetchId = (isInstance, propUrl) => {
   const regexBPMNTask = /[?&]taskIds=([^&#]*)/g; // ?id=1&taskIds=1,2
   const regexBPMNActivityCounts = /[?&]activityCount=([^&#]*)/g; // ?id=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1
   const regexBPMNInstanceId = /[?&]instanceId=([^&#]*)/g; // ?instanceId=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1
+  const regexBPMNErrorNode = /[?&]node=([^&#]*)/g; // ?instanceId=1&taskIds=1,2&activityCount=activiti1:1,activit2:1,activit3:2,activit4:1&node=activity1
 
   const url = propUrl || window.location.href;
   let matchBPMNId,
@@ -117,40 +122,43 @@ const fetchId = (isInstance, propUrl) => {
     activityCounts,
     matchInstanceId,
     id,
-    taskIds;
+    taskIds,
+    matchErrorNode,
+    errorNode;
 
   while ((matchBPMNTasksId = regexBPMNTask.exec(url))) {
     let ids = matchBPMNTasksId[1];
     taskIds = ids.split(",");
   }
-
   while ((matchActivityCounts = regexBPMNActivityCounts.exec(url))) {
     activityCounts = matchActivityCounts[1];
   }
-
+  while ((matchErrorNode = regexBPMNErrorNode.exec(url))) {
+    errorNode = matchErrorNode[1];
+  }
   if (isInstance) {
     while ((matchInstanceId = regexBPMNInstanceId.exec(url))) {
       id = matchInstanceId[1];
-      return { id, taskIds, activityCounts };
+      return { id, taskIds, activityCounts, errorNode };
     }
   } else {
     while ((matchBPMNId = regexBPMN.exec(url))) {
       id = matchBPMNId[1];
-      return { id, taskIds, activityCounts };
+      return { id, taskIds, activityCounts, errorNode };
     }
   }
 };
 
-const fetchDiagram = async (id, taskIds, activityCounts) => {
+const fetchDiagram = async (id, taskIds, activityCounts, errorNode) => {
   if (id) {
     let res = await Service.fetchId("com.axelor.studio.db.WkfModel", id);
     const wkf = (res && res.data && res.data[0]) || {};
     const { diagramXml } = wkf;
-    openDiagramImage(taskIds, diagramXml, activityCounts);
+    openDiagramImage(id, taskIds, diagramXml, activityCounts, errorNode);
   }
 };
 
-const fetchInstanceDiagram = async (id, taskIds, activityCounts) => {
+const fetchInstanceDiagram = async (id, taskIds, activityCounts, errorNode) => {
   if (id) {
     let actionRes = await Service.action({
       model: "com.axelor.studio.db.WkfModel",
@@ -169,14 +177,20 @@ const fetchInstanceDiagram = async (id, taskIds, activityCounts) => {
       actionRes.data[0].values
     ) {
       const { xml } = actionRes.data[0].values;
-      openDiagramImage(taskIds, xml, activityCounts);
+      openDiagramImage(id, taskIds, xml, activityCounts, errorNode);
     }
   }
 };
 
-const openDiagramImage = (taskIds, diagramXml, activityCounts) => {
+const openDiagramImage = async (
+  instanceId,
+  taskIds,
+  diagramXml,
+  activityCounts,
+  errorNode
+) => {
   if (!diagramXml) return;
-  bpmnViewer.importXML(diagramXml, (err) => {
+  bpmnViewer.importXML(diagramXml, async (err) => {
     if (err) {
       return console.error("could not import BPMN 2.0 diagram", err);
     }
@@ -240,6 +254,34 @@ const openDiagramImage = (taskIds, diagramXml, activityCounts) => {
         },
         html: `<div class="diagram-note">${overlayActivity.count}</div>`,
       });
+    });
+
+    if (!errorNode) return;
+    const { currentError, "wkfProcess.wkfModel": { id } = {} } =
+      (await getProcessInstance(instanceId)) || {};
+    const isSuccessTokenExist = overlayActivies?.find(
+      (act) => act.id === errorNode
+    );
+    overlays.add(errorNode, "note", {
+      position: {
+        bottom: 18,
+        right: isSuccessTokenExist ? 45 : 18,
+      },
+      html: `<div id="targetElement" class="diagram-error-note">
+        <div class="error-count">!</div>
+        <div class="error-popup">
+          <h2>Error: Failed BPMN Process</h2>
+          <div class="error-details">
+            <p class="error-code">Node:  ${errorNode}</p>
+            <p class="error-message">${currentError || ""}</p>
+          </div>
+          <button class="error-fix-btn" onclick="window.top?.axelor?.$openHtmlTab('wkf-editor/?id=${id}&node=${errorNode}','${translate(
+        "BPM editor"
+      )}')">
+          ${translate("Fix in BPM Editor")}
+          </button>
+        </div>
+          </div>`,
     });
   });
 };
@@ -347,8 +389,11 @@ function BpmnViewerComponent({ isInstance }) {
     ) {
       handleSnackbarClick("success", "Restarted successfully");
       const { updatedUrl } = actionRes?.data[0]?.values || {};
-      const { taskIds, activityCounts } = fetchId(true, updatedUrl);
-      fetchInstanceDiagram(id, taskIds, activityCounts);
+      const { id, taskIds, activityCounts, errorNode } = fetchId(
+        true,
+        updatedUrl
+      );
+      fetchInstanceDiagram(id, taskIds, activityCounts, errorNode);
     } else {
       handleSnackbarClick(
         "danger",
@@ -395,7 +440,7 @@ function BpmnViewerComponent({ isInstance }) {
       container: "#canvas-task",
       additionalModules: [readOnlyModule],
     });
-    let { id, taskIds, activityCounts } = fetchId(isInstance) || {};
+    let { id, taskIds, activityCounts, errorNode } = fetchId(isInstance) || {};
     setId(id);
     setTaskIds(taskIds);
     setActivityCounts(activityCounts);
@@ -409,9 +454,9 @@ function BpmnViewerComponent({ isInstance }) {
         }
       });
       setActivityIds(ids);
-      fetchInstanceDiagram(id, taskIds, activityCounts);
+      fetchInstanceDiagram(id, taskIds, activityCounts, errorNode);
     } else {
-      fetchDiagram(id, taskIds, activityCounts);
+      fetchDiagram(id, taskIds, activityCounts, errorNode);
     }
   }, [isInstance]);
 
@@ -448,6 +493,44 @@ function BpmnViewerComponent({ isInstance }) {
       }
     });
   }, [isInstance, taskIds, activityCounts]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      function checkPosition(event) {
+        const element = document.getElementById("targetElement");
+        if (!element) return;
+
+        const rect = element.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const position =
+          rect.top + rect.height + 250 > windowHeight ? "below" : "above";
+
+        const errorPopup = document.querySelector(".error-popup");
+        if (errorPopup) {
+          if (position === "above") {
+            errorPopup.classList.remove("above");
+            errorPopup.classList.add("below");
+          } else {
+            errorPopup.classList.remove("below");
+            errorPopup.classList.add("above");
+          }
+        }
+      }
+
+      const targetElement = document.getElementById("targetElement");
+      if (targetElement) {
+        targetElement.addEventListener("mousemove", checkPosition);
+      }
+
+      return () => {
+        if (targetElement) {
+          targetElement.removeEventListener("mousemove", checkPosition);
+        }
+      };
+    }, 400);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   return (
     <React.Fragment>
