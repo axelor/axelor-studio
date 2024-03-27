@@ -19,14 +19,21 @@ package com.axelor.studio.bpm.service.log;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import com.axelor.meta.MetaFiles;
+import com.axelor.meta.db.MetaFile;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 public class WkfLogServiceImpl implements WkfLogService {
 
@@ -36,14 +43,18 @@ public class WkfLogServiceImpl implements WkfLogService {
 
   protected AppSettingsStudioService appSettingsService;
 
+  protected MetaFiles metaFiles;
+
   @Inject
   public WkfLogServiceImpl(
       WkfLoggerInitService wkfLoggerInitServiceImpl,
       WkfInstanceRepository wkfInstanceRepository,
-      AppSettingsStudioService appSettingsService) {
+      AppSettingsStudioService appSettingsService,
+      MetaFiles metaFiles) {
     this.wkfLoggerInitServiceImpl = wkfLoggerInitServiceImpl;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.appSettingsService = appSettingsService;
+    this.metaFiles = metaFiles;
   }
 
   @Override
@@ -89,26 +100,35 @@ public class WkfLogServiceImpl implements WkfLogService {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  protected void updateProcessInstanceLog(
-      String processInstanceId, ByteArrayOutputStream outStream) {
+  protected void updateProcessInstanceLog(String processInstanceId, ByteArrayOutputStream outStream)
+      throws IOException {
     WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
-
     if (wkfInstance != null) {
-      String logText = wkfInstance.getLogText();
-      if (logText == null) {
-        logText = "";
+      if (wkfInstance.getLogFile() == null) {
+        attachLogFile(wkfInstance);
       }
-      wkfInstance.setLogText(logText + outStream.toString());
-      wkfInstanceRepository.save(wkfInstance);
+      MetaFile logFile = wkfInstance.getLogFile();
+      try (BufferedWriter writer =
+          Files.newBufferedWriter(MetaFiles.getPath(logFile), StandardOpenOption.APPEND)) {
+        writer.write(outStream.toString());
+      }
     }
+  }
+
+  protected void attachLogFile(WkfInstance wkfInstance) throws IOException {
+    Path tempFilePath =
+        MetaFiles.createTempFile("process_instance_log_" + wkfInstance.getInstanceId(), ".txt");
+    File tempFile = tempFilePath.toFile();
+    MetaFile logFile = metaFiles.upload(tempFile);
+    wkfInstance.setLogFile(logFile);
+    wkfInstanceRepository.save(wkfInstance);
   }
 
   @Transactional(rollbackOn = Exception.class)
   public void clearLog(String processInstanceId) {
     WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
-
     if (wkfInstance != null) {
-      wkfInstance.setLogText(null);
+      wkfInstance.setLogFile(null);
       wkfLoggerInitServiceImpl.remove(processInstanceId);
       wkfInstanceRepository.save(wkfInstance);
     }

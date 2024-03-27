@@ -14,7 +14,7 @@
     <string name="currentStatus" large="true" title="Current status"/>
     <long name="modelId"/>
     <string name="modelName"/>
-    <string name="logText" title="Log" large="true"/>
+    <many-to-one name="logFile" ref="com.axelor.meta.db.MetaFile" title="Log"/>
     <string name="node" title="Node"/>
     <boolean name="instanceError" title="Instance error"/>
     <string name="currentError" title="Error"/>

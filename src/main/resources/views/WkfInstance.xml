@@ -33,10 +33,11 @@
           name="migrateInstanceBtn" title="Migrate instance"/>
         <field name="wkfInstanceMigrationHistory" readonly="true" colSpan="12"/>
       </panel>
-      <panel name="logPanel" title="Log" hidden="true">
+      <panel name="logPanel" title="Log" hidden="true"
+        onTabSelect="action-method-wkf-instance-show-logs">
         <button name="clearLogBtn" title="Clear log"
           onClick="action-wkf-instance-method-clear-log" colSpan="3"/>
-        <field name="logText" colSpan="12" showTitle="false" widget="code-editor"/>
+        <field name="$logText" colSpan="12" showTitle="false" widget="code-editor"/>
       </panel>
       <panel name="varPanel" title="Variables"
         onTabSelect="action-wkf-instance-method-show-vars">
@@ -104,6 +105,10 @@
 
   <action-method name="action-wkf-instance-method-show-vars">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="showInstanceVariables"/>
+  </action-method>
+
+  <action-method name="action-method-wkf-instance-show-logs">
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="showInstanceLog"/>
   </action-method>
 
 

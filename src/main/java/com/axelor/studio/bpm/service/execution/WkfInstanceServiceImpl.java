@@ -49,6 +49,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
@@ -859,5 +861,25 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     wkfInstance.setInstanceError(value);
     wkfInstance.setCurrentError(error);
     wkfInstanceRepository.save(wkfInstance);
+  }
+
+  public String getLogText(WkfInstance instance) {
+    try {
+      String result = "";
+      if (instance.getLogFile() != null) {
+        BufferedReader reader =
+            new BufferedReader(new FileReader(MetaFiles.getPath(instance.getLogFile()).toString()));
+        StringBuilder logBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+          logBuilder.append(line).append(System.lineSeparator());
+        }
+        result = logBuilder.toString();
+        reader.close();
+      }
+      return result;
+    } catch (Exception e) {
+      throw new IllegalStateException(e.getMessage());
+    }
   }
 }

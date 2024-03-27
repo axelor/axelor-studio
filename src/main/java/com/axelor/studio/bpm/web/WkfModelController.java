@@ -500,4 +500,14 @@ public class WkfModelController {
       ExceptionHelper.trace(response, e);
     }
   }
+
+  public void showInstanceLog(ActionRequest request, ActionResponse response) {
+    try {
+      WkfInstance instance = request.getContext().asType(WkfInstance.class);
+      String result = Beans.get(WkfInstanceService.class).getLogText(instance);
+      response.setValue("$logText", result);
+    } catch (Exception e) {
+      ExceptionHelper.trace(response, e);
+    }
+  }
 }
