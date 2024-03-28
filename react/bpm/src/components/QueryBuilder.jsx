@@ -18,6 +18,8 @@ function QueryBuilder({
   setProperty,
   getExpression,
   fetchModels,
+  setOpen,
+  setOpenScriptDialog,
 }) {
   const parameters = {
     type: type,
@@ -40,6 +42,8 @@ function QueryBuilder({
             getExpression={getExpression}
             defaultModel={defaultModel}
             fetchModels={fetchModels}
+            setOpen={setOpen}
+            setOpenScriptDialog={setOpenScriptDialog}
             dialogActionButton={
               <Button
                 onClick={close}

@@ -309,11 +309,6 @@
           "name": "followUpDate",
           "isAttr": true,
           "type": "String"
-        },
-        {
-          "name": "priority",
-          "isAttr": true,
-          "type": "String"
         }
       ]
     },
@@ -1025,9 +1020,7 @@
     },
     {
       "name": "Menus",
-      "superClass": [
-        "Element"
-      ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "menuParameters",
@@ -1108,9 +1101,7 @@
     },
     {
       "name": "Context",
-      "superClass": [
-        "Element"
-      ],
+      "superClass": ["Element"],
       "properties": [
         {
           "name": "key",

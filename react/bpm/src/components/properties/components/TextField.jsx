@@ -27,6 +27,10 @@ export default function TextField({
   isScript,
   language,
   setDummyProperty = () => {},
+  setTeamField,
+  setField,
+  setDeadlineField,
+  placeholder,
 }) {
   const {
     label,
@@ -75,6 +79,9 @@ export default function TextField({
     setValue("");
     const isError = getValidation();
     setError(isError);
+    setTeamField && setTeamField(null);
+    setField && setField(null);
+    setDeadlineField && setDeadlineField(null);
     if (!isError) {
       updateProperty("");
     }
@@ -161,6 +168,7 @@ export default function TextField({
             className={className}
             style={{ textOverflow: "ellipsis" }}
             onBlur={(e) => updateProperty(e.target.value)}
+            placeholder={placeholder}
           />
           {canRemove && !readOnly && (
             <Button

@@ -26,13 +26,11 @@ function ScriptEditor({
   const [height, setHeight] = useState(defaultHeight || INITIAL_HEIGHT);
   const [width, setWidth] = useState(containerWidth - PADDING * 2);
   const savedDimension = useRef({ width, height });
-  const {
-    tokenizer,
-    suggestions,
-    languageConfig,
-    themeRules,
-  } = useLanguageConfig(language);
+  const { tokenizer, suggestions, languageConfig, themeRules } =
+    useLanguageConfig(language);
   const { theme } = useTheme();
+  const showSuggestions =
+    language && language.toLowerCase() === "javascript" ? false : true;
 
   const options = {
     readOnly: readOnly,
@@ -41,6 +39,8 @@ function ScriptEditor({
     minimap: {
       enabled: minimap,
     },
+    suggestOnTriggerCharacters: showSuggestions,
+    quickSuggestions: showSuggestions,
   };
 
   function handleChange(newValue) {
