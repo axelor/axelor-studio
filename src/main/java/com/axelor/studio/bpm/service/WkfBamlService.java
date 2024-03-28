@@ -24,6 +24,7 @@ import com.axelor.studio.db.BamlModel;
 import com.axelor.studio.db.repo.BamlModelRepository;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.Inject;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfBamlService implements JavaDelegate {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfBamlService.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected BamlModelRepository bamlModelRepo;
   protected BamlService bamlService;

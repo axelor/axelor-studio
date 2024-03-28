@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class FilterGroovyServiceImpl implements FilterGroovyService {
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected FilterCommonService filterCommonService;
 

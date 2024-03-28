@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ReportBuilderServiceImpl implements ReportBuilderService {
 
-  protected Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected List<String[]> panels;
 

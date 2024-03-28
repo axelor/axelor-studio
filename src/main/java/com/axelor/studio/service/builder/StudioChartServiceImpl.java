@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StudioChartServiceImpl implements StudioChartService {
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final String Tab1 = "\n \t";
   protected static final String Tab2 = "\n \t\t";

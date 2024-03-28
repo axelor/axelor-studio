@@ -29,6 +29,7 @@ import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfExecutionListener implements ExecutionListener {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfExecutionListener.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected WkfInstanceRepository wkfInstanceRepo;
   protected WkfInstanceService wkfInstanceService;

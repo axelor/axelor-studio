@@ -9,7 +9,6 @@ import com.axelor.meta.db.MetaModule;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.db.repo.MetaModuleRepository;
-import com.axelor.studio.app.service.AppServiceImpl;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.db.WkfModel;
@@ -20,6 +19,7 @@ import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.io.ByteStreams;
 import com.google.inject.persist.Transactional;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfBpmImportServiceImpl implements WkfBpmImportService {
   private final WkfModelRepository wkfModelRepository;
-  protected final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   protected final BpmDeploymentService bpmDeploymentService;
   protected static final String DIR_PROCESSES = "processes";
   protected static final String DIR_DMN = "processes/dmn";

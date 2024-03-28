@@ -54,6 +54,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -95,7 +96,7 @@ public class StudioAppServiceImpl implements StudioAppService {
     this.metaJsonModelRepo = metaJsonModelRepo;
   }
 
-  protected final Logger log = LoggerFactory.getLogger(StudioAppServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Override
   public StudioApp build(StudioApp studioApp) {

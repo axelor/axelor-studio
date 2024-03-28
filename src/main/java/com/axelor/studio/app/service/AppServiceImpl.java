@@ -50,6 +50,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,7 +76,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class AppServiceImpl implements AppService {
 
-  protected final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final String DIR_APPS = "apps";
 
