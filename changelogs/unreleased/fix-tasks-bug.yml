@@ -1,0 +1,3 @@
+---
+title: Fix problem with userTask is blocking node when true expression set
+type: fix
