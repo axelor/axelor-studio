@@ -122,25 +122,25 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     OutputStreamAppender<ILoggingEvent> appender = null;
     String processInstanceId = null;
-    String modelProcessInstanceId = model.getProcessInstanceId();
 
     try {
-      if (Strings.isNullOrEmpty(modelProcessInstanceId)) {
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
         checkSubProcess(model);
       }
 
-      if (Strings.isNullOrEmpty(modelProcessInstanceId)) {
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
         addRelatedProcessInstanceId(model);
-        log.debug("Model process instanceId added: {}", modelProcessInstanceId);
+        log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
       }
 
-      if (Strings.isNullOrEmpty(modelProcessInstanceId)) {
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
         return helpText;
       }
 
       ProcessEngine engine = engineService.getEngine();
 
-      WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(modelProcessInstanceId);
+      WkfInstance wkfInstance =
+          wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
 
       if (wkfInstance == null) {
         return helpText;
@@ -158,6 +158,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     } catch (Exception e) {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
+        final String finalProcessInstanceId = model.getProcessInstanceId();
         ForkJoinPool.commonPool()
             .submit(
                 () ->
@@ -165,7 +166,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
                         null,
                         e.getMessage(),
                         EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                        modelProcessInstanceId));
+                        finalProcessInstanceId));
       }
       throw e;
 
