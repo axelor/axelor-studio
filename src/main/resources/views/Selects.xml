@@ -67,4 +67,10 @@
     <option value="3">Error</option>
   </selection>
 
+  <selection name="studio-wkf-instance-log-filter-select">
+    <option value="1">Date</option>
+    <option value="2">Duration</option>
+    <option value="3">All</option>
+  </selection>
+
 </object-views>

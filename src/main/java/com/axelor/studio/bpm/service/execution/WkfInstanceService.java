@@ -70,5 +70,6 @@ public interface WkfInstanceService {
 
   public List<WkfInstanceVariable> getWkfInstanceVariables(WkfInstance instance);
 
-  String getLogText(WkfInstance wkfInstance);
+  String getInstanceLogs(
+      WkfInstance instance, String filter, String startString, String endString, Integer minutes);
 }

@@ -56,6 +56,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -863,7 +864,28 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     wkfInstanceRepository.save(wkfInstance);
   }
 
-  public String getLogText(WkfInstance instance) {
+  @Override
+  public String getInstanceLogs(
+      WkfInstance instance, String filter, String startString, String endString, Integer minutes) {
+    String result = "";
+    if (Integer.parseInt(filter) == 1 && startString != null && endString != null) {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+      LocalDateTime startDate = LocalDateTime.parse(startString, formatter);
+      LocalDateTime endDate = LocalDateTime.parse(endString, formatter);
+      result = getFilteredLogText(instance, startDate, endDate);
+    }
+    if (Integer.parseInt(filter) == 2 && minutes != null) {
+      result =
+          getFilteredLogText(
+              instance, LocalDateTime.now().minusMinutes(minutes), LocalDateTime.now());
+    }
+    if (Integer.parseInt(filter) == 3) {
+      result = getAllLogText(instance);
+    }
+    return result;
+  }
+
+  public String getAllLogText(WkfInstance instance) {
     try {
       String result = "";
       if (instance.getLogFile() != null) {
@@ -881,5 +903,57 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     } catch (Exception e) {
       throw new IllegalStateException(e.getMessage());
     }
+  }
+
+  public String getFilteredLogText(WkfInstance wkfInstance, LocalDateTime from, LocalDateTime to) {
+    validate(from, to);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    StringBuilder result = new StringBuilder();
+    try {
+      if (wkfInstance.getLogFile() != null) {
+        LocalDateTime lastValidDateTime = null;
+        BufferedReader reader =
+            new BufferedReader(
+                new FileReader(MetaFiles.getPath(wkfInstance.getLogFile()).toString()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+          if (isLogDetails(line)) {
+            if (isLogDetailsIncluded(lastValidDateTime, from, to)) {
+              result.append(line).append(System.lineSeparator());
+            }
+            continue;
+          }
+          String logDateTimeStr = line.substring(0, 23);
+          LocalDateTime logDateTime = LocalDateTime.parse(logDateTimeStr, formatter);
+
+          if (logDateTime.isAfter(from) && logDateTime.isBefore(to)) {
+            result.append(line).append(System.lineSeparator());
+          }
+
+          lastValidDateTime = logDateTime;
+        }
+        reader.close();
+      }
+      return result.toString();
+
+    } catch (Exception e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  protected void validate(LocalDateTime infDate, LocalDateTime supDate) {
+    if (infDate.isAfter(supDate)) {
+      throw new IllegalArgumentException(
+          String.format(I18n.get(BpmExceptionMessage.BPM_LOG_INVALID_DATES)));
+    }
+  }
+
+  protected boolean isLogDetails(String line) {
+    return line.length() < 23 || !Character.isDigit(line.charAt(0));
+  }
+
+  protected boolean isLogDetailsIncluded(
+      LocalDateTime validDateTime, LocalDateTime inf, LocalDateTime sup) {
+    return validDateTime != null && validDateTime.isBefore(sup) && validDateTime.isAfter(inf);
   }
 }

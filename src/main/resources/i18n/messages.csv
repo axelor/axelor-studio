@@ -2040,3 +2040,6 @@
 "Disable 'Add translations' property or add respective language translation to change label",,,
 
 "Disable 'Add translations' property or add respective language translation to change label",,,
+"Invalid date: start date is after end date",,,
+"Duration (m)",,,
+"Duration",,,

@@ -504,8 +504,14 @@ public class WkfModelController {
   public void showInstanceLog(ActionRequest request, ActionResponse response) {
     try {
       WkfInstance instance = request.getContext().asType(WkfInstance.class);
-      String result = Beans.get(WkfInstanceService.class).getLogText(instance);
-      response.setValue("$logText", result);
+      String filter = (String) request.getContext().get("wkfLogFilter");
+      Integer minutes = (Integer) request.getContext().get("minutes");
+      String startString = (String) request.getContext().get("startDate");
+      String endString = (String) request.getContext().get("endDate");
+      response.setValue(
+          "$logText",
+          Beans.get(WkfInstanceService.class)
+              .getInstanceLogs(instance, filter, startString, endString, minutes));
     } catch (Exception e) {
       ExceptionHelper.trace(response, e);
     }
