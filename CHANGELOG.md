@@ -1,3 +1,9 @@
+## 2.2.1 (2024-03-29)
+
+#### Fix
+
+* Fix problem with userTask is blocking node when true expression set
+
 ## 2.2.0 (2024-03-14)
 
 #### Feature
