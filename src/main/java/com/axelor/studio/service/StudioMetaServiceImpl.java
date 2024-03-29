@@ -47,6 +47,7 @@ import com.axelor.studio.db.repo.StudioMenuRepository;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
 
 public class StudioMetaServiceImpl implements StudioMetaService {
 
-  protected final Logger log = LoggerFactory.getLogger(StudioMetaServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected final MetaActionRepository metaActionRepo;
 

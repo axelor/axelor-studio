@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FilterJpqlServiceImpl implements FilterJpqlService {
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected FilterCommonService filterCommonService;
 

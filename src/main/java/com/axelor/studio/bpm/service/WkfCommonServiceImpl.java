@@ -37,6 +37,7 @@ import com.axelor.utils.helpers.StringHelper;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfCommonServiceImpl implements WkfCommonService {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfCommonServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected WkfProcessConfigRepository wkfProcessConfigRepository;
 

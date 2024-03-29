@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class StudioDashboardServiceImpl implements StudioDashboardService {
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected StudioMetaService metaService;
 

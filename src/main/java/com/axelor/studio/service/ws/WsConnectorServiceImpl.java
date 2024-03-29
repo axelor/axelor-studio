@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
 
 public class WsConnectorServiceImpl implements WsConnectorService {
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   protected final SessionTypeFactory sessionTypeFactory;
   protected WsAuthenticatorService wsAuthenticatorService;
   protected GroovyTemplates templates;

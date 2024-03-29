@@ -29,6 +29,7 @@ import com.axelor.studio.db.repo.WkfDmnModelRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 public class DmnDeploymentServiceImpl implements DmnDeploymentService {
 
-  protected final Logger log = LoggerFactory.getLogger(DmnDeploymentServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected WkfDmnModelRepository wkfDmnModelRepo;
   protected ProcessEngineService processEngineService;

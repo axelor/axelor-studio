@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 public class FilterSqlServiceImpl implements FilterSqlService {
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected FilterCommonService filterCommonService;
 

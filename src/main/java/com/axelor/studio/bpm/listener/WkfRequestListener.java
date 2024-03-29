@@ -37,6 +37,7 @@ import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.google.inject.persist.Transactional;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfRequestListener {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfRequestListener.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected WkfInstanceRepository wkfInstanceRepo;
   protected WkfInstanceService wkfInstanceService;

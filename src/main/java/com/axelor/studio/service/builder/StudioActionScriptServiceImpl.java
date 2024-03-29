@@ -54,7 +54,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
 
   protected static final String INDENT = "\t";
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected final Inflector inflector = Inflector.getInstance();
 

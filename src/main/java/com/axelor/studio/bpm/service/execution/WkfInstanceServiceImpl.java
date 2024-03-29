@@ -51,6 +51,7 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfInstanceServiceImpl implements WkfInstanceService {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfInstanceServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected ProcessEngineService engineService;
 

@@ -37,6 +37,7 @@ import com.axelor.studio.translation.ITranslation;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import java.lang.invoke.MethodHandles;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfTaskServiceImpl implements WkfTaskService {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfTaskServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final int RECURSIVE_TASK_EXECUTION_COUNT_LIMIT = 100;
 

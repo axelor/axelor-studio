@@ -90,7 +90,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
         "ws-request-list"
       };
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final List<String> JSON_EXTRACT_TYPES =
       Arrays.asList(new String[] {"integer", "decimal", "boolean", "text"});

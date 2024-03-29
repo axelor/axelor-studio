@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.listener;
 
+import java.lang.invoke.MethodHandles;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class SendTaskExecution implements JavaDelegate {
 
-  protected static final Logger log = LoggerFactory.getLogger(SendTaskExecution.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Override
   public void execute(DelegateExecution execution) throws Exception {

@@ -45,6 +45,7 @@ import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.helpers.context.FullContextHelper;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
 
 public class DmnServiceImpl implements DmnService {
 
-  protected Logger log = LoggerFactory.getLogger(DmnServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected WkfCommonService wkfCommonService;
 

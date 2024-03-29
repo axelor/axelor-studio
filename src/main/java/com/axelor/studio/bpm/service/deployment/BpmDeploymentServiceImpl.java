@@ -45,6 +45,7 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,7 +81,7 @@ import org.slf4j.LoggerFactory;
 
 public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
-  protected Logger log = LoggerFactory.getLogger(BpmDeploymentServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected WkfProcessRepository wkfProcessRepository;
   protected MetaJsonModelRepository metaJsonModelRepository;

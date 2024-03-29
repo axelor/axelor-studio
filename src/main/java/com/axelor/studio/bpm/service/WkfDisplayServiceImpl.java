@@ -33,6 +33,7 @@ import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +57,7 @@ import org.slf4j.LoggerFactory;
 
 public class WkfDisplayServiceImpl implements WkfDisplayService {
 
-  protected static final Logger log = LoggerFactory.getLogger(WkfDisplayServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected ProcessEngineService engineService;
 

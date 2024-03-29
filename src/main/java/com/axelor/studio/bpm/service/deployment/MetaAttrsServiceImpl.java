@@ -28,6 +28,7 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public class MetaAttrsServiceImpl implements MetaAttrsService {
 
-  protected final Logger log = LoggerFactory.getLogger(MetaAttrsServiceImpl.class);
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static final String META_ATTRS_CONDITION =
       "com.axelor.inject.Beans.get("
