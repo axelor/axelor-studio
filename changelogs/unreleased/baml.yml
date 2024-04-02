@@ -1,0 +1,8 @@
+---
+title : "BAML : Migrate BAML components to axelor ui components"
+description : |
+  Remove material ui & use axelor ui components as a alternative
+  Add theme support like backend
+  You can refer BPM or Studio for this migration.
+  Basically completely migrate BAML to new theme & look using axelor ui
+type : feature

@@ -1,0 +1,8 @@
+---
+title : "STUDIO : Studio properties improvisation"
+description: |
+  One should be able to hide the whole section from properties.
+  Similarly, it's Allowed property to hide or show conditionally.
+  Sections labels customisation is possible.
+  In side panel widgets toolbar also, it is possible  to update visibility conditionally for sections or for particular field type & the same for divider's logic
+type : feature

@@ -1,0 +1,5 @@
+---
+title : "STUDIO : Fix Infinite loading When model bar search"
+description : |
+  When model doesn't have any panel and it's get selected view gets into a infinite loading.
+type : fix
