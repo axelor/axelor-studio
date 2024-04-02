@@ -2082,3 +2082,6 @@
 "The expression is evaluated in the context and displayed","L'expression est évaluée dans le contexte et affichée.",,
 "This expression evaluates the context to determine whether the value for the field is valid or not.","Cette expression évalue le contexte pour déterminer si la valeur du champ est valide ou non.",,
 "Disable 'Add translations' property or add respective language translation to change label","Désactiver la propriété 'Ajouter des traductions' ou ajouter la traduction dans la langue respective pour modifier l'étiquette.",,
+"Invalid date: start date is after end date","Date invalide : la date de début est après la date de fin",,
+"Duration (m)","Durée (m)",,
+"Duration","Durée",,

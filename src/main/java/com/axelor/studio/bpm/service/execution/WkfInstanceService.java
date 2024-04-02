@@ -69,4 +69,7 @@ public interface WkfInstanceService {
       WkfProcess process, String processInstanceId, int migrationStatus);
 
   public List<WkfInstanceVariable> getWkfInstanceVariables(WkfInstance instance);
+
+  public String getInstanceLogs(
+      WkfInstance instance, String filter, String startString, String endString, Integer minutes);
 }

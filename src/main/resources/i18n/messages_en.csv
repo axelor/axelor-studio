@@ -2040,3 +2040,6 @@
 "The expression is evaluated in the context and displayed",,,
 "This expression evaluates the context to determine whether the value for the field is valid or not.",,,
 "Disable 'Add translations' property or add respective language translation to change label",,,
+"Invalid date: start date is after end date",,,
+"Duration (m)",,,
+"Duration",,,
