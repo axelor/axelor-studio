@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <%
-	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsRequestRepository' as Class).all()
+	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsRequestRepository' as Class).all().order('name')
+	export = com.axelor.inject.Beans.get('com.axelor.studio.service.ExportService' as Class)
 
 	if(__ids__ != null) {
 		query = query.filter('self.studioApp.id in ?1',__ids__)
@@ -10,11 +11,11 @@
 	query.fetch().each({
 		request ->
 
-				headers = com.axelor.studio.service.ExportService.exportWsKeyValueHeadersLines(request.headerWsKeyValueList, 4, 'header')
+				headers = export.exportWsKeyValueHeadersLines(request.headerWsKeyValueList, 4, 'header')
 
-				payloads = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.payLoadWsKeyValueList, 4, 'payload')
+				payloads = export.exportWsKeyValueLines(request.payLoadWsKeyValueList, 4, 'payload')
 
-				parameters = com.axelor.studio.service.ExportService.exportWsKeyValueLines(request.parameterWsKeyValueList, 4, 'parameter')
+				parameters = export.exportWsKeyValueLines(request.parameterWsKeyValueList, 4, 'parameter')
 
 				wsRequests += """\n\t\t<ws-request>
 				\n\t\t\t<name>${request.name}</name>
