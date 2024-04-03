@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <%
-	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsConnectorRepository' as Class).all()
-
+	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WsConnectorRepository' as Class).all().order('name')
+	export = com.axelor.inject.Beans.get('com.axelor.studio.service.ExportService' as Class)
 	if(__ids__ != null) {
 		query = query.filter('self.studioApp.id in ?1',__ids__)
 	}
@@ -9,7 +9,7 @@
 	wsConnectors = ""
 	query.fetch().each({
 		wsConnector ->
-		        requests = com.axelor.studio.service.ExportService.exportRequests(wsConnector.wsRequestList, 4, 'request')
+		        requests = export.exportRequests(wsConnector.wsRequestList, 4, 'request')
 
 				wsConnectors += """\n\t\t<ws-connector>
 				\n\t\t\t<name>${wsConnector.name}</name>
