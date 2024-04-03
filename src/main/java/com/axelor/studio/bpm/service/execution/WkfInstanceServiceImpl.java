@@ -161,23 +161,23 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfInstance wkfInstance =
           wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
 
-        if (wkfInstance == null) {
-          return helpText;
-        }
-        setWkfInstanceError(wkfInstance, false, null);
-        try {
-          ProcessInstance processInstance =
-              findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
+      if (wkfInstance == null) {
+        return helpText;
+      }
+      setWkfInstanceError(wkfInstance, false, null);
+      try {
+        ProcessInstance processInstance =
+            findProcessInstance(wkfInstance.getInstanceId(), engine.getRuntimeService());
 
-          if (processInstance != null && !processInstance.isEnded()) {
-            processInstanceId = processInstance.getId();
-            appender = wkfLogService.createOrAttachAppender(processInstanceId);
-            helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
-          }
-        } catch (Exception e) {
-          setWkfInstanceError(wkfInstance, true, e.getMessage());
-          throw e;
+        if (processInstance != null && !processInstance.isEnded()) {
+          processInstanceId = processInstance.getId();
+          appender = wkfLogService.createOrAttachAppender(processInstanceId);
+          helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
         }
+      } catch (Exception e) {
+        setWkfInstanceError(wkfInstance, true, e.getMessage());
+        throw e;
+      }
 
     } catch (Exception e) {
       if (!(e instanceof AxelorScriptEngineException)) {
