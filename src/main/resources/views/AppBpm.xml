@@ -3,12 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_6.1.xsd">
 
-  <form name="app-studio-config-form" title="App Studio" model="com.axelor.studio.db.AppStudio"
+  <form name="app-bpm-config-form" title="App BPM" model="com.axelor.studio.db.AppBpm"
     width="large" canDelete="false" canNew="false" canCopy="false">
 
-    <panel name="mainPanel">
-      <field name="enableStudioApp" widget="Boolean-switch"/>
-      <field name="enableTrackWebServiceCall"/>
+    <panel name="taskEvaluationPanel" title="Task evaluation">
+      <help colSpan="12">A suspicion of infinite loop occurs when both of these limits are exceeded.</help>
+      <field name="taskExecutionRecursivityDurationLimit"/>
+      <field name="taskExecutionRecursivityDepthLimit"/>
     </panel>
 
     <panel-mail name="mailPanel">

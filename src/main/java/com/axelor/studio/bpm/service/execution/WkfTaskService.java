@@ -24,6 +24,9 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 public interface WkfTaskService {
 
+  /** Resets the service state. */
+  void reset();
+
   String runTasks(
       ProcessEngine engine,
       WkfInstance instance,

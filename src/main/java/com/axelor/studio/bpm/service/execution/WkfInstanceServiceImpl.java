@@ -141,6 +141,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     OutputStreamAppender<ILoggingEvent> appender = null;
     String processInstanceId = null;
+
     try {
       if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
         checkSubProcess(model);
@@ -151,12 +152,14 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         log.debug("Model process instanceId added: {}", model.getProcessInstanceId());
       }
 
-      if (!Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+      if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
+        return helpText;
+      }
 
-        ProcessEngine engine = engineService.getEngine();
+      ProcessEngine engine = engineService.getEngine();
 
-        WkfInstance wkfInstance =
-            wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
+      WkfInstance wkfInstance =
+          wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
 
         if (wkfInstance == null) {
           return helpText;
@@ -175,7 +178,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
           setWkfInstanceError(wkfInstance, true, e.getMessage());
           throw e;
         }
-      }
+
     } catch (Exception e) {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
@@ -192,7 +195,9 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
       throw e;
+
     } finally {
+      wkfTaskService.reset();
       if (appender != null) {
         wkfLogService.writeLog(processInstanceId);
       }

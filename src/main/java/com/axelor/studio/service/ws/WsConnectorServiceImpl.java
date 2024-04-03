@@ -21,8 +21,13 @@ import com.axelor.common.StringUtils;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
-import com.axelor.studio.db.*;
-import com.axelor.studio.db.repo.AppStudioRepository;
+import com.axelor.studio.db.WsAuthenticator;
+import com.axelor.studio.db.WsConnector;
+import com.axelor.studio.db.WsKeyValue;
+import com.axelor.studio.db.WsKeyValueSelectionHeader;
+import com.axelor.studio.db.WsRequest;
+import com.axelor.studio.db.WsRequestList;
+import com.axelor.studio.service.app.AppStudioService;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.text.Templates;
 import com.axelor.utils.helpers.ExceptionHelper;
@@ -66,6 +71,7 @@ import org.slf4j.LoggerFactory;
 public class WsConnectorServiceImpl implements WsConnectorService {
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   protected final SessionTypeFactory sessionTypeFactory;
   protected WsAuthenticatorService wsAuthenticatorService;
   protected GroovyTemplates templates;
@@ -144,6 +150,9 @@ public class WsConnectorServiceImpl implements WsConnectorService {
     WsRequest wsRequest = null;
 
     wsConnector.getWsRequestList().sort(Comparator.comparingInt(WsRequestList::getSequence));
+
+    Boolean enableTrackWebServiceCall =
+        Beans.get(AppStudioService.class).getAppStudio().getEnableTrackWebServiceCall();
 
     while (count < wsConnector.getWsRequestList().size() + 1) {
       Response wsResponse = null;
@@ -261,18 +270,14 @@ public class WsConnectorServiceImpl implements WsConnectorService {
           repeatIndex++;
         }
       } catch (Exception e) {
-        if (wsRequest != null
-            && Beans.get(AppStudioRepository.class)
-                .all()
-                .fetchOne()
-                .getEnableTrackWebServiceCall()) {
+        if (wsRequest != null && enableTrackWebServiceCall) {
           addAttachement(resultContext, wsRequest, wsResponse, wsConnector, e);
         }
         throw new IllegalArgumentException(e.getMessage());
       }
     }
     // success
-    if (Beans.get(AppStudioRepository.class).all().fetchOne().getEnableTrackWebServiceCall()) {
+    if (enableTrackWebServiceCall) {
       addAttachement(resultContext, wsConnector);
     }
     return ctx;
