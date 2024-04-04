@@ -1,3 +1,0 @@
----
-title : "BPM : Fix Multiple BPM instance for a same record when throwing exception during the process execution"
-type : fix

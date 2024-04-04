@@ -1,3 +1,68 @@
+## 3.0.0 (2024-04-04)
+
+#### Feature
+
+* BPM : Allow to display status of an event based gateway
+* BPM : Colorize the diagram nodes where errors happens
+* BPM : Update the bpmn-js-token-simulation
+* BPM : For a given process instance allow to visualize process variable and values
+* STUDIO : Studio properties improvisation
+
+  <details>
+  
+  One should be able to hide the whole section from properties.
+  Similarly, it's Allowed property to hide or show conditionally.
+  Sections labels customisation is possible.
+  In side panel widgets toolbar also, it is possible  to update visibility conditionally for sections or for particular field type & the same for divider's logic
+  
+  </details>
+
+* BPM : DMN logs related to an instance execution should be displayed as well
+* STUDIO : Add interface for ExportService and change methods to non-static
+* BAML : Migrate BAML components to axelor ui components
+
+  <details>
+  
+  Remove material ui & use axelor ui components as a alternative
+  Add theme support like backend
+  You can refer BPM or Studio for this migration.
+  Basically completely migrate BAML to new theme & look using axelor ui
+  
+  </details>
+
+* BPM : Migrate from react-ace to monaco-editor
+* BPM : The executable option must be a label properly displayed
+* STUDIO : Add icons and toolTips to guide the user
+
+#### Change
+
+* App builder : Use logger properly and with consistency
+
+#### Fix
+
+* STUDIO :  Studio label on conditions are not translated
+* STUDIO : Fix Infinite loading When model bar search
+
+  <details>
+  
+  When model doesn't have any panel and it's get selected view gets into a infinite loading.
+  
+  </details>
+
+* BPM : OutOfMemory error due to large instance log text
+* STUDIO :  Titles are not get in the node mapping
+* BPM : Node translations are not working
+* BPM : Fix Multiple BPM instance for a same record when throwing exception during the process execution
+* STUDIO : Add action validate when saving the studio action
+
+  <details>
+  
+  Verify filling the fields lines by the right values. No effect for this action will be triggered just an action validate
+  
+  </details>
+
+* App builder : fix import Apps from App menu
+
 ## 2.2.1 (2024-03-29)
 
 #### Fix

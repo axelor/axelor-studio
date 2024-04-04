@@ -1,5 +1,0 @@
----
-title : "STUDIO : Add action validate when saving the studio action"
-description : |
-  Verify filling the fields lines by the right values. No effect for this action will be triggered just an action validate
-type : fix
