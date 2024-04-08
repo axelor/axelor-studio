@@ -233,6 +233,16 @@ export default function ConditionalEventProps({
             description={translate(
               "Variable events can be used to restrict the type of change. It is possible to specify more than one variable change event as a comma separated list"
             )}
+            handleRemove={(option) => {
+              let value = variableEventValue
+                ?.split(",")
+                ?.filter((i) => i !== option?.value)
+                ?.join(",");
+              setVariableEventValue(value);
+              setValue("variableEvent")(element, {
+                variableEvent: value,
+              });
+            }}
           />
         </>
       )}
