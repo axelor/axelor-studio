@@ -24,7 +24,7 @@ RUN mkdir -p ${APP_SOURCE}/webapps/ROOT && \
 FROM eclipse-temurin:11-jre-alpine
 
 ARG BUILD_DATE
-ARG TOMCAT_VERSION=9.0.83
+ARG TOMCAT_VERSION=9.0.85
 
 ENV CATALINA_HOME=/usr/local/tomcat
 

@@ -1,5 +1,4 @@
 #!/bin/ash
-set -e
 
 APP_USER="${APP_USER:-admin}"
 APP_PASS="${APP_PASS:-admin}"
@@ -13,8 +12,9 @@ APP_LANGUAGE="${APP_LANGUAGE:-en}"
 APP_DEMO_DATA="${APP_DEMO_DATA:-true}"
 APP_LOAD_APPS="${APP_LOAD_APPS:-true}"
 DEV_MODE="${DEV_MODE:-false}"
+ENABLE_QUARTZ="${ENABLE_QUARTZ:-false}"
 
-APP_DATA_BASE_DIR="/app/data"
+APP_DATA_BASE_DIR="/data"
 APP_DATA_EXPORTS_DIR="${APP_DATA_EXPORTS_DIR:-$APP_DATA_BASE_DIR/exports}"
 APP_DATA_ATTACHMENTS_DIR="${APP_DATA_ATTACHMENTS_DIR:-$APP_DATA_BASE_DIR/attachments}"
 
@@ -86,7 +86,7 @@ update_properties() {
   findAndReplace "hibernate.hikari.minimumIdle" "1" ${APP_PROP_FILE_PATH}
   findAndReplace "hibernate.search.default.directory_provider" "none" ${APP_PROP_FILE_PATH}
   findAndReplace "logging.level.com.axelor" "${LOG_LEVEL}" ${APP_PROP_FILE_PATH}
-  findAndReplace "quartz.enable" "false" ${APP_PROP_FILE_PATH}
+  findAndReplace "quartz.enable" "${ENABLE_QUARTZ}" ${APP_PROP_FILE_PATH}
   findAndReplace "temp.dir" "{java.io.tmpdir}" ${APP_PROP_FILE_PATH}
 }
 
@@ -155,21 +155,25 @@ EOF
   fi
 }
 
+# Wait until app is started and available
 check_tomcat_app_available() {
+  echo "Waiting tomcat startup..."
   local counter=1
   local command="curl --connect-timeout 5 --fail -s -o /dev/null -w %{http_code} -X GET http://localhost:8080/"
-  local code
-  code=$(eval "${command}")
+  local code=0
   until [[ "$code" == "200" ]] || [ "${counter}" -gt 30 ]; do
-    echo "Waiting 20sec for Tomcat to be ready, attempt $((counter++))"
-    sleep 20
+    code=$(eval "${command}")
+    if [ "${code}" -ne 200 ]; then
+      echo "Waiting 20sec for Tomcat to be ready, attempt $((counter++)). (code: ${code})"
+      sleep 20
+    fi
   done
 
-  if [ "$counter" -gt 30 ]; then
+  if [ "${counter}" -gt 30 ]; then
     echo
     echo "ERROR: "
-    echo "  Unable to reach instance. (code: ${code})"
-    echo "  Seems app has not starting or still loading."
+    echo "  Unable to reach instance."
+    echo "  It seems the app has not started or is still loading."
     echo "  Aborting... 🧨"
     echo
     exit 1
