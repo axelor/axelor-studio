@@ -8,8 +8,9 @@ services:
       PGDATABASE: axelor
       JAVA_XMS: "4096M"
       JAVA_XMX: "4096M"
-      APP_LOAD_APPS: "true"
+      APP_LOAD_APPS: "all"
       APP_DEMO_DATA: "true"
+      DEV_MODE: "true"
     ports:
       - "8080:8080"
   postgres:

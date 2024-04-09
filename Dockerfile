@@ -1,9 +1,9 @@
 FROM axelor/app-builder:6.1 AS builder
 
 ARG JAVA_OPTS="-Xmx4g"
-ARG APP_SOURCE=/app/open-platform-demo
-ARG DEBIAN_FRONTEND=noninteractive
-ARG MODULE_NAME=axelor-studio
+ARG APP_SOURCE="/app/open-platform-demo"
+ARG DEBIAN_FRONTEND="noninteractive"
+ARG MODULE_NAME="axelor-studio"
 
 COPY . /${MODULE_NAME}
 WORKDIR /
@@ -26,7 +26,19 @@ FROM eclipse-temurin:11-jre-alpine
 ARG BUILD_DATE
 ARG TOMCAT_VERSION=9.0.85
 
-ENV CATALINA_HOME=/usr/local/tomcat
+ARG APP_LANGUAGE
+ARG APP_DEMO_DATA
+ARG APP_LOAD_APPS
+ARG DEV_MODE
+ARG ENABLE_QUARTZ
+
+ENV CATALINA_HOME="/usr/local/tomcat"
+
+ENV APP_LANGUAGE=${APP_LANGUAGE}
+ENV APP_DEMO_DATA=${APP_DEMO_DATA}
+ENV APP_LOAD_APPS=${APP_LOAD_APPS}
+ENV DEV_MODE=${DEV_MODE}
+ENV ENABLE_QUARTZ=${ENABLE_QUARTZ}
 
 # System Upgrade for security reasons + install tools needed by the entrypoint
 RUN apk upgrade && \
@@ -51,9 +63,9 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 LABEL \
 	maintainer="Axelor <support@axelor.com>" \
 	org.label-schema.schema-version="1.0" \
-	org.label-schema.build-date=${BUILD_DATE} \
-	org.label-schema.name=${MODULE_NAME} \
-	org.label-schema.vendor=axelor
+	org.label-schema.build-date="${BUILD_DATE}" \
+	org.label-schema.name="${MODULE_NAME}" \
+	org.label-schema.vendor="axelor"
 
 # Entrypoint
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
