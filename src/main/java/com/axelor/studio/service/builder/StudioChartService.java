@@ -24,6 +24,7 @@ public interface StudioChartService {
   String getDateTypeGroup(String dateType, String typeName, String group);
 
   String getSearchFields();
+
   //	private void setOnNewAction(StudioChart studioChart) {
   //
   //		if (!onNewFields.isEmpty()) {
