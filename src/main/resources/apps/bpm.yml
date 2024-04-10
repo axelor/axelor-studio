@@ -6,6 +6,7 @@ typeSelect: standard
 installOrder: 1020
 description: |
    Business Process Modeling
+image: app-bpm.png
 modules: 
    axelor-studio
 dependsOn: 
