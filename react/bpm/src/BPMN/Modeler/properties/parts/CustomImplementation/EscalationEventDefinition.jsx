@@ -100,22 +100,15 @@ export default function EscalationEventProps({
                 if (!escalationEventDefinition) return;
                 let reference = escalationEventDefinition.get("escalationRef");
                 return {
-                  name: reference && reference.name,
+                  name: reference?.name,
                 };
               },
               set: function (e, value) {
-                if (
-                  escalationEventDefinition &&
-                  escalationEventDefinition.escalationRef
-                ) {
-                  setDummyProperty({
-                    bpmnModeler,
-                    element,
-                    value: ele.name,
-                  });
+                if (escalationEventDefinition?.escalationRef) {
+                  setDummyProperty();
                   escalationEventDefinition.escalationRef.name = value.name;
                   getOptions();
-                  setSelectedEscalation(ele && ele.id);
+                  setSelectedEscalation(ele?.id);
                 }
               },
               validate: function (e, values) {
@@ -137,18 +130,18 @@ export default function EscalationEventProps({
                 if (!escalationEventDefinition) return;
                 let reference = escalationEventDefinition.get("escalationRef");
                 return {
-                  escalationCode: reference && reference.escalationCode,
+                  escalationCode: reference?.escalationCode,
                 };
               },
               set: function (e, value) {
                 if (!escalationEventDefinition) return;
                 let reference = escalationEventDefinition.get("escalationRef");
                 if (reference) {
-                  setDummyProperty({
-                    bpmnModeler,
-                    element,
-                    value: value.escalationCode,
-                  });
+                  setDummyProperty();
+                  if (!value?.escalationCode) {
+                    delete reference?.escalationCode;
+                    return;
+                  }
                   reference.escalationCode = value.escalationCode;
                 }
               },
@@ -165,22 +158,20 @@ export default function EscalationEventProps({
             label: translate("Escalation code variable"),
             modelProperty: "escalationCodeVariable",
             get: function () {
-              let codeVariable = escalationEventDefinition.get(
-                "camunda:escalationCodeVariable"
-              );
               return {
-                escalationCodeVariable: codeVariable,
+                escalationCodeVariable:
+                  escalationEventDefinition?.escalationCodeVariable,
               };
             },
             set: function (element, values) {
               if (!escalationEventDefinition) return;
-              setDummyProperty({
-                bpmnModeler,
-                element,
-                value: values.escalationCodeVariable || undefined,
-              });
-              escalationEventDefinition["camunda:escalationCodeVariable"] =
-                values.escalationCodeVariable || undefined;
+              setDummyProperty();
+              if (!values?.escalationCodeVariable) {
+                delete escalationEventDefinition?.escalationCodeVariable;
+                return;
+              }
+              escalationEventDefinition.escalationCodeVariable =
+                values.escalationCodeVariable;
             },
           }}
         />
