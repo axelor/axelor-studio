@@ -19,27 +19,24 @@ export default function ErrorEventProps({
   const [errorOptions, setErrorOptions] = useState([]);
   const [ele, setEle] = useState(null);
 
-  const getValue = (modelProperty) => {
-    return function (element) {
-      let modelPropertyValue = errorEventDefinition.get(
-        "camunda:" + modelProperty
-      );
-      let value = {};
-      value[modelProperty] = modelPropertyValue;
-      return value;
-    };
-  };
+  const getValue = React.useCallback(
+    (modelProperty) => {
+      return function () {
+        return { [modelProperty]: errorEventDefinition[modelProperty] };
+      };
+    },
+    [errorEventDefinition]
+  );
 
   const setValue = (modelProperty) => {
     return function (element, values) {
       if (!errorEventDefinition) return;
-      setDummyProperty({
-        bpmnModeler,
-        element,
-        value: values[modelProperty],
-      });
-      errorEventDefinition["camunda:" + modelProperty] =
-        values[modelProperty] || undefined;
+      setDummyProperty();
+      if (!values[modelProperty]) {
+        delete errorEventDefinition[modelProperty];
+        return;
+      }
+      errorEventDefinition[modelProperty] = values[modelProperty];
     };
   };
 
@@ -91,11 +88,7 @@ export default function ErrorEventProps({
             setSelectedError(value);
             setEle(ele);
             if (errorEventDefinition && errorEventDefinition.errorRef) {
-              setDummyProperty({
-                bpmnModeler,
-                element,
-                value: ele.name,
-              });
+              setDummyProperty();
               errorEventDefinition.errorRef.name = ele.name;
             }
           },
@@ -127,11 +120,7 @@ export default function ErrorEventProps({
               set: function (e, value) {
                 if (errorEventDefinition && errorEventDefinition.errorRef) {
                   errorEventDefinition.errorRef.name = value.name;
-                  setDummyProperty({
-                    bpmnModeler,
-                    element,
-                    value: value.name,
-                  });
+                  setDummyProperty();
                   getOptions();
                   setSelectedError(ele && ele.id);
                 }
@@ -155,18 +144,18 @@ export default function ErrorEventProps({
                 if (!errorEventDefinition) return;
                 let reference = errorEventDefinition.get("errorRef");
                 return {
-                  errorCode: reference && reference.errorCode,
+                  errorCode: reference?.errorCode,
                 };
               },
               set: function (e, value) {
                 if (!errorEventDefinition) return;
                 let reference = errorEventDefinition.get("errorRef");
                 if (reference) {
-                  setDummyProperty({
-                    bpmnModeler,
-                    element,
-                    value: value.errorCode,
-                  });
+                  setDummyProperty();
+                  if (!value.errorCode) {
+                    delete reference?.errorCode;
+                    return;
+                  }
                   reference.errorCode = value.errorCode;
                 }
               },
@@ -184,18 +173,18 @@ export default function ErrorEventProps({
                 if (!errorEventDefinition) return;
                 let reference = errorEventDefinition.get("errorRef");
                 return {
-                  errorMessage: reference && reference.errorMessage,
+                  errorMessage: reference?.errorMessage,
                 };
               },
               set: function (e, value) {
                 if (!errorEventDefinition) return;
                 let reference = errorEventDefinition.get("errorRef");
                 if (reference) {
-                  setDummyProperty({
-                    bpmnModeler,
-                    element,
-                    value: value.errorMessage,
-                  });
+                  setDummyProperty();
+                  if (!value.errorMessage) {
+                    delete reference?.errorMessage;
+                    return;
+                  }
                   reference.errorMessage = value.errorMessage;
                 }
               },
@@ -207,6 +196,7 @@ export default function ErrorEventProps({
         (is(element, "bpmn:BoundaryEvent") && (
           <React.Fragment>
             <TextField
+              canRemove={true}
               element={element}
               entry={{
                 id: "errorCodeVariable",
@@ -217,6 +207,7 @@ export default function ErrorEventProps({
               }}
             />
             <TextField
+              canRemove={true}
               element={element}
               entry={{
                 id: "errorMessageVariable",
