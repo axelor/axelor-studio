@@ -811,59 +811,80 @@ export async function getActions(criteria = []) {
   return data;
 }
 
-export const getLanguages = async (options) => {
-  const res = await Service.search(
-    "com.axelor.apps.base.db.Localization",
-    options
+export const getLanguages = async () => {
+  const defaultLanguages = [
+    {
+      value: "en",
+      title: "English",
+      id: "en",
+    },
+    {
+      value: "fr",
+      title: "French",
+      id: "fr",
+    },
+  ];
+  const res = await Service.search("com.axelor.meta.db.MetaSelect", {
+    fields: ["items"],
+    limit: 1,
+    sortBy: ["-priority"],
+    data: {
+      criteria: [
+        {
+          fieldName: "name",
+          operator: "=",
+          value: "select.language",
+        },
+      ],
+    },
+  });
+  const items = res?.data?.[0]?.items?.map((i) => i?.id);
+  if (!items?.length) return defaultLanguages;
+  const languagesRes = await Service.search(
+    "com.axelor.meta.db.MetaSelectItem",
+    {
+      fields: ["title", "value"],
+      data: {
+        criteria: [
+          {
+            fieldName: "id",
+            operator: "IN",
+            value: items,
+          },
+        ],
+      },
+    }
   );
-  const { data = [] } = res || {};
-  if (res.status === -1) {
-    return [
-      {
-        code: "en",
-        name: "English",
-        id: "en",
-      },
-      {
-        code: "fr",
-        name: "French",
-        id: "fr",
-      },
-    ];
-  }
-  return data;
+  return languagesRes?.status > -1 ? languagesRes?.data : defaultLanguages;
 };
+
 export async function getProcessInstance(instanceId) {
-  if(!instanceId) return
+  if (!instanceId) return;
   const entity = `com.axelor.studio.db.WkfInstance`;
-  const payload={
+  const payload = {
     offset: 0,
-    fields: [
-        "instanceId",
-      "currentError",
-      "wkfProcess.wkfModel"
-    ],
+    fields: ["instanceId", "currentError", "wkfProcess.wkfModel"],
     limit: 40,
     data: {
-        _domain: null,
-        _domainContext: {
-            _model: "com.axelor.studio.db.WkfInstance",
-            _id: null
-        },
-        criteria: [
+      _domain: null,
+      _domainContext: {
+        _model: "com.axelor.studio.db.WkfInstance",
+        _id: null,
+      },
+      criteria: [
+        {
+          operator: "and",
+          criteria: [
             {
-                operator: "and",
-                criteria: [
-                    {
-                        fieldName: "instanceId",
-                        value: instanceId,
-                        operator: "="
-                    }
-                ]
-            }
-        ]
-    }
-}
+              fieldName: "instanceId",
+              value: instanceId,
+              operator: "=",
+            },
+          ],
+        },
+      ],
+    },
+  };
   const res = await Service.search(entity, payload);
   const { data = [] } = res || {};
   return data[0];
