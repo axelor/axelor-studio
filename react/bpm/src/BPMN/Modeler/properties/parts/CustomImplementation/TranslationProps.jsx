@@ -308,9 +308,9 @@ export default function TranslationProps({
                           className={styles.select}
                           isTranslated={true}
                           update={(value) => {
-                            if (translateKey.language === value?.code) return;
+                            if (translateKey.language === value?.value) return;
                             const isLang = translations.find(
-                              (t) => t.language === value?.code
+                              (t) => t.language === value?.value
                             );
                             if (isLang) {
                               setSnackbar({
@@ -322,14 +322,14 @@ export default function TranslationProps({
                               });
                               return;
                             }
-                            setProperty(index, "language", value?.code, {
+                            setProperty(index, "language", value?.value, {
                               ...translateKey,
-                              language: value?.code,
+                              language: value?.value,
                             });
                           }}
                           name="language"
                           value={languages?.find(
-                            (l) => l.code === translateKey.language
+                            (l) => l.value === translateKey.language
                           )}
                           isLabel={false}
                           options={languages}
