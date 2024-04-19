@@ -8,13 +8,13 @@ function StoreProvider({ children }) {
     info: null,
     languages: [
       {
-        code: "en",
-        name: "English",
+        value: "en",
+        title: "English",
         id: "en",
       },
       {
-        code: "fr",
-        name: "French",
+        value: "fr",
+        title: "French",
         id: "fr",
       },
     ],
