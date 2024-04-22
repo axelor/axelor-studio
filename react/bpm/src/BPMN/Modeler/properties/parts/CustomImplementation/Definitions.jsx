@@ -456,7 +456,7 @@ export default function Definition({
                           className={styles.linkIcon}
                           onClick={() => {
                             openWebApp(
-                              `wkf-editor/?id=${model?.id || ""}`,
+                              `bpm/?id=${model?.id || ""}`,
                               translate("BPM editor")
                             );
                           }}

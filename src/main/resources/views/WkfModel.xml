@@ -305,7 +305,7 @@
   </action-record>
 
   <action-view name="action-wkf-view-open-editor" title="BPM Studio">
-    <view type="html" name="wkf-editor/index.html?id={{_id}}"/>
+    <view type="html" name="bpm/index.html?id={{_id}}"/>
   </action-view>
 
   <action-view name="action-wkf-model-view-import-wkf-model-form"

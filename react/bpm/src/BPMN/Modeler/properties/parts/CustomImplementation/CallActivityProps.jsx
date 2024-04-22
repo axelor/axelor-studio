@@ -206,7 +206,7 @@ export default function CallActivityProps({
       setWkfModel(wkfModel);
       handleSnackbarClick("success", "New process added successfully");
       if (wkfModel.id) {
-        openWebApp(`wkf-editor/?id=${wkfModel.id}`, translate("BPM editor"));
+        openWebApp(`bpm/?id=${wkfModel.id}`, translate("BPM editor"));
       }
     } else {
       handleSnackbarClick(
@@ -487,7 +487,7 @@ export default function CallActivityProps({
                   <div
                     onClick={() => {
                       openWebApp(
-                        `wkf-editor/?id=${wkfModel.id || ""}`,
+                        `bpm/?id=${wkfModel.id || ""}`,
                         translate("BPM editor")
                       );
                     }}

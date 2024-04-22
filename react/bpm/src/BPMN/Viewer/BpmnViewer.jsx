@@ -275,7 +275,7 @@ const openDiagramImage = async (
             <p class="error-code">Node:  ${errorNode}</p>
             <p class="error-message">${currentError || ""}</p>
           </div>
-          <button class="error-fix-btn" onclick="window.top?.axelor?.$openHtmlTab('wkf-editor/?id=${id}&node=${errorNode}','${translate(
+          <button class="error-fix-btn" onclick="window.top?.axelor?.$openHtmlTab('bpm/?id=${id}&node=${errorNode}','${translate(
         "BPM editor"
       )}')">
           ${translate("Fix in BPM Editor")}

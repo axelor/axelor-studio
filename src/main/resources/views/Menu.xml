@@ -24,7 +24,7 @@
     action="studio.web.service.ws.webService" order="20" if="__config__.app?.isApp('studio')"/>
   <action-view name="studio.web.service.ws.webService" title="WS studio"
     model="com.axelor.studio.db.WebService">
-    <view type="html" name="ws-builder"/>
+    <view type="html" name="webservices-builder"/>
   </action-view>
   <menuitem name="studio-web-service-ws-request" title="Request" order="5"
     parent="ws-app-studio-component" action="studio.web.service.ws.request"/>
