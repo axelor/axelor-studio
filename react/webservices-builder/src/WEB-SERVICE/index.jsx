@@ -766,7 +766,7 @@ function WebServiceEditor() {
     window.top.document
       .getElementsByTagName("iframe")[0]
       ?.contentWindow.parent.axelor.$openHtmlTab(
-        `ws-builder/?id=${params.get("id")}&model=${params.get("model")}`,
+        `webservices-builder/?id=${params.get("id")}&model=${params.get("model")}`,
         "WS Studio"
       );
   };
@@ -782,7 +782,7 @@ function WebServiceEditor() {
     window.top.document
       .getElementsByTagName("iframe")[0]
       ?.contentWindow.parent.axelor.$openHtmlTab(
-        `ws-builder/?model=${params.get("model")}`,
+        `webservices-builder/?model=${params.get("model")}`,
         "WS Studio"
       );
   };

@@ -22,7 +22,7 @@
   </form>
 
   <action-view name="action-wkf-migration-view-open-bpm-editor" title="BPM Studio">
-    <view type="html" name="wkf-editor/?id={{_relatedModelId}}"/>
+    <view type="html" name="bpm/?id={{_relatedModelId}}"/>
     <context name="_relatedModelId" expr="eval: versionId"/>
   </action-view>
 

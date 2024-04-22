@@ -352,7 +352,7 @@ export default function ServiceTaskDelegateProps({
                 <div
                   onClick={() => {
                     openWebApp(
-                      `baml-editor/?id=${bamlModel?.id || ""}`,
+                      `baml/?id=${bamlModel?.id || ""}`,
                       translate("BAML editor")
                     );
                   }}
@@ -615,7 +615,7 @@ export default function ServiceTaskDelegateProps({
                           <div
                             onClick={() => {
                               openWebApp(
-                                `wkf-editor/?type=dmn&id=${dmnModel.id || ""}`,
+                                `bpm/?type=dmn&id=${dmnModel.id || ""}`,
                                 translate("DMN editor")
                               );
                             }}
