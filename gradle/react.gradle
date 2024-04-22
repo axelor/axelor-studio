@@ -30,7 +30,7 @@ node {
 
 def reactDirs = []
 file("react").traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
-    if (new File(it, "build.gradle").exists()) {
+    if (new File(it, "package.json").exists()) {
         reactDirs.add(it)
     }
 }
@@ -77,7 +77,7 @@ reactDirs.each { dir ->
         delete "$projectDir/react/${dirName}/build", "$projectDir/react/${dirName}/node_modules"
     })
 
-    componentPaths.add([from: "react/${dirName}/build", to: "webapp/${dirName}"])
+    componentPaths.add([from: "$projectDir/react/${dirName}/build", to: "webapp/${dirName}"])
 }
 
 def frontBuild = tasks.register('frontBuild') {
@@ -101,7 +101,7 @@ def frontCopy = tasks.register('frontCopy', Copy) {
 
     componentPaths.each { paths ->
         into("${paths.to}") {
-            from "$projectDir/${paths.from}"
+            from "${paths.from}"
         }
     }
 }
@@ -111,7 +111,7 @@ try {
         dependsOn frontBuild
         componentPaths.each { paths ->
             into("${paths.to}") {
-                from "$projectDir/${paths.from}"
+                from "${paths.from}"
             }
         }
     }
