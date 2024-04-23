@@ -14,7 +14,7 @@ RUN mv ${MODULE_NAME} ${APP_SOURCE}/modules
 WORKDIR ${APP_SOURCE}
 
 RUN chmod +x gradlew && \
-    ./gradlew --no-daemon build -xtest -xcheck -Dinclude.react;
+    ./gradlew --no-daemon build -xtest -xcheck;
 
 RUN mkdir -p ${APP_SOURCE}/webapps/ROOT && \
     unzip -q -o ${APP_SOURCE}/build/libs/*.war -d ${APP_SOURCE}/webapps/ROOT/
