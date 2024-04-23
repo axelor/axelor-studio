@@ -190,10 +190,8 @@ const openDiagramImage = async (
   errorNode
 ) => {
   if (!diagramXml) return;
-  bpmnViewer.importXML(diagramXml, async (err) => {
-    if (err) {
-      return console.error("could not import BPMN 2.0 diagram", err);
-    }
+  try {
+    await bpmnViewer.importXML(diagramXml);
     let canvas = bpmnViewer.get("canvas");
     canvas.zoom("fit-viewport", "auto");
     bpmnViewer.get("readOnly").readOnly(true);
@@ -283,7 +281,9 @@ const openDiagramImage = async (
         </div>
           </div>`,
     });
-  });
+  } catch (err) {
+    return console.error("could not import BPMN 2.0 diagram", err);
+  }
 };
 
 const zoomIn = () => {
