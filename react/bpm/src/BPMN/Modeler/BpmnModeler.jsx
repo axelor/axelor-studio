@@ -61,6 +61,7 @@ import { useStore } from "../../store.jsx";
 import { useKeyPress } from "../../custom-hooks/useKeyPress";
 import Ids from "ids";
 import Alert from "../../components/Alert";
+import { Collaboration } from "../../components/Collaboration";
 import { Box, CommandBar, Scrollable } from "@axelor/ui";
 
 import "bpmn-js/dist/assets/diagram-js.css";
@@ -412,6 +413,7 @@ function BpmnModelerComponent() {
         const wkf = (await fetchWkf(id)) || {};
         let { diagramXml } = wkf;
         setWkf(wkf);
+        update((state) => ({ ...state, record: wkf }));
         newBpmnDiagram(diagramXml, isDeploy, id, wkf);
         return wkf;
       } else {
@@ -463,6 +465,7 @@ function BpmnModelerComponent() {
     setInitialState(false);
     setDirty(false);
     setWkf(null);
+    update((state) => ({ ...state, record: null }));
     setId(null);
     newBpmnDiagram();
   }, [newBpmnDiagram]);
@@ -487,6 +490,7 @@ function BpmnModelerComponent() {
       setInitialState(false);
       setDirty(false);
       const wkf = await fetchWkf(value?.id);
+      update((state) => ({ ...state, record: wkf }));
       const { diagramXml, id } = wkf || {};
       setWkf(wkf);
       setId(id);
@@ -790,6 +794,7 @@ function BpmnModelerComponent() {
       });
       if (res && res.data && res.data[0]) {
         const latestWkf = res.data[0];
+        update((state) => ({ ...state, record: latestWkf }));
         /**
          * Even if record is not updated it's version gets changed when saved first time
          */
@@ -1659,6 +1664,7 @@ function BpmnModelerComponent() {
   }, []);
 
   function setDirty(dirty = true) {
+    update((state) => ({ ...state, dirty }));
     const axelor = getAxelorScope();
     if (axelor?.useActiveTab) {
       const [, setTabState] = axelor.useActiveTab();
@@ -1853,6 +1859,7 @@ function BpmnModelerComponent() {
                   placeholder={translate("BPM model")}
                 />
               </Box>
+              <Collaboration />
               <CommandBar items={rightToolbar} className={styles.commandBar} />
               <input
                 id="inputFile"
