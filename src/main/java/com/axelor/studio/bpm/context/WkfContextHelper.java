@@ -22,10 +22,22 @@ import com.axelor.db.Model;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.helper.DepthFilter;
+import com.axelor.studio.helper.ModelTools;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.helpers.context.FullContextHelper;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.camunda.bpm.engine.RuntimeService;
@@ -151,5 +163,115 @@ public class WkfContextHelper {
     lines.forEach(fullContext -> values.add((Long) fullContext.get("id")));
 
     return values;
+  }
+
+  public static Object createObject(Object object) throws JsonProcessingException {
+    if (object instanceof FullContext) {
+      return createSingleVariable((FullContext) object);
+    } else if (isListOfFullContext(object)) {
+      return createListVariable((List<?>) object);
+    }
+    return null;
+  }
+
+  private static Object createSingleVariable(FullContext context) throws JsonProcessingException {
+    Map<String, String> map = new HashMap<>();
+    Model model = (Model) context.getTarget();
+    String serializedModel = serializeModel(model);
+    map.put(context.getContextClass().getName(), serializedModel);
+    return Variables.objectValue(map, false)
+        .serializationDataFormat(SerializationDataFormats.JAVA)
+        .create();
+  }
+
+  private static Object createListVariable(List<?> list) throws JsonProcessingException {
+    Map<String, List<String>> map = new HashMap<>();
+    List<String> serializedModels = new ArrayList<>();
+    for (Object elem : list) {
+      FullContext fullContext = (FullContext) elem;
+      Model model = (Model) fullContext.getTarget();
+      serializedModels.add(serializeModel(model));
+    }
+    map.put(((FullContext) list.get(0)).getContextClass().getName(), serializedModels);
+    return Variables.objectValue(map, false)
+        .serializationDataFormat(SerializationDataFormats.JAVA)
+        .create();
+  }
+
+  private static boolean isListOfFullContext(Object object) {
+    if (object instanceof List<?>) {
+      List<?> list = (List<?>) object;
+      if (!list.isEmpty() && list.get(0) instanceof FullContext) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static String serializeModel(Model model) throws JsonProcessingException {
+    return serializeMap(model, 3);
+  }
+
+  public static Object getObject(String varName, DelegateExecution execution)
+      throws JsonProcessingException, ClassNotFoundException {
+    ObjectMapper mapper = createObjectMapper();
+    Map<?, ?> map = (Map<?, ?>) getVariable(execution.getProcessInstanceId(), varName);
+    if (map != null && !map.isEmpty()) {
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object value = entry.getValue();
+        if (value instanceof List<?>) {
+          return deserializeList((List<String>) value, (String) entry.getKey(), mapper);
+        } else {
+          return deserializeModel((String) value, (String) entry.getKey(), mapper);
+        }
+      }
+    }
+    return null;
+  }
+
+  private static ObjectMapper createObjectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
+    return mapper;
+  }
+
+  private static Object deserializeList(
+      List<String> serializedModels, String className, ObjectMapper mapper)
+      throws ClassNotFoundException, JsonProcessingException {
+    List<Object> deserializedModels = new ArrayList<>();
+    for (String serializedModel : serializedModels) {
+      deserializedModels.add(
+          mapper.readValue(serializedModel, ModelTools.findModelClass(className)));
+    }
+    return deserializedModels;
+  }
+
+  private static Object deserializeModel(
+      String serializedModel, String className, ObjectMapper mapper)
+      throws ClassNotFoundException, JsonProcessingException {
+    return mapper.readValue(serializedModel, ModelTools.findModelClass(className));
+  }
+
+  protected static String serializeMap(Model model, int depthMax) throws JsonProcessingException {
+    String filterName = "depth_filter";
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.registerModule(new JavaTimeModule());
+    objectMapper.disable(SerializationFeature.FAIL_ON_SELF_REFERENCES);
+    objectMapper.enable(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM);
+    objectMapper.enable(JsonGenerator.Feature.IGNORE_UNKNOWN);
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    objectMapper.setAnnotationIntrospector(
+        new JacksonAnnotationIntrospector() {
+          @Override
+          public Object findFilterId(Annotated a) {
+            return filterName;
+          }
+        });
+
+    ObjectWriter writer =
+        objectMapper.writer(
+            new SimpleFilterProvider().addFilter(filterName, new DepthFilter(depthMax)));
+    return writer.writeValueAsString(model);
   }
 }
