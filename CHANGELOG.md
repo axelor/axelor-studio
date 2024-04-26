@@ -1,3 +1,11 @@
+## 3.0.1 (2024-04-26)
+
+#### Fix
+
+* Don't override AOP translations
+* Reference to non existant element while opening the view
+* Escalation variable is not persisted
+
 ## 3.0.0 (2024-04-04)
 
 #### Feature
