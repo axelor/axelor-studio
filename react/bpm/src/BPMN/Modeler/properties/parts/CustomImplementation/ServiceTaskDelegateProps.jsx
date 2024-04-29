@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
+import { getServiceTaskLikeBusinessObject, isServiceTaskLike } from "../../../../../utils/ImplementationTypeUtils";
 import { is } from "bpmn-js/lib/util/ModelUtil";
 
 import Select from "../../../../../components/Select";
@@ -38,12 +38,9 @@ const eventTypes = [
   "bpmn:BoundaryEvent",
 ];
 
-function isServiceTaskLike(element) {
-  return ImplementationTypeHelper.isServiceTaskLike(element);
-}
 
 function getBusinessObject(element) {
-  return ImplementationTypeHelper.getServiceTaskLikeBusinessObject(element);
+  return getServiceTaskLikeBusinessObject(element);
 }
 
 const bindingOptions = [

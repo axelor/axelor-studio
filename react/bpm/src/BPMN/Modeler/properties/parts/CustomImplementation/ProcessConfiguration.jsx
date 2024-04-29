@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { IconButton } from "@material-ui/core";
 import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
@@ -155,7 +155,7 @@ export default function ProcessConfiguration({
       bo = getBusinessObject(bo.processRef);
     }
     if (!extensionElements) {
-      extensionElements = elementHelper.createElement(
+      extensionElements = createElement(
         "bpmn:ExtensionElements",
         { values: [] },
         bo,

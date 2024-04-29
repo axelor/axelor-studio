@@ -1,3 +1,4 @@
+import {getExtensionElements} from "./utils/ExtensionElementsUtil"
 const download = (entity, name, isXml = true) => {
   let encodedData = encodeURIComponent(entity);
   let dl = document.createElement("a");
@@ -162,4 +163,70 @@ export {
   dashToUnderScore,
   convertSVGtoBase64,
   lightenColor,
+};
+
+
+
+export function isAsyncBefore(bo) {
+  return !!(bo.get('camunda:asyncBefore') || bo.get('camunda:async'));
+}
+
+export function isAsyncAfter(bo) {
+  return !!bo.get('camunda:asyncAfter');
+}
+
+export  function PropertiesActivator(eventBus, priority) {
+  var self = this;
+
+  priority = priority || DEFAULT_PRIORITY;
+
+  eventBus.on('propertiesPanel.isEntryVisible', priority, function(context) {
+    var element = context.element,
+        entry = context.entry,
+        group = context.group,
+        tab = context.tab;
+
+    return self.isEntryVisible(element, entry, group, tab);
+  });
+
+  eventBus.on('propertiesPanel.isPropertyEditable', priority, function(context) {
+    var element = context.element,
+        entry = context.entry,
+        group = context.group,
+        propertyName = context.propertyName,
+        tab = context.tab;
+
+    return self.isPropertyEditable(propertyName, element, entry, group, tab);
+  });
+}
+
+
+export function createCategoryValue(definitions, bpmnFactory) {
+  const categoryValue = bpmnFactory.create('bpmn:CategoryValue');
+
+  const category = bpmnFactory.create('bpmn:Category', {
+    categoryValue: [ categoryValue ]
+  });
+
+  // add to correct place
+  collectionAdd(definitions.get('rootElements'), category);
+  getBusinessObject(category).$parent = definitions;
+  getBusinessObject(categoryValue).$parent = category;
+
+  return categoryValue;
+}
+
+
+export function getFailedJobRetryTimeCycle(bo) {
+  return getExtensionElements(bo, 'camunda:FailedJobRetryTimeCycle')[0];
+}
+
+export function updateBusinessObject(element, businessObject, newProperties) {return {
+  cmd: 'properties-panel.update-businessobject',
+  context: {
+    element: element,
+    businessObject: businessObject,
+    properties: newProperties
+  }
+};
 };

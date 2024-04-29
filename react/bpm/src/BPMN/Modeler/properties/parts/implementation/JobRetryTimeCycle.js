@@ -1,22 +1,13 @@
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
-import asyncCapableHelper from "bpmn-js-properties-panel/lib/helper/AsyncCapableHelper";
+import { getTimerEventDefinition } from "../../../../../utils/EventDefinitionUtil";
+import { getFailedJobRetryTimeCycle, isAsyncAfter, isAsyncBefore } from "../../../../../utils";
+import { createElement } from "../../../../../utils/ElementUtil";
 import { is } from "bpmn-js/lib/util/ModelUtil";
 
-function isAsyncBefore(bo) {
-  return asyncCapableHelper.isAsyncBefore(bo);
-}
 
-function isAsyncAfter(bo) {
-  return asyncCapableHelper.isAsyncAfter(bo);
-}
 
-function getFailedJobRetryTimeCycle(bo) {
-  return asyncCapableHelper.getFailedJobRetryTimeCycle(bo);
-}
 
 function createExtensionElements(parent, bpmnFactory) {
-  return elementHelper.createElement(
+  return createElement(
     "bpmn:ExtensionElements",
     { values: [] },
     parent,
@@ -25,7 +16,7 @@ function createExtensionElements(parent, bpmnFactory) {
 }
 
 function createFailedJobRetryTimeCycle(parent, bpmnFactory, cycle) {
-  return elementHelper.createElement(
+  return createElement(
     "camunda:FailedJobRetryTimeCycle",
     { body: cycle },
     parent,
@@ -103,7 +94,7 @@ export default function JobRetryTimeCycle(
       }
 
       if (is(element, "bpmn:Event")) {
-        return !eventDefinitionHelper.getTimerEventDefinition(element);
+        return !getTimerEventDefinition(element);
       }
 
       return true;

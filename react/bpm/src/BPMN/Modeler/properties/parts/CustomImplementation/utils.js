@@ -1,4 +1,4 @@
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import {createElement as _createElement} from "../../../../../utils/ElementUtil"
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { camelCase } from "lodash";
 import { getAxelorScope, translate } from "../../../../../utils";
@@ -25,7 +25,7 @@ export function getProcessConfig(element) {
 }
 
 export function createElement(type, parent, factory, properties) {
-  return elementHelper.createElement(type, properties, parent, factory);
+  return _createElement(type, properties, parent, factory);
 }
 
 export function createProcessConfiguration(parent, bpmnFactory, properties) {

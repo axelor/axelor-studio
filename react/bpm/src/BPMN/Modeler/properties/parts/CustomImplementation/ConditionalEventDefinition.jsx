@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { createElement } from "../../../../../utils/ElementUtil";
 import { isEventSubProcess } from "bpmn-js/lib/util/DiUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
@@ -141,7 +141,7 @@ export default function ConditionalEventProps({
 
       let conditionOrConditionExpression;
       if (conditionType) {
-        conditionOrConditionExpression = elementHelper.createElement(
+        conditionOrConditionExpression = createElement(
           "bpmn:FormalExpression",
           conditionProps,
           conditionalEventDefinition || bo,

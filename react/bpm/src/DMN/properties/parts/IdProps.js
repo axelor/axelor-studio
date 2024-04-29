@@ -1,5 +1,5 @@
 import { getBusinessObject } from "dmn-js-shared/lib/util/ModelUtil";
-import { isIdValid } from "dmn-js-properties-panel/lib/Utils.js";
+import { isIdValid } from "../../../utils/ValidationUtil";
 
 export default function IdProps(group, element, translate, options) {
   let description = options && options.description;

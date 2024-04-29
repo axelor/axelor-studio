@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { createElement as _createElement} from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { IconButton } from "@material-ui/core";
 
@@ -308,7 +308,7 @@ export default function MenuActionPanel({
   ) {
     let bo = getBusinessObject(element);
     if (!extensionElements) {
-      extensionElements = elementHelper.createElement(
+      extensionElements = _createElement(
         "bpmn:ExtensionElements",
         { values: [] },
         bo,

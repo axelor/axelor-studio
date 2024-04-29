@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import NotInterested from "@material-ui/icons/NotInterested";
 
@@ -54,7 +54,7 @@ function getTimerDefinitionType(timer) {
 
 function createFormalExpression(parent, body, bpmnFactory) {
   body = body || undefined;
-  return elementHelper.createElement(
+  return createElement(
     "bpmn:FormalExpression",
     { body: body },
     parent,

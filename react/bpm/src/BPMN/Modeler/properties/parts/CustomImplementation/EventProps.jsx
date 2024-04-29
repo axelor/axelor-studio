@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -13,6 +12,16 @@ import Error from "./ErrorEventDefinition";
 import { Box, Divider } from "@axelor/ui";
 import { translate } from "../../../../../utils";
 import styles from "./EventProps.module.css";
+import {
+  getCompensateEventDefinition,
+  getErrorEventDefinition,
+  getEscalationEventDefinition,
+  getMessageEventDefinition,
+  getSignalEventDefinition,
+  getTimerEventDefinition,
+  getConditionalEventDefinition
+} from "../../../../../utils/EventDefinitionUtil";
+
 
 const events = [
   "bpmn:StartEvent",
@@ -155,9 +164,9 @@ export default function EventProps({
     events.forEach((event) => {
       if (is(element, event)) {
         let messageEventDefinition =
-            eventDefinitionHelper.getMessageEventDefinition(element),
+          getMessageEventDefinition(element),
           signalEventDefinition =
-            eventDefinitionHelper.getSignalEventDefinition(element);
+            getSignalEventDefinition(element);
 
         if (messageEventDefinition) {
           renderType = {
@@ -195,7 +204,7 @@ export default function EventProps({
     errorEvents.forEach((event) => {
       if (is(element, event)) {
         let errorEventDefinition =
-          eventDefinitionHelper.getErrorEventDefinition(element);
+          getErrorEventDefinition(element);
 
         if (errorEventDefinition) {
           renderType = {
@@ -213,7 +222,7 @@ export default function EventProps({
 
         // get business object
         let escalationEventDefinition =
-          eventDefinitionHelper.getEscalationEventDefinition(element);
+          getEscalationEventDefinition(element);
 
         if (escalationEventDefinition) {
           renderType = {
@@ -229,7 +238,7 @@ export default function EventProps({
       if (is(element, event)) {
         // get business object
         let timerEventDefinition =
-          eventDefinitionHelper.getTimerEventDefinition(element);
+          getTimerEventDefinition(element);
 
         if (timerEventDefinition) {
           renderType = {
@@ -244,7 +253,7 @@ export default function EventProps({
       if (is(element, event)) {
         // get business object
         let compensateEventDefinition =
-          eventDefinitionHelper.getCompensateEventDefinition(element);
+          getCompensateEventDefinition(element);
 
         if (compensateEventDefinition) {
           renderType = {
@@ -258,7 +267,7 @@ export default function EventProps({
     if (isAny(element, conditionalEvents)) {
       // get business object
       let conditionalEventDefinition =
-        eventDefinitionHelper.getConditionalEventDefinition(element);
+        getConditionalEventDefinition(element);
 
       if (conditionalEventDefinition) {
         renderType = {

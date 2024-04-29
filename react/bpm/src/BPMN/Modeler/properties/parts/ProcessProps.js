@@ -1,5 +1,5 @@
 import nameEntryFactory from "./implementation/Name";
-import utils from "bpmn-js-properties-panel/lib/Utils";
+import { isIdValid } from "../../../../utils/ValidationUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import { getProcessBusinessObject, getFlowElements } from "../../extra";
@@ -72,7 +72,7 @@ export default function ProcessProps(
         let idValue = values.processId;
         let bo = getBusinessObject(element);
         if (!(bo && bo.processRef)) return;
-        let processIdError = utils.isIdValid(
+        let processIdError = isIdValid(
           bo && bo.processRef,
           idValue,
           translate

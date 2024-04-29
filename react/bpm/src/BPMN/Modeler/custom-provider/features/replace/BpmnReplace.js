@@ -87,7 +87,8 @@ export default function BpmnReplace(
     hints = hints || {};
 
     var type = target.type,
-      oldBusinessObject = element.businessObject;
+      oldBusinessObject = element.businessObject,
+      oldElement = element;
 
     if (isSubProcess(oldBusinessObject)) {
       if (type === "bpmn:SubProcess") {
@@ -174,7 +175,7 @@ export default function BpmnReplace(
       // copy size, from an expanded subprocess to an expanded alternative subprocess
       // except bpmn:Task, because Task is always expanded
       if (
-        isExpanded(oldBusinessObject) &&
+        isExpanded(oldElement) &&
         !is(oldBusinessObject, "bpmn:Task") &&
         newElement.isExpanded
       ) {
@@ -200,17 +201,14 @@ export default function BpmnReplace(
 
       // apply same width and default height
       newElement.width = element.width;
-      newElement.height = elementFactory._getDefaultSize(
-        newBusinessObject
-      ).height;
+      newElement.height =
+        elementFactory._getDefaultSize(newBusinessObject).height;
     }
     if (!rules.allowed("shape.resize", { shape: newBusinessObject })) {
-      newElement.height = elementFactory._getDefaultSize(
-        newBusinessObject
-      ).height;
-      newElement.width = elementFactory._getDefaultSize(
-        newBusinessObject
-      ).width;
+      newElement.height =
+        elementFactory._getDefaultSize(newBusinessObject).height;
+      newElement.width =
+        elementFactory._getDefaultSize(newBusinessObject).width;
     }
 
     newBusinessObject.name = oldBusinessObject.name;
@@ -251,7 +249,7 @@ export default function BpmnReplace(
     newElement.di = {};
 
     // fill and stroke will be set to DI
-    copyProperties(oldBusinessObject.di, newElement.di, ["fill", "stroke"]);
+    copyProperties(oldElement.di, newElement.di, ["fill", "stroke"]);
 
     newElement = replace.replaceElement(element, newElement, hints);
 

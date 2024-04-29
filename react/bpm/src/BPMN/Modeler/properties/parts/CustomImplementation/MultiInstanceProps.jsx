@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 
 import { Selection } from "../../../../../components/expression-builder/components";
@@ -64,7 +64,7 @@ function getElementVariable(element) {
 }
 
 function createFormalExpression(parent, body, bpmnFactory) {
-  return elementHelper.createElement(
+  return createElement(
     "bpmn:FormalExpression",
     { body: body },
     parent,

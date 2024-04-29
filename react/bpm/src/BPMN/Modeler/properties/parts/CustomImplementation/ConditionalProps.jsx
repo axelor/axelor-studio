@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { getConditionalEventDefinition } from "../../../../../utils/EventDefinitionUtil";
+import { createElement } from "../../../../../utils/ElementUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
@@ -149,7 +149,7 @@ export default function ConditionalProps({
           language: "",
           "camunda:resource": undefined,
         };
-        conditionOrConditionExpression = elementHelper.createElement(
+        conditionOrConditionExpression = createElement(
           "bpmn:FormalExpression",
           conditionProps,
           conditionalEventDefinition || bo,
@@ -191,7 +191,7 @@ export default function ConditionalProps({
           language: "",
           "camunda:resource": undefined,
         };
-        conditionOrConditionExpression = elementHelper.createElement(
+        conditionOrConditionExpression = createElement(
           "bpmn:FormalExpression",
           conditionProps,
           conditionalEventDefinition || bo,

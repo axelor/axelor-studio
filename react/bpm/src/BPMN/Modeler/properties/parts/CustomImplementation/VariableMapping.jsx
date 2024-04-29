@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import filter from "lodash/filter";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
-import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { createElement } from "../../../../../utils/ElementUtil";
+import {getExtensionElements} from "../../../../../utils/ExtensionElementsUtil"
+import { getSignalEventDefinition } from "../../../../../utils/EventDefinitionUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 
@@ -37,9 +37,9 @@ const CAMUNDA_IN_EXTENSION_ELEMENT = "camunda:In",
 function getCamundaInOutMappings(element, type) {
   let bo = getBusinessObject(element);
   let signalEventDefinition =
-    eventDefinitionHelper.getSignalEventDefinition(bo);
+    getSignalEventDefinition(bo);
   return (
-    extensionElementsHelper.getExtensionElements(
+    getExtensionElements(
       signalEventDefinition || bo,
       type
     ) || []
@@ -67,7 +67,7 @@ function getInOutType(mapping) {
 }
 
 function getMappings(bo, type) {
-  return (bo && extensionElementsHelper.getExtensionElements(bo, type)) || [];
+  return (bo && getExtensionElements(bo, type)) || [];
 }
 
 const setOptionLabelValue = (type, element) => {
@@ -122,7 +122,7 @@ export default function VariableMapping({
 
   const newElement = (type) => {
     return function (e, extensionEle, value) {
-      let newElem = elementHelper.createElement(
+      let newElem = createElement(
         type,
         { source: "" },
         extensionEle,
@@ -131,7 +131,7 @@ export default function VariableMapping({
       let bo = signalEventDefinition || getBusinessObject(element);
       let extensionElements = bo && bo.extensionElements;
       if (!extensionElements) {
-        extensionElements = elementHelper.createElement(
+        extensionElements = createElement(
           "bpmn:ExtensionElements",
           { values: [] },
           bo,
@@ -237,7 +237,7 @@ export default function VariableMapping({
 
   useEffect(() => {
     const signalEventDefinition =
-      eventDefinitionHelper.getSignalEventDefinition(element);
+      getSignalEventDefinition(element);
     setSignalEventDefinition(signalEventDefinition);
     if (is(element, "camunda:CallActivity") && !signalEventDefinition) {
       setVisible(true);

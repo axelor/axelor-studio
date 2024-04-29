@@ -214,13 +214,11 @@ export function getTabs(bpmnModeler, element, setDummyProperty) {
   let canvas = bpmnModeler.get("canvas");
   let elementRegistry = bpmnModeler.get("elementRegistry");
   let bpmnFactory = bpmnModeler.get("bpmnFactory");
-  let elementTemplates = bpmnModeler.get("elementTemplates");
   let tabs = propertiesTabs(
     element,
     canvas,
     bpmnFactory,
     elementRegistry,
-    elementTemplates,
     translate,
     bpmnModeler,
     setDummyProperty

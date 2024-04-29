@@ -1,10 +1,10 @@
-import cmdHelper from "bpmn-js-properties-panel/lib/helper/CmdHelper";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
+import { updateBusinessObject } from "../../../../../utils";
 import { classes as domClasses } from "min-dom";
 
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import multiInstanceLoopCharacteristics from "../implementation/MultiInstanceLoopCharacteristics";
 import jobRetryTimeCycle from "../implementation/JobRetryTimeCycle";
+import { createElement } from "../../../../../utils/ElementUtil";
 
 /**
  * Get a property value of the loop characteristics.
@@ -120,7 +120,7 @@ function getElementVariable(element) {
  * @result {ModdleElement<bpmn:FormalExpression>} a formal expression
  */
 function createFormalExpression(parent, body, bpmnFactory) {
-  return elementHelper.createElement(
+  return createElement(
     "bpmn:FormalExpression",
     { body: body },
     parent,
@@ -144,7 +144,7 @@ function updateFormalExpression(element, propertyName, newValue, bpmnFactory) {
   if (!newValue) {
     // remove formal expression
     expressionProps[propertyName] = undefined;
-    return cmdHelper.updateBusinessObject(
+    return updateBusinessObject(
       element,
       loopCharacteristics,
       expressionProps
@@ -160,7 +160,7 @@ function updateFormalExpression(element, propertyName, newValue, bpmnFactory) {
       newValue,
       bpmnFactory
     );
-    return cmdHelper.updateBusinessObject(
+    return updateBusinessObject(
       element,
       loopCharacteristics,
       expressionProps
@@ -168,7 +168,7 @@ function updateFormalExpression(element, propertyName, newValue, bpmnFactory) {
   }
 
   // edit existing formal expression
-  return cmdHelper.updateBusinessObject(element, existingExpression, {
+  return updateBusinessObject(element, existingExpression, {
     body: newValue,
   });
 }
@@ -282,7 +282,7 @@ export default function MultiInstanceLoopProps(
 
     set: function (element, values) {
       let loopCharacteristics = getLoopCharacteristics(element);
-      return cmdHelper.updateBusinessObject(element, loopCharacteristics, {
+      return updateBusinessObject(element, loopCharacteristics, {
         "camunda:elementVariable": values.elementVariable || undefined,
       });
     },
