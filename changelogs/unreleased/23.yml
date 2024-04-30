@@ -4,5 +4,5 @@ type: feature
 description: |
   Add the collaboration in the BPM modeler
   
-  Attention: This feature is only available if 
+  Warning: This feature is only available if 
   AOP enterprise is activated
