@@ -2,15 +2,21 @@ import React, { useEffect, useState } from "react";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { translate } from "../../../utils";
 import { Box, Input, InputLabel } from "@axelor/ui";
-import styles from "./ColorPicker.module.css"
+import styles from "./ColorPicker.module.css";
 
 import "../css/colorpicker.css";
 
-export default function ColorPickerComponent({ changeColor, entry, element }) {
+export default function ColorPickerComponent({
+  changeColor,
+  entry,
+  element,
+  setDummyProperty = () => {},
+}) {
   const [color, setColor] = useState("#fff");
   const { label = "" } = entry || {};
   const handleChange = (e) => {
     const newValue = e.target.value;
+    setDummyProperty();
     setColor(newValue);
     if (newValue) {
       changeColor(newValue);

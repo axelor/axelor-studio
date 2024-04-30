@@ -64,7 +64,9 @@ export class Service {
           .includes("application/json");
         return isJSON ? data.json() : data;
       })
-      .catch((err) => {});
+      .catch((err) => {
+        throw err;
+      });
   }
 
   request(url, config = {}, data = {}) {
@@ -74,7 +76,7 @@ export class Service {
         credentials: "include",
         headers: this.headers,
         mode: "cors",
-        body: JSON.stringify(data),
+        ...(config.method !== "HEAD" ? { body: JSON.stringify(data) } : {}),
       },
       config
     );

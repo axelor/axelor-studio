@@ -26,6 +26,7 @@ export default function TextField({
   endAdornment,
   isScript,
   language,
+  setDummyProperty = () => {},
 }) {
   const {
     label,
@@ -56,6 +57,7 @@ export default function TextField({
   };
   const updateProperty = (value) => {
     if (!set && !setProperty) return;
+    setDummyProperty();
     if (set) {
       set(element, {
         [modelProperty]: value,

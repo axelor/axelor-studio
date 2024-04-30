@@ -17,6 +17,7 @@ export default function SelectBox({ entry, element }) {
     getProperty,
     setProperty,
     disabled = false,
+    setDummyProperty = () => {},
   } = entry || {};
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -25,6 +26,7 @@ export default function SelectBox({ entry, element }) {
     setSelectedOption(updatedValue);
     const { value = "" } = updatedValue || {};
     if (!set && !setProperty) return;
+    setDummyProperty();
     if (set) {
       set(element, {
         [modelProperty]: value,

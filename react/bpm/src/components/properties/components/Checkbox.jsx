@@ -10,11 +10,13 @@ export default function Checkbox({
   element,
   className,
   labelClassName,
+  setDummyProperty = () => {},
 }) {
   const { id, label, modelProperty, get, set } = entry || {};
   const [value, setValue] = useState(false);
   const { update } = useStore();
   const updateValue = () => {
+    setDummyProperty();
     setValue((value) => !value);
     set(element, { [modelProperty]: value });
     update((prevState) => ({
