@@ -1,4 +1,4 @@
-import fontAwesomeList from "./fa-icons"
+import bootstrapIcons from "./bootstrap-icons"
 import {
 	Name,
 	Type,
@@ -455,8 +455,7 @@ const buttonOption = [
 			StaticSelectField({
 				name: "icon",
 				title: "Icon",
-				data: fontAwesomeList,
-				helper: "https://fontawesome.com/cheatsheet",
+				data: bootstrapIcons,
 				parentField: "widgetAttrs",
 				modelType: MODEL_TYPE.CUSTOM,
 			}),

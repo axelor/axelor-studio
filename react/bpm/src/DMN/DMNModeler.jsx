@@ -7,6 +7,7 @@ import propertiesProviderModule from "dmn-js-properties-panel/lib/provider/camun
 import camundaModdleDescriptor from "camunda-dmn-moddle/resources/camunda";
 import classnames from "classnames";
 import { Resizable } from "re-resizable";
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import AlertDialog from "../components/AlertDialog";
 import Select from "../components/Select";
@@ -1086,7 +1087,7 @@ function DMNModeler() {
                 onClick={uploadExcelFile}
                 className={classnames(styles.textButton, "property-button")}
               >
-                <i className="fa fa-upload" style={{ fontSize: 18 }}></i>
+                <BootstrapIcon icon="upload" fontSize={18} />
               </Button>
             }
           />

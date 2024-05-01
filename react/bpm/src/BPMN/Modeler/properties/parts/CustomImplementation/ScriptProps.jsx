@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import Select from "../../../../../components/Select";
 import QueryBuilder from "../../../../../components/QueryBuilder";
@@ -510,10 +511,9 @@ export default function ScriptProps({
           />
           <div className={styles.new}>
             <Tooltip title="Enable" aria-label="enable">
-              {/* Code icon is not available in material icons */}
-              <i
-                className="fa fa-code"
-                style={{ fontSize: 18, marginLeft: 5 }}
+              <BootstrapIcon
+                icon="code-slash"
+                fontSize={18}
                 onClick={() => {
                   if (isReadOnly) {
                     setAlertMessage(
@@ -526,7 +526,7 @@ export default function ScriptProps({
                     setOpenScriptDialog(true);
                   }
                 }}
-              ></i>
+              />
             </Tooltip>
             <MaterialIcon
               icon="edit"

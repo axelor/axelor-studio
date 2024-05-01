@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import classnames from "classnames"
 import { Badge, Box, Select } from "@axelor/ui"
 import { translate } from "../../utils"
-import { MaterialIcon } from "@axelor/ui/icons/material-icon"
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon"
 
 export default function StaticSelect({
 	value,
@@ -23,11 +23,9 @@ export default function StaticSelect({
 
 	const renderChip = (item) => {
 		return !optionValue && item ? (
-			<Box>
-				{name === "icon" && (
-					<i className={`fa ${item.option}`} style={{ marginRight: 4 }} />
-				)}
-				{item.option}
+			<Box d="flex" alignItems={"center"}>
+				{name === "icon" && <BootstrapIcon icon={option} />}
+				<Box style={{ marginLeft: 4 }}>{item.option}</Box>
 			</Box>
 		) : (
 			<Box>
@@ -81,11 +79,9 @@ export default function StaticSelect({
 			placeholder={translate(title)}
 			renderOption={({ option }) => {
 				return !optionValue && option ? (
-					<Box>
-						{name === "icon" && (
-							<i className={`fa ${option}`} style={{ marginRight: 4 }} />
-						)}
-						{option}
+					<Box d="flex" alignItems={"center"}>
+						{name === "icon" && <BootstrapIcon icon={option} />}
+						<Box style={{ marginLeft: 4 }}>{option}</Box>
 					</Box>
 				) : (
 					<Badge

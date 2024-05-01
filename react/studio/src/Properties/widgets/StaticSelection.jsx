@@ -1,5 +1,7 @@
 import React from "react"
 import { Box, InputLabel, Select } from "@axelor/ui"
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon"
+
 import { camleCaseString, translate, getProperty } from "../../utils"
 import { typeReplacer } from "../../constants"
 import { TYPE } from "../../constants"
@@ -10,7 +12,6 @@ export default function StaticSelection(_props) {
 		name,
 		required,
 		data,
-		helper,
 		title,
 		color,
 		disableClearable = false,
@@ -115,18 +116,17 @@ export default function StaticSelection(_props) {
 				}
 				renderOption={(option) =>
 					typeof option === "object" ? (
-						<Box>
-							<i
-								className={`fa ${option.option}`}
-								style={{ marginRight: "10px" }}
-							/>
-							{translate(`${option.option}`)}
+						<Box d="flex" alignItems={"center"}>
+							<BootstrapIcon icon={option?.option} />
+							<Box style={{ marginLeft: 10 }}>
+								{translate(`${option.option}`)}
+							</Box>
 						</Box>
 					) : (
 						<Box>
 							{color && <ColorTag color={option} />}
-							<i className={`fa ${option}`} style={{ marginRight: "10px" }} />
-							<span>{translate(option)}</span>
+							<BootstrapIcon icon={option} />
+							<Box style={{ marginLeft: 10 }}>{translate(option)}</Box>
 						</Box>
 					)
 				}
