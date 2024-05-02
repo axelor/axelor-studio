@@ -170,7 +170,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
           Optional.ofNullable(AuthUtils.getUser()).map(Model::getId).orElse(0L).toString();
       engine.getTaskService().setAssignee(task.getId(), userId);
 
-      engine.getTaskService().complete(task.getId(), variables);
+      engine.getTaskService().complete(task.getId(), variables); // here to update the task aop
       taskExecuted = true;
     }
 

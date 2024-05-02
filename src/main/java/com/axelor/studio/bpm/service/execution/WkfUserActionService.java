@@ -30,6 +30,9 @@ public interface WkfUserActionService {
 
   public String processTitle(String title, FullContext wkfContext);
 
+  public void updateUserAction(
+      WkfTaskConfig wkfTaskConfig, DelegateExecution execution, boolean cancel);
+
   public FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
       throws ClassNotFoundException;
 

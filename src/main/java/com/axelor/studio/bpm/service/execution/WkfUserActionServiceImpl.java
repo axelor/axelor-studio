@@ -142,6 +142,37 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   }
 
   @Override
+  public void updateUserAction(
+      WkfTaskConfig wkfTaskConfig, DelegateExecution execution, boolean cancel) {
+    String title = wkfTaskConfig.getTaskEmailTitle();
+
+    if (title == null) {
+      return;
+    }
+
+    try {
+      FullContext wkfContext = getModelCtx(wkfTaskConfig, execution);
+      if (wkfContext != null) {
+        title = processTitle(title, wkfContext);
+      }
+      TeamTask teamTask = teamTaskRepository.findByName(title);
+      if (cancel) {
+        teamTask.setStatus("canceled");
+        teamTaskRepository.save(teamTask);
+        return;
+      }
+      boolean variableLocal =
+          (boolean) execution.getVariableLocal(execution.getCurrentActivityId() + "_successful");
+      if (variableLocal) {
+        teamTask.setStatus("closed");
+        teamTaskRepository.save(teamTask);
+      }
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
   public String processTitle(String title, FullContext wkfContext) {
 
     Matcher machMatcher = FIELD_PATTERN.matcher(title);
@@ -184,7 +215,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       Model record = JPA.find(modelClass, Long.parseLong(id.toString()));
       wkfContext = new FullContext(record);
     }
-
     return wkfContext;
   }
 

@@ -72,6 +72,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
+import org.camunda.bpm.engine.runtime.ActivityInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.camunda.bpm.engine.variable.VariableMap;
@@ -487,6 +488,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         ExceptionHelper.trace(e);
       }
     }
+    wkfUserActionService.updateUserAction(wkfTaskConfig, execution, false);
   }
 
   @Override
@@ -752,10 +754,55 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
           createMigrationHistory(instance, process.getWkfModel()));
       instance.setWkfProcess(process);
       instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
+      ActivityInstance activityInstance =
+          engineService.getEngine().getRuntimeService().getActivityInstance(processInstanceId);
+
+      // Check if there is a current activity instance
+      if (activityInstance != null) {
+        // Get the ID of the current activity (which represents the current node in the process)
+        String activityId = activityInstance.getActivityId();
+
+        if (activityId != null && activityId.startsWith("task_")) {
+          // This instance is currently on a task node
+          // You can take appropriate action here
+          WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(activityInstance);
+          DelegateExecution execution =
+              (DelegateExecution)
+                  engineService
+                      .getEngine()
+                      .getRuntimeService()
+                      .createExecutionQuery()
+                      .processInstanceId(processInstanceId)
+                      .singleResult();
+          wkfUserActionService.updateUserAction(wkfTaskConfig, execution, true);
+          System.out.println(
+              "Process instance " + processInstanceId + " is on a task node: " + activityId);
+        }
+      }
     }
 
     instance.setMigrationStatusSelect(migrationStatus);
     wkfInstanceRepository.save(instance);
+  }
+
+  protected WkfTaskConfig getWkfTaskConfig(ActivityInstance activityInstance) {
+    WkfTaskConfig wkfTaskConfig =
+        wkfTaskConfigRepository
+            .all()
+            .autoFlush(false)
+            .filter(
+                "self.name = ? and self.wkfModel.id = (select wkfModel.id from WkfProcess where processId = ?)",
+                activityInstance.getActivityId(),
+                activityInstance.getProcessDefinitionId())
+            .fetchOne();
+
+    log.debug(
+        "Task config searched with taskId: {}, processInstanceId: {}, found:{}",
+        activityInstance.getActivityId(),
+        activityInstance.getProcessDefinitionId(),
+        wkfTaskConfig);
+
+    return wkfTaskConfig;
   }
 
   @Override
