@@ -22,7 +22,7 @@ import com.axelor.app.AxelorModule;
 import com.axelor.message.service.AppSettingsMessageServiceImpl;
 import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
-import com.axelor.meta.service.MetaService;
+import com.axelor.meta.service.ViewProcessor;
 import com.axelor.studio.app.listener.AppServerStartListener;
 import com.axelor.studio.app.service.AccessTemplateService;
 import com.axelor.studio.app.service.AccessTemplateServiceImpl;
@@ -125,13 +125,13 @@ import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.studio.service.AppSettingsStudioServiceImpl;
 import com.axelor.studio.service.ChartRecordViewService;
 import com.axelor.studio.service.ChartRecordViewServiceImpl;
-import com.axelor.studio.service.CustomMetaService;
 import com.axelor.studio.service.ExportService;
 import com.axelor.studio.service.ExportServiceImpl;
 import com.axelor.studio.service.JsonFieldService;
 import com.axelor.studio.service.JsonFieldServiceImpl;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.StudioMetaServiceImpl;
+import com.axelor.studio.service.ViewProcessorImpl;
 import com.axelor.studio.service.app.AppStudioService;
 import com.axelor.studio.service.app.AppStudioServiceImpl;
 import com.axelor.studio.service.builder.ReportBuilderService;
@@ -180,8 +180,7 @@ public class StudioModule extends AxelorModule {
   @Override
   protected void configure() {
     AppSettings.get().enableFeature("studio");
-
-    bind(MetaService.class).to(CustomMetaService.class);
+    bind(ViewProcessor.class).to(ViewProcessorImpl.class);
     bind(StudioChartRepository.class).to(StudioChartRepo.class);
     bind(StudioActionRepository.class).to(StudioActionRepo.class);
     bind(StudioMenuRepository.class).to(StudioMenuRepo.class);
