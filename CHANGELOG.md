@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+* Anomaly: fix override AOP translations
+
 ## 1.0.5
 
 * Anomaly #71447: Fix NPE upon save of a custom model with a menu
