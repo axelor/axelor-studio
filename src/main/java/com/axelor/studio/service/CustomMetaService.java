@@ -74,7 +74,7 @@ public class CustomMetaService extends MetaService {
       Class<?> btnClass = Class.forName("com.axelor.meta.schema.views.Button");
       Field iconField = btnClass.getDeclaredField("icon");
       iconField.setAccessible(true);
-      iconField.set(openStudioBtn, "fa fa-magic");
+      iconField.set(openStudioBtn, "magic");
       iconField.setAccessible(false);
 
       openStudioBtn.setName("openStudioBtn");

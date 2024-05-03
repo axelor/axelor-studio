@@ -9,7 +9,7 @@
     <field name="createdOn"/>
     <field name="migrationHistoryUpdatedOn"/>
     <button name="openEditorBtn" title="wkf.open.editor"
-      onClick="action-wkf-migration-view-open-bpm-editor" icon="fa-edit"/>
+      onClick="action-wkf-migration-view-open-bpm-editor" icon="pencil-square"/>
   </grid>
 
   <form name="wkf-instance-migration-history-form" title="Migration History"
