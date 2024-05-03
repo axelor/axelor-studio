@@ -1,3 +1,7 @@
+## Current (unreleased)
+
+* Anomaly: fix override AOP translations
+
 ## 1.3.4 (2023-11-03)
 
 #### Fixed
