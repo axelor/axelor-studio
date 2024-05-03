@@ -1,3 +1,9 @@
+## 2.0.2 (2024-05-03)
+
+#### Fix
+
+* fix override AOP translations
+
 ## 2.0.1 (2024-02-16)
 
 #### Change
