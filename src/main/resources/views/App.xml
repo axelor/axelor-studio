@@ -204,15 +204,6 @@
     <view-param name="height" value="400"/>
   </action-view>
 
-  <action-view name="action-app-view-import-access-config-wizard"
-    title="Import access config" model="com.axelor.utils.db.Wizard">
-    <view type="form" name="import-access-config-wizard-form"/>
-    <view-param name="show-toolbar" value="false"/>
-    <view-param name="popup" value="true"/>
-    <view-param name="popup-save" value="false"/>
-    <view-param name="show-confirm" value="false"/>
-  </action-view>
-
   <action-attrs name="action-app-on-load-attrs">
     <attribute name="hidden" for="configureBtn" expr="eval:!__self__.active"/>
     <attribute name="hidden" for="demoDataLoaded" expr="eval:!__self__.active"/>
