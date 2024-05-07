@@ -1,10 +1,12 @@
 import React from "react"
 import classNames from "classnames"
 import { Box } from "@axelor/ui"
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon"
+
 import Grid from "./Grid"
 import { TYPE } from "../constants"
 import { translate } from "../utils"
-
+import Tooltip from "./tooltip/tooltip"
 /**
  * Panel Component
  * Used As Container to group Field Component like form group
@@ -25,10 +27,14 @@ function PanelComponent({ id, attrs, design, isTab = false, ...rest }) {
 						attrs.title || attrs.autoTitle || (isTab ? attrs.field : "")
 					)}
 					{attrs.serverType === TYPE.toolbar && (
-						<i className="fa fa-wrench" title={translate("Toolbar")} />
+						<Tooltip title={translate("Toolbar")}>
+							<BootstrapIcon icon="wrench" fontSize={14} />
+						</Tooltip>
 					)}
 					{attrs.serverType === TYPE.menubar && (
-						<i className="fa fa-bars" title={translate("Menubar")} />
+						<Tooltip title={translate("Menubar")}>
+							<BootstrapIcon icon="list" fontSize={14} />
+						</Tooltip>
 					)}
 				</Box>
 			)}

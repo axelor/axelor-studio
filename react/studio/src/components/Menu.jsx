@@ -3,6 +3,7 @@ import classNames from "classnames"
 import Grid from "./Grid"
 import { translate } from "../utils"
 import { useStore } from "../store/context"
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon"
 
 /**
  * Menu Component
@@ -35,11 +36,11 @@ function MenuComponent({ id, attrs, design, isTab = true, ...rest }) {
 				})}
 			>
 				<div className="menu-toggle-button" onClick={handleToggleMenu}>
-					<i className={`fa fa-chevron-${arrow}`} />
+					<BootstrapIcon icon={`chevron-compact-${arrow}`} />
 				</div>
 				<span>{translate(attrs.title || attrs.autoTitle)}</span>
 				<div className="menu-toggle-button" onClick={handleToggleMenu}>
-					<i className={`fa fa-chevron-${arrow}`} />
+					<BootstrapIcon icon={`chevron-compact-${arrow}`} />
 				</div>
 			</div>
 			{errors.items && !isTab && (

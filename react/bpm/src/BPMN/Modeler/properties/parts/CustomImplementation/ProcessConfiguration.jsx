@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { IconButton } from "@material-ui/core";
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import Select from "../../../../../components/Select";
 import AlertDialog from "../../../../../components/AlertDialog";
@@ -749,13 +750,9 @@ export default function ProcessConfiguration({
                               endAdornment={
                                 <>
                                   <Tooltip title="Enable" aria-label="enable">
-                                    <i
-                                      className="fa fa-code"
-                                      style={{
-                                        fontSize: 18,
-                                        marginLeft: 5,
-                                        cursor: "pointer",
-                                      }}
+                                    <BootstrapIcon
+                                      icon="code-slash"
+                                      fontSize={18}
                                       onClick={() => {
                                         setPathCondition({
                                           key,

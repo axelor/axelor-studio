@@ -5,6 +5,7 @@ import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/Extensi
 import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
 import find from "lodash/find";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import AlertDialog from "../../../../../components/AlertDialog";
 import Mapper from "../../../../../components/Mapper";
@@ -579,9 +580,9 @@ export default function ListenerProps({
               />
               <Box color="body" className={styles.edit}>
                 <Tooltip title="Enable" aria-label="enable">
-                  <i
-                    className="fa fa-code"
-                    style={{ fontSize: 18, marginLeft: 5 }}
+                  <BootstrapIcon
+                    icon="code-slash"
+                    fontSize={18}
                     onClick={() => {
                       const listener = getListener();
                       if (listener?.script?.scriptValue) {
@@ -591,7 +592,7 @@ export default function ListenerProps({
                         setOpenScriptDialog(true);
                       }
                     }}
-                  ></i>
+                  />
                 </Tooltip>
                 {(selectedExecutionEntity === 0 ||
                   selectedExecutionEntity ||

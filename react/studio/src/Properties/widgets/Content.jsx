@@ -4,7 +4,7 @@ import { MaterialIcon } from "@axelor/ui/icons/material-icon"
 import IconButton from "../../components/IconButton"
 import { useDrag, useDrop } from "react-dnd"
 import Select from "./Select"
-import fontAwesomeList from "../fa-icons"
+import bootstrapIcons from "../bootstrap-icons"
 import { WKF_COLORS } from "../../constants"
 
 const ItemTypes = {
@@ -222,7 +222,7 @@ const Content = React.forwardRef(
 								handleChange(row.id, "icon", value)
 							}}
 							value={row?.icon || ""}
-							options={fontAwesomeList}
+							options={bootstrapIcons}
 						/>
 					) : (
 						row.icon

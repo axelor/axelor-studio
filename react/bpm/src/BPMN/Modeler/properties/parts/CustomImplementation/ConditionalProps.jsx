@@ -3,6 +3,7 @@ import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefi
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import AlertDialog from "../../../../../components/AlertDialog";
 import { Textbox } from "../../../../../components/properties/components";
@@ -20,8 +21,7 @@ import {
 } from "@axelor/ui";
 import Tooltip from "../../../../../components/Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ConditionalProps.module.css"
-
+import styles from "./ConditionalProps.module.css";
 
 let CONDITIONAL_SOURCES = [
   "bpmn:Activity",
@@ -52,7 +52,6 @@ export default function ConditionalProps({
   const [readOnly, setReadOnly] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
-
 
   const handleClickOpen = () => {
     setAlertMessage("Add all values");
@@ -139,9 +138,8 @@ export default function ConditionalProps({
       element.businessObject.conditionExpression.resource = undefined;
       element.businessObject.conditionExpression.language = "axelor";
       let conditionOrConditionExpression;
-      let conditionalEventDefinition = eventDefinitionHelper.getConditionalEventDefinition(
-        element
-      );
+      let conditionalEventDefinition =
+        eventDefinitionHelper.getConditionalEventDefinition(element);
       if (conditionalEventDefinition) {
         element.businessObject.condition = conditionOrConditionExpression;
       } else {
@@ -157,7 +155,8 @@ export default function ConditionalProps({
           conditionalEventDefinition || bo,
           bpmnFactory
         );
-        element.businessObject.conditionExpression = conditionOrConditionExpression;
+        element.businessObject.conditionExpression =
+          conditionOrConditionExpression;
         if (conditionOrConditionExpression) {
           element.businessObject.conditionExpression.body = expression;
           element.businessObject.conditionExpression.resource = undefined;
@@ -178,15 +177,13 @@ export default function ConditionalProps({
       if (CONDITIONAL_SOURCES.includes(bo.sourceRef.$type)) return;
       modeling &&
         modeling.updateProperties(shape, {
-          [conditionalEventDefinition
-            ? "condition"
-            : "conditionExpression"]: conditionOrConditionExpression,
+          [conditionalEventDefinition ? "condition" : "conditionExpression"]:
+            conditionOrConditionExpression,
         });
     } else {
       let conditionOrConditionExpression;
-      let conditionalEventDefinition = eventDefinitionHelper.getConditionalEventDefinition(
-        element
-      );
+      let conditionalEventDefinition =
+        eventDefinitionHelper.getConditionalEventDefinition(element);
       let bo = getBusinessObject(element);
       if (expression && expression !== "" && conditionType) {
         const conditionProps = {
@@ -212,7 +209,8 @@ export default function ConditionalProps({
       if (conditionalEventDefinition) {
         element.businessObject.condition = conditionOrConditionExpression;
       } else {
-        element.businessObject.conditionExpression = conditionOrConditionExpression;
+        element.businessObject.conditionExpression =
+          conditionOrConditionExpression;
         if (conditionOrConditionExpression) {
           element.businessObject.conditionExpression.body = expression;
           element.businessObject.conditionExpression.resource = undefined;
@@ -233,9 +231,8 @@ export default function ConditionalProps({
       if (CONDITIONAL_SOURCES.includes(bo.sourceRef.$type)) return;
       modeling &&
         modeling.updateProperties(shape, {
-          [conditionalEventDefinition
-            ? "condition"
-            : "conditionExpression"]: conditionOrConditionExpression,
+          [conditionalEventDefinition ? "condition" : "conditionExpression"]:
+            conditionOrConditionExpression,
         });
     }
   };
@@ -286,9 +283,9 @@ export default function ConditionalProps({
           />
           <Box color="body" className={styles.new}>
             <Tooltip title="Enable" aria-label="enable">
-              <i
-                className="fa fa-code"
-                style={{ fontSize: 18, marginLeft: 5 }}
+              <BootstrapIcon
+                icon="code-slash"
+                fontSize={18}
                 onClick={() => {
                   if (readOnly) {
                     setAlertMessage(
@@ -301,7 +298,7 @@ export default function ConditionalProps({
                     setOpenScriptDialog(true);
                   }
                 }}
-              ></i>
+              />
             </Tooltip>
             <MaterialIcon
               icon="edit"

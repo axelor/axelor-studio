@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
 import { isEventSubProcess } from "bpmn-js/lib/util/DiUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
@@ -273,9 +274,9 @@ export default function ConditionalEventProps({
         {conditionalEventDefinition && (
           <Box color="body" className={styles.new}>
             <Tooltip title="Enable" aria-label="enable">
-              <i
-                className="fa fa-code"
-                style={{ fontSize: 18, marginLeft: 5 }}
+              <BootstrapIcon
+                icon="code-slash"
+                fontSize={18}
                 onClick={() => {
                   if (readOnly) {
                     setAlertMessage(
@@ -288,7 +289,7 @@ export default function ConditionalEventProps({
                     setOpenScriptDialog(true);
                   }
                 }}
-              ></i>
+              />
             </Tooltip>
             <MaterialIcon
               icon="edit"

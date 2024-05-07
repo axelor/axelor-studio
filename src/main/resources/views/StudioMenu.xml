@@ -12,7 +12,7 @@
     <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
       if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
     <button name="recordsBtn" onClick="action-studio-method-studio-menu-show-records"
-      icon="fa-list" title="Show records"/>
+      icon="list-ul" title="Show records"/>
   </grid>
 
   <form name="studio-menu-form" title="StudioMenu.menu" model="com.axelor.studio.db.StudioMenu"

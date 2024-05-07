@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import Textbox from "../../../../../components/properties/components/Textbox";
 import TextField from "../../../../../components/properties/components/TextField";
@@ -272,9 +273,9 @@ export default function UserTaskProps({
             endAdornment={
               <Box color="body" className={styles.new}>
                 <Tooltip title="Enable" aria-label="enable">
-                  <i
-                    className="fa fa-code"
-                    style={{ fontSize: 18, marginLeft: 5 }}
+                  <BootstrapIcon
+                    icon="code-slash"
+                    fontSize={18}
                     onClick={() => {
                       if (readOnly) {
                         setAlertMessage(
@@ -287,7 +288,7 @@ export default function UserTaskProps({
                         setOpenScriptDialog(true);
                       }
                     }}
-                  ></i>
+                  />
                 </Tooltip>
                 <MaterialIcon
                   icon="edit"
