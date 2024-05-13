@@ -120,6 +120,12 @@ export class Service {
     const url = `ws/action/${actionName}`;
     return this.post(url, data);
   }
+
+
+  info() {
+    const url = "ws/public/app/info"
+    return this.get(url)
+  }
 }
 
 const _Service = new Service();

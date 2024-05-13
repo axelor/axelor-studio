@@ -34,9 +34,11 @@ import {
   Box,
   Input,
   InputLabel,
+  ThemeProvider,
 } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 import styles from './index.module.css';
+import { useAppTheme } from '../theme/hooks/useAopTheme';
 
 let paramCount = 0;
 let count = 0;
@@ -54,6 +56,7 @@ function ExpressionBuilder({
   fetchModels,
   isAllowButtons = false,
   isMapper,
+  isBamlQuery
 }) {
   const {
     type: parentType = 'expressionBuilder',
@@ -85,20 +88,20 @@ function ExpressionBuilder({
             ? queryModel && defaultExpressionValue
               ? defaultExpressionValue
               : {
-                  metaModals:
-                    expressionComponents &&
-                    expressionComponents[0] &&
-                    expressionComponents[0].value &&
-                    expressionComponents[0].value.metaModals,
-                  rules: [
-                    {
-                      id: 0,
-                      parentId: -1,
-                      combinator: 'and',
-                      rules: [{}],
-                    },
-                  ],
-                }
+                metaModals:
+                  expressionComponents &&
+                  expressionComponents[0] &&
+                  expressionComponents[0].value &&
+                  expressionComponents[0].value.metaModals,
+                rules: [
+                  {
+                    id: 0,
+                    parentId: -1,
+                    combinator: 'and',
+                    rules: [{}],
+                  },
+                ],
+              }
             : undefined,
         });
       })
@@ -159,34 +162,28 @@ function ExpressionBuilder({
       if (findRelational && findRelational.length > 0) {
         const str =
           nestedFields.length >= 1
-            ? `${fName}.find{it->it.$$$$}${
-                POSITIVE_OPERATORS.includes(operator) ? ' != null' : ' == null'
-              }`
-            : `${fName}.${
-                nestedFields.length > 0 ? 'find' : 'collect'
-              }{it->it$$$$}${
-                nestedFields.length > 0
-                  ? POSITIVE_OPERATORS.includes(operator)
-                    ? ' != null'
-                    : ' == null'
-                  : ''
-              }`;
+            ? `${fName}.find{it->it.$$$$}${POSITIVE_OPERATORS.includes(operator) ? ' != null' : ' == null'
+            }`
+            : `${fName}.${nestedFields.length > 0 ? 'find' : 'collect'
+            }{it->it$$$$}${nestedFields.length > 0
+              ? POSITIVE_OPERATORS.includes(operator)
+                ? ' != null'
+                : ' == null'
+              : ''
+            }`;
         initValue = initValue.replace(/\$\$/g, str);
       } else {
         const str =
           nestedFields.length >= 1
-            ? `${fName}.find{it->it.$$}${
-                POSITIVE_OPERATORS.includes(operator) ? ' != null' : ' == null'
-              }`
-            : `${fName}.${
-                nestedFields.length > 0 ? 'find' : 'collect'
-              }{it->it$$}${
-                nestedFields.length > 0
-                  ? POSITIVE_OPERATORS.includes(operator)
-                    ? ' != null'
-                    : ' == null'
-                  : ''
-              }`;
+            ? `${fName}.find{it->it.$$}${POSITIVE_OPERATORS.includes(operator) ? ' != null' : ' == null'
+            }`
+            : `${fName}.${nestedFields.length > 0 ? 'find' : 'collect'
+            }{it->it$$}${nestedFields.length > 0
+              ? POSITIVE_OPERATORS.includes(operator)
+                ? ' != null'
+                : ' == null'
+              : ''
+            }`;
         initValue += str;
       }
       const nestedFieldName = nestedFields.join(JOIN_OPERATOR[expression]);
@@ -293,37 +290,33 @@ function ExpressionBuilder({
           typeof rule?.fieldValue === 'string'
             ? rule.fieldValue
             : (rule?.fieldValue || [])
-                .map(f => {
-                  const targetFields =
-                    f['nameField'] ||
-                    f['targetName'] ||
-                    f['fullName'] ||
-                    f[`name`];
-                  return targetFields
-                    ? isNumber
-                      ? targetFields
-                      : `'${targetFields}'`
-                    : f['id'];
-                })
-                .join(',');
+              .map(f => {
+                const targetFields =
+                  f['nameField'] ||
+                  f['targetName'] ||
+                  f['fullName'] ||
+                  f[`name`];
+                return targetFields
+                  ? isNumber
+                    ? targetFields
+                    : `'${targetFields}'`
+                  : f['id'];
+              })
+              .join(',');
         const name =
           isParent || nestedFields.length >= 1
             ? ''
-            : `${fieldName}${
-                selectionList
-                  ? ''
-                  : `${JOIN_OPERATOR[expression]}${
-                      nameField ||
-                      (field && field.targetName) ||
-                      targetName ||
-                      'fullName'
-                    }`
-              }`;
-        const str = `${operator === 'notIn' ? '!' : ''}${`[${value}]`}${
-          JOIN_OPERATOR[expression]
-        }${map_operators[operator]}${isManyToManyField ? 'All' : ''}(${prefix}${
-          JOIN_OPERATOR[expression]
-        }${initValue.replace(/\$\$/g, name)})`;
+            : `${fieldName}${selectionList
+              ? ''
+              : `${JOIN_OPERATOR[expression]}${nameField ||
+              (field && field.targetName) ||
+              targetName ||
+              'fullName'
+              }`
+            }`;
+        const str = `${operator === 'notIn' ? '!' : ''}${`[${value}]`}${JOIN_OPERATOR[expression]
+          }${map_operators[operator]}${isManyToManyField ? 'All' : ''}(${prefix}${JOIN_OPERATOR[expression]
+          }${initValue.replace(/\$\$/g, name)})`;
         return str;
       } else if (['contains', 'notContains'].includes(operator)) {
         const isManyToManyField = initValue && initValue.includes('{it->it$$}');
@@ -332,37 +325,33 @@ function ExpressionBuilder({
           typeof rule?.fieldValue === 'string'
             ? rule.fieldValue
             : (rule?.fieldValue || [])
-                .map(f => {
-                  const targetFields =
-                    f['nameField'] ||
-                    f['targetName'] ||
-                    f['fullName'] ||
-                    f[`name`];
-                  return targetFields
-                    ? isNumber
-                      ? targetFields
-                      : `'${targetFields}'`
-                    : f['id'];
-                })
-                .join(',');
+              .map(f => {
+                const targetFields =
+                  f['nameField'] ||
+                  f['targetName'] ||
+                  f['fullName'] ||
+                  f[`name`];
+                return targetFields
+                  ? isNumber
+                    ? targetFields
+                    : `'${targetFields}'`
+                  : f['id'];
+              })
+              .join(',');
         const name =
           isParent || nestedFields.length >= 1
             ? ''
-            : `${fieldName}${
-                selectionList
-                  ? ''
-                  : `${JOIN_OPERATOR[expression]}${
-                      nameField ||
-                      (field && field.targetName) ||
-                      targetName ||
-                      'fullName'
-                    }`
-              }`;
-        const str = `${operator === 'notContains' ? '!' : ''}(${prefix}${
-          JOIN_OPERATOR[expression]
-        }${initValue.replace(/\$\$/g, name)})${JOIN_OPERATOR[expression]}${
-          map_operators[operator]
-        }${isManyToManyField ? 'All' : ''}(${value})`;
+            : `${fieldName}${selectionList
+              ? ''
+              : `${JOIN_OPERATOR[expression]}${nameField ||
+              (field && field.targetName) ||
+              targetName ||
+              'fullName'
+              }`
+            }`;
+        const str = `${operator === 'notContains' ? '!' : ''}(${prefix}${JOIN_OPERATOR[expression]
+          }${initValue.replace(/\$\$/g, name)})${JOIN_OPERATOR[expression]}${map_operators[operator]
+          }${isManyToManyField ? 'All' : ''}(${value})`;
         return str;
       } else if (['between', 'notBetween'].includes(operator)) {
         const temp = initValue.match(/it.\$\$/g);
@@ -390,13 +379,11 @@ function ExpressionBuilder({
           const name =
             isParent || nestedFields.length >= 1
               ? ''
-              : `${fieldName}${
-                  selectionList
-                    ? ''
-                    : `${JOIN_OPERATOR[expression]}${
-                        (field && field.targetName) || targetName || 'fullName'
-                      }`
-                }`;
+              : `${fieldName}${selectionList
+                ? ''
+                : `${JOIN_OPERATOR[expression]}${(field && field.targetName) || targetName || 'fullName'
+                }`
+              }`;
           return `${prefix}${JOIN_OPERATOR[expression]}${initValue.replace(
             /\$\$/g,
             `${name} ${str}`
@@ -415,9 +402,8 @@ function ExpressionBuilder({
         )}`;
       } else if (['like', 'notLike'].includes(operator)) {
         const str = `${fieldName}${JOIN_OPERATOR[expression]}${map_operators[operator]}(${fieldValue})`;
-        return `${operator === 'notLike' ? '!' : ''}${prefix}${
-          JOIN_OPERATOR[expression]
-        }${initValue.replace(/\$\$/g, str)}`;
+        return `${operator === 'notLike' ? '!' : ''}${prefix}${JOIN_OPERATOR[expression]
+          }${initValue.replace(/\$\$/g, str)}`;
       } else {
         const fieldNew = field || allField.find(f => f.name === parent) || {};
         const targetFields =
@@ -438,19 +424,17 @@ function ExpressionBuilder({
             ? `'${jsStringEscape(targetFields, withParam)}'`
             : fieldValue['id']
           : fieldValue;
-        const str = `${
-          isObjectValue
-            ? `${fieldName}${JOIN_OPERATOR[expression]}${
-                nameField || fieldNew.targetName || 'fullName'
-              }`
+        const str = `${isObjectValue
+            ? `${fieldName}${JOIN_OPERATOR[expression]}${nameField || fieldNew.targetName || 'fullName'
+            }`
             : `${fieldName}${isRelational ? `?.getTarget()` : ''}`
-        } ${map_operators[operator]} ${value}`;
+          } ${map_operators[operator]} ${value}`;
         return ['button', 'menu-item'].includes(type)
           ? `${initValue.replace(/\$\$/g, str)}`
           : `${prefix}${JOIN_OPERATOR[expression]}${initValue.replace(
-              /\$\$/g,
-              str
-            )}`;
+            /\$\$/g,
+            str
+          )}`;
       }
     }
   }
@@ -488,8 +472,8 @@ function ExpressionBuilder({
     const prefix = isBPM
       ? 'self'
       : isBPMN && generateWithId
-      ? `__ctx__.find('${upperCaseFirstLetter(modalName)}', ${modalName}Id)`
-      : modalName;
+        ? `__ctx__.find('${upperCaseFirstLetter(modalName)}', ${modalName}Id)`
+        : modalName;
     const map_operators = MAP_OPERATOR[isBPM ? 'BPM' : expression];
     const returnValues = [];
     for (let i = 0; i < (rules && rules.length); i++) {
@@ -538,9 +522,9 @@ function ExpressionBuilder({
         'json_one_to_one',
       ].includes(
         f &&
-          f.type &&
-          f.type.toLowerCase() &&
-          f.type.toLowerCase().replaceAll('-', '_')
+        f.type &&
+        f.type.toLowerCase() &&
+        f.type.toLowerCase().replaceAll('-', '_')
       );
       if (isRelational) {
         returnValues.push(
@@ -574,14 +558,11 @@ function ExpressionBuilder({
             .filter(f => f !== '')
             .join(',');
           returnValues.push(
-            `${operator === 'notIn' ? '!' : ''}${`[${value}]`}${
-              JOIN_OPERATOR[expression]
-            }${map_operators[operator]}(${prefix}${
-              JOIN_OPERATOR[expression]
-            }${fieldName}${
-              selectionList
-                ? ''
-                : `${JOIN_OPERATOR[expression]} ${targetName || 'fullName'}`
+            `${operator === 'notIn' ? '!' : ''}${`[${value}]`}${JOIN_OPERATOR[expression]
+            }${map_operators[operator]}(${prefix}${JOIN_OPERATOR[expression]
+            }${fieldName}${selectionList
+              ? ''
+              : `${JOIN_OPERATOR[expression]} ${targetName || 'fullName'}`
             })`
           );
         } else if (['between', 'notBetween'].includes(operator)) {
@@ -604,10 +585,8 @@ function ExpressionBuilder({
           );
         } else if (['like', 'notLike'].includes(operator)) {
           returnValues.push(
-            `${operator === 'notLike' ? '!' : ''}${prefix}${
-              JOIN_OPERATOR[expression]
-            }${fieldName}${JOIN_OPERATOR[expression]}${
-              map_operators[operator]
+            `${operator === 'notLike' ? '!' : ''}${prefix}${JOIN_OPERATOR[expression]
+            }${fieldName}${JOIN_OPERATOR[expression]}${map_operators[operator]
             }(${fieldValue})`
           );
         } else {
@@ -624,13 +603,11 @@ function ExpressionBuilder({
           returnValues.push(
             ['button', 'menu-item'].includes(type)
               ? `${fieldName} ${map_operators[operator]} ${value}`
-              : `${prefix}${JOIN_OPERATOR[expression]}${
-                  type === 'many_to_one' || type === 'json_many_to_one'
-                    ? `${fieldName}${JOIN_OPERATOR[expression]}${
-                        field.targetName || 'fullName'
-                      }`
-                    : fieldName
-                } ${map_operators[operator]} ${value}`
+              : `${prefix}${JOIN_OPERATOR[expression]}${type === 'many_to_one' || type === 'json_many_to_one'
+                ? `${fieldName}${JOIN_OPERATOR[expression]}${field.targetName || 'fullName'
+                }`
+                : fieldName
+              } ${map_operators[operator]} ${value}`
           );
         }
       }
@@ -716,9 +693,9 @@ function ExpressionBuilder({
       }
       const jsonFieldName = parentCustomField
         ? {
-            ...parentCustomField,
-            targetName: field?.targetName,
-          }
+          ...parentCustomField,
+          targetName: field?.targetName,
+        }
         : field;
       let {
         fieldValue,
@@ -789,19 +766,17 @@ function ExpressionBuilder({
 
         const nameField = selectionList ? '' : `.${targetName || 'id'}`;
         returnValues.push({
-          condition: `${
-            isJsonField
+          condition: `${isJsonField
               ? `${prefix}.${jsonFieldName.modelField}.${fieldName}${nameField}`
               : `${prefix}.${fieldName}${nameField}`
-          } ${map_operators[operator]} ${
-            isRelatedModalSame
+            } ${map_operators[operator]} ${isRelatedModalSame
               ? withParam
                 ? isJsonField
                   ? value
                   : fieldValue
                 : `(${value})`
               : `(?${count})`
-          }`,
+            }`,
           values: isRelatedModalSame
             ? undefined
             : [[isParam ? (isCondition ? `?` : `:param${paramCount}`) : value]],
@@ -811,95 +786,87 @@ function ExpressionBuilder({
           isRelatedModalSame && isRelatedElseModalSame
             ? undefined
             : isRelatedModalSame
-            ? [
+              ? [
                 isParam
                   ? isCondition
                     ? `?`
                     : `:param${paramCount}`
                   : fieldValue2,
               ]
-            : isRelatedElseModalSame
-            ? [
-                isParam
-                  ? isCondition
-                    ? `?`
-                    : `:param${paramCount}`
-                  : fieldValue,
-              ]
-            : [
-                isParam
-                  ? isCondition
-                    ? `?`
-                    : `:param${paramCount}`
-                  : fieldValue,
-                isParam
-                  ? isCondition
-                    ? `?`
-                    : `:param${++paramCount}`
-                  : fieldValue2,
-              ];
+              : isRelatedElseModalSame
+                ? [
+                  isParam
+                    ? isCondition
+                      ? `?`
+                      : `:param${paramCount}`
+                    : fieldValue,
+                ]
+                : [
+                  isParam
+                    ? isCondition
+                      ? `?`
+                      : `:param${paramCount}`
+                    : fieldValue,
+                  isParam
+                    ? isCondition
+                      ? `?`
+                      : `:param${++paramCount}`
+                    : fieldValue2,
+                ];
         if (isDateTime && isBPM) {
           returnValues.push({
-            condition: `${
-              isJsonField
+            condition: `${isJsonField
                 ? `${prefix}.${jsonFieldName.modelField}.${fieldName}`
                 : `${prefix}.${fieldName}`
-            } ${operator === 'notBetween' ? 'NOT BETWEEN' : 'BETWEEN'} ${
-              isRelatedModalSame
+              } ${operator === 'notBetween' ? 'NOT BETWEEN' : 'BETWEEN'} ${isRelatedModalSame
                 ? isParam
                   ? isCondition
                     ? `?`
                     : `:param${paramCount}`
                   : fieldValue
                 : `?${count}`
-            } ${map_type['and']} ${
-              isRelatedElseModalSame
+              } ${map_type['and']} ${isRelatedElseModalSame
                 ? isParam
                   ? isCondition
                     ? `?`
                     : `:param${++paramCount}`
                   : fieldValue2
                 : `?${++count}`
-            }`,
+              }`,
             values,
           });
         } else {
           returnValues.push({
-            condition: `${operator === 'notBetween' ? 'NOT ' : ''}${
-              isJsonField
+            condition: `${operator === 'notBetween' ? 'NOT ' : ''}${isJsonField
                 ? `${prefix}.${jsonFieldName.modelField}.${fieldName}`
                 : `${prefix}.${fieldName}`
-            } >= ${
-              isRelatedModalSame
+              } >= ${isRelatedModalSame
                 ? isParam
                   ? isCondition
                     ? `?`
                     : `:param${paramCount}`
                   : fieldValue
                 : `?${count}`
-            } ${map_type['and']} ${
-              isJsonField
+              } ${map_type['and']} ${isJsonField
                 ? `${prefix}.${jsonFieldName.modelField}.${fieldName}`
                 : `${prefix}.${fieldName}`
-            } <= ${
-              isRelatedElseModalSame
+              } <= ${isRelatedElseModalSame
                 ? isParam
                   ? isCondition
                     ? `?`
                     : `:param${++paramCount}`
                   : fieldValue2
                 : `?${++count}`
-            }`,
+              }`,
             values,
           });
         }
       } else if (['isNotNull', 'isNull'].includes(operator)) {
         returnValues.push({
-          condition: `${
-            isJsonField
+          condition: `${isJsonField
               ? `${prefix}.${jsonFieldName.modelField}.${fieldName}`
               : `${prefix}.${fieldName}`
-          } ${map_operators[operator]}`,
+            } ${map_operators[operator]}`,
         });
       } else if (['isTrue', 'isFalse'].includes(operator)) {
         let value = operator === 'isTrue' ? true : false;
@@ -911,12 +878,10 @@ function ExpressionBuilder({
           : `${value}`;
 
         returnValues.push({
-          condition: `${
-            isJsonField
+          condition: `${isJsonField
               ? `${prefix}.${jsonFieldName.modelField}.${fieldName}`
               : `${prefix}.${fieldName}`
-          } ${map_operators[operator]} ${
-            isRelatedModalSame
+            } ${map_operators[operator]} ${isRelatedModalSame
               ? withParam
                 ? isParam
                   ? isCondition
@@ -925,7 +890,7 @@ function ExpressionBuilder({
                   : fieldValue
                 : value
               : `?${count}`
-          }`,
+            }`,
           values: isRelatedModalSame
             ? undefined
             : [isParam ? (isCondition ? `?` : `:param${paramCount}`) : value],
@@ -937,8 +902,7 @@ function ExpressionBuilder({
             : `'${jsStringEscape(fieldValue['name'] || '', withParam)}'`
           : fieldValue;
         returnValues.push({
-          condition: `${
-            isRelatedModalSame
+          condition: `${isRelatedModalSame
               ? withParam
                 ? isParam
                   ? isCondition
@@ -947,11 +911,10 @@ function ExpressionBuilder({
                   : fieldValue
                 : value
               : `?${count}`
-          } ${map_operators[operator]} ${
-            isJsonField
+            } ${map_operators[operator]} ${isJsonField
               ? `${prefix}.${jsonFieldName.modelField}.${fieldName}`
               : `${prefix}.${fieldName}`
-          }`,
+            }`,
           values: isRelatedModalSame
             ? undefined
             : [isParam ? (isCondition ? `?` : `:param${paramCount}`) : value],
@@ -986,36 +949,33 @@ function ExpressionBuilder({
           isRelational && !isRelationalValue ? `.${targetName || 'id'}` : '';
 
         returnValues.push({
-          condition: `${
-            isJsonField
+          condition: `${isJsonField
               ? `${prefix}.${jsonFieldName.modelField}.${fieldName}${nameField}`
               : `${prefix}.${fieldName}${nameField}`
-          } ${map_operators[operator]} ${
-            isRelatedModalSame
+            } ${map_operators[operator]} ${isRelatedModalSame
               ? ['like', 'notLike'].includes(operator) &&
                 (!isJsonField || (isJsonField && !isRelationalCustom))
-                ? `CONCAT('%',${
-                    isParam
-                      ? isCondition
-                        ? `?`
-                        : `:param${paramCount}`
-                      : fieldValue
-                  },'%')`
-                : withParam
-                ? isJsonField
-                  ? value
-                  : isParam
+                ? `CONCAT('%',${isParam
                   ? isCondition
                     ? `?`
                     : `:param${paramCount}`
                   : fieldValue
-                : value
+                },'%')`
+                : withParam
+                  ? isJsonField
+                    ? value
+                    : isParam
+                      ? isCondition
+                        ? `?`
+                        : `:param${paramCount}`
+                      : fieldValue
+                  : value
               : ['like', 'notLike'].includes(operator) &&
                 (!isJsonField ||
                   (isJsonField && !MANY_TO_ONE_TYPES.includes(operator)))
-              ? `CONCAT('%',?${count},'%')`
-              : `?${count}`
-          }`,
+                ? `CONCAT('%',?${count},'%')`
+                : `?${count}`
+            }`,
           values: isRelatedModalSame
             ? undefined
             : [isParam ? (isCondition ? `?` : `:param${paramCount}`) : value],
@@ -1054,15 +1014,13 @@ function ExpressionBuilder({
     if (children.length > 0) {
       let isChild = childConditions && childConditions.length > 0;
       return {
-        condition: `${isChild ? '(' : ''}${
-          c ? c.join(' ' + map_type[combinator] + ' ') : ''
-        } ${
-          isChild
+        condition: `${isChild ? '(' : ''}${c ? c.join(' ' + map_type[combinator] + ' ') : ''
+          } ${isChild
             ? `${map_type[combinator]} ${childConditions.join(
-                ' ' + map_type[combinator] + ' '
-              )}`
+              ' ' + map_type[combinator] + ' '
+            )}`
             : ''
-        }${isChild ? ')' : ''}`,
+          }${isChild ? ')' : ''}`,
         values: [
           ...((condition &&
             condition.map(co => co && co.values).filter(f => f)) ||
@@ -1107,15 +1065,13 @@ function ExpressionBuilder({
 
     if (children.length > 0 && condition && condition.length > 0) {
       let isChild = childrenConditions && childrenConditions.length !== 0;
-      return `${isChild ? '(' : ''}${
-        condition ? condition.join(' ' + map_type[combinator] + ' ') : ''
-      } ${
-        isChild
+      return `${isChild ? '(' : ''}${condition ? condition.join(' ' + map_type[combinator] + ' ') : ''
+        } ${isChild
           ? ` ${map_type[combinator]} ${childrenConditions.join(
-              ' ' + map_type[combinator] + ' '
-            )}`
+            ' ' + map_type[combinator] + ' '
+          )}`
           : ''
-      }${isChild ? ')' : ''}`;
+        }${isChild ? ')' : ''}`;
     } else if (isChildren && condition && condition.length > 0) {
       return '(' + condition.join(' ' + map_type[combinator] + ' ') + ')';
     } else if (condition && condition.length > 0) {
@@ -1282,10 +1238,10 @@ function ExpressionBuilder({
       model = isBPMN
         ? modalName
         : isBPMQuery(type)
-        ? modelType === 'metaJsonModel'
-          ? modalName
-          : fullName
-        : modalName;
+          ? modelType === 'metaJsonModel'
+            ? modalName
+            : fullName
+          : modalName;
       let str = '';
       const listOfTree = getListOfTree(rules);
       const criteria = isBPMQuery(type)
@@ -1342,17 +1298,15 @@ function ExpressionBuilder({
 
       const showBracket = !queryModel || withParam;
       const exp = str
-        ? `${showBracket ? '(' : ''}${
-            !queryModel ? `${withParam ? `"${model}"` : `${model}`}, ` : ''
-          }${withParam ? `"${str}"` : `${str}`}${
-            vals && vals.length > 0 ? `${valueParameters}` : ``
-          }${showBracket ? ')' : ''}`
+        ? `${showBracket ? '(' : ''}${!queryModel ? `${withParam ? `"${model}"` : `${model}`}, ` : ''
+        }${withParam ? `"${str}"` : `${str}`}${vals && vals.length > 0 ? `${valueParameters}` : ``
+        }${showBracket ? ')' : ''}`
         : null;
       const expBPMN = str
-        ? `return __ctx__.createVariable(__ctx__.${
-            singleResult ? 'filterOne' : 'filter'
-          }("${model}","${str}"${
-            vals && vals.length > 0 ? `${valueParameters}` : ``
+        ? isBamlQuery
+          ? `"${str}"${vals && vals.length > 0 ? `${valueParameters}` : ``}`
+          : `return __ctx__.createVariable(__ctx__.${singleResult ? 'filterOne' : 'filter'
+          }("${model}","${str}"${vals && vals.length > 0 ? `${valueParameters}` : ``
           }))`
         : undefined;
       expr = isBPMN ? expBPMN : exp;
@@ -1363,17 +1317,17 @@ function ExpressionBuilder({
       expr,
       expr
         ? {
-            values: expressionValues,
-            combinator,
-          }
+          values: expressionValues,
+          combinator,
+        }
         : null
     );
     let checked =
       !expr || expr === 'undefined' || expressionValues?.length === 0
         ? null
         : isBPMQuery(type)
-        ? singleResult
-        : generateWithId;
+          ? singleResult
+          : generateWithId;
     setProperty &&
       setProperty({
         expression: expr,
@@ -1514,10 +1468,75 @@ function ExpressionBuilder({
     </Box>
   );
 
+  function UI() {
+    return (
+      <div>
+        {
+          !isBamlQuery && <Button
+            title={isBPMQuery(parentType) ? 'Add group' : 'Add expression'}
+            icon="add"
+            onClick={() => onAddExpressionEditor()}
+            disabled={
+              isBPMQuery(parentType)
+                ? expressionComponents &&
+                  ((expressionComponents[0] &&
+                    expressionComponents[0].value &&
+                    expressionComponents[0].value.metaModals) ||
+                    expressionComponents.length === 0)
+                  ? false
+                  : true
+                : false
+            }
+          />
+        }
+        {expressionComponents &&
+          expressionComponents.map(({ value }, index) => {
+            return (
+              <Box d="flex" alignItems="center" key={index}>
+                <ExpressionComponent
+                  value={value}
+                  index={index}
+                  onChange={onChange}
+                  element={record && modelFilter && record[modelFilter]}
+                  type={parentType}
+                  queryModel={queryModel}
+                  isCondition={isCondition}
+                  isPackage={isPackage}
+                  isParameterShow={isParameterShow}
+                  defaultModel={defaultModel}
+                  fetchModels={fetchModels}
+                  isAllowButtons={isAllowButtons}
+                  isBPMN={isBPMN}
+                  isMapper={isMapper}
+                  isBamlQuery={isBamlQuery}
+                />
+
+                {
+                  !isBamlQuery && <IconButton
+                    size="small"
+                    color="inherit"
+                    onClick={() => onRemoveExpressionEditor(index)}
+                  > <div>
+
+                    </div>
+                    <MaterialIcon
+                      icon="delete"
+                      fontSize={18}
+                      color="body"
+                    />
+                  </IconButton>
+                }
+              </Box>
+            );
+          })}
+      </div>
+    )
+  }
+
   return (
     <Box d="flex" flexDirection="column" overflow="hidden" flex="1">
       <Box d="flex" flexDirection="column" color="body" className={styles.root}>
-        <Box rounded={2} border className={styles.paper}>
+        <Box rounded={2} border={!isBamlQuery} className={styles.paper}>
           <Box maxH={100} maxW={100}>
             {isBPMN &&
               !isBPMQuery(parentType) &&
@@ -1526,83 +1545,35 @@ function ExpressionBuilder({
                 generateWithId,
                 setGenerateWithId
               )}
-            {isBPMN &&
+            {isBPMN && !isBamlQuery &&
               isBPMQuery(parentType) &&
               renderCheckbox('Single result', singleResult, setSingleResult)}
-            <Timeline
-              isBPMN={isBPMN}
-              title={
-                <Select
-                  className={styles.combinator}
-                  name="expression"
-                  value={combinator}
-                  options={COMBINATORS}
-                  onChange={value => setCombinator(value)}
-                  disableUnderline={true}
-                />
-              }
-            >
-              <Button
-                title={isBPMQuery(parentType) ? 'Add group' : 'Add expression'}
-                icon="add"
-                onClick={() => onAddExpressionEditor()}
-                disabled={
-                  isBPMQuery(parentType)
-                    ? expressionComponents &&
-                      ((expressionComponents[0] &&
-                        expressionComponents[0].value &&
-                        expressionComponents[0].value.metaModals) ||
-                        expressionComponents.length === 0)
-                      ? false
-                      : true
-                    : false
-                }
-              />
-              <div>
-                {expressionComponents &&
-                  expressionComponents.map(({ value }, index) => {
-                    return (
-                      <Box d="flex" alignItems="center" key={index}>
-                        <ExpressionComponent
-                          value={value}
-                          index={index}
-                          onChange={onChange}
-                          element={record && modelFilter && record[modelFilter]}
-                          type={parentType}
-                          queryModel={queryModel}
-                          isCondition={isCondition}
-                          isPackage={isPackage}
-                          isParameterShow={isParameterShow}
-                          defaultModel={defaultModel}
-                          fetchModels={fetchModels}
-                          isAllowButtons={isAllowButtons}
-                          isBPMN={isBPMN}
-                          isMapper={isMapper}
-                        />
-                        <IconButton
-                          size="small"
-                          color="inherit"
-                          onClick={() => onRemoveExpressionEditor(index)}
-                        >
-                          <MaterialIcon
-                            icon="delete"
-                            fontSize={18}
-                            color="body"
-                          />
-                        </IconButton>
-                      </Box>
-                    );
-                  })}
-              </div>
-            </Timeline>
+            {
+              isBamlQuery ? <div>{UI()}</div> :
+                <Timeline
+                  isBPMN={isBPMN}
+                  title={
+                    <Select
+                      className={styles.combinator}
+                      name="expression"
+                      value={combinator}
+                      options={COMBINATORS}
+                      onChange={value => setCombinator(value)}
+                      disableUnderline={true}
+                    />
+                  }
+                >
+                  {UI()}
+                </Timeline>
+            }
           </Box>
         </Box>
       </Box>
 
-      <Box d="flex" alignItems="center" justifyContent="flex-end" w={100}>
+      <Box className={styles.dialogFooter}  >
         <Button
           variant="primary"
-          title="Save"
+          title="OK"
           className={styles.save}
           onClick={() => generateExpression(combinator, parentType)}
         />
@@ -1630,4 +1601,15 @@ function ExpressionBuilder({
   );
 }
 
-export default ExpressionBuilder;
+
+
+export default function ExpressionBuilderApp(props) {
+  const { theme, options } = useAppTheme();
+  return (
+    <ThemeProvider theme={theme} options={options}>
+      <ExpressionBuilder {...props} />
+    </ThemeProvider>
+  );
+};
+
+

@@ -18,6 +18,7 @@ function AppContent({
   getProcessElement,
   isDMNAllow,
   getDMNValues,
+  isBAML
 }) {
   const [values, setValues] = React.useState(null);
 
@@ -58,6 +59,7 @@ function AppContent({
         getProcessElement={getProcessElement}
         isDMNAllow={isDMNAllow}
         getDMNValues={getDMNValues}
+        isBAML={isBAML}
       />
     </div>
   );
@@ -74,6 +76,7 @@ export default function App({
   getProcessElement,
   isDMNAllow,
   getDMNValues,
+  isBAML=false
 }) {
   const data = useAppTheme();
   const { theme, options } = data;
@@ -92,6 +95,7 @@ export default function App({
           getProcessElement={getProcessElement}
           isDMNAllow={isDMNAllow}
           getDMNValues={getDMNValues}
+          isBAML={isBAML}
         />
       </DndProvider>
     </ThemeProvider>

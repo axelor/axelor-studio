@@ -1038,6 +1038,7 @@ export default function Editor({
   isAllowButtons = false,
   isBPMN = false,
   isMapper,
+  isBamlQuery=false
 }) {
   const classes = useStyles();
   const [isBPM, setBPM] = useState(false);

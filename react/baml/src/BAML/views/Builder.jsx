@@ -9,11 +9,13 @@ import {
   DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import ExpressionBuilder from "../expression-builder/index";
 import { translate } from "../../utils";
 import { Textbox } from "../components";
 import { getModels } from "../../services/api";
 import Tooltip from "../components/tooltip/tooltip";
+import QueryBuilder from "./QueryBuilder";
+import { getBusinessObject } from "../ModelUtil";
+import AlertDialog from "../expression-builder/components/AlertDialog";
 
 export default function ExtendedQueryProps({ element, bpmnModeler }) {
   const [isReadOnly, setReadOnly] = useState(false);
@@ -22,6 +24,8 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
   const [model, setModel] = useState(null);
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
 
   const setProperty = (name, value) => {
     if (!bpmnModeler) return;
@@ -74,6 +78,20 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
     fetchModel();
   }, [getProperty]);
 
+  const updateScript = ({expr,exprMeta}={})=>{
+    setProperty("expression",expr)
+    setScript(expr);
+    setProperty("expressionValue",exprMeta?exprMeta:undefined)
+  }
+
+  const getScript = React.useCallback(()=>{
+    let bo = getBusinessObject(element)
+    return {
+      script: (bo?.get("expression") || "")?.replace(/[\u200B-\u200D\uFEFF]/g, ""),
+    };
+  })
+
+
   return (
     <Box d="flex" justifyContent="center" alignItems="center">
       <Textbox
@@ -81,7 +99,7 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
         readOnly={isReadOnly}
         bpmnModeler={bpmnModeler}
         entry={{
-          id: "expression",
+          id: "script",
           label: translate("Expression"),
           modelProperty: "expression",
           name: "expression",
@@ -101,6 +119,8 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
             );
           },
         }}
+        rows={2}
+        defaultHeight={120}
       />
       <Box d="flex" mt={4} pt={2}>
         <Tooltip title={translate("Enable")} aria-label="enable">
@@ -116,6 +136,9 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                 );
                 setAlertTitle("Warning");
                 setAlert(true);
+              }else{
+                setScript(getScript()?.script)
+                setOpenScriptDialog(true)
               }
             }}
           />
@@ -130,9 +153,9 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
           }}
         />
         {openExpressionBuilder && (
-          <ExpressionBuilder
+          <QueryBuilder
             open={openExpressionBuilder}
-            handleClose={() => handleClose()}
+            close={() => handleClose()}
             defaultModel={model}
             getExpression={() => {
               const value = getProperty("expressionValue");
@@ -164,12 +187,12 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                 setReadOnly(true);
               }
             }}
-            element={element}
             title={translate("Add expression")}
           />
         )}
         {openAlert && (
           <Dialog
+           centered
             open={openAlert}
             onClose={(e, reason) => {
               if (reason !== "backdropClick") {
@@ -201,7 +224,11 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                   setAlertMessage(null);
                   setAlertTitle(null);
                   setReadOnly(false);
-                  setProperty("expressionValue", undefined);
+                  setOpenScriptDialog(true)
+                  setScript(getScript()?.script)
+                  if(element.businessObject){
+                    setProperty("expressionValue", undefined);
+                  }
                 }}
                 size="sm"
                 variant="primary"
@@ -212,6 +239,36 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
             </DialogFooter>
           </Dialog>
         )}
+         {openScriptDialog && (
+              <AlertDialog
+                openAlert={openScriptDialog}
+                alertClose={() => setOpenScriptDialog(false)}
+                handleAlertOk={() => {
+                  updateScript({ expr: script });
+                  setOpenScriptDialog(false);
+                }}
+                title={translate("Add Expression")}
+                children={
+                  <Textbox
+                    element={element}
+                    showLabel={false}
+                    defaultHeight={window?.innerHeight - 205}
+                    entry={{
+                      id:'script',
+                      name: "expression",
+                      label: translate("Expression"),
+                      modelProperty: "script",
+                      get: function () {
+                        return { expression:script };
+                      },
+                      set: function (e, values) {
+                        setScript(values?.expression);
+                      },
+                    }}
+                  />
+                }
+              />
+            )}
       </Box>
     </Box>
   );

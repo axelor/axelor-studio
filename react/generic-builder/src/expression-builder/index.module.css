@@ -29,6 +29,14 @@
 }
 
 .save {
-  margin: 8px;
   min-width: 64px;
+  max-height: fit-content;
+}
+
+.dialogFooter {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  align-items: center;
+
 }

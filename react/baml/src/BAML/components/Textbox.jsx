@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { translate } from "../../utils";
-import { Box, TextField } from "@axelor/ui";
+import { Box, TextField ,InputLabel} from "@axelor/ui";
+import ScriptEditor from "./editorConfig/ScriptEditor";
 
 export default function Textbox({
   entry,
@@ -9,11 +10,16 @@ export default function Textbox({
   bpmnModeler,
   className,
   readOnly,
+  showLabel = true,
+  defaultHeight,
+  minimap=false,
 }) {
-  const { label, description, name, validate, get, set } = entry || {};
+  const { id, label, description, name, validate, get, set, modelProperty  } = entry || {};
   const [value, setValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isError, setError] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef(null)
 
   const setProperty = (value) => {
     if (set) {
@@ -75,34 +81,79 @@ export default function Textbox({
     setValue(value);
   }, [element, getProperty, entry]);
 
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const observer = new ResizeObserver((entries) => {
+      const containerWidth = entries[0].contentRect.width;
+      setContainerWidth(containerWidth)
+    })
+    observer.observe(container);
+    return () => {
+      observer.unobserve(container);
+    }
+  }, [])
+
+
+
   return (
     <Box
-      d="flex"
-      style={{ width: "100%" }}
-      flexDirection="column"
-      mt={1}
-      className={className}
-    >
-      <TextField
-        style={{ height: "20px" }}
-        id={`camunda_${name}_${Date()}`}
-        as="textarea"
-        value={value || ""}
-        minRows={rows}
-        label={translate(label)}
-        onBlur={(e) => {
-          if (!readOnly) {
-            updateProperty(e.target.value);
-          }
-        }}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-        readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
-        disabled={typeof readOnly === "function" ? readOnly() : readOnly}
-        invalid={errorMessage}
-        description={description}
-      />
-    </Box>
+    d="flex"
+    style={{ width: "100%" }}
+    flexDirection="column"
+    mt={1}
+    className={className}
+    ref={containerRef}
+
+  >
+      {
+        id === 'script' ?
+          <div>
+            {showLabel && (
+              <InputLabel  color="body">
+                {translate(label)}
+              </InputLabel>
+            )}
+            <ScriptEditor
+              id={`camunda_${modelProperty}`}
+              value={value || ""}
+              isError={isError}
+              defaultHeight={defaultHeight}
+              readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
+              width={containerWidth}
+              onChange={setValue}
+              onBlur={(e, editor) => {
+                if (typeof readOnly === "function" ? !readOnly() : !readOnly) {
+                  updateProperty((value ?? "").trim());
+                }
+              }}
+              minimap={minimap}
+            />
+          </div>
+          :
+        
+            <TextField
+              style={{ height: `${defaultHeight ? `${defaultHeight}px` : "20px"}` }}
+              id={`camunda_${name}_${Date()}`}
+              as="textarea"
+              value={value || ""}
+              minRows={rows}
+              label={showLabel ? translate(label) : ""}
+              onBlur={(e) => {
+                if (!readOnly) {
+                  updateProperty(e.target.value);
+                }
+              }}
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+              readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
+              disabled={typeof readOnly === "function" ? readOnly() : readOnly}
+              invalid={errorMessage}
+              description={description}
+            />
+         
+      }
+   </Box>
   );
 }

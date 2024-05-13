@@ -170,6 +170,7 @@ function Builder({
   getProcessElement,
   isDMNAllow,
   getDMNValues,
+  isBAML
 }) {
   const [loading, setLoading] = React.useState(false);
   const [builderRecord, setBuilderRecord] = React.useState({});
@@ -363,7 +364,7 @@ function Builder({
         [params.sourceField]: getSourceModelString(sourceModelList),
       };
       onSave &&
-        onSave({ resultField: scriptString, resultMetaField: jsonQuery });
+      onSave({ resultField: scriptString, resultMetaField: jsonQuery ,sourceField:record[params.sourceField],targetField:model?.name});
       if (!params?.model) return;
       const result = await saveRecord(params, record);
       if (result) {
@@ -457,12 +458,12 @@ function Builder({
       if (params) {
         try {
           setLoading(true);
-          const result = isBPMN
+          const result = isBPMN || isBAML
             ? true
             : await fetchRecord(params.model, params.id);
           if (result) {
             !isBPMN && setBuilderRecord(result);
-            const jsonData = isBPMN
+            const jsonData = isBPMN || isBAML
               ? getJSON(params, 'resultMetaField')
               : getJSON(result, params.resultMetaField);
             if (jsonData) {
@@ -614,7 +615,7 @@ function Builder({
         <Box className={styles.topView}>
           <Box style={{ marginBottom: 10 }}>
             <Box d="flex" flexWrap="wrap" alignItems="center">
-              {!isBPMN && (
+              {!isBPMN &&  !isBAML && (
                 <IconButton
                   classes={{ colorPrimary: styles.saveIcon }}
                   color="primary"
