@@ -201,21 +201,4 @@ public class AppController {
       ExceptionHelper.trace(response, e);
     }
   }
-
-  @SuppressWarnings("unchecked")
-  public void importAccessConfig(ActionRequest request, ActionResponse response) {
-    try {
-      Map<String, Object> metaFileMap = (Map<String, Object>) request.getContext().get("metaFile");
-
-      if (metaFileMap != null) {
-        Long fileId = Long.parseLong(metaFileMap.get("id").toString());
-        Beans.get(AccessConfigImportService.class)
-            .importAccessConfig(Beans.get(MetaFileRepository.class).find(fileId));
-        response.setInfo(I18n.get(StudioExceptionMessage.ACCESS_CONFIG_IMPORTED));
-        response.setCanClose(true);
-      }
-    } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
-    }
-  }
 }
