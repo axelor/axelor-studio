@@ -42,6 +42,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
+import org.camunda.bpm.engine.task.Task;
+import org.camunda.bpm.model.bpmn.instance.BpmnModelElementInstance;
+import org.camunda.bpm.model.bpmn.instance.FlowNode;
 
 public class WkfUserActionServiceImpl implements WkfUserActionService {
 
@@ -101,7 +105,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       if (wkfContext != null) {
         title = processTitle(title, wkfContext);
       }
-
       TeamTask teamTask = new TeamTask(title);
       teamTask.setStatus("new");
       if (!StringUtils.isEmpty(wkfTaskConfig.getRoleName())) {
@@ -113,7 +116,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       if (teamTask.getTaskDate() == null) {
         teamTask.setTaskDate(LocalDate.now());
       }
-
       String userPath = getUserPath(wkfTaskConfig, execution.getProcessDefinitionId());
       if (userPath != null) {
         teamTask.setAssignedTo(getUser(userPath, wkfContext));
@@ -129,13 +131,10 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
           }
         }
       }
-
       String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
       teamTask.setDescription(
           String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
-
       teamTaskRepository.save(teamTask);
-
     } catch (ClassNotFoundException e) {
       ExceptionHelper.trace(e);
     }
@@ -161,9 +160,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         teamTaskRepository.save(teamTask);
         return;
       }
-      boolean variableLocal =
-          (boolean) execution.getVariableLocal(execution.getCurrentActivityId() + "_successful");
-      if (variableLocal) {
+      Task task = execution.getProcessEngine().getTaskService().createTaskQuery().taskId(execution.getBpmnModelElementInstance().getId()).singleResult();
+      if (task == null) {
         teamTask.setStatus("closed");
         teamTaskRepository.save(teamTask);
       }
