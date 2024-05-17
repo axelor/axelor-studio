@@ -29,6 +29,7 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfModel;
@@ -57,6 +58,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.collections.CollectionUtils;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.migration.MigrationPlan;
 import org.camunda.bpm.engine.migration.MigrationPlanBuilder;
@@ -65,6 +67,7 @@ import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.impl.BpmnModelConstants;
@@ -95,8 +98,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfInstanceService wkfInstanceService;
   protected WkfTaskMenuRepository taskMenuRepo;
   protected WkfTaskConfigRepository taskConfigRepo;
+  protected WkfUserActionService wkfUserActionService;
   protected WkfModel sourceModel;
   protected WkfModel targetModel;
+
   protected Map<String, Object> migrationMap;
 
   @Inject
@@ -111,6 +116,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfModelRepository wkfModelRepository,
       WkfInstanceService wkfInstanceService,
       WkfTaskMenuRepository taskMenuRepo,
+      WkfUserActionService WkfUserActionService,
       WkfTaskConfigRepository taskConfigRepo,
       ProcessEngineService processEngineService) {
 
@@ -126,6 +132,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.processEngineService = processEngineService;
     this.taskMenuRepo = taskMenuRepo;
     this.taskConfigRepo = taskConfigRepo;
+    this.wkfUserActionService = WkfUserActionService;
   }
 
   @Override
@@ -340,16 +347,44 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
 
     for (String processInstanceId : processInstanceIds) {
+
       try {
+        ArrayList<Task> activeTasks =
+            (ArrayList<Task>)
+                engine
+                    .getTaskService()
+                    .createTaskQuery()
+                    .processInstanceId(processInstanceId)
+                    .active()
+                    .list();
         engine
             .getRuntimeService()
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-
+        for (Task task : activeTasks) {
+          if (engine
+                  .getTaskService()
+                  .createTaskQuery()
+                  .taskDefinitionKey(task.getTaskDefinitionKey())
+                  .singleResult()
+              == null) {
+            WkfTaskConfig wkfTaskConfig =
+                    taskConfigRepo
+                    .all()
+                    .autoFlush(false)
+                    .filter(
+                        "self.name = ? and self.wkfModel.id = (select wkfModel.id from WkfProcess where processId = ?)",
+                            task.getTaskDefinitionKey(),
+                       task.getProcessDefinitionId()
+                       )
+                    .fetchOne();
+          //  wkfUserActionService.updateUserAction(wkfTaskConfig, null, true);
+            wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
+          }
+        }
         wkfInstanceService.updateProcessInstance(
-            targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
-
+                targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
       } catch (Exception e) {
         isMigrationError.set(true);
         wkfInstanceService.updateProcessInstance(

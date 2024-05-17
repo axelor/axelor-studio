@@ -28,6 +28,7 @@ import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfProcessConfigRepository;
 import com.axelor.team.db.Team;
 import com.axelor.team.db.TeamTask;
@@ -42,10 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.task.Task;
-import org.camunda.bpm.model.bpmn.instance.BpmnModelElementInstance;
-import org.camunda.bpm.model.bpmn.instance.FlowNode;
 
 public class WkfUserActionServiceImpl implements WkfUserActionService {
 
@@ -68,6 +66,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
   protected MetaModelRepository metaModelRepository;
 
+  protected WkfInstanceRepository wkfInstanceRepository;
+
   @Inject
   public WkfUserActionServiceImpl(
       WkfCommonService wkfService,
@@ -77,6 +77,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       RoleRepository roleRepo,
       TeamRepository teamRepo,
       MetaModelRepository metaModelRepository,
+      WkfInstanceRepository wkfInstanceRepository,
       WkfEmailService wkfEmailService) {
     this.wkfService = wkfService;
     this.userRepository = userRepository;
@@ -85,6 +86,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     this.roleRepo = roleRepo;
     this.teamRepo = teamRepo;
     this.wkfEmailService = wkfEmailService;
+    this.wkfInstanceRepository = wkfInstanceRepository;
     this.metaModelRepository = metaModelRepository;
   }
 
@@ -106,6 +108,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         title = processTitle(title, wkfContext);
       }
       TeamTask teamTask = new TeamTask(title);
+      teamTask.setProcessInstanceRef(
+          wkfInstanceRepository.findByInstanceId(execution.getProcessInstanceId()));
       teamTask.setStatus("new");
       if (!StringUtils.isEmpty(wkfTaskConfig.getRoleName())) {
         teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
@@ -141,6 +145,24 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   }
 
   @Override
+  public void migrateUserAction(WkfTaskConfig wkfTaskConfig,String oldProcessId){
+    String title = wkfTaskConfig.getTaskEmailTitle();
+    if (title == null) {
+      return;
+    }
+    TeamTask teamTask =
+            teamTaskRepository
+                    .all()
+                    .filter(
+                            "self.processInstanceRef.name = ?1 and self.name =  ?2",
+                            wkfTaskConfig.getProcessId()+" : "+oldProcessId,
+                            title)
+                    .fetchOne();
+      teamTask.setStatus("canceled");
+      teamTaskRepository.save(teamTask);
+  }
+
+  @Override
   public void updateUserAction(
       WkfTaskConfig wkfTaskConfig, DelegateExecution execution, boolean cancel) {
     String title = wkfTaskConfig.getTaskEmailTitle();
@@ -148,27 +170,33 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     if (title == null) {
       return;
     }
-
-    try {
-      FullContext wkfContext = getModelCtx(wkfTaskConfig, execution);
-      if (wkfContext != null) {
-        title = processTitle(title, wkfContext);
-      }
-      TeamTask teamTask = teamTaskRepository.findByName(title);
+      TeamTask teamTask =
+          teamTaskRepository
+              .all()
+              .filter(
+                  "self.processInstanceRef.name = ?1 and self.name =  ?2",
+                  execution.getProcessDefinitionId() + " : "+execution.getProcessInstanceId(),
+                  title)
+              .fetchOne();
       if (cancel) {
         teamTask.setStatus("canceled");
         teamTaskRepository.save(teamTask);
         return;
       }
-      Task task = execution.getProcessEngine().getTaskService().createTaskQuery().taskId(execution.getBpmnModelElementInstance().getId()).singleResult();
+      Task task =
+          execution
+              .getProcessEngine()
+              .getTaskService()
+              .createTaskQuery()
+              .taskId(execution.getBpmnModelElementInstance().getId())
+              .singleResult();
       if (task == null) {
         teamTask.setStatus("closed");
         teamTaskRepository.save(teamTask);
       }
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
   }
+
+
 
   @Override
   public String processTitle(String title, FullContext wkfContext) {

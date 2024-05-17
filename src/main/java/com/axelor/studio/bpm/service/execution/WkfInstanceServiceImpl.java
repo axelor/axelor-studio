@@ -742,7 +742,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   @Transactional
   @Override
   public void updateProcessInstance(
-      WkfProcess process, String processInstanceId, int migrationStatus) {
+          WkfProcess process, String processInstanceId, int migrationStatus) {
 
     WkfInstance instance = wkfInstanceRepository.findByInstanceId(processInstanceId);
     if (instance == null) {
@@ -751,39 +751,16 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     if (process != null) {
       instance.addWkfInstanceMigrationHistory(
-          createMigrationHistory(instance, process.getWkfModel()));
+              createMigrationHistory(instance, process.getWkfModel()));
       instance.setWkfProcess(process);
       instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
-      ActivityInstance activityInstance =
-          engineService.getEngine().getRuntimeService().getActivityInstance(processInstanceId);
-
-      // Check if there is a current activity instance
-      if (activityInstance != null) {
-        // Get the ID of the current activity (which represents the current node in the process)
-        String activityId = activityInstance.getActivityId();
-
-        if (activityId != null && activityId.startsWith("task_")) {
-          // This instance is currently on a task node
-          // You can take appropriate action here
-          WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(activityInstance);
-          DelegateExecution execution =
-              (DelegateExecution)
-                  engineService
-                      .getEngine()
-                      .getRuntimeService()
-                      .createExecutionQuery()
-                      .processInstanceId(processInstanceId)
-                      .singleResult();
-          wkfUserActionService.updateUserAction(wkfTaskConfig, execution, true);
-          System.out.println(
-              "Process instance " + processInstanceId + " is on a task node: " + activityId);
-        }
-      }
     }
 
     instance.setMigrationStatusSelect(migrationStatus);
     wkfInstanceRepository.save(instance);
   }
+
+
 
   protected WkfTaskConfig getWkfTaskConfig(ActivityInstance activityInstance) {
     WkfTaskConfig wkfTaskConfig =
