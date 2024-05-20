@@ -742,7 +742,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   @Transactional
   @Override
   public void updateProcessInstance(
-          WkfProcess process, String processInstanceId, int migrationStatus) {
+      WkfProcess process, String processInstanceId, int migrationStatus) {
 
     WkfInstance instance = wkfInstanceRepository.findByInstanceId(processInstanceId);
     if (instance == null) {
@@ -751,7 +751,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     if (process != null) {
       instance.addWkfInstanceMigrationHistory(
-              createMigrationHistory(instance, process.getWkfModel()));
+          createMigrationHistory(instance, process.getWkfModel()));
       instance.setWkfProcess(process);
       instance.setName(process.getProcessId() + " : " + instance.getInstanceId());
     }
@@ -759,8 +759,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     instance.setMigrationStatusSelect(migrationStatus);
     wkfInstanceRepository.save(instance);
   }
-
-
 
   protected WkfTaskConfig getWkfTaskConfig(ActivityInstance activityInstance) {
     WkfTaskConfig wkfTaskConfig =

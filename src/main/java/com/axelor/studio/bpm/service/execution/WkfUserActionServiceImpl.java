@@ -145,24 +145,27 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   }
 
   @Override
-  public void migrateUserAction(WkfTaskConfig wkfTaskConfig,String oldProcessId){
+  @Transactional(rollbackOn = Exception.class)
+  public void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId) {
+    // if(wkfTaskConfig == null) return;
     String title = wkfTaskConfig.getTaskEmailTitle();
     if (title == null) {
       return;
     }
     TeamTask teamTask =
-            teamTaskRepository
-                    .all()
-                    .filter(
-                            "self.processInstanceRef.name = ?1 and self.name =  ?2",
-                            wkfTaskConfig.getProcessId()+" : "+oldProcessId,
-                            title)
-                    .fetchOne();
-      teamTask.setStatus("canceled");
-      teamTaskRepository.save(teamTask);
+        teamTaskRepository
+            .all()
+            .filter(
+                "self.processInstanceRef.name = ?1 and self.name =  ?2",
+                wkfTaskConfig.getProcessId() + " : " + oldProcessId,
+                title)
+            .fetchOne();
+    teamTask.setStatus("canceled");
+    teamTaskRepository.save(teamTask);
   }
 
   @Override
+  @Transactional(rollbackOn = Exception.class)
   public void updateUserAction(
       WkfTaskConfig wkfTaskConfig, DelegateExecution execution, boolean cancel) {
     String title = wkfTaskConfig.getTaskEmailTitle();
@@ -170,33 +173,31 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     if (title == null) {
       return;
     }
-      TeamTask teamTask =
-          teamTaskRepository
-              .all()
-              .filter(
-                  "self.processInstanceRef.name = ?1 and self.name =  ?2",
-                  execution.getProcessDefinitionId() + " : "+execution.getProcessInstanceId(),
-                  title)
-              .fetchOne();
-      if (cancel) {
-        teamTask.setStatus("canceled");
-        teamTaskRepository.save(teamTask);
-        return;
-      }
-      Task task =
-          execution
-              .getProcessEngine()
-              .getTaskService()
-              .createTaskQuery()
-              .taskId(execution.getBpmnModelElementInstance().getId())
-              .singleResult();
-      if (task == null) {
-        teamTask.setStatus("closed");
-        teamTaskRepository.save(teamTask);
-      }
+    TeamTask teamTask =
+        teamTaskRepository
+            .all()
+            .filter(
+                "self.processInstanceRef.name = ?1 and self.name =  ?2",
+                execution.getProcessDefinitionId() + " : " + execution.getProcessInstanceId(),
+                title)
+            .fetchOne();
+    if (cancel) {
+      teamTask.setStatus("canceled");
+      teamTaskRepository.save(teamTask);
+      return;
+    }
+    Task task =
+        execution
+            .getProcessEngine()
+            .getTaskService()
+            .createTaskQuery()
+            .taskId(execution.getBpmnModelElementInstance().getId())
+            .singleResult();
+    if (task == null) {
+      teamTask.setStatus("closed");
+      teamTaskRepository.save(teamTask);
+    }
   }
-
-
 
   @Override
   public String processTitle(String title, FullContext wkfContext) {

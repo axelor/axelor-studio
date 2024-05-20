@@ -58,7 +58,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.collections.CollectionUtils;
 import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.migration.MigrationPlan;
 import org.camunda.bpm.engine.migration.MigrationPlanBuilder;
@@ -349,6 +348,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     for (String processInstanceId : processInstanceIds) {
 
       try {
+        // get active tasks before migration
         ArrayList<Task> activeTasks =
             (ArrayList<Task>)
                 engine
@@ -363,28 +363,20 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .processInstanceIds(processInstanceId)
             .execute();
         for (Task task : activeTasks) {
-          if (engine
-                  .getTaskService()
-                  .createTaskQuery()
-                  .taskDefinitionKey(task.getTaskDefinitionKey())
-                  .singleResult()
-              == null) {
-            WkfTaskConfig wkfTaskConfig =
-                    taskConfigRepo
-                    .all()
-                    .autoFlush(false)
-                    .filter(
-                        "self.name = ? and self.wkfModel.id = (select wkfModel.id from WkfProcess where processId = ?)",
-                            task.getTaskDefinitionKey(),
-                       task.getProcessDefinitionId()
-                       )
-                    .fetchOne();
+          WkfTaskConfig wkfTaskConfig =
+              taskConfigRepo
+                  .all()
+                  .autoFlush(false)
+                  .filter(
+                      "self.name = ? and self.processId = ?",
+                      task.getTaskDefinitionKey(),
+                      task.getProcessDefinitionId())
+                  .fetchOne();
           //  wkfUserActionService.updateUserAction(wkfTaskConfig, null, true);
-            wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
-          }
+          wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
         }
         wkfInstanceService.updateProcessInstance(
-                targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+            targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
       } catch (Exception e) {
         isMigrationError.set(true);
         wkfInstanceService.updateProcessInstance(
