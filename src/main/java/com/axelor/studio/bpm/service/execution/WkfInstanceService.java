@@ -61,8 +61,6 @@ public interface WkfInstanceService {
 
   public void restart(String processInstanceId, String processName, String activityId);
 
-  public List<String> getNodes(String processInstanceId);
-
   public void cancelNode(String processInstanceId, String activityId);
 
   public void updateProcessInstance(
