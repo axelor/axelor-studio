@@ -147,7 +147,9 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   @Override
   @Transactional(rollbackOn = Exception.class)
   public void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId) {
-    // if(wkfTaskConfig == null) return;
+    if (wkfTaskConfig == null) {
+      return;
+    }
     String title = wkfTaskConfig.getTaskEmailTitle();
     if (title == null) {
       return;
