@@ -1,0 +1,5 @@
+---
+title: Remove unnecessary code
+type: fix
+description: |
+  Remove unnecessary getNode method from WkfInstanceService
