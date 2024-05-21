@@ -710,4 +710,13 @@ public final class BpmExceptionMessage {
   public static final String BPM_YAML_NOT_FOUND_FILE = /*$$(*/ "File not found" /*)*/;
   public static final String BPM_LOG_INVALID_DATES = /*$$(*/
       "Invalid date: start date is after end date" /*)*/;
+  public static final String BPM_MODEL_REQUIRED_NUMBER_TO_PERFORM_MERGE_OPERATION =
+      /*$$(*/ "At least 2 models are required to perform the merge operation." /*)*/;
+  public static final String BPM_MISSING_PROCESS_CONFIGURATION =
+      /*$$(*/ "Missing process configuration. Ensure that the required configuration for all the process is provided." /*)*/;
+  public static final String BPM_WKF_MODEL_EXPECTED = /*$$(*/
+      "Ensure providing a valid WKF model before proceeding." /*)*/;
+
+  public static final String BPM_WKF_MODEL_UNIQUE_CODE = /*$$(*/
+      "The code %s is already in use. Please choose a different code." /*)*/;
 }

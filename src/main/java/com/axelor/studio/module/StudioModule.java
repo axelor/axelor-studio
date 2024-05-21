@@ -48,6 +48,8 @@ import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.WkfCommonServiceImpl;
 import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.WkfDisplayServiceImpl;
+import com.axelor.studio.bpm.service.WkfModelMergerSplitterService;
+import com.axelor.studio.bpm.service.WkfModelMergerSplitterServiceImpl;
 import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.WkfModelServiceImpl;
 import com.axelor.studio.bpm.service.app.AppBpmService;
@@ -271,5 +273,6 @@ public class StudioModule extends AxelorModule {
     bind(WkfBpmImportService.class).to(WkfBpmImportServiceImpl.class);
     bind(WkfModelImportListener.class);
     bind(ProcessInstanceModificationService.class).to(ProcessInstanceModificationServiceImpl.class);
+    bind(WkfModelMergerSplitterService.class).to(WkfModelMergerSplitterServiceImpl.class);
   }
 }
