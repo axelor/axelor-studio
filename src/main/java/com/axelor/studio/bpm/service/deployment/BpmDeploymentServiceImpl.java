@@ -92,18 +92,11 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfNodeService wkfNodeService;
   protected WkfModelRepository wkfModelRepository;
   protected ProcessEngineService processEngineService;
-
-  @Inject protected WkfTaskConfigRepository taskConfigRepo;
-
-  @Inject protected WkfTaskMenuRepository taskMenuRepo;
-
-  @Inject protected WkfInstanceService wkfInstanceService;
-
-  @Inject protected WkfModelRepository wkfModelRepo;
-
+  protected WkfInstanceService wkfInstanceService;
+  protected WkfTaskMenuRepository taskMenuRepo;
+  protected WkfTaskConfigRepository taskConfigRepo;
   protected WkfModel sourceModel;
   protected WkfModel targetModel;
-
   protected Map<String, Object> migrationMap;
 
   @Inject
@@ -116,6 +109,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfProcessApplication wkfProcessApplication,
       WkfNodeService wkfNodeService,
       WkfModelRepository wkfModelRepository,
+      WkfInstanceService wkfInstanceService,
+      WkfTaskMenuRepository taskMenuRepo,
+      WkfTaskConfigRepository taskConfigRepo,
       ProcessEngineService processEngineService) {
 
     this.wkfProcessRepository = wkfProcessRepository;
@@ -126,7 +122,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.wkfProcessApplication = wkfProcessApplication;
     this.wkfNodeService = wkfNodeService;
     this.wkfModelRepository = wkfModelRepository;
+    this.wkfInstanceService = wkfInstanceService;
     this.processEngineService = processEngineService;
+    this.taskMenuRepo = taskMenuRepo;
+    this.taskConfigRepo = taskConfigRepo;
   }
 
   @Override
@@ -192,7 +191,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   @Transactional(rollbackOn = Exception.class)
   protected WkfModel saveWkfModel(WkfModel wkfModel) {
-    return wkfModelRepo.save(wkfModel);
+    return wkfModelRepository.save(wkfModel);
   }
 
   protected Map<String, String> deployProcess(
