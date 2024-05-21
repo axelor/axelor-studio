@@ -72,6 +72,7 @@ import "../css/bpmn.css";
 import "../css/colors.css";
 import "../css/tokens.css";
 import styles from "./BpmnModeler.module.css";
+import { openWebApp } from "./properties/parts/CustomImplementation/utils.js";
 
 const resizeStyle = {
   display: "flex",
@@ -1402,6 +1403,28 @@ function BpmnModelerComponent() {
       description: translate("Download SVG"),
       iconProps: { icon: "photo" },
       onClick: () => saveSVG(bpmnModeler, wkf?.name),
+    },
+    {
+      key: "split",
+      iconOnly: true,
+      description: translate("Split"),
+      iconProps: { icon: "splitScreen" },
+      onClick: () =>
+        openWebApp(
+          `bpm-merge-split/?type=split&&id=${id}`,
+          translate("Split editor")
+        ),
+    },
+    {
+      key: "merge",
+      iconOnly: true,
+      description: translate("Merge"),
+      iconProps: { icon: "vertical_split" },
+      onClick: () =>
+        openWebApp(
+          `bpm-merge-split/?type=merge&&id=${id}`,
+          translate("Merge editor")
+        ),
     },
   ];
 

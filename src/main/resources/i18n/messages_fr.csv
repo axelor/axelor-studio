@@ -1639,3 +1639,8 @@
 "zoom-in",,,
 "zoom-out",,,
 "{{$fmt('name')}}",,,
+"Merge operation requires at least 2 models. Please provide multiple models to proceed with the merge.","L'opération de fusion nécessite au moins 2 modèles. Veuillez fournir plusieurs modèles pour procéder à la fusion.",,
+"Split operation requires exactly one model. Please provide a single model to proceed with the split.","L'opération de division nécessite exactement un modèle. Veuillez fournir un seul modèle pour procéder à la division.",,
+"Merging editor","Éditeur de fusion",,
+"Splitting editor","Éditeur de division",,
+"Merge and split feature","Fusion/Divison",,

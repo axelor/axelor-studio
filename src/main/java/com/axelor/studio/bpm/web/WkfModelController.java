@@ -35,7 +35,10 @@ import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
+import com.axelor.studio.bpm.pojo.MergeSplitContributor;
+import com.axelor.studio.bpm.pojo.MergeSplitResult;
 import com.axelor.studio.bpm.service.WkfDisplayService;
+import com.axelor.studio.bpm.service.WkfModelMergerSplitterService;
 import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
@@ -50,6 +53,8 @@ import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.MapHelper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -514,6 +519,80 @@ public class WkfModelController {
               .getInstanceLogs(instance, filter, startString, endString, minutes));
     } catch (Exception e) {
       ExceptionHelper.trace(response, e);
+    }
+  }
+
+  public void splitWkfModel(ActionRequest request, ActionResponse response) {
+    try {
+      String contributerJson = (String) request.getData().get("contributor");
+      ObjectMapper objectMapper = new ObjectMapper();
+      MergeSplitContributor contributor =
+          objectMapper.readValue(contributerJson, MergeSplitContributor.class);
+      List<String> results = Beans.get(WkfModelMergerSplitterService.class).split(contributor);
+      response.setValue("results", results);
+    } catch (Exception e) {
+      ExceptionHelper.trace(e);
+      response.setError(e.getMessage());
+    }
+  }
+
+  public void mergeWkfModel(ActionRequest request, ActionResponse response) {
+    try {
+      String contributorsJson = (String) request.getData().get("contributor");
+      ObjectMapper objectMapper = new ObjectMapper();
+      List<MergeSplitContributor> contributors =
+          objectMapper.readValue(
+              contributorsJson, new TypeReference<List<MergeSplitContributor>>() {});
+      String result = Beans.get(WkfModelMergerSplitterService.class).merge(contributors);
+      response.setValue("result", result);
+    } catch (Exception e) {
+      ExceptionHelper.trace(e);
+      response.setError(e.getMessage());
+    }
+  }
+
+  public void saveAndDeploy(ActionRequest request, ActionResponse response) {
+    try {
+      String contributorJson = (String) request.getData().get("contributor");
+      String resultsString = (String) request.getData().get("results");
+      Boolean deploy = (Boolean) request.getData().get("deploy");
+      ObjectMapper objectMapper = new ObjectMapper();
+      List<MergeSplitContributor> contributors =
+          objectMapper.readValue(
+              contributorJson, new TypeReference<List<MergeSplitContributor>>() {});
+      List<MergeSplitResult> results =
+          objectMapper.readValue(resultsString, new TypeReference<List<MergeSplitResult>>() {});
+      List<Long> createdWkfModels =
+          Beans.get(WkfModelMergerSplitterService.class).save(results, contributors, deploy);
+      response.setValue("createdWkfModels", createdWkfModels);
+    } catch (Exception e) {
+      ExceptionHelper.trace(e);
+      response.setError(e.getMessage());
+    }
+  }
+
+  public void openSplitEditor(ActionRequest request, ActionResponse response) {
+    try {
+      List<Integer> ids = (List<Integer>) request.getContext().get("_ids");
+      String link = Beans.get(WkfModelMergerSplitterService.class).getSplitUrl(ids);
+      if (link != null) {
+        response.setView(ActionView.define("Split editor").add("html", link).map());
+      }
+
+    } catch (Exception e) {
+      ExceptionHelper.trace(e);
+    }
+  }
+
+  public void openMergeEditor(ActionRequest request, ActionResponse response) {
+    try {
+      List<Integer> ids = (List<Integer>) request.getContext().get("_ids");
+      String link = Beans.get(WkfModelMergerSplitterService.class).getMergeUrl(ids);
+      if (link != null) {
+        response.setView(ActionView.define("Merge editor").add("html", link).map());
+      }
+    } catch (Exception e) {
+      ExceptionHelper.trace(e);
     }
   }
 }
