@@ -17,8 +17,8 @@ public class ViewProcessorImpl implements ViewProcessor {
   protected static final String BTN_NAME = "openStudioBtn";
   protected static final String BTN_ON_CLICK = "action-studio-method-open-studio-builder";
   protected static final String BTN_IF_MODULE = "axelor-studio";
-  protected static final String BTN_ICON = "fa fa-magic";
-  protected UserRepository userRepository;
+  protected static final String BTN_ICON = "magic";
+  protected final UserRepository userRepository;
 
   @Inject
   public ViewProcessorImpl(UserRepository userRepository) {
