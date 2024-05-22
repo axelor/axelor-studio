@@ -1,35 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { getServiceTaskLikeBusinessObject, isServiceTaskLike } from "../../../../../utils/ImplementationTypeUtils";
 import { is } from "bpmn-js/lib/util/ModelUtil";
+import React, { useEffect, useState } from "react";
 
 import Select from "../../../../../components/Select";
 import {
-  getDMNModel,
-  getDMNModels,
-  getBamlModels,
-  getActions,
-} from "../../../../../services/api";
-import { getBool } from "../../../../../utils";
-import {
+  Checkbox,
   SelectBox,
   TextField,
-  Checkbox,
 } from "../../../../../components/properties/components";
-import { translate } from "../../../../../utils";
-import { openWebApp } from "./utils";
 import {
+  checkConnectAndStudioInstalled,
+  getActions,
+  getBamlModels,
+  getDMNModel,
+  getDMNModels,
+  getOrganization,
+  getScenarios,
+  getToken,
+} from "../../../../../services/api";
+import { getBool, translate } from "../../../../../utils";
+
+import {
+  Box,
   Button,
   Dialog,
-  DialogHeader,
   DialogContent,
   DialogFooter,
-  InputLabel,
-  Box,
+  DialogHeader,
   Divider,
+  InputLabel,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ServiceTaskDelegateProps.module.css";
 
+import { useStore } from "../../../../../store";
+import styles from "./ServiceTaskDelegateProps.module.css";
+import { openWebApp } from "./utils";
 const eventTypes = [
   "bpmn:StartEvent",
   "bpmn:IntermediateCatchEvent",
@@ -88,6 +94,13 @@ export default function ServiceTaskDelegateProps({
   const [isBaml, setBaml] = useState(false);
   const [compulsory, setCompulsory] = useState(true);
   const [actions, setActions] = useState([]);
+  const [organization, setOrganization] = useState(null);
+  const [organizations, setOrganizations] = useState([]);
+  const [scenario, setScenario] = useState(null);
+  const [isInstall, setIsInstall] = useState(false);
+  const [token, setToken] = useState(null);
+
+  const { update } = useStore();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -180,6 +193,12 @@ export default function ServiceTaskDelegateProps({
     },
     [element, setProperty]
   );
+  const getOrganizationScenarios = React.useCallback(
+    (id) => {
+      return getScenarios(token, id);
+    },
+    [token]
+  );
 
   const updateAction = (value) => {
     if (value?.length) {
@@ -198,11 +217,31 @@ export default function ServiceTaskDelegateProps({
     }
   };
 
+  const updateScenariodata = (value, organization) => {
+    setProperty("organizationId", organization?.id);
+    setProperty("organizationLabel", organization?.name);
+    if (value) {
+      element.businessObject.class = `com.axelor.studio.bpm.service.execution.WkfConnectService`;
+      element.businessObject.topic = undefined;
+      element.businessObject.expression = undefined;
+      element.businessObject.resultVariable = undefined;
+      element.businessObject.delegateExpression = undefined;
+      element.businessObject.decisionRef = undefined;
+      setProperty("scenario", value.id);
+      setProperty("scenarioLabel", value.name);
+    } else {
+      element.businessObject.class = undefined;
+      setProperty("scenario", undefined);
+      setProperty("scenarioLabel", undefined);
+    }
+  };
+
   useEffect(() => {
     async function fetchModel() {
       const baml = getProperty("baml") || false;
       const bamlModelId = getProperty("bamlModelId");
       setBaml(getBool(baml));
+      if (!bamlModelId || !baml) return;
       const bamlModel = await getBamlModels([
         {
           fieldName: "id",
@@ -240,7 +279,32 @@ export default function ServiceTaskDelegateProps({
           return { name: action };
         });
       setActions(value);
-    } else setActions([]);
+    } else {
+      setActions([]);
+    }
+  }, [implementationType, element]);
+
+  useEffect(() => {
+    if (implementationType === "connect") {
+      const bo = getBusinessObject(element);
+      const attrs = bo && bo.$attrs;
+      const id = attrs["camunda:scenario"];
+      const name = attrs["camunda:scenarioLabel"];
+      const organizationId = attrs["camunda:organizationId"];
+      const organizationLabel = attrs["camunda:organizationLabel"];
+      if (organizations?.length === 1) {
+        setOrganization({
+          id: organizations[0].id,
+          name: organizations[0].name,
+        });
+      } else {
+        setOrganization({ id: organizationId, name: organizationLabel });
+      }
+      setScenario({ id, name });
+    } else {
+      setScenario(null);
+      setOrganization(null);
+    }
   }, [implementationType, element]);
 
   useEffect(() => {
@@ -275,7 +339,21 @@ export default function ServiceTaskDelegateProps({
       setVisible(false);
     }
   }, [element]);
-
+  useEffect(() => {
+    (async function () {
+      const isConnectInstalled = await checkConnectAndStudioInstalled();
+      if (isConnectInstalled) {
+        setIsInstall(true);
+        const _token = await getToken();
+        setToken(_token);
+        update((prev) => ({ ...prev, _token }));
+        const data = await getOrganization(_token);
+        setOrganizations(data);
+      } else {
+        setIsInstall(false);
+      }
+    })();
+  }, []);
   return (
     isVisible && (
       <div>
@@ -375,19 +453,25 @@ export default function ServiceTaskDelegateProps({
                 label: "Implementation",
                 modelProperty: "implementationType",
                 selectOptions: function () {
-                  let options;
+                  let options = implementationOptions;
+                  if (isInstall) {
+                    const connect = {
+                      name: translate("Connect"),
+                      value: "connect",
+                    };
+                    options = [...options, connect];
+                  }
                   if (is(element, "bpmn:BusinessRuleTask")) {
                     const dmn = { name: translate("DMN"), value: "dmn" };
-                    options = [...implementationOptions, dmn];
+                    options = [...options, dmn];
                   } else if (is(element, "bpmn:ServiceTask")) {
                     const actions = {
                       name: translate("Actions"),
                       value: "actions",
                     };
-                    options = [...implementationOptions, actions];
-                  } else {
-                    options = implementationOptions;
+                    options = [...options, actions];
                   }
+
                   return options;
                 },
                 get: function () {
@@ -417,6 +501,14 @@ export default function ServiceTaskDelegateProps({
                     element.businessObject.class = undefined;
                     setProperty("isAction", undefined);
                     setProperty("actions", undefined);
+                  }
+                  if (values.implementationType !== "connect") {
+                    element.businessObject.class = undefined;
+                    setProperty("organizationId", undefined);
+                    setProperty("organizationLabel", undefined);
+                    setProperty("scenario", undefined);
+
+                    setProperty("scenarioLabel", undefined);
                   }
                   setImplementationType(values.implementationType);
                   setProperty("implementationType", values.implementationType);
@@ -898,6 +990,90 @@ export default function ServiceTaskDelegateProps({
                   }}
                 />
               </div>
+            )}
+            {implementationType === "connect" && (
+              <>
+                <div className={styles.actionContainer}>
+                  {organizations?.length > 1 && (
+                    <>
+                      <InputLabel color="body" className={styles.label}>
+                        {translate("Organization")}
+                      </InputLabel>
+                      <Select
+                        className={styles.actionSelect}
+                        update={(value) => {
+                          if (value) {
+                            setOrganization({
+                              id: value?.id,
+                              name: value?.name,
+                            });
+                          } else {
+                            setOrganization(null);
+                          }
+                          setScenario(null);
+                          updateScenariodata(null, value);
+                        }}
+                        validate={(values) => {
+                          if (!values?.connect?.id) {
+                            return {
+                              connect: translate("Must provide a value"),
+                            };
+                          }
+                        }}
+                        name="connect"
+                        value={organization}
+                        multiple={false}
+                        optionLabel="name"
+                        optionLabelSecondary="title"
+                        options={organizations || []}
+                        handleRemove={() => {
+                          setOrganization(null);
+                          setScenario(null);
+                          updateScenariodata(null, undefined);
+                        }}
+                      />
+                    </>
+                  )}
+                  {organizations.length > 0 && organization?.id && (
+                    <>
+                      <InputLabel color="body" className={styles.label}>
+                        {translate("Scenario")}
+                      </InputLabel>
+                      <Select
+                        className={styles.actionSelect}
+                        update={(value) => {
+                          if (value) {
+                            const { id, name } = value;
+                            setScenario({ id, name });
+                            updateScenariodata({ id, name }, organization);
+                          } else {
+                            setScenario(null);
+                            updateScenariodata(null, organization);
+                          }
+                        }}
+                        validate={(values) => {
+                          if (!values?.scenario?.id) {
+                            return {
+                              scenario: translate("Must provide a value"),
+                            };
+                          }
+                        }}
+                        name="scenario"
+                        value={scenario}
+                        optionLabel="name"
+                        optionLabelSecondary="title"
+                        fetchMethod={() =>
+                          getOrganizationScenarios(organization?.id)
+                        }
+                        handleRemove={() => {
+                          setScenario(null);
+                          updateScenariodata(null, organization);
+                        }}
+                      />
+                    </>
+                  )}
+                </div>
+              </>
             )}
           </React.Fragment>
         )}

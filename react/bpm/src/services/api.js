@@ -889,3 +889,52 @@ export async function getProcessInstance(instanceId) {
   const { data = [] } = res || {};
   return data[0];
 }
+
+export async function getToken() {
+  const actionRes = await Service.action({
+    action:
+      "com.axelor.studio.pro.web.StudioAppConnectController:getConnectToken",
+  });
+  if (actionRes?.data[0]?.values) return actionRes?.data[0]?.values?.token;
+}
+
+export async function checkConnectAndStudioInstalled() {
+  const res = await Service.action({
+    action:
+      "com.axelor.studio.web.ConnectController:isConnectAndStudioInstalled",
+  });
+  if (res?.data[0]?.values)
+    return res?.data[0]?.values?.isConnectAndStudioInstalled;
+}
+
+const CONNECT_URL = `/api/v2`;
+const ORGANIZATIONS = "organizations";
+const SCENARIOS = "scenarios";
+
+export async function getOrganization(token) {
+  if (token) {
+    const data = await fetch(`${CONNECT_URL}/${ORGANIZATIONS}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+    const response = await data.json();
+    const { organizations } = response;
+    return organizations;
+  }
+}
+
+export async function getScenarios(token, organizationId, isActive = true) {
+  const res = await fetch(
+    `${CONNECT_URL}/${SCENARIOS}?organizationId=${organizationId}&islinked=${isActive}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    }
+  );
+  const data = await res.json();
+  return data.scenarios;
+}
