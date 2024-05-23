@@ -24,8 +24,6 @@ import com.axelor.meta.db.repo.MetaJsonFieldRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.service.MetaService;
 import com.axelor.studio.app.listener.AppServerStartListener;
-import com.axelor.studio.app.service.AccessConfigImportService;
-import com.axelor.studio.app.service.AccessConfigImportServiceImpl;
 import com.axelor.studio.app.service.AccessTemplateService;
 import com.axelor.studio.app.service.AccessTemplateServiceImpl;
 import com.axelor.studio.app.service.AppService;
@@ -210,7 +208,6 @@ public class StudioModule extends AxelorModule {
     // App
     bind(AppService.class).to(AppServiceImpl.class);
     bind(AccessTemplateService.class).to(AccessTemplateServiceImpl.class);
-    bind(AccessConfigImportService.class).to(AccessConfigImportServiceImpl.class);
     bind(AppServerStartListener.class);
     bind(AppVersionService.class).to(AppVersionServiceImpl.class);
 

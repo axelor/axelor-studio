@@ -23,13 +23,11 @@ import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaView;
-import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
-import com.axelor.studio.app.service.AccessConfigImportService;
 import com.axelor.studio.app.service.AccessTemplateService;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.db.App;
@@ -197,23 +195,6 @@ public class AppController {
 
       response.setInfo(I18n.get(StudioExceptionMessage.ROLE_IMPORT_SUCCESS));
       response.setReload(true);
-    } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public void importAccessConfig(ActionRequest request, ActionResponse response) {
-    try {
-      Map<String, Object> metaFileMap = (Map<String, Object>) request.getContext().get("metaFile");
-
-      if (metaFileMap != null) {
-        Long fileId = Long.parseLong(metaFileMap.get("id").toString());
-        Beans.get(AccessConfigImportService.class)
-            .importAccessConfig(Beans.get(MetaFileRepository.class).find(fileId));
-        response.setInfo(I18n.get(StudioExceptionMessage.ACCESS_CONFIG_IMPORTED));
-        response.setCanClose(true);
-      }
     } catch (Exception e) {
       ExceptionHelper.trace(response, e);
     }

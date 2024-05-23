@@ -23,8 +23,6 @@
     <string name="typeSelect" title="Type" selection="studio.app.type.select"
       default="others"/>
     <string name="appVersion" title="Version"/>
-    <one-to-many name="accessConfigList" ref="com.axelor.studio.db.AccessConfig"
-      title="Access config" mappedBy="app"/>
     <boolean name="isCustom" title="Custom"/>
     <boolean name="isExperimental" title="Experimental"/>
 
