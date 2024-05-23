@@ -913,28 +913,21 @@ const SCENARIOS = "scenarios";
 
 export async function getOrganization(token) {
   if (token) {
-    const data = await fetch(`${CONNECT_URL}/${ORGANIZATIONS}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Token ${token}`,
-      },
+    const res = await Service.action({
+      action:
+        "com.axelor.studio.pro.web.StudioAppConnectController:getOrganizations",
     });
-    const response = await data.json();
-    const { organizations } = response;
+    const { organizations } = res?.data[0]?.values;
     return organizations;
   }
 }
 
 export async function getScenarios(token, organizationId, isActive = true) {
-  const res = await fetch(
-    `${CONNECT_URL}/${SCENARIOS}?organizationId=${organizationId}&islinked=${isActive}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Token ${token}`,
-      },
-    }
-  );
-  const data = await res.json();
-  return data.scenarios;
+  const res = await Service.action({
+    action: "com.axelor.studio.pro.web.StudioAppConnectController:getScenarios",
+    data: {
+      organizationId: Number(organizationId),
+    },
+  });
+  return res?.data[0]?.values?.scenarios;
 }
