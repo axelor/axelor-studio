@@ -154,6 +154,8 @@ import com.axelor.studio.service.builder.StudioMenuService;
 import com.axelor.studio.service.builder.StudioMenuServiceImpl;
 import com.axelor.studio.service.builder.StudioSelectionService;
 import com.axelor.studio.service.builder.StudioSelectionServiceImpl;
+import com.axelor.studio.service.connect.ConnectService;
+import com.axelor.studio.service.connect.ConnectServiceImpl;
 import com.axelor.studio.service.filter.FilterCommonService;
 import com.axelor.studio.service.filter.FilterCommonServiceImpl;
 import com.axelor.studio.service.filter.FilterGroovyService;
@@ -270,5 +272,7 @@ public class StudioModule extends AxelorModule {
     bind(WkfModelImportListener.class);
     bind(ProcessInstanceModificationService.class).to(ProcessInstanceModificationServiceImpl.class);
     bind(WkfModelMergerSplitterService.class).to(WkfModelMergerSplitterServiceImpl.class);
+
+    bind(ConnectService.class).to(ConnectServiceImpl.class);
   }
 }
