@@ -65,12 +65,10 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
@@ -644,33 +642,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
             });
 
     return varMap;
-  }
-
-  @Override
-  public List<String> getNodes(String processInstanceId) {
-
-    List<String> nodes = new ArrayList<String>();
-
-    HistoryService historyService = engineService.getEngine().getHistoryService();
-
-    HistoricActivityInstanceQuery query =
-        historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstanceId);
-
-    query
-        .list()
-        .forEach(
-            instance -> {
-              String name = instance.getActivityName();
-              String id = instance.getActivityId();
-
-              if (name != null) {
-                id = name + "(" + id + ")";
-              }
-
-              nodes.add(id);
-            });
-
-    return nodes;
   }
 
   protected void checkSubProcess(Model model) {
