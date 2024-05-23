@@ -327,25 +327,6 @@ function BpmnModelerComponent() {
           if (!value) return;
           const { element } = value;
           if (!element) return;
-          if (modeling && element.businessObject && element.businessObject.di) {
-            let type = is(element, ["bpmn:Gateway"])
-              ? "bpmn:Gateway"
-              : element.type;
-            let colors = {
-              stroke: element.businessObject.di.stroke || STROKE_COLORS[type],
-            };
-            if (
-              (element.businessObject.di.fill || FILL_COLORS[type]) &&
-              ![
-                "bpmn:SequenceFlow",
-                "bpmn:MessageFlow",
-                "bpmn:Association",
-              ].includes(element.type)
-            ) {
-              colors.fill = element.businessObject.di.fill || FILL_COLORS[type];
-            }
-            modeling.setColor(element, colors);
-          }
           if (["Shape", "Root"].includes(element.constructor.name)) {
             let bo = element.businessObject;
             if (!bo) return;
@@ -361,6 +342,45 @@ function BpmnModelerComponent() {
           }
           updateTranslations(element, bpmnModeler);
         });
+
+        async function processColors(nodes, modeling) {
+          const entries = Object.entries(nodes);
+          for (let i = 0; i < entries.length; i++) {
+            const [key, value] = entries[i];
+            if (!value) continue;
+            const { element } = value;
+            if (!element) continue;
+            if (
+              modeling &&
+              element.businessObject &&
+              element.businessObject.di
+            ) {
+              let type = is(element, ["bpmn:Gateway"])
+                ? "bpmn:Gateway"
+                : element.type;
+              let colors = {
+                stroke: element.businessObject.di.stroke || STROKE_COLORS[type],
+              };
+              if (
+                (element.businessObject.di.fill || FILL_COLORS[type]) &&
+                ![
+                  "bpmn:SequenceFlow",
+                  "bpmn:MessageFlow",
+                  "bpmn:Association",
+                ].includes(element.type)
+              ) {
+                colors.fill =
+                  element.businessObject.di.fill || FILL_COLORS[type];
+              }
+
+              modeling.setColor(element, colors);
+            }
+            await new Promise((resolve) => setTimeout(resolve, 0));
+          }
+        }
+        
+        processColors(nodes, modeling);
+
         try {
           const { xml } = await bpmnModeler.saveXML({ format: true });
           diagramXmlRef.current = xml;
