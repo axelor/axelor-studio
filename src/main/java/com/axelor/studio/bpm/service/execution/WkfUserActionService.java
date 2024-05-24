@@ -21,7 +21,9 @@ import com.axelor.auth.db.User;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.persist.Transactional;
+import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 public interface WkfUserActionService {
 
@@ -32,7 +34,10 @@ public interface WkfUserActionService {
 
   @Transactional
   public void updateUserAction(
-      WkfTaskConfig wkfTaskConfig, DelegateExecution execution, boolean cancel);
+      WkfTaskConfig wkfTaskConfig,
+      ProcessInstance processInstance,
+      ProcessEngine processEngine,
+      String taskId);
 
   public void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId);
 

@@ -72,7 +72,6 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
-import org.camunda.bpm.engine.runtime.ActivityInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.camunda.bpm.engine.variable.VariableMap;
@@ -488,7 +487,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         ExceptionHelper.trace(e);
       }
     }
-    wkfUserActionService.updateUserAction(wkfTaskConfig, execution, false);
   }
 
   @Override
@@ -758,26 +756,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     instance.setMigrationStatusSelect(migrationStatus);
     wkfInstanceRepository.save(instance);
-  }
-
-  protected WkfTaskConfig getWkfTaskConfig(ActivityInstance activityInstance) {
-    WkfTaskConfig wkfTaskConfig =
-        wkfTaskConfigRepository
-            .all()
-            .autoFlush(false)
-            .filter(
-                "self.name = ? and self.wkfModel.id = (select wkfModel.id from WkfProcess where processId = ?)",
-                activityInstance.getActivityId(),
-                activityInstance.getProcessDefinitionId())
-            .fetchOne();
-
-    log.debug(
-        "Task config searched with taskId: {}, processInstanceId: {}, found:{}",
-        activityInstance.getActivityId(),
-        activityInstance.getProcessDefinitionId(),
-        wkfTaskConfig);
-
-    return wkfTaskConfig;
   }
 
   @Override

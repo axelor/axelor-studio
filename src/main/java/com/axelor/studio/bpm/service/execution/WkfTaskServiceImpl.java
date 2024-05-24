@@ -66,17 +66,20 @@ public class WkfTaskServiceImpl implements WkfTaskService {
   protected WkfInstanceService wkfInstanceService;
   protected WkfCommonService wkfService;
   protected AppBpmService appBpmService;
+  protected WkfUserActionService wkfUserActionService;
 
   @Inject
   public WkfTaskServiceImpl(
       WkfTaskConfigRepository wkfTaskConfigRepository,
       WkfInstanceService wkfInstanceService,
       WkfCommonService wkfService,
-      AppBpmService appBpmService) {
+      AppBpmService appBpmService,
+      WkfUserActionService wkfUserActionService) {
     this.wkfTaskConfigRepository = wkfTaskConfigRepository;
     this.wkfInstanceService = wkfInstanceService;
     this.wkfService = wkfService;
     this.appBpmService = appBpmService;
+    this.wkfUserActionService = wkfUserActionService;
   }
 
   @Override
@@ -171,9 +174,9 @@ public class WkfTaskServiceImpl implements WkfTaskService {
       engine.getTaskService().setAssignee(task.getId(), userId);
 
       engine.getTaskService().complete(task.getId(), variables); // here to update the task aop
+      wkfUserActionService.updateUserAction(config, processInstance, engine, task.getId());
       taskExecuted = true;
     }
-
     Execution execution =
         engine
             .getRuntimeService()
@@ -184,9 +187,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
     if (execution != null) {
       engine.getRuntimeService().setVariables(execution.getId(), ctxVariables);
     }
-
     AppBpm appBpm = appBpmService.getAppBpm();
-
     Integer taskExecutionRecursivityTimeLimit =
         Optional.ofNullable(appBpm.getTaskExecutionRecursivityDurationLimit())
             .orElse(DEFAULT_RECURSIVE_TASK_EXECUTION_DURATION_LIMIT);

@@ -42,8 +42,10 @@ import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
+import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.task.Task;
+import org.camunda.bpm.engine.history.HistoricTaskInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 public class WkfUserActionServiceImpl implements WkfUserActionService {
 
@@ -169,9 +171,14 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   @Override
   @Transactional(rollbackOn = Exception.class)
   public void updateUserAction(
-      WkfTaskConfig wkfTaskConfig, DelegateExecution execution, boolean cancel) {
+      WkfTaskConfig wkfTaskConfig,
+      ProcessInstance processInstance,
+      ProcessEngine processEngine,
+      String taskId) {
+    if (wkfTaskConfig == null) {
+      return;
+    }
     String title = wkfTaskConfig.getTaskEmailTitle();
-
     if (title == null) {
       return;
     }
@@ -180,25 +187,21 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             .all()
             .filter(
                 "self.processInstanceRef.name = ?1 and self.name =  ?2",
-                execution.getProcessDefinitionId() + " : " + execution.getProcessInstanceId(),
+                processInstance.getProcessDefinitionId()
+                    + " : "
+                    + processInstance.getProcessInstanceId(),
                 title)
             .fetchOne();
-    if (cancel) {
-      teamTask.setStatus("canceled");
-      teamTaskRepository.save(teamTask);
-      return;
-    }
-    Task task =
-        execution
-            .getProcessEngine()
-            .getTaskService()
-            .createTaskQuery()
-            .taskId(execution.getBpmnModelElementInstance().getId())
+    HistoricTaskInstance task =
+        processEngine
+            .getHistoryService()
+            .createHistoricTaskInstanceQuery()
+            .taskId(taskId)
+            .processInstanceId(processInstance.getProcessInstanceId())
             .singleResult();
-    if (task == null) {
-      teamTask.setStatus("closed");
-      teamTaskRepository.save(teamTask);
-    }
+    teamTask.setStatus("closed");
+    teamTask.setTaskDuration((int) (task.getDurationInMillis() / (1000)));
+    teamTaskRepository.save(teamTask);
   }
 
   @Override

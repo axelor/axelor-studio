@@ -372,7 +372,6 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
                       task.getTaskDefinitionKey(),
                       task.getProcessDefinitionId())
                   .fetchOne();
-          //  wkfUserActionService.updateUserAction(wkfTaskConfig, null, true);
           wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
         }
         wkfInstanceService.updateProcessInstance(
