@@ -228,16 +228,6 @@ public class WkfModelController {
     }
   }
 
-  public void importStandardWkfModels(ActionRequest request, ActionResponse response) {
-    try {
-      Beans.get(WkfModelService.class).importStandardWkfModels();
-
-      response.setReload(true);
-    } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
-    }
-  }
-
   public void restart(ActionRequest request, ActionResponse response) {
     try {
       Context context = request.getContext();

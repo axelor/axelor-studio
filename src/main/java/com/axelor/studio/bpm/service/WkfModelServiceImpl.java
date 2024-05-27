@@ -30,7 +30,6 @@ import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
-import com.axelor.studio.db.App;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
@@ -168,46 +167,6 @@ public class WkfModelServiceImpl implements WkfModelService {
     }
 
     return wkfModelIds;
-  }
-
-  @Override
-  public void importStandardWkfModels() throws IOException {
-
-    List<App> appList = appRepo.all().filter("self.active = true").fetch();
-
-    if (ObjectUtils.isEmpty(appList)) {
-      return;
-    }
-
-    File configFile = File.createTempFile("config", ".xml");
-    try (FileOutputStream fout = new FileOutputStream(configFile)) {
-      InputStream inputStream = this.getClass().getResourceAsStream(IMPORT_CONFIG_PATH);
-      IOUtil.copyCompletely(inputStream, fout);
-    }
-
-    if (configFile == null) {
-      return;
-    }
-
-    String dataFileName = "/data-wkf-models/input/";
-    File tempDir = java.nio.file.Files.createTempDirectory(null).toFile();
-    File dataFile = new File(tempDir, "wkfModels.xml");
-
-    XMLImporter importer = getXMLImporter(configFile.getAbsolutePath(), tempDir.getAbsolutePath());
-
-    for (App app : appList) {
-      String fileName = dataFileName + app.getCode() + ".xml";
-      InputStream dataInputStream = this.getClass().getResourceAsStream(fileName);
-      if (dataInputStream == null) {
-        continue;
-      }
-
-      try (FileOutputStream fout = new FileOutputStream(dataFile)) {
-        IOUtil.copyCompletely(dataInputStream, fout);
-      }
-
-      importer.run();
-    }
   }
 
   protected XMLImporter getXMLImporter(String configFile, String dataFile) {
