@@ -40,6 +40,7 @@ function ExpressionBuilder(props) {
     isAllowButtons = false,
     isBPMN,
     isMapper,
+    isBamlQuery
   } = props;
   const { metaModals, rules } = value || defaultState;
   const expression = 'GROOVY';
@@ -215,10 +216,10 @@ function ExpressionBuilder(props) {
 
   return (
     <div className={styles.container}>
-      <Box border className={styles.paper}>
+      <Box border={!isBamlQuery}  className={styles.paper}>
         <div className={styles.content}>
           <div className={styles.flex}>
-            {(isBPMQuery(type) ? (index === 0 ? true : false) : true) && (
+            {(isBPMQuery(type) ? (index === 0 ? true : false) : true) && !isBamlQuery &&(
               <Selection
                 name="metaModal"
                 title="Meta model"
@@ -263,6 +264,7 @@ function ExpressionBuilder(props) {
             isParameterShow={isParameterShow}
             fetchModels={fetchModels}
             isAllowButtons={isAllowButtons}
+            isBamlQuery={isBamlQuery}
           />
         ))}
       </Box>

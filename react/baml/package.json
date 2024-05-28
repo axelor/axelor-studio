@@ -5,15 +5,19 @@
   "dependencies": {
     "@axelor/ui": "^0.0.32",
     "@date-io/moment": "^1.3.6",
+    "@monaco-editor/react": "^4.6.0",
     "@vitejs/plugin-react": "^4.0.4",
+    "classnames": "^2.5.1",
     "css.escape": "^1.5.1",
     "diagram-js": "^6.8.0",
     "diagram-js-direct-editing": "^1.6.1",
+    "generic-builder": "link:../generic-builder",
     "ids": "^1.0.0",
     "immer": "^8.0.1",
     "inherits": "^2.0.4",
     "js-string-escape": "^1.0.1",
     "lodash": "^4.17.21",
+    "mapper": "link:../mapper",
     "min-dash": "^4.1.1",
     "min-dom": "^4.1.0",
     "moment": "^2.29.1",
@@ -31,7 +35,9 @@
     "vite-plugin-svgr": "^4.2.0"
   },
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
+    "install:generic-builder": "cd ../generic-builder && pnpm install",
+    "install:mapper": "cd ../mapper && pnpm install",
+    "preinstall": "npx only-allow pnpm && pnpm run install:generic-builder  && pnpm run install:mapper",
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -68,5 +74,8 @@
   "homepage": "./",
   "devDependencies": {
     "sass": "^1.70.0"
+  },
+  "peerDependencies": {
+    "only-allow": "^1.2.1"
   }
 }

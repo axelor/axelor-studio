@@ -459,3 +459,10 @@ export async function saveRecord(model, record) {
   if (res && res.status === -1) return [];
   return res && res.data && res.data[0];
 }
+
+
+
+export async function fetchUserPreferences() {
+  const userInfo = await services.info()
+  return userInfo
+}

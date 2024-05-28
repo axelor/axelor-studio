@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MapperBuilder from "../mapper-builder/App";
+import Builder from "mapper/src/App";
 import { translate } from "../../utils";
 import { Textbox, TextField } from "../components";
 import {
@@ -13,6 +13,8 @@ import {
 } from "@axelor/ui";
 import Tooltip from "../components/tooltip/tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import AlertDialog from "../expression-builder/components/AlertDialog";
+import { getBusinessObject } from "../ModelUtil";
 
 const createElement = (elementType, properties, parent, factory) => {
   let element = factory.create(elementType, properties);
@@ -26,6 +28,9 @@ export default function ScriptProps({ element, bpmnFactory, bpmnModeler }) {
   const [openMapper, setMapper] = useState(false);
   const [alertTitle, setAlertTitle] = useState(null);
   const [alertMessage, setAlertMessage] = useState(null);
+  const [openScriptDialog, setOpenScriptDialog] = useState(false);
+  const [script, setScript] = useState("");
+  
 
   const handleMapperOpen = () => {
     setMapper(true);
@@ -116,14 +121,22 @@ export default function ScriptProps({ element, bpmnFactory, bpmnModeler }) {
     setReadOnly(scriptMeta ? true : false);
   }, [getProperty]);
 
+
+  const getScript = React.useCallback(() => {
+    let bo = getBusinessObject(element);
+    return {
+      script: (bo?.get("script")?.value || "")?.replace(/[\u200B-\u200D\uFEFF]/g, ""),
+    };
+  }, [element]);
   return (
     <React.Fragment>
       <Box d="flex" justifyContent="space-between" alignItems="center">
         <Textbox
           element={element}
-          rows={3}
+          rows={5}
           readOnly={isReadOnly}
           bpmnModeler={bpmnModeler}
+          defaultHeight={120}
           entry={{
             id: "script",
             label: translate("Script"),
@@ -159,6 +172,10 @@ export default function ScriptProps({ element, bpmnFactory, bpmnModeler }) {
                   setAlertTitle("Warning");
                   setAlert(true);
                 }
+                else {
+                  setScript(getScript()?.script);
+                  setOpenScriptDialog(true)
+                }
               }}
             />
           </Tooltip>
@@ -172,7 +189,7 @@ export default function ScriptProps({ element, bpmnFactory, bpmnModeler }) {
             }}
           />
           {openMapper && (
-            <MapperBuilder
+            <Builder
               open={openMapper}
               handleClose={handleCloseMapper}
               bpmnModeler={bpmnModeler}
@@ -180,7 +197,10 @@ export default function ScriptProps({ element, bpmnFactory, bpmnModeler }) {
                 onSave(expr);
                 setReadOnly(true);
               }}
-              params={() => getExpression()}
+              param={() => getExpression()}
+              isDialog={true}
+              isBAML={true}
+              isBPMN={false}
             />
           )}
           {openAlert && (
@@ -202,6 +222,8 @@ export default function ScriptProps({ element, bpmnFactory, bpmnModeler }) {
                     setAlertMessage(null);
                     setAlertTitle(null);
                     setReadOnly(false);
+                    setOpenScriptDialog(true)
+                    setScript(getScript()?.script)
                     if (element.businessObject) {
                       element.businessObject.scriptValue = undefined;
                     }
@@ -224,6 +246,37 @@ export default function ScriptProps({ element, bpmnFactory, bpmnModeler }) {
                 </Button>
               </DialogFooter>
             </Dialog>
+          )}
+
+          {openScriptDialog && (
+            <AlertDialog
+              openAlert={openScriptDialog}
+              alertClose={() => setOpenScriptDialog(false)}
+              handleAlertOk={() => {
+                updateScript(script);
+                setOpenScriptDialog(false);
+              }}
+              title={translate("Add script")}
+              children={
+                <Textbox
+                  element={element}
+                  showLabel={false}
+                  defaultHeight={window?.innerHeight - 205}
+                  entry={{
+                    id:'script',
+                    name: "script",
+                    label: translate("Script"),
+                    modelProperty: "script",
+                    get: function () {
+                      return { script };
+                    },
+                    set: function (e, values) {
+                      setScript(values?.script);
+                    },
+                  }}
+                />
+              }
+            />
           )}
         </Box>
       </Box>

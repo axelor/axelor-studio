@@ -110,7 +110,3 @@ div[role="listbox"] {
   min-width: 300px;
   justify-content: center;
 }
-
-button {
-  border-color: transparent !important;
-}

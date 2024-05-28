@@ -96,7 +96,7 @@ export default function FieldBuilder({ element, bpmnModeler }) {
         element={element}
         bpmnModeler={bpmnModeler}
         entry={{
-          id: "expression",
+          id: "script",
           label: translate("Expression"),
           modelProperty: "expression",
           name: "expression",
