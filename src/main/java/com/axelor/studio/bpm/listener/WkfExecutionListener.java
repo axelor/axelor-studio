@@ -31,6 +31,7 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
@@ -164,6 +165,20 @@ public class WkfExecutionListener implements ExecutionListener {
     }
   }
 
+  protected void removeInstanceVariables(DelegateExecution execution) {
+    RuntimeService runtimeService = execution.getProcessEngineServices().getRuntimeService();
+    String processInstanceId = execution.getProcessInstanceId();
+    ProcessInstance processInstance =
+        runtimeService
+            .createProcessInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .singleResult();
+    if (processInstance == null || processInstance.isEnded()) {
+      runtimeService.removeVariables(
+          processInstanceId, runtimeService.getVariables(processInstanceId).keySet());
+    }
+  }
+
   @Transactional(rollbackOn = Exception.class)
   protected void setInstanceCurrentNode(String instanceId, FlowElement flowElement) {
     WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(instanceId);
@@ -188,6 +203,9 @@ public class WkfExecutionListener implements ExecutionListener {
     } else if (blockingNode(type)) {
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
       wkfInstanceService.onNodeDeactivation(wkfTaskConfig, execution);
+    }
+    if (type.equals(BpmnModelConstants.BPMN_ELEMENT_END_EVENT)) {
+      removeInstanceVariables(execution);
     }
   }
 

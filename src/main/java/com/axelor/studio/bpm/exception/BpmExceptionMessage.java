@@ -719,4 +719,7 @@ public final class BpmExceptionMessage {
 
   public static final String BPM_WKF_MODEL_UNIQUE_CODE = /*$$(*/
       "The code %s is already in use. Please choose a different code." /*)*/;
+
+  public static final String BPM_VARIABLE_UNSUPPORTED_TYPE = /*$$(*/
+      "Unsupported variable type or empty map" /*)*/;
 }

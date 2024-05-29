@@ -6,6 +6,6 @@
   <module name="studio" package="com.axelor.studio.db"/>
   <entity name="WkfInstanceVariable" cacheable="true" persistable="false">
     <string name="name" title="Name"/>
-    <string name="value" title="Value"/>
+    <string name="value" title="Value" large="true"/>
   </entity>
 </domain-models>
