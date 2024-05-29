@@ -348,15 +348,13 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     for (String processInstanceId : processInstanceIds) {
       try {
         // get active tasks before migration
-        ArrayList<Task> activeTasks =
-            (ArrayList<Task>)
-                getActiveTasks(engine,processInstanceId);
+        ArrayList<Task> activeTasks = (ArrayList<Task>) getActiveTasks(engine, processInstanceId);
         engine
             .getRuntimeService()
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-        updateTasksStatus(activeTasks,processInstanceId);
+        updateTasksStatus(activeTasks, processInstanceId);
         wkfInstanceService.updateProcessInstance(
             targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
       } catch (Exception e) {
@@ -368,27 +366,28 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     return isMigrationError;
   }
 
-  protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId){
+  protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId) {
     for (Task task : activeTasks) {
       WkfTaskConfig wkfTaskConfig =
-              taskConfigRepo
-                      .all()
-                      .autoFlush(false)
-                      .filter(
-                              "self.name = ? and self.processId = ?",
-                              task.getTaskDefinitionKey(),
-                              task.getProcessDefinitionId())
-                      .fetchOne();
+          taskConfigRepo
+              .all()
+              .autoFlush(false)
+              .filter(
+                  "self.name = ? and self.processId = ?",
+                  task.getTaskDefinitionKey(),
+                  task.getProcessDefinitionId())
+              .fetchOne();
       wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
     }
   }
+
   protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
     return engine
-            .getTaskService()
-            .createTaskQuery()
-            .active()
-            .processInstanceId(processInstanceId)
-            .list();
+        .getTaskService()
+        .createTaskQuery()
+        .active()
+        .processInstanceId(processInstanceId)
+        .list();
   }
 
   protected MigrationPlan createMigrationPlan(

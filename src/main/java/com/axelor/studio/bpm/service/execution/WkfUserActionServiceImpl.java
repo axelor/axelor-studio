@@ -110,7 +110,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         title = processTitle(title, wkfContext);
       }
       TeamTask teamTask = new TeamTask(title);
-      teamTask.setProcessInstanceRef(
+      teamTask.setRelatedProcessInstance(
           wkfInstanceRepository.findByInstanceId(execution.getProcessInstanceId()));
       teamTask.setStatus("new");
       if (!StringUtils.isEmpty(wkfTaskConfig.getRoleName())) {
@@ -160,8 +160,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         teamTaskRepository
             .all()
             .filter(
-                "self.processInstanceRef.name = ?1 and self.name =  ?2",
-                wkfTaskConfig.getProcessId() + " : " + oldProcessId,
+                "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
+                String.format("%s : %s", wkfTaskConfig.getProcessId(), oldProcessId),
                 title)
             .fetchOne();
     teamTask.setStatus("canceled");
@@ -186,10 +186,11 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         teamTaskRepository
             .all()
             .filter(
-                "self.processInstanceRef.name = ?1 and self.name =  ?2",
-                    String.format("%s : %s",
-                            processInstance.getProcessDefinitionId(),
-                            processInstance.getProcessInstanceId()),
+                "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
+                String.format(
+                    "%s : %s",
+                    processInstance.getProcessDefinitionId(),
+                    processInstance.getProcessInstanceId()),
                 title)
             .fetchOne();
     HistoricTaskInstance task =
@@ -220,7 +221,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
     return title;
   }
-
 
   @SuppressWarnings("unchecked")
   @Override

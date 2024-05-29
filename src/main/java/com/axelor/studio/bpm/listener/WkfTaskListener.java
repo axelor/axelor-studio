@@ -16,7 +16,7 @@ public class WkfTaskListener implements TaskListener {
 
   protected WkfTaskConfigRepository taskConfigRepo;
   protected TeamTaskRepository teamTaskRepository;
-  private  static String EVENT_NAME_DELETE = "delete";
+  private static String EVENT_NAME_DELETE = "delete";
 
   @Inject
   public WkfTaskListener(
@@ -49,8 +49,9 @@ public class WkfTaskListener implements TaskListener {
           teamTaskRepository
               .all()
               .filter(
-                  "self.processInstanceRef.name = ?1 and self.name =  ?2",
-                  wkfTaskConfig.getProcessId() + " : " + delegateTask.getProcessInstanceId(),
+                  "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
+                  String.format(
+                      "%s : %s", wkfTaskConfig.getProcessId(), delegateTask.getProcessInstanceId()),
                   title)
               .fetchOne();
       if (teamTask == null) return;
