@@ -187,9 +187,9 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             .all()
             .filter(
                 "self.processInstanceRef.name = ?1 and self.name =  ?2",
-                processInstance.getProcessDefinitionId()
-                    + " : "
-                    + processInstance.getProcessInstanceId(),
+                    String.format("%s : %s",
+                            processInstance.getProcessDefinitionId(),
+                            processInstance.getProcessInstanceId()),
                 title)
             .fetchOne();
     HistoricTaskInstance task =
@@ -200,7 +200,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             .processInstanceId(processInstance.getProcessInstanceId())
             .singleResult();
     teamTask.setStatus("closed");
-    teamTask.setTaskDuration((int) (task.getDurationInMillis() / (1000)));
+    teamTask.setTaskDuration((int) (task.getDurationInMillis() / 1000));
     teamTaskRepository.save(teamTask);
   }
 
@@ -220,6 +220,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
     return title;
   }
+
 
   @SuppressWarnings("unchecked")
   @Override

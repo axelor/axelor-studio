@@ -346,34 +346,17 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
 
     for (String processInstanceId : processInstanceIds) {
-
       try {
         // get active tasks before migration
         ArrayList<Task> activeTasks =
             (ArrayList<Task>)
-                engine
-                    .getTaskService()
-                    .createTaskQuery()
-                    .processInstanceId(processInstanceId)
-                    .active()
-                    .list();
+                getActiveTasks(engine,processInstanceId);
         engine
             .getRuntimeService()
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-        for (Task task : activeTasks) {
-          WkfTaskConfig wkfTaskConfig =
-              taskConfigRepo
-                  .all()
-                  .autoFlush(false)
-                  .filter(
-                      "self.name = ? and self.processId = ?",
-                      task.getTaskDefinitionKey(),
-                      task.getProcessDefinitionId())
-                  .fetchOne();
-          wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
-        }
+        updateTasksStatus(activeTasks,processInstanceId);
         wkfInstanceService.updateProcessInstance(
             targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
       } catch (Exception e) {
@@ -383,6 +366,29 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       }
     }
     return isMigrationError;
+  }
+
+  protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId){
+    for (Task task : activeTasks) {
+      WkfTaskConfig wkfTaskConfig =
+              taskConfigRepo
+                      .all()
+                      .autoFlush(false)
+                      .filter(
+                              "self.name = ? and self.processId = ?",
+                              task.getTaskDefinitionKey(),
+                              task.getProcessDefinitionId())
+                      .fetchOne();
+      wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
+    }
+  }
+  protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
+    return engine
+            .getTaskService()
+            .createTaskQuery()
+            .active()
+            .processInstanceId(processInstanceId)
+            .list();
   }
 
   protected MigrationPlan createMigrationPlan(
