@@ -49,10 +49,11 @@ public class WkfTaskListener implements TaskListener {
           teamTaskRepository
               .all()
               .filter(
-                  "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
+                  "self.relatedProcessInstance.name = ?1 and self.name =  ?2 and status = ?3",
                   String.format(
                       "%s : %s", wkfTaskConfig.getProcessId(), delegateTask.getProcessInstanceId()),
-                  title)
+                  title,
+                  "new")
               .fetchOne();
       if (teamTask == null) return;
       teamTask.setStatus("canceled");
