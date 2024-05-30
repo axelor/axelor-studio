@@ -1,0 +1,5 @@
+---
+title: Display studio button using AOP 7.1 feature
+type: change
+description: |
+  The studio button is now added using ViewProcessorImpl class which implements ViewProcessor class of AOP 7.1. The previous solution used CustomMetaService, which has now been removed as it is no longer needed.
