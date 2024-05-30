@@ -172,8 +172,16 @@ public class StudioAppServiceImpl implements StudioAppService {
             new XMLImporter(confiFile.getAbsolutePath(), dataDir.getAbsolutePath());
         xmlImporter.addListener(
             new ConsumerListener(
-                null,
-                null,
+                (num, app) -> {
+                  logStringBuilder.append("Import model: ");
+                  logStringBuilder.append(num);
+                  logStringBuilder.append("\n");
+                },
+                model -> {
+                  logStringBuilder.append("Import model: ");
+                  logStringBuilder.append(model);
+                  logStringBuilder.append("\n");
+                },
                 (model, e) -> logStringBuilder.append("Error importing: " + model + "\n")));
         xmlImporter.run();
       }
