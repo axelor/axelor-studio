@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <studio-apps>
   <studio-app>
-    <name>Multi instance signal (Billing Subscription)</name>
-    <code>BPM-15</code>
+    <name>Pizza Delivery</name>
+    <code>BPM-2</code>
     <description></description>
     <depends></depends>
     <image name=""></image>

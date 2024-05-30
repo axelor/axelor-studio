@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <app-loaders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <app-loader name="BPM-2: Pizza Delivery" importFilePath="apps/demo-data/en/BPM-2/"/>
-  <app-loader name="BPM-15: Multi instance signal (Billing Subscription)"
-    importFilePath="apps/demo-data/en/BPM-15/"/>
+  <app-loader name="BPM-1: Pizza Delivery" importFilePath="apps/demo-data/en/BPM-1/"/>
+  <app-loader name="BPM-2: Multi instance signal (Billing Subscription)"
+    importFilePath="apps/demo-data/en/BPM-2/"/>
 </app-loaders>
 
