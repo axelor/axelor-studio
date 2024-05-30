@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <json-models>
 
+
   <json-model>
 
-    <name>Pizza</name>
+    <name>BillSubscription</name>
 
-    <title>Pizza</title>
+    <title>Bill subscription</title>
 
     <onNew></onNew>
 
     <onSave></onSave>
 
-    <formWidth></formWidth>
+    <formWidth>large</formWidth>
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <studioMenu name='studio-pizza' title='Pizza' xmlId='studio-pizza'/>
+    <studioMenu name='studio-menu-billsubscription' title='Bill subscription'
+      xmlId='studio-menu-billsubscription'/>
 
     <menuTitle></menuTitle>
 
@@ -27,24 +29,25 @@
 
     <menuParent></menuParent>
 
-    <studioApp>BPM-2</studioApp>
+    <studioApp>BPM-15</studioApp>
 
   </json-model>
   <json-model>
 
-    <name>PizzaOrder</name>
+    <name>CreditCardBillSubcription</name>
 
-    <title>Pizza order</title>
+    <title>Credit card bill subscription</title>
 
     <onNew></onNew>
 
     <onSave></onSave>
 
-    <formWidth></formWidth>
+    <formWidth>large</formWidth>
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <studioMenu name='studio-pizza-order' title='Pizza order' xmlId='studio-pizza-order'/>
+    <studioMenu name='studio-menu-creditcardbillsubcription' title='CC bill subscription'
+      xmlId='studio-menu-creditcardbillsubcription'/>
 
     <menuTitle></menuTitle>
 
@@ -52,29 +55,29 @@
 
     <menuBackground></menuBackground>
 
-    <menuOrder>0</menuOrder>
+    <menuOrder>1</menuOrder>
 
     <menuParent></menuParent>
 
-    <studioApp>BPM-2</studioApp>
+    <studioApp>BPM-15</studioApp>
 
   </json-model>
   <json-model>
 
-    <name>HungryPizza</name>
+    <name>ElectricityBillSubscription</name>
 
-    <title>Hungry Pizza</title>
+    <title>Electricity bill subscription</title>
 
     <onNew></onNew>
 
     <onSave></onSave>
 
-    <formWidth></formWidth>
+    <formWidth>large</formWidth>
 
     <isGenerateMenu>true</isGenerateMenu>
 
-    <studioMenu name='studio-hungry-pizza' title='Hungry Pizza'
-      xmlId='studio-hungry-pizza'/>
+    <studioMenu name='studio-menu-electricitybillsubscription'
+      title='Electricity bill subcription' xmlId='studio-menu-electricitybillsubscription'/>
 
     <menuTitle></menuTitle>
 
@@ -82,70 +85,13 @@
 
     <menuBackground></menuBackground>
 
-    <menuOrder>0</menuOrder>
+    <menuOrder>2</menuOrder>
 
     <menuParent></menuParent>
 
-    <studioApp>BPM-2</studioApp>
+    <studioApp>BPM-15</studioApp>
 
   </json-model>
-  <json-model>
 
-    <name>CalmCustomer</name>
 
-    <title>Calm customer</title>
-
-    <onNew></onNew>
-
-    <onSave></onSave>
-
-    <formWidth></formWidth>
-
-    <isGenerateMenu>true</isGenerateMenu>
-
-    <studioMenu name='studio-pizza-calm-customer' title='Calm customer'
-      xmlId='studio-pizza-calm-customer'/>
-
-    <menuTitle></menuTitle>
-
-    <menuIcon></menuIcon>
-
-    <menuBackground></menuBackground>
-
-    <menuOrder>0</menuOrder>
-
-    <menuParent></menuParent>
-
-    <studioApp>BPM-2</studioApp>
-
-  </json-model>
-  <json-model>
-
-    <name>AskPizza</name>
-
-    <title>Ask pizza</title>
-
-    <onNew></onNew>
-
-    <onSave></onSave>
-
-    <formWidth></formWidth>
-
-    <isGenerateMenu>true</isGenerateMenu>
-
-    <studioMenu name='studio-ask-pizza' title='Ask Pizza' xmlId='studio-ask-pizza'/>
-
-    <menuTitle></menuTitle>
-
-    <menuIcon></menuIcon>
-
-    <menuBackground></menuBackground>
-
-    <menuOrder>0</menuOrder>
-
-    <menuParent></menuParent>
-
-    <studioApp>BPM-2</studioApp>
-
-  </json-model>
 </json-models>

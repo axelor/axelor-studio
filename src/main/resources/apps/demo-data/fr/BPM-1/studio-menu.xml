@@ -3,13 +3,13 @@
 
   <studio-menu>
 
-    <name>studio-men-purchase-req-root</name>
+    <name>studio-pizza-root</name>
 
-    <xmlId>studio-men-purchase-req-root</xmlId>
+    <xmlId>studio-pizza-root</xmlId>
 
-    <title>Demande d&apos;achat</title>
+    <title>Pizza</title>
 
-    <icon>layout-three-columns</icon>
+    <icon>pie-chart-fill</icon>
 
     <iconBackground>blue</iconBackground>
 
@@ -49,16 +49,16 @@
 
     <studioAction></studioAction>
 
-    <studioApp>BPM-1</studioApp>
+    <studioApp>BPM-2</studioApp>
 
   </studio-menu>
   <studio-menu>
 
-    <name>studio-menu-purchasereq</name>
+    <name>studio-ask-pizza</name>
 
-    <xmlId>studio-menu-purchasereq</xmlId>
+    <xmlId>studio-ask-pizza</xmlId>
 
-    <title>Demande d&apos;achat</title>
+    <title>Ask Pizza</title>
 
     <icon></icon>
 
@@ -96,20 +96,20 @@
 
     </roles>
 
-    <parentMenu>studio-men-purchase-req-root</parentMenu>
+    <parentMenu>studio-pizza-root</parentMenu>
 
-    <studioAction>studio-menu-purchasereq</studioAction>
+    <studioAction>studio-ask-pizza</studioAction>
 
-    <studioApp>BPM-1</studioApp>
+    <studioApp>BPM-2</studioApp>
 
   </studio-menu>
   <studio-menu>
 
-    <name>studio-menu-purchase-req-file</name>
+    <name>studio-pizza</name>
 
-    <xmlId>studio-menu-purchase-req-file</xmlId>
+    <xmlId>studio-pizza</xmlId>
 
-    <title>Dossier</title>
+    <title>Pizza</title>
 
     <icon></icon>
 
@@ -147,11 +147,164 @@
 
     </roles>
 
-    <parentMenu>studio-men-purchase-req-root</parentMenu>
+    <parentMenu>studio-pizza-root</parentMenu>
 
-    <studioAction>studio-menu-purchase-req-file</studioAction>
+    <studioAction>studio-pizza</studioAction>
 
-    <studioApp>BPM-1</studioApp>
+    <studioApp>BPM-2</studioApp>
+
+  </studio-menu>
+  <studio-menu>
+
+    <name>studio-hungry-pizza</name>
+
+    <xmlId>studio-hungry-pizza</xmlId>
+
+    <title>Hungry Pizza</title>
+
+    <icon></icon>
+
+    <iconBackground></iconBackground>
+
+    <order>0</order>
+
+    <tag></tag>
+
+    <tagGet></tagGet>
+
+    <tagCount>false</tagCount>
+
+    <tagStyle></tagStyle>
+
+    <left>true</left>
+
+    <mobile>false</mobile>
+
+    <hidden>false</hidden>
+
+    <link></link>
+
+    <conditionToCheck></conditionToCheck>
+
+    <moduleToCheck></moduleToCheck>
+
+    <showAction>true</showAction>
+
+    <groups>
+
+    </groups>
+
+    <roles>
+
+    </roles>
+
+    <parentMenu>studio-pizza-root</parentMenu>
+
+    <studioAction>studio-hungry-pizza</studioAction>
+
+    <studioApp>BPM-2</studioApp>
+
+  </studio-menu>
+  <studio-menu>
+
+    <name>studio-pizza-order</name>
+
+    <xmlId>studio-pizza-order</xmlId>
+
+    <title>Pizza order</title>
+
+    <icon></icon>
+
+    <iconBackground></iconBackground>
+
+    <order>0</order>
+
+    <tag></tag>
+
+    <tagGet></tagGet>
+
+    <tagCount>false</tagCount>
+
+    <tagStyle></tagStyle>
+
+    <left>true</left>
+
+    <mobile>false</mobile>
+
+    <hidden>false</hidden>
+
+    <link></link>
+
+    <conditionToCheck></conditionToCheck>
+
+    <moduleToCheck></moduleToCheck>
+
+    <showAction>true</showAction>
+
+    <groups>
+
+    </groups>
+
+    <roles>
+
+    </roles>
+
+    <parentMenu>studio-pizza-root</parentMenu>
+
+    <studioAction>studio-pizza-order</studioAction>
+
+    <studioApp>BPM-2</studioApp>
+
+  </studio-menu>
+  <studio-menu>
+
+    <name>studio-pizza-calm-customer</name>
+
+    <xmlId>studio-pizza-calm-customer</xmlId>
+
+    <title>Calm customer</title>
+
+    <icon></icon>
+
+    <iconBackground></iconBackground>
+
+    <order>0</order>
+
+    <tag></tag>
+
+    <tagGet></tagGet>
+
+    <tagCount>false</tagCount>
+
+    <tagStyle></tagStyle>
+
+    <left>true</left>
+
+    <mobile>false</mobile>
+
+    <hidden>false</hidden>
+
+    <link></link>
+
+    <conditionToCheck></conditionToCheck>
+
+    <moduleToCheck></moduleToCheck>
+
+    <showAction>true</showAction>
+
+    <groups>
+
+    </groups>
+
+    <roles>
+
+    </roles>
+
+    <parentMenu>studio-pizza-root</parentMenu>
+
+    <studioAction>studio-pizza-calm-customer</studioAction>
+
+    <studioApp>BPM-2</studioApp>
 
   </studio-menu>
 </studio-menus>

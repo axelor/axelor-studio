@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <studio-actions>
 
+
   <studio-action>
 
-    <name>studio-pizza</name>
+    <name>studio-menu-billsubscription</name>
 
-    <xmlId>studio-pizza</xmlId>
+    <xmlId>studio-menu-billsubscription</xmlId>
 
     <typeSelect>3</typeSelect>
 
-    <model>Pizza</model>
+    <model>BillSubscription</model>
 
     <targetModel></targetModel>
 
@@ -17,7 +18,7 @@
 
     </lines>
 
-    <title>Pizza</title>
+    <title>Bill subscription</title>
 
     <emailTemplate>
 
@@ -34,7 +35,7 @@
 
         <viewType>grid</viewType>
 
-        <viewName>custom-model-Pizza-grid</viewName>
+        <viewName>custom-model-BillSubscription-grid</viewName>
 
         <sequence>0</sequence>
 
@@ -43,7 +44,7 @@
 
         <viewType>form</viewType>
 
-        <viewName>custom-model-Pizza-form</viewName>
+        <viewName>custom-model-BillSubscription-form</viewName>
 
         <sequence>0</sequence>
 
@@ -61,18 +62,18 @@
 
     <menuAction>true</menuAction>
 
-    <studioApp>BPM-2</studioApp>
+    <studioApp>BPM-15</studioApp>
 
   </studio-action>
   <studio-action>
 
-    <name>studio-pizza-order</name>
+    <name>studio-menu-creditcardbillsubcription</name>
 
-    <xmlId>studio-pizza-order</xmlId>
+    <xmlId>studio-menu-creditcardbillsubcription</xmlId>
 
     <typeSelect>3</typeSelect>
 
-    <model>PizzaOrder</model>
+    <model>CreditCardBillSubcription</model>
 
     <targetModel></targetModel>
 
@@ -80,7 +81,7 @@
 
     </lines>
 
-    <title>Pizza order</title>
+    <title>CC bill subscription</title>
 
     <emailTemplate>
 
@@ -97,7 +98,7 @@
 
         <viewType>grid</viewType>
 
-        <viewName>custom-model-PizzaOrder-grid</viewName>
+        <viewName>custom-model-CreditCardBillSubcription-grid</viewName>
 
         <sequence>0</sequence>
 
@@ -106,7 +107,7 @@
 
         <viewType>form</viewType>
 
-        <viewName>custom-model-PizzaOrder-form</viewName>
+        <viewName>custom-model-CreditCardBillSubcription-form</viewName>
 
         <sequence>0</sequence>
 
@@ -124,18 +125,18 @@
 
     <menuAction>true</menuAction>
 
-    <studioApp>BPM-2</studioApp>
+    <studioApp>BPM-15</studioApp>
 
   </studio-action>
   <studio-action>
 
-    <name>studio-hungry-pizza</name>
+    <name>studio-menu-electricitybillsubscription</name>
 
-    <xmlId>studio-hungry-pizza</xmlId>
+    <xmlId>studio-menu-electricitybillsubscription</xmlId>
 
     <typeSelect>3</typeSelect>
 
-    <model>HungryPizza</model>
+    <model>ElectricityBillSubscription</model>
 
     <targetModel></targetModel>
 
@@ -143,7 +144,7 @@
 
     </lines>
 
-    <title>Hungry Pizza</title>
+    <title>Electricity bill subcription</title>
 
     <emailTemplate>
 
@@ -160,7 +161,7 @@
 
         <viewType>grid</viewType>
 
-        <viewName>custom-model-HungryPizza-grid</viewName>
+        <viewName>custom-model-ElectricityBillSubscription-grid</viewName>
 
         <sequence>0</sequence>
 
@@ -169,7 +170,7 @@
 
         <viewType>form</viewType>
 
-        <viewName>custom-model-HungryPizza-form</viewName>
+        <viewName>custom-model-ElectricityBillSubscription-form</viewName>
 
         <sequence>0</sequence>
 
@@ -187,133 +188,9 @@
 
     <menuAction>true</menuAction>
 
-    <studioApp>BPM-2</studioApp>
+    <studioApp>BPM-15</studioApp>
 
   </studio-action>
-  <studio-action>
 
-    <name>studio-pizza-calm-customer</name>
 
-    <xmlId>studio-pizza-calm-customer</xmlId>
-
-    <typeSelect>3</typeSelect>
-
-    <model>CalmCustomer</model>
-
-    <targetModel></targetModel>
-
-    <lines>
-
-    </lines>
-
-    <title>Calm customer</title>
-
-    <emailTemplate>
-
-    </emailTemplate>
-
-    <transactional>false</transactional>
-
-    <scriptType>0</scriptType>
-
-    <scriptText></scriptText>
-
-    <studioActionViews>
-      <view>
-
-        <viewType>grid</viewType>
-
-        <viewName>custom-model-CalmCustomer-grid</viewName>
-
-        <sequence>0</sequence>
-
-      </view>
-      <view>
-
-        <viewType>form</viewType>
-
-        <viewName>custom-model-CalmCustomer-form</viewName>
-
-        <sequence>0</sequence>
-
-      </view>
-
-    </studioActionViews>
-
-    <isJson>true</isJson>
-
-    <domainCondition></domainCondition>
-
-    <viewParams>
-
-    </viewParams>
-
-    <menuAction>true</menuAction>
-
-    <studioApp>BPM-2</studioApp>
-
-  </studio-action>
-  <studio-action>
-
-    <name>studio-ask-pizza</name>
-
-    <xmlId>studio-ask-pizza</xmlId>
-
-    <typeSelect>3</typeSelect>
-
-    <model>AskPizza</model>
-
-    <targetModel></targetModel>
-
-    <lines>
-
-    </lines>
-
-    <title>Ask Pizza</title>
-
-    <emailTemplate>
-
-    </emailTemplate>
-
-    <transactional>false</transactional>
-
-    <scriptType>0</scriptType>
-
-    <scriptText></scriptText>
-
-    <studioActionViews>
-      <view>
-
-        <viewType>grid</viewType>
-
-        <viewName>custom-model-AskPizza-grid</viewName>
-
-        <sequence>0</sequence>
-
-      </view>
-      <view>
-
-        <viewType>form</viewType>
-
-        <viewName>custom-model-AskPizza-form</viewName>
-
-        <sequence>0</sequence>
-
-      </view>
-
-    </studioActionViews>
-
-    <isJson>true</isJson>
-
-    <domainCondition></domainCondition>
-
-    <viewParams>
-
-    </viewParams>
-
-    <menuAction>true</menuAction>
-
-    <studioApp>BPM-2</studioApp>
-
-  </studio-action>
 </studio-actions>

@@ -374,10 +374,6 @@
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="importWkfModels"/>
   </action-method>
 
-  <action-method name="action-wkf-model-method-import-standard-wkf-model">
-    <call class="com.axelor.studio.bpm.web.WkfModelController" method="importStandardWkfModels"/>
-  </action-method>
-
   <action-method name="action-wkf-model-method-show-dashboard">
     <call class="com.axelor.studio.bpm.web.WkfDashboardController" method="showDashboard"/>
   </action-method>

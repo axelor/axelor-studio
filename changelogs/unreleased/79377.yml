@@ -1,0 +1,7 @@
+---
+title: Remove AOS dependencies
+type: fix
+description : |
+  remove importStandardWkfModels methode 
+  remove demo data related to AOS
+  remove data-wkf-models imported files related to AOS

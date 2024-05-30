@@ -19,7 +19,6 @@ package com.axelor.studio.bpm.service;
 
 import com.axelor.meta.db.MetaFile;
 import com.axelor.studio.db.WkfModel;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,8 +33,6 @@ public interface WkfModelService {
   public WkfModel backToDraft(WkfModel wkfModel);
 
   public List<Long> findVersions(WkfModel wkfModel);
-
-  public void importStandardWkfModels() throws IOException;
 
   public String importWkfModels(
       MetaFile metaFile, boolean translate, String sourceLanguage, String targetLanguage)
