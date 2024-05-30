@@ -29,6 +29,7 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfModel;
@@ -65,6 +66,7 @@ import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.impl.BpmnModelConstants;
@@ -95,8 +97,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfInstanceService wkfInstanceService;
   protected WkfTaskMenuRepository taskMenuRepo;
   protected WkfTaskConfigRepository taskConfigRepo;
+  protected WkfUserActionService wkfUserActionService;
   protected WkfModel sourceModel;
   protected WkfModel targetModel;
+
   protected Map<String, Object> migrationMap;
 
   @Inject
@@ -111,6 +115,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfModelRepository wkfModelRepository,
       WkfInstanceService wkfInstanceService,
       WkfTaskMenuRepository taskMenuRepo,
+      WkfUserActionService WkfUserActionService,
       WkfTaskConfigRepository taskConfigRepo,
       ProcessEngineService processEngineService) {
 
@@ -126,6 +131,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.processEngineService = processEngineService;
     this.taskMenuRepo = taskMenuRepo;
     this.taskConfigRepo = taskConfigRepo;
+    this.wkfUserActionService = WkfUserActionService;
   }
 
   @Override
@@ -341,15 +347,16 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     for (String processInstanceId : processInstanceIds) {
       try {
+        // get active tasks before migration
+        ArrayList<Task> activeTasks = (ArrayList<Task>) getActiveTasks(engine, processInstanceId);
         engine
             .getRuntimeService()
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-
+        updateTasksStatus(activeTasks, processInstanceId);
         wkfInstanceService.updateProcessInstance(
             targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
-
       } catch (Exception e) {
         isMigrationError.set(true);
         wkfInstanceService.updateProcessInstance(
@@ -357,6 +364,30 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       }
     }
     return isMigrationError;
+  }
+
+  protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId) {
+    for (Task task : activeTasks) {
+      WkfTaskConfig wkfTaskConfig =
+          taskConfigRepo
+              .all()
+              .autoFlush(false)
+              .filter(
+                  "self.name = ? and self.processId = ?",
+                  task.getTaskDefinitionKey(),
+                  task.getProcessDefinitionId())
+              .fetchOne();
+      wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
+    }
+  }
+
+  protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
+    return engine
+        .getTaskService()
+        .createTaskQuery()
+        .active()
+        .processInstanceId(processInstanceId)
+        .list();
   }
 
   protected MigrationPlan createMigrationPlan(
