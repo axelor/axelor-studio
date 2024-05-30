@@ -1,3 +1,9 @@
+## 2.0.3 (2024-05-30)
+
+#### Fix
+
+* Fix NPE issue when importing Apps from Studio Apps menu
+
 ## 2.0.2 (2024-05-03)
 
 #### Fix
