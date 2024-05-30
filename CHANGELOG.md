@@ -1,3 +1,81 @@
+## 3.1.0 (2024-05-30)
+
+#### Feature
+
+* Implement a websocket for the bpm
+
+  <details>
+  
+  Add the collaboration in the BPM modeler
+  
+  Warning: This feature is only available if 
+  AOP enterprise is activated
+  
+  </details>
+
+* Synchronize BPM Task status with AOP task
+* Integrate Builders in BAML
+
+  <details>
+  
+  Generalise builders based on type if any and Remove all the static duplicate code and use the generalised builders to avail all features and designs.
+  
+  </details>
+
+* Implement a patch feature to merge/Split bpmn diagrams
+
+#### Change
+
+* Display studio button using AOP 7.1 feature
+
+  <details>
+  
+  The studio button is now added using ViewProcessorImpl class which implements ViewProcessor class of AOP 7.1. The previous solution used CustomMetaService, which has now been removed as it is no longer needed.
+  
+  </details>
+
+#### Fix
+
+* Resolve Bpm deprecated warning
+* Improve memory management
+
+  <details>
+  
+  Refacto of the front end to easily manage large bpmn models
+  
+  </details>
+
+* Remove AccessConfig Model and unnecessary code
+
+  <details>
+  
+  Objects deleted :
+  AccessConfig,UserAccessConfig
+  Services deleted :
+  AccessConfigImportService.java
+  AccessConfigImportServiceImpl.java
+  
+  </details>
+
+* Remove unnecessary code
+
+  <details>
+  
+  Remove unnecessary getNode method from WkfInstanceService
+  
+  </details>
+
+* Remove AOS dependencies
+
+  <details>
+  
+  remove importStandardWkfModels methode 
+  remove demo data related to AOS
+  remove data-wkf-models imported files related to AOS
+  
+  </details>
+
+
 ## 3.0.1 (2024-04-26)
 
 #### Fix

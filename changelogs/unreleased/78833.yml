@@ -1,5 +1,0 @@
----
-title: Integrate Builders in BAML
-type: feature
-description:  |
-  Generalise builders based on type if any and Remove all the static duplicate code and use the generalised builders to avail all features and designs.

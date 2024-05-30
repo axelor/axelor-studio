@@ -1,5 +1,0 @@
----
-title: Improve memory management
-type: fix
-description: |
-  Refacto of the front end to easily manage large bpmn models

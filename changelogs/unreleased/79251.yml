@@ -1,9 +1,0 @@
----
-title: Remove AccessConfig Model and unnecessary code
-type: fix
-description: |
-  Objects deleted :
-  AccessConfig,UserAccessConfig
-  Services deleted :
-  AccessConfigImportService.java
-  AccessConfigImportServiceImpl.java
