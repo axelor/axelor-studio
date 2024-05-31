@@ -5,7 +5,7 @@
 
 == Validation via une condition
 
-Reprenons, l’énoncé  : **Nous allons effectuer un processus qui vérifie que l’utilisateur a renseigné un contact fournisseur pour sa demande**
+Reprenons l’énoncé  : **Nous allons effectuer un processus qui vérifie que l’utilisateur a renseigné un contact fournisseur pour sa demande**
 
 Pour cela, nous allons ajouter une tâche utilisateur image:task-user-icon.png[task image] qui va se charger de vérifier si la commande possède un fournisseur. Pour insérer une tâche utilisateur, il faut d’abord insérer une tâche non typées image:mapper-icon.png[mapper image]  puis cliquer dessus, sélectionner la clé à molette et sélectionner la tâche utilisateur.
 
