@@ -4,7 +4,7 @@
 :experimental:
 
 Pour démarrer, nous allons créer un nouveau modèle de processus en cliquant sur le bouton image:plus-icon.png[plus image] de la barre d’outil horizontal.
-Nous allons ensuite renseigner les information général de notre modèle sur le panel qui apparaît à gauche de l’écran :
+Nous allons ensuite renseigner les informations générales de notre modèle sur le panel qui apparaît à gauche de l’écran :
 
 image::new_module.png[connector form,align="left"]
 
