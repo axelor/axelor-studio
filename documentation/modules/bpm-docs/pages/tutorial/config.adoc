@@ -4,14 +4,15 @@
 :experimental:
 
 Nous commençons par insérer une piscine qui va représenter un participant et au sein de laquelle nous allons insérer des objets pour définir notre processus.
-Pour insérer une piscine, il faut faire un glissé déposé de l’icon image:participant-icon.png[participant image]  vers l’espace de travail.
+
+Pour insérer une piscine, glissez et déposez l’icône image:participant-icon.png[participant image] vers l’espace de travail.
 
 Une fois qu’une piscine est insérée dans la modélisation, il est impossible d’insérer un objet en dehors d’une quelconque piscine.
 Le panel de configuration d’une piscine est composé de 4 onglets qui sont les suivants.
 
 image::panel-menu.png[Panel menu,align="left"]
 
-On accède à ce panel en cliquant sur la piscine.
+Accédez à ce panel en cliquant sur la piscine.
 
 == Général
 
