@@ -101,7 +101,7 @@ public class WkfContextHelper {
     String varName = Beans.get(WkfCommonService.class).getVarName(wkfContext);
     execution.setVariable(
         varName,
-        Variables.objectValue(wkfContext, false)
+        Variables.objectValue(wkfContext, true)
             .serializationDataFormat(SerializationDataFormats.JSON)
             .create());
     execution.setVariable(varName + "Id", wkfContext.get("id"));
@@ -174,7 +174,7 @@ public class WkfContextHelper {
     } else if (object instanceof Collection<?>) {
       return createListVariable((Collection<?>) object);
     }
-    throw new IllegalArgumentException("Unsupported object type: " + object.getClass().getName());
+    throw new IllegalArgumentException(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE));
   }
 
   private static Object createSingleVariable(FullContext context) throws JsonProcessingException {
