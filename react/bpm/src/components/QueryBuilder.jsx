@@ -26,6 +26,7 @@ function QueryBuilder({
     withParam: true,
     isParameterShow: false,
   };
+
   return (
     <Dialog backdrop open={open} className={styles.dialog}>
       <DialogHeader onCloseClick={close}>

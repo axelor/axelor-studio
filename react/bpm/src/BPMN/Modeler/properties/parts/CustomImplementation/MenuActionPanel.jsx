@@ -63,6 +63,13 @@ const TYPES = [
   { value: "script", id: "script", title: "Script" },
 ];
 
+const FIELDSTOMAP = {
+  taskRole: "roleType",
+  taskName: "taskNameType",
+  taskPriority: "priorityType",
+  description: "descriptionType",
+  duration: "durationType",
+};
 const menuObj = {
   menuName: null,
   menuParent: null,
@@ -113,6 +120,7 @@ export default function MenuActionPanel({
   const [teamFieldDummy, setTeamFieldDummy] = useState(null);
   const [menus, setMenus] = useState([]);
   const [taskFields, setTaskFields] = useState({
+    taskRole: null,
     taskName: null,
     taskPriority: null,
     description: null,
@@ -654,14 +662,14 @@ export default function MenuActionPanel({
   const getter = (fieldType) => {
     const fieldPathValue = getProperty(`${fieldType}Value`);
     let values;
-    if (!fieldPathValue) return {};
+    if (!fieldPathValue) return { checked: true };
     let json = JSON.parse(fieldPathValue || "{}");
-    const { value, scriptOperatorType, checked } = json;
+    const { value, scriptOperatorType } = json;
     values = JSON.parse(value || "{}");
     if (!values.length) {
       values = null;
     }
-    return { values, combinator: scriptOperatorType, checked };
+    return { values, combinator: scriptOperatorType, checked: true };
   };
 
   const setter = (val, dummyState, fieldPathState, fieldPath) => {
@@ -798,6 +806,7 @@ export default function MenuActionPanel({
     const emailNotification = getProperty("emailNotification");
     const emailEvent = getProperty("emailEvent") || "start";
     const roleFieldPath = getProperty("roleFieldPath");
+    const taskRole = getProperty("taskRole");
     const deadlineFieldPath = getProperty("deadlineFieldPath");
     const template = getSelectValue("template");
     const userFieldPath = getProperty("userFieldPath");
@@ -818,6 +827,7 @@ export default function MenuActionPanel({
 
     setTaskFields((prevState) => ({
       ...prevState,
+      taskRole: taskRole,
       taskName: taskName,
       taskPriority: priorityField,
       description: descriptionField,
@@ -959,6 +969,7 @@ export default function MenuActionPanel({
                 setRoleFieldPath(null);
                 setTaskFields((prevState) => ({
                   ...prevState,
+                  taskRole: null,
                   taskName: null,
                   taskPriority: null,
                   description: null,
@@ -970,11 +981,11 @@ export default function MenuActionPanel({
                 );
                 setSelectedTaskOption((prevState) => ({
                   ...prevState,
-                  roleType: "Value",
-                  taskNameType: "Value",
-                  priorityType: "Value",
-                  durationType: "Value",
-                  descriptionType: "Value",
+                  roleType: null,
+                  taskNameType: null,
+                  priorityType: null,
+                  durationType: null,
+                  descriptionType: null,
                 }));
 
                 Object.keys(selectedTaskOption).forEach((key) =>
@@ -1044,6 +1055,8 @@ export default function MenuActionPanel({
                                   ) ||
                                   roleTypes.includes(getProperty("roleType"))
                                 ) {
+                                  handleChange("taskRole", null);
+                                  setProperty("taskRole", undefined);
                                   clearValues(
                                     "roleFieldPath",
                                     setRoleFieldPath,
@@ -1060,17 +1073,18 @@ export default function MenuActionPanel({
                               <Select
                                 className={styles.select}
                                 type="text"
-                                disabled={
-                                  roleFieldPath && readOnlyFields?.roleFieldPath
-                                }
                                 update={(value, label) => {
-                                  setProperty("roleFieldPath", value?.name);
-                                  setRoleFieldPath(value?.name);
-                                  setRoleDummy({ roleFieldPath: value?.name });
-                                  updateMenuValue("role", value, label, "name");
+                                  setProperty("taskRole", value?.name);
+                                  handleChange("taskRole", value?.name);
+                                  updateMenuValue(
+                                    "taskRole",
+                                    value,
+                                    label,
+                                    "name"
+                                  );
                                 }}
-                                name="role"
-                                value={roleFieldPath || null}
+                                name="taskRole"
+                                value={taskFields.taskRole || null}
                                 isLabel={false}
                                 fetchMethod={(data) => getRoles(data?.criteria)}
                               />
@@ -2831,9 +2845,9 @@ export default function MenuActionPanel({
           close={handleClose}
           type="bpmQuery"
           title="Add query"
-          setProperty={(val) => {
-            setter(val, dummyStates, fieldPathState, fieldTypes);
-          }}
+          setProperty={(val) =>
+            setter(val, dummyStates, fieldPathState, fieldTypes)
+          }
           getExpression={() => getter(fieldTypes)}
           fetchModels={() => fetchModels(element)}
         />
@@ -2866,7 +2880,7 @@ export default function MenuActionPanel({
                     setDescriptionDummy({ description: values?.script });
                   },
                 }}
-                language="javascript"
+                suggestion={false}
               />
             </Box>
           }

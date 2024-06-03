@@ -106,7 +106,7 @@ export default function ScriptDialog({
             showLabel={false}
             defaultHeight={window?.innerHeight - 205}
             entry={scriptEntry}
-            language="groovy"
+            suggestion={true}
           />
         </Box>
       }

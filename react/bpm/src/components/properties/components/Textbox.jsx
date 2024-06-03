@@ -33,7 +33,7 @@ export default function Textbox({
   defaultHeight,
   showLabel = true,
   minimap,
-  language,
+  suggestion,
   setDummyProperty = () => {},
 }) {
   const {
@@ -161,7 +161,7 @@ export default function Textbox({
             }
           }}
           minimap={minimap}
-          language={language}
+          suggestion={suggestion}
         />
       ) : (
         <Input
