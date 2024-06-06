@@ -907,7 +907,7 @@ export async function checkConnectAndStudioInstalled() {
     return res?.data[0]?.values?.isConnectAndStudioInstalled;
 }
 
-const CONNECT_URL = `/api/v2`;
+const CONNECT_URL = `${import.meta.env.VITE_CONNECT_URL}/api/v2`;
 const ORGANIZATIONS = "organizations";
 const SCENARIOS = "scenarios";
 

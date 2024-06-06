@@ -1034,7 +1034,7 @@ export default function ServiceTaskDelegateProps({
                       />
                     </>
                   )}
-                  {organizations.length > 0 && organization?.id && (
+                  {organizations?.length > 0 && organization?.id && (
                     <>
                       <InputLabel color="body" className={styles.label}>
                         {translate("Scenario")}
