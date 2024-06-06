@@ -33,11 +33,6 @@ export default defineConfig({
         changeOrigin: true,
         ws: true,
       },
-      "/api/": {
-        target: "https://connect.axelor.com/",
-        changeOrigin: true,
-        ws: true,
-      },
     },
   },
 });
