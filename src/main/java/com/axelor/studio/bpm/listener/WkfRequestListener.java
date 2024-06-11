@@ -20,11 +20,8 @@ package com.axelor.studio.bpm.listener;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
-import com.axelor.event.Observes;
 import com.axelor.events.PostAction;
 import com.axelor.events.PostRequest;
-import com.axelor.events.RequestEvent;
-import com.axelor.events.internal.BeforeTransactionComplete;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
@@ -35,10 +32,8 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +60,7 @@ public class WkfRequestListener {
     this.wkfDisplayService = wkfDisplayService;
   }
 
-  public void onBeforeTransactionComplete(@Observes BeforeTransactionComplete event)
+  public void onBeforeTransactionComplete(Set<Model> updated, Set<Model> deleted)
       throws ClassNotFoundException {
 
     String tenantId = BpmTools.getCurentTenant();
@@ -73,14 +68,11 @@ public class WkfRequestListener {
       WkfCache.initWkfModelCache();
     }
 
-    processUpdated(event, tenantId);
-    processDeleted(event, tenantId);
+    processUpdated(updated, tenantId);
+    processDeleted(deleted, tenantId);
   }
 
-  private void processUpdated(BeforeTransactionComplete event, String tenantId)
-      throws ClassNotFoundException {
-
-    Set<? extends Model> updated = new HashSet<>(event.getUpdated());
+  private void processUpdated(Set<Model> updated, String tenantId) throws ClassNotFoundException {
 
     for (Model model : updated) {
       String modelName = EntityHelper.getEntityClass(model).getName();
@@ -96,7 +88,7 @@ public class WkfRequestListener {
   }
 
   @SuppressWarnings("unchecked")
-  public void onRequest(@Observes PostAction postAction) throws ClassNotFoundException {
+  public void onRequest(PostAction postAction) throws ClassNotFoundException {
 
     Context context = postAction.getContext();
 
@@ -154,7 +146,7 @@ public class WkfRequestListener {
   }
 
   @SuppressWarnings("all")
-  public void onFetch(@Observes @Named(RequestEvent.FETCH) PostRequest event) {
+  public void onFetch(PostRequest event) {
 
     Object obj = event.getResponse().getItem(0);
 
@@ -174,9 +166,7 @@ public class WkfRequestListener {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  public void processDeleted(BeforeTransactionComplete event, String tenantId) {
-
-    Set<? extends Model> deleted = new HashSet<>(event.getDeleted());
+  public void processDeleted(Set<Model> deleted, String tenantId) {
 
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();
