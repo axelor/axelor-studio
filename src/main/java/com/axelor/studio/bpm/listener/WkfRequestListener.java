@@ -20,8 +20,10 @@ package com.axelor.studio.bpm.listener;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
+import com.axelor.event.Observes;
 import com.axelor.events.PostAction;
 import com.axelor.events.PostRequest;
+import com.axelor.events.RequestEvent;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
@@ -32,6 +34,7 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -88,7 +91,7 @@ public class WkfRequestListener {
   }
 
   @SuppressWarnings("unchecked")
-  public void onRequest(PostAction postAction) throws ClassNotFoundException {
+  public void onRequest(@Observes PostAction postAction) throws ClassNotFoundException {
 
     Context context = postAction.getContext();
 
@@ -146,7 +149,7 @@ public class WkfRequestListener {
   }
 
   @SuppressWarnings("all")
-  public void onFetch(PostRequest event) {
+  public void onFetch(@Observes @Named(RequestEvent.FETCH) PostRequest event) {
 
     Object obj = event.getResponse().getItem(0);
 

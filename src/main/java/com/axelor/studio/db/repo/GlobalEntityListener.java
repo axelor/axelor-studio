@@ -3,6 +3,7 @@ package com.axelor.studio.db.repo;
 import com.axelor.db.Model;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import java.util.Collections;
@@ -32,7 +33,7 @@ public class GlobalEntityListener {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     } catch (ExecutionException e) {
-      throw new RuntimeException(e);
+      ExceptionHelper.trace(e);
     } finally {
       forkJoinPool.shutdown();
     }
