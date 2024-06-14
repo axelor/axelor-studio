@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     height: '100%',
+    paddingBottom: '10%',
   },
   table: {
     minWidth: 650,
