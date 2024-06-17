@@ -275,6 +275,7 @@ function BpmnModelerComponent() {
     async (xml, isDeploy, id, oldWkf) => {
       try {
         await bpmnModeler.importXML(xml);
+        diagramXmlRef.current = xml;
         if (isDeploy) {
           addOldNodes(oldWkf, setWkf, bpmnModeler);
         }
@@ -378,10 +379,9 @@ function BpmnModelerComponent() {
             await new Promise((resolve) => setTimeout(resolve, 0));
           }
         }
-        
-        processColors(nodes, modeling);
 
         try {
+          await processColors(nodes, modeling);
           const { xml } = await bpmnModeler.saveXML({ format: true });
           diagramXmlRef.current = xml;
           setInitialState(true);
@@ -395,6 +395,7 @@ function BpmnModelerComponent() {
     },
     []
   );
+
 
   const newBpmnDiagram = React.useCallback(
     function newBpmnDiagram(rec, isDeploy, id, oldWkf) {
@@ -1811,7 +1812,18 @@ function BpmnModelerComponent() {
         });
       });
     bpmnModeler.on("element.click", (event) => {
-      updateTabs(event);
+      if (
+        ["bpmn:Collaboration", "bpmn:Process", "bpmn:SubProcess"].includes(
+          event.element.type
+        )
+      ) {
+        updateTabs(event);
+      }
+    });
+    bpmnModeler.get("eventBus").on("selection.changed", function (event) {
+      if (event.newSelection.length > 0) {
+        updateTabs({ element: event.newSelection[0] });
+      }
     });
     bpmnModeler.on("element.dblclick", (event) => {
       const { element } = event;
