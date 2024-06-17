@@ -320,6 +320,7 @@ function BpmnModelerComponent() {
     async (xml, isDeploy, id, oldWkf) => {
       try {
         await bpmnModeler.importXML(xml);
+        diagramXmlRef.current = xml;
         if (isDeploy) {
           addOldNodes(oldWkf, setWkf, bpmnModeler);
         }
@@ -405,7 +406,45 @@ function BpmnModelerComponent() {
             (bo && bo.get([modelProperty]));
           updateTranslations(element, bpmnModeler, nameKey);
         });
+
+        async function processColors(nodes, modeling) {
+          const entries = Object.entries(nodes);
+          for (let i = 0; i < entries.length; i++) {
+            const [key, value] = entries[i];
+            if (!value) continue;
+            const { element } = value;
+            if (!element) continue;
+            if (
+              modeling &&
+              element.businessObject &&
+              element.businessObject.di
+            ) {
+              let type = is(element, ["bpmn:Gateway"])
+                ? "bpmn:Gateway"
+                : element.type;
+              let colors = {
+                stroke: element.businessObject.di.stroke || STROKE_COLORS[type],
+              };
+              if (
+                (element.businessObject.di.fill || FILL_COLORS[type]) &&
+                ![
+                  "bpmn:SequenceFlow",
+                  "bpmn:MessageFlow",
+                  "bpmn:Association",
+                ].includes(element.type)
+              ) {
+                colors.fill =
+                  element.businessObject.di.fill || FILL_COLORS[type];
+              }
+
+              modeling.setColor(element, colors);
+            }
+            await new Promise((resolve) => setTimeout(resolve, 0));
+          }
+        }
+
         try {
+          await processColors(nodes, modeling);
           const { xml } = await bpmnModeler.saveXML({ format: true });
           diagramXmlRef.current = xml;
           setInitialState(true);
@@ -419,6 +458,7 @@ function BpmnModelerComponent() {
     },
     []
   );
+
 
   const newBpmnDiagram = React.useCallback(
     function newBpmnDiagram(rec, isDeploy, id, oldWkf) {
