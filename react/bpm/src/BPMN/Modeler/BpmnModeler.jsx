@@ -273,6 +273,7 @@ function BpmnModelerComponent() {
     async (xml, isDeploy, id, oldWkf) => {
       try {
         await bpmnModeler.importXML(xml);
+        diagramXmlRef.current = xml;
         if (isDeploy) {
           addOldNodes(oldWkf, setWkf, bpmnModeler);
         }
@@ -360,6 +361,7 @@ function BpmnModelerComponent() {
           updateTranslations(element, bpmnModeler);
         });
         try {
+          await processColors(nodes, modeling);
           const { xml } = await bpmnModeler.saveXML({ format: true });
           diagramXmlRef.current = xml;
           setInitialState(true);
@@ -373,6 +375,7 @@ function BpmnModelerComponent() {
     },
     []
   );
+
 
   const newBpmnDiagram = React.useCallback(
     function newBpmnDiagram(rec, isDeploy, id, oldWkf) {
