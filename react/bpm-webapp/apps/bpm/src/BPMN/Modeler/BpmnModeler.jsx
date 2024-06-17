@@ -119,10 +119,10 @@ function nextId() {
 
 function setColors(element, forceUpdate = false) {
   if (
-    element.businessObject &&
-    element.businessObject.di &&
-    (element.businessObject.di.stroke || element.businessObject.di.fill) &&
-    !forceUpdate
+      element.businessObject &&
+      element.businessObject.di &&
+      (element.businessObject.di.stroke || element.businessObject.di.fill) &&
+      !forceUpdate
   ) {
     return;
   }
@@ -137,10 +137,10 @@ function setColors(element, forceUpdate = false) {
     element.businessObject.di.set("stroke", STROKE_COLORS[element.type]);
     colors.stroke = STROKE_COLORS[element.type];
     if (
-      FILL_COLORS[element.type] &&
-      !["bpmn:SequenceFlow", "bpmn:MessageFlow", "bpmn:Association"].includes(
-        element.type
-      )
+        FILL_COLORS[element.type] &&
+        !["bpmn:SequenceFlow", "bpmn:MessageFlow", "bpmn:Association"].includes(
+            element.type
+        )
     ) {
       colors.fill = FILL_COLORS[element.type];
       element.businessObject.di.set("fill", FILL_COLORS[element.type]);
@@ -194,18 +194,18 @@ function BpmnModelerComponent() {
   }, []);
 
   const handleChange = React.useCallback(
-    (newValue) => {
-      const val = tabs.findIndex((tab) => tab.id === newValue?.id);
-      const tabValue = val > -1 ? val : 0;
-      setTabValue(tabValue);
-    },
-    [tabs]
+      (newValue) => {
+        const val = tabs.findIndex((tab) => tab.id === newValue?.id);
+        const tabValue = val > -1 ? val : 0;
+        setTabValue(tabValue);
+      },
+      [tabs]
   );
 
   const alertOpen = (
-    actions,
-    alertMessage = "Item is required.",
-    title = "Error"
+      actions,
+      alertMessage = "Item is required.",
+      title = "Error"
   ) => {
     const { onOk = () => {}, onCancel = () => {} } = actions || {
       onOk: () => {},
@@ -257,7 +257,7 @@ function BpmnModelerComponent() {
     const bo = getBusinessObject(element);
     if (!bo) return;
     const isTranslation =
-      (bo.$attrs && bo.$attrs["camunda:isTranslations"]) || false;
+        (bo.$attrs && bo.$attrs["camunda:isTranslations"]) || false;
     if (!getBool(isTranslation)) return;
     const translations = await getTranslations(key);
     if (translations && translations.length > 0) {
@@ -265,18 +265,18 @@ function BpmnModelerComponent() {
       const language = info && info["user.lang"];
       if (!language) return;
       const selectedTranslation = translations.find(
-        (t) => t.language === language
+          (t) => t.language === language
       );
       if (!element) return;
       const value = selectedTranslation && selectedTranslation.message;
       const bo = element && element.businessObject;
       const elementType = element && element.type;
       let modelProperty =
-        elementType === "bpmn:TextAnnotation"
-          ? "text"
-          : elementType === "bpmn:Group"
-          ? "categoryValue"
-          : "name";
+          elementType === "bpmn:TextAnnotation"
+              ? "text"
+              : elementType === "bpmn:Group"
+                  ? "categoryValue"
+                  : "name";
       const name = bo[modelProperty];
       const newKey = bo.$attrs["camunda:key"];
       const diagramValue = value || newKey || name;
@@ -286,9 +286,9 @@ function BpmnModelerComponent() {
       let shape = elementRegistry.get(element.id);
       if (!shape) return;
       modeling &&
-        modeling.updateProperties(shape, {
-          [modelProperty]: diagramValue,
-        });
+      modeling.updateProperties(shape, {
+        [modelProperty]: diagramValue,
+      });
     }
   };
 
@@ -317,115 +317,147 @@ function BpmnModelerComponent() {
   }, []);
 
   const openBpmnDiagram = React.useCallback(
-    async (xml, isDeploy, id, oldWkf) => {
-      try {
-        await bpmnModeler.importXML(xml);
-        if (isDeploy) {
-          addOldNodes(oldWkf, setWkf, bpmnModeler);
-        }
-        let canvas = bpmnModeler.get("canvas");
-        canvas.zoom("fit-viewport", "auto");
-        const definitions = bpmnModeler._definitions;
-        let attrs = definitions && definitions.$attrs;
-        if (attrs) {
-          if (oldWkf) {
-            [
-              "code",
-              "name",
-              "versionTag",
-              "studioApp",
-              "description",
-              "wkfStatusColor",
-              "newVersionOnDeploy",
-            ].forEach((key) => {
-              if (key === "name") {
-                setProperty("diagramName", oldWkf[key], true);
-              } else if (key === "studioApp") {
-                setProperty("studioApp", oldWkf[key] && oldWkf[key].code, true);
-              } else {
-                setProperty(key, oldWkf[key], true);
-              }
-            });
-          }
-        }
-        let tabs = getTabs(bpmnModeler, definitions, setDummyProperty);
-        setTabs(tabs);
-        setTabValue(0);
-        setSelectedElement(definitions);
-        let elementRegistry = bpmnModeler.get("elementRegistry");
-        let modeling = bpmnModeler.get("modeling");
-        let nodes = elementRegistry && elementRegistry._elements;
-        if (!nodes) return;
-        Object.entries(nodes).forEach(([key, value]) => {
-          if (!value) return;
-          const { element } = value;
-          if (!element) return;
-          if (modeling && element.businessObject && element.businessObject.di) {
-            let type = is(element, ["bpmn:Gateway"])
-              ? "bpmn:Gateway"
-              : element.type;
-            let colors = {
-              stroke: element.businessObject.di.stroke || STROKE_COLORS[type],
-            };
-            if (
-              (element.businessObject.di.fill || FILL_COLORS[type]) &&
-              ![
-                "bpmn:SequenceFlow",
-                "bpmn:MessageFlow",
-                "bpmn:Association",
-              ].includes(element.type)
-            ) {
-              colors.fill = element.businessObject.di.fill || FILL_COLORS[type];
-            }
-            modeling.setColor(element, colors);
-          }
-          if (["Shape", "Root"].includes(element.constructor.name)) {
-            let bo = element.businessObject;
-            if (!bo) return;
-            if (isConditionalSource(element)) return;
-            if (bo.$attrs["camunda:displayStatus"] === "false") return;
-            if (
-              bo.$attrs &&
-              (bo.$attrs["camunda:displayStatus"] === undefined ||
-                bo.$attrs["camunda:displayStatus"] === null)
-            ) {
-              bo.$attrs["camunda:displayStatus"] = true;
-            }
-          }
-          let bo = getBusinessObject(element);
-          const elementType = element && element.type;
-          let modelProperty =
-            elementType === "bpmn:TextAnnotation"
-              ? "text"
-              : elementType === "bpmn:Group"
-              ? "categoryValue"
-              : "name";
-          let nameKey =
-            element.businessObject.$attrs["camunda:key"] ||
-            (bo && bo.get([modelProperty]));
-          updateTranslations(element, bpmnModeler, nameKey);
-        });
+      async (xml, isDeploy, id, oldWkf) => {
         try {
-          const { xml } = await bpmnModeler.saveXML({ format: true });
+          await bpmnModeler.importXML(xml);
           diagramXmlRef.current = xml;
-          setInitialState(true);
-          setDirty(false);
+          if (isDeploy) {
+            addOldNodes(oldWkf, setWkf, bpmnModeler);
+          }
+          let canvas = bpmnModeler.get("canvas");
+          canvas.zoom("fit-viewport", "auto");
+          const definitions = bpmnModeler._definitions;
+          let attrs = definitions && definitions.$attrs;
+          if (attrs) {
+            if (oldWkf) {
+              [
+                "code",
+                "name",
+                "versionTag",
+                "studioApp",
+                "description",
+                "wkfStatusColor",
+                "newVersionOnDeploy",
+              ].forEach((key) => {
+                if (key === "name") {
+                  setProperty("diagramName", oldWkf[key], true);
+                } else if (key === "studioApp") {
+                  setProperty("studioApp", oldWkf[key] && oldWkf[key].code, true);
+                } else {
+                  setProperty(key, oldWkf[key], true);
+                }
+              });
+            }
+          }
+          let tabs = getTabs(bpmnModeler, definitions, setDummyProperty);
+          setTabs(tabs);
+          setTabValue(0);
+          setSelectedElement(definitions);
+          let elementRegistry = bpmnModeler.get("elementRegistry");
+          let modeling = bpmnModeler.get("modeling");
+          let nodes = elementRegistry && elementRegistry._elements;
+          if (!nodes) return;
+          Object.entries(nodes).forEach(([key, value]) => {
+            if (!value) return;
+            const { element } = value;
+            if (!element) return;
+            if (modeling && element.businessObject && element.businessObject.di) {
+              let type = is(element, ["bpmn:Gateway"])
+                  ? "bpmn:Gateway"
+                  : element.type;
+              let colors = {
+                stroke: element.businessObject.di.stroke || STROKE_COLORS[type],
+              };
+              if (
+                  (element.businessObject.di.fill || FILL_COLORS[type]) &&
+                  ![
+                    "bpmn:SequenceFlow",
+                    "bpmn:MessageFlow",
+                    "bpmn:Association",
+                  ].includes(element.type)
+              ) {
+                colors.fill = element.businessObject.di.fill || FILL_COLORS[type];
+              }
+              modeling.setColor(element, colors);
+            }
+            if (["Shape", "Root"].includes(element.constructor.name)) {
+              let bo = element.businessObject;
+              if (!bo) return;
+              if (isConditionalSource(element)) return;
+              if (bo.$attrs["camunda:displayStatus"] === "false") return;
+              if (
+                  bo.$attrs &&
+                  (bo.$attrs["camunda:displayStatus"] === undefined ||
+                      bo.$attrs["camunda:displayStatus"] === null)
+              ) {
+                bo.$attrs["camunda:displayStatus"] = true;
+              }
+            }
+            let bo = getBusinessObject(element);
+            const elementType = element && element.type;
+            let modelProperty =
+                elementType === "bpmn:TextAnnotation"
+                    ? "text"
+                    : elementType === "bpmn:Group"
+                        ? "categoryValue"
+                        : "name";
+            let nameKey =
+                element.businessObject.$attrs["camunda:key"] ||
+                (bo && bo.get([modelProperty]));
+            updateTranslations(element, bpmnModeler, nameKey);
+          });
+          async function processColors(nodes, modeling) {
+            const entries = Object.entries(nodes);
+            for (let i = 0; i < entries.length; i++) {
+              const [key, value] = entries[i];
+              if (!value) continue;
+              const { element } = value;
+              if (!element) continue;
+              if (modeling && element.di) {
+                let type = is(element, ["bpmn:Gateway"])
+                  ? "bpmn:Gateway"
+                  : element.type;
+                let colors = {
+                  stroke: element.di.stroke || STROKE_COLORS[type],
+                };
+                if (
+                  (element.di.fill || FILL_COLORS[type]) &&
+                  ![
+                    "bpmn:SequenceFlow",
+                    "bpmn:MessageFlow",
+                    "bpmn:Association",
+                  ].includes(element.type)
+                ) {
+                  colors.fill = element.di.fill || FILL_COLORS[type];
+                }
+  
+                modeling.setColor(element, colors);
+              }
+              await new Promise((resolve) => setTimeout(resolve, 0));
+            }
+          }  
+          try {
+            await processColors(nodes, modeling);
+            const { xml } = await bpmnModeler.saveXML({ format: true });
+            diagramXmlRef.current = xml;
+            setInitialState(true);
+            setDirty(false);
+          } catch (error) {
+            console.error(error);
+          }
         } catch (error) {
-          console.error(error);
+          handleSnackbarClick("danger", "Error! Can't import XML");
         }
-      } catch (error) {
-        handleSnackbarClick("danger", "Error! Can't import XML");
-      }
-    },
-    []
+      },
+      []
   );
 
   const newBpmnDiagram = React.useCallback(
-    function newBpmnDiagram(rec, isDeploy, id, oldWkf) {
-      const processId = nextId();
-      const diagram =
-        rec ||
-        `<?xml version="1.0" encoding="UTF-8" ?>
+      function newBpmnDiagram(rec, isDeploy, id, oldWkf) {
+        const processId = nextId();
+        const diagram =
+            rec ||
+            `<?xml version="1.0" encoding="UTF-8" ?>
       <bpmn2:definitions 
         xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" 
         xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" 
@@ -447,24 +479,24 @@ function BpmnModelerComponent() {
           </bpmndi:BPMNPlane>
         </bpmndi:BPMNDiagram>
       </bpmn2:definitions>`;
-      openBpmnDiagram(diagram, isDeploy, id, oldWkf);
-    },
-    [openBpmnDiagram]
+        openBpmnDiagram(diagram, isDeploy, id, oldWkf);
+      },
+      [openBpmnDiagram]
   );
 
   const fetchDiagram = React.useCallback(
-    async function fetchDiagram(id, isDeploy = false) {
-      if (id) {
-        const wkf = (await fetchWkf(id)) || {};
-        let { diagramXml } = wkf;
-        setWkf(wkf);
-        newBpmnDiagram(diagramXml, isDeploy, id, wkf);
-        return wkf;
-      } else {
-        newBpmnDiagram(undefined, isDeploy, id);
-      }
-    },
-    [newBpmnDiagram]
+      async function fetchDiagram(id, isDeploy = false) {
+        if (id) {
+          const wkf = (await fetchWkf(id)) || {};
+          let { diagramXml } = wkf;
+          setWkf(wkf);
+          newBpmnDiagram(diagramXml, isDeploy, id, wkf);
+          return wkf;
+        } else {
+          newBpmnDiagram(undefined, isDeploy, id);
+        }
+      },
+      [newBpmnDiagram]
   );
 
   const uploadFile = (e) => {
@@ -472,10 +504,10 @@ function BpmnModelerComponent() {
     if (!files?.length) return;
     let reader = new FileReader();
     if (
-      files &&
-      files[0] &&
-      files[0].name &&
-      !files[0].name.includes(".bpmn")
+        files &&
+        files[0] &&
+        files[0].name &&
+        !files[0].name.includes(".bpmn")
     ) {
       handleSnackbarClick("danger", "Upload Bpmn files only");
       return;
@@ -488,14 +520,14 @@ function BpmnModelerComponent() {
 
   function getKeyData(data, key) {
     return (
-      data &&
-      data.reduce((arrs, item) => {
-        if (item.name === key) {
-          arrs.push([]);
-        }
-        arrs[arrs.length - 1] && arrs[arrs.length - 1].push(item);
-        return arrs;
-      }, [])
+        data &&
+        data.reduce((arrs, item) => {
+          if (item.name === key) {
+            arrs.push([]);
+          }
+          arrs[arrs.length - 1] && arrs[arrs.length - 1].push(item);
+          return arrs;
+        }, [])
     );
   }
 
@@ -517,11 +549,11 @@ function BpmnModelerComponent() {
     const isDirty = await checkIfUpdated();
     if (isDirty) {
       alertOpen(
-        {
-          onOk: reloadView,
-        },
-        "Current changes will be lost. Do you really want to proceed?",
-        "Refresh"
+          {
+            onOk: reloadView,
+          },
+          "Current changes will be lost. Do you really want to proceed?",
+          "Refresh"
       );
     } else {
       reloadView();
@@ -529,54 +561,54 @@ function BpmnModelerComponent() {
   };
 
   const updateWkf = React.useCallback(
-    async (value) => {
-      setInitialState(false);
-      setDirty(false);
-      const wkf = await fetchWkf(value?.id);
-      const { diagramXml, id } = wkf || {};
-      setWkf(wkf);
-      setId(id);
-      newBpmnDiagram(diagramXml, false, id, wkf);
-    },
-    [newBpmnDiagram]
+      async (value) => {
+        setInitialState(false);
+        setDirty(false);
+        const wkf = await fetchWkf(value?.id);
+        const { diagramXml, id } = wkf || {};
+        setWkf(wkf);
+        setId(id);
+        newBpmnDiagram(diagramXml, false, id, wkf);
+      },
+      [newBpmnDiagram]
   );
 
   const updateWkfModel = React.useCallback(
-    async (value, oldValue) => {
-      const isDirty = await checkIfUpdated();
-      if (isDirty) {
-        alertOpen(
-          {
-            onOk: () => updateWkf(value),
-            onCancel: () => setWkf(oldValue),
-          },
-          "Current changes will be lost. Do you really want to proceed?",
-          "Update"
-        );
-      } else {
-        updateWkf(value);
-      }
-    },
-    [updateWkf]
+      async (value, oldValue) => {
+        const isDirty = await checkIfUpdated();
+        if (isDirty) {
+          alertOpen(
+              {
+                onOk: () => updateWkf(value),
+                onCancel: () => setWkf(oldValue),
+              },
+              "Current changes will be lost. Do you really want to proceed?",
+              "Update"
+          );
+        } else {
+          updateWkf(value);
+        }
+      },
+      [updateWkf]
   );
 
   const onNew = React.useCallback(
-    async (isSkipAlert = false) => {
-      const isDirty = await checkIfUpdated();
-      if (isDirty && !isSkipAlert) {
-        alertOpen(
-          {
-            onOk: addNewDiagram,
-          },
-          "Current changes will be lost. Do you really want to proceed?",
-          "New"
-        );
-      } else {
-        addNewDiagram();
-      }
-      setError(false);
-    },
-    [addNewDiagram]
+      async (isSkipAlert = false) => {
+        const isDirty = await checkIfUpdated();
+        if (isDirty && !isSkipAlert) {
+          alertOpen(
+              {
+                onOk: addNewDiagram,
+              },
+              "Current changes will be lost. Do you really want to proceed?",
+              "New"
+          );
+        } else {
+          addNewDiagram();
+        }
+        setError(false);
+      },
+      [addNewDiagram]
   );
 
   const getProcessModels = (element) => {
@@ -584,13 +616,13 @@ function BpmnModelerComponent() {
     const extensionElements = bo && bo.extensionElements;
     if (!extensionElements || !extensionElements.values) return [];
     const processConfigurations = extensionElements.values.find(
-      (e) => e.$type === "camunda:ProcessConfiguration"
+        (e) => e.$type === "camunda:ProcessConfiguration"
     );
     const metaModels = [],
-      metaJsonModels = [];
+        metaJsonModels = [];
     if (
-      !processConfigurations &&
-      !processConfigurations?.processConfigurationParameters
+        !processConfigurations &&
+        !processConfigurations?.processConfigurationParameters
     )
       return [];
     processConfigurations?.processConfigurationParameters.forEach((config) => {
@@ -610,14 +642,14 @@ function BpmnModelerComponent() {
 
     if (!name || !code) {
       handleSnackbarClick(
-        "danger",
-        !name && !code
-          ? "Name and code are required."
-          : !name
-          ? "Name is required."
-          : !code
-          ? "Code is required."
-          : ""
+          "danger",
+          !name && !code
+              ? "Name and code are required."
+              : !name
+                  ? "Name is required."
+                  : !code
+                      ? "Code is required."
+                      : ""
       );
       setError(true);
       return;
@@ -631,7 +663,7 @@ function BpmnModelerComponent() {
         const bo = getBusinessObject(element);
         if (bo && bo.eventDefinitions) {
           let timerDef = bo.eventDefinitions.find(
-            (e) => e.$type === "bpmn:TimerEventDefinition"
+              (e) => e.$type === "bpmn:TimerEventDefinition"
           );
           if (timerDef) {
             return element;
@@ -648,159 +680,159 @@ function BpmnModelerComponent() {
     let nodes = elementRegistry && elementRegistry._elements;
     let isValid = true;
     nodes &&
-      Object.values(nodes).forEach((node) => {
-        const viewElement = node.element;
-        const businessObject = getBusinessObject(viewElement);
-        const extensionElements = businessObject.extensionElements;
-        const processModels = getProcessModels(viewElement);
-        const nodeName =
+    Object.values(nodes).forEach((node) => {
+      const viewElement = node.element;
+      const businessObject = getBusinessObject(viewElement);
+      const extensionElements = businessObject.extensionElements;
+      const processModels = getProcessModels(viewElement);
+      const nodeName =
           (businessObject && businessObject.name) ||
           (viewElement && viewElement.id);
-        if (!viewElement.id) {
-          alertOpen(null, `${translate("Id is required in")} ${nodeName}`);
-          isValid = false;
-          return;
-        }
-        if (
+      if (!viewElement.id) {
+        alertOpen(null, `${translate("Id is required in")} ${nodeName}`);
+        isValid = false;
+        return;
+      }
+      if (
           [
             "bpmn:EndEvent",
             "bpmn:IntermediateCatchEvent",
             ...USER_TASKS_TYPES,
           ].includes(node.element.type)
-        ) {
-          let extensionElementValues, camundaProperty;
-          if (extensionElements && extensionElements.values) {
-            camundaProperty = extensionElements.values.find(
+      ) {
+        let extensionElementValues, camundaProperty;
+        if (extensionElements && extensionElements.values) {
+          camundaProperty = extensionElements.values.find(
               (e) => e.$type === "camunda:Properties"
-            );
-            extensionElementValues = camundaProperty && camundaProperty.values;
-          }
-          if (extensionElementValues && extensionElementValues.length < 1)
-            return;
-          let models = getKeyData(extensionElementValues, "model");
-          let values = [];
-          models &&
-            models.forEach((modelArr) => {
-              let value = { items: [] };
-              let items = getKeyData(modelArr, "itemType");
-              modelArr.forEach((ele) => {
-                if (ele.name === "model") {
-                  value.model = { model: ele.value, fullName: ele.value };
-                }
-                if (ele.name === "modelName") {
-                  value.model = { ...value.model, name: ele.value };
-                }
-                if (ele.name === "modelType") {
-                  value.model = { ...value.model, type: ele.value };
-                }
-                if (ele.name === "modelLabel") {
-                  value.modelLabel = ele.value;
-                  value.model = { ...value.model, title: ele.value };
-                }
-                if (ele.name === "view") {
-                  value.view = { name: ele.value };
-                }
-                if (ele.name === "viewLabel") {
-                  value.viewLabel = ele.value;
-                  value.view = { ...value.view, title: ele.value };
-                }
-                if (ele.name === "relatedField") {
-                  value.relatedField = { name: ele.value };
-                }
-                if (ele.name === "relatedFieldLabel") {
-                  value.relatedFieldLabel = ele.value;
-                  value.relatedField = {
-                    ...value.relatedField,
-                    title: ele.value,
-                  };
-                }
-                if (ele.name === "roles") {
-                  if (!ele.value) return;
-                  const roles = ele.value.split(",");
-                  let valueRoles = [];
-                  roles.forEach((role) => {
-                    valueRoles.push({ name: role });
-                  });
-                  value.roles = valueRoles;
-                }
-              });
-
-              items &&
-                items.forEach((item) => {
-                  const name = item.find((f) => f.name === "item");
-                  const label = item.find((f) => f.name === "itemLabel");
-                  const type = item.find((f) => f.name === "itemType");
-                  const attribute = item.find((f) =>
-                    ALL_ATTRIBUTES.includes(f.name)
-                  );
-                  const permanent = item.find((f) => f.name === "permanent");
-                  value.items.push({
-                    itemName: {
-                      name: name?.value,
-                      label: label?.value,
-                      type: type?.value,
-                    },
-                    itemNameLabel: label && label.value,
-                    attributeName: attribute && attribute.name,
-                    attributeValue: attribute && attribute.value,
-                    permanent: permanent && permanent.value,
-                  });
-                });
-              values.push(value);
-            });
-          if (values && values.length > 0) {
-            values &&
-              values.forEach((value) => {
-                const { items = [], relatedField, model } = value;
-                if (!processModels?.includes(model?.name) && !relatedField) {
-                  alertOpen(
-                    null,
-                    `${"Related field is required in"} ${nodeName}`
-                  );
-                  isValid = false;
-                  return;
-                }
-                const checkItems = items.filter(
-                  (item) => item && (!item.itemName || !item.attributeName)
-                );
-                if (items.length < 1 || checkItems.length === items.length) {
-                  alertOpen(null, `${"Item is required in"} ${nodeName}`);
-                  isValid = false;
-                  return;
-                }
-                if (items.length > 0) {
-                  items.forEach((item) => {
-                    let { itemName, attributeName, attributeValue } = item;
-                    if (!itemName || !attributeName) {
-                      alertOpen(
-                        null,
-                        `${"Item name is required in"} ${nodeName}`
-                      );
-                      isValid = false;
-                      return;
-                    }
-                    if (!attributeValue) {
-                      if (
-                        ["readonly", "hidden", "required"].includes(
-                          attributeName
-                        )
-                      ) {
-                        attributeValue = false;
-                      } else {
-                        isValid = false;
-                        alertOpen(
-                          null,
-                          `${"Item value is required in"} ${nodeName}`
-                        );
-                        return;
-                      }
-                    }
-                  });
-                }
-              });
-          }
+          );
+          extensionElementValues = camundaProperty && camundaProperty.values;
         }
-      });
+        if (extensionElementValues && extensionElementValues.length < 1)
+          return;
+        let models = getKeyData(extensionElementValues, "model");
+        let values = [];
+        models &&
+        models.forEach((modelArr) => {
+          let value = { items: [] };
+          let items = getKeyData(modelArr, "itemType");
+          modelArr.forEach((ele) => {
+            if (ele.name === "model") {
+              value.model = { model: ele.value, fullName: ele.value };
+            }
+            if (ele.name === "modelName") {
+              value.model = { ...value.model, name: ele.value };
+            }
+            if (ele.name === "modelType") {
+              value.model = { ...value.model, type: ele.value };
+            }
+            if (ele.name === "modelLabel") {
+              value.modelLabel = ele.value;
+              value.model = { ...value.model, title: ele.value };
+            }
+            if (ele.name === "view") {
+              value.view = { name: ele.value };
+            }
+            if (ele.name === "viewLabel") {
+              value.viewLabel = ele.value;
+              value.view = { ...value.view, title: ele.value };
+            }
+            if (ele.name === "relatedField") {
+              value.relatedField = { name: ele.value };
+            }
+            if (ele.name === "relatedFieldLabel") {
+              value.relatedFieldLabel = ele.value;
+              value.relatedField = {
+                ...value.relatedField,
+                title: ele.value,
+              };
+            }
+            if (ele.name === "roles") {
+              if (!ele.value) return;
+              const roles = ele.value.split(",");
+              let valueRoles = [];
+              roles.forEach((role) => {
+                valueRoles.push({ name: role });
+              });
+              value.roles = valueRoles;
+            }
+          });
+
+          items &&
+          items.forEach((item) => {
+            const name = item.find((f) => f.name === "item");
+            const label = item.find((f) => f.name === "itemLabel");
+            const type = item.find((f) => f.name === "itemType");
+            const attribute = item.find((f) =>
+                ALL_ATTRIBUTES.includes(f.name)
+            );
+            const permanent = item.find((f) => f.name === "permanent");
+            value.items.push({
+              itemName: {
+                name: name?.value,
+                label: label?.value,
+                type: type?.value,
+              },
+              itemNameLabel: label && label.value,
+              attributeName: attribute && attribute.name,
+              attributeValue: attribute && attribute.value,
+              permanent: permanent && permanent.value,
+            });
+          });
+          values.push(value);
+        });
+        if (values && values.length > 0) {
+          values &&
+          values.forEach((value) => {
+            const { items = [], relatedField, model } = value;
+            if (!processModels?.includes(model?.name) && !relatedField) {
+              alertOpen(
+                  null,
+                  `${"Related field is required in"} ${nodeName}`
+              );
+              isValid = false;
+              return;
+            }
+            const checkItems = items.filter(
+                (item) => item && (!item.itemName || !item.attributeName)
+            );
+            if (items.length < 1 || checkItems.length === items.length) {
+              alertOpen(null, `${"Item is required in"} ${nodeName}`);
+              isValid = false;
+              return;
+            }
+            if (items.length > 0) {
+              items.forEach((item) => {
+                let { itemName, attributeName, attributeValue } = item;
+                if (!itemName || !attributeName) {
+                  alertOpen(
+                      null,
+                      `${"Item name is required in"} ${nodeName}`
+                  );
+                  isValid = false;
+                  return;
+                }
+                if (!attributeValue) {
+                  if (
+                      ["readonly", "hidden", "required"].includes(
+                          attributeName
+                      )
+                  ) {
+                    attributeValue = false;
+                  } else {
+                    isValid = false;
+                    alertOpen(
+                        null,
+                        `${"Item value is required in"} ${nodeName}`
+                    );
+                    return;
+                  }
+                }
+              });
+            }
+          });
+        }
+      }
+    });
     if (!isValid) return;
     try {
       const { xml } = await bpmnModeler.saveXML({ format: true });
@@ -853,8 +885,8 @@ function BpmnModelerComponent() {
         handleSnackbarClick("success", "Saved Successfully");
       } else {
         handleSnackbarClick(
-          "danger",
-          (res && res.data && (res.data.message || res.data.title)) || "Error"
+            "danger",
+            (res && res.data && (res.data.message || res.data.title)) || "Error"
         );
       }
     } catch (err) {
@@ -868,9 +900,9 @@ function BpmnModelerComponent() {
 
   const getBOParent = React.useCallback((element) => {
     if (
-      element &&
-      element.$parent &&
-      element.$parent.$type !== "bpmn:Process"
+        element &&
+        element.$parent &&
+        element.$parent.$type !== "bpmn:Process"
     ) {
       return getBOParent(element.$parent);
     } else {
@@ -891,21 +923,21 @@ function BpmnModelerComponent() {
     let props = {
       event: initialEvent,
       script: elementHelper.createElement(
-        "camunda:Script",
-        {
-          scriptFormat: "axelor",
-          value: script,
-        },
-        getBO(),
-        bpmnFactory
+          "camunda:Script",
+          {
+            scriptFormat: "axelor",
+            value: script,
+          },
+          getBO(),
+          bpmnFactory
       ),
     };
 
     let newElem = elementHelper.createElement(
-      type,
-      props,
-      undefined,
-      bpmnFactory
+        type,
+        props,
+        undefined,
+        bpmnFactory
     );
 
     newElem.$attrs["outId"] = "dmn_output_mapping";
@@ -913,10 +945,10 @@ function BpmnModelerComponent() {
     let extensionElements = bo && bo.extensionElements;
     if (!extensionElements) {
       extensionElements = elementHelper.createElement(
-        "bpmn:ExtensionElements",
-        { values: [] },
-        bo,
-        bpmnFactory
+          "bpmn:ExtensionElements",
+          { values: [] },
+          bo,
+          bpmnFactory
       );
       element.businessObject.extensionElements = extensionElements;
     }
@@ -933,14 +965,14 @@ function BpmnModelerComponent() {
       return { status: -1 };
     }
     let elements =
-      businessRuleElements &&
-      businessRuleElements.filter(
-        (e) =>
-          e &&
-          e.businessObject &&
-          e.businessObject.$attrs &&
-          getBool(e.businessObject.$attrs["camunda:assignOutputToFields"])
-      );
+        businessRuleElements &&
+        businessRuleElements.filter(
+            (e) =>
+                e &&
+                e.businessObject &&
+                e.businessObject.$attrs &&
+                getBool(e.businessObject.$attrs["camunda:assignOutputToFields"])
+        );
     if (!elements || elements.length < 0) {
       return { status: -1 };
     }
@@ -948,20 +980,20 @@ function BpmnModelerComponent() {
       let element = elements[i];
       if (element && element.businessObject) {
         let ifMultiple =
-          element.businessObject.$attrs &&
-          element.businessObject.$attrs["camunda:ifMultiple"];
+            element.businessObject.$attrs &&
+            element.businessObject.$attrs["camunda:ifMultiple"];
 
         let searchWith =
-          element.businessObject.$attrs &&
-          element.businessObject.$attrs["camunda:searchWith"];
+            element.businessObject.$attrs &&
+            element.businessObject.$attrs["camunda:searchWith"];
 
         let resultVariable = element.businessObject.resultVariable;
         let decisionId = element.businessObject.decisionRef;
 
         let ctxModel =
-          element.businessObject.$attrs &&
-          (element.businessObject.$attrs["camunda:metaModelModelName"] ||
-            element.businessObject.$attrs["camunda:metaJsonModelModelName"]);
+            element.businessObject.$attrs &&
+            (element.businessObject.$attrs["camunda:metaModelModelName"] ||
+                element.businessObject.$attrs["camunda:metaJsonModelModelName"]);
 
         let context = {
           decisionId,
@@ -985,21 +1017,21 @@ function BpmnModelerComponent() {
           if (script) {
             let bo = getBO(element);
             const listeners = getListeners(
-              bo,
-              CAMUNDA_EXECUTION_LISTENER_ELEMENT
+                bo,
+                CAMUNDA_EXECUTION_LISTENER_ELEMENT
             );
 
             const listener = listeners.find(
-              (l) => l && l.$attrs && l.$attrs["outId"] === "dmn_output_mapping"
+                (l) => l && l.$attrs && l.$attrs["outId"] === "dmn_output_mapping"
             );
             if (listener && listener.script) {
               listener.script.value = script;
             } else {
               addNewExecutionElement(
-                element,
-                CAMUNDA_EXECUTION_LISTENER_ELEMENT,
-                "end",
-                script
+                  element,
+                  CAMUNDA_EXECUTION_LISTENER_ELEMENT,
+                  "end",
+                  script
               );
             }
           }
@@ -1055,8 +1087,8 @@ function BpmnModelerComponent() {
       fetchDiagram(newWkf.id, true);
     } else {
       handleSnackbarClick(
-        "danger",
-        (actionRes?.data && actionRes?.data[0]?.error?.message) ||
+          "danger",
+          (actionRes?.data && actionRes?.data[0]?.error?.message) ||
           actionRes?.data?.title ||
           "Error"
       );
@@ -1064,10 +1096,10 @@ function BpmnModelerComponent() {
   };
 
   const startAction = async (
-    newWkf,
-    wkfMigrationMap,
-    isDeploy = false,
-    isMigrateOld
+      newWkf,
+      wkfMigrationMap,
+      isDeploy = false,
+      isMigrateOld
   ) => {
     let actionStart = await Service.action({
       model: "com.axelor.studio.db.WkfModel",
@@ -1082,13 +1114,13 @@ function BpmnModelerComponent() {
     if (actionStart?.data && actionStart.data[0]?.reload) {
       if (isDeploy) {
         await deployAction(
-          {
-            _model: "com.axelor.studio.db.WkfModel",
-            ...newWkf,
-            isMigrateOld,
-            wkfMigrationMap,
-          },
-          newWkf
+            {
+              _model: "com.axelor.studio.db.WkfModel",
+              ...newWkf,
+              isMigrateOld,
+              wkfMigrationMap,
+            },
+            newWkf
         );
       } else {
         handleSnackbarClick("success", "Started Successfully");
@@ -1096,8 +1128,8 @@ function BpmnModelerComponent() {
       }
     } else {
       handleSnackbarClick(
-        "danger",
-        actionStart?.data?.message || actionStart?.data?.title || "Error"
+          "danger",
+          actionStart?.data?.message || actionStart?.data?.title || "Error"
       );
     }
   };
@@ -1150,16 +1182,16 @@ function BpmnModelerComponent() {
         wkfMigrationMap,
       };
       if (
-        (newWkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
-        newWkf?.oldNodes
+          (newWkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
+          newWkf?.oldNodes
       ) {
         context.isMigrateOld = isMigrateOld;
       }
       return { context, res };
     } else {
       handleSnackbarClick(
-        "danger",
-        res?.data?.message || res?.data?.title || "Error"
+          "danger",
+          res?.data?.message || res?.data?.title || "Error"
       );
     }
   };
@@ -1167,7 +1199,7 @@ function BpmnModelerComponent() {
   const deploy = async (wkfMigrationMap, isMigrateOld, newWkf = wkf) => {
     try {
       const { context, res } =
-        (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
+      (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
       if (newWkf?.newVersionOnDeploy && newWkf?.statusSelect === 2) {
         let newVersionWkf = await addNewVersion(newWkf);
         if (newVersionWkf && newVersionWkf.statusSelect === 1) {
@@ -1196,10 +1228,10 @@ function BpmnModelerComponent() {
     setDelopyDialog(false);
     if (wkf && wkf.statusSelect === 1) {
       const rootElements =
-        bpmnModeler._definitions && bpmnModeler._definitions.rootElements;
+          bpmnModeler._definitions && bpmnModeler._definitions.rootElements;
       const processes =
-        rootElements &&
-        rootElements.filter((ele) => ele.$type === "bpmn:Process");
+          rootElements &&
+          rootElements.filter((ele) => ele.$type === "bpmn:Process");
       const processIds = processes.map((process) => process.id);
       if (processIds && processIds.length > 0) {
         const isValidId = await getBPMNModels({
@@ -1216,17 +1248,17 @@ function BpmnModelerComponent() {
         });
         const wkfProcess = isValidId && isValidId[0];
         const processNames =
-          (wkf &&
-            wkf.wkfProcessList &&
-            wkf.wkfProcessList.map((f) => f.name)) ||
-          [];
+            (wkf &&
+                wkf.wkfProcessList &&
+                wkf.wkfProcessList.map((f) => f.name)) ||
+            [];
         if (
-          wkfProcess &&
-          !wkf.previousVersion &&
-          !(
-            processNames &&
-            processNames.some((item) => processIds && processIds.includes(item))
-          )
+            wkfProcess &&
+            !wkf.previousVersion &&
+            !(
+                processNames &&
+                processNames.some((item) => processIds && processIds.includes(item))
+            )
         ) {
           handleSnackbarClick("danger", "Please provide unique process id");
           return;
@@ -1269,34 +1301,34 @@ function BpmnModelerComponent() {
     let colors = {};
     colors.stroke = color;
     if (
-      !["bpmn:SequenceFlow", "bpmn:MessageFlow", "bpmn:Association"].includes(
-        selectedElement && selectedElement.type
-      )
+        !["bpmn:SequenceFlow", "bpmn:MessageFlow", "bpmn:Association"].includes(
+            selectedElement && selectedElement.type
+        )
     ) {
       colors.fill = ["bpmn:Process", "bpmn:Participant", "bpmn:Group"].includes(
-        selectedElement && selectedElement.type
+          selectedElement && selectedElement.type
       )
-        ? "white"
-        : lightenColor(color, 0.85);
+          ? "white"
+          : lightenColor(color, 0.85);
     }
     modeling.setColor(selectedElement, colors);
   };
 
   const onDelete = () => {
     alertOpen(
-      {
-        onOk: async () => {
-          const res = await removeWkf(id);
-          if (typeof res !== "string") {
-            handleSnackbarClick("success", "Deleted Successfully");
-            onNew(true);
-          } else {
-            handleSnackbarClick("danger", res);
-          }
+        {
+          onOk: async () => {
+            const res = await removeWkf(id);
+            if (typeof res !== "string") {
+              handleSnackbarClick("success", "Deleted Successfully");
+              onNew(true);
+            } else {
+              handleSnackbarClick("danger", res);
+            }
+          },
         },
-      },
-      `Are you sure you want to delete this record?`,
-      "Question"
+        `Are you sure you want to delete this record?`,
+        "Question"
     );
   };
 
@@ -1305,15 +1337,15 @@ function BpmnModelerComponent() {
     let attrs = definitions && definitions.$attrs;
     if (attrs) {
       const newValue =
-        !["null", ""].includes(attrs[`camunda:${name}`]) &&
-        isInitial &&
-        !["null", "", null, undefined].includes(value)
-          ? value
-          : attrs[`camunda:${name}`]
-          ? attrs[`camunda:${name}`]
-          : !["null", "", null, undefined].includes(value)
-          ? value
-          : undefined;
+          !["null", ""].includes(attrs[`camunda:${name}`]) &&
+          isInitial &&
+          !["null", "", null, undefined].includes(value)
+              ? value
+              : attrs[`camunda:${name}`]
+                  ? attrs[`camunda:${name}`]
+                  : !["null", "", null, undefined].includes(value)
+                      ? value
+                      : undefined;
       attrs[`camunda:${name}`] = newValue;
       if (!newValue && name !== "newVersionOnDeploy") {
         delete attrs[`camunda:${name}`];
@@ -1347,10 +1379,10 @@ function BpmnModelerComponent() {
     }
     if (resetElement) {
       updateTabs(
-        {
-          element: definitions,
-        },
-        false
+          {
+            element: definitions,
+          },
+          false
       );
     }
   };
@@ -1402,9 +1434,9 @@ function BpmnModelerComponent() {
       key: "deploy",
       iconOnly: true,
       description:
-        wkf && wkf.statusSelect === 1
-          ? translate("Start")
-          : translate("Deploy"),
+          wkf && wkf.statusSelect === 1
+              ? translate("Start")
+              : translate("Deploy"),
       iconProps: {
         icon: "rocket",
       },
@@ -1454,10 +1486,10 @@ function BpmnModelerComponent() {
     const bpmnFactory = bpmnModeler.get("bpmnFactory");
 
     let parent = elementHelper.createElement(
-      "bpmn:ExtensionElements",
-      { values: [] },
-      bo,
-      bpmnFactory
+        "bpmn:ExtensionElements",
+        { values: [] },
+        bo,
+        bpmnFactory
     );
     let cmd = cmdHelper.updateBusinessObject(element, bo, {
       extensionElements: parent,
@@ -1470,11 +1502,11 @@ function BpmnModelerComponent() {
 
   function getPropertiesElementInsideExtensionElements(extensionElements) {
     return find(
-      extensionElements.$parent.extensionElements &&
+        extensionElements.$parent.extensionElements &&
         extensionElements.$parent.extensionElements.values,
-      function (elem) {
-        return is(elem, "camunda:Properties");
-      }
+        function (elem) {
+          return is(elem, "camunda:Properties");
+        }
     );
   }
 
@@ -1491,16 +1523,16 @@ function BpmnModelerComponent() {
     const bo = getBusinessObject(selectedElement);
     let result = createParent(selectedElement, bo);
     let camundaProperties = elementHelper.createElement(
-      "camunda:Properties",
-      {},
-      result && result.parent,
-      bpmnFactory
+        "camunda:Properties",
+        {},
+        result && result.parent,
+        bpmnFactory
     );
     selectedElement.businessObject.extensionElements &&
-      selectedElement.businessObject.extensionElements.values &&
-      selectedElement.businessObject.extensionElements.values.push(
+    selectedElement.businessObject.extensionElements.values &&
+    selectedElement.businessObject.extensionElements.values.push(
         camundaProperties
-      );
+    );
   };
 
   const addProperty = (name, value) => {
@@ -1514,10 +1546,10 @@ function BpmnModelerComponent() {
     let properties = getPropertiesElement(parent);
     if (!properties) {
       properties = elementHelper.createElement(
-        "camunda:Properties",
-        {},
-        parent,
-        bpmnFactory
+          "camunda:Properties",
+          {},
+          parent,
+          bpmnFactory
       );
     }
 
@@ -1527,35 +1559,35 @@ function BpmnModelerComponent() {
     };
 
     let property = elementHelper.createElement(
-      "camunda:Property",
-      propertyProps,
-      properties,
-      bpmnFactory
+        "camunda:Property",
+        propertyProps,
+        properties,
+        bpmnFactory
     );
 
     let camundaProps = bpmnFactory.create("camunda:Properties");
     camundaProps.get("values").push(property);
     if (!businessObject.extensionElements) {
       businessObject.extensionElements = bpmnFactory.create(
-        "bpmn:ExtensionElements"
+          "bpmn:ExtensionElements"
       );
       businessObject.extensionElements.get("values").push(camundaProps);
     } else {
       let camundaProperties = extensionElementsHelper.getExtensionElements(
-        bo,
-        "camunda:Properties"
+          bo,
+          "camunda:Properties"
       );
       if (
-        camundaProperties &&
-        camundaProperties[0] &&
-        camundaProperties[0].values
+          camundaProperties &&
+          camundaProperties[0] &&
+          camundaProperties[0].values
       ) {
         camundaProperties[0].values.push(property);
       } else {
         createCamundaProperty();
         let camundaProperties = extensionElementsHelper.getExtensionElements(
-          bo,
-          "camunda:Properties"
+            bo,
+            "camunda:Properties"
         );
         camundaProperties[0].values = [property];
       }
@@ -1580,20 +1612,20 @@ function BpmnModelerComponent() {
       }
     }
     let camundaProperties = elementHelper.createElement(
-      "camunda:In",
-      {
-        source: processId,
-        target: processId,
-      },
-      result && result.parent,
-      bpmnFactory
+        "camunda:In",
+        {
+          source: processId,
+          target: processId,
+        },
+        result && result.parent,
+        bpmnFactory
     );
     if (!extensionElements) {
       extensionElements = elementHelper.createElement(
-        "bpmn:ExtensionElements",
-        { values: [camundaProperties] },
-        bo,
-        bpmnFactory
+          "bpmn:ExtensionElements",
+          { values: [camundaProperties] },
+          bo,
+          bpmnFactory
       );
       bo.extensionElements = extensionElements;
     }
@@ -1604,95 +1636,95 @@ function BpmnModelerComponent() {
     const { values = [] } = row;
     if (values && values.length > 0) {
       values &&
-        values.forEach((value) => {
-          const {
-            model,
-            modelLabel,
-            view,
-            viewLabel,
-            relatedField,
-            relatedFieldLabel,
-            roles = [],
-            items = [],
-          } = value;
-          if (model) {
-            addProperty(
+      values.forEach((value) => {
+        const {
+          model,
+          modelLabel,
+          view,
+          viewLabel,
+          relatedField,
+          relatedFieldLabel,
+          roles = [],
+          items = [],
+        } = value;
+        if (model) {
+          addProperty(
               "model",
               model.type === "metaJsonModel"
-                ? "com.axelor.meta.db.MetaJsonRecord"
-                : model.fullName || model.model
-            );
-            addProperty("modelName", model.name);
-            addProperty("modelLabel", modelLabel);
-            addProperty("modelType", model.type);
-          }
-          if (view) {
-            addProperty("view", view.name);
-            addProperty("viewLabel", viewLabel);
-          }
-          if (relatedField) {
-            addProperty("relatedField", relatedField.name);
-            addProperty("relatedFieldLabel", relatedFieldLabel);
-          }
-          if (roles?.length > 0) {
-            const roleNames = roles.map((role) => role.name);
-            addProperty("roles", roleNames.toString());
-          }
-          if (items.length > 0) {
-            items.forEach((item) => {
-              const {
-                itemName,
-                itemNameLabel,
-                attributeName,
-                attributeValue,
-                permanent,
-              } = item;
-              if (!itemName?.name && !itemName?.title) return;
-              if (
+                  ? "com.axelor.meta.db.MetaJsonRecord"
+                  : model.fullName || model.model
+          );
+          addProperty("modelName", model.name);
+          addProperty("modelLabel", modelLabel);
+          addProperty("modelType", model.type);
+        }
+        if (view) {
+          addProperty("view", view.name);
+          addProperty("viewLabel", viewLabel);
+        }
+        if (relatedField) {
+          addProperty("relatedField", relatedField.name);
+          addProperty("relatedFieldLabel", relatedFieldLabel);
+        }
+        if (roles?.length > 0) {
+          const roleNames = roles.map((role) => role.name);
+          addProperty("roles", roleNames.toString());
+        }
+        if (items.length > 0) {
+          items.forEach((item) => {
+            const {
+              itemName,
+              itemNameLabel,
+              attributeName,
+              attributeValue,
+              permanent,
+            } = item;
+            if (!itemName?.name && !itemName?.title) return;
+            if (
                 itemName?.type ||
                 itemName?.typeName ||
                 itemName?.relationship
-              ) {
-                addProperty(
+            ) {
+              addProperty(
                   "itemType",
                   itemName.type || itemName?.typeName || itemName.relationship
-                );
-              }
-              if (itemNameLabel) {
-                addProperty("itemLabel", itemNameLabel);
-              }
-              addProperty("permanent", permanent || false);
-              addProperty("item", itemName?.name);
-              if (attributeName && attributeName !== "" && attributeValue) {
-                addProperty(attributeName, attributeValue);
-              }
-            });
-          }
-        });
+              );
+            }
+            if (itemNameLabel) {
+              addProperty("itemLabel", itemNameLabel);
+            }
+            addProperty("permanent", permanent || false);
+            addProperty("item", itemName?.name);
+            if (attributeName && attributeName !== "" && attributeValue) {
+              addProperty(attributeName, attributeValue);
+            }
+          });
+        }
+      });
     }
   };
 
   const updateTabs = React.useCallback(
-    (event, isAllowComments = true) => {
-      let { element } = event;
-      if (element && element.type === "label") {
-        const elementRegistry = bpmnModeler.get("elementRegistry");
-        const newElement = elementRegistry.get(
-          element.businessObject && element.businessObject.id
-        );
-        element = newElement;
-      }
-      let tabs = getTabs(bpmnModeler, element, setDummyProperty);
-      setTabValue(0);
-      setTabs(tabs);
-      setSelectedElement(element);
-      if (isAllowComments) {
-        const commentsLength = getCommentsLength(element);
-        setComments(commentsLength);
-        checkMenuActionTab(element);
-      }
-    },
-    [checkMenuActionTab]
+      (event, isAllowComments = true) => {
+        let { element } = event;
+        if (element && element.type === "label") {
+          const elementRegistry = bpmnModeler.get("elementRegistry");
+          const newElement = elementRegistry.get(
+              element.businessObject && element.businessObject.id
+          );
+          element = newElement;
+        }
+        let tabs = getTabs(bpmnModeler, element, setDummyProperty);
+        setTabValue(0);
+        setTabs(tabs);
+        setSelectedElement(element);
+        if (isAllowComments) {
+          const commentsLength = getCommentsLength(element);
+          setComments(commentsLength);
+          checkMenuActionTab(element);
+        }
+      },
+      [checkMenuActionTab]
   );
 
   const alertUser = (event) => {
@@ -1781,13 +1813,13 @@ function BpmnModelerComponent() {
       addCallActivityExtensionElement(shape);
     });
     bpmnModeler
-      .get("eventBus")
-      .on("commandStack.shape.replace.postExecuted", (event) => {
-        setColors(event && event.context && event.context.newShape, true);
-        updateTabs({
-          element: event && event.context && event.context.newShape,
+        .get("eventBus")
+        .on("commandStack.shape.replace.postExecuted", (event) => {
+          setColors(event && event.context && event.context.newShape, true);
+          updateTabs({
+            element: event && event.context && event.context.newShape,
+          });
         });
-      });
     bpmnModeler.on("element.click", (event) => {
       updateTabs(event);
     });
@@ -1795,7 +1827,7 @@ function BpmnModelerComponent() {
       const elementRegistry = bpmnModeler.get("elementRegistry");
       const definitions = bpmnModeler.getDefinitions();
       const element =
-        definitions && definitions.rootElements && definitions.rootElements[0];
+          definitions && definitions.rootElements && definitions.rootElements[0];
       if (!element) return;
       const rootElement = elementRegistry.get(element.id);
       if (!rootElement) return;
@@ -1814,7 +1846,7 @@ function BpmnModelerComponent() {
       });
       if (!app) return;
       const appConfig = await getAppStudioConfig(
-        app.appStudio && app.appStudio.id
+          app.appStudio && app.appStudio.id
       );
       setEnableStudioApp(appConfig && appConfig.enableStudioApp);
     }
@@ -1824,150 +1856,150 @@ function BpmnModelerComponent() {
   useKeyPress(["s"], onSave);
 
   return (
-    <React.Fragment>
-      <Box id="container">
-        <React.Suspense fallback={<></>}>
-          {!isTimerTask && <TimerEvents />}
-        </React.Suspense>
-        <Box id="bpmncontainer" color="body">
-          <div id="propview"></div>
-          <div id="bpmnview">
-            <Box
-              d="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              flexWrap="wrap"
-              rounded
-              border
-              gap="4"
-              style={{
-                padding: "6px 20px 8px 20px",
-                backgroundColor: "var(--bs-tertiary-bg)",
-              }}
-            >
-              <CommandBar items={leftToolbar} className={classes.commandBar} />
-              <Box flex="1">
-                <Select
-                  className={classes.select}
-                  disableClearable={true}
-                  update={(value, label, oldValue) => {
-                    /**Removing wkf model to avoid flickering of updated value await */
-                    setWkf("");
-                    updateWkfModel(value, oldValue);
+      <React.Fragment>
+        <Box id="container">
+          <React.Suspense fallback={<></>}>
+            {!isTimerTask && <TimerEvents />}
+          </React.Suspense>
+          <Box id="bpmncontainer" color="body">
+            <div id="propview"></div>
+            <div id="bpmnview">
+              <Box
+                  d="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  flexWrap="wrap"
+                  rounded
+                  border
+                  gap="4"
+                  style={{
+                    padding: "6px 20px 8px 20px",
+                    backgroundColor: "var(--bs-tertiary-bg)",
                   }}
-                  name="wkf"
-                  value={wkf}
-                  optionLabel="name"
-                  optionLabelSecondary="description"
-                  isLabel={false}
-                  fetchMethod={(criteria) => getModels(criteria)}
-                  disableUnderline={false}
-                  isOptionEllipsis={true}
-                  placeholder={translate("BPM model")}
+              >
+                <CommandBar items={leftToolbar} className={classes.commandBar} />
+                <Box flex="1">
+                  <Select
+                      className={classes.select}
+                      disableClearable={true}
+                      update={(value, label, oldValue) => {
+                        /**Removing wkf model to avoid flickering of updated value await */
+                        setWkf("");
+                        updateWkfModel(value, oldValue);
+                      }}
+                      name="wkf"
+                      value={wkf}
+                      optionLabel="name"
+                      optionLabelSecondary="description"
+                      isLabel={false}
+                      fetchMethod={(criteria) => getModels(criteria)}
+                      disableUnderline={false}
+                      isOptionEllipsis={true}
+                      placeholder={translate("BPM model")}
+                  />
+                </Box>
+                <CommandBar items={rightToolbar} className={classes.commandBar} />
+                <input
+                    id="inputFile"
+                    type="file"
+                    name="file"
+                    onChange={uploadFile}
+                    style={{ display: "none" }}
                 />
               </Box>
-              <CommandBar items={rightToolbar} className={classes.commandBar} />
-              <input
-                id="inputFile"
-                type="file"
-                name="file"
-                onChange={uploadFile}
-                style={{ display: "none" }}
-              />
-            </Box>
-          </div>
-        </Box>
-        <div>
-          <Resizable
-            style={resizeStyle}
-            size={{ width, height }}
-            onResizeStop={(e, direction, ref, d) => {
-              setWidth((width) => width + d.width);
-              setHeight(height + d.height);
-            }}
-            minWidth={width === 0 ? width : drawerWidth}
-            maxWidth={window.innerWidth - 150}
-          >
-            <Scrollable className={classes.drawerPaper}>
-              <Box className={classes.drawerContainer}>
-                <DrawerContent
-                  tabs={tabs}
-                  tabValue={tabValue}
-                  handleChange={handleChange}
-                  isMenuActionDisable={isMenuActionDisable}
-                  comments={comments}
-                  selectedElement={selectedElement}
-                  id={id}
-                  handleAdd={handleAdd}
-                  wkf={wkf}
-                  reloadView={reloadView}
-                  onSave={onSave}
-                  openSnackbar={openSnackbar}
-                  handleMenuActionTab={handleMenuActionTab}
-                  updateCommentsCount={updateCommentsCount}
-                  handleSnackbarClick={handleSnackbarClick}
-                  enableStudioApp={enableStudioApp}
-                  addNewVersion={addNewVersion}
-                  changeColor={changeColor}
-                  bpmnModeler={bpmnModeler}
-                  showError={showError}
-                  setDummyProperty={setDummyProperty}
-                />
-              </Box>
-            </Scrollable>
-            <Box
-              className="bpmn-property-toggle"
-              color="body"
-              pos="absolute"
-              bg="body-tertiary"
-              userSelect="none"
-              roundedTop
-              fontSize={6}
-              onClick={() => {
-                setWidth((width) => (width === 0 ? 380 : 0));
-              }}
+            </div>
+          </Box>
+          <div>
+            <Resizable
+                style={resizeStyle}
+                size={{ width, height }}
+                onResizeStop={(e, direction, ref, d) => {
+                  setWidth((width) => width + d.width);
+                  setHeight(height + d.height);
+                }}
+                minWidth={width === 0 ? width : drawerWidth}
+                maxWidth={window.innerWidth - 150}
             >
-              {translate("Properties")}
-            </Box>
-          </Resizable>
-          <div
-            className="properties-panel-parent"
-            id="js-properties-panel"
-          ></div>
-        </div>
-        {openSnackbar.open && (
-          <Alert
-            open={openSnackbar.open}
-            message={openSnackbar.message}
-            messageType={openSnackbar.messageType}
-            onClose={handleSnackbarClose}
-          />
-        )}
-        {openAlert?.open && (
-          <AlertDialog
-            openAlert={openAlert?.open}
-            alertClose={() => handleAlertAction("cancel")}
-            handleAlertOk={() => handleAlertAction("ok")}
-            message={openAlert?.alertMessage}
-            title={openAlert?.title}
-          />
-        )}
-        {openDelopyDialog && (
-          <DeployDialog
-            open={openDelopyDialog}
-            onClose={() => setDelopyDialog(false)}
-            ids={ids}
-            getNewVersionInfo={getNewVersionInfo}
-            onOk={(wkfMigrationMap, isMigrateOld) =>
-              handleOk(wkfMigrationMap, isMigrateOld)
-            }
-            element={selectedElement}
-            wkf={wkf}
-          />
-        )}
-      </Box>
-      <Logo />
-    </React.Fragment>
+              <Scrollable className={classes.drawerPaper}>
+                <Box className={classes.drawerContainer}>
+                  <DrawerContent
+                      tabs={tabs}
+                      tabValue={tabValue}
+                      handleChange={handleChange}
+                      isMenuActionDisable={isMenuActionDisable}
+                      comments={comments}
+                      selectedElement={selectedElement}
+                      id={id}
+                      handleAdd={handleAdd}
+                      wkf={wkf}
+                      reloadView={reloadView}
+                      onSave={onSave}
+                      openSnackbar={openSnackbar}
+                      handleMenuActionTab={handleMenuActionTab}
+                      updateCommentsCount={updateCommentsCount}
+                      handleSnackbarClick={handleSnackbarClick}
+                      enableStudioApp={enableStudioApp}
+                      addNewVersion={addNewVersion}
+                      changeColor={changeColor}
+                      bpmnModeler={bpmnModeler}
+                      showError={showError}
+                      setDummyProperty={setDummyProperty}
+                  />
+                </Box>
+              </Scrollable>
+              <Box
+                  className="bpmn-property-toggle"
+                  color="body"
+                  pos="absolute"
+                  bg="body-tertiary"
+                  userSelect="none"
+                  roundedTop
+                  fontSize={6}
+                  onClick={() => {
+                    setWidth((width) => (width === 0 ? 380 : 0));
+                  }}
+              >
+                {translate("Properties")}
+              </Box>
+            </Resizable>
+            <div
+                className="properties-panel-parent"
+                id="js-properties-panel"
+            ></div>
+          </div>
+          {openSnackbar.open && (
+              <Alert
+                  open={openSnackbar.open}
+                  message={openSnackbar.message}
+                  messageType={openSnackbar.messageType}
+                  onClose={handleSnackbarClose}
+              />
+          )}
+          {openAlert?.open && (
+              <AlertDialog
+                  openAlert={openAlert?.open}
+                  alertClose={() => handleAlertAction("cancel")}
+                  handleAlertOk={() => handleAlertAction("ok")}
+                  message={openAlert?.alertMessage}
+                  title={openAlert?.title}
+              />
+          )}
+          {openDelopyDialog && (
+              <DeployDialog
+                  open={openDelopyDialog}
+                  onClose={() => setDelopyDialog(false)}
+                  ids={ids}
+                  getNewVersionInfo={getNewVersionInfo}
+                  onOk={(wkfMigrationMap, isMigrateOld) =>
+                      handleOk(wkfMigrationMap, isMigrateOld)
+                  }
+                  element={selectedElement}
+                  wkf={wkf}
+              />
+          )}
+        </Box>
+        <Logo />
+      </React.Fragment>
   );
 }
 
