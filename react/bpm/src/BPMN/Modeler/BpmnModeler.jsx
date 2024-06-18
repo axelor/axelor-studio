@@ -378,7 +378,7 @@ function BpmnModelerComponent() {
             await new Promise((resolve) => setTimeout(resolve, 0));
           }
         }
-        
+
         processColors(nodes, modeling);
 
         try {
@@ -1811,7 +1811,18 @@ function BpmnModelerComponent() {
         });
       });
     bpmnModeler.on("element.click", (event) => {
-      updateTabs(event);
+      if (
+        ["bpmn:Collaboration", "bpmn:Process", "bpmn:SubProcess"].includes(
+          event.element.type
+        )
+      ) {
+        updateTabs(event);
+      }
+    });
+    bpmnModeler.get("eventBus").on("selection.changed", function (event) {
+      if (event.newSelection.length > 0) {
+        updateTabs({ element: event.newSelection[0] });
+      }
     });
     bpmnModeler.on("element.dblclick", (event) => {
       const { element } = event;
