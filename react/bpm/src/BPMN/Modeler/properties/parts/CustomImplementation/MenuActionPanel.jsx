@@ -49,6 +49,7 @@ import ScriptDialog from "./ScriptDialog";
 import styles from "./MenuActionPanel.module.css";
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
+import { fetchModels } from "../../../../../services/api";
 
 const PRIORITIES = [
   { value: "low", id: "low", title: "Low" },
@@ -551,10 +552,36 @@ export default function MenuActionPanel({
       duration: durationDummy,
       description: descriptionDummy,
     };
+    const extractTypes = {
+      roleFieldPath: "roleType",
+      taskName: "taskNameType",
+      taskPriority: "priorityType",
+      description: "descriptionType",
+      userFieldPath: "userFieldType",
+      teamFieldPath: "teamFieldType",
+      deadlineFieldPath: "deadlineType",
+    };
+    const propertiesType = {
+      roleFieldPath: selectedTaskOption.roleType,
+      taskName: selectedTaskOption.taskNameType,
+      taskPriority: selectedTaskOption.priorityType,
+      description: selectedTaskOption.descriptionType,
+      userFieldPath: selectedFieldOption.userFieldType,
+      teamFieldPath: selectedFieldOption.teamFieldType,
+      deadlineFieldPath: selectedFieldOption.deadlineType,
+    };
 
     // Retrieve the relevant dummy object based on fieldType
     const { [fieldType]: fieldPathDummy } = extractDummyField;
     if (!fieldPathDummy) return;
+
+    if (fieldPathDummy[fieldType] === "") {
+      //remove the property
+      setProperty(extractTypes[fieldType], undefined);
+    } else {
+      // set the property
+      setProperty(extractTypes[fieldType], propertiesType[fieldType]);
+    }
 
     // Extract field path and field path value from the dummy object
     const {
@@ -675,7 +702,23 @@ export default function MenuActionPanel({
   const setter = (val, dummyState, fieldPathState, fieldPath) => {
     const { expression, value, combinator, checked } = val;
     const pathValue = `${fieldPath}Value`;
-
+    const extractTypes = {
+      roleFieldPath: "roleType",
+      userFieldPath: "userFieldType",
+      teamFieldPath: "teamFieldType",
+      deadlineFieldPath: "deadlineType",
+    };
+    const propertiesType = {
+      roleFieldPath: selectedTaskOption.roleType,
+      userFieldPath: selectedFieldOption.userFieldType,
+      teamFieldPath: selectedFieldOption.teamFieldType,
+      deadlineFieldPath: selectedFieldOption.deadlineType,
+    };
+    if (value) {
+      setProperty(extractTypes[fieldPath], propertiesType[fieldPath]);
+    } else {
+      setProperty(extractTypes[fieldPath], undefined);
+    }
     dummyState({
       [fieldPath]: expression,
       [pathValue]: JSON.stringify({
@@ -686,6 +729,7 @@ export default function MenuActionPanel({
     });
     fieldPathState(expression);
     setProperty(fieldPath, expression);
+    setProperty();
     setProperty(
       pathValue,
       JSON.stringify({
@@ -844,7 +888,7 @@ export default function MenuActionPanel({
 
     taskTypes.forEach((field) => {
       if (!hasProperty(field)) {
-        setProperty(field, selectedTaskOption[field].toLowerCase());
+        // setProperty(field, selectedTaskOption[field]?.toLowerCase());
       } else {
         const selectedOptionValue = formattedValue(getProperty(field));
         setSelectedTaskOption((prevState) => ({
@@ -936,6 +980,13 @@ export default function MenuActionPanel({
     }
   }, [getProperty]);
 
+  useEffect(() => {
+    if (isTeamField) {
+      setProperty("userFieldType", undefined);
+    } else {
+      setProperty("teamFieldType", undefined);
+    }
+  }, [isTeamField]);
   return (
     <div className={styles.main}>
       <div className={styles.container}>
@@ -961,7 +1012,7 @@ export default function MenuActionPanel({
                   ...selectedTaskOption,
                 }));
                 Object.keys(selectedTaskOption).forEach((key) =>
-                  setProperty(key, selectedTaskOption[key].toLowerCase())
+                  setProperty(key, selectedTaskOption[key]?.toLowerCase())
                 );
               }
               if (!createUserAction) {
@@ -1046,8 +1097,6 @@ export default function MenuActionPanel({
                                   ...prevState,
                                   roleType: value?.title,
                                 }));
-
-                                setProperty("roleType", value?.value);
                                 const roleTypes = ["Value", "Field", "Script"];
                                 if (
                                   roleTypes.includes(
@@ -1057,6 +1106,7 @@ export default function MenuActionPanel({
                                 ) {
                                   handleChange("taskRole", null);
                                   setProperty("taskRole", undefined);
+                                  setProperty("roleType", undefined);
                                   clearValues(
                                     "roleFieldPath",
                                     setRoleFieldPath,
@@ -1075,6 +1125,10 @@ export default function MenuActionPanel({
                                 type="text"
                                 update={(value, label) => {
                                   setProperty("taskRole", value?.name);
+                                  setProperty(
+                                    "roleType",
+                                    value?.name && selectedTaskOption?.roleType
+                                  );
                                   handleChange("taskRole", value?.name);
                                   updateMenuValue(
                                     "taskRole",
@@ -1113,6 +1167,12 @@ export default function MenuActionPanel({
                                     setProperty(
                                       "roleFieldPath",
                                       value.roleFieldPath
+                                    );
+                                    setProperty(
+                                      "roleType",
+                                      value.roleFieldPath !== ""
+                                        ? selectedTaskOption.roleType
+                                        : undefined
                                     );
                                   },
                                   validate: function (e, values) {
@@ -1205,7 +1265,6 @@ export default function MenuActionPanel({
                                   ...prevState,
                                   taskNameType: value?.title,
                                 }));
-                                setProperty("taskNameType", value?.value);
                                 const taskNameTypes = ["Value", "Script"];
                                 if (
                                   taskNameTypes.includes(
@@ -1217,6 +1276,7 @@ export default function MenuActionPanel({
                                 ) {
                                   handleChange("taskName", null);
                                   setProperty("taskName", undefined);
+                                  setProperty("taskNameType", undefined);
                                   setActionTitleDummy({
                                     taskName: null,
                                   });
@@ -1244,6 +1304,12 @@ export default function MenuActionPanel({
                                 set: function (e, value) {
                                   handleChange("taskName", value.taskName);
                                   setProperty("taskName", value.taskName);
+                                  setProperty(
+                                    "taskNameType",
+                                    value?.taskName !== ""
+                                      ? selectedTaskOption?.taskNameType
+                                      : undefined
+                                  );
                                   setActionTitleDummy({
                                     taskName: value.taskName,
                                   });
@@ -1300,7 +1366,6 @@ export default function MenuActionPanel({
                                   ...prevState,
                                   priorityType: value?.title,
                                 }));
-                                setProperty("priorityType", value?.value);
                                 const priorityTypes = [
                                   "Value",
                                   "Field",
@@ -1316,6 +1381,7 @@ export default function MenuActionPanel({
                                 ) {
                                   handleChange("taskPriority", null);
                                   setProperty("taskPriority", undefined);
+                                  setProperty("priorityType", undefined);
                                   setPriorityDummy({
                                     taskPriority: null,
                                   });
@@ -1340,6 +1406,11 @@ export default function MenuActionPanel({
                                         value?.title
                                       );
                                       setProperty("taskPriority", value?.value);
+                                      setProperty(
+                                        "priorityType",
+                                        value?.value &&
+                                          selectedTaskOption?.priorityType
+                                      );
                                     }}
                                     isLabel={false}
                                   />
@@ -1370,6 +1441,12 @@ export default function MenuActionPanel({
                                       "taskPriority",
                                       value.taskPriority
                                     );
+                                    setProperty(
+                                      "priorityType",
+                                      value.taskPriority !== ""
+                                        ? selectedTaskOption?.priorityType
+                                        : undefined
+                                    );
                                     setPriorityDummy({
                                       taskPriority: value.taskPriority,
                                     });
@@ -1390,6 +1467,7 @@ export default function MenuActionPanel({
                                       scriptEditor: true,
                                       fieldEditor: false,
                                     });
+
                                     setPriorityDummy({
                                       taskPriority: getScript("taskPriority"),
                                     });
@@ -1417,7 +1495,6 @@ export default function MenuActionPanel({
                                   ...prevState,
                                   durationType: value?.title,
                                 }));
-                                setProperty("durationType", value?.value);
                               }}
                               disableClearable="false"
                               isLabel={false}
@@ -1439,6 +1516,12 @@ export default function MenuActionPanel({
                                 set: function (e, value) {
                                   handleChange("duration", value.duration);
                                   setProperty("duration", value.duration);
+                                  setProperty(
+                                    "durationType",
+                                    value.duration !== ""
+                                      ? selectedTaskOption?.durationType
+                                      : undefined
+                                  );
                                   setDurationDummy({
                                     duration: value.duration,
                                   });
@@ -1466,7 +1549,6 @@ export default function MenuActionPanel({
                                   ...prevState,
                                   descriptionType: value?.title,
                                 }));
-                                setProperty("descriptionType", value?.value);
                                 const descriptionTypes = [
                                   "Value",
                                   "Field",
@@ -1482,6 +1564,7 @@ export default function MenuActionPanel({
                                 ) {
                                   handleChange("description", null);
                                   setProperty("description", undefined);
+                                  setProperty("descriptionType", undefined);
                                   setDescriptionDummy({
                                     description: null,
                                   });
@@ -1511,6 +1594,12 @@ export default function MenuActionPanel({
                                     value.description
                                   );
                                   setProperty("description", value.description);
+                                  setProperty(
+                                    "descriptionType",
+                                    value?.description !== ""
+                                      ? selectedTaskOption?.descriptionType
+                                      : undefined
+                                  );
                                   setDescriptionDummy({
                                     description: value.description,
                                   });
@@ -1532,6 +1621,10 @@ export default function MenuActionPanel({
                                       scriptEditor: true,
                                       fieldEditor: false,
                                     });
+                                    setProperty(
+                                      "descriptionType",
+                                      selectedTaskOption?.descriptionType
+                                    );
                                     setDescriptionDummy({
                                       description: getScript("description"),
                                     });
@@ -1699,7 +1792,7 @@ export default function MenuActionPanel({
                                   ...prevState,
                                   userFieldType: value?.title,
                                 }));
-                                setProperty("userFieldType", value?.value);
+                                setProperty("userFieldType", undefined);
                                 const userFieldTypes = [
                                   "Value",
                                   "Field",
@@ -1753,6 +1846,11 @@ export default function MenuActionPanel({
                                   setProperty(
                                     "userFieldPath",
                                     value.userFieldPath
+                                  );
+                                  setProperty(
+                                    "userFieldType",
+                                    value?.userFieldPath !== "" &&
+                                      selectedFieldOption?.userFieldType
                                   );
                                 },
                                 validate: function (e, values) {
@@ -1842,6 +1940,7 @@ export default function MenuActionPanel({
                                           scriptEditor: true,
                                           fieldEditor: false,
                                         });
+
                                         setUserFieldPathDummy({
                                           userFieldPath:
                                             getScript("userFieldPath"),
@@ -1882,7 +1981,7 @@ export default function MenuActionPanel({
                                   ...prevState,
                                   teamFieldType: value?.title,
                                 }));
-                                setProperty("teamFieldType", value?.value);
+                                setProperty("teamFieldType", undefined);
                                 const teamFieldTypes = [
                                   "Value",
                                   "Field",
@@ -1935,6 +2034,11 @@ export default function MenuActionPanel({
                                   setProperty(
                                     "teamFieldPath",
                                     value.teamFieldPath
+                                  );
+                                  setProperty(
+                                    "teamFieldType",
+                                    value?.teamFieldPath !== "" &&
+                                      selectedFieldOption?.teamFieldType
                                   );
                                 },
                                 validate: function (e, values) {
@@ -2022,6 +2126,7 @@ export default function MenuActionPanel({
                                           scriptEditor: true,
                                           fieldEditor: false,
                                         });
+
                                         setTeamFieldDummy({
                                           teamFieldPath:
                                             getScript("teamFieldPath"),
@@ -2061,7 +2166,7 @@ export default function MenuActionPanel({
                               ...prevState,
                               deadlineType: value?.title,
                             }));
-                            setProperty("deadlineType", value?.value);
+                            setProperty("deadlineType", undefined);
                             const deadlineTypes = ["Value", "Field", "Script"];
                             if (
                               deadlineTypes.includes(
@@ -2111,6 +2216,12 @@ export default function MenuActionPanel({
                               setProperty(
                                 "deadlineFieldPath",
                                 value.deadlineFieldPath
+                              );
+
+                              setProperty(
+                                "deadlineType",
+                                value?.deadlineFieldPath !== "" &&
+                                  selectedFieldOption.deadlineType
                               );
                             },
                             validate: function (e, values) {
@@ -2165,6 +2276,7 @@ export default function MenuActionPanel({
                                     scriptEditor: true,
                                     fieldEditor: false,
                                   });
+
                                   setDeadlineFieldPathDummy({
                                     deadlineFieldPath:
                                       getScript("deadlineFieldPath"),
@@ -2578,13 +2690,18 @@ export default function MenuActionPanel({
                 return;
               }
               setOpenTeamPathDialog(false);
+              if (!teamField && !teamFieldDummy?.teamFieldPath) {
+                setProperty("teamFieldType", undefined);
+              }
               if (teamField) {
                 setTeamFieldPath(teamFieldDummy);
                 setProperty("teamFieldPath", teamFieldDummy);
+                setProperty("teamFieldType", selectedFieldOption.teamFieldType);
               }
               if (teamFieldDummy?.teamFieldPath) {
                 setTeamFieldPath(teamFieldDummy?.teamFieldPath);
                 setProperty("teamFieldPath", teamFieldDummy?.teamFieldPath);
+                setProperty("teamFieldType", selectedFieldOption.teamFieldType);
               }
             }}
             variant="primary"
@@ -2645,9 +2762,16 @@ export default function MenuActionPanel({
                 return;
               }
               setOpenDeadlinePathDialog(false);
+              if (
+                !deadlineField &&
+                !deadlineFieldPathDummy?.deadlineFieldPath
+              ) {
+                setProperty("deadlineType", undefined);
+              }
               if (deadlineField) {
                 setDeadlineFieldPath(deadlineFieldPathDummy);
                 setProperty("deadlineFieldPath", deadlineFieldPathDummy);
+                setProperty("deadlineType", selectedFieldOption.deadlineType);
               }
               if (deadlineFieldPathDummy?.deadlineFieldPath) {
                 setDeadlineFieldPath(deadlineFieldPathDummy?.deadlineFieldPath);
@@ -2655,6 +2779,7 @@ export default function MenuActionPanel({
                   "deadlineFieldPath",
                   deadlineFieldPathDummy?.deadlineFieldPath
                 );
+                setProperty("deadlineType", selectedFieldOption.deadlineType);
               }
             }}
             variant="primary"
@@ -2711,13 +2836,18 @@ export default function MenuActionPanel({
                 return;
               }
               setOpenUserPathDialog(false);
+              if (!field && !userFieldPathDummy?.userFieldPath) {
+                setProperty("userFieldType", undefined);
+              }
               if (field) {
                 setUserFieldPath(userFieldPathDummy);
                 setProperty("userFieldPath", userFieldPathDummy);
+                setProperty("userFieldType", selectedFieldOption.userFieldType);
               }
               if (userFieldPathDummy?.userFieldPath) {
                 setUserFieldPath(userFieldPathDummy?.userFieldPath);
                 setProperty("userFieldPath", userFieldPathDummy?.userFieldPath);
+                setProperty("userFieldType", selectedFieldOption.userFieldType);
               }
             }}
             variant="primary"
@@ -2768,13 +2898,18 @@ export default function MenuActionPanel({
                 return;
               }
               setOpenRoleDialog(false);
+              if (!role && !roleDummy) {
+                setProperty("roleType", undefined);
+              }
               if (role) {
                 setRoleFieldPath(roleDummy);
                 setProperty("roleFieldPath", roleDummy);
+                setProperty("roleType", selectedTaskOption?.roleType);
               }
               if (roleDummy?.roleFieldPath) {
                 setRoleFieldPath(roleDummy?.roleFieldPath);
                 setProperty("roleFieldPath", roleDummy?.roleFieldPath);
+                setProperty("roleType", selectedTaskOption?.roleType);
               }
             }}
             variant="primary"
