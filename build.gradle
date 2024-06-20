@@ -59,12 +59,12 @@ dependencies {
   if (findProject(":modules:axelor-message") != null) {
     api project(":modules:axelor-message")
   } else {
-    implementation "com.axelor.addons:axelor-message:3.0.1"
+    implementation "com.axelor.addons:axelor-message:3.1.0"
   }
   if (findProject(":modules:axelor-utils") != null) {
     api project(":modules:axelor-utils")
   } else {
-    implementation "com.axelor.addons:axelor-utils:3.0.0"
+    implementation "com.axelor.addons:axelor-utils:3.1.0"
   }
 
   implementation "org.camunda.bpm:camunda-engine:7.17.0"
