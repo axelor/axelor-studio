@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.variable.Variables;
@@ -169,10 +170,12 @@ public class WkfContextHelper {
   }
 
   public static Object createObject(Object object) throws JsonProcessingException {
-    if (object instanceof FullContext) {
-      return createSingleVariable((FullContext) object);
-    } else if (object instanceof Collection<?>) {
-      return createListVariable((Collection<?>) object);
+    if(object != null){
+      if (object instanceof FullContext) {
+        return createSingleVariable((FullContext) object);
+      } else if (object instanceof Collection<?>) {
+        return createListVariable((Collection<?>) object);
+      }
     }
     throw new IllegalArgumentException(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE));
   }
@@ -185,16 +188,20 @@ public class WkfContextHelper {
     return createVariablesObjectValue(map);
   }
 
-  private static Object createListVariable(Collection<?> collection)
-      throws JsonProcessingException {
+  private static Object createListVariable(Collection<?> collection){
     if (isListOfFullContext(collection)) {
       List<FullContext> contexts = (List<FullContext>) collection;
       String key = contexts.get(0).getContextClass().getName();
-      List<String> serializedModels = new ArrayList<>();
-      for (FullContext context : contexts) {
-        Model model = (Model) context.getTarget();
-        serializedModels.add(serializeModel(model));
-      }
+
+      List<String> serializedModels = contexts.stream()
+              .map(context -> {
+                try {
+                  return serializeModel((Model) context.getTarget());
+                } catch (JsonProcessingException e) {
+                  throw new IllegalArgumentException(e);
+                }
+              })
+              .collect(Collectors.toList());
       Map<String, List<String>> map = Collections.singletonMap(key, serializedModels);
       return createVariablesObjectValue(map);
     } else {
