@@ -1,3 +1,15 @@
+## 3.1.1 (2024-06-26)
+
+#### Change
+
+* Update dependencies to Axelor-message & Axelor-utils
+
+#### Fix
+
+* Fix unused exportation of files, when exporting an empty Studio App
+* Change AOP version to 7.1.0
+* Fix scrolling is blocked in mapper
+
 ## 3.1.0 (2024-05-30)
 
 #### Feature
