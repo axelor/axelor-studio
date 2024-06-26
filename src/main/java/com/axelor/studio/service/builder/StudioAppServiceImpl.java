@@ -369,7 +369,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         Files.delete(file.toPath());
       } else {
         try (Stream<String> stream = Files.lines(file.toPath())) {
-          if (stream.count() == 1 || ( Files.lines(file.toPath()).count() == 2 && Files.lines(file.toPath()).skip(1).findFirst().orElse(null).isEmpty())) {
+          if (stream.count() <= 2) {
             Files.delete(file.toPath());
           }
         }
