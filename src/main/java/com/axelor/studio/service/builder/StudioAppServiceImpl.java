@@ -368,7 +368,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         Files.delete(file.toPath());
       } else {
         try (Stream<String> stream = Files.lines(file.toPath())) {
-          if (stream.count() == 1) {
+          if (stream.count() <= 2) {
             Files.delete(file.toPath());
           }
         }
