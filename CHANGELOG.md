@@ -1,3 +1,10 @@
+## 3.0.2 (2024-06-26)
+
+#### Fix
+
+* Fix unused exportation of files, when exporting an empty Studio App
+* Fix scrolling is blocked in mapper
+
 ## 3.0.1 (2024-04-26)
 
 #### Fix
