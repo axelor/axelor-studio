@@ -25,8 +25,11 @@ export default function IdProps(
     setProperty: function (element, properties) {
       element = element.labelTarget || element;
       if (element.businessObject) {
-        element.businessObject.id = properties["id"];
-
+        const modeling = bpmnModeler.get('modeling');
+        modeling.updateProperties(element, {
+          id: properties["id"]
+        });
+      
         /**
          * Update callactivity extension elements on id updates
          */
