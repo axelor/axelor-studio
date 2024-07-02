@@ -140,19 +140,23 @@ function StringInput(_props) {
 		setOpenEditor(false)
 	}
 	const handleEditorSave = () => {
-		editorValue !== null &&
-			setPropertyList({
+		if (editorValue !== null) {
+			const payload = {
 				...(propertyList || {}),
 				...getProperty(
 					name,
-					editorValue,
+					editorValue?.trim(),
 					parentField,
 					propertyList[parentField],
 					modelType === rest.modelType ||
 						editWidgetType === "customField" ||
 						!(rest.modelType || modelType === MODEL_TYPE.BASE)
 				),
-			})
+			}
+			setPropertyList(payload)
+			onChange(payload, name)
+		}
+
 		setOpenEditor(false)
 	}
 	return (
