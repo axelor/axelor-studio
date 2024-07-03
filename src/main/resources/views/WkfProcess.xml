@@ -17,6 +17,7 @@
       <field name="name"/>
       <field name="processId" readonly="true"/>
       <field name="description"/>
+      <field name="startOnListener"/>
       <panel-related field="wkfProcessConfigList" colSpan="12" showTitle="false"/>
     </panel>
   </form>

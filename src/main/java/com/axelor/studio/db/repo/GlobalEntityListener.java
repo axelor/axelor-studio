@@ -3,6 +3,7 @@ package com.axelor.studio.db.repo;
 import com.axelor.db.Model;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
+import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
@@ -41,12 +42,14 @@ public class GlobalEntityListener {
 
   protected Map<String, Object> callWkfProcess(Set<Model> updated, Set<Model> deleted)
       throws ClassNotFoundException {
+
     Map<String, Object> result = new HashMap<>();
     result.put("updated", updated);
     result.put("deleted", deleted);
     RequestScoper scope = ServletScopes.scopeRequest(Collections.emptyMap());
     try (RequestScoper.CloseableScope ignored = scope.open()) {
-      Beans.get(WkfRequestListener.class).onBeforeTransactionComplete(updated, deleted);
+      Beans.get(WkfRequestListener.class)
+          .applyProcessChange(updated, deleted, WkfInstanceServiceImpl.EXECUTION_SOURCE_LISTENER);
     }
     return result;
   }

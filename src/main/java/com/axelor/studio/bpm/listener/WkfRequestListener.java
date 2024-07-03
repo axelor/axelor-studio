@@ -24,6 +24,7 @@ import com.axelor.event.Observes;
 import com.axelor.events.PostAction;
 import com.axelor.events.PostRequest;
 import com.axelor.events.RequestEvent;
+import com.axelor.events.internal.BeforeTransactionComplete;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
@@ -31,6 +32,7 @@ import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.google.inject.Inject;
@@ -63,7 +65,14 @@ public class WkfRequestListener {
     this.wkfDisplayService = wkfDisplayService;
   }
 
-  public void onBeforeTransactionComplete(Set<Model> updated, Set<Model> deleted)
+  public void onBeforeTransactionComplete(@Observes BeforeTransactionComplete event)
+      throws ClassNotFoundException {
+    applyProcessChange(
+        event.getUpdated(), event.getDeleted(), WkfInstanceServiceImpl.EXECUTION_SOURCE_OBSERVER);
+  }
+
+  public void applyProcessChange(
+      Set<? extends Model> updated, Set<? extends Model> deleted, int source)
       throws ClassNotFoundException {
 
     String tenantId = BpmTools.getCurentTenant();
@@ -71,11 +80,12 @@ public class WkfRequestListener {
       WkfCache.initWkfModelCache();
     }
 
-    processUpdated(updated, tenantId);
-    processDeleted(deleted, tenantId);
+    processUpdated(updated, tenantId, source);
+    processDeleted(deleted, tenantId, source);
   }
 
-  private void processUpdated(Set<Model> updated, String tenantId) throws ClassNotFoundException {
+  private void processUpdated(Set<? extends Model> updated, String tenantId, Integer source)
+      throws ClassNotFoundException {
 
     for (Model model : updated) {
       String modelName = EntityHelper.getEntityClass(model).getName();
@@ -85,7 +95,7 @@ public class WkfRequestListener {
 
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
         log.trace("Eval workflow from updated model: {}, id: {}", modelName, model.getId());
-        wkfInstanceService.evalInstance(model, null);
+        wkfInstanceService.evalInstance(model, null, source);
       }
     }
   }
@@ -169,7 +179,7 @@ public class WkfRequestListener {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  public void processDeleted(Set<Model> deleted, String tenantId) {
+  public void processDeleted(Set<? extends Model> deleted, String tenantId, Integer source) {
 
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();

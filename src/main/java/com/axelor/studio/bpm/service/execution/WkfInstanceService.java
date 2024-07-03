@@ -30,6 +30,9 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface WkfInstanceService {
 
+  public String evalInstance(Model model, String signal, Integer source)
+      throws ClassNotFoundException;
+
   public String evalInstance(Model model, String signal) throws ClassNotFoundException;
 
   void evalInstancesFromWkfModel(WkfModel wkfModel);
