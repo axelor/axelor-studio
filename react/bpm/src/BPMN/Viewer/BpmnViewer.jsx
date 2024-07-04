@@ -204,13 +204,13 @@ const openDiagramImage = async (
       const { element } = value;
       if (!element) return;
       let modeling = bpmnViewer.get("modeling");
-      if (modeling && element.businessObject && element.businessObject.di) {
+      if (modeling && element.businessObject && element.di) {
         let type = is(element, ["bpmn:Gateway"])
           ? "bpmn:Gateway"
           : element.type;
         modeling.setColor(element, {
-          stroke: element.businessObject.di.stroke || STROKE_COLORS[type],
-          fill: element.businessObject.di.fill || FILL_COLORS[type],
+          stroke: element.di.stroke || STROKE_COLORS[type],
+          fill: element.di.fill || FILL_COLORS[type],
         });
       }
     });

@@ -1,6 +1,6 @@
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
-import { createCategoryValue } from "bpmn-js-properties-panel/lib/helper/CategoryHelper";
+import { createCategoryValue } from "../../../../utils";
 import nameEntryFactory from "./implementation/Name";
 
 export default function NameProps(

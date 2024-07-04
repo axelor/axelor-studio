@@ -1,6 +1,6 @@
 import React from "react";
-import utils from "bpmn-js-properties-panel/lib/Utils";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
+import { filterElementsByType } from "../../../../../utils/ElementUtil";
+import { getCompensateEventDefinition } from "../../../../../utils/EventDefinitionUtil";
 import forEach from "lodash/forEach";
 import find from "lodash/find";
 import filter from "lodash/filter";
@@ -21,13 +21,13 @@ function getContainedBoundaryEvents(element) {
 }
 
 function getFlowElements(element, type) {
-  return utils.filterElementsByType(element.flowElements, type);
+  return filterElementsByType(element.flowElements, type);
 }
 
 function isCompensationEventAttachedToActivity(activity, boundaryEvents) {
   let activityId = activity.id;
   let boundaryEvent = find(boundaryEvents, function (boundaryEvent) {
-    let compensateEventDefinition = eventDefinitionHelper.getCompensateEventDefinition(
+    let compensateEventDefinition = getCompensateEventDefinition(
       boundaryEvent
     );
     let attachedToRef = boundaryEvent.attachedToRef;

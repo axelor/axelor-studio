@@ -83,7 +83,7 @@ ReplaceMenuProvider.prototype.getEntries = function (element) {
   // expanded/collapsed pools
   if (is(businessObject, "bpmn:Participant")) {
     entries = filter(replaceOptions.PARTICIPANT, function (entry) {
-      return isExpanded(businessObject) !== entry.target.isExpanded;
+      return isExpanded(element) !== entry.target.isExpanded;
     });
 
     return this._createEntries(element, entries);
@@ -195,14 +195,14 @@ ReplaceMenuProvider.prototype.getEntries = function (element) {
   }
 
   // expanded event sub processes
-  if (isEventSubProcess(businessObject) && isExpanded(businessObject)) {
+  if (isEventSubProcess(businessObject) && isExpanded(element)) {
     entries = filter(replaceOptions.EVENT_SUB_PROCESS, differentType);
 
     return this._createEntries(element, entries);
   }
 
   // expanded sub processes
-  if (is(businessObject, "bpmn:SubProcess") && isExpanded(businessObject)) {
+  if (is(businessObject, "bpmn:SubProcess") && isExpanded(element)) {
     entries = filter(replaceOptions.SUBPROCESS_EXPANDED, differentType);
 
     return this._createEntries(element, entries);
@@ -211,7 +211,7 @@ ReplaceMenuProvider.prototype.getEntries = function (element) {
   // collapsed ad hoc sub processes
   if (
     is(businessObject, "bpmn:AdHocSubProcess") &&
-    !isExpanded(businessObject)
+    !isExpanded(element)
   ) {
     entries = filter(replaceOptions.TASK, function (entry) {
       var target = entry.target;
@@ -242,7 +242,7 @@ ReplaceMenuProvider.prototype.getEntries = function (element) {
     entries = filter(replaceOptions.TASK, differentType);
 
     // collapsed SubProcess can not be replaced with itself
-    if (is(businessObject, "bpmn:SubProcess") && !isExpanded(businessObject)) {
+    if (is(businessObject, "bpmn:SubProcess") && !isExpanded(element)) {
       entries = filter(entries, function (entry) {
         return entry.label !== "Sub Process (collapsed)";
       });

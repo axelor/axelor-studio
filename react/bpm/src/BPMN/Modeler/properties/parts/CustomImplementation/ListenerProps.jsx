@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
-import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
+import { getLinkEventDefinition } from "../../../../../utils/EventDefinitionUtil";
+import { getExtensionElements } from "../../../../../utils/ExtensionElementsUtil";
+import {
+  getImplementationType,
+  isSequenceFlow as _isSequenceFlow,
+} from "../../../../../utils/ImplementationTypeUtils";
+import { createElement } from "../../../../../utils/ElementUtil";
 import find from "lodash/find";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
@@ -47,7 +50,7 @@ const timerOptions = [
 ];
 
 function getListeners(bo, type) {
-  return (bo && extensionElementsHelper.getExtensionElements(bo, type)) || [];
+  return (bo && getExtensionElements(bo, type)) || [];
 }
 
 function getTimerDefinitionType(timer) {
@@ -80,7 +83,7 @@ function getTimerDefinition(timerOrFunction, element, node) {
 
 function createFormalExpression(parent, body, bpmnFactory) {
   body = body || undefined;
-  return elementHelper.createElement(
+  return createElement(
     "bpmn:FormalExpression",
     { body: body },
     parent,
@@ -108,7 +111,7 @@ export default function ListenerProps({
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
 
-  const isSequenceFlow = ImplementationTypeHelper.isSequenceFlow(element);
+  const isSequenceFlow = _isSequenceFlow(element);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -132,7 +135,7 @@ export default function ListenerProps({
     if (!listener?.script) {
       listener.script =
         listener.script ||
-        elementHelper.createElement(
+        createElement(
           "camunda:Script",
           {
             scriptFormat: "axelor",
@@ -170,13 +173,12 @@ export default function ListenerProps({
   };
 
   const getExecutionOptions = () => {
-    const executionListenerEventTypeOptions =
-      ImplementationTypeHelper.isSequenceFlow(element)
-        ? [{ name: translate("take"), value: "take" }]
-        : [
-            { name: translate("start"), value: "start" },
-            { name: translate("end"), value: "end" },
-          ];
+    const executionListenerEventTypeOptions = _isSequenceFlow(element)
+      ? [{ name: translate("take"), value: "take" }]
+      : [
+          { name: translate("start"), value: "start" },
+          { name: translate("end"), value: "end" },
+        ];
     return executionListenerEventTypeOptions;
   };
 
@@ -187,17 +189,12 @@ export default function ListenerProps({
         script: undefined,
       };
 
-      let newElem = elementHelper.createElement(
-        type,
-        props,
-        extensionEle,
-        bpmnFactory
-      );
+      let newElem = createElement(type, props, extensionEle, bpmnFactory);
 
       let bo = getBusinessObject(element);
       let extensionElements = bo && bo.extensionElements;
       if (!extensionElements) {
-        extensionElements = elementHelper.createElement(
+        extensionElements = createElement(
           "bpmn:ExtensionElements",
           { values: [] },
           bo,
@@ -276,8 +273,7 @@ export default function ListenerProps({
     return function (index) {
       let listeners = getListeners(bo, type);
       let listener = listeners[index];
-      let listenerType =
-        ImplementationTypeHelper.getImplementationType(listener);
+      let listenerType = getImplementationType(listener);
       if (!listener) return "";
       let event = listener.get("event")
         ? listener.get("event")
@@ -336,7 +332,7 @@ export default function ListenerProps({
     const executionOptions =
       executionListeners &&
       executionListeners.map(function (l, index) {
-        let listenerType = ImplementationTypeHelper.getImplementationType(l);
+        let listenerType = getImplementationType(l);
         return {
           id: index,
           text: `${translate(l.event)} : ${
@@ -349,7 +345,7 @@ export default function ListenerProps({
     const taskOptions =
       taskListeners &&
       taskListeners.map(function (l, index) {
-        let listenerType = ImplementationTypeHelper.getImplementationType(l);
+        let listenerType = getImplementationType(l);
         return {
           id: index,
           text: `${translate(l.event)} : ${
@@ -380,7 +376,7 @@ export default function ListenerProps({
     if (!listener?.script) {
       listener.script =
         listener.script ||
-        elementHelper.createElement(
+        createElement(
           "camunda:Script",
           {
             scriptFormat: "axelor",
@@ -399,9 +395,9 @@ export default function ListenerProps({
 
   useEffect(() => {
     setVisible(
-      !eventDefinitionHelper.getLinkEventDefinition(element) ||
+      !getLinkEventDefinition(element) ||
         (!is(element, "bpmn:IntermediateThrowEvent") &&
-          eventDefinitionHelper.getLinkEventDefinition(element))
+          getLinkEventDefinition(element))
     );
   }, [element]);
 

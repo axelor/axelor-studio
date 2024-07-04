@@ -1,5 +1,5 @@
 import inherits from "inherits";
-import PropertiesActivator from "dmn-js-properties-panel/lib/PropertiesActivator.js";
+import PropertiesActivator from "../../properties/PropertiseActivator";
 import { is } from "dmn-js-shared/lib/util/ModelUtil";
 
 // bpmn properties

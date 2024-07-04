@@ -1,5 +1,5 @@
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import utils from "bpmn-js-properties-panel/lib/Utils";
+import {isIdValid} from "../../../../utils/ValidationUtil"
 
 import { getFlowElements } from "../../extra";
 
@@ -25,7 +25,10 @@ export default function IdProps(
     setProperty: function (element, properties) {
       element = element.labelTarget || element;
       if (element.businessObject) {
-        element.businessObject.id = properties["id"];
+        const modeling = bpmnModeler.get('modeling');
+        modeling.updateProperties(element, {
+          id: properties["id"]
+        });
 
         /**
          * Update callactivity extension elements on id updates
@@ -53,7 +56,7 @@ export default function IdProps(
     validate: function (element, values) {
       let idValue = values.id;
       let bo = getBusinessObject(element);
-      let idError = utils.isIdValid(bo, idValue, translate);
+      let idError = isIdValid(bo, idValue, translate);
       return idError ? { id: idError } : {};
     },
   });

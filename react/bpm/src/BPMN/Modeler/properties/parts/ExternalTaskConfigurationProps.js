@@ -1,10 +1,10 @@
-import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
+import {getServiceTaskLikeBusinessObject as _getServiceTaskLikeBusinessObject} from "../../../../utils/ImplementationTypeUtils";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import externalTaskPriority from "./implementation/ExternalTaskPriority";
 
 function getServiceTaskLikeBusinessObject(element) {
-  let bo = ImplementationTypeHelper.getServiceTaskLikeBusinessObject(element);
+  let bo = _getServiceTaskLikeBusinessObject(element);
 
   // if the element is not a serviceTaskLike element, fetch the normal business object
   // This avoids the loss of the process / participant business object

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
+import { getConditionalEventDefinition, getMessageEventDefinition, getSignalEventDefinition, getTimerEventDefinition } from "../../../../../utils/EventDefinitionUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
@@ -19,22 +19,22 @@ export default function StartEventInitiator({
   const showLabel = () => {
     if (!element) return;
     let messageEventDefinition =
-      eventDefinitionHelper.getMessageEventDefinition(element);
+      getMessageEventDefinition(element);
     if (messageEventDefinition) {
       return false;
     }
     let timerEventDefinition =
-      eventDefinitionHelper.getTimerEventDefinition(element);
+      getTimerEventDefinition(element);
     if (timerEventDefinition) {
       return false;
     }
     let signalEventDefinition =
-      eventDefinitionHelper.getSignalEventDefinition(element);
+      getSignalEventDefinition(element);
     if (signalEventDefinition) {
       return false;
     }
     let conditionalEventDefinition =
-      eventDefinitionHelper.getConditionalEventDefinition(element);
+      getConditionalEventDefinition(element);
     if (conditionalEventDefinition) {
       return false;
     }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
+import { getExtensionElementsList } from "../../../../../utils/ExtensionElementsUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import {
@@ -47,7 +47,7 @@ export default function BusinessRuleTaskProps({
   );
 
   function getListeners(bo, type) {
-    return (bo && extensionElementsHelper.getExtensionElements(bo, type)) || [];
+    return (bo && getExtensionElementsList(bo, type)) || [];
   }
 
   const getBO = () => {

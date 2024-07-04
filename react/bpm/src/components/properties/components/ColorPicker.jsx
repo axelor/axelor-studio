@@ -24,8 +24,7 @@ export default function ColorPickerComponent({
   };
 
   useEffect(() => {
-    const bo = getBusinessObject(element);
-    const color = bo?.di?.stroke;
+    const color = element?.di?.stroke;
     if (!color) return;
     setColor(color);
   }, [element]);

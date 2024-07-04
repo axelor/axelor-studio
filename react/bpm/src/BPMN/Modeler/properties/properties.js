@@ -1,5 +1,4 @@
-import asyncCapableHelper from "bpmn-js-properties-panel/lib/helper/AsyncCapableHelper";
-import ImplementationTypeHelper from "bpmn-js-properties-panel/lib/helper/ImplementationTypeHelper";
+ import {getImplementationType, getServiceTaskLikeBusinessObject, isExternalCapable}  from "../../../utils/ImplementationTypeUtils";
 
 import { is } from "bpmn-js/lib/util/ModelUtil";
 
@@ -18,7 +17,7 @@ import jobConfiguration from "./parts/JobConfigurationProps";
 import externalTaskConfiguration from "./parts/ExternalTaskConfigurationProps";
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import eventDefinitionHelper from "bpmn-js-properties-panel/lib/helper/EventDefinitionHelper";
+import {getTimerEventDefinition} from "../../../utils/EventDefinitionUtil"
 import {
   CallActivityProps,
   ConditionalProps,
@@ -40,7 +39,7 @@ import {
   Comments,
   Definitions,
 } from "./parts/CustomImplementation";
-import { translate } from "../../../utils";
+import { isAsyncAfter, isAsyncBefore, translate } from "../../../utils";
 
 // helpers
 
@@ -51,15 +50,15 @@ let isExternalTaskPriorityEnabled = function (element) {
     return true;
   }
 
-  let externalBo = ImplementationTypeHelper.getServiceTaskLikeBusinessObject(
+  let externalBo = getServiceTaskLikeBusinessObject(
       element
     ),
     isExternalTask =
-      ImplementationTypeHelper.getImplementationType(externalBo) === "external";
+      getImplementationType(externalBo) === "external";
 
   // ... or an external task with selected external implementation type
   return (
-    !!ImplementationTypeHelper.isExternalCapable(externalBo) && isExternalTask
+    !!isExternalCapable(externalBo) && isExternalTask
   );
 };
 
@@ -77,15 +76,15 @@ let isJobConfigEnabled = function (element) {
   // async behavior
   let bo = getBusinessObject(element);
   if (
-    asyncCapableHelper.isAsyncBefore(bo) ||
-    asyncCapableHelper.isAsyncAfter(bo)
+    isAsyncBefore(bo) ||
+    isAsyncAfter(bo)
   ) {
     return true;
   }
 
   // timer definition
   if (is(element, "bpmn:Event")) {
-    return !!eventDefinitionHelper.getTimerEventDefinition(element);
+    return !!getTimerEventDefinition(element);
   }
 
   return false;
@@ -99,7 +98,6 @@ function createGeneralTabGroups(
   canvas,
   bpmnFactory,
   elementRegistry,
-  elementTemplates,
   translate,
   bpmnModeler,
   setDummyProperty
@@ -369,7 +367,6 @@ export default function getTabs(
   canvas,
   bpmnFactory,
   elementRegistry,
-  elementTemplates,
   translate,
   bpmnModeler,
   setDummyProperty
@@ -393,7 +390,6 @@ export default function getTabs(
       canvas,
       bpmnFactory,
       elementRegistry,
-      elementTemplates,
       translate,
       bpmnModeler,
       setDummyProperty

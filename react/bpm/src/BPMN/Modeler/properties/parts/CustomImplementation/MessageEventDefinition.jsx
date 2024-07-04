@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import utils from "bpmn-js-properties-panel/lib/Utils";
+import { createElement, getRoot } from "../../../../../utils/ElementUtil";
+
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import BpmnModeler from "bpmn-js/lib/Modeler";
 
@@ -238,14 +238,14 @@ export default function MessageProps({
                 element,
                 value: true,
               });
-              let root = utils.getRoot(messageEventDefinition);
+              let root = getRoot(messageEventDefinition);
               if (is(element, "bpmn:SendTask")) {
                 setProperty("camunda:messageName", values["name"], element);
               }
               if (messageEventDefinition.messageRef) {
                 messageEventDefinition.messageRef.name = values["name"];
               } else {
-                let ele = elementHelper.createElement(
+                let ele = createElement(
                   "bpmn:Message",
                   { name: values["name"] },
                   root,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import utils from "bpmn-js-properties-panel/lib/Utils";
+import {findRootElementsByType,nextId,getRoot} from "../../../utils/ElementUtil";
 import find from "lodash/find";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import classnames from "classnames";
@@ -10,7 +10,7 @@ import { Box, Button, InputLabel } from "@axelor/ui";
 import styles from "./CustomSelectBox.module.css";
 
 function findElementById(eventDefinition, type, id) {
-  var elements = utils.findRootElementsByType(eventDefinition, type);
+  var elements = findRootElementsByType(eventDefinition, type);
   return find(elements, function (element) {
     return element.id === id;
   });
@@ -60,15 +60,15 @@ export default function CustomSelectBox({
 
   const addElement = () => {
     let prefix = newElementIdPrefix || "elem_";
-    let id = utils.nextId(prefix);
-    let name = utils.nextId(prefix);
+    let id = nextId(prefix);
+    let name = nextId(prefix);
     let props = {};
     if (!name) {
       props[referenceProperty] = undefined;
     }
     let selectedElement = findElementById(definition, elementType, name);
     if (!selectedElement) {
-      let root = utils.getRoot(definition);
+      let root = getRoot(definition);
       selectedElement = bpmnModdle.create(elementType, {
         id,
         name,

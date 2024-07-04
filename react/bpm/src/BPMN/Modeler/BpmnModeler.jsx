@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from "react";
 import find from "lodash/find";
 import BpmnModeler from "bpmn-js/lib/Modeler";
-import propertiesPanelModule from "bpmn-js-properties-panel";
-import propertiesProviderModule from "bpmn-js-properties-panel/lib/provider/camunda";
-import cmdHelper from "bpmn-js-properties-panel/lib/helper/CmdHelper";
-import elementHelper from "bpmn-js-properties-panel/lib/helper/ElementHelper";
-import extensionElementsHelper from "bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper";
+import {
+  BpmnPropertiesProviderModule,
+  BpmnPropertiesPanelModule,
+} from "bpmn-js-properties-panel";
 import TokenSimulationModule from "bpmn-js-token-simulation/lib/modeler";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { Resizable } from "re-resizable";
-import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-
-import { useAppTheme } from "../../custom-hooks/useAppTheme.jsx";
 import { Logo } from "../../components/Logo";
 import DrawerContent from "./DrawerContent";
 import propertiesCustomProviderModule from "./custom-provider";
@@ -49,6 +45,7 @@ import {
   translate,
   convertSVGtoBase64,
   lightenColor,
+  updateBusinessObject,
 } from "../../utils";
 import {
   FILL_COLORS,
@@ -66,13 +63,15 @@ import { Box, CommandBar, Scrollable } from "@axelor/ui";
 
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
-import "bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css";
+import "@bpmn-io/properties-panel/dist/assets/properties-panel.css";
 import "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
 import "../css/tokens.css";
 import styles from "./BpmnModeler.module.css";
 import { openWebApp } from "./properties/parts/CustomImplementation/utils.js";
+import { createElement } from "../../utils/ElementUtil.js";
+import { getExtensionElements } from "../../utils/ExtensionElementsUtil.js";
 
 const resizeStyle = {
   display: "flex",
@@ -351,27 +350,22 @@ function BpmnModelerComponent() {
             if (!value) continue;
             const { element } = value;
             if (!element) continue;
-            if (
-              modeling &&
-              element.businessObject &&
-              element.businessObject.di
-            ) {
+            if (modeling && element.di) {
               let type = is(element, ["bpmn:Gateway"])
                 ? "bpmn:Gateway"
                 : element.type;
               let colors = {
-                stroke: element.businessObject.di.stroke || STROKE_COLORS[type],
+                stroke: element.di.stroke || STROKE_COLORS[type],
               };
               if (
-                (element.businessObject.di.fill || FILL_COLORS[type]) &&
+                (element.di.fill || FILL_COLORS[type]) &&
                 ![
                   "bpmn:SequenceFlow",
                   "bpmn:MessageFlow",
                   "bpmn:Association",
                 ].includes(element.type)
               ) {
-                colors.fill =
-                  element.businessObject.di.fill || FILL_COLORS[type];
+                colors.fill = element.di.fill || FILL_COLORS[type];
               }
 
               modeling.setColor(element, colors);
@@ -390,7 +384,7 @@ function BpmnModelerComponent() {
           console.error(error);
         }
       } catch (error) {
-        handleSnackbarClick("danger", "Error! Can't import XML");
+        handleSnackbarClick("danger", "Error! Can't import XML" + error);
       }
     },
     []
@@ -844,7 +838,7 @@ function BpmnModelerComponent() {
   };
 
   function getListeners(bo, type) {
-    return (bo && extensionElementsHelper.getExtensionElements(bo, type)) || [];
+    return (bo && getExtensionElements(bo, type)) || [];
   }
 
   const getBOParent = React.useCallback((element) => {
@@ -871,7 +865,7 @@ function BpmnModelerComponent() {
     const bpmnFactory = bpmnModeler.get("bpmnFactory");
     let props = {
       event: initialEvent,
-      script: elementHelper.createElement(
+      script: createElement(
         "camunda:Script",
         {
           scriptFormat: "axelor",
@@ -882,18 +876,13 @@ function BpmnModelerComponent() {
       ),
     };
 
-    let newElem = elementHelper.createElement(
-      type,
-      props,
-      undefined,
-      bpmnFactory
-    );
+    let newElem = createElement(type, props, undefined, bpmnFactory);
 
     newElem.$attrs["outId"] = "dmn_output_mapping";
     let bo = getBO(element);
     let extensionElements = bo && bo.extensionElements;
     if (!extensionElements) {
-      extensionElements = elementHelper.createElement(
+      extensionElements = createElement(
         "bpmn:ExtensionElements",
         { values: [] },
         bo,
@@ -1456,13 +1445,13 @@ function BpmnModelerComponent() {
   function createParent(element, bo) {
     const bpmnFactory = bpmnModeler.get("bpmnFactory");
 
-    let parent = elementHelper.createElement(
+    let parent = createElement(
       "bpmn:ExtensionElements",
       { values: [] },
       bo,
       bpmnFactory
     );
-    let cmd = cmdHelper.updateBusinessObject(element, bo, {
+    let cmd = updateBusinessObject(element, bo, {
       extensionElements: parent,
     });
     return {
@@ -1493,7 +1482,7 @@ function BpmnModelerComponent() {
     const bpmnFactory = bpmnModeler.get("bpmnFactory");
     const bo = getBusinessObject(selectedElement);
     let result = createParent(selectedElement, bo);
-    let camundaProperties = elementHelper.createElement(
+    let camundaProperties = createElement(
       "camunda:Properties",
       {},
       result && result.parent,
@@ -1516,12 +1505,7 @@ function BpmnModelerComponent() {
     parent = result.parent;
     let properties = getPropertiesElement(parent);
     if (!properties) {
-      properties = elementHelper.createElement(
-        "camunda:Properties",
-        {},
-        parent,
-        bpmnFactory
-      );
+      properties = createElement("camunda:Properties", {}, parent, bpmnFactory);
     }
 
     let propertyProps = {
@@ -1529,7 +1513,7 @@ function BpmnModelerComponent() {
       value: value,
     };
 
-    let property = elementHelper.createElement(
+    let property = createElement(
       "camunda:Property",
       propertyProps,
       properties,
@@ -1544,10 +1528,7 @@ function BpmnModelerComponent() {
       );
       businessObject.extensionElements.get("values").push(camundaProps);
     } else {
-      let camundaProperties = extensionElementsHelper.getExtensionElements(
-        bo,
-        "camunda:Properties"
-      );
+      let camundaProperties = getExtensionElements(bo, "camunda:Properties");
       if (
         camundaProperties &&
         camundaProperties[0] &&
@@ -1556,10 +1537,7 @@ function BpmnModelerComponent() {
         camundaProperties[0].values.push(property);
       } else {
         createCamundaProperty();
-        let camundaProperties = extensionElementsHelper.getExtensionElements(
-          bo,
-          "camunda:Properties"
-        );
+        let camundaProperties = getExtensionElements(bo, "camunda:Properties");
         camundaProperties[0].values = [property];
       }
     }
@@ -1582,7 +1560,7 @@ function BpmnModelerComponent() {
         break;
       }
     }
-    let camundaProperties = elementHelper.createElement(
+    let camundaProperties = createElement(
       "camunda:In",
       {
         source: processId,
@@ -1592,7 +1570,7 @@ function BpmnModelerComponent() {
       bpmnFactory
     );
     if (!extensionElements) {
-      extensionElements = elementHelper.createElement(
+      extensionElements = createElement(
         "bpmn:ExtensionElements",
         { values: [camundaProperties] },
         bo,
@@ -1755,8 +1733,8 @@ function BpmnModelerComponent() {
         parent: "#js-properties-panel",
       },
       additionalModules: [
-        propertiesPanelModule,
-        propertiesProviderModule,
+        BpmnPropertiesPanelModule,
+        BpmnPropertiesProviderModule,
         propertiesCustomProviderModule,
         TokenSimulationModule,
         {
