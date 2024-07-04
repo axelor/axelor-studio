@@ -29,7 +29,7 @@ export default function IdProps(
         modeling.updateProperties(element, {
           id: properties["id"]
         });
-      
+
         /**
          * Update callactivity extension elements on id updates
          */

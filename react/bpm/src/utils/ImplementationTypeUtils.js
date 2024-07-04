@@ -148,5 +148,5 @@ export function getListenerBusinessObject(businessObject) {
 }
 
 export function isSequenceFlow(element){
-  return is(element, 'bpmn:SequenceFlow'); 
+  return is(element, 'bpmn:SequenceFlow');
 }

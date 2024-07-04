@@ -15,7 +15,7 @@ import {
  * @returns {import('bpmn-js/lib/model/Types').ModdleElement}
  */
 export function createElement(type, properties, parent, bpmnFactory) {
-  
+
 
   const element = bpmnFactory.create(type, properties);
 
