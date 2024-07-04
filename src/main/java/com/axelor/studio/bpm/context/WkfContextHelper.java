@@ -170,7 +170,7 @@ public class WkfContextHelper {
   }
 
   public static Object createObject(Object object) throws JsonProcessingException {
-    if(object != null){
+    if (object != null) {
       if (object instanceof FullContext) {
         return createSingleVariable((FullContext) object);
       } else if (object instanceof Collection<?>) {
@@ -188,19 +188,21 @@ public class WkfContextHelper {
     return createVariablesObjectValue(map);
   }
 
-  private static Object createListVariable(Collection<?> collection){
+  private static Object createListVariable(Collection<?> collection) {
     if (isListOfFullContext(collection)) {
       List<FullContext> contexts = (List<FullContext>) collection;
       String key = contexts.get(0).getContextClass().getName();
 
-      List<String> serializedModels = contexts.stream()
-              .map(context -> {
-                try {
-                  return serializeModel((Model) context.getTarget());
-                } catch (JsonProcessingException e) {
-                  throw new IllegalArgumentException(e);
-                }
-              })
+      List<String> serializedModels =
+          contexts.stream()
+              .map(
+                  context -> {
+                    try {
+                      return serializeModel((Model) context.getTarget());
+                    } catch (JsonProcessingException e) {
+                      throw new IllegalArgumentException(e);
+                    }
+                  })
               .collect(Collectors.toList());
       Map<String, List<String>> map = Collections.singletonMap(key, serializedModels);
       return createVariablesObjectValue(map);
