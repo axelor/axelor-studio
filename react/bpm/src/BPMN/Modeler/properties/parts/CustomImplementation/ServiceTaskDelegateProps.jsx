@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getServiceTaskLikeBusinessObject, isServiceTaskLike } from "../../../../../utils/ImplementationTypeUtils";
 import { is } from "bpmn-js/lib/util/ModelUtil";
-import React, { useEffect, useState } from "react";
 
 import Select from "../../../../../components/Select";
 import {
@@ -17,7 +16,6 @@ import {
   getDMNModels,
   getOrganization,
   getScenarios,
-  getToken,
 } from "../../../../../services/api";
 import { getBool, translate } from "../../../../../utils";
 
@@ -98,9 +96,6 @@ export default function ServiceTaskDelegateProps({
   const [organizations, setOrganizations] = useState([]);
   const [scenario, setScenario] = useState(null);
   const [isInstall, setIsInstall] = useState(false);
-  const [token, setToken] = useState(null);
-
-  const { update } = useStore();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -193,12 +188,9 @@ export default function ServiceTaskDelegateProps({
     },
     [element, setProperty]
   );
-  const getOrganizationScenarios = React.useCallback(
-    (id) => {
-      return getScenarios(token, id);
-    },
-    [token]
-  );
+  const getOrganizationScenarios = React.useCallback((id) => {
+    return getScenarios(id);
+  }, []);
 
   const updateAction = (value) => {
     if (value?.length) {
@@ -339,15 +331,13 @@ export default function ServiceTaskDelegateProps({
       setVisible(false);
     }
   }, [element]);
+
   useEffect(() => {
     (async function () {
       const isConnectInstalled = await checkConnectAndStudioInstalled();
       if (isConnectInstalled) {
         setIsInstall(true);
-        const _token = await getToken();
-        setToken(_token);
-        update((prev) => ({ ...prev, _token }));
-        const data = await getOrganization(_token);
+        const data = await getOrganization();
         setOrganizations(data);
       } else {
         setIsInstall(false);
