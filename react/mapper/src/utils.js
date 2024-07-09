@@ -74,7 +74,7 @@ export function excludeFields(data, otherFields = []) {
   const getType = (type = '') => type.replace(/-/g, '_').toLowerCase();
   const excludeFieldList = [...excludedFields, ...otherFields];
   const dataList = data.filter(
-    (item) => excludeFieldList.indexOf(item.name) === -1
+      (item) => excludeFieldList.indexOf(item.name) === -1
   );
   return dataList.filter((item) => {
     return !excludedFieldList.includes(getType(item.type));
