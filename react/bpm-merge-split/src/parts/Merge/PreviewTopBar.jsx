@@ -4,6 +4,7 @@ import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import ModelList from "./ModelList";
 import { useCallback } from "react";
 import Tooltip from "../../components/Tooltip/Tooltip";
+import { translate } from "../../utils";
 
 const PreviewTopBar = ({ setModels, models, setFilteredModels, createNew }) => {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ const PreviewTopBar = ({ setModels, models, setFilteredModels, createNew }) => {
           </Button>
         </Tooltip>
         <TextField
-          placeholder="Search..."
+          placeholder={translate("Search...")}
           inputProps={{ "aria-label": "search" }}
           onChange={filterModels}
           icons={[{ icon: "search", color: "body" }]}

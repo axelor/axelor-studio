@@ -1,6 +1,7 @@
 import { useDropzone } from "react-dropzone";
 import { Box } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import { translate } from "../utils";
 
 function UploadCard({ files = [], onFileUpload = () => {} }) {
   const onDrop = (acceptedFiles) => {
@@ -31,12 +32,14 @@ function UploadCard({ files = [], onFileUpload = () => {} }) {
         <MaterialIcon icon="upload_file" color="primary" />
       </Box>
       <Box style={{ fontSize: "12px" }} mt={2} color="body-tertiary">
-        Drag and drop files here, or click to select files
+        {translate("Drag and drop files here, or click to select files")}
       </Box>
 
       {files.length > 0 && (
         <Box mt={2}>
-          <Box>{files.length} file(s) selected</Box>
+          <Box>
+            {files.length} {translate("file(s) selected")}
+          </Box>
         </Box>
       )}
     </Box>

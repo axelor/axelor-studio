@@ -4,7 +4,7 @@ import { getBPMModels } from "../../services/api";
 import { useCallback, useEffect, useState } from "react";
 import Selection from "../../components/Select";
 import Tooltip from "../../components/Tooltip/Tooltip";
-import { getParams, setParam } from "../../utils";
+import { getParams } from "../../utils";
 
 const SplitViewToolBar = ({
   model,

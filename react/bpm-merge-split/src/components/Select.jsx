@@ -15,6 +15,7 @@ function Selection({
   autoFocus,
   disableClearable,
   autoComplete = true,
+  placeholder = "",
   ...props
 }) {
   const [open, setOpen] = useState(showDropDown ?? false);
@@ -131,9 +132,9 @@ function Selection({
               search(searchText);
             }
           }}
-          placeholder={label}
+          placeholder={translate(placeholder)}
           onClose={() => open && setOpen(false)}
-          noOptionsMessage={"No options"}
+          noOptionsMessage={translate("No options")}
           removeOnBackspace={false}
           clearOnEscape={false}
           clearIcon={!disableClearable}
