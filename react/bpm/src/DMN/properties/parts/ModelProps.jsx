@@ -2,19 +2,21 @@ import React, { useEffect, useState } from "react";
 import classnames from "classnames";
 import { is, getBusinessObject } from "dmn-js-shared/lib/util/ModelUtil";
 
-import { Checkbox } from "../../../components/properties/components";
 import Select from "../../../components/Select";
 import { getCustomModels, getMetaModels } from "../../../services/api";
-import { translate, getBool, splitWithComma } from "../../../utils";
+import {
+  translate,
+  getBool,
+  splitWithComma,
+  mergeModels,
+} from "../../../utils";
 
 import { Box, Divider, InputLabel } from "@axelor/ui";
 import styles from "./ModelProps.module.css";
 
 export default function ModelProps({ element, label }) {
   const [isVisible, setVisible] = useState(false);
-  const [metaModel, setMetaModel] = useState(null);
-  const [metaJsonModel, setMetaJsonModel] = useState(null);
-  const [isCustom, setIsCustom] = useState(false);
+  const [model, setModel] = useState(null);
 
   const setProperty = React.useCallback(
     (name, value) => {
@@ -76,16 +78,47 @@ export default function ModelProps({ element, label }) {
       if (!names?.length && !labels?.length) return null;
       const models = [];
       for (let i = 0; i < names.length; i++) {
-        models.push({
+        let model = {
           name: names[i],
           title: labels[i],
-          fullName: name === "metaModel" && fullNames[i],
-        });
+        };
+        if (name === "metaModel") {
+          model.fullName = fullNames[i];
+        }
+        models.push(model);
       }
       return models;
     },
     [getProperty]
   );
+
+  async function getAllModels(criteria = {}) {
+    const metaModels = await getMetaModels(criteria);
+    const metaJsonModels = await getCustomModels(criteria);
+    return [...metaModels, ...metaJsonModels];
+  }
+
+  const updateXML = (name, value) => {
+    const models = value.filter((v) =>
+      name === "metaModel"
+        ? v.hasOwnProperty("fullName")
+        : !v.hasOwnProperty("fullName")
+    );
+    const modelLabels = models.map((i) => i["title"]).join(",");
+    updateSelectValue(name, models, modelLabels);
+  };
+
+  const handleSelectionChange = (value) => {
+    if (value) {
+      setModel(value);
+      updateXML("metaModel", value);
+      updateXML("metaJsonModel", value);
+    } else {
+      updateSelectValue("metaModel", null, null);
+      updateSelectValue("metaJsonModel", null, null);
+      setModel(null);
+    }
+  };
 
   useEffect(() => {
     if (is(element, "dmn:Definitions")) {
@@ -98,16 +131,9 @@ export default function ModelProps({ element, label }) {
   useEffect(() => {
     const metaModel = getSelectValue("metaModel");
     const metaJsonModel = getSelectValue("metaJsonModel");
-    const isCustom = getProperty("isCustom");
-    setIsCustom(
-      isCustom === undefined || isCustom === ""
-        ? metaJsonModel
-          ? true
-          : false
-        : getBool(isCustom)
-    );
-    setMetaModel(metaModel);
-    setMetaJsonModel(metaJsonModel);
+    let allModels = mergeModels(metaModel, metaJsonModel);
+
+    setModel(allModels);
   }, [getSelectValue, getProperty]);
 
   return (
@@ -118,76 +144,48 @@ export default function ModelProps({ element, label }) {
           {translate(label)}
         </Box>
         <InputLabel color="body" className={styles.label}>
-          {translate("Model")}
+          {translate("Models")}
         </InputLabel>
-        <Checkbox
-          className={styles.checkbox}
-          entry={{
-            id: `custom-model`,
-            modelProperty: "isCustom",
-            label: translate("Custom"),
-            get: function () {
-              return {
-                isCustom: isCustom,
-              };
-            },
-            set: function (e, values) {
-              const isCustom = !values.isCustom;
-              setIsCustom(isCustom);
-              setProperty("isCustom", isCustom);
-              setMetaJsonModel(undefined);
-              updateSelectValue("metaJsonModel", undefined);
-              setMetaModel(undefined);
-              updateSelectValue("metaModel", undefined);
-            },
+        <Select
+          className={styles.select}
+          fetchMethod={(options) => getAllModels(options)}
+          update={(value) => {
+            handleSelectionChange(value);
           }}
-          element={element}
+          name="models"
+          value={model || []}
+          multiple={true}
+          type="multiple"
+          placeholder={translate("Models")}
+          optionLabel="name"
+          optionLabelSecondary="title"
+          customOptionLabel={(option) => {
+            let optionName = `${option["name"]} (${option["title"]}) ${
+              !option.fullName ? `(${translate("Custom Model")})` : ""
+            }`;
+            return translate(optionName);
+          }}
+          customOptionEqual={(option, val, optionName) => {
+            if (!val) return;
+            if (option[optionName] === val[optionName]) {
+              return option.fullName === val.fullName;
+            }
+          }}
+          customOnChange={(value) => {
+            const optionLabels = value
+              ?.map((v) => v["name"] || v["title"])
+              .join(",");
+            handleSelectionChange(value, optionLabels);
+            return;
+          }}
+          handleRemove={(option) => {
+            const value = model.filter(
+              (item) =>
+                item.name !== option.name || item.fullName !== option.fullName
+            );
+            handleSelectionChange(value);
+          }}
         />
-        {isCustom ? (
-          <Select
-            className={classnames(styles.select, styles.metajsonModel)}
-            fetchMethod={(options) => getCustomModels(options)}
-            update={(value, label) => {
-              setMetaJsonModel(value);
-              updateSelectValue("metaJsonModel", value, label);
-            }}
-            name="metaJsonModel"
-            value={metaJsonModel || []}
-            multiple={true}
-            type="multiple"
-            placeholder={translate("Custom model")}
-            optionLabel="name"
-            optionLabelSecondary="title"
-            handleRemove={(option) => {
-              let value = metaJsonModel?.filter((r) => r.name !== option.name);
-              let label = value?.map((v) => v["title"]).join(",");
-              setMetaJsonModel(value);
-              updateSelectValue("metaJsonModel", value, label);
-            }}
-          />
-        ) : (
-          <Select
-            className={styles.select}
-            fetchMethod={(options) => getMetaModels(options)}
-            update={(value, label) => {
-              setMetaModel(value);
-              updateSelectValue("metaModel", value, label);
-            }}
-            name="metaModel"
-            value={metaModel || []}
-            multiple={true}
-            type="multiple"
-            placeholder={translate("Model")}
-            optionLabel="name"
-            optionLabelSecondary="title"
-            handleRemove={(option) => {
-              let value = metaModel?.filter((r) => r.name !== option.name);
-              let label = value?.map((v) => v["title"]).join(",");
-              setMetaModel(value);
-              updateSelectValue("metaModel", value, label);
-            }}
-          />
-        )}
       </Box>
     )
   );

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DmnModeler from "dmn-js/lib/Modeler";
 import { migrateDiagram } from "@bpmn-io/dmn-migrate";
-import {DmnPropertiesPanelModule,DmnPropertiesProviderModule} from "dmn-js-properties-panel";
+import {
+  DmnPropertiesPanelModule,
+  DmnPropertiesProviderModule,
+} from "dmn-js-properties-panel";
 import camundaModdleDescriptor from "camunda-dmn-moddle/resources/camunda";
 import classnames from "classnames";
 import { Resizable } from "re-resizable";
@@ -38,6 +41,7 @@ import {
   filesToItems,
   getAttachmentBlob,
   splitWithComma,
+  mergeModels,
 } from "../utils";
 
 import {
@@ -209,15 +213,20 @@ function DMNModeler() {
     }
     return result;
   };
-  const getData = () => {
-    const isCustom = JSON.parse(getProperty("isCustom") || "false");
-    const models = getSelectValue(isCustom ? "metaJsonModels" : "metaModels");
-    const type = isCustom ? "metaJsonModel" : "metaModel";
-    const titles = getSelectValue(
-      isCustom ? "metaJsonModelLabels" : "metaModelLabels"
-    );
+
+  const findModels = (name) => {
+    const models = getSelectValue(`${name}s`) || [];
+    const modelLabels = getSelectValue(`${name}Labels`);
+    const $models = getModels(models, name, modelLabels);
+
     if (!models?.length) return;
-    return getModels(models, type, titles);
+    return $models;
+  };
+  const getData = () => {
+    const metaModels = findModels("metaModel");
+    const metaJsonModels = findModels("metaJsonModel");
+
+    return mergeModels(metaModels, metaJsonModels);
   };
 
   const getInput = (event) => {
@@ -483,60 +492,62 @@ function DMNModeler() {
   const openDiagram = React.useCallback(
     async (dmnXML) => {
       const dmn13XML = await migrateDiagram(dmnXML);
-    dmnModeler.importXML(dmn13XML).then(result=>{
-     
-      diagramXmlRef.current = dmnXML;
-      const activeView = dmnModeler.getActiveView();
-      if (activeView && activeView.type === "drd") {
-        let activeEditor = dmnModeler.getActiveViewer();
-        let eventBus = activeEditor.get("eventBus");
-        let canvas = activeEditor.get("canvas");
-        canvas.zoom("fit-viewport");
-        const elementRegistry =
-          dmnModeler._viewers.drd &&
-          dmnModeler._viewers.drd.get("elementRegistry");
-        const rootElement =
-          elementRegistry && elementRegistry.get(dmnModeler._activeView.id);
-        setRootElement(rootElement);
-        updateTabs({
-          element: rootElement,
+      dmnModeler
+        .importXML(dmn13XML)
+        .then((result) => {
+          diagramXmlRef.current = dmnXML;
+          const activeView = dmnModeler.getActiveView();
+          if (activeView && activeView.type === "drd") {
+            let activeEditor = dmnModeler.getActiveViewer();
+            let eventBus = activeEditor.get("eventBus");
+            let canvas = activeEditor.get("canvas");
+            canvas.zoom("fit-viewport");
+            const elementRegistry =
+              dmnModeler._viewers.drd &&
+              dmnModeler._viewers.drd.get("elementRegistry");
+            const rootElement =
+              elementRegistry && elementRegistry.get(dmnModeler._activeView.id);
+            setRootElement(rootElement);
+            updateTabs({
+              element: rootElement,
+            });
+            eventBus.on("drillDown.click", (event) => {
+              event.stopPropagation();
+              setWidth(0);
+              const { element } = event || {};
+              setDecision(element);
+              updateTabs({
+                element: {
+                  id: "__implicitroot",
+                },
+              });
+            });
+            eventBus.on("element.click", (event) => {
+              const { element } = event;
+              setSelectedElement(element);
+              updateTabs(event);
+            });
+            eventBus.on("commandStack.shape.replace.postExecuted", (event) => {
+              updateTabs({
+                element: event && event.context && event.context.newShape,
+              });
+            });
+            eventBus.on("shape.removed", () => {
+              const elementRegistry =
+                dmnModeler._viewers.drd.get("elementRegistry");
+              const rootElement = elementRegistry.get(
+                dmnModeler._activeView.id
+              );
+              if (!rootElement) return;
+              updateTabs({
+                element: rootElement,
+              });
+            });
+          }
+        })
+        .catch((err) => {
+          return console.error("could not import DMN 1.1 diagram", err);
         });
-        eventBus.on("drillDown.click", (event) => {
-          event.stopPropagation();
-          setWidth(0);
-          const { element } = event || {};
-          setDecision(element);
-          updateTabs({
-            element: {
-              id: "__implicitroot",
-            },
-          });
-        });
-        eventBus.on("element.click", (event) => {
-          const { element } = event;
-          setSelectedElement(element);
-          updateTabs(event);
-        });
-        eventBus.on("commandStack.shape.replace.postExecuted", (event) => {
-          updateTabs({
-            element: event && event.context && event.context.newShape,
-          });
-        });
-        eventBus.on("shape.removed", () => {
-          const elementRegistry =
-            dmnModeler._viewers.drd.get("elementRegistry");
-          const rootElement = elementRegistry.get(dmnModeler._activeView.id);
-          if (!rootElement) return;
-          updateTabs({
-            element: rootElement,
-          });
-        });
-      }
-    }).catch(err=>{
-      return console.error("could not import DMN 1.1 diagram", err);
-    })
-
-
     },
     [updateTabs]
   );
