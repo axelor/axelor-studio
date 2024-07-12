@@ -157,8 +157,8 @@ export class Service {
     return this.get(url);
   }
   info() {
-    const url = "ws/app/info"
-    return this.get(url)
+    const url = "ws/public/app/info";
+    return this.get(url);
   }
 
   fetchRecord(entity, id, data = {}) {

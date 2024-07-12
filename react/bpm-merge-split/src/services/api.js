@@ -13,6 +13,21 @@ export async function getInfo() {
   return res;
 }
 
+export async function getTranslations(key) {
+  if (!key) return;
+  const res = await Service.search("com.axelor.meta.db.MetaTranslation", {
+    data: {
+      _domain: "self.key = :key",
+      _domainContext: {
+        key: `value:${key}`,
+      },
+    },
+    sortBy: ["id"],
+  });
+  const { data = [] } = res || {};
+  return data;
+}
+
 export async function getBPMModels() {
   const entity = `com.axelor.studio.db.WkfModel`;
   const payload = {

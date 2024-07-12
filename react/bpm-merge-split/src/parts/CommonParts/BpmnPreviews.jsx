@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@axelor/ui";
 import ParticipantSelector from "./ParticipantSelector";
-import { translate } from "../../utils";
+import { translate, updateTranslations } from "../../utils";
 import ConfigurationBox from "./ConfigurationBox";
 import Tooltip from "../../components/Tooltip/Tooltip";
 import { useTab } from "../../context/TabChangeContext";
@@ -32,6 +32,15 @@ const openDiagramImage = async (
     bpmnViewer?.get("readOnly")?.readOnly(true);
 
     const elementRegistry = bpmnViewer?.get("elementRegistry");
+    let nodes = elementRegistry && elementRegistry._elements;
+    if (!nodes) return;
+    Object.entries(nodes).forEach(([key, value]) => {
+      if (!value) return;
+      const { element } = value;
+      if (!element) return;
+      updateTranslations(element, bpmnViewer);
+    });
+
     const participants = elementRegistry.filter(
       (element) => element.type === "bpmn:Participant"
     );
@@ -238,7 +247,7 @@ function BpmnPreviews({
                     </Box>
                   </Tooltip>
                 ) : (
-                  <Tooltip title={"Delete"}>
+                  <Tooltip title="Delete">
                     <Box
                       rounded="circle"
                       p={1}

@@ -162,7 +162,7 @@ const Split = () => {
             </Box>
           </Grow>
         )}
-        {loading && <LoadingAnimation loadingTexts={LOADING_TEXT.SPLIT} />}
+        {loading && <LoadingAnimation loadingTexts={LOADING_TEXT} />}
       </Box>
     </SplitPane>
   );

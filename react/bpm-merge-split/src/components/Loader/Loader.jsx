@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, CircularProgress } from "@axelor/ui";
 import classNames from "classnames";
 import styles from "./Loader.module.css";
+import { translate } from "../../utils";
 
 function Loader({ text = "Loading...", delay = 400 }) {
   const [show, setShow] = useState(false);
@@ -30,7 +31,7 @@ function Loader({ text = "Loading...", delay = 400 }) {
       <Box>
         <CircularProgress size={25} indeterminate />
       </Box>
-      <Box>{text}</Box>
+      <Box>{translate(text)}</Box>
     </Box>
   );
 }

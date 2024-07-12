@@ -4,6 +4,7 @@ import { useRef, useEffect, useCallback } from "react";
 import { Box } from "@axelor/ui";
 import "../../css/bpmn.css";
 import { useTab } from "../../context/TabChangeContext";
+import { updateTranslations } from "../../utils";
 
 const openDiagramImage = async (
   diagramXml,
@@ -18,9 +19,16 @@ const openDiagramImage = async (
     const canvas = bpmnViewer.get("canvas");
     canvas.zoom("fit-viewport", "auto");
     bpmnViewer.get("readOnly").readOnly(true);
-
+    const elementRegistry = bpmnViewer?.get("elementRegistry");
+    let nodes = elementRegistry && elementRegistry._elements;
+    if (!nodes) return;
+    Object.entries(nodes).forEach(([key, value]) => {
+      if (!value) return;
+      const { element } = value;
+      if (!element) return;
+      updateTranslations(element, bpmnViewer);
+    });
     if (shouldSelectParticipants) {
-      const elementRegistry = bpmnViewer?.get("elementRegistry");
       const participants = elementRegistry.filter(
         (element) => element.type === "bpmn:Participant"
       );

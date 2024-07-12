@@ -289,7 +289,9 @@ body,
 .bpp-properties-panel [type="text"] {
   width: calc(100% - 35px);
 }
-
+.djs-label {
+  fill: var(--bs-emphasis-color) !important;
+}
 .djs-popup-header {
   margin: 0 !important;
 }

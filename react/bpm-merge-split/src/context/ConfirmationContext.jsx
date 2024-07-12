@@ -1,6 +1,7 @@
 import { useState, createContext, useContext } from "react";
 import Dialog from "../components/Dialog";
 import { Box } from "@axelor/ui";
+import { translate } from "../utils";
 
 const ConfirmationContext = createContext();
 
@@ -34,11 +35,11 @@ export const ConfirmationDialogProvider = ({ children }) => {
       {question && (
         <Dialog
           open={question}
-          title="Are you sure ?"
+          title={translate("Are you sure ?")}
           onConfirm={handleConfirm}
           onCancel={clearConfirmation}
         >
-          <Box>{question}</Box>
+          <Box>{translate(question)}</Box>
         </Dialog>
       )}
     </ConfirmationContext.Provider>

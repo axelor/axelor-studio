@@ -5,7 +5,7 @@ import UploadCard from "../../components/UploadCard";
 import BpmnPreviews from "../CommonParts/BpmnPreviews";
 import PreviewToolBar from "./PreviewTopBar";
 import { useConfirmation } from "../../context/ConfirmationContext";
-import { getParams } from "../../utils";
+import { getParams, translate } from "../../utils";
 import { getBPMModels } from "../../services/api";
 
 const MergePreviewPanel = ({
@@ -28,7 +28,7 @@ const MergePreviewPanel = ({
         let reader = new FileReader();
         const fileName = file?.name?.replace(/\s/g, "");
         if (!fileName?.includes(".bpmn")) {
-          alert("Upload Bpmn files only");
+          alert(translate("Upload Bpmn files only"));
           return;
         }
         reader.readAsText(file);

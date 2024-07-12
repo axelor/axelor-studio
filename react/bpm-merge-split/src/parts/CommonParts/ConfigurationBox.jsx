@@ -46,8 +46,8 @@ const ConfigurationBox = ({ data = {}, update = () => {} }) => {
     >
       <Box my={2}>
         <TextField
-          label="Name"
-          placeholder="Name"
+          label={translate("Name")}
+          placeholder={translate("Name")}
           name="name"
           invalid={!formData.name}
           description={!formData.name && translate("Name field is required")}
@@ -58,8 +58,8 @@ const ConfigurationBox = ({ data = {}, update = () => {} }) => {
       </Box>
       <Box my={2}>
         <TextField
-          label="Code"
-          placeholder="Code"
+          label={translate("Code")}
+          placeholder={translate("Code")}
           name="code"
           invalid={!formData.code}
           description={!formData.code && translate("Code field is required")}

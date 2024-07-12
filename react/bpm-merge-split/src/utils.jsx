@@ -1,3 +1,16 @@
+import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+import { getInfo, getTranslations } from "./services/api";
+
+const info = (() => {
+  let infoPromise = null;
+  return async () => {
+    if (!infoPromise) {
+      infoPromise = getInfo();
+    }
+    return infoPromise;
+  };
+})();
+
 const download = (entity, name, isXml = true) => {
   let encodedData = encodeURIComponent(entity);
   let dl = document.createElement("a");
@@ -127,6 +140,40 @@ const setParam = (param, value = "") => {
   const url = new URL(document.location);
   url.searchParams.set(param, value);
   window.history.replaceState({}, "", url.toString());
+};
+
+export function getNameProperty(element) {
+  return element?.type === "bpmn:TextAnnotation"
+    ? "text"
+    : element?.type === "bpmn:Group"
+    ? "categoryValue"
+    : "name";
+}
+
+export const updateTranslations = async (element, bpmnModeler) => {
+  if (!element) return;
+  const bo = getBusinessObject(element);
+  if (!bo) return;
+  if (!getBool(bo?.$attrs?.["camunda:isTranslations"])) return;
+  if (!bo?.$attrs?.["camunda:key"]) return;
+  const translations = await getTranslations(bo?.$attrs?.["camunda:key"]);
+  if (translations?.length <= 0) return;
+  const modelProperty = getNameProperty(element);
+  const userInfo = await info();
+  const language = userInfo?.user?.lang;
+  if (!language) return;
+  const selectedTranslation = translations?.find(
+    (t) => t.language === language
+  );
+  const diagramValue =
+    selectedTranslation?.message || bo?.$attrs["camunda:key"];
+  if (!diagramValue) return;
+  let elementRegistry = bpmnModeler.get("elementRegistry");
+  let modeling = bpmnModeler.get("modeling");
+  let shape = elementRegistry.get(element.id);
+  modeling?.updateProperties(shape, {
+    [modelProperty]: diagramValue,
+  });
 };
 
 export {
