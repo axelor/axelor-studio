@@ -50,7 +50,7 @@ export default function SelectComponent({
 }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
-  const [searchText, setsearchText] = useState(null);
+  const [searchText, setSearchText] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isError, setError] = useState(false);
@@ -204,6 +204,7 @@ export default function SelectComponent({
           open={open}
           onOpen={() => setOpen(true)}
           onClose={() => {
+            setSearchText(null);
             setOpen(false);
           }}
           defaultValue={defaultValue}
@@ -331,7 +332,7 @@ export default function SelectComponent({
             }
           }}
           name={name}
-          onInputChange={(val) => setsearchText(val)}
+          onInputChange={(val) => setSearchText(val)}
           //TODO add dynamic support for optionLabel
           optionLabel={(option) =>
             customOptionLabel
