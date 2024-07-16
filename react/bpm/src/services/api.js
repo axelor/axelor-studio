@@ -889,3 +889,32 @@ export async function getProcessInstance(instanceId) {
   const { data = [] } = res || {};
   return data[0];
 }
+
+export async function checkConnectAndStudioInstalled() {
+  const res = await Service.action({
+    action:
+      "com.axelor.studio.web.ConnectController:isConnectAndStudioInstalled",
+  });
+  if (res?.data[0]?.values)
+    return res?.data[0]?.values?.isConnectAndStudioInstalled;
+}
+
+export async function getOrganization() {
+  const res = await Service.action({
+    action:
+      "com.axelor.studio.pro.web.StudioAppConnectController:getOrganizations",
+  });
+  const { organizations } = res?.data[0]?.values;
+  return organizations || [];
+}
+
+export async function getScenarios(organizationId) {
+  if (!organizationId) return [];
+  const res = await Service.action({
+    action: "com.axelor.studio.pro.web.StudioAppConnectController:getScenarios",
+    data: {
+      organizationId: Number(organizationId),
+    },
+  });
+  return res?.data[0]?.values?.scenarios || [];
+}
