@@ -38,13 +38,16 @@
 *** xref:/documentation-general/creation_modele_dmn.adoc[Création des modèles DMN]
 *** xref:/documentation-general/create_model_baml.adoc[Création des modèles BAML]
 *** xref:/documentation-general/merge-split.adoc[Fusionner et diviser des modèles BPMN]
-*** xref:/documentation-general/[Instances de processus]
-**** xref:/documentation-general/Instances de processus/display-logs.adoc[Affichage des logs]
-**** xref:/documentation-general/Instances de processus/colorize_diagram_errors.adoc[Indication des erreurs sur les nœuds des diagrammes.]
-**** xref:/documentation-general/Instances de processus/process_runtime_modification.adoc[Modification d'instance de processus en cours d'exécution]
-**** xref:/documentation-general/Instances de processus/process_variables_visualization.adoc[Visualisation des variables de processus]
+*** xref:/documentation-general/instance-de-processus/[Instances de processus]
+**** xref:/documentation-general/instance-de-processus/display-logs.adoc[Affichage des logs]
+**** xref:/documentation-general/instance-de-processus/colorize_diagram_errors.adoc[Indication des erreurs sur les nœuds des diagrammes.]
+**** xref:/documentation-general/instance-de-processus/process_runtime_modification.adoc[Modification d'instance de processus en cours d'exécution]
+**** xref:/documentation-general/instance-de-processus/process_variables_visualization.adoc[Visualisation des variables de processus]
 
 
 ** xref:/annexes/[Annexes]
 *** xref:/annexes/astuce_espace_travail.adoc[Astuces sur l’espace de travail]
 *** xref:/annexes/configurable_values_prevent_infinite_loop.adoc[Utiliser des valeurs configurables pour détecter une boucle infinie potentielle]
+
+** xref:/pro-features/[Pro features]
+*** xref:/pro-features/call_connect_with_bpm.adoc[Call connect scenario with the BPM]
