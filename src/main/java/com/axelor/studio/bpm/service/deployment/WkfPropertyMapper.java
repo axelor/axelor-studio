@@ -26,10 +26,14 @@ public class WkfPropertyMapper {
 
   static {
     FIELD_MAP.put("createTask", "createUserAction");
-    FIELD_MAP.put("roleName", "role");
+    FIELD_MAP.put("roleName", "taskRole");
+    FIELD_MAP.put("roleType", "roleType");
+    FIELD_MAP.put("roleFieldPath", "roleFieldPath");
     FIELD_MAP.put("taskEmailTitle", "actionEmailTitle");
     FIELD_MAP.put("userPath", "userFieldPath");
+    FIELD_MAP.put("userFieldType", "userFieldType");
     FIELD_MAP.put("deadlineFieldPath", "deadlineFieldPath");
+    FIELD_MAP.put("deadlineType", "deadlineType");
     FIELD_MAP.put("notificationEmail", "emailNotification");
     FIELD_MAP.put("emailEvent", "emailEvent");
     FIELD_MAP.put("modelName", "metaModel");
@@ -45,6 +49,12 @@ public class WkfPropertyMapper {
     FIELD_MAP.put("callLink", "parentPath");
     FIELD_MAP.put("callLinkCondition", "condition");
     FIELD_MAP.put("teamPath", "teamFieldPath");
+    FIELD_MAP.put("taskPriority", "taskPriority");
+    FIELD_MAP.put("taskPriorityType", "priorityType");
+    FIELD_MAP.put("description", "description");
+    FIELD_MAP.put("descriptionType", "descriptionType");
+    FIELD_MAP.put("duration", "duration");
+    FIELD_MAP.put("durationType", "durationType");
   }
 
   protected static final Map<String, String> PROCESS_DISPLAY_PROPERTIES =

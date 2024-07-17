@@ -15,15 +15,24 @@
     <many-to-one name="wkfModel" ref="WkfModel"/>
     <boolean name="createTask" title="Create user action"/>
     <string name="roleName" title="Role"/>
+    <string name="roleType" title="Role type"/>
+    <string name="roleFieldPath" title="Role field path"/>
     <string name="taskEmailTitle" title="Action/Email Title"/>
     <string name="userPath" title="User field path"/>
+    <string name="userFieldType" title="User field type"/>
     <string name="deadlineFieldPath" title="Deadline field path"/>
+    <string name="deadlineType" title="Deadline type field"/>
     <boolean name="notificationEmail" title="Email notification"/>
     <string name="emailEvent" title="Email event"/>
     <one-to-many name="wkfTaskMenuList" title="Menus"
       ref="com.axelor.studio.db.WkfTaskMenu" mappedBy="wkfTaskConfig"/>
     <string name="modelName" title="Model name"/>
     <string name="jsonModelName" title="Json model name"/>
+    <string name="taskPriority" title="Task priority"/>
+    <string name="taskPriorityType" title="taskPriorityType"/>
+    <string name="descriptionType" title="Description type"/>
+    <string name="duration" title="Duration"/>
+    <string name="durationType" title="Duration type"/>
     <string name="processId" title="Process id"/>
     <boolean name="displayStatus" title="Display status"/>
     <string name="displayOnModels" title="Display for models" large="true"/>
