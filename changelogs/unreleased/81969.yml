@@ -1,0 +1,7 @@
+---
+title: Update xsd version on Studio elements
+type: fix
+description: |
+  - Update xsd version on domains from 6.1 to 7.1
+  - Update xsd version on views from 6.1 to 7.1
+  - Update xsd version on import from 6.1 to 7.1
