@@ -29,7 +29,7 @@ public class WkfPropertyMapper {
     FIELD_MAP.put("roleName", "taskRole");
     FIELD_MAP.put("roleType", "roleType");
     FIELD_MAP.put("roleFieldPath", "roleFieldPath");
-    FIELD_MAP.put("taskEmailTitle", "actionEmailTitle");
+    FIELD_MAP.put("taskEmailTitle", "taskName");
     FIELD_MAP.put("userPath", "userFieldPath");
     FIELD_MAP.put("userFieldType", "userFieldType");
     FIELD_MAP.put("deadlineFieldPath", "deadlineFieldPath");
@@ -49,6 +49,7 @@ public class WkfPropertyMapper {
     FIELD_MAP.put("callLink", "parentPath");
     FIELD_MAP.put("callLinkCondition", "condition");
     FIELD_MAP.put("teamPath", "teamFieldPath");
+    FIELD_MAP.put("teamFieldType", "teamFieldType");
     FIELD_MAP.put("taskPriority", "taskPriority");
     FIELD_MAP.put("taskPriorityType", "priorityType");
     FIELD_MAP.put("description", "description");

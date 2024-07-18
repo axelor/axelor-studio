@@ -44,6 +44,7 @@
     <string name="callLink" title="Call link"/>
     <string name="callLinkCondition" title="Call link condition"/>
     <string name="teamPath" title="Team field path"/>
+    <string name="teamFieldType" title="Team field type"/>
     <entity-listener class="com.axelor.studio.bpm.listener.WkfTaskConfigListener"/>
 
   </entity>

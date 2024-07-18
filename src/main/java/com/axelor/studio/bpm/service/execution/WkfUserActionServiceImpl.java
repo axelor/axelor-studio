@@ -25,6 +25,7 @@ import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaModelRepository;
+import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
@@ -113,29 +114,74 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       teamTask.setRelatedProcessInstance(
           wkfInstanceRepository.findByInstanceId(execution.getProcessInstanceId()));
       teamTask.setStatus("new");
-      if (!StringUtils.isEmpty(wkfTaskConfig.getRoleName())) {
-        teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
+      if (!StringUtils.isEmpty(wkfTaskConfig.getRoleType())) {
+        switch (wkfTaskConfig.getRoleType()) {
+          case "Value":
+            teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
+            break;
+          case "Field":
+            teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleFieldPath())); // here process field
+            break;
+          case "Script":
+            teamTask.setRole(
+                roleRepo.findByName(
+                    (String)
+                        new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getRoleFieldPath())));
+            break;
+        }
       }
-      if (wkfTaskConfig.getDeadlineFieldPath() != null) {
-        teamTask.setTaskDate(getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
+      if (wkfTaskConfig.getDeadlineType() != null) {
+        switch (wkfTaskConfig.getDeadlineType()) {
+          case "Field":
+            teamTask.setTaskDeadline(getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
+            break;
+          case "Script":
+            teamTask.setTaskDeadline(
+                (LocalDate)
+                    new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getDeadlineFieldPath()));
+            break;
+        }
       }
       if (teamTask.getTaskDate() == null) {
         teamTask.setTaskDate(LocalDate.now());
       }
       String userPath = getUserPath(wkfTaskConfig, execution.getProcessDefinitionId());
       if (userPath != null) {
-        teamTask.setAssignedTo(getUser(userPath, wkfContext));
+        switch (wkfTaskConfig.getUserFieldType()) {
+          case "Field":
+            teamTask.setAssignedTo(getUser(userPath, wkfContext));
+            break;
+          case "Script":
+            teamTask.setAssignedTo(
+                (User) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getUserPath()));
+            break;
+        }
       }
       String teamPath = wkfTaskConfig.getTeamPath();
       if (teamPath != null) {
-        FullContext teamCtx = (FullContext) wkfService.evalExpression(wkfContext, teamPath);
-        if (teamCtx != null) {
-          Team team = (Team) teamCtx.getTarget();
-          if (team != null) {
-            team = teamRepo.find(team.getId());
-            teamTask.setTeam(team);
-          }
+        switch (wkfTaskConfig.getTeamFieldType()) {
+          case "Field":
+            teamTask.setTeam(getTeam(teamPath, wkfContext));
+            break;
+          case "Script":
+            teamTask.setTeam(
+                (Team) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getTeamPath()));
+            break;
         }
+      }
+      if (wkfTaskConfig.getTaskPriority() != null) {
+        switch (wkfTaskConfig.getTaskPriorityType()) {
+          case "Value":
+            teamTask.setPriority(wkfTaskConfig.getTaskPriority());
+            break;
+          case "Script":
+            teamTask.setPriority(
+                (String) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getTaskPriority()));
+            break;
+        }
+      }
+      if (wkfTaskConfig.getDuration() != null) {
+        teamTask.setTaskDuration(Integer.parseInt(wkfTaskConfig.getDuration()));
       }
       String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
       teamTask.setDescription(
@@ -144,6 +190,18 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     } catch (ClassNotFoundException e) {
       ExceptionHelper.trace(e);
     }
+  }
+
+  private Team getTeam(String teamPath, FullContext wkfContext) {
+    FullContext teamCtx = (FullContext) wkfService.evalExpression(wkfContext, teamPath);
+    if (teamCtx != null) {
+      Team team = (Team) teamCtx.getTarget();
+      if (team != null) {
+        team = teamRepo.find(team.getId());
+        return team;
+      }
+    }
+    return null;
   }
 
   @Override
