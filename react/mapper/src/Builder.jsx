@@ -448,7 +448,7 @@ function Builder({
     if (model) {
       (async () => {
         const data = await fetchFields(model);
-        setMetaFields(excludeFields([...data]));
+        setMetaFields(data);
       })();
     }
   }, [model, setBuilderFields]);
