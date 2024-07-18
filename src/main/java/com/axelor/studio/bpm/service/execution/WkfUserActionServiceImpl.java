@@ -18,6 +18,7 @@
 package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.auth.AuthUtils;
+import com.axelor.auth.db.Role;
 import com.axelor.auth.db.User;
 import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.auth.db.repo.UserRepository;
@@ -120,7 +121,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
             break;
           case "Field":
-            teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleFieldPath())); // here process field
+            teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(),wkfContext)); // here process field
             break;
           case "Script":
             teamTask.setRole(
@@ -319,6 +320,23 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     }
 
     return date;
+  }
+
+  public Role getRole(String rolePath, FullContext wkfContext) {
+    Role role = null;
+    if (wkfContext != null) {
+      FullContext roleCtx = (FullContext) wkfService.evalExpression(wkfContext, rolePath);
+      if (roleCtx != null) {
+        role = (Role) roleCtx.getTarget();
+        if (role != null) {
+          role = roleRepo.find(role.getId());
+        }
+      }
+    } else {
+      role = roleRepo.findByName(rolePath);
+    }
+
+    return role;
   }
 
   @Override
