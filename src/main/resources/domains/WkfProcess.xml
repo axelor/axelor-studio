@@ -18,7 +18,7 @@
     <boolean name="displayStatus"/>
     <string name="displayOnModels" title="Display for models" large="true"/>
     <string name="description" title="Description" large="true"/>
-    <boolean name="onlyOnClientChange" title="Trigger only on client change" default="true"/>
+    <boolean name="onlyOnClientChange" title="Trigger only on client change" default="false"/>
   </entity>
 
 </domain-models>
