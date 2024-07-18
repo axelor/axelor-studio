@@ -21,7 +21,7 @@ import javax.persistence.PostUpdate;
 public class GlobalEntityListener {
   @PostPersist
   @PostUpdate
-  protected void onPostPersist(Model model) throws InterruptedException {
+  protected void onPostPersistOrUpdate(Model model) throws InterruptedException {
     runOnForkJoinPool(Set.of(model), Set.of());
   }
 
