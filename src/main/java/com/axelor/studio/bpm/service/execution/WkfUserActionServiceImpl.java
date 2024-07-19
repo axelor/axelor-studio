@@ -108,8 +108,16 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
     try {
       FullContext wkfContext = getModelCtx(wkfTaskConfig, execution);
-      if (wkfContext != null) {
-        title = processTitle(title, wkfContext);
+      switch (wkfTaskConfig.getTaskEmailTitle()) {
+        case "Value":
+          if (wkfContext != null) {
+            title = processTitle(title, wkfContext);
+          }
+          break;
+        case "Script":
+          title =
+              (String) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getTaskEmailTitle());
+          break;
       }
       TeamTask teamTask = new TeamTask(title);
       teamTask.setRelatedProcessInstance(
@@ -121,7 +129,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
             break;
           case "Field":
-            teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(),wkfContext)); // here process field
+            teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(), wkfContext));
             break;
           case "Script":
             teamTask.setRole(
@@ -134,7 +142,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       if (wkfTaskConfig.getDeadlineType() != null) {
         switch (wkfTaskConfig.getDeadlineType()) {
           case "Field":
-            teamTask.setTaskDeadline(getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
+            teamTask.setTaskDeadline(
+                getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
             break;
           case "Script":
             teamTask.setTaskDeadline(
