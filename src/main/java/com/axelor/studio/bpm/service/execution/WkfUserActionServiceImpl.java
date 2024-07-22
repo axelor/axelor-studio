@@ -194,8 +194,12 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         teamTask.setTaskDuration(Integer.parseInt(wkfTaskConfig.getDuration()));
       }
       String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
-      teamTask.setDescription(
-          String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
+      if(wkfTaskConfig.getDescriptionType() == "Script"){
+        teamTask.setDescription((String) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getDescription()));
+      }else {
+        teamTask.setDescription(
+                String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
+      }
       teamTaskRepository.save(teamTask);
     } catch (ClassNotFoundException e) {
       ExceptionHelper.trace(e);
