@@ -135,5 +135,13 @@ The `Axelor` script is an extended format of the `groovy` language, it supports 
   ** **\\__ctx__.createVariable(WkfContext wkfContext, DelegateExecution execution):**
          This function is used when a process variable is required to create from the newly created record from `\\__ctx__.create` function, here pass that record as wkfContext and execution (inbuilt variable).
             For example, to create a new variable for a product that is created on the first function, the variable creation can be done by `\\__ctx__.createVariable(product,execution)`.
+  ** **\\__ctx__.createObject(value):**
+         This function is used to create a mapping in act_ru_variable, where the key corresponds to the model class and the value contains the JSON-serialized representation of the full context.
+         This method is applicable for both individual full context objects and collections of full context.
+  ** **\\__ctx__.getObject("variablename", execution):**
+         This operation deserializes the variable's value (which is a map of serialized values) and returns the deserialized full context.
+         It's essential to adhere to the following practices:
+        - Always fetch the variable value using __ctx__.getObject("variablename", execution) to ensure proper deserialization and usability.
+        - Any modifications to the variable's value should be accompanied by updating the variable using __ctx__.createObject(value), using the same variable name.
 
 * **\\__beans__:** It represents **com.axelor.inject.Beans**, which is used to inject and use services.
