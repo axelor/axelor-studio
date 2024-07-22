@@ -13,7 +13,7 @@ import { getBPMModels } from "../../services/api";
 import { setParam, translate } from "../../utils";
 import { MODEL_GRID_COLUMNS } from "../../Constants";
 
-const ModelList = ({ setModels, models = [], open, setOpen }) => {
+const ModelList = ({ setModels, models = [], open, setOpen,setSelectedParticipants }) => {
   const [records, setRecords] = useState([]);
   const [selectedRecords, setSelectedRecords] = useState([]);
 
@@ -26,13 +26,24 @@ const ModelList = ({ setModels, models = [], open, setOpen }) => {
   );
 
   const onSave = () => {
-    const modelIds = models.map((m) => m.id);
-    const ids = selectedRecords.map(({ id }) => id).join("-");
-    setParam("id", ids);
+    const ids = selectedRecords.map(({ id }) => id)
+    const idParams=ids?.join("-");
+    setParam("id", idParams);
     setModels((models) => [
       ...selectedRecords,
       ...models.filter(({ uploaded }) => uploaded),
     ]);
+    setSelectedParticipants((sp) => {
+      const newParticipants = Object.entries(sp)
+        .filter(([key, value]) => ids.includes(Number(key)) || isNaN(Number(key)))
+        .reduce((acc, [key, value]) => {
+          const numKey = Number(key);
+          acc[isNaN(numKey) ? key : numKey] = Array.isArray(value) ? value : [value];
+          return acc;
+        }, {});
+    
+      return newParticipants;
+    }); 
     setSelectedRecords([]);
     setOpen(false);
   };

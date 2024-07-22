@@ -1,0 +1,6 @@
+---
+title: When merging BPM models there is a breaking issue
+type: fix
+description: |
+  When having selected a BPM model and then merging it with another model, the application went blank consequently to a 
+  front-end issue.
