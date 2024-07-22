@@ -138,7 +138,7 @@ function createGeneralTabGroups(
 
   let startOnListenerProps = {
     id: "process-is-start-on-listener",
-    label: translate("Start on listener"),
+    label: translate("Trigger only on client change"),
     entries: [],
     component: StartOnListenerProps,
   };
