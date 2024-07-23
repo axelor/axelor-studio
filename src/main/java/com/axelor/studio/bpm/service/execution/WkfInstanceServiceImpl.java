@@ -129,10 +129,14 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   @Override
   public String evalInstance(Model model, String signal, Integer source)
       throws ClassNotFoundException {
-    WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
-    boolean executeProcess =
-        (wkfProcess.getOnlyOnClientChange() && EXECUTION_SOURCE_LISTENER == source)
-            || (source == EXECUTION_SOURCE_OBSERVER && !wkfProcess.getOnlyOnClientChange());
+    WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
+    boolean executeProcess = false;
+    if (wkfProcessConfig != null) {
+      WkfProcess wkfProcess = wkfProcessConfig.getWkfProcess();
+      executeProcess =
+          (wkfProcess.getOnlyOnClientChange() && EXECUTION_SOURCE_LISTENER == source)
+              || (source == EXECUTION_SOURCE_OBSERVER && !wkfProcess.getOnlyOnClientChange());
+    }
     if (executeProcess) {
       return evalInstance(model, signal);
     }
