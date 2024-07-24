@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.reporting;
 
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaAction;
@@ -27,10 +27,13 @@ import com.axelor.meta.schema.views.Dashlet;
 import com.axelor.studio.db.StudioDashboard;
 import com.axelor.studio.db.StudioDashlet;
 import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.constructor.GroovyTemplateService;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +45,18 @@ import org.slf4j.LoggerFactory;
  */
 public class StudioDashboardServiceImpl implements StudioDashboardService {
 
-  protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  protected static final String TEMPLATE_PATH = "templates/dashboardActionView.tmpl";
+
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected StudioMetaService metaService;
+  protected GroovyTemplateService groovyTemplateService;
 
   @Inject
-  public StudioDashboardServiceImpl(StudioMetaService metaService) {
+  public StudioDashboardServiceImpl(
+      StudioMetaService metaService, GroovyTemplateService groovyTemplateService) {
     this.metaService = metaService;
+    this.groovyTemplateService = groovyTemplateService;
   }
 
   /**
@@ -150,37 +158,34 @@ public class StudioDashboardServiceImpl implements StudioDashboardService {
     if (view.equals("form")) {
       otherView = "grid";
     }
+    Map<String, Object> binding = new HashMap<>();
 
     String xmlId = actionName;
-    StringBuilder xml = new StringBuilder();
-    xml.append("<action-view name=\"" + actionName + "\" ");
-    xml.append("id=\"" + xmlId + "\" ");
-    xml.append("title=\"" + studioDashlet.getName() + "\" ");
+    binding.put("name", actionName);
+    binding.put("id", xmlId);
+    binding.put("title", studioDashlet.getName());
+    binding.put("hasModel", model != null);
     if (model != null) {
-      xml.append("model=\"" + model + "\"");
+      binding.put("model", model);
     }
-    xml.append(">");
-    xml.append("\n\t<view type=\"" + view + "\" ");
-    xml.append("name=\"" + name + "\" />");
-    if (isJson) {
-      xml.append("\n\t<view type=\"" + otherView + "\" ");
-      xml.append("name=\"" + name.replace("-" + view, "-" + otherView) + "\" />");
-    } else {
-      xml.append("\n\t<view type=\"" + otherView + "\" />");
-    }
-    if (studioDashlet.getPaginationLimit() > 0) {
-      xml.append(
-          "\n\t<view-param name=\"limit\" value=\""
-              + studioDashlet.getPaginationLimit().toString()
-              + "\"/>");
-    }
+    binding.put("viewType1", view);
+    binding.put("viewName1", name);
+    binding.put("viewType2", otherView);
 
+    binding.put("isJson", isJson);
+    if (isJson) {
+      binding.put("viewName2", name.replace("-" + view, "-" + otherView));
+    }
+    binding.put("hasPaginationValue", studioDashlet.getPaginationLimit() > 0);
+    if (studioDashlet.getPaginationLimit() > 0) {
+      binding.put("paginationValue", studioDashlet.getPaginationLimit().toString());
+    }
     if (isJson) {
       String[] models = name.split("-");
-      xml.append("\n\t<domain>self.jsonModel = '" + models[models.length - 2] + "'</domain>");
+      binding.put("jsonModel", models[models.length - 2]);
     }
-    xml.append("\n</action-view>");
+    String xml = groovyTemplateService.createXmlWithGroovyTemplate(TEMPLATE_PATH, binding);
 
-    return metaService.updateMetaAction(actionName, "action-view", xml.toString(), model, xmlId);
+    return metaService.updateMetaAction(actionName, "action-view", xml, model, xmlId);
   }
 }
