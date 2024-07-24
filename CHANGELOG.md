@@ -1,3 +1,34 @@
+## 2.2.5 (2024-07-24)
+
+#### Fix
+
+* Update xsd version on Studio elements
+
+  <details>
+  
+  - Update xsd version on domains from 6.1 to 7.0
+  - Update xsd version on views from 6.1 to 7.0
+  - Update xsd version on import from 6.1 to 7.0
+  
+  </details>
+
+* Builders refactoring
+
+  <details>
+  
+  - Change used template for studio action, use groovy template instead of js templating.
+  
+  </details>
+
+* Correct wrong translation
+
+  <details>
+  
+  - Change in fr translation "Modèles standards importés" to "Importer les modèles standards"
+  
+  </details>
+
+
 ## 2.2.4 (2024-06-26)
 
 #### Fix
