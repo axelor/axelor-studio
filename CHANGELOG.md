@@ -1,3 +1,28 @@
+## 3.0.3 (2024-07-24)
+
+#### Fix
+
+* When merging BPM models there is a breaking issue
+
+  <details>
+  
+  When having selected a BPM model and then merging it with another model, the application went blank consequently to a 
+  front-end issue.
+  
+  </details>
+
+* Update xsd version on Studio elements
+
+  <details>
+  
+  - Update xsd version on domains from 6.1 to 7.0
+  - Update xsd version on views from 6.1 to 7.0
+  - Update xsd version on import from 6.1 to 7.0
+  
+  </details>
+
+* Builders refactoring
+
 ## 3.0.2 (2024-06-26)
 
 #### Fix
