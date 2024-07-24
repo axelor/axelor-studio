@@ -17,7 +17,8 @@
     <!-- onNew="action-studio-action-line-set-default-attrs" onLoad="action-studio-action-line-set-default-attrs"> -->
     <panel name="mainPanel">
       <field name="dummy" colSpan="4"/>
-      <field name="isTargetJson" hideIf="dummy" colSpan="4"/>
+      <field name="isTargetJson" hideIf="dummy" colSpan="4"
+        onChange="action-studio-menu-attrs-reset-name-onChange"/>
       <field name="isSourceJson" hideIf="dummy" colSpan="4"/>
       <panel name="metaFieldsPanel" colSpan="6" itemSpan="12" hideIf="dummy">
         <field name="metaJsonField" showIf="isTargetJson"
@@ -161,6 +162,11 @@
   <action-record name="action-studio-action-line-set-name-json"
     model="com.axelor.studio.db.StudioActionLine">
     <field name="name" expr="eval:metaJsonField?.name"/>
+  </action-record>
+
+  <action-record name="action-studio-menu-attrs-reset-name-onChange"
+    model="com.axelor.studio.db.StudioActionLine">
+    <field name="name" expr="eval: isTargetJson ? metaJsonField?.name : metaField?.name"/>
   </action-record>
 
   <action-record name="action-studio-action-line-set-src-field-meta"

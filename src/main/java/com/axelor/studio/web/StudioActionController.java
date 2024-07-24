@@ -54,8 +54,8 @@ public class StudioActionController {
           model = inflector.dasherize(model);
         }
         List<StudioActionView> views = new ArrayList<>();
-        addStudioActionView(views, model, "grid", isJson, 0);
-        addStudioActionView(views, model, "form", isJson, 1);
+        addStudioActionView(views, model, "grid", isJson, 1);
+        addStudioActionView(views, model, "form", isJson, 2);
         response.setValue("studioActionViews", views);
       }
     } catch (Exception e) {

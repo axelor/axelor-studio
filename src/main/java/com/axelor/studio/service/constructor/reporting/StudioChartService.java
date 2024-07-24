@@ -1,46 +1,37 @@
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.reporting;
 
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.db.Filter;
 import com.axelor.studio.db.StudioChart;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 public interface StudioChartService {
 
   void build(StudioChart studioChart) throws JAXBException;
 
-  String createXml(StudioChart studioChart, String[] queryString);
+  String createXml(StudioChart studioChart, Map<String, Object> queryString);
 
-  String[] prepareQuery(StudioChart studioChart);
+  Map<String, Object> prepareQuery(StudioChart studioChart);
 
-  String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField);
+  String getSumField(boolean isJson, MetaField metaField, MetaJsonField jsonField);
 
   String getGroup(
       boolean isJson, MetaField metaField, MetaJsonField jsonField, String dateType, String target);
 
   String getDateTypeGroup(String dateType, String typeName, String group);
 
-  String getSearchFields();
-
-  //	private void setOnNewAction(StudioChart studioChart) {
-  //
-  //		if (!onNewFields.isEmpty()) {
-  //			onNewAction = new ActionRecord();
-  //			onNewAction.setName("action-" + studioChart.getName() + "-default");
-  //			onNewAction.setModel(studioChart.getModel());
-  //			onNewAction.setFields(onNewFields);
-  //		}
-  //
-  //	}
-
   void addSearchField(List<Filter> filters);
 
-  String getMetaSearchField(String fieldStr, MetaField field);
+  HashMap<String, Object> getMetaSearchField(
+      String fieldStr, MetaField field, HashMap<String, Object> searchFieldMap);
 
-  String getJsonSearchField(String fieldStr, MetaJsonField field);
+  HashMap<String, Object> getJsonSearchField(
+      String fieldStr, MetaJsonField field, HashMap<String, Object> searchFieldMap);
 
   String getTable(String model);
 

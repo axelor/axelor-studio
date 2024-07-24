@@ -32,18 +32,19 @@
         required="true"/>
       <field name="parentMenu" domain="self.name != :name"/>
       <field name="icon" widget="ImageSelect"/>
-      <field name="iconBackground"/>
+      <field name="iconBackground" widget="TagSelect"/>
       <field name="order" colSpan="3"/>
       <field name="showAction" colSpan="3" widget="boolean-switch"
-        onChange="action-studio-menu-show-action"/>
+        onChange="action-studio-menu-show-action" title="Show actions"/>
       <field name="studioAction" colSpan="12" showIf="showAction" showTitle="false">
         <editor>
-          <field name="isJson" colSpan="2"/>
+          <field name="isJson" title="Custom model" colSpan="2" widget="boolean-switch"/>
           <field name="model" widget="ref-text" x-target-name="name"
-            x-target="com.axelor.meta.db.MetaJsonModel" hideIf="!isJson" colSpan="5"
+            x-target="com.axelor.meta.db.MetaJsonModel" hideIf="!isJson" colSpan="4"
             onChange="action-studio-action-method-set-views"/>
+          <spacer colSpan="12"/>
           <field name="model" showIf="!isJson" widget="ref-text" x-target-name="fullName"
-            x-target="com.axelor.meta.db.MetaModel" colSpan="5"
+            x-target="com.axelor.meta.db.MetaModel" colSpan="4"
             onChange="action-studio-action-method-set-views"/>
           <field name="studioActionViews" colSpan="12" grid-view="studio-action-view-grid"
             form-view="studio-action-view-form"/>
@@ -104,12 +105,12 @@
 
   <action-attrs name="action-studio-menu-attrs-check-generate-name">
     <attribute name="value" for="name"
-      expr="call:com.axelor.studio.service.builder.StudioMenuService:checkAndGenerateName(name)"/>
+      expr="call:com.axelor.studio.service.constructor.components.StudioMenuService:checkAndGenerateName(name)"/>
   </action-attrs>
 
   <action-attrs name="action-studio-menu-attrs-check-generate-id">
     <attribute name="value" for="xmlId"
-      expr="call:com.axelor.studio.service.builder.StudioMenuService:checkAndGenerateName(xmlId)"/>
+      expr="call:com.axelor.studio.service.constructor.components.StudioMenuService:checkAndGenerateName(xmlId)"/>
   </action-attrs>
 
 </object-views>
