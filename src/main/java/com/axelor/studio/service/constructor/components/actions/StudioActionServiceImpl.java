@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components.actions;
 
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaAction;
@@ -24,6 +24,7 @@ import com.axelor.studio.db.StudioActionView;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,14 +38,14 @@ public class StudioActionServiceImpl implements StudioActionService {
 
   protected StudioActionViewService studioActionViewService;
 
-  protected StudioActionScriptServiceImpl studioActionScriptService;
+  protected StudioActionScriptService studioActionScriptService;
 
   protected StudioActionEmailService studioActionEmailService;
 
   @Inject
   public StudioActionServiceImpl(
       StudioActionViewService studioActionViewService,
-      StudioActionScriptServiceImpl studioActionScriptService,
+      StudioActionScriptService studioActionScriptService,
       StudioActionEmailService studioActionEmailService) {
     this.studioActionViewService = studioActionViewService;
     this.studioActionEmailService = studioActionEmailService;
@@ -53,7 +54,7 @@ public class StudioActionServiceImpl implements StudioActionService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public MetaAction build(StudioAction studioAction) {
+  public MetaAction build(StudioAction studioAction) throws IOException, ClassNotFoundException {
 
     if (studioAction == null) {
       return null;
