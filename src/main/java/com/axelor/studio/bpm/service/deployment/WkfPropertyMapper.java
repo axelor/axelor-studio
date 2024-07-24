@@ -30,6 +30,7 @@ public class WkfPropertyMapper {
     FIELD_MAP.put("roleType", "roleType");
     FIELD_MAP.put("roleFieldPath", "roleFieldPath");
     FIELD_MAP.put("taskEmailTitle", "taskName");
+    FIELD_MAP.put("taskNameType", "taskNameType");
     FIELD_MAP.put("userPath", "userFieldPath");
     FIELD_MAP.put("userFieldType", "userFieldType");
     FIELD_MAP.put("deadlineFieldPath", "deadlineFieldPath");

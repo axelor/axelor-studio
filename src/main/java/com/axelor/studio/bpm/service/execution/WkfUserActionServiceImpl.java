@@ -36,14 +36,19 @@ import com.axelor.team.db.Team;
 import com.axelor.team.db.TeamTask;
 import com.axelor.team.db.repo.TeamRepository;
 import com.axelor.team.db.repo.TeamTaskRepository;
+import com.axelor.text.GroovyTemplates;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.context.FullContext;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xmlbeans.impl.xb.xsdschema.Attribute;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
@@ -72,6 +77,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
   protected WkfInstanceRepository wkfInstanceRepository;
 
+  protected GroovyTemplates templates;
+
   @Inject
   public WkfUserActionServiceImpl(
       WkfCommonService wkfService,
@@ -79,6 +86,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       WkfProcessConfigRepository wkfProcessConfigRepository,
       TeamTaskRepository teamTaskRepository,
       RoleRepository roleRepo,
+      GroovyTemplates templates,
       TeamRepository teamRepo,
       MetaModelRepository metaModelRepository,
       WkfInstanceRepository wkfInstanceRepository,
@@ -92,6 +100,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     this.wkfEmailService = wkfEmailService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.metaModelRepository = metaModelRepository;
+    this.templates = templates;
   }
 
   protected static final Pattern FIELD_PATTERN = Pattern.compile("(\\$\\{[^\\}]+\\})");
@@ -108,7 +117,20 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
     try {
       FullContext wkfContext = getModelCtx(wkfTaskConfig, execution);
-      switch (wkfTaskConfig.getTaskEmailTitle()) {
+      String modelName = null;
+      if(wkfTaskConfig.getModelName() != null){
+        modelName = wkfTaskConfig.getModelName();
+      } else {
+        modelName = wkfTaskConfig.getJsonModelName();
+      }
+      String varModelName = wkfService.getVarName(modelName);
+      Map<String,Object> contextVariables = new HashMap<>();
+      contextVariables.put(varModelName, wkfContext);
+      Map<String, Object> processVariables =
+              execution.getProcessEngine().getRuntimeService().getVariables(execution.getProcessInstance().getId());
+      processVariables.entrySet().removeIf(it -> Strings.isNullOrEmpty(it.getKey()));
+      contextVariables.putAll(processVariables);
+      switch (wkfTaskConfig.getTaskNameType()) {
         case "Value":
           if (wkfContext != null) {
             title = processTitle(title, wkfContext);
@@ -116,7 +138,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
           break;
         case "Script":
           title =
-              (String) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getTaskEmailTitle());
+              templates.fromText(wkfTaskConfig.getTaskEmailTitle()).make(contextVariables).render();
           break;
       }
       TeamTask teamTask = new TeamTask(title);
@@ -134,8 +156,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
           case "Script":
             teamTask.setRole(
                 roleRepo.findByName(
-                    (String)
-                        new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getRoleFieldPath())));
+                        (String) wkfService.evalExpression(contextVariables, wkfTaskConfig.getRoleFieldPath())));
             break;
         }
       }
@@ -147,8 +168,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             break;
           case "Script":
             teamTask.setTaskDeadline(
-                (LocalDate)
-                    new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getDeadlineFieldPath()));
+                (LocalDate) wkfService.evalExpression(contextVariables, wkfTaskConfig.getDeadlineFieldPath()));
             break;
         }
       }
@@ -162,8 +182,13 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setAssignedTo(getUser(userPath, wkfContext));
             break;
           case "Script":
-            teamTask.setAssignedTo(
-                (User) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getUserPath()));
+            FullContext userCtx = (FullContext) wkfService.evalExpression(contextVariables, wkfTaskConfig.getUserPath());
+            if(userCtx != null){
+              User user = (User) userCtx.getTarget();
+              if(user != null){
+                teamTask.setAssignedTo(user);
+              }
+            }
             break;
         }
       }
@@ -175,7 +200,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             break;
           case "Script":
             teamTask.setTeam(
-                (Team) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getTeamPath()));
+                (Team)  wkfService.evalExpression(contextVariables, wkfTaskConfig.getTeamPath()));
             break;
         }
       }
@@ -186,7 +211,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             break;
           case "Script":
             teamTask.setPriority(
-                (String) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getTaskPriority()));
+                templates.fromText(wkfTaskConfig.getTaskPriority()).make(contextVariables).render());
             break;
         }
       }
@@ -194,11 +219,12 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
         teamTask.setTaskDuration(Integer.parseInt(wkfTaskConfig.getDuration()));
       }
       String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
-      if(wkfTaskConfig.getDescriptionType() == "Script"){
-        teamTask.setDescription((String) new GroovyScriptHelper(wkfContext).eval(wkfTaskConfig.getDescription()));
-      }else {
+      if (wkfTaskConfig.getDescriptionType() == "Script") {
         teamTask.setDescription(
-                String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
+                templates.fromText(wkfTaskConfig.getDescription()).make(contextVariables).render());
+      } else {
+        teamTask.setDescription(
+            String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
       }
       teamTaskRepository.save(teamTask);
     } catch (ClassNotFoundException e) {
