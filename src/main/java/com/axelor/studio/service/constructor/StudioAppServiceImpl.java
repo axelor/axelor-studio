@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor;
 
 import com.axelor.common.Inflector;
 import com.axelor.common.ObjectUtils;
@@ -26,7 +26,6 @@ import com.axelor.data.xml.XMLImporter;
 import com.axelor.data.xml.XMLInput;
 import com.axelor.db.JpaSecurity;
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaFile;
@@ -36,7 +35,7 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.repo.AppRepository;
-import com.axelor.studio.db.repo.StudioAppRepository;
+import com.axelor.studio.db.repo.StudioAppRepo;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportService;
@@ -77,22 +76,28 @@ public class StudioAppServiceImpl implements StudioAppService {
 
   protected AppLoaderExportService appLoaderExportService;
   protected AppLoaderImportService appLoaderImportService;
+  protected MetaFiles metaFiles;
 
   protected AppRepository appRepo;
   protected MetaJsonModelRepository metaJsonModelRepo;
+  protected StudioAppRepo studioAppRepo;
 
   @Inject
   public StudioAppServiceImpl(
       JpaSecurity jpaSecurity,
       AppLoaderExportService appLoaderExportService,
       AppLoaderImportService appLoaderImportService,
+      MetaFiles metaFiles,
       AppRepository appRepo,
-      MetaJsonModelRepository metaJsonModelRepo) {
+      MetaJsonModelRepository metaJsonModelRepo,
+      StudioAppRepo studioAppRepo) {
     this.jpaSecurity = jpaSecurity;
     this.appLoaderExportService = appLoaderExportService;
     this.appLoaderImportService = appLoaderImportService;
+    this.metaFiles = metaFiles;
     this.appRepo = appRepo;
     this.metaJsonModelRepo = metaJsonModelRepo;
+    this.studioAppRepo = studioAppRepo;
   }
 
   protected final Logger log = LoggerFactory.getLogger(StudioAppServiceImpl.class);
@@ -153,7 +158,7 @@ public class StudioAppServiceImpl implements StudioAppService {
   @Override
   @Transactional(rollbackOn = Exception.class)
   public void deleteApp(StudioApp studioApp) {
-    Beans.get(StudioAppRepository.class).remove(studioApp);
+    studioAppRepo.remove(studioApp);
   }
 
   @Override
@@ -190,7 +195,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         File logFile = MetaFiles.createTempFile("import-", "log").toFile();
         org.apache.commons.io.FileUtils.writeStringToFile(
             logFile, logStringBuilder.toString(), StandardCharsets.UTF_8);
-        return Beans.get(MetaFiles.class).upload(logFile);
+        return metaFiles.upload(logFile);
       }
     } catch (IOException e) {
       ExceptionHelper.trace(e);
@@ -241,7 +246,7 @@ public class StudioAppServiceImpl implements StudioAppService {
       int[] studioAppIdArr = studioAppIds.stream().mapToInt(id -> id).toArray();
       generateExportFile(exportDir, isExportData, studioAppIdArr);
       File zipFile = appLoaderExportService.createExportZip(exportDir);
-      exportFile = Beans.get(MetaFiles.class).upload(zipFile);
+      exportFile = metaFiles.upload(zipFile);
     } catch (Exception e) {
       ExceptionHelper.trace(e);
     } finally {
@@ -266,7 +271,7 @@ public class StudioAppServiceImpl implements StudioAppService {
       exportDir = Files.createTempDirectory("").toFile();
       generateExportFile(exportDir, isExportData, Integer.parseInt(studioApp.getId().toString()));
       File zipFile = appLoaderExportService.createExportZip(exportDir);
-      exportFile = Beans.get(MetaFiles.class).upload(zipFile);
+      exportFile = metaFiles.upload(zipFile);
     } catch (Exception e) {
       ExceptionHelper.trace(e);
     } finally {

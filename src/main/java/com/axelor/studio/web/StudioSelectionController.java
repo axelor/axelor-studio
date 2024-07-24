@@ -23,7 +23,7 @@ import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioSelection;
 import com.axelor.studio.db.repo.StudioSelectionRepository;
-import com.axelor.studio.service.builder.StudioSelectionService;
+import com.axelor.studio.service.constructor.components.StudioSelectionService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.List;
 import java.util.Map;

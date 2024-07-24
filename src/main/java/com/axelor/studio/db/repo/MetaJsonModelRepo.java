@@ -23,7 +23,7 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
-import com.axelor.studio.service.builder.StudioMenuService;
+import com.axelor.studio.service.constructor.components.StudioMenuService;
 
 public class MetaJsonModelRepo extends MetaJsonModelRepository {
 

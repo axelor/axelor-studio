@@ -1,4 +1,4 @@
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor;
 
 import com.axelor.data.xml.XMLBind;
 import com.axelor.data.xml.XMLInput;
