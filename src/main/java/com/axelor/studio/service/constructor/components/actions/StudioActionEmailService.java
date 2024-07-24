@@ -1,4 +1,4 @@
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components.actions;
 
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaAction;
