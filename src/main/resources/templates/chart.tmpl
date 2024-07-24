@@ -1,0 +1,32 @@
+<chart name="${name}" title="${title}">
+    <% if (searchFieldsNotEmpty) { %>
+    <search-fields>
+            <% searchFields.each { searchField -> %>
+        <field name="${searchField.name}" title="${searchField.title}" widget="ref-text" type="${searchField.type}" <% if (searchField.hasRelationship) { %> x-target-name="${searchField.targetName}" x-target="${searchField.target}" x-required="true" <% } %>/>
+        <% } %>
+    </search-fields>
+    <% } %>
+    <dataset type="sql"><![CDATA[
+        SELECT
+            SUM(${query.sumField}) AS sum_field
+        <% if (query.groupFieldNotNull) { %>
+            ,${query.groupField} AS group_field
+        <% } %>
+        <% if (query.aggFieldNotNull) { %>
+            ,${query.aggField} AS agg_field
+        <% } %>
+        FROM
+            ${query.tableName} self
+            ${query.joins}
+
+            <% if (query && query.chartIsJson && query.filtersNotNull) { %> WHERE self.json_model = '${query.model}' AND (${query.filters})
+            <% } else if (query && query.filtersNotNull) {%> WHERE ${query.filters}<% } %>
+        group by
+            group_field <% if (query.aggFieldNotNull) { %>, agg_field<% } %>
+    ]]></dataset>
+    <category key="group_field" type="${categoryType}" title="${categoryTitle}" />
+    <series key="sum_field" type="${seriesType}" title="${seriesTitle}" <% if (query.aggFieldNotNull) { %> groupBy="agg_field" <% } %>/>
+    <% if (clickHandlerSupported) { %>
+    <config name="onClick" value="action-studio-chart-view-related-record" />
+    <% } %>
+</chart>

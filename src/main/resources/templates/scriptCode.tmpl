@@ -1,0 +1,91 @@
+                var ctx = \$request.context;
+<% if (conditionTextNonNull) { %>
+                if(${condition}){
+<% } %>
+<% if (typeCreate) { %>
+<% if (isJson) { %>
+                var target = \$json.create('${targetModel}');
+                target = setVar0(null, ctx, {});
+                target = \$json.save(target);
+<% } else { %>
+                var target = new ${targetModel}();
+                target = setVar0(null, ctx, {});
+                \$em.persist(target);
+<% } %>
+
+<% if (openRecord) { %>
+<% if (isJson) { %>
+                \$response.setView(com.axelor.meta.schema.actions.ActionView.define('${title}')
+                    .model('com.axelor.meta.db.MetaJsonRecord')
+                    .add('grid','custom-model-${targetModel}-grid')
+                    .add('form','custom-model-${targetModel}-form')
+                    .domain('self.jsonModel = :jsonModel')
+                    .context('jsonModel', '${targetModel}')
+                    .context('_showRecord', target.id)
+                    .map())
+<% } else { %>
+                \$response.setView(com.axelor.meta.schema.actions.ActionView.define('${title}')
+                    .model('${targetModel}')
+                    .add('grid')
+                    .add('form')
+                    .context('_showRecord', target.id)
+                    .map())
+<% } %>
+<% } %>
+<% if (displayMsgNotEmpty) { %>
+                \$response.setInfo('${displayMsg}')
+<% } %>
+<% } else {%>
+<% if (isJson) { %>
+                var target = {};
+<% } else {%>
+                var target = ctx.asType("${targetModel}".class)
+<% } %>
+                target = setVar0(null, ctx, {});
+                \$response.setValues(target);
+<% } %>
+<% if (conditionTextNonNull) { %>
+            }
+<% } %>
+                function setVar0(\$\$, \$, _\$){
+<% if (isJsonField) { %>
+<% for (field in attrsFields) { %>
+                if (${field.target}.${field.attrsField} == null) {
+                    ${field.target}.${field.attrsField} = '{}';
+                }
+                var ${field.attrsField} = JSON.parse(${field.target}.${field.attrsField});
+<% } %>
+<% } %>
+
+<% for (line in lineMaps) { %>
+<% if (line.isDummy) { %>
+                _\$.${line.name} = line.${value};
+<% continue %>
+<% } %>
+<% if (line.conditionNotNull) { %>
+<% if (line.jsonFieldNotNull && isJsonField) { %>
+                if(${line.condition}){${line.attrsField}.${line.name} = ${line.value};}
+<% } else {%>
+                if(${line.condition}){${line.target}.${line.name} = ${line.value};}
+<% } %>
+<% } else {%>
+<% if (line.jsonFieldNotNull && isJsonField) { %>
+                ${line.attrsField}.${line.name} = ${line.value};
+<% } else {%>
+                ${line.target}.${line.name} = ${line.value};
+<% } %>
+<% } %>
+<% } %>
+
+<% if (isJsonField) { %>
+<% jsonAttrsFields.each { field ->  %>
+                ${field.target}.${field.attrsField} = JSON.stringify(${field.attrsField});
+<% } %>
+<% } %>
+                return target;
+            }
+
+        ${fbuilder}
+
+
+

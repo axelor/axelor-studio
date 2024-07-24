@@ -1,0 +1,17 @@
+<action-view name="${name}" title="${title}" id="${id}" model="${model}">
+        <% views.each { view -> %>
+        <view type="${view.viewType}" name="${view.viewName}" <% if (view.viewConditionToCheck && !view.viewConditionToCheck.isEmpty()) { %>if="${view.viewConditionToCheck}" <% } %>/>
+        <% } %>
+        <% params.each { param -> %>
+        <view-param name="${param.name}" value="${org.apache.commons.text.StringEscapeUtils.escapeXml11(param.value)}" />
+        <% } %>
+        <% if (domainNoNull) { %>
+        <domain>${domain}</domain>
+        <% } %>
+        <% contexts.each { context -> %>
+        <context name="${context.name}" expr="${context.value}" />
+        <% } %>
+        <% if (addJsonCtx) { %>
+        <context name="jsonModel" expr="${jsonModel}"/>
+        <% } %>
+</action-view>

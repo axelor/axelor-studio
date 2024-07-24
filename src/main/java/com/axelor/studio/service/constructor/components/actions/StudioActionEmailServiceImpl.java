@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components.actions;
 
 import com.axelor.i18n.I18n;
 import com.axelor.message.db.Message;
@@ -34,72 +34,72 @@ import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.constructor.GroovyTemplateService;
 import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 import javax.mail.MessagingException;
 
 public class StudioActionEmailServiceImpl implements StudioActionEmailService {
 
+  protected static final String TEMPLATE_PATH = "templates/actionMethod.tmpl";
+
   protected MetaModelRepository metaModelRepo;
-
   protected MetaJsonModelRepository metaJsonModelRepo;
-
-  protected StudioMetaService studioMetaService;
-
   protected TemplateRepository templateRepo;
 
+  protected StudioMetaService studioMetaService;
   protected TemplateMessageService templateMessageService;
-
   protected MessageService messageService;
+  protected GroovyTemplateService groovyTemplateService;
 
   @Inject
   public StudioActionEmailServiceImpl(
       MetaModelRepository metaModelRepo,
       MetaJsonModelRepository metaJsonModelRepo,
-      StudioMetaService studioMetaService,
       TemplateRepository templateRepo,
+      StudioMetaService studioMetaService,
       TemplateMessageService templateMessageService,
-      MessageService messageService) {
+      MessageService messageService,
+      GroovyTemplateService groovyTemplateService) {
     this.metaModelRepo = metaModelRepo;
     this.metaJsonModelRepo = metaJsonModelRepo;
-    this.studioMetaService = studioMetaService;
     this.templateRepo = templateRepo;
+    this.studioMetaService = studioMetaService;
     this.templateMessageService = templateMessageService;
     this.messageService = messageService;
+    this.groovyTemplateService = groovyTemplateService;
   }
 
   @Override
   public MetaAction build(StudioAction studioAction) {
     String name = studioAction.getName();
     Object model =
-        studioAction.getIsJson()
+        Boolean.TRUE.equals(studioAction.getIsJson())
             ? metaJsonModelRepo.all().filter("self.name = ?", studioAction.getModel()).fetchOne()
             : metaModelRepo.all().filter("self.fullName = ?", studioAction.getModel()).fetchOne();
 
     int sendOption = studioAction.getEmailSendOptionSelect();
     Template template = studioAction.getEmailTemplate();
 
-    String xml =
-        "<action-method name=\""
-            + name
-            + "\" id=\""
-            + studioAction.getXmlId()
-            + "\">\n\t"
-            + "<call class=\"com.axelor.studio.service.builder.StudioActionEmailService\" method=\"sendEmail(id, '"
-            + (studioAction.getIsJson()
-                ? ((MetaJsonModel) model).getName()
-                : ((MetaModel) model).getFullName())
-            + "', '"
-            + (studioAction.getIsJson()
-                ? ((MetaJsonModel) model).getName()
-                : ((MetaModel) model).getName())
-            + "', '"
-            + template.getId()
-            + "', '"
-            + sendOption
-            + "')\" "
-            + "if=\"id != null\"/>\n"
-            + "</action-method>";
+    Map<String, Object> binding = new HashMap<>();
+    binding.put("name", name);
+    binding.put("id", studioAction.getXmlId());
+    binding.put("className", StudioActionEmailService.class.getName());
+    binding.put(
+        "model",
+        (Boolean.TRUE.equals(studioAction.getIsJson())
+            ? ((MetaJsonModel) model).getName()
+            : ((MetaModel) model).getFullName()));
+    binding.put(
+        "tag",
+        ((Boolean.TRUE.equals(studioAction.getIsJson())
+            ? ((MetaJsonModel) model).getName()
+            : ((MetaModel) model).getName())));
+    binding.put("templateId", template.getId());
+    binding.put("sendOption", sendOption);
 
+    String xml = groovyTemplateService.createXmlWithGroovyTemplate(TEMPLATE_PATH, binding);
     return studioMetaService.updateMetaAction(
         name, "action-method", xml, null, studioAction.getXmlId());
   }

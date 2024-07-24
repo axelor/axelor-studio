@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components;
 
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaSelect;
