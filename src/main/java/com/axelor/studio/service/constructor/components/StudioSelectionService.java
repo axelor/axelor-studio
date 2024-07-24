@@ -1,4 +1,4 @@
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components;
 
 import com.axelor.meta.db.MetaSelect;
 import com.axelor.meta.db.MetaSelectItem;

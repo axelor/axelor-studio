@@ -32,7 +32,7 @@ import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioMenu;
-import com.axelor.studio.service.builder.StudioMenuService;
+import com.axelor.studio.service.constructor.components.StudioMenuService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.HashMap;
 import java.util.Map;

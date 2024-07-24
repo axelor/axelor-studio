@@ -1,4 +1,4 @@
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components;
 
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaAction;
@@ -7,12 +7,13 @@ import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.StudioMenu;
 import com.google.inject.persist.Transactional;
+import java.io.IOException;
 import java.util.Optional;
 
 public interface StudioMenuService {
 
   @Transactional(rollbackOn = Exception.class)
-  MetaMenu build(StudioMenu studioMenu);
+  MetaMenu build(StudioMenu studioMenu) throws IOException, ClassNotFoundException;
 
   @SuppressWarnings("unchecked")
   Optional<StudioAction> createStudioAction(MetaAction metaAction);

@@ -1,4 +1,4 @@
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.reporting;
 
 import com.axelor.meta.db.MetaAction;
 import com.axelor.meta.db.MetaView;

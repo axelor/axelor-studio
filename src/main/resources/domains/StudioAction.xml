@@ -50,7 +50,6 @@
         public static final int TYPE_SELECT_SCRIPT = 2;
         public static final int TYPE_SELECT_VIEW= 3;
         public static final int TYPE_SELECT_EMAIL = 4;
-        public static final int TYPE_SELECT_REPORT = 5;
     ]]></extra-code>
 
   </entity>
