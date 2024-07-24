@@ -102,6 +102,7 @@ const MergePreviewPanel = ({
         models={models}
         setFilteredModels={setFilteredModels}
         createNew={createNew}
+        setSelectedParticipants={setSelectedParticipants}
       />
       <Box>
         <Box

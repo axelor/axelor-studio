@@ -5,7 +5,7 @@ import ModelList from "./ModelList";
 import { useCallback } from "react";
 import Tooltip from "../../components/Tooltip/Tooltip";
 
-const PreviewTopBar = ({ setModels, models, setFilteredModels, createNew }) => {
+const PreviewTopBar = ({ setModels, models, setFilteredModels, createNew,setSelectedParticipants }) => {
   const [open, setOpen] = useState(false);
 
   const openDialog = () => setOpen(true);
@@ -47,6 +47,7 @@ const PreviewTopBar = ({ setModels, models, setFilteredModels, createNew }) => {
         setOpen={setOpen}
         models={models}
         setModels={setModels}
+        setSelectedParticipants={setSelectedParticipants}
       />
     </Box>
   );
