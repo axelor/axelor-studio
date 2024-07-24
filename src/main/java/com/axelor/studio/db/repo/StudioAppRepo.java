@@ -17,25 +17,18 @@
  */
 package com.axelor.studio.db.repo;
 
+import com.axelor.inject.Beans;
 import com.axelor.studio.db.StudioApp;
-import com.axelor.studio.service.builder.StudioAppService;
-import com.google.inject.Inject;
+import com.axelor.studio.service.constructor.StudioAppService;
 import javax.validation.ValidationException;
 
 public class StudioAppRepo extends StudioAppRepository {
-
-  protected StudioAppService studioAppService;
-
-  @Inject
-  public StudioAppRepo(StudioAppService studioAppService) {
-    this.studioAppService = studioAppService;
-  }
 
   @Override
   public StudioApp save(StudioApp studioApp) {
 
     try {
-      studioAppService.build(studioApp);
+      Beans.get(StudioAppService.class).build(studioApp);
     } catch (Exception e) {
       throw new ValidationException(e);
     }
@@ -46,7 +39,7 @@ public class StudioAppRepo extends StudioAppRepository {
   @Override
   public void remove(StudioApp studioApp) {
 
-    studioAppService.clean(studioApp);
+    Beans.get(StudioAppService.class).clean(studioApp);
 
     super.remove(studioApp);
   }

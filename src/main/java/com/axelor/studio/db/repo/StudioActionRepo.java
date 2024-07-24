@@ -20,8 +20,10 @@ package com.axelor.studio.db.repo;
 import com.axelor.meta.MetaStore;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.service.StudioMetaService;
-import com.axelor.studio.service.builder.StudioActionService;
+import com.axelor.studio.service.constructor.components.actions.StudioActionService;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
+import java.io.IOException;
 
 public class StudioActionRepo extends StudioActionRepository {
 
@@ -40,7 +42,11 @@ public class StudioActionRepo extends StudioActionRepository {
 
     studioAction = super.save(studioAction);
 
-    studioActionService.build(studioAction);
+    try {
+      studioActionService.build(studioAction);
+    } catch (IOException | ClassNotFoundException e) {
+      ExceptionHelper.trace(e);
+    }
 
     return studioAction;
   }
