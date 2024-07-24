@@ -26,7 +26,6 @@ import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaModelRepository;
-import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
@@ -48,7 +47,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xmlbeans.impl.xb.xsdschema.Attribute;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
@@ -118,16 +116,19 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     try {
       FullContext wkfContext = getModelCtx(wkfTaskConfig, execution);
       String modelName = null;
-      if(wkfTaskConfig.getModelName() != null){
+      if (wkfTaskConfig.getModelName() != null) {
         modelName = wkfTaskConfig.getModelName();
       } else {
         modelName = wkfTaskConfig.getJsonModelName();
       }
       String varModelName = wkfService.getVarName(modelName);
-      Map<String,Object> contextVariables = new HashMap<>();
+      Map<String, Object> contextVariables = new HashMap<>();
       contextVariables.put(varModelName, wkfContext);
       Map<String, Object> processVariables =
-              execution.getProcessEngine().getRuntimeService().getVariables(execution.getProcessInstance().getId());
+          execution
+              .getProcessEngine()
+              .getRuntimeService()
+              .getVariables(execution.getProcessInstance().getId());
       processVariables.entrySet().removeIf(it -> Strings.isNullOrEmpty(it.getKey()));
       contextVariables.putAll(processVariables);
       switch (wkfTaskConfig.getTaskNameType()) {
@@ -154,9 +155,14 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(), wkfContext));
             break;
           case "Script":
-            teamTask.setRole(
-                roleRepo.findByName(
-                        (String) wkfService.evalExpression(contextVariables, wkfTaskConfig.getRoleFieldPath())));
+            FullContext roleContext = (FullContext) wkfService.evalExpression(
+                                    contextVariables, wkfTaskConfig.getRoleFieldPath());
+            if(roleContext != null) {
+              Role role = (Role) roleContext.getTarget();
+              if(role != null) {
+                teamTask.setRole(role);
+              }
+            }
             break;
         }
       }
@@ -167,8 +173,15 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
                 getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
             break;
           case "Script":
-            teamTask.setTaskDeadline(
-                (LocalDate) wkfService.evalExpression(contextVariables, wkfTaskConfig.getDeadlineFieldPath()));
+            FullContext deadlineCtx = (FullContext)
+                    wkfService.evalExpression(
+                            contextVariables, wkfTaskConfig.getDeadlineFieldPath());
+            if(deadlineCtx != null) {
+              LocalDate deadline = (LocalDate) deadlineCtx.getTarget();
+              if(deadline != null) {
+                teamTask.setTaskDeadline(deadline);
+              }
+            }
             break;
         }
       }
@@ -182,10 +195,12 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setAssignedTo(getUser(userPath, wkfContext));
             break;
           case "Script":
-            FullContext userCtx = (FullContext) wkfService.evalExpression(contextVariables, wkfTaskConfig.getUserPath());
-            if(userCtx != null){
+            FullContext userCtx =
+                (FullContext)
+                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getUserPath());
+            if (userCtx != null) {
               User user = (User) userCtx.getTarget();
-              if(user != null){
+              if (user != null) {
                 teamTask.setAssignedTo(user);
               }
             }
@@ -199,8 +214,13 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setTeam(getTeam(teamPath, wkfContext));
             break;
           case "Script":
-            teamTask.setTeam(
-                (Team)  wkfService.evalExpression(contextVariables, wkfTaskConfig.getTeamPath()));
+            FullContext teamCtx = (FullContext) wkfService.evalExpression(contextVariables, wkfTaskConfig.getTeamPath());
+            if(teamCtx != null) {
+              Team team = (Team) teamCtx.getTarget();
+              if(team != null) {
+                teamTask.setTeam(team);
+              }
+            }
             break;
         }
       }
@@ -211,7 +231,10 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             break;
           case "Script":
             teamTask.setPriority(
-                templates.fromText(wkfTaskConfig.getTaskPriority()).make(contextVariables).render());
+                templates
+                    .fromText(wkfTaskConfig.getTaskPriority())
+                    .make(contextVariables)
+                    .render());
             break;
         }
       }
@@ -221,7 +244,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
       if (wkfTaskConfig.getDescriptionType() == "Script") {
         teamTask.setDescription(
-                templates.fromText(wkfTaskConfig.getDescription()).make(contextVariables).render());
+            templates.fromText(wkfTaskConfig.getDescription()).make(contextVariables).render());
       } else {
         teamTask.setDescription(
             String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
