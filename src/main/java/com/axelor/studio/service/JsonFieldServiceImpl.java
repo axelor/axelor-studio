@@ -19,7 +19,7 @@ package com.axelor.studio.service;
 
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonField;
-import com.axelor.studio.service.builder.StudioSelectionService;
+import com.axelor.studio.service.constructor.components.StudioSelectionService;
 import com.axelor.utils.helpers.ModelHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;

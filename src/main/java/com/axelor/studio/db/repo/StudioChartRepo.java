@@ -20,7 +20,7 @@ package com.axelor.studio.db.repo;
 import com.axelor.meta.db.MetaView;
 import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.studio.db.StudioChart;
-import com.axelor.studio.service.builder.StudioChartService;
+import com.axelor.studio.service.constructor.reporting.StudioChartService;
 import com.google.inject.Inject;
 import java.util.List;
 import javax.validation.ValidationException;

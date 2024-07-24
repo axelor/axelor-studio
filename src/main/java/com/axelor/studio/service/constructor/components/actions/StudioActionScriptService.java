@@ -1,22 +1,22 @@
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components.actions;
 
 import com.axelor.meta.db.MetaAction;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.db.StudioActionLine;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface StudioActionScriptService {
 
-  MetaAction build(StudioAction studioAction);
+  MetaAction build(StudioAction studioAction) throws IOException, ClassNotFoundException;
 
   String generateScriptCode(StudioAction studioAction);
 
-  void addCreateCode(boolean isJson, StringBuilder stb, int level, String targetModel);
+  void addCreateCode(StudioAction studioAction, StringBuilder stb, int level);
 
-  void addOpenRecord(boolean isJson, StringBuilder stb, int level, String targetModel);
-
-  void addUpdateCode(boolean isJson, StringBuilder stb, int level, String targetModel);
+  void addOpenRecord(boolean isJson, String targetModel);
 
   void addRootFunction(StudioAction studioAction, StringBuilder stb, int level);
 
@@ -24,11 +24,12 @@ public interface StudioActionScriptService {
 
   String addFieldsBinding(String target, List<StudioActionLine> lines, int level, boolean json);
 
-  void computeAttrsField(String target, int level, List<StudioActionLine> lines, StringBuilder stb);
+  void computeAttrsField(String target, List<StudioActionLine> lines);
 
   Set<String> getAttrsFields(List<StudioActionLine> lines);
 
-  String addRelationalBinding(StudioActionLine line, String target, boolean json);
+  String addRelationalBinding(
+      StudioActionLine line, String target, boolean json, Map<String, Object> lineMap);
 
   String getTargetModel(StudioActionLine line);
 

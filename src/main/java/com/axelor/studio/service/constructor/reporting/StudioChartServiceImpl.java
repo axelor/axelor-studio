@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.reporting;
 
 import static com.axelor.utils.MetaJsonFieldType.JSON_MANY_TO_ONE;
 import static com.axelor.utils.MetaJsonFieldType.MANY_TO_ONE;
@@ -23,7 +23,6 @@ import static com.axelor.utils.MetaJsonFieldType.ONE_TO_ONE;
 
 import com.axelor.common.Inflector;
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
@@ -37,6 +36,7 @@ import com.axelor.studio.db.Filter;
 import com.axelor.studio.db.StudioChart;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.constructor.GroovyTemplateService;
 import com.axelor.studio.service.filter.FilterCommonService;
 import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Joiner;
@@ -44,7 +44,9 @@ import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,7 @@ import org.slf4j.LoggerFactory;
  * used as search fields.
  */
 public class StudioChartServiceImpl implements StudioChartService {
+  protected static final String TEMPLATE_PATH = "templates/chart.tmpl";
 
   protected final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -67,9 +70,7 @@ public class StudioChartServiceImpl implements StudioChartService {
   protected static final List<String> CLICK_HANDLER_SUPPORTED_CHARTS =
       Arrays.asList("bar", "hbar", "scatter", "pie", "donut");
 
-  protected List<String> searchFields;
-
-  //	private List<RecordField> onNewFields;
+  protected List<HashMap<String, Object>> searchFields;
 
   protected List<String> joins;
 
@@ -77,18 +78,23 @@ public class StudioChartServiceImpl implements StudioChartService {
 
   protected MetaModelRepository metaModelRepo;
 
+  protected FilterSqlService filterSqlService;
   protected FilterCommonService filterCommonService;
-
   protected StudioMetaService metaService;
+  protected GroovyTemplateService groovyTemplateService;
 
   @Inject
   public StudioChartServiceImpl(
       MetaModelRepository metaModelRepo,
+      FilterSqlService filterSqlService,
       FilterCommonService filterCommonService,
-      StudioMetaService metaService) {
+      StudioMetaService metaService,
+      GroovyTemplateService groovyTemplateService) {
     this.metaModelRepo = metaModelRepo;
+    this.filterSqlService = filterSqlService;
     this.filterCommonService = filterCommonService;
     this.metaService = metaService;
+    this.groovyTemplateService = groovyTemplateService;
   }
 
   /**
@@ -104,15 +110,15 @@ public class StudioChartServiceImpl implements StudioChartService {
       throw new IllegalStateException(I18n.get(StudioExceptionMessage.STUDIO_CHART_1));
     }
 
-    searchFields = new ArrayList<String>();
+    searchFields = new ArrayList<>();
     //		onNewFields = new ArrayList<RecordField>();
     joins = new ArrayList<String>();
     categType = "text";
 
-    String[] queryString = prepareQuery(studioChart);
+    Map<String, Object> queryMap = prepareQuery(studioChart);
     //		setOnNewAction(studioChart);
 
-    String xml = createXml(studioChart, queryString);
+    String xml = createXml(studioChart, queryMap);
 
     log.debug("Chart xml: {}", xml);
 
@@ -126,19 +132,15 @@ public class StudioChartServiceImpl implements StudioChartService {
   }
 
   @Override
-  public String createXml(StudioChart studioChart, String[] queryString) {
-
-    String xml =
-        "<chart name=\"" + studioChart.getName() + "\" title=\"" + studioChart.getTitle() + "\" ";
-
-    //		if (onNewAction != null) {
-    //			xml += " onInit=\"" + onNewAction.getName() + "\" ";
-    //		}
-
-    xml += ">\n";
+  public String createXml(StudioChart studioChart, Map<String, Object> queryMap) {
+    Map<String, Object> binding = new HashMap<>();
+    binding.put("query", queryMap);
+    binding.put("name", studioChart.getName());
+    binding.put("title", studioChart.getTitle());
+    binding.put("searchFieldsNotEmpty", !searchFields.isEmpty());
 
     if (!searchFields.isEmpty()) {
-      xml += "\t" + getSearchFields() + "\n";
+      binding.put("searchFields", searchFields);
     }
 
     String groupLabel =
@@ -151,48 +153,29 @@ public class StudioChartServiceImpl implements StudioChartService {
             ? studioChart.getDisplayFieldJson().getTitle()
             : studioChart.getDisplayField().getLabel();
 
-    xml += "\t<dataset type=\"sql\"><![CDATA[";
-    xml += Tab2 + queryString[0];
-    xml += Tab2 + " ]]></dataset>";
-    xml +=
-        Tab1
-            + "<category key=\"group_field\" type=\""
-            + categType
-            + "\" title=\""
-            + groupLabel
-            + "\" />";
-    xml +=
-        Tab1
-            + "<series key=\"sum_field\" type=\""
-            + studioChart.getChartType()
-            + "\" title=\""
-            + displayLabel
-            + "\" ";
-    if (queryString[1] != null) {
-      xml += "groupBy=\"agg_field\" ";
-    }
-    xml += "/>\n";
+    binding.put("categoryType", categType);
+    binding.put("categoryTitle", groupLabel);
+    binding.put("seriesType", studioChart.getChartType());
+    binding.put("seriesTitle", displayLabel);
+    binding.put(
+        "clickHandlerSupported",
+        CLICK_HANDLER_SUPPORTED_CHARTS.contains(studioChart.getChartType()));
 
-    if (CLICK_HANDLER_SUPPORTED_CHARTS.contains(studioChart.getChartType())) {
-      xml += "<config name=\"onClick\" value=\"action-studio-chart-view-related-record\" />";
-    }
-
-    xml += "</chart>";
-
-    return xml;
+    return groovyTemplateService.createXmlWithGroovyTemplate(TEMPLATE_PATH, binding);
   }
 
   /**
    * Method create query from chart filters added in chart builder.
    *
    * @param studioChart StudioChart to use.
-   * @return StringArray with first element as query string and second as aggregate field name.
+   * @return <String, Object> Map with the binding of query values to be used in the groovy template
    */
   @Override
-  public String[] prepareQuery(StudioChart studioChart) {
+  public Map<String, Object> prepareQuery(StudioChart studioChart) {
 
-    String query =
-        createSumQuery(
+    Map<String, Object> queryMap = new HashMap<>();
+    String sumField =
+        getSumField(
             studioChart.getIsJsonDisplayField(),
             studioChart.getDisplayField(),
             studioChart.getDisplayFieldJson());
@@ -213,51 +196,43 @@ public class StudioChartServiceImpl implements StudioChartService {
             studioChart.getAggregateDateType(),
             studioChart.getAggregateOnTarget());
 
-    query += groupField + " AS group_field";
-
+    queryMap.put("sumField", sumField);
+    queryMap.put("groupFieldNotNull", groupField != null);
+    queryMap.put("groupField", groupField);
     if (aggField != null) {
-      query += "," + Tab3 + aggField + " AS agg_field";
+      queryMap.put("aggField", aggField);
     }
 
-    String filters =
-        Beans.get(FilterSqlService.class).getSqlFilters(studioChart.getFilterList(), joins, true);
+    String filters = filterSqlService.getSqlFilters(studioChart.getFilterList(), joins, true);
     addSearchField(studioChart.getFilterList());
     String model = studioChart.getModel();
 
+    queryMap.put("chartIsJson", studioChart.getIsJson());
+    queryMap.put("filtersNotNull", filters != null);
+    if (filters != null) {
+      queryMap.put("filters", filters);
+    }
+
     if (studioChart.getIsJson()) {
-      if (filters != null) {
-        filters = "self.json_model = '" + model + "' AND (" + filters + ")";
-      } else {
-        filters = "self.json_model = '" + model + "'";
-      }
+      queryMap.put("model", model);
       model = MetaJsonRecord.class.getName();
     }
 
-    query += Tab2 + "FROM " + Tab3 + getTable(model) + " self";
+    queryMap.put("tableName", getTable(model));
 
     if (!joins.isEmpty()) {
-      query += Tab3 + Joiner.on(Tab3).join(joins);
+      queryMap.put("joins", Joiner.on(Tab3).join(joins));
     }
 
-    if (filters != null) {
-      query += Tab2 + "WHERE " + Tab3 + filters;
-    }
+    queryMap.put("aggFieldNotNull", aggField != null);
 
-    query += Tab2 + "group by " + Tab3 + "group_field";
-
-    if (aggField != null && aggField != null) {
-      query += ",agg_field";
-      return new String[] {query, aggField};
-    }
-
-    return new String[] {query, null};
+    return queryMap;
   }
 
   @Override
-  public String createSumQuery(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
+  public String getSumField(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
 
     String sumField = null;
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     if (isJson) {
       String sqlType = filterSqlService.getSqlType(jsonField.getType());
@@ -272,8 +247,7 @@ public class StudioChartServiceImpl implements StudioChartService {
     } else {
       sumField = "self." + filterSqlService.getColumn(metaField);
     }
-
-    return "SELECT" + Tab3 + "SUM(" + sumField + ") AS sum_field," + Tab3;
+    return sumField;
   }
 
   @Override
@@ -287,8 +261,6 @@ public class StudioChartServiceImpl implements StudioChartService {
     if (!isJson && metaField == null || isJson && jsonField == null) {
       return null;
     }
-
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     String typeName = null;
     String group = null;
@@ -340,30 +312,6 @@ public class StudioChartServiceImpl implements StudioChartService {
     return group;
   }
 
-  /**
-   * Method generate xml for search-fields.
-   *
-   * @return
-   */
-  @Override
-  public String getSearchFields() {
-
-    String search = "<search-fields>";
-
-    int count = 0;
-
-    for (String searchField : searchFields) {
-      search += Tab2 + searchField;
-      if (++count == 2) {
-        break;
-      }
-    }
-
-    search += Tab1 + "</search-fields>";
-
-    return search;
-  }
-
   @Override
   public void addSearchField(List<Filter> filters) {
 
@@ -371,12 +319,11 @@ public class StudioChartServiceImpl implements StudioChartService {
       return;
     }
 
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
-
     filters.stream()
         .filter(filter -> filter.getIsParameter())
         .forEach(
             filter -> {
+              HashMap<String, Object> searchFieldMap = new HashMap<>();
               String fieldStr = "param" + filter.getId();
 
               Object object = null;
@@ -392,77 +339,66 @@ public class StudioChartServiceImpl implements StudioChartService {
               }
 
               if (object instanceof MetaField) {
-                fieldStr = getMetaSearchField(fieldStr, (MetaField) object);
+                searchFieldMap = getMetaSearchField(fieldStr, (MetaField) object, searchFieldMap);
               } else {
-                fieldStr = getJsonSearchField(fieldStr, (MetaJsonField) object);
+                searchFieldMap =
+                    getJsonSearchField(fieldStr, (MetaJsonField) object, searchFieldMap);
               }
 
-              searchFields.add(fieldStr + "\" x-required=\"true\" />");
+              searchFields.add(searchFieldMap);
             });
   }
 
   @Override
-  public String getMetaSearchField(String fieldStr, MetaField field) {
+  public HashMap<String, Object> getMetaSearchField(
+      String fieldStr, MetaField field, HashMap<String, Object> searchFieldMap) {
 
-    fieldStr = "<field name=\"" + fieldStr + "\" title=\"" + field.getLabel();
+    searchFieldMap.put("name", fieldStr);
+    searchFieldMap.put("title", field.getLabel());
+    searchFieldMap.put("hasRelationship", field.getRelationship() != null);
 
     if (field.getRelationship() == null) {
       String fieldType = filterCommonService.getFieldType(field);
-      fieldStr += "\" type=\"" + fieldType;
+      searchFieldMap.put("type", fieldType);
     } else {
-      String[] targetRef =
-          Beans.get(FilterSqlService.class).getDefaultTarget(field.getName(), field.getTypeName());
+      String[] targetRef = filterSqlService.getDefaultTarget(field.getName(), field.getTypeName());
       String[] nameField = targetRef[0].split("\\.");
-      fieldStr +=
-          "\" widget=\"ref-text\" type=\""
-              + filterCommonService.getFieldType(targetRef[1])
-              + "\" x-target-name=\""
-              + nameField[1]
-              + "\" x-target=\""
-              + metaModelRepo.findByName(field.getTypeName()).getFullName();
+      searchFieldMap.put("type", filterCommonService.getFieldType(targetRef[1]));
+      searchFieldMap.put("targetName", nameField[1]);
+      searchFieldMap.put("target", metaModelRepo.findByName(field.getTypeName()).getFullName());
     }
-
-    return fieldStr;
+    return searchFieldMap;
   }
 
   @Override
-  public String getJsonSearchField(String fieldStr, MetaJsonField field) {
+  public HashMap<String, Object> getJsonSearchField(
+      String fieldStr, MetaJsonField field, HashMap<String, Object> searchFieldMap) {
 
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
-
-    fieldStr = "<field name=\"" + fieldStr + "\" title=\"" + field.getTitle();
+    searchFieldMap.put("name", fieldStr);
+    searchFieldMap.put("title", field.getTitle());
 
     if (field.getTargetJsonModel() != null) {
       String[] targetRef =
           filterSqlService.getDefaultTargetJson(field.getName(), field.getTargetJsonModel());
       String[] nameField = targetRef[0].split("\\.");
-      fieldStr +=
-          "\" widget=\"ref-text\" type=\""
-              + filterCommonService.getFieldType(targetRef[1])
-              + "\" x-target-name=\""
-              + nameField[1]
-              + "\" x-target=\""
-              + MetaJsonRecord.class.getName()
-              + "\" x-domain=\"self.jsonModel = '"
-              + field.getTargetJsonModel().getName()
-              + "'";
+      searchFieldMap.put("type", filterCommonService.getFieldType(targetRef[1]));
+      searchFieldMap.put("targetName", nameField[1]);
+      searchFieldMap.put("target", MetaJsonRecord.class.getName());
+      searchFieldMap.put(
+          "xDomain", "self.jsonModel = '" + field.getTargetJsonModel().getName() + "'");
     } else if (field.getTargetModel() != null) {
       String[] targetRef =
           filterSqlService.getDefaultTarget(field.getName(), field.getTargetModel());
       String[] nameField = targetRef[0].split("\\.");
-      fieldStr +=
-          "\" widget=\"ref-text\" type=\""
-              + filterCommonService.getFieldType(targetRef[1])
-              + "\" x-target-name=\""
-              + nameField[1]
-              + "\" x-target=\""
-              + field.getTargetModel();
+      searchFieldMap.put("type", filterCommonService.getFieldType(targetRef[1]));
+      searchFieldMap.put("targetName", nameField[1]);
+      searchFieldMap.put("target", field.getTargetModel());
     } else {
       String fieldType = Inflector.getInstance().camelize(field.getType(), true);
-      fieldStr += "\" type=\"" + fieldType;
+      searchFieldMap.put("type", fieldType);
     }
 
-    return fieldStr;
+    return searchFieldMap;
   }
 
   @Override
@@ -486,8 +422,7 @@ public class StudioChartServiceImpl implements StudioChartService {
       return metaField.getName();
     }
 
-    return Beans.get(FilterSqlService.class)
-        .getDefaultTarget(metaField.getName(), metaField.getTypeName())[0];
+    return filterSqlService.getDefaultTarget(metaField.getName(), metaField.getTypeName())[0];
   }
 
   @Override
@@ -498,8 +433,6 @@ public class StudioChartServiceImpl implements StudioChartService {
         .contains(metaJsonField.getType())) {
       return metaJsonField.getName();
     }
-
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
 
     if (metaJsonField.getTargetJsonModel() != null) {
       return filterSqlService
@@ -524,7 +457,6 @@ public class StudioChartServiceImpl implements StudioChartService {
     }
 
     Object targetField = null;
-    FilterSqlService filterSqlService = Beans.get(FilterSqlService.class);
     try {
       if (object instanceof MetaJsonField) {
         targetField = filterSqlService.parseJsonField((MetaJsonField) object, target, null, null);

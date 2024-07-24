@@ -30,7 +30,7 @@ import com.axelor.studio.db.App;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.repo.StudioAppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
-import com.axelor.studio.service.builder.StudioAppService;
+import com.axelor.studio.service.constructor.StudioAppService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import java.util.ArrayList;
 import java.util.List;
