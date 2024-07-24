@@ -1,0 +1,5 @@
+---
+title: Builders refactoring
+type: fix
+description: |
+  - Change used template for studio action, use groovy template instead of js templating.
