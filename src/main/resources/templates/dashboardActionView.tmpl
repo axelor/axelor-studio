@@ -1,0 +1,10 @@
+<action-view name="${name}" id="${id}" title="${title}" <% if (hasModel) { %>model="${model}"<% } %> >
+    <view type="${viewType1}" name="${viewName1}" />
+    <view type="${viewType2}" <% if (isJson) { %>name="${viewName2}" <% } %>/>
+    <% if (hasPaginationValue){ %>
+    <view-param name="limit" value="paginationValue"/>
+    <% } %>
+    <% if (isJson) { %>
+    <domain>self.jsonModel = "${jsonModel}"</domain>
+    <% } %>
+</action-view>

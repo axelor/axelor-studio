@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components.actions;
 
 import static com.axelor.utils.MetaJsonFieldType.JSON_MANY_TO_MANY;
 import static com.axelor.utils.MetaJsonFieldType.JSON_MANY_TO_ONE;
@@ -26,7 +26,6 @@ import static com.axelor.utils.MetaJsonFieldType.ONE_TO_MANY;
 import static com.axelor.utils.MetaJsonFieldType.ONE_TO_ONE;
 
 import com.axelor.common.Inflector;
-import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaAction;
 import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
@@ -36,6 +35,7 @@ import com.axelor.studio.db.StudioActionLine;
 import com.axelor.studio.db.repo.StudioActionLineRepository;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.constructor.GroovyTemplateService;
 import com.axelor.studio.service.filter.FilterSqlService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Joiner;
@@ -44,7 +44,9 @@ import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -53,12 +55,16 @@ import org.slf4j.LoggerFactory;
 public class StudioActionScriptServiceImpl implements StudioActionScriptService {
 
   protected static final String INDENT = "\t";
+  protected static final String TEMPLATE_PATH = "templates/actionScript.tmpl";
+  protected static final String SCRIPT_CODE_TEMPLATE_PATH = "templates/scriptCode.tmpl";
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected final Inflector inflector = Inflector.getInstance();
 
   protected List<StringBuilder> fbuilder = null;
+
+  protected Map<String, Object> scriptCodeBinding = new HashMap<>();
 
   protected int varCount = 0;
 
@@ -69,12 +75,19 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
   protected StudioActionLineRepository studioActionLineRepo;
 
   protected StudioMetaService metaService;
+  protected FilterSqlService filterSqlService;
+  protected GroovyTemplateService groovyTemplateService;
 
   @Inject
   public StudioActionScriptServiceImpl(
-      StudioActionLineRepository studioActionLineRepo, StudioMetaService metaService) {
+      StudioActionLineRepository studioActionLineRepo,
+      StudioMetaService metaService,
+      FilterSqlService filterSqlService,
+      GroovyTemplateService groovyTemplateService) {
     this.studioActionLineRepo = studioActionLineRepo;
     this.metaService = metaService;
+    this.filterSqlService = filterSqlService;
+    this.groovyTemplateService = groovyTemplateService;
   }
 
   @Override
@@ -86,10 +99,8 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     String transactional = "true";
 
     if (studioAction.getTypeSelect() == StudioActionRepository.TYPE_SELECT_SCRIPT) {
+      lang = "groovy";
       code = "\n" + studioAction.getScriptText();
-      if (studioAction.getScriptType() == 1) {
-        lang = "groovy";
-      }
       if (studioAction.getTransactional()) {
         transactional = "false";
       }
@@ -97,23 +108,15 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
       code = generateScriptCode(studioAction);
     }
 
-    String xml =
-        "<action-script name=\""
-            + name
-            + "\" "
-            + "id=\""
-            + studioAction.getXmlId()
-            + "\" model=\""
-            + MetaJsonRecord.class.getName()
-            + "\">\n\t"
-            + "<script language=\""
-            + lang
-            + "\" transactional=\""
-            + transactional
-            + "\">\n\t<![CDATA["
-            + code
-            + "\n\t]]>\n\t</script>\n</action-script>";
+    Map<String, Object> binding = new HashMap<>();
+    binding.put("name", name);
+    binding.put("id", studioAction.getXmlId());
+    binding.put("model", MetaJsonRecord.class.getName());
+    binding.put("lang", lang);
+    binding.put("transactional", transactional);
+    binding.put("code", code);
 
+    String xml = groovyTemplateService.createXmlWithGroovyTemplate(TEMPLATE_PATH, binding);
     return metaService.updateMetaAction(
         studioAction.getName(), "action-script", xml, null, studioAction.getXmlId());
   }
@@ -126,109 +129,58 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     varCount = 1;
     int level = 1;
     String condition = studioAction.getConditionText();
+    scriptCodeBinding.put("conditionTextNonNull", condition != null);
+    scriptCodeBinding.put("condition", condition);
+    scriptCodeBinding.put(
+        "typeCreate", studioAction.getTypeSelect() == StudioActionRepository.TYPE_SELECT_CREATE);
+    scriptCodeBinding.put("isJson", studioAction.getIsJson());
+    scriptCodeBinding.put("targetModel", studioAction.getTargetModel());
+    scriptCodeBinding.put("openRecord", studioAction.getOpenRecord());
 
-    stb.append(
-        condition == null
-            ? format("var ctx = $request.context;", level)
-            : format("var ctx = $request.context;", level)
-                + "\n"
-                + format("if(" + condition.replaceAll("\\$.", "ctx.") + "){", level));
-
-    String targetModel;
     if (studioAction.getTypeSelect() == StudioActionRepository.TYPE_SELECT_CREATE) {
-      targetModel = studioAction.getTargetModel();
-      isCreate = true;
-      addCreateCode(studioAction.getIsJson(), stb, level, targetModel);
-      if (studioAction.getOpenRecord()) {
-        addOpenRecord(studioAction.getIsJson(), stb, level, targetModel);
-      }
-      if (!Strings.isNullOrEmpty(studioAction.getDisplayMsg())) {
-        stb.append("\n");
-        stb.append(format("$response.setInfo('" + studioAction.getDisplayMsg() + "')", level));
-      }
-    } else {
-      targetModel = studioAction.getModel();
-      isCreate = false;
-      addUpdateCode(studioAction.getIsJson(), stb, level, targetModel);
+      addCreateCode(studioAction, stb, level);
     }
-
-    stb.append(condition == null ? "\n" : format("}", level) + "\n");
 
     addRootFunction(studioAction, stb, level);
 
-    stb.append(Joiner.on("").join(fbuilder));
-
-    return stb.toString();
+    scriptCodeBinding.put("fbuilder", Joiner.on("").join(fbuilder));
+    return groovyTemplateService.createXmlWithGroovyTemplate(
+        SCRIPT_CODE_TEMPLATE_PATH, scriptCodeBinding);
   }
 
   @Override
-  public void addCreateCode(boolean isJson, StringBuilder stb, int level, String targetModel) {
+  public void addCreateCode(StudioAction studioAction, StringBuilder stb, int level) {
+    String targetModel = studioAction.getTargetModel();
+    isCreate = true;
 
-    if (isJson) {
-      stb.append(format("var target = $json.create('" + targetModel + "');", level));
-      stb.append(format("target = setVar0(null, ctx, {});", level));
-      stb.append(format("target = $json.save(target);", level));
-    } else {
-      stb.append(format("var target = new " + targetModel + "();", level));
-      stb.append(format("target = setVar0(null, ctx, {});", level));
-      stb.append(format("$em.persist(target);", level));
+    if (Boolean.TRUE.equals(studioAction.getOpenRecord())) {
+      addOpenRecord(studioAction.getIsJson(), targetModel);
+    }
+
+    scriptCodeBinding.put(
+        "displayMsgNotEmpty", !Strings.isNullOrEmpty(studioAction.getDisplayMsg()));
+    if (!Strings.isNullOrEmpty(studioAction.getDisplayMsg())) {
+      scriptCodeBinding.put("displayMsg", studioAction.getDisplayMsg());
     }
   }
 
   @Override
-  public void addOpenRecord(boolean isJson, StringBuilder stb, int level, String targetModel) {
-
-    stb.append("\n");
-
+  public void addOpenRecord(boolean isJson, String targetModel) {
     if (isJson) {
       String title = inflector.humanize(targetModel);
-      stb.append(
-          format(
-              "$response.setView(com.axelor.meta.schema.actions.ActionView.define('" + title + "')",
-              level));
-      stb.append(format(".model('com.axelor.meta.db.MetaJsonRecord')", level + 1));
-      stb.append(format(".add('grid','custom-model-" + targetModel + "-grid')", level + 1));
-      stb.append(format(".add('form','custom-model-" + targetModel + "-form')", level + 1));
-      stb.append(format(".domain('self.jsonModel = :jsonModel')", level + 1));
-      stb.append(format(".context('jsonModel', '" + targetModel + "')", level + 1));
-      stb.append(format(".context('_showRecord', target.id)", level + 1));
-      stb.append(format(".map())", level + 1));
+      scriptCodeBinding.put("title", title);
     } else {
       String title = inflector.humanize(targetModel.substring(targetModel.lastIndexOf('.') + 1));
-      stb.append(
-          format(
-              "$response.setView(com.axelor.meta.schema.actions.ActionView.define('" + title + "')",
-              level));
-      stb.append(format(".model('" + targetModel + "')", level + 1));
-      stb.append(format(".add('grid')", level + 1));
-      stb.append(format(".add('form')", level + 1));
-      stb.append(format(".context('_showRecord', target.id)", level + 1));
-      stb.append(format(".map())", level + 1));
+      scriptCodeBinding.put("title", title);
     }
-  }
-
-  @Override
-  public void addUpdateCode(boolean isJson, StringBuilder stb, int level, String targetModel) {
-
-    if (isJson) {
-      stb.append(format("var target = {};", level));
-    } else {
-      stb.append(format("var target = ctx.asType(" + targetModel + ".class)", level));
-    }
-
-    stb.append(format("target = setVar0(null, ctx, {});", level));
-    stb.append(format("$response.setValues(target);", level));
   }
 
   @Override
   public void addRootFunction(StudioAction studioAction, StringBuilder stb, int level) {
     List<StudioActionLine> lines = studioAction.getLines();
     boolean isJsonField = lines.stream().anyMatch(l -> l.getIsTargetJson());
-    stb.append(format("function setVar0($$, $, _$){", level));
-    String bindings = addFieldsBinding("target", studioAction.getLines(), level + 1, isJsonField);
-    stb.append(bindings);
-    stb.append(format("return target;", level + 1));
-    stb.append(format("}", level));
+    scriptCodeBinding.put("isJsonField", isJsonField);
+    addFieldsBinding("target", studioAction.getLines(), level + 1, isJsonField);
   }
 
   @Override
@@ -255,17 +207,22 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
         });
 
     if (json) {
-      computeAttrsField(target, level, lines, stb);
+      computeAttrsField(target, lines);
     }
 
+    List<Map<String, Object>> lineMaps = new ArrayList<>();
     for (StudioActionLine line : lines) {
-
+      Map<String, Object> lineMap = new HashMap<>();
       String name = line.getName();
       String value = line.getValue();
       if (value != null && value.contains(".sum(")) {
         value = getSum(value, line.getFilter());
       }
-      if (line.getDummy()) {
+      lineMap.put("isDummy", Boolean.TRUE.equals(line.getDummy()));
+      if (Boolean.TRUE.equals(line.getDummy())) {
+        lineMap.put("name", name);
+        lineMap.put("value", value);
+
         stb.append(format("_$." + name + " = " + value + ";", level));
         continue;
       }
@@ -273,34 +230,33 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
       MetaJsonField jsonField = line.getMetaJsonField();
       MetaField metaField = line.getMetaField();
 
-      if (line.getIsTargetJson()
-          && jsonField != null
-          && (jsonField.getTargetJsonModel() != null || jsonField.getTargetModel() != null)) {
-        value = addRelationalBinding(line, target, true);
-      } else if (!line.getIsTargetJson()
-          && metaField != null
-          && metaField.getRelationship() != null) {
-        value = addRelationalBinding(line, target, false);
-      }
-      // else {
-      // MetaJsonField valueJson = line.getValueJson();
-      // if (valueJson != null && valueJson.getType().contentEquals("many-to-one")) {
-      // value = value.replace("$." + valueJson.getName(),"$json.create($json.find($."
-      // +
-      // valueJson.getName() + ".id))");
-      // }
-      // }
-
       if (value != null
           && metaField != null
           && metaField.getTypeName().equals(BigDecimal.class.getSimpleName())) {
         value = "new BigDecimal(" + value + ")";
       }
 
+      if (Boolean.TRUE.equals(line.getIsTargetJson() && jsonField != null)
+          && (jsonField.getTargetJsonModel() != null || jsonField.getTargetModel() != null)) {
+        value = addRelationalBinding(line, target, true, lineMap);
+      } else if (Boolean.TRUE.equals(!line.getIsTargetJson() && metaField != null)
+          && metaField.getRelationship() != null) {
+        value = addRelationalBinding(line, target, false, lineMap);
+      }
+
+      lineMap.put("value", value);
+      lineMap.put("name", name);
+      lineMap.put("target", target);
+
       String condition = line.getConditionText();
+      lineMap.put("conditionNotNull", condition != null);
+      lineMap.put("condition", condition);
+      lineMap.put("jsonFieldNotNull", jsonField != null);
+
       if (condition != null) {
         if (jsonField != null && json) {
           String attrsField = jsonField.getModelField();
+          lineMap.put("attrsField", attrsField);
           stb.append(
               format(
                   "if(" + condition + "){" + attrsField + "." + name + " = " + value + ";}",
@@ -314,42 +270,48 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
       } else {
         if (jsonField != null && json) {
           String attrsField = jsonField.getModelField();
+          lineMap.put("attrsField", attrsField);
           stb.append(format(attrsField + "." + name + " = " + value + ";", level));
-
         } else {
           stb.append(format(target + "." + name + " = " + value + ";", level));
         }
       }
+      lineMaps.add(lineMap);
     }
+    scriptCodeBinding.put("lineMaps", lineMaps);
 
     if (json) {
       Set<String> attrsFields = getAttrsFields(lines);
+      List<Map<String, Object>> attrsFieldMaps = new ArrayList<>();
       attrsFields.forEach(
           attrsField -> {
+            Map<String, Object> attrsFieldMap = new HashMap<>();
+            attrsFieldMap.put("target", target);
+            attrsFieldMap.put("attrsField", attrsField);
             stb.append(
                 format(
                     target + "." + attrsField + " = JSON.stringify(" + attrsField + ");", level));
+            attrsFieldMaps.add(attrsFieldMap);
           });
+      scriptCodeBinding.put("jsonAttrsFields", attrsFieldMaps);
     }
 
     return stb.toString();
   }
 
   @Override
-  public void computeAttrsField(
-      String target, int level, List<StudioActionLine> lines, StringBuilder stb) {
+  public void computeAttrsField(String target, List<StudioActionLine> lines) {
 
     Set<String> attrsFields = getAttrsFields(lines);
+    List<Map<String, Object>> attrsFieldMapList = new ArrayList<>();
     attrsFields.forEach(
         attrsField -> {
-          stb.append(format("if (" + target + "." + attrsField + " == null) {", level));
-          stb.append(format(target + "." + attrsField + " = '{}';", level + 1));
-          stb.append(format("}", level));
-          stb.append(
-              format(
-                  "var " + attrsField + " = JSON.parse(" + target + "." + attrsField + ");",
-                  level));
+          Map<String, Object> attrsFieldMap = new HashMap<>();
+          attrsFieldMap.put("target", target);
+          attrsFieldMap.put("attrsField", attrsField);
+          attrsFieldMapList.add(attrsFieldMap);
         });
+    scriptCodeBinding.put("attrsFields", attrsFieldMapList);
   }
 
   @Override
@@ -361,7 +323,8 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
   }
 
   @Override
-  public String addRelationalBinding(StudioActionLine line, String target, boolean json) {
+  public String addRelationalBinding(
+      StudioActionLine line, String target, boolean json, Map<String, Object> lineMap) {
 
     line = studioActionLineRepo.find(line.getId());
     String subCode = null;
@@ -370,7 +333,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
         json
             ? line.getMetaJsonField().getType()
             : inflector.dasherize(line.getMetaField().getRelationship());
-
+    lineMap.put("type", type);
     switch (type) {
       case MANY_TO_ONE:
         subCode = addM2OBinding(line, true, true, json);
@@ -452,8 +415,8 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
       if (jsonField != null && jsonField.getTargetModel() != null) {
         if (line.getValue() != null && !line.getValue().contentEquals("$." + jsonField.getName())) {
           targetObject =
-              Beans.get(FilterSqlService.class)
-                  .parseJsonField(jsonField, line.getValue().replace("$.", ""), null, null);
+              filterSqlService.parseJsonField(
+                  jsonField, line.getValue().replace("$.", ""), null, null);
         } else {
           sourceModel = jsonField.getTargetModel();
         }
@@ -463,8 +426,8 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
       if (field != null && field.getTypeName() != null) {
         if (line.getValue() != null && !line.getValue().contentEquals("$." + field.getName())) {
           targetObject =
-              Beans.get(FilterSqlService.class)
-                  .parseMetaField(field, line.getValue().replace("$.", ""), null, null, false);
+              filterSqlService.parseMetaField(
+                  field, line.getValue().replace("$.", ""), null, null, false);
         } else {
           sourceModel = field.getTypeName();
         }
@@ -500,15 +463,15 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     isObjToJson = true;
     StringBuilder stb = new StringBuilder();
     fbuilder.add(stb);
-    stb.append(format("", 1));
-    stb.append(format("function objToJson($){", 1));
-    stb.append(format("var obj = {};", 2));
-    stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($);", 2));
-    stb.append(format("map.forEach(function(key, value){", 2));
-    stb.append(format("obj[key] = value;", 3));
-    stb.append(format("});", 2));
-    stb.append(format("return obj;", 2));
-    stb.append(format("}", 1));
+    stb.append(format("", 5));
+    stb.append(format("function objToJson($){", 3));
+    stb.append(format("var obj = {};", 4));
+    stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($);", 4));
+    stb.append(format("map.forEach(function(key, value){", 4));
+    stb.append(format("obj[key] = value;", 5));
+    stb.append(format("});", 4));
+    stb.append(format("return obj;", 4));
+    stb.append(format("}", 3));
   }
 
   @Override
@@ -523,50 +486,50 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     StringBuilder stb = new StringBuilder();
     fbuilder.add(stb);
     if (tModel.contains(".")) {
-      tModel = tModel.substring(tModel.lastIndexOf('.') + 1);
+      tModel = tModel.substring(tModel.lastIndexOf('.') + 3);
     }
-    stb.append(format("", 1));
-    stb.append(format("function " + fname + "($$, $, _$){", 1));
-    stb.append(format("var val = null;", 2));
+    stb.append(format("", 5));
+    stb.append(format("function " + fname + "($$, $, _$){", 3));
+    stb.append(format("var val = null;", 4));
     if (srcModel != null) {
-      stb.append(format("if ($ != null && $.id != null){", 2));
-      srcModel = srcModel.substring(srcModel.lastIndexOf('.') + 1);
-      stb.append(format("$ = $em.find(" + srcModel + ".class, $.id);", 3));
+      stb.append(format("if ($ != null && $.id != null){", 4));
+      srcModel = srcModel.substring(srcModel.lastIndexOf('.') + 5);
+      stb.append(format("$ = $em.find(" + srcModel + ".class, $.id);", 5));
       log.debug("src model: {}, Target model: {}", srcModel, tModel);
       if (srcModel.contentEquals(tModel)) {
-        stb.append(format("val = $", 3));
+        stb.append(format("val = $", 5));
       }
-      stb.append(format("}", 2));
+      stb.append(format("}", 4));
     }
 
     if (filter && line.getFilter() != null) {
       if (line.getValue() != null) {
-        stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($);", 2));
+        stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($);", 4));
       } else {
-        stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($$);", 2));
+        stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($$);", 4));
       }
-      stb.append(format("val = " + getQuery(tModel, line.getFilter(), false, false), 2));
+      stb.append(format("val = " + getQuery(tModel, line.getFilter(), false, false), 4));
     } else if (srcModel == null) {
-      stb.append(format("val = $;", 2));
+      stb.append(format("val = $;", 4));
     }
 
     List<StudioActionLine> lines = line.getSubLines();
     if (lines != null && !lines.isEmpty()) {
       boolean isJsonField = lines.stream().anyMatch(l -> l.getIsTargetJson());
 
-      stb.append(format("if (!val) {", 2));
-      stb.append(format("val = new " + tModel + "();", 3));
-      stb.append(format("}", 2));
-      stb.append(addFieldsBinding("val", lines, 2, isJsonField));
+      stb.append(format("if (!val) {", 4));
+      stb.append(format("val = new " + tModel + "();", 5));
+      stb.append(format("}", 4));
+      stb.append(addFieldsBinding("val", lines, 4, isJsonField));
       // stb.append(format("$em.persist(val);", 2));
     }
     if (json) {
       addObjToJson();
-      stb.append(format("return objToJson(val);", 2));
+      stb.append(format("return objToJson(val);", 4));
     } else {
-      stb.append(format("return val;", 2));
+      stb.append(format("return val;", 4));
     }
-    stb.append(format("}", 1));
+    stb.append(format("}", 3));
 
     return fname;
   }
@@ -578,23 +541,23 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     varCount += 1;
     StringBuilder stb = new StringBuilder();
     fbuilder.add(stb);
-    stb.append(format("", 1));
-    stb.append(format("function " + fname + "($$, $, _$){", 1));
-    stb.append(format("var val = " + (json ? "[];" : "new HashSet();"), 2));
+    stb.append(format("", 5));
+    stb.append(format("function " + fname + "($$, $, _$){", 3));
+    stb.append(format("var val = " + (json ? "[];" : "new HashSet();"), 4));
     if (line.getFilter() != null) {
       String model = getTargetModel(line);
-      stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($$);", 2));
-      stb.append(format("val.addAll(" + getQuery(model, line.getFilter(), false, true) + ");", 2));
-      stb.append(format("if(!val.empty){return val;}", 2));
+      stb.append(format("var map = com.axelor.db.mapper.Mapper.toMap($$);", 4));
+      stb.append(format("val.addAll(" + getQuery(model, line.getFilter(), false, true) + ");", 4));
+      stb.append(format("if(!val.empty){return val;}", 4));
     }
 
-    stb.append(format("if(!$){return val;}", 2));
-    stb.append(format("$.forEach(function(v){", 2));
-    stb.append(format("v = " + addM2OBinding(line, true, false, json) + "($$, v, _$);", 3));
-    stb.append(format(json ? "val.push(v);" : "val.add(v);", 3));
-    stb.append(format("});", 2));
-    stb.append(format("return val;", 2));
-    stb.append(format("}", 1));
+    stb.append(format("if(!$){return val;}", 4));
+    stb.append(format("$.forEach(function(v){", 4));
+    stb.append(format("v = " + addM2OBinding(line, true, false, json) + "($$, v, _$);", 5));
+    stb.append(format(json ? "val.push(v);" : "val.add(v);", 5));
+    stb.append(format("});", 4));
+    stb.append(format("return val;", 4));
+    stb.append(format("}", 3));
 
     return fname;
   }
@@ -606,19 +569,19 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     varCount += 1;
     StringBuilder stb = new StringBuilder();
     fbuilder.add(stb);
-    stb.append(format("", 1));
-    stb.append(format("function " + fname + "($$, $, _$){", 1));
-    stb.append(format("var val = " + (json ? "[];" : "new ArrayList();"), 2));
-    stb.append(format("if(!$){return val;}", 2));
-    stb.append(format("$.forEach(function(v){", 2));
-    stb.append(format("var item = " + addM2OBinding(line, false, false, json) + "($$, v, _$);", 3));
+    stb.append(format("", 5));
+    stb.append(format("function " + fname + "($$, $, _$){", 3));
+    stb.append(format("var val = " + (json ? "[];" : "new ArrayList();"), 4));
+    stb.append(format("if(!$){return val;}", 4));
+    stb.append(format("$.forEach(function(v){", 4));
+    stb.append(format("var item = " + addM2OBinding(line, false, false, json) + "($$, v, _$);", 5));
     if (isCreate && line.getMetaField() != null && line.getMetaField().getMappedBy() != null) {
-      stb.append(format("item." + line.getMetaField().getMappedBy() + " = " + target, 3));
+      stb.append(format("item." + line.getMetaField().getMappedBy() + " = " + target, 5));
     }
-    stb.append(format(json ? "val.push(item);" : "val.add(item);", 3));
-    stb.append(format("});", 2));
-    stb.append(format("return val;", 2));
-    stb.append(format("}", 1));
+    stb.append(format(json ? "val.push(item);" : "val.add(item);", 5));
+    stb.append(format("});", 4));
+    stb.append(format("return val;", 4));
+    stb.append(format("}", 3));
 
     return fname;
   }
@@ -633,40 +596,40 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     StringBuilder stb = new StringBuilder();
     fbuilder.add(stb);
     String model = getTargetJsonModel(line);
-    stb.append(format("", 1));
-    stb.append(format("function " + fname + "($$, $, _$){", 1));
-    stb.append(format("var val = null;", 2));
-    // stb.append(format("if ($ != null && $.id != null){", 2));
-    // stb.append(format("$ = $json.find($.id);", 3));
+    stb.append(format("", 5));
+    stb.append(format("function " + fname + "($$, $, _$){", 3));
+    stb.append(format("var val = null;", 4));
+    // stb.append(format("if ($ != null && $.id != null){", 4));
+    // stb.append(format("$ = $json.find($.id);", 5));
     if (search) {
-      stb.append(format("if ($ != null && $.id != null) {", 2));
-      stb.append(format("val = $json.find($.id);", 3));
-      stb.append(format("if (val.jsonModel != '" + model + "'){val = null;} ", 3));
-      stb.append(format("}", 2));
+      stb.append(format("if ($ != null && $.id != null) {", 4));
+      stb.append(format("val = $json.find($.id);", 5));
+      stb.append(format("if (val.jsonModel != '" + model + "'){val = null;} ", 5));
+      stb.append(format("}", 4));
     }
     // stb.append(format("}",2));
     if (filter && line.getFilter() != null) {
       String query = getQuery(model, line.getFilter(), true, false);
-      stb.append(format("val = " + query, 2));
+      stb.append(format("val = " + query, 4));
     }
     List<StudioActionLine> lines = line.getSubLines();
     if (lines != null && !lines.isEmpty()) {
-      stb.append(format("if (!val) {", 2));
-      stb.append(format("val = $json.create('" + model + "');", 3));
-      stb.append(format("}", 2));
-      stb.append(format("else {", 2));
-      stb.append(format("val = $json.create(val);", 3));
-      stb.append(format("}", 2));
-      stb.append(addFieldsBinding("val", lines, 2, false));
-      stb.append(format("val = $json.save(val);", 2));
+      stb.append(format("if (!val) {", 4));
+      stb.append(format("val = $json.create('" + model + "');", 5));
+      stb.append(format("}", 4));
+      stb.append(format("else {", 4));
+      stb.append(format("val = $json.create(val);", 5));
+      stb.append(format("}", 4));
+      stb.append(addFieldsBinding("val", lines, 4, false));
+      stb.append(format("val = $json.save(val);", 4));
     }
     if (json) {
       addObjToJson();
-      stb.append(format("return objToJson(val);", 2));
+      stb.append(format("return objToJson(val);", 4));
     } else {
-      stb.append(format("return val;", 2));
+      stb.append(format("return val;", 4));
     }
-    stb.append(format("}", 1));
+    stb.append(format("}", 3));
 
     return fname;
   }
@@ -678,21 +641,21 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     varCount += 1;
     StringBuilder stb = new StringBuilder();
     fbuilder.add(stb);
-    stb.append(format("", 1));
-    stb.append(format("function " + fname + "($$, $, _$){", 1));
-    stb.append(format("var val = [];", 2));
+    stb.append(format("", 5));
+    stb.append(format("function " + fname + "($$, $, _$){", 3));
+    stb.append(format("var val = [];", 4));
     if (line.getFilter() != null) {
       String model = getTargetJsonModel(line);
-      stb.append(format("val.addAll(" + getQuery(model, line.getFilter(), true, true) + ");", 2));
-      stb.append(format("if(!val.empty){return val;}", 2));
+      stb.append(format("val.addAll(" + getQuery(model, line.getFilter(), true, true) + ");", 4));
+      stb.append(format("if(!val.empty){return val;}", 4));
     }
-    stb.append(format("if(!$){return val;}", 2));
-    stb.append(format("$.forEach(function(v){", 2));
-    stb.append(format("v = " + addJsonM2OBinding(line, true, false, true) + "($$, v, _$);", 3));
-    stb.append(format("val.push(v);", 3));
-    stb.append(format("});", 2));
-    stb.append(format("return val;", 2));
-    stb.append(format("}", 1));
+    stb.append(format("if(!$){return val;}", 4));
+    stb.append(format("$.forEach(function(v){", 4));
+    stb.append(format("v = " + addJsonM2OBinding(line, true, false, true) + "($$, v, _$);", 5));
+    stb.append(format("val.push(v);", 5));
+    stb.append(format("});", 4));
+    stb.append(format("return val;", 4));
+    stb.append(format("}", 3));
 
     return fname;
   }
@@ -704,16 +667,16 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     varCount += 1;
     StringBuilder stb = new StringBuilder();
     fbuilder.add(stb);
-    stb.append(format("", 1));
-    stb.append(format("function " + fname + "($$, $, _$){", 1));
-    stb.append(format("var val = [];", 2));
-    stb.append(format("if(!$){return val;}", 2));
-    stb.append(format("$.forEach(function(v){", 2));
-    stb.append(format("v = " + addJsonM2OBinding(line, false, false, true) + "($$, v, _$);", 3));
-    stb.append(format("val.push(v);", 3));
-    stb.append(format("});", 2));
-    stb.append(format("return val;", 2));
-    stb.append(format("}", 1));
+    stb.append(format("", 5));
+    stb.append(format("function " + fname + "($$, $, _$){", 3));
+    stb.append(format("var val = [];", 4));
+    stb.append(format("if(!$){return val;}", 4));
+    stb.append(format("$.forEach(function(v){", 4));
+    stb.append(format("v = " + addJsonM2OBinding(line, false, false, true) + "($$, v, _$);", 5));
+    stb.append(format("val.push(v);", 5));
+    stb.append(format("});", 4));
+    stb.append(format("return val;", 4));
+    stb.append(format("}", 3));
 
     return fname;
   }
@@ -757,22 +720,22 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     varCount += 1;
 
     StringBuilder stb = new StringBuilder();
-    stb.append(format("", 1));
-    stb.append(format("function " + fname + "(sumOf$, $$, filter){", 1));
-    stb.append(format("var val  = 0", 2));
-    stb.append(format("if (sumOf$ == null){ return val;}", 2));
-    stb.append(format("sumOf$.forEach(function($){", 2));
+    stb.append(format("", 5));
+    stb.append(format("function " + fname + "(sumOf$, $$, filter){", 3));
+    stb.append(format("var val  = 0", 4));
+    stb.append(format("if (sumOf$ == null){ return val;}", 4));
+    stb.append(format("sumOf$.forEach(function($){", 4));
     // stb.append(format("if ($ instanceof MetaJsonRecord){ $ =
     // $json.create($json.find($.id)); }",
-    // 3));
+    // 5));
     String val = "val += " + expr[1] + ";";
     if (filter != null) {
       val = "if(filter){" + val + "}";
     }
-    stb.append(format(val, 3));
-    stb.append(format("})", 2));
-    stb.append(format("return new BigDecimal(val);", 2));
-    stb.append(format("}", 1));
+    stb.append(format(val, 5));
+    stb.append(format("})", 4));
+    stb.append(format("return new BigDecimal(val);", 4));
+    stb.append(format("}", 3));
 
     fbuilder.add(stb);
     return fname + "(" + expr[0] + ",$," + filter + ")";

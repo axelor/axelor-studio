@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.service.builder;
+package com.axelor.studio.service.constructor.components;
 
 import com.axelor.common.Inflector;
 import com.axelor.db.mapper.Mapper;
@@ -36,11 +36,13 @@ import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.studio.db.repo.StudioMenuRepo;
 import com.axelor.studio.service.StudioMetaService;
+import com.axelor.studio.service.constructor.components.actions.StudioActionService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.WrappingHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
@@ -69,7 +71,7 @@ public class StudioMenuServiceImpl implements StudioMenuService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public MetaMenu build(StudioMenu studioMenu) {
+  public MetaMenu build(StudioMenu studioMenu) throws IOException, ClassNotFoundException {
 
     MetaMenu menu = metaService.createMenu(studioMenu);
     StudioAction studioAction = studioMenu.getStudioAction();

@@ -174,12 +174,12 @@
   <action-record name="action-studio-chart-aggregate-on-change"
     model="com.axelor.studio.db.StudioChart">
     <field name="aggregateOnTarget"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getDefaultTarget(aggregateOn)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getDefaultTarget(aggregateOn)"
       if="!isJsonAggregateOn &amp;&amp; aggregateOn != null"/>
     <field name="aggregateOnTarget" expr="eval:null"
       if="!isJsonAggregateOn &amp;&amp; aggregateOn == null"/>
     <field name="aggregateOnTarget"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getDefaultTarget(aggregateOnJson)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getDefaultTarget(aggregateOnJson)"
       if="isJsonAggregateOn &amp;&amp; aggregateOnJson != null"/>
     <field name="aggregateOnTarget" expr="eval:null"
       if="isJsonAggregateOn &amp;&amp; aggregateOnJson == null"/>
@@ -188,22 +188,22 @@
   <action-record name="action-studio-chart-update-aggregate-on-target-type"
     model="com.axelor.studio.db.StudioChart">
     <field name="aggregateOnTargetType"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getTargetType(aggregateOn, aggregateOnTarget)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getTargetType(aggregateOn, aggregateOnTarget)"
       if="!isJsonAggregateOn"/>
     <field name="aggregateOnTargetType"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getTargetType(aggregateOnJson, aggregateOnTarget)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getTargetType(aggregateOnJson, aggregateOnTarget)"
       if="isJsonAggregateOn"/>
   </action-record>
 
   <action-record name="action-studio-chart-group-on-change"
     model="com.axelor.studio.db.StudioChart">
     <field name="groupOnTarget"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getDefaultTarget(groupOn)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getDefaultTarget(groupOn)"
       if="!isJsonGroupOn &amp;&amp; groupOn != null"/>
     <field name="groupOnTarget" expr="eval:null"
       if="!isJsonGroupOn &amp;&amp; groupOn == null"/>
     <field name="groupOnTarget"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getDefaultTarget(groupOnJson)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getDefaultTarget(groupOnJson)"
       if="isJsonGroupOn &amp;&amp; groupOnJson != null"/>
     <field name="groupOnTarget" expr="eval:null"
       if="isJsonGroupOn &amp;&amp; groupOnJson == null"/>
@@ -212,10 +212,10 @@
   <action-record name="action-studio-chart-update-group-on-target-type"
     model="com.axelor.studio.db.StudioChart">
     <field name="groupOnTargetType"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getTargetType(groupOn, groupOnTarget)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getTargetType(groupOn, groupOnTarget)"
       if="!isJsonGroupOn"/>
     <field name="groupOnTargetType"
-      expr="call:com.axelor.studio.service.builder.StudioChartService:getTargetType(groupOnJson, groupOnTarget)"
+      expr="call:com.axelor.studio.service.constructor.reporting.StudioChartService:getTargetType(groupOnJson, groupOnTarget)"
       if="isJsonGroupOn"/>
   </action-record>
 
