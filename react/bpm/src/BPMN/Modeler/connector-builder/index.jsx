@@ -84,7 +84,7 @@ export default function ConnectorBuilder({
     if (resultVariable) {
       expr =
         expr +
-        `\nexecution.setVariable('${resultVariable}', __ctx__.createVariable(${
+        `\nexecution.setVariable('${resultVariable}', __ctx__.createObject(${
           returnExpression ? returnExpression : "_res"
         }))`;
     }

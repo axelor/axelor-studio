@@ -322,7 +322,7 @@ rec.name = src.name
 rec.statusSelect = 1
 rec.orderBy = __ctx__.find('User',src.orderBy?.id)?.getTarget()
 rec.orderDate = src.orderDate
-__ctx__.createVariable(__ctx__.save(rec), execution)</camunda:script>
+__ctx__.createObject(__ctx__.save(rec), execution)</camunda:script>
         </camunda:executionListener>
       </bpmn2:extensionElements>
       <bpmn2:outgoing>Flow_1xbbf1h</bpmn2:outgoing>

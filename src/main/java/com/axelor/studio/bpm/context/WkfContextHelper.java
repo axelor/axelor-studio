@@ -19,15 +19,31 @@ package com.axelor.studio.bpm.context;
 
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
+import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.helper.DepthFilter;
+import com.axelor.studio.helper.ModelTools;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.helpers.context.FullContextHelper;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.variable.Variables;
@@ -95,12 +111,12 @@ public class WkfContextHelper {
   public static ObjectValue createVariable(Object variable) {
 
     if (variable instanceof byte[]) {
-      return Variables.objectValue(variable, true)
+      return Variables.objectValue(variable, false)
           .serializationDataFormat(SerializationDataFormats.JAVA)
           .create();
     }
 
-    return Variables.objectValue(variable, true)
+    return Variables.objectValue(variable, false)
         .serializationDataFormat(SerializationDataFormats.JSON)
         .create();
   }
@@ -151,5 +167,128 @@ public class WkfContextHelper {
     lines.forEach(fullContext -> values.add((Long) fullContext.get("id")));
 
     return values;
+  }
+
+  public static Object createObject(Object object) throws JsonProcessingException {
+    if (object != null) {
+      if (object instanceof FullContext) {
+        return createSingleVariable((FullContext) object);
+      } else if (object instanceof Collection<?>) {
+        return createListVariable((Collection<?>) object);
+      }
+    }
+    throw new IllegalArgumentException(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE));
+  }
+
+  private static Object createSingleVariable(FullContext context) throws JsonProcessingException {
+    Model model = (Model) context.getTarget();
+    String serializedModel = serializeModel(model);
+    Map<String, String> map =
+        Collections.singletonMap(context.getContextClass().getName(), serializedModel);
+    return createVariablesObjectValue(map);
+  }
+
+  private static Object createListVariable(Collection<?> collection) {
+    if (isListOfFullContext(collection)) {
+      List<FullContext> contexts = (List<FullContext>) collection;
+      String key = contexts.get(0).getContextClass().getName();
+
+      List<String> serializedModels =
+          contexts.stream()
+              .map(
+                  context -> {
+                    try {
+                      return serializeModel((Model) context.getTarget());
+                    } catch (JsonProcessingException e) {
+                      throw new IllegalArgumentException(e);
+                    }
+                  })
+              .collect(Collectors.toList());
+      Map<String, List<String>> map = Collections.singletonMap(key, serializedModels);
+      return createVariablesObjectValue(map);
+    } else {
+      List<String> serializedModels = new ArrayList<>();
+      return createVariablesObjectValue(serializedModels);
+    }
+  }
+
+  private static boolean isListOfFullContext(Collection<?> collection) {
+    return !collection.isEmpty() && collection.iterator().next() instanceof FullContext;
+  }
+
+  private static String serializeModel(Model model) throws JsonProcessingException {
+    return serializeMap(model, 3);
+  }
+
+  public static Object getObject(String varName, DelegateExecution execution)
+      throws JsonProcessingException {
+    ObjectMapper mapper = createObjectMapper();
+    Object object = getVariable(execution.getProcessInstanceId(), varName);
+    if (object instanceof Map<?, ?>) {
+      Map<?, ?> map = (Map<?, ?>) object;
+      if (!map.isEmpty()) {
+        Map.Entry<?, ?> entry = map.entrySet().iterator().next();
+        if (entry.getValue() instanceof List<?>) {
+          return deserializeList((List<String>) entry.getValue(), (String) entry.getKey(), mapper);
+        } else {
+          return deserializeModel((String) entry.getValue(), (String) entry.getKey(), mapper);
+        }
+      }
+    } else if (object instanceof List<?>) {
+      return object;
+    }
+    throw new IllegalArgumentException(
+        String.format(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE)));
+  }
+
+  private static ObjectMapper createObjectMapper() {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
+    return mapper;
+  }
+
+  private static Object deserializeList(
+      List<String> serializedModels, String className, ObjectMapper mapper)
+      throws JsonProcessingException {
+    List<Object> deserializedModels = new ArrayList<>();
+    for (String serializedModel : serializedModels) {
+      deserializedModels.add(
+          new FullContext(mapper.readValue(serializedModel, ModelTools.findModelClass(className))));
+    }
+    return deserializedModels;
+  }
+
+  private static Object deserializeModel(
+      String serializedModel, String className, ObjectMapper mapper)
+      throws JsonProcessingException {
+    return new FullContext(mapper.readValue(serializedModel, ModelTools.findModelClass(className)));
+  }
+
+  protected static String serializeMap(Model model, int depthMax) throws JsonProcessingException {
+    String filterName = "depth_filter";
+    ObjectMapper objectMapper = createObjectMapper();
+    objectMapper.disable(SerializationFeature.FAIL_ON_SELF_REFERENCES);
+    objectMapper.enable(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM);
+    objectMapper.enable(JsonGenerator.Feature.IGNORE_UNKNOWN);
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    objectMapper.setAnnotationIntrospector(
+        new JacksonAnnotationIntrospector() {
+          @Override
+          public Object findFilterId(Annotated a) {
+            return filterName;
+          }
+        });
+
+    ObjectWriter writer =
+        objectMapper.writer(
+            new SimpleFilterProvider().addFilter(filterName, new DepthFilter(depthMax)));
+    return writer.writeValueAsString(model);
+  }
+
+  private static Object createVariablesObjectValue(Object value) {
+    return Variables.objectValue(value, false)
+        .serializationDataFormat(SerializationDataFormats.JAVA)
+        .create();
   }
 }
