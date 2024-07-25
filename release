@@ -17,7 +17,7 @@ usage() {
   printf "This script does following steps :\n"
   printf "   * Update CHANGELOG.md\n"
   printf "   * Create commit release and tag\n"
-  printf "   * Merge into stable (x.y) branch\n\n"
+  printf "   * Merge into release (release/x.y) branch\n\n"
   printf "Options :\n"
   printf "\t-b <branch> : Default branch to work on (default to 'main').\n"
   printf "\t-h          : Display this help.\n"
@@ -61,7 +61,7 @@ if [[ ! "$response" =~ ^([yY])$ ]]; then
   exit 0
 fi
 
-stable_branch=$(echo "$tag" | sed -Ene's#(0|[1-9][0-9]*)\.(0|[1-9][0-9]*).*#\1.\2#p')
+release_branch=$(echo "$tag" | sed -Ene's#(0|[1-9][0-9]*)\.(0|[1-9][0-9]*).*#release/\1.\2#p')
 repo_url=$($git_path remote -v | grep -m1 '^origin' | sed -Ene's#.*(git@[^[:space:]]*).*#\1#p' | sed -Ene's#git@(.*):(.*).git#https://\1/\2#p')
 
 ensure_on_target_branch() {
@@ -90,10 +90,8 @@ require_clean_work_tree() {
 }
 
 ensure_tag_dont_exist() {
-  local remote
-  local local
-  remote=$($git_path ls-remote --tags origin "$tag")
-  local=$($git_path tag -l "$tag")
+  local remote=$($git_path ls-remote --tags origin "$tag")
+  local local=$($git_path tag -l "$tag")
   if [ -n "$remote" ] || [ -n "$local" ]; then
     echo "Tag '$tag' exist on remote or on local"
     exit 1
@@ -155,30 +153,29 @@ release_source() {
   $git_path push --quiet origin "$tag"
 }
 
-merge_in_stable() {
-  if [[ "${stable_branch}" == "${target_branch}" ]]; then
+merge_in_release() {
+  if [[ "${release_branch}" == "${target_branch}" ]]; then
     return
   fi
 
-  print_step "Merging into stable branch $stable_branch..."
+  print_step "Merging into release branch $release_branch..."
 
-  local existed_in_local
-  existed_in_local=$($git_path branch --list "$stable_branch")
+  local existed_in_local=$($git_path branch --list "$release_branch")
 
   if [[ -z ${existed_in_local} ]]; then
-    print_sub_step "  * Creating stable branch"
-    $git_path checkout --quiet -b "$stable_branch"
+    print_sub_step "  * Creating release branch"
+    $git_path checkout --quiet -b "$release_branch"
   else
-    print_sub_step "  * Checkout stable branch and reset from remote"
-    $git_path checkout --quiet "$stable_branch"
-    $git_path reset --quiet --hard "origin/$stable_branch"
+    print_sub_step "  * Checkout release branch and reset from remote"
+    $git_path checkout --quiet "$release_branch"
+    $git_path reset --quiet --hard "origin/$release_branch"
   fi
 
-  print_sub_step "  * Merge release on stable branch"
+  print_sub_step "  * Merge release on release branch"
   $git_path merge --quiet --no-edit "$target_branch"
 
-  print_sub_step "  * Push stable branch"
-  $git_path push --quiet origin "$stable_branch"
+  print_sub_step "  * Push release branch"
+  $git_path push --quiet origin "$release_branch"
 
   $git_path checkout --quiet "$target_branch"
 }
@@ -186,7 +183,7 @@ merge_in_stable() {
 check_prerequisites
 prepare
 release_source
-merge_in_stable
+merge_in_release
 
 echo "-------------------"
 echo -e "Release '$tag' pushed on remote :"
