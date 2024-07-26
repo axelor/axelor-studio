@@ -10,6 +10,9 @@
         <field name="role"/>
       </insert>
     </extend>
+    <extend target="//field[@name='description']">
+      <attribute name="widget" value="html"/>
+    </extend>
   </form>
 
 </object-views>
