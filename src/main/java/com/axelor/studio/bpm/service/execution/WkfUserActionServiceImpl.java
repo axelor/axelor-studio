@@ -173,15 +173,10 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
                 getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
             break;
           case "Script":
-            FullContext deadlineCtx = (FullContext)
+            LocalDate deadline = (LocalDate)
                     wkfService.evalExpression(
                             contextVariables, wkfTaskConfig.getDeadlineFieldPath());
-            if(deadlineCtx != null) {
-              LocalDate deadline = (LocalDate) deadlineCtx.getTarget();
-              if(deadline != null) {
-                teamTask.setTaskDeadline(deadline);
-              }
-            }
+            teamTask.setTaskDeadline(deadline);
             break;
         }
       }
