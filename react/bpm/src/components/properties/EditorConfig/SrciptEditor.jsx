@@ -20,18 +20,15 @@ function ScriptEditor({
   isError,
   readOnly,
   defaultHeight,
+  suggestion,
   language = "groovy",
   minimap = true,
 }) {
   const [height, setHeight] = useState(defaultHeight || INITIAL_HEIGHT);
   const [width, setWidth] = useState(containerWidth - PADDING * 2);
   const savedDimension = useRef({ width, height });
-  const {
-    tokenizer,
-    suggestions,
-    languageConfig,
-    themeRules,
-  } = useLanguageConfig(language);
+  const { tokenizer, suggestions, languageConfig, themeRules } =
+    useLanguageConfig(language);
   const { theme } = useTheme();
 
   const options = {
@@ -41,6 +38,8 @@ function ScriptEditor({
     minimap: {
       enabled: minimap,
     },
+    suggestOnTriggerCharacters: suggestion,
+    quickSuggestions: suggestion,
   };
 
   function handleChange(newValue) {
@@ -79,7 +78,7 @@ function ScriptEditor({
     monaco.editor.defineTheme("custom-theme", {
       base: theme === "dark" ? VS_DARK_THEME : VS_THEME,
       inherit: true,
-      rules: themeRules || [],
+      rules: suggestion ? themeRules : [],
       colors: {
         "editor.foreground": theme === "dark" ? "#ffffff" : "#000000",
       },

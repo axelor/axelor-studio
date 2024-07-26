@@ -1,0 +1,6 @@
+---
+title: Instead of selecting m2o fields from the model, allow expressions
+type: feature
+description:  |
+  - For the Actions on activity, the user can select either a team field or user field and expressions
+  - Each of the user action fields is expecting a m2o (for team and users) or a date field in case of a deadline.

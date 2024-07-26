@@ -18,6 +18,7 @@
 package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.auth.AuthUtils;
+import com.axelor.auth.db.Role;
 import com.axelor.auth.db.User;
 import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.auth.db.repo.UserRepository;
@@ -34,11 +35,15 @@ import com.axelor.team.db.Team;
 import com.axelor.team.db.TeamTask;
 import com.axelor.team.db.repo.TeamRepository;
 import com.axelor.team.db.repo.TeamTaskRepository;
+import com.axelor.text.GroovyTemplates;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.context.FullContext;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +75,8 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
   protected WkfInstanceRepository wkfInstanceRepository;
 
+  protected GroovyTemplates templates;
+
   @Inject
   public WkfUserActionServiceImpl(
       WkfCommonService wkfService,
@@ -77,6 +84,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       WkfProcessConfigRepository wkfProcessConfigRepository,
       TeamTaskRepository teamTaskRepository,
       RoleRepository roleRepo,
+      GroovyTemplates templates,
       TeamRepository teamRepo,
       MetaModelRepository metaModelRepository,
       WkfInstanceRepository wkfInstanceRepository,
@@ -90,6 +98,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     this.wkfEmailService = wkfEmailService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.metaModelRepository = metaModelRepository;
+    this.templates = templates;
   }
 
   protected static final Pattern FIELD_PATTERN = Pattern.compile("(\\$\\{[^\\}]+\\})");
@@ -106,44 +115,151 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
     try {
       FullContext wkfContext = getModelCtx(wkfTaskConfig, execution);
-      if (wkfContext != null) {
-        title = processTitle(title, wkfContext);
+      String modelName = null;
+      if (wkfTaskConfig.getModelName() != null) {
+        modelName = wkfTaskConfig.getModelName();
+      } else {
+        modelName = wkfTaskConfig.getJsonModelName();
+      }
+      String varModelName = wkfService.getVarName(modelName);
+      Map<String, Object> contextVariables = new HashMap<>();
+      contextVariables.put(varModelName, wkfContext);
+      Map<String, Object> processVariables =
+          execution
+              .getProcessEngine()
+              .getRuntimeService()
+              .getVariables(execution.getProcessInstance().getId());
+      processVariables.entrySet().removeIf(it -> Strings.isNullOrEmpty(it.getKey()));
+      contextVariables.putAll(processVariables);
+      switch (wkfTaskConfig.getTaskNameType()) {
+        case "Value":
+          if (wkfContext != null) {
+            title = processTitle(title, wkfContext);
+          }
+          break;
+        case "Script":
+          title =
+              templates.fromText(wkfTaskConfig.getTaskEmailTitle()).make(contextVariables).render();
+          break;
       }
       TeamTask teamTask = new TeamTask(title);
       teamTask.setRelatedProcessInstance(
           wkfInstanceRepository.findByInstanceId(execution.getProcessInstanceId()));
       teamTask.setStatus("new");
-      if (!StringUtils.isEmpty(wkfTaskConfig.getRoleName())) {
-        teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
+      if (!StringUtils.isEmpty(wkfTaskConfig.getRoleType())) {
+        switch (wkfTaskConfig.getRoleType()) {
+          case "Value":
+            teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
+            break;
+          case "Field":
+            teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(), wkfContext));
+            break;
+          case "Script":
+            FullContext roleContext = (FullContext) wkfService.evalExpression(
+                                    contextVariables, wkfTaskConfig.getRoleFieldPath());
+            if(roleContext != null) {
+              Role role = (Role) roleContext.getTarget();
+              if(role != null) {
+                teamTask.setRole(role);
+              }
+            }
+            break;
+        }
       }
-      if (wkfTaskConfig.getDeadlineFieldPath() != null) {
-        teamTask.setTaskDate(getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
+      if (wkfTaskConfig.getDeadlineType() != null) {
+        switch (wkfTaskConfig.getDeadlineType()) {
+          case "Field":
+            teamTask.setTaskDeadline(
+                getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
+            break;
+          case "Script":
+            LocalDate deadline = (LocalDate)
+                    wkfService.evalExpression(
+                            contextVariables, wkfTaskConfig.getDeadlineFieldPath());
+            teamTask.setTaskDeadline(deadline);
+            break;
+        }
       }
       if (teamTask.getTaskDate() == null) {
         teamTask.setTaskDate(LocalDate.now());
       }
       String userPath = getUserPath(wkfTaskConfig, execution.getProcessDefinitionId());
       if (userPath != null) {
-        teamTask.setAssignedTo(getUser(userPath, wkfContext));
+        switch (wkfTaskConfig.getUserFieldType()) {
+          case "Field":
+            teamTask.setAssignedTo(getUser(userPath, wkfContext));
+            break;
+          case "Script":
+            FullContext userCtx =
+                (FullContext)
+                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getUserPath());
+            if (userCtx != null) {
+              User user = (User) userCtx.getTarget();
+              if (user != null) {
+                teamTask.setAssignedTo(user);
+              }
+            }
+            break;
+        }
       }
       String teamPath = wkfTaskConfig.getTeamPath();
       if (teamPath != null) {
-        FullContext teamCtx = (FullContext) wkfService.evalExpression(wkfContext, teamPath);
-        if (teamCtx != null) {
-          Team team = (Team) teamCtx.getTarget();
-          if (team != null) {
-            team = teamRepo.find(team.getId());
-            teamTask.setTeam(team);
-          }
+        switch (wkfTaskConfig.getTeamFieldType()) {
+          case "Field":
+            teamTask.setTeam(getTeam(teamPath, wkfContext));
+            break;
+          case "Script":
+            FullContext teamCtx = (FullContext) wkfService.evalExpression(contextVariables, wkfTaskConfig.getTeamPath());
+            if(teamCtx != null) {
+              Team team = (Team) teamCtx.getTarget();
+              if(team != null) {
+                teamTask.setTeam(team);
+              }
+            }
+            break;
         }
       }
+      if (wkfTaskConfig.getTaskPriority() != null) {
+        switch (wkfTaskConfig.getTaskPriorityType()) {
+          case "Value":
+            teamTask.setPriority(wkfTaskConfig.getTaskPriority());
+            break;
+          case "Script":
+            teamTask.setPriority(
+                templates
+                    .fromText(wkfTaskConfig.getTaskPriority())
+                    .make(contextVariables)
+                    .render());
+            break;
+        }
+      }
+      if (wkfTaskConfig.getDuration() != null) {
+        teamTask.setTaskDuration(Integer.parseInt(wkfTaskConfig.getDuration()));
+      }
       String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
-      teamTask.setDescription(
-          String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
+      if (wkfTaskConfig.getDescriptionType() == "Script") {
+        teamTask.setDescription(
+            templates.fromText(wkfTaskConfig.getDescription()).make(contextVariables).render());
+      } else {
+        teamTask.setDescription(
+            String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
+      }
       teamTaskRepository.save(teamTask);
     } catch (ClassNotFoundException e) {
       ExceptionHelper.trace(e);
     }
+  }
+
+  private Team getTeam(String teamPath, FullContext wkfContext) {
+    FullContext teamCtx = (FullContext) wkfService.evalExpression(wkfContext, teamPath);
+    if (teamCtx != null) {
+      Team team = (Team) teamCtx.getTarget();
+      if (team != null) {
+        team = teamRepo.find(team.getId());
+        return team;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -261,6 +377,23 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     }
 
     return date;
+  }
+
+  public Role getRole(String rolePath, FullContext wkfContext) {
+    Role role = null;
+    if (wkfContext != null) {
+      FullContext roleCtx = (FullContext) wkfService.evalExpression(wkfContext, rolePath);
+      if (roleCtx != null) {
+        role = (Role) roleCtx.getTarget();
+        if (role != null) {
+          role = roleRepo.find(role.getId());
+        }
+      }
+    } else {
+      role = roleRepo.findByName(rolePath);
+    }
+
+    return role;
   }
 
   @Override

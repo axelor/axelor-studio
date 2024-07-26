@@ -23,13 +23,21 @@ export default function FieldEditor({
   allowAllFields = false,
   excludeUITypes = false,
   isDatePath = false,
+  fieldType,
 }) {
   const { fieldName = "", allFields } = value || {};
   const [fields, setFields] = useState([]);
   const [isShow, setShow] = useState(true);
   const [isButton, setButton] = useState(true);
   const [allFieldValues, setAllFieldValues] = useState(null);
-  const values = fieldName && fieldName.split(".");
+
+  let values = null;
+  if (typeof fieldName === "object") {
+    values = fieldName[fieldType]?.split(".");
+  } else if (typeof fieldName === "string") {
+    values = fieldName.split(".");
+  }
+
   const [startValue] = values || [];
   const hasManyValues =
     fieldName &&
@@ -95,7 +103,13 @@ export default function FieldEditor({
   }, [getMetaFields, isCollection, allowAllFields, excludeUITypes, isDatePath]);
 
   useEffect(() => {
-    const values = fieldName && fieldName.split(".");
+    let values = null;
+    if (typeof fieldName === "object") {
+      values = fieldName[fieldType]?.split(".");
+    } else if (typeof fieldName === "string") {
+      values = fieldName.split(".");
+    }
+
     const transformValue =
       fields && fields.find((f) => f.name === (values && values[0]));
 

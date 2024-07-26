@@ -15,3 +15,14 @@
   vertical-align: middle;
   margin-bottom: 3px;
 }
+
+.clearButton {
+  background: transparent;
+  border: none;
+  height: 23px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}

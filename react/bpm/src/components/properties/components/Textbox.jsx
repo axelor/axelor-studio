@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import classnames from "classnames";
-import { InputLabel, Input } from "@axelor/ui";
+import { InputLabel, Input, Button } from "@axelor/ui";
 import ScriptEditor from "../EditorConfig/SrciptEditor";
 import Description from "./Description";
 import { getBool } from "../../../utils";
@@ -33,6 +33,7 @@ export default function Textbox({
   defaultHeight,
   showLabel = true,
   minimap,
+  suggestion,
   setDummyProperty = () => {},
 }) {
   const {
@@ -160,6 +161,7 @@ export default function Textbox({
             }
           }}
           minimap={minimap}
+          suggestion={suggestion}
         />
       ) : (
         <Input
