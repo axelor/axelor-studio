@@ -39,6 +39,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,7 +87,7 @@ public class WkfRequestListener {
 
   private void processUpdated(Set<? extends Model> updated, String tenantId, Integer source)
       throws ClassNotFoundException {
-
+    updated = new HashSet<>(updated);
     for (Model model : updated) {
       String modelName = EntityHelper.getEntityClass(model).getName();
       if (model instanceof MetaJsonRecord) {

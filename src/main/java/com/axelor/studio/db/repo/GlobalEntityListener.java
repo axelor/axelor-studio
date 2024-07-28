@@ -8,6 +8,7 @@ import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class GlobalEntityListener {
     }
   }
 
-  protected Map<String, Object> callWkfProcess(Set<Model> updated, Set<Model> deleted)
+  protected synchronized Map<String, Object> callWkfProcess(Set<Model> updated, Set<Model> deleted)
       throws ClassNotFoundException {
 
     Map<String, Object> result = new HashMap<>();
@@ -50,6 +51,8 @@ public class GlobalEntityListener {
     try (RequestScoper.CloseableScope ignored = scope.open()) {
       Beans.get(WkfRequestListener.class)
           .applyProcessChange(updated, deleted, WkfInstanceServiceImpl.EXECUTION_SOURCE_LISTENER);
+    } catch (ConcurrentModificationException e) {
+      e.printStackTrace();
     }
     return result;
   }
