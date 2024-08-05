@@ -22,6 +22,7 @@ import com.axelor.app.AppSettings;
 import com.axelor.auth.AuthUtils;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.context.WkfContextHelper;
+import com.axelor.studio.bpm.context.WkfProcessHelper;
 import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
 import com.axelor.studio.bpm.utils.BpmLoggingHelper;
 import com.axelor.studio.helper.MigrationHelper;
@@ -47,6 +48,7 @@ public class AxelorBindingsHelper {
     bindings.put("__config__", AppSettings.get());
     bindings.put("__log__", BpmLoggingHelper.get());
     bindings.put("__migration__", MigrationHelper.class);
+    bindings.put("__process__", WkfProcessHelper.class);
     return bindings;
   }
 }
