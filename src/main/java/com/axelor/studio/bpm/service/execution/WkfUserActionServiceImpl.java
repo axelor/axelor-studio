@@ -193,6 +193,9 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
                     processInstance.getProcessInstanceId()),
                 title)
             .fetchOne();
+    if (teamTask == null) {
+      return;
+    }
     HistoricTaskInstance task =
         processEngine
             .getHistoryService()
