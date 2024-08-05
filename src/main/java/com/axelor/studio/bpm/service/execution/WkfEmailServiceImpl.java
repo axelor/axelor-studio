@@ -114,8 +114,10 @@ public class WkfEmailServiceImpl implements WkfEmailService {
     if (template != null) {
       url = "<a href=\"" + url + "\" >" + url + "</a>";
       message = templateMessageService.generateMessage(id, model, tag, template);
-      message.setSubject(message.getSubject().replace("{{activeNode}}", activeNode));
-      message.setContent(message.getContent().replace("{{activeNode}}", activeNode));
+      if (activeNode != null) {
+        message.setSubject(message.getSubject().replace("{{activeNode}}", activeNode));
+        message.setContent(message.getContent().replace("{{activeNode}}", activeNode));
+      }
       message.setSubject(message.getSubject().replace("{{recordUrl}}", url));
       message.setContent(message.getContent().replace("{{recordUrl}}", url));
     } else {
