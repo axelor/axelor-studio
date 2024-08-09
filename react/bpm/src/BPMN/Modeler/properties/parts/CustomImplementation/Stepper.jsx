@@ -36,11 +36,19 @@ const Stepper = (props) => {
       items={listItems}
       isItemActive={(item) => item === listItems[active]}
       renderItem={(props) => <Item {...props} />}
-      renderMenuTrigger={() => {}}
+      renderMenuTrigger={MenuTrigger}
       onItemClick={() => {}}
       renderMenuItem={({ item }) => <>{item.value}</>}
     />
   );
 };
+
+function MenuTrigger({ count, open }) {
+  return (
+    <div className={clsx(styles.item, [{ [styles.open]: open }])}>
+      <div className={styles.text}>+{count}</div>
+    </div>
+  );
+}
 
 export default Stepper;
