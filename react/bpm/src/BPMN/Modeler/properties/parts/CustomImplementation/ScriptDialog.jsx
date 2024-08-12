@@ -10,46 +10,12 @@ export default function ScriptDialog({
   setOpenScriptDialog,
   updateScript,
   fieldType,
-  userDummy,
-  teamDummy,
-  deadlineDummy,
-  roleDummy,
-  setUserFieldPathDummy,
-  setTeamFieldDummy,
-  setDeadlineFieldPathDummy,
-  setRoleDummy,
-  readOnlyFields,
   getProperty,
-  actionTitleDummy,
-  priorityDummy,
-  durationDummy,
-  descriptionDummy,
-  setActionTitleDummy,
-  setPriorityDummy,
-  setDurationDummy,
-  setDescriptionDummy,
+  setActionDummy,
+  actionDummy,
 }) {
   function getFieldPathValue(fieldType) {
-    switch (fieldType) {
-      case "userFieldPath":
-        return userDummy?.userFieldPath;
-      case "teamFieldPath":
-        return teamDummy?.teamFieldPath;
-      case "deadlineFieldPath":
-        return deadlineDummy?.deadlineFieldPath;
-      case "roleFieldPath":
-        return roleDummy?.roleFieldPath;
-      case "taskPriority":
-        return priorityDummy?.taskPriority;
-      case "taskName":
-        return actionTitleDummy?.taskName;
-      case "duration":
-        return durationDummy?.duration;
-      case "description":
-        return descriptionDummy?.description;
-      default:
-        return "";
-    }
+    return actionDummy[fieldType] || "";
   }
 
   const scriptEntry = {
@@ -61,23 +27,8 @@ export default function ScriptDialog({
     },
     set: function (e, values) {
       const updatedValue = values?.script;
-      if (fieldType === "userFieldPath") {
-        setUserFieldPathDummy({ userFieldPath: updatedValue });
-      } else if (fieldType === "teamFieldPath") {
-        setTeamFieldDummy({ teamFieldPath: updatedValue });
-      } else if (fieldType === "deadlineFieldPath") {
-        setDeadlineFieldPathDummy({ deadlineFieldPath: updatedValue });
-      } else if (fieldType === "roleFieldPath") {
-        setRoleDummy({ roleFieldPath: updatedValue });
-      } else if (fieldType === "taskPriority") {
-        setPriorityDummy({ taskPriority: updatedValue });
-      } else if (fieldType === "taskName") {
-        setActionTitleDummy({ taskName: updatedValue });
-      } else if (fieldType === "duration") {
-        setDurationDummy({ duration: updatedValue });
-      } else if (fieldType === "description") {
-        setDescriptionDummy({ description: updatedValue });
-      }
+      setActionDummy((prev)=>({[fieldType]:updatedValue}))
+     
     },
   };
 
@@ -100,9 +51,7 @@ export default function ScriptDialog({
           <Textbox
             element={element}
             className={styles.textbox}
-            readOnly={
-              readOnlyFields[fieldType] || getProperty(`${fieldType}Value`)
-            }
+            readOnly={getProperty(`${fieldType}Value`)}
             showLabel={false}
             defaultHeight={window?.innerHeight - 205}
             entry={scriptEntry}
