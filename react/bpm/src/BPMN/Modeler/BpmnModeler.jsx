@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import find from "lodash/find";
 import BpmnModeler from "bpmn-js/lib/Modeler";
 import {
@@ -59,7 +59,7 @@ import { useKeyPress } from "../../custom-hooks/useKeyPress";
 import Ids from "ids";
 import Alert from "../../components/Alert";
 import { Collaboration } from "../../components/Collaboration";
-import { Box, CommandBar, Scrollable } from "@axelor/ui";
+import { Box, CommandBar } from "@axelor/ui";
 
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
@@ -77,8 +77,9 @@ const resizeStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  borderLeft: "1px solid var(--bs-secondary-bg)",
 };
-const drawerWidth = 380;
+const DRAWER_WIDTH = 380;
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
 
 const TimerEvents = React.lazy(() => import("./TimerEvent"));
@@ -136,13 +137,14 @@ function BpmnModelerComponent() {
   const [comments, setComments] = useState(null);
   const [tabValue, setTabValue] = useState(0);
   const [tabs, setTabs] = useState([]);
-  const [width, setWidth] = useState(drawerWidth);
+  const [width, setWidth] = useState(DRAWER_WIDTH);
   const [height, setHeight] = useState("100%");
   const [enableStudioApp, setEnableStudioApp] = useState(false);
   const [showError, setError] = useState(false);
   const [initialState, setInitialState] = useState(false);
   const { update, state } = useStore();
   const { info } = state || {};
+  const [drawerOpen, setDrawerOpen] = useState(true);
 
   const diagramXmlRef = React.useRef(null);
 
@@ -389,7 +391,6 @@ function BpmnModelerComponent() {
     },
     []
   );
-
 
   const newBpmnDiagram = React.useCallback(
     function newBpmnDiagram(rec, isDeploy, id, oldWkf) {
@@ -1703,6 +1704,35 @@ function BpmnModelerComponent() {
     setDirty(isDirty);
   }
 
+  const setCSSWidth = (width) => {
+    setDrawerOpen(width === "0px" ? false : true);
+  };
+
+  const initialWidth = useRef(window.innerWidth);
+  const availableWidth = useRef(window.innerWidth);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+
+    const checkWindowSize = () => {
+      const windowWidth = window.innerWidth;
+      availableWidth.current = windowWidth;
+      setWidth(() => {
+        const width = Math.round(
+          (windowWidth * DRAWER_WIDTH) / initialWidth.current
+        );
+        const addOn = Math.round(Math.max(0, 1024 - windowWidth) / 5);
+        return width + addOn;
+      });
+    };
+
+    window.addEventListener("resize", checkWindowSize);
+
+    return () => {
+      window.removeEventListener("resize", checkWindowSize);
+    };
+  }, [drawerOpen]);
+
   useEffect(() => {
     window.top && window.top.addEventListener("beforeunload", alertUser);
     return () => {
@@ -1904,18 +1934,25 @@ function BpmnModelerComponent() {
             </Box>
           </div>
         </Box>
-        <div>
+        <Box position="sticky" top={0} right={0} h={100}>
           <Resizable
             style={resizeStyle}
             size={{ width, height }}
             onResizeStop={(e, direction, ref, d) => {
               setWidth((width) => width + d.width);
-              setHeight(height + d.height);
+              setHeight((height) => height + d.height);
+              setCSSWidth(`${width + d.width}px`);
             }}
-            minWidth={width === 0 ? width : drawerWidth}
-            maxWidth={window.innerWidth - 150}
+            maxWidth={Math.max(window.innerWidth - DRAWER_WIDTH, DRAWER_WIDTH)}
+            minWidth={
+              !drawerOpen || availableWidth.current <= 1024 ? 0 : DRAWER_WIDTH
+            }
+            minHeight={height}
+            enable={{
+              left: true,
+            }}
           >
-            <Scrollable className={styles.drawerPaper}>
+            <Box className={styles.drawerPaper} maxH={100}>
               <Box className={styles.drawerContainer}>
                 <DrawerContent
                   tabs={tabs}
@@ -1941,27 +1978,31 @@ function BpmnModelerComponent() {
                   setDummyProperty={setDummyProperty}
                 />
               </Box>
-            </Scrollable>
+            </Box>
             <Box
               className="bpmn-property-toggle"
               color="body"
+              borderEnd
+              borderTop
+              borderStart
               pos="absolute"
               bg="body-tertiary"
               userSelect="none"
               roundedTop
               fontSize={6}
               onClick={() => {
-                setWidth((width) => (width === 0 ? 380 : 0));
+                setWidth((width) => (width === 0 ? DRAWER_WIDTH : 0));
+                setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
               }}
             >
               {translate("Properties")}
             </Box>
+            <div
+              className="properties-panel-parent"
+              id="js-properties-panel"
+            ></div>
           </Resizable>
-          <div
-            className="properties-panel-parent"
-            id="js-properties-panel"
-          ></div>
-        </div>
+        </Box>
         {openSnackbar.open && (
           <Alert
             open={openSnackbar.open}
