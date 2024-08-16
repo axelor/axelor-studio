@@ -15,17 +15,6 @@ body,
   overflow: hidden;
 }
 
-.modeler {
-  height: 97%;
-  display: flex;
-  justify-content: space-between;
-}
-
-#canvas {
-  height: 100%;
-  width: 100%;
-}
-
 #properties {
   background: var(--bs-body-bg);
   width: calc(100% - 15px);
@@ -190,6 +179,10 @@ body,
 
 .dmn-decision-table-container .action-icon {
   box-shadow: 0 0 0 2px var(--bs-body-color) !important;
+}
+
+.dmn-decision-table-container .tjs-table {
+  z-index: 0;
 }
 
 .djs-direct-editing-content {
