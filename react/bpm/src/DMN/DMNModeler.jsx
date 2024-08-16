@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import DmnModeler from "dmn-js/lib/Modeler";
 import { migrateDiagram } from "@bpmn-io/dmn-migrate";
 import propertiesPanelModule from "dmn-js-properties-panel";
@@ -71,12 +71,13 @@ import Ids from "ids";
 import styles from "./DMNModeler.module.css";
 
 let dmnModeler = null;
-const drawerWidth = 380;
+const DRAWER_WIDTH = 380;
 
 const resizeStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  borderLeft: "1px solid var(--bs-secondary-bg)",
 };
 
 function nextId(prefix) {
@@ -149,7 +150,7 @@ function DMNModeler() {
     messageType: null,
     message: null,
   });
-  const [width, setWidth] = useState(drawerWidth);
+  const [width, setWidth] = useState(DRAWER_WIDTH);
   const [height, setHeight] = useState("100%");
   const [selectedElement, setSelectedElement] = useState(null);
   const [tabValue, setTabValue] = useState(0);
@@ -167,7 +168,8 @@ function DMNModeler() {
   const [openAlert, setAlert] = useState(false);
   const [id, setId] = useState(null);
   const [nameCol, setNameCol] = useState(null);
-  const diagramXmlRef = React.useRef(null);
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const diagramXmlRef = useRef(null);
   const tab = tabs && tabs[tabValue];
   const { groups = [], id: tabId = "" } = tab || {};
   const { theme = "light" } = useAppTheme();
@@ -234,7 +236,12 @@ function DMNModeler() {
   };
 
   const openPropertyPanel = () => {
-    setWidth(380);
+    setWidth(DRAWER_WIDTH);
+    setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
+  };
+
+  const setCSSWidth = (width) => {
+    setDrawerOpen(width === "0px" ? false : true);
   };
 
   const getSheet = React.useCallback(() => {
@@ -870,6 +877,31 @@ function DMNModeler() {
     });
   }, [getSheet]);
 
+  const initialWidth = useRef(window.innerWidth);
+  const availableWidth = useRef(window.innerWidth);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+
+    const checkWindowSize = () => {
+      const windowWidth = window.innerWidth;
+      availableWidth.current = windowWidth;
+      setWidth(() => {
+        const width = Math.round(
+          (windowWidth * DRAWER_WIDTH) / initialWidth.current
+        );
+        const addOn = Math.round(Math.max(0, 1024 - windowWidth) / 5);
+        return width + addOn;
+      });
+    };
+
+    window.addEventListener("resize", checkWindowSize);
+
+    return () => {
+      window.removeEventListener("resize", checkWindowSize);
+    };
+  }, [drawerOpen]);
+
   const getNameCol = (nameCol) => {
     nameCol && setNameCol(nameCol);
   };
@@ -879,10 +911,15 @@ function DMNModeler() {
     handleViewDRD();
   };
 
+  const hasDrawerContent = useMemo(
+    () => Boolean(input || inputRule || output || rule),
+    [input, inputRule, output, rule]
+  );
+
   return (
-    <Box className="App" color="body">
-      <div className="modeler">
-        <div id="canvas">
+    <Box className="App" d="flex" flexDirection="column" color="body">
+      <Box flex={1} d="flex" justifyContent="space-between" className="modeler">
+        <Box w={100} h={100} id="canvas">
           <Box
             d="flex"
             alignItems="center"
@@ -942,16 +979,26 @@ function DMNModeler() {
               style={{ display: "none" }}
             />
           </Box>
-        </div>
-        <Box>
+        </Box>
+        <Box position="sticky" top={0} right={0} h={100}>
           <Resizable
             style={resizeStyle}
             size={{ width, height }}
             onResizeStop={(e, direction, ref, d) => {
               setWidth((width) => width + d.width);
               setHeight(height + d.height);
+              setCSSWidth(`${width + d.width}px`);
             }}
-            maxWidth={window.innerWidth - 150}
+            maxWidth={Math.max(window.innerWidth - 230, DRAWER_WIDTH)}
+            minWidth={
+              !width || !drawerOpen || availableWidth.current <= 1024
+                ? 0
+                : DRAWER_WIDTH
+            }
+            minHeight={height}
+            enable={{
+              left: true,
+            }}
           >
             <Box className={styles.drawerPaper} id="drawer">
               <Box className={styles.drawerContainer}>
@@ -972,9 +1019,13 @@ function DMNModeler() {
                 />
                 {selectedElement && selectedElement.id === "__implicitroot" ? (
                   decision && (
-                    <div style={{ marginTop: 10 }}>
+                    <div>
                       {decision && (
-                        <React.Fragment>
+                        <Box
+                          className={
+                            hasDrawerContent ? styles["drawer-content"] : ""
+                          }
+                        >
                           {input && !inputRule && (
                             <InputHeadProperties
                               element={selectedElement}
@@ -1016,16 +1067,16 @@ function DMNModeler() {
                               getData={getData}
                             />
                           )}
-                        </React.Fragment>
+                        </Box>
                       )}
                     </div>
                   )
                 ) : (
-                  <React.Fragment>
+                  <Box border p={2} pb={3} rounded>
                     {groups.map((group, index) => (
                       <TabPanel key={index} group={group} index={index} />
                     ))}
-                  </React.Fragment>
+                  </Box>
                 )}
                 <div id="properties" style={{ display: "none" }}></div>
               </Box>
@@ -1033,20 +1084,24 @@ function DMNModeler() {
             <Box
               className="bpmn-property-toggle"
               color="body"
+              borderEnd
+              borderTop
+              borderStart
               pos="absolute"
               bg="body-tertiary"
               userSelect="none"
               roundedTop
               fontSize={6}
               onClick={() => {
-                setWidth((width) => (width === 0 ? 380 : 0));
+                setWidth((width) => (width === 0 ? DRAWER_WIDTH : 0));
+                setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
               }}
             >
               {translate("Properties")}
             </Box>
           </Resizable>
         </Box>
-      </div>
+      </Box>
       <AlertDialog
         openAlert={openAlert}
         alertClose={alertClose}

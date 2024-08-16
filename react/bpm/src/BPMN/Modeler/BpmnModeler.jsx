@@ -1965,9 +1965,11 @@ function BpmnModelerComponent() {
               setHeight((height) => height + d.height);
               setCSSWidth(`${width + d.width}px`);
             }}
-            maxWidth={Math.max(window.innerWidth - DRAWER_WIDTH, DRAWER_WIDTH)}
+            maxWidth={Math.max(window.innerWidth - 230, DRAWER_WIDTH)}
             minWidth={
-              !drawerOpen || availableWidth.current <= 1024 ? 0 : DRAWER_WIDTH
+              !width || !drawerOpen || availableWidth.current <= 1024
+                ? 0
+                : DRAWER_WIDTH
             }
             minHeight={height}
             enable={{
