@@ -22,7 +22,7 @@ This checklist encourages us to confirm any changes have been analyzed to reduce
 
 ### Java
 
-* [ ] My code follow this guidline [Guidline](https://redmine.axelor.com/issues/59638)
+* [ ] My code follow this guideline [Guideline](https://redmine.axelor.com/issues/59638)
 * [ ] The business logic is only in the services.
 * [ ] The queries are only in the repositories.
 
