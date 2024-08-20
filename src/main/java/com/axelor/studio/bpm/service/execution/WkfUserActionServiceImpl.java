@@ -155,11 +155,12 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(), wkfContext));
             break;
           case "Script":
-            FullContext roleContext = (FullContext) wkfService.evalExpression(
-                                    contextVariables, wkfTaskConfig.getRoleFieldPath());
-            if(roleContext != null) {
+            FullContext roleContext =
+                (FullContext)
+                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getRoleFieldPath());
+            if (roleContext != null) {
               Role role = (Role) roleContext.getTarget();
-              if(role != null) {
+              if (role != null) {
                 teamTask.setRole(role);
               }
             }
@@ -173,9 +174,10 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
                 getDeadLineDate(wkfTaskConfig.getDeadlineFieldPath(), wkfContext));
             break;
           case "Script":
-            LocalDate deadline = (LocalDate)
+            LocalDate deadline =
+                (LocalDate)
                     wkfService.evalExpression(
-                            contextVariables, wkfTaskConfig.getDeadlineFieldPath());
+                        contextVariables, wkfTaskConfig.getDeadlineFieldPath());
             teamTask.setTaskDeadline(deadline);
             break;
         }
@@ -209,10 +211,12 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setTeam(getTeam(teamPath, wkfContext));
             break;
           case "Script":
-            FullContext teamCtx = (FullContext) wkfService.evalExpression(contextVariables, wkfTaskConfig.getTeamPath());
-            if(teamCtx != null) {
+            FullContext teamCtx =
+                (FullContext)
+                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getTeamPath());
+            if (teamCtx != null) {
               Team team = (Team) teamCtx.getTarget();
-              if(team != null) {
+              if (team != null) {
                 teamTask.setTeam(team);
               }
             }
