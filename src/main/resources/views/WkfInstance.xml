@@ -14,14 +14,16 @@
   <form name="wkf-instance-form" title="Process Instance"
     model="com.axelor.studio.db.WkfInstance" width="large"
     onLoad="action-wkf-attrs-refresh-instance-state" canNew="false">
-    <panel name="mainPanel" colSpan="12">
+    <panel name="mainPanel" colSpan="12" itemSpan="3">
       <field name="migrationStatusSelect" widget="NavSelect" colSpan="12" readonly="true"
         showTitle="false"/>
       <field name="name" readonly="true"/>
-      <field name="instanceId" colSpan="3" readonly="true"/>
+      <field name="instanceId" readonly="true"/>
       <button name="openDashboardBtn" title="Dashboard"
-        onClick="save,action-wkf-instance-view-dashboard" colSpan="3"/>
-      <field name="$imageUrl" colSpan="12" hidden="true"/>
+        onClick="save,action-wkf-instance-view-dashboard"/>
+      <button name="unblockInstanceBtn" title="Unblock process instance"
+        onClick="save, action-wkf-instance-method-unblock-instance"/>
+      <field name="$imageUrl" hidden="true"/>
     </panel>
     <panel-tabs name="mainPanelTabs" showIf="$imageUrl != null">
       <panel-dashlet name="wkfInstanceDashlet"
@@ -125,6 +127,10 @@
 
   <action-method name="action-method-wkf-instance-show-logs">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="showInstanceLog"/>
+  </action-method>
+
+  <action-method name="action-wkf-instance-method-unblock-instance">
+    <call class="com.axelor.studio.bpm.web.WkfInstanceController" method="unblockInstance"/>
   </action-method>
 
   <action-attrs name="set-default-log-filter">

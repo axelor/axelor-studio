@@ -73,7 +73,7 @@
       </panel>
     </panel-tabs>
     <panel name="extraPanel">
-      <field name="wkfProcessList" colSpan="12" canNew="false" canRemove="true" hidden="true"/>
+      <field name="wkfProcessList" colSpan="12" canNew="false" canRemove="true"/>
       <field name="description" colSpan="12"/>
       <panel-dashlet hidden="true" action="action-wkf-model-method-show-versions"
         name="wkfModelVersionDashlet" title="Previous Versions" colSpan="12"/>
@@ -104,6 +104,8 @@
         onClick="save,action-wkf-model-method-show-dashboard" showIf="id"/>
       <button name="openInstanceBtn" title="All instances"
         onClick="save,action-wkf-model-view-show-instance" showIf="id"/>
+      <button name="unblockInstancesBtn" title="Unblock all instances"
+        onClick="save, action-wkf-model-method-unblock-instances" showIf="id"/>
     </panel>
   </form>
 
@@ -404,6 +406,11 @@
 
   <action-method name="action-wkf-model-method-open-late-task">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="openLateTask"/>
+  </action-method>
+
+  <action-method name="action-wkf-model-method-unblock-instances">
+    <call class="com.axelor.studio.bpm.web.WkfModelController"
+      method="unblockInstanceFromModel"/>
   </action-method>
 
   <action-export name="action-wkf-model-export-wkf-models" output="${date}${time}"

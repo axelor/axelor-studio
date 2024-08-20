@@ -19,13 +19,16 @@ package com.axelor.studio.bpm.service.execution;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import com.axelor.common.ObjectUtils;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
+import com.axelor.db.Query;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
+import com.axelor.meta.db.MetaModel;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
@@ -82,6 +85,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WkfInstanceServiceImpl implements WkfInstanceService {
+
+  // XXX this value might need to be reviewed based on our user experience feedbacks
+  protected static final int FETCH_SIZE_FOR_EVAL_INSTANCE_BATCH = 5;
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -190,6 +196,69 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
 
     return helpText;
+  }
+
+  @Override
+  public void evalInstance(WkfInstance instance) throws ClassNotFoundException {
+    List<WkfProcessConfig> wkfProcessConfigs = instance.getWkfProcess().getWkfProcessConfigList();
+    if (wkfProcessConfigs.isEmpty()) {
+      return;
+    }
+
+    String classFullName = wkfProcessConfigs.get(0).getMetaModel().getFullName();
+    Class<? extends Model> klass = Class.forName(classFullName).asSubclass(Model.class);
+    Model model = JPA.find(klass, instance.getModelId());
+    evalInstance(model, null);
+  }
+
+  @Override
+  public void evalInstancesFromWkfModel(WkfModel wkfModel) {
+    wkfModel.getWkfProcessList().forEach(this::evalInstancesFromProcess);
+  }
+
+  protected void evalInstancesFromProcess(WkfProcess process) {
+    List<WkfProcessConfig> wkfProcessConfigs =
+        process.getWkfProcessConfigList().stream()
+            .filter(WkfProcessConfig::getIsStartModel)
+            .collect(Collectors.toList());
+    if (wkfProcessConfigs.isEmpty()) {
+      return;
+    }
+
+    try {
+      int offset = 0;
+
+      MetaModel metaModel = wkfProcessConfigs.get(0).getMetaModel();
+      Class<? extends Model> klass = Class.forName(metaModel.getFullName()).asSubclass(Model.class);
+
+      List<? extends Model> models =
+          fetchModelWithInstanceProcessId(klass, FETCH_SIZE_FOR_EVAL_INSTANCE_BATCH, offset);
+
+      while (ObjectUtils.notEmpty(models)) {
+        for (Model model : models) {
+          log.debug("Update process instance for model {}", model.getId());
+          this.evalInstance(model, null);
+          offset++;
+        }
+
+        if (models.size() < FETCH_SIZE_FOR_EVAL_INSTANCE_BATCH) {
+          return;
+        }
+
+        JPA.clear();
+        models = fetchModelWithInstanceProcessId(klass, FETCH_SIZE_FOR_EVAL_INSTANCE_BATCH, offset);
+      }
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected <T extends Model> List<T> fetchModelWithInstanceProcessId(
+      Class<T> klass, int limit, int offset) {
+    return Query.of(klass)
+        .filter("self.processInstanceId IS NOT NULL")
+        .order("id")
+        .fetch(limit, offset);
   }
 
   protected void startInstance(WkfProcessConfig wkfProcessConfig, Model model) {

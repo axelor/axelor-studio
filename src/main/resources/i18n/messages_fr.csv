@@ -1042,6 +1042,8 @@
 "Unique constraint violation",,,
 "Unique model",,,
 "Unit",,,
+"Unblock all instances","Débloquer toutes les instances",,
+"Unblock process instance","Débloquer l'instance de processus",,
 "Unsupported operation : %s","Opération non prise en charge : %s",,
 "Unsupported variable type or empty map",,,
 "Update",,,
