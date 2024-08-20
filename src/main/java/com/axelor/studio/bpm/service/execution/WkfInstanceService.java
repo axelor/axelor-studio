@@ -21,6 +21,7 @@ import com.axelor.db.Model;
 import com.axelor.meta.CallMethod;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceVariable;
+import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfTaskConfig;
 import java.util.List;
@@ -30,6 +31,10 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 public interface WkfInstanceService {
 
   public String evalInstance(Model model, String signal) throws ClassNotFoundException;
+
+  void evalInstancesFromWkfModel(WkfModel wkfModel);
+
+  void evalInstance(WkfInstance wkfInstance) throws ClassNotFoundException;
 
   public WkfInstance createWkfInstance(String processInstanceId, WkfProcess wkfProcess);
 

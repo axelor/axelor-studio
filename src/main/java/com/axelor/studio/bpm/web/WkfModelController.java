@@ -585,4 +585,10 @@ public class WkfModelController {
       ExceptionHelper.trace(e);
     }
   }
+
+  public void unblockInstanceFromModel(ActionRequest request, ActionResponse response) {
+    WkfModel wkfModel = request.getContext().asType(WkfModel.class);
+    Beans.get(WkfInstanceService.class).evalInstancesFromWkfModel(wkfModel);
+    response.setInfo("Operation completed");
+  }
 }
