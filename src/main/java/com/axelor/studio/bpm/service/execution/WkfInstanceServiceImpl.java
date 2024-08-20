@@ -86,23 +86,13 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected ProcessEngineService engineService;
-
   protected WkfInstanceRepository wkfInstanceRepository;
-
   protected WkfCommonService wkfService;
-
-  protected MetaFiles metaFiles;
-
   protected WkfTaskConfigRepository wkfTaskConfigRepository;
-
   protected WkfTaskService wkfTaskService;
-
   protected WkfEmailService wkfEmailService;
-
   protected WkfUserActionService wkfUserActionService;
-
   protected BpmErrorMessageService bpmErrorMessageService;
-
   protected WkfLogService wkfLogService;
 
   @Inject
@@ -110,7 +100,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       ProcessEngineService engineService,
       WkfInstanceRepository wkfInstanceRepository,
       WkfCommonService wkfService,
-      MetaFiles metaFiles,
       WkfTaskConfigRepository wkfTaskConfigRepository,
       WkfTaskService wkfTaskService,
       WkfEmailService wkfEmailService,
@@ -120,7 +109,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
-    this.metaFiles = metaFiles;
     this.wkfTaskConfigRepository = wkfTaskConfigRepository;
     this.wkfTaskService = wkfTaskService;
     this.wkfEmailService = wkfEmailService;
