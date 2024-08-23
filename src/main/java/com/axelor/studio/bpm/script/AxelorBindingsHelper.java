@@ -54,7 +54,10 @@ public class AxelorBindingsHelper {
     bindings.put("__migration__", MigrationHelper.class);
     bindings.put("__process__", WkfProcessHelper.class);
     List<CustomVariable> customVariables =
-        Beans.get(CustomVariableRepository.class).all().filter("status = '1'").fetch();
+        Beans.get(CustomVariableRepository.class)
+            .all()
+            .filter("status = ?1", CustomVariableRepository.STATUS_VALID)
+            .fetch();
     for (CustomVariable customVariable : customVariables) {
       String variableName = customVariable.getName();
       GroovyScriptHelper helper = new GroovyScriptHelper(bindings);

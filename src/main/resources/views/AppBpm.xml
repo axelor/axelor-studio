@@ -14,7 +14,7 @@
     </panel>
     <panel name="customVariablePanel">
       <field name="customVariableList" form-view="custom-variable-form"
-        grid-view="custom-variable-grid" colSpan="12"/>
+        title="Custom variables" grid-view="custom-variable-grid" colSpan="12"/>
     </panel>
     <panel-mail name="mailPanel">
       <mail-messages limit="4"/>
