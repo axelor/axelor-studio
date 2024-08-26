@@ -1,0 +1,6 @@
+---
+title: Add Custom Variables in BPM Configurations
+type: feature
+description:  |
+  - Added support for custom variables in BPM app configurations.Each variable has a corresponding Groovy expression that is validated for syntax.
+  - Valid variables can be used in BPM scripts.

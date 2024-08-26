@@ -72,5 +72,9 @@
     <option value="2">Duration</option>
     <option value="3">All</option>
   </selection>
+  <selection name="studio.app.bpm.custom.variable.status">
+    <option value="1">Valid</option>
+    <option value="2">Invalid</option>
+  </selection>
 
 </object-views>
