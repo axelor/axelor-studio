@@ -507,3 +507,13 @@ export async function getInfo() {
   const res = await services.get(url);
   return res;
 }
+
+export async function getCustomVariables() {
+  const res = await services.search('com.axelor.studio.db.CustomVariable', {
+    data: {
+      criteria: [{ fieldName: 'status', operator: '=', value: 1 }],
+    },
+  });
+  if (res && res.status === -1) return [];
+  return (res && res.data) || [];
+}

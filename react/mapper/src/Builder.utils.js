@@ -1,6 +1,7 @@
 import { ModelType } from './services/api';
 import { VALUE_FROM, lowerCaseFirstLetter } from './utils';
 import get from 'lodash/get';
+import { VAR_TYPES } from './constants';
 
 export const getDefaultFrom = (sourceModel) => {
   return sourceModel ? VALUE_FROM.SOURCE : VALUE_FROM.NONE;
@@ -57,7 +58,8 @@ const getModelFieldValue = (fields) => {
   let modelFieldText = '';
   if (fields) {
     fields.forEach((field) => {
-      if (field.name) {
+      const isVariableOption = Object.values(VAR_TYPES)?.includes(field?.type);
+      if (field.name && !isVariableOption) {
         const fieldName = lowerCaseFirstLetter(field.name);
         if (modelFieldText) {
           modelFieldText = `${modelFieldText}?.${fieldName}`;
@@ -174,7 +176,6 @@ export function generateJson(data, currentJson, defaultFrom, sourceModel) {
         value: `${dmn?.resultVariable}?.${contextKey}`,
       };
     }
-
     return newValue || null;
   };
 

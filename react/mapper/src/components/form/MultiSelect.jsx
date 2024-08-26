@@ -3,8 +3,9 @@ import { Badge, Box } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 import Selection from './Selection';
-import { fetchFields, getModels } from '../../services/api';
+import { fetchFields, getCustomVariables, getModels } from '../../services/api';
 import { excludedFields, translate, dashToUnderScore } from '../../utils';
+import { VAR_OPTIONS, VAR_TYPES } from '../../constants';
 
 const getProcessConfig = (element) => {
   const extensionElements = element && element.extensionElements;
@@ -58,6 +59,8 @@ const getProcessConfig = (element) => {
 };
 
 const getKey = (key) => (key === '_selectId' ? 'id' : key);
+
+
 
 const builtInVars = [
   '__date__',
@@ -186,16 +189,16 @@ function MultiSelector(props) {
     async (e) => {
       if (sourceModel && value?.length === 1 && value[0]?.title === 'SOURCE') {
         return [];
-      } else if (
-        isContext &&
-        value?.length === 1 &&
-        value[0]?.title === 'Built In Variables' &&
-        type
-      ) {
-        return (isBPMN
-          ? ['__date__', '__datetime__', '__studiouser__']
-          : builtInVars
-        ).map((ele) => ({ name: ele }));
+      } else if (isContext && value?.length === 1 && type) {
+        if (value[0]?.type === VAR_TYPES.BUILT_IN) {
+          return (
+            isBPMN
+              ? ['__date__', '__datetime__', '__studiouser__']
+              : builtInVars
+          ).map((ele) => ({ name: ele }));
+        } else if (value[0]?.type === VAR_TYPES.CUSTOM) {
+          return await getCustomVariables();
+        }
       } else {
         let data;
 
@@ -213,8 +216,7 @@ function MultiSelector(props) {
         }
 
         if (isContext && (!value || value.length < 1) && type) {
-          const object = { title: 'Built In Variables' };
-          data = [object, ...data];
+          data = [...VAR_OPTIONS, ...data];
         }
 
         if (isM2o && value && value.length > 0) {
