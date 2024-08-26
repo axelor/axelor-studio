@@ -207,7 +207,15 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     String classFullName = wkfProcessConfigs.get(0).getMetaModel().getFullName();
     Class<? extends Model> klass = Class.forName(classFullName).asSubclass(Model.class);
-    Model model = JPA.find(klass, instance.getModelId());
+    Model model =
+        Query.of(klass)
+            .filter("self.processInstanceId = :instanceId")
+            .bind("instanceId", instance.getInstanceId())
+            .fetchOne();
+
+    if (model == null) {
+      throw new RuntimeException("Model not found");
+    }
     evalInstance(model, null);
   }
 
