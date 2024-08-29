@@ -10,7 +10,7 @@
 
 (What's the technical scope? What's the architecture? What are the technical acceptance criteria?)
 
-/label ~"T: feature ✨" ~New ~normal
+/label ~"T: feature ✨" ~New ~Normal
 /milestone %Backlog    
   
 /cc @pco  
