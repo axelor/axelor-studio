@@ -46,7 +46,7 @@ export default function SelectComponent({
 }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
-  const [searchText, setsearchText] = useState(null);
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isError, setError] = useState(false);
@@ -101,8 +101,8 @@ export default function SelectComponent({
   );
 
   const optionDebounceHandler = React.useCallback(() => {
-    fetchOptions(searchText);
-  }, [fetchOptions, searchText]);
+        fetchOptions(searchText);
+  }, [searchText]);
 
   useDebounceEffect(optionDebounceHandler, 500);
 
@@ -199,7 +199,10 @@ export default function SelectComponent({
         <Select
           open={open}
           onOpen={() => setOpen(true)}
-          onClose={() => setOpen(false)}
+          onClose={() => {
+            setSearchText("");
+            setOpen(false);
+          }}
           defaultValue={defaultValue}
           clearOnEscape
           removeOnBackspace
