@@ -16,15 +16,15 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.github.node-gradle:gradle-node-plugin:5.0.0"
+        classpath "com.github.node-gradle:gradle-node-plugin:7.0.2"
     }
 }
 
 apply plugin: com.github.gradle.node.NodePlugin
 
 node {
-    version = '18.16.1'
-    pnpmVersion = '8.6.6'
+    version = '22.7.0'
+    pnpmVersion = '9.8.0'
     download = true
 }
 
