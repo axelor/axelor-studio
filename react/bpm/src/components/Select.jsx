@@ -43,11 +43,14 @@ export default function SelectComponent({
   description,
   handleRemove,
   title = "",
+  customOptionLabel,
+  customOptionEqual,
+  customOnChange,
   ...rest
 }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState([]);
-  const [searchText, setsearchText] = useState(null);
+  const [searchText, setSearchText] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isError, setError] = useState(false);
@@ -102,8 +105,8 @@ export default function SelectComponent({
   );
 
   const optionDebounceHandler = React.useCallback(() => {
-    fetchOptions(searchText);
-  }, [fetchOptions, searchText]);
+        fetchOptions(searchText);
+  }, [searchText]);
 
   useDebounceEffect(optionDebounceHandler, 500);
 
@@ -200,7 +203,10 @@ export default function SelectComponent({
         <Select
           open={open}
           onOpen={() => setOpen(true)}
-          onClose={() => setOpen(false)}
+          onClose={() => {
+            setSearchText("");
+            setOpen(false);
+          }}
           defaultValue={defaultValue}
           clearOnEscape
           removeOnBackspace
@@ -219,7 +225,11 @@ export default function SelectComponent({
             return multiple ? (
               <Badge bg="primary">
                 <Box d="flex" alignItems="center" g={1}>
-                  <Box as="span">{getOptionLabel(option)}</Box>
+                  <Box as="span">
+                    {customOptionLabel
+                      ? customOptionLabel(option, isTranslated)
+                      : getOptionLabel(option)}
+                  </Box>
                   <Box as="span" style={{ cursor: "pointer" }}>
                     <MaterialIcon
                       icon="close"
@@ -272,49 +282,63 @@ export default function SelectComponent({
             }
             if (!val[optionName] && val)
               return `"${option[optionName]}"` === val;
-            return option[optionName] === val[optionName];
+            if (customOptionEqual) {
+              return customOptionEqual(option, val, optionName);
+            } else {
+              return option[optionName] === val[optionName];
+            }
           }}
           onChange={(value) => {
-            let values = value;
-            if (type === "multiple") {
-              values =
-                value &&
-                value.filter(
-                  (val, i, self) =>
-                    i ===
-                    self.findIndex((t) => t[optionLabel] === val[optionLabel])
+            if (customOnChange) {
+              customOnChange(value);
+            } else {
+              let values = value;
+              if (type === "multiple") {
+                values =
+                  value &&
+                  value.filter(
+                    (val, i, self) =>
+                      i ===
+                      self.findIndex((t) => t[optionLabel] === val[optionLabel])
+                  );
+                const titles = value
+                  ?.map((v) => v["lable"] || v["title"])
+                  .join(",");
+                const secondaryOptionLabels = value
+                  ?.map((v) => v[optionLabelSecondary])
+                  .join(",");
+                const optionLabels = value
+                  ?.map((v) => v[optionLabel])
+                  .join(",");
+                update(
+                  values,
+                  name === "itemName" && value
+                    ? titles
+                    : optionLabelSecondary === "title"
+                    ? secondaryOptionLabels
+                    : optionLabels
                 );
-              const titles = value
-                ?.map((v) => v["lable"] || v["title"])
-                .join(",");
-              const secondaryOptionLabels = value
-                ?.map((v) => v[optionLabelSecondary])
-                .join(",");
-              const optionLabels = value?.map((v) => v[optionLabel]).join(",");
+                return;
+              }
               update(
                 values,
                 name === "itemName" && value
-                  ? titles
+                  ? value["label"] || value["title"]
                   : optionLabelSecondary === "title"
-                  ? secondaryOptionLabels
-                  : optionLabels
+                  ? value && value[optionLabelSecondary]
+                  : value && value[optionLabel],
+                oldValue
               );
-              return;
             }
-            update(
-              values,
-              name === "itemName" && value
-                ? value["label"] || value["title"]
-                : optionLabelSecondary === "title"
-                ? value && value[optionLabelSecondary]
-                : value && value[optionLabel],
-              oldValue
-            );
           }}
           name={name}
-          onInputChange={(val) => setsearchText(val)}
+          onInputChange={(val) => setSearchText(val)}
           //TODO add dynamic support for optionLabel
-          optionLabel={(option) => getOptionLabel(option)}
+          optionLabel={(option) =>
+            customOptionLabel
+              ? customOptionLabel(option, isTranslated)
+              : getOptionLabel(option)
+          }
           optionKey={(x) => x.id}
           {...rest}
         />
