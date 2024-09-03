@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getConditionalEventDefinition } from "../../../../../utils/EventDefinitionUtil";
 import { createElement } from "../../../../../utils/ElementUtil";
 import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
@@ -137,35 +136,27 @@ export default function ConditionalProps({
         : undefined;
       element.businessObject.conditionExpression.resource = undefined;
       element.businessObject.conditionExpression.language = "axelor";
-      let conditionOrConditionExpression;
-      let conditionalEventDefinition =
-        eventDefinitionHelper.getConditionalEventDefinition(element);
-      if (conditionalEventDefinition) {
-        element.businessObject.condition = conditionOrConditionExpression;
-      } else {
-        let bo = getBusinessObject(element);
-        const conditionProps = {
-          body: "",
-          language: "",
-          "camunda:resource": undefined,
-        };
-        conditionOrConditionExpression = createElement(
-          "bpmn:FormalExpression",
-          conditionProps,
-          conditionalEventDefinition || bo,
-          bpmnFactory
-        );
-        element.businessObject.conditionExpression =
-          conditionOrConditionExpression;
-        if (conditionOrConditionExpression) {
-          element.businessObject.conditionExpression.body = expression;
-          element.businessObject.conditionExpression.resource = undefined;
-          element.businessObject.conditionExpression.language = "axelor";
-        }
-      }
+      let conditionExpression;
       let bo = getBusinessObject(element);
+      const conditionProps = {
+        body: "",
+        language: "",
+        "camunda:resource": undefined,
+      };
+      conditionExpression = createElement(
+        "bpmn:FormalExpression",
+        conditionProps,
+        bo,
+        bpmnFactory
+      );
+      element.businessObject.conditionExpression = conditionExpression;
+      if (conditionExpression) {
+        element.businessObject.conditionExpression.body = expression;
+        element.businessObject.conditionExpression.resource = undefined;
+        element.businessObject.conditionExpression.language = "axelor";
+      }
       if (!expression) {
-        conditionOrConditionExpression = undefined;
+        conditionExpression = undefined;
         setProperty("camunda:conditionValue", undefined);
         setProperty("camunda:conditionCombinator", undefined);
       }
@@ -177,13 +168,10 @@ export default function ConditionalProps({
       if (CONDITIONAL_SOURCES.includes(bo.sourceRef.$type)) return;
       modeling &&
         modeling.updateProperties(shape, {
-          [conditionalEventDefinition ? "condition" : "conditionExpression"]:
-            conditionOrConditionExpression,
+          conditionExpression,
         });
     } else {
-      let conditionOrConditionExpression;
-      let conditionalEventDefinition =
-        eventDefinitionHelper.getConditionalEventDefinition(element);
+      let conditionExpression;
       let bo = getBusinessObject(element);
       if (expression && expression !== "" && conditionType) {
         const conditionProps = {
@@ -191,10 +179,10 @@ export default function ConditionalProps({
           language: "",
           "camunda:resource": undefined,
         };
-        conditionOrConditionExpression = createElement(
+        conditionExpression = createElement(
           "bpmn:FormalExpression",
           conditionProps,
-          conditionalEventDefinition || bo,
+          bo,
           bpmnFactory
         );
 
@@ -206,20 +194,15 @@ export default function ConditionalProps({
         }
       }
 
-      if (conditionalEventDefinition) {
-        element.businessObject.condition = conditionOrConditionExpression;
-      } else {
-        element.businessObject.conditionExpression =
-          conditionOrConditionExpression;
-        if (conditionOrConditionExpression) {
-          element.businessObject.conditionExpression.body = expression;
-          element.businessObject.conditionExpression.resource = undefined;
-          element.businessObject.conditionExpression.language = "axelor";
-        }
+      element.businessObject.conditionExpression = conditionExpression;
+      if (conditionExpression) {
+        element.businessObject.conditionExpression.body = expression;
+        element.businessObject.conditionExpression.resource = undefined;
+        element.businessObject.conditionExpression.language = "axelor";
       }
 
       if (!expression) {
-        conditionOrConditionExpression = undefined;
+        conditionExpression = undefined;
         setProperty("camunda:conditionValue", undefined);
         setProperty("camunda:conditionCombinator", undefined);
       }
@@ -231,8 +214,7 @@ export default function ConditionalProps({
       if (CONDITIONAL_SOURCES.includes(bo.sourceRef.$type)) return;
       modeling &&
         modeling.updateProperties(shape, {
-          [conditionalEventDefinition ? "condition" : "conditionExpression"]:
-            conditionOrConditionExpression,
+          conditionExpression,
         });
     }
   };
