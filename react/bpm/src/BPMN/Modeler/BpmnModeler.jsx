@@ -1035,6 +1035,7 @@ function BpmnModelerComponent() {
         handleSnackbarClick("success", "Deployed Successfully");
       }
       fetchDiagram(newWkf.id, true);
+      return true;
     } else {
       handleSnackbarClick(
         "danger",
@@ -1042,6 +1043,7 @@ function BpmnModelerComponent() {
           actionRes?.data?.title ||
           "Error"
       );
+      return false;
     }
   };
 
@@ -1156,7 +1158,10 @@ function BpmnModelerComponent() {
           startAction(newVersionWkf, wkfMigrationMap, true, isMigrateOld);
         }
       } else {
-        await deployAction(context, newWkf);
+        const res = await deployAction(context, newWkf);
+        if (!res) {
+          return;
+        }
       }
       if (newWkf?.statusSelect === 1) {
         startAction(res?.data[0]);
