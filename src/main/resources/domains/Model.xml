@@ -11,6 +11,7 @@
     <string name="importOrigin" copy="false" equalsInclude="false" readonly="true"
       title="Imported from"/>
     <string name="processInstanceId" copy="false"/>
+    <entity-listener class="com.axelor.studio.db.repo.GlobalEntityListener"/>
   </entity>
 
 </domain-models>

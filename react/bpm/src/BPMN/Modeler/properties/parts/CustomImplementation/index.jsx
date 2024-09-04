@@ -17,6 +17,7 @@ import TranslationProps from "./TranslationProps";
 import BusinessRuleProps from "./BusinessRuleProps";
 import Comments from "./Comments";
 import Definitions from "./Definitions";
+import StartOnListenerProps from "./StartOnListenerProps";
 
 export {
   CallActivityProps,
@@ -38,4 +39,5 @@ export {
   BusinessRuleProps,
   Comments,
   Definitions,
+  StartOnListenerProps,
 };

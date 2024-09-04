@@ -1,4 +1,8 @@
- import {getImplementationType, getServiceTaskLikeBusinessObject, isExternalCapable}  from "../../../utils/ImplementationTypeUtils";
+import {
+  getImplementationType,
+  getServiceTaskLikeBusinessObject,
+  isExternalCapable,
+} from "../../../utils/ImplementationTypeUtils";
 
 import { is } from "bpmn-js/lib/util/ModelUtil";
 
@@ -17,7 +21,7 @@ import jobConfiguration from "./parts/JobConfigurationProps";
 import externalTaskConfiguration from "./parts/ExternalTaskConfigurationProps";
 
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import {getTimerEventDefinition} from "../../../utils/EventDefinitionUtil"
+import { getTimerEventDefinition } from "../../../utils/EventDefinitionUtil";
 import {
   CallActivityProps,
   ConditionalProps,
@@ -38,6 +42,7 @@ import {
   BusinessRuleProps,
   Comments,
   Definitions,
+  StartOnListenerProps,
 } from "./parts/CustomImplementation";
 import { isAsyncAfter, isAsyncBefore, translate } from "../../../utils";
 
@@ -50,16 +55,11 @@ let isExternalTaskPriorityEnabled = function (element) {
     return true;
   }
 
-  let externalBo = getServiceTaskLikeBusinessObject(
-      element
-    ),
-    isExternalTask =
-      getImplementationType(externalBo) === "external";
+  let externalBo = getServiceTaskLikeBusinessObject(element),
+    isExternalTask = getImplementationType(externalBo) === "external";
 
   // ... or an external task with selected external implementation type
-  return (
-    !!isExternalCapable(externalBo) && isExternalTask
-  );
+  return !!isExternalCapable(externalBo) && isExternalTask;
 };
 
 let isJobConfigEnabled = function (element) {
@@ -75,10 +75,7 @@ let isJobConfigEnabled = function (element) {
 
   // async behavior
   let bo = getBusinessObject(element);
-  if (
-    isAsyncBefore(bo) ||
-    isAsyncAfter(bo)
-  ) {
+  if (isAsyncBefore(bo) || isAsyncAfter(bo)) {
     return true;
   }
 
@@ -138,6 +135,13 @@ function createGeneralTabGroups(
   );
   executableProps(generalGroup, element, translate, bpmnModeler);
   colorProps(generalGroup, element, translate, bpmnModeler);
+
+  let startOnListenerProps = {
+    id: "process-is-start-on-listener",
+    label: translate("Trigger only on client change"),
+    entries: [],
+    component: StartOnListenerProps,
+  };
 
   let userTaskProps = {
     id: "userTaskProps",
@@ -241,6 +245,13 @@ function createGeneralTabGroups(
 
   let groups = [];
   groups.push(generalGroup);
+  if (
+    element &&
+    (element.type === "bpmn:Process" || element.type === "bpmn:Participant")
+  ) {
+    groups.push(startOnListenerProps);
+  }
+
   groups.push(userTaskProps);
   groups.push(serviceTaskDelegateProps);
   groups.push(scriptProps);

@@ -101,6 +101,9 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected BpmErrorMessageService bpmErrorMessageService;
   protected WkfLogService wkfLogService;
 
+  public static final int EXECUTION_SOURCE_LISTENER = 0;
+  public static final int EXECUTION_SOURCE_OBSERVER = 1;
+
   @Inject
   public WkfInstanceServiceImpl(
       ProcessEngineService engineService,
@@ -121,6 +124,23 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.wkfUserActionService = wkfUserActionService;
     this.bpmErrorMessageService = bpmErrorMessageService;
     this.wkfLogService = wkfLogService;
+  }
+
+  @Override
+  public String evalInstance(Model model, String signal, Integer source)
+      throws ClassNotFoundException {
+    WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
+    boolean executeProcess = false;
+    if (wkfProcessConfig != null) {
+      WkfProcess wkfProcess = wkfProcessConfig.getWkfProcess();
+      executeProcess =
+          (wkfProcess.getOnlyOnClientChange() && EXECUTION_SOURCE_LISTENER == source)
+              || (source == EXECUTION_SOURCE_OBSERVER && !wkfProcess.getOnlyOnClientChange());
+    }
+    if (executeProcess) {
+      return evalInstance(model, signal);
+    }
+    return null;
   }
 
   @Override
