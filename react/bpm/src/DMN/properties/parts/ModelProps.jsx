@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
-import classnames from "classnames";
 import { is, getBusinessObject } from "dmn-js-shared/lib/util/ModelUtil";
 
 import Select from "../../../components/Select";
 import { getCustomModels, getMetaModels } from "../../../services/api";
-import {
-  translate,
-  getBool,
-  splitWithComma,
-  mergeModels,
-} from "../../../utils";
+import { translate, splitWithComma, mergeModels } from "../../../utils";
 
 import { Box, InputLabel } from "@axelor/ui";
 import Title from "../../Title";

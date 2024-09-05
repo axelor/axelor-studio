@@ -16,7 +16,6 @@ import {
   getSubMenus,
   getViews,
   getTemplates,
-  getMetaFields,
   getRoles,
   getMenu,
 } from "../../../../../services/api";
@@ -63,12 +62,6 @@ const TYPES = [
   { value: "script", id: "script", title: "Script" },
 ];
 
-const FIELDSTOMAP = {
-  taskRole: "roleType",
-  taskName: "taskNameType",
-  taskPriority: "priorityType",
-  description: "descriptionType",
-};
 const menuObj = {
   menuName: null,
   menuParent: null,
@@ -119,35 +112,26 @@ export default function MenuActionPanel({
     descriptionType: "Value",
   });
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
-  const [openDialogs, setOpenDialogs] = useState({
-    scriptEditor: false,
-    fieldEditor: false,
-  });
   const [openValueTextBox, setOpenValueTextBox] = useState(false);
   const [metaModel, setMetaModel] = useState(null);
   const openDialog = useDialog();
 
 
-
   const USER_ACTIONS_HEADER = [
-    { id: 1, label: "Task field", className: styles.leftAlign },
-    { id: 2, label: "Type" },
-    { id: 3, label: "Value" },
-    { id: 4, label: "Action" },
+    { label: "Task field", className: styles.leftAlign },
+    { label: "Type" },
+    { label: "Value" },
+    { label: "Action" },
   ];
-  
+
   const closeEditor = () => {
     setOpenValueTextBox(false);
   };
-
 
   const filterTypes = (type1, type2) => {
     const excludeValues = [type1, type2];
     return TYPES.filter((task) => !excludeValues.includes(task.value));
   };
-  const IsUserMenu = useCallback(() => {
-    return menus.find((menu) => getBool(menu?.isUserMenu));
-  }, [menus]);
 
   const setProperty = useCallback(
     (name, value) => {
@@ -442,9 +426,6 @@ export default function MenuActionPanel({
     }
   };
 
-
-  
-
   const updateScript = (fieldType) => {
     const extractDummyField = {
       taskPriority: actionDummy,
@@ -481,40 +462,15 @@ export default function MenuActionPanel({
     } = fieldPathDummy || {};
 
     if (fieldPath) {
-      switch (fieldType) {
-        
-        case "taskName":
-          setTaskFields((prevState) => ({
-            ...prevState,
-            taskName: fieldPath,
-          }));
-          setActionDummy((prev) => ({ ...prev, taskName: fieldPath }));
-          break;
-        case "taskPriority":
-          setTaskFields((prevState) => ({
-            ...prevState,
-            taskPriority: fieldPath,
-          }));
-          setActionDummy((prev) => ({ ...prev, taskPriority: fieldPath }));
-
-          break;
-        case "description":
-          setTaskFields((prevState) => ({
-            ...prevState,
-            description: fieldPath,
-          }));
-          setActionDummy((prev) => ({ ...prev, description: fieldPath }));
-          break;
-        default:
-          break;
-      }
+      setTaskFields((prevState) => ({
+        ...prevState,
+        [fieldType]: fieldPath,
+      }));
+      setActionDummy((prev) => ({ ...prev, [fieldType]: fieldPath }));
       setProperty(fieldType, fieldPath);
       setProperty(`${fieldType}Value`, fieldPathValue);
     }
   };
-
-
-
 
   const removeElement = (optionIndex) => {
     let menus = getMenuParameters();
@@ -761,14 +717,14 @@ export default function MenuActionPanel({
                     <Table size="sm" textAlign="center">
                       <TableHead>
                         <TableRow>
-                        {USER_ACTIONS_HEADER.map((item) => (
-                          <TableCell
-                            key={item.id}
-                            className={clsx(styles.tableHead, item.className)}
-                          >
-                            {translate(item.label)}
-                          </TableCell>
-                        ))}
+                          {USER_ACTIONS_HEADER.map((item) => (
+                            <TableCell
+                              key={item.label}
+                              className={clsx(styles.tableHead, item.className)}
+                            >
+                              {translate(item.label)}
+                            </TableCell>
+                          ))}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -784,7 +740,7 @@ export default function MenuActionPanel({
                               type="text"
                               value={selectedTaskOption.taskNameType || null}
                               options={filterTypes("field")}
-                              update={(value, label) => {
+                              update={(value) => {
                                 setSelectedTaskOption((prevState) => ({
                                   ...prevState,
                                   taskNameType: value?.title,
@@ -863,10 +819,6 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18 }}
                                   onClick={() => {
                                     setFieldTypes("taskName");
-                                    setOpenDialogs({
-                                      scriptEditor: true,
-                                      fieldEditor: false,
-                                    });
                                     setActionDummy((prev) => ({
                                       ...prev,
                                       taskName: getScript("taskName"),
@@ -997,11 +949,6 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18 }}
                                   onClick={() => {
                                     setFieldTypes("taskPriority");
-                                    setOpenDialogs({
-                                      scriptEditor: true,
-                                      fieldEditor: false,
-                                    });
-
                                     setActionDummy((prev) => ({
                                       ...prev,
                                       taskPriority: getScript("taskPriority"),
@@ -1101,10 +1048,6 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18, marginLeft: 1 }}
                                   onClick={() => {
                                     setFieldTypes("description");
-                                    setOpenDialogs({
-                                      scriptEditor: true,
-                                      fieldEditor: false,
-                                    });
                                     setProperty(
                                       "descriptionType",
                                       selectedTaskOption?.descriptionType
@@ -1125,10 +1068,6 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18, marginLeft: 1 }}
                                   onClick={() => {
                                     setFieldTypes("description");
-                                    // setOpenDialogs({
-                                    //   scriptEditor: true,
-                                    //   fieldEditor: false,
-                                    // });
                                     setActionDummy((prev) => ({
                                       ...prev,
                                       description: getScript("description"),
@@ -1141,11 +1080,11 @@ export default function MenuActionPanel({
                           </TableCell>
                         </TableRow>
                         <FieldAction
-                         key={"knkn"}
+                          key="role"
                           isUserAction={true}
-                          initialType={"value"}
+                          initialType="value"
                           label="Role"
-                          title={"roleField"}
+                          title="roleField"
                           element={element}
                           getProperty={getProperty}
                           setProperty={setProperty}

@@ -84,22 +84,44 @@ const HELP_TITLE_SOURCES = [
   "bpmn:DataStoreReference",
 ];
 
-const typesWithViewAttributes = [
-  "bpmn:EndEvent",
+const typesWithMenuAction = [
   "bpmn:StartEvent",
-  "bpmn:IntermediateCatchEvent",
-  "bpmn:IntermediateCatchEvent",
-  "bpmn:EndEvent",
-  "bpmn:IntermediateCatchEvent",
-  "bpmn:IntermediateCatchEvent",
+  "bpmn:AdHocSubProcess",
+  "bpmn:Transaction",
+  "bpmn:Group",
+  "bpmn:Association",
   "bpmn:EndEvent",
   "bpmn:UserTask",
   "bpmn:ReceiveTask",
   "bpmn:CallActivity",
   "bpmn:SubProcess",
-  "bpmn:EndEvent",
-  "bpmn:EndEvent",
 ];
+
+const EVENT_DEFINITIONS_TYPES = {
+  "bpmn:StartEvent": [
+    "bpmn:MessageEventDefinition",
+    "bpmn:TimerEventDefinition",
+    "bpmn:ConditionalEventDefinition",
+    "bpmn:SignalEventDefinition",
+    "bpmn:IntermediateCatchEvent",
+  ],
+  "bpmn:IntermediateCatchEvent": [
+    "bpmn:MessageEventDefinition",
+    "bpmn:TimerEventDefinition",
+    "bpmn:ConditionalEventDefinition",
+    "bpmn:LinkEventDefinition",
+    "bpmn:SignalEventDefinition",
+  ],
+  "bpmn:EndEvent": [
+    "bpmn:MessageEventDefinition",
+    "bpmn:CompensateEventDefinition",
+    "bpmn:ErrorEventDefinition",
+    "bpmn:TerminateEventDefinition",
+    "bpmn:EscalationEventDefinition",
+  ],
+  "bpmn:IntermediateThrowEvent": ["bpmn:SignalEventDefinition"],
+};
+
 const PRIORITIES = [
   { value: "low", id: "low", title: "Low" },
   { value: "normal", id: "normal", title: "Normal" },
@@ -441,8 +463,13 @@ export default function ModelProps(props) {
 
   useEffect(() => {
     const bo = getBusinessObject(element);
-    if (typesWithViewAttributes.includes(bo.$type)) setRenderActions(true);
-    else setRenderActions(false);
+    const eventDefinitionType = bo.get("eventDefinitions")?.[0]?.$type;
+    if (
+      (typesWithMenuAction.includes(bo.$type) && !eventDefinitionType) ||
+      EVENT_DEFINITIONS_TYPES[bo.$type]?.includes(eventDefinitionType)
+    ) {
+      setRenderActions(true);
+    } else setRenderActions(false);
   }, [element]);
   return (
     <>
@@ -753,7 +780,7 @@ export function FieldAction({
   ];
 
   const toPath = (text) => `${text}Path`;
-  const toPathValue = (text) =>`${text}PathValue`;
+  const toPathValue = (text) => `${text}PathValue`;
   const toType = (text) => `${text}Type`;
   const toTask = (text) => `task${text}`;
   const toLowerCase = (text) => text.toLowerCase();
@@ -950,7 +977,7 @@ export function FieldAction({
                   onClick={() => {
                     if (readOnly && getProperty(toPathValue(title))) {
                       setAlertMessage(
-                        `${label}  field can't be managed using builder once changed manually.`
+                        `${label} field can't be managed using builder once changed manually.`
                       );
                       setOpenAlertDialog(true);
                     } else {
