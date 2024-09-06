@@ -37,9 +37,11 @@ import com.axelor.rpc.Context;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.pojo.MergeSplitContributor;
 import com.axelor.studio.bpm.pojo.MergeSplitResult;
+import com.axelor.studio.bpm.service.WkfBpmImportService;
 import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.WkfModelMergerSplitterService;
 import com.axelor.studio.bpm.service.WkfModelService;
+import com.axelor.studio.bpm.service.app.AppBpmService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
@@ -51,10 +53,12 @@ import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
+import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.MapHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -590,5 +594,20 @@ public class WkfModelController {
     WkfModel wkfModel = request.getContext().asType(WkfModel.class);
     Beans.get(WkfInstanceService.class).evalInstancesFromWkfModel(wkfModel);
     response.setInfo("Operation completed");
+  }
+
+  public void importBpmnModelFromSources(ActionRequest request, ActionResponse response) {
+    if (!Beans.get(AppBpmService.class).getAppBpm().getAllowBpmLoadingFromSources()) {
+      response.setError(I18n.get(StudioExceptionMessage.STUDIO_BPM_SOURCE_IMPORT_NOT_ALLOWED));
+    } else {
+      String code = request.getContext().asType(WkfModel.class).getCode();
+      try {
+        Beans.get(WkfBpmImportService.class).importWkfModel(code);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      } catch (IllegalArgumentException e) {
+        response.setError(I18n.get(e.getMessage()));
+      }
+    }
   }
 }

@@ -18,8 +18,7 @@ public class WkfModelImportListener {
 
   public void onStartUp(@Observes @Priority(value = -1) StartupEvent event) {
     try {
-
-      wkfBpmImportService.importProcesses();
+      wkfBpmImportService.importDmn();
     } catch (Exception e) {
       ExceptionHelper.trace(e);
     }

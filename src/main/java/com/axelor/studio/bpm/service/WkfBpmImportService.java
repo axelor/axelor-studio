@@ -8,11 +8,11 @@ import javax.transaction.Transactional;
 
 public interface WkfBpmImportService {
 
-  void importProcesses() throws IOException;
+  void importDmn() throws IOException;
 
   @Transactional
-  WkfModel importWkfModel(File bpmDiagFile) throws IOException;
+  WkfModel importWkfModel(String code) throws IOException;
 
-  @com.google.inject.persist.Transactional
+  @Transactional
   WkfDmnModel importDmnModel(File dmnDiagFile) throws IOException;
 }

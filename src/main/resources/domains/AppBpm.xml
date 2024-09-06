@@ -16,6 +16,7 @@
       title="Max depth of recursive task execution" default="100"
       help="A negative value won't set a depth limit in the recursive task evaluation. Please do so only if you are aware of the impacts."/>
     <one-to-many name="customVariableList" ref="com.axelor.studio.db.CustomVariable"/>
+    <boolean name="allowBpmLoadingFromSources" title="Allow Bpm loading from sources"/>
   </entity>
 
 </domain-models>
