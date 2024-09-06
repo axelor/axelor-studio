@@ -254,4 +254,10 @@ public final class StudioExceptionMessage {
   public static final String STUDIO_ADD_NEW = /*$$(*/ "Add new" /*)*/;
   public static final String STUDIO_TOOLBAR = /*$$(*/ "Toolbar" /*)*/;
   public static final String STUDIO_MENUBAR = /*$$(*/ "Menubar" /*)*/;
+  public static final String STUDIO_BPM_SOURCE_IMPORT_NOT_ALLOWED = /*$$(*/
+      "Bpm import from sources is not allowed" /*)*/;
+  public static final String STUDIO_MULTIPLE_BPM_FILES = /*$$(*/
+      "Multiple BPM files with the code %s are defined in sources" /*)*/;
+  public static final String STUDIO_NO_BPM_FILE = /*$$(*/
+      "No BPM files with the code %s is defined in sources" /*)*/;
 }

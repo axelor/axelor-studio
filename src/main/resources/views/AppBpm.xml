@@ -8,9 +8,11 @@
     onSave="action-method-custom-variable-list-validate">
 
     <panel name="taskEvaluationPanel" title="Task evaluation">
+      <field name="allowBpmLoadingFromSources" widget="boolean-switch"/>
       <help colSpan="12">A suspicion of infinite loop occurs when both of these limits are exceeded.</help>
       <field name="taskExecutionRecursivityDurationLimit"/>
       <field name="taskExecutionRecursivityDepthLimit"/>
+
     </panel>
     <panel name="customVariablePanel">
       <field name="customVariableList" form-view="custom-variable-form"

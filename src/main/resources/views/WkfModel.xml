@@ -90,6 +90,9 @@
       <!-- <button name="startBtn" title="Start" onClick="save,action-wkf-model-method-start" prompt="It
         will terminate previous version. Are you sure wants to start?" showIf="statusSelect == 1 &amp;&amp; isActive
         &amp;&amp; previousVersion != null &amp;&amp; previousVersion.statusSelect != 3"/> -->
+      <button name="importFromSourcesBtn"
+        if="__config__.app.getApp('bpm')?.getAllowBpmLoadingFromSources()"
+        title="Import from sources" onClick="save,action-wkf-model-method-import-from-sources"/>
       <button name="terminateBtn" title="wkf.terminate.btn"
         onClick="save,action-wkf-model-method-terminate"
         showIf="statusSelect == 2 &amp;&amp; isActive"/>
@@ -436,6 +439,11 @@
 
   <action-method name="action-wkf-model-open-merge-tool-editor">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="openMergeEditor"/>
+  </action-method>
+
+  <action-method name="action-wkf-model-method-import-from-sources">
+    <call class="com.axelor.studio.bpm.web.WkfModelController"
+      method="importBpmnModelFromSources"/>
   </action-method>
   <action-validate name="action-validate-merge-reqs">
     <alert

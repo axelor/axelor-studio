@@ -15,6 +15,7 @@ import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.repo.WkfDmnModelRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.dmn.service.DmnDeploymentService;
+import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.io.ByteStreams;
 import com.google.inject.persist.Transactional;
@@ -65,10 +66,9 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
   }
 
   @Override
-  public void importProcesses() throws IOException {
+  public void importDmn() throws IOException {
     final List<MetaModule> modules = metaModuleRepo.all().fetch();
     importDmnModels(modules);
-    importWkfModels(modules);
   }
 
   protected void importDmnModels(List<MetaModule> modules) throws IOException {
@@ -100,8 +100,10 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
     }
   }
 
-  protected void importWkfModels(List<MetaModule> modules) throws IOException {
+  protected String findDiagramByCode(String code) throws IOException {
+    List<MetaModule> modules = metaModuleRepo.all().fetch();
     File tmp;
+    String bpmdiag = null;
     for (MetaModule module : modules) {
       tmp = extract(module.getName(), DIR_PROCESSES);
       try {
@@ -112,42 +114,59 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
         if (dataFiles == null || dataFiles.length == 0) {
           continue;
         }
-
         for (File dataFile : dataFiles) {
-          log.debug("Importing {} bpm file", dataFile.getName());
-          importWkfModel(dataFile);
+          String tempDiag = readFile(dataFile);
+          if (isSameCode(tempDiag, code)) {
+            if (bpmdiag != null) {
+              throw new IllegalArgumentException(
+                  String.format(StudioExceptionMessage.STUDIO_MULTIPLE_BPM_FILES, code));
+            }
+            bpmdiag = tempDiag;
+          }
         }
-
       } catch (Exception e) {
         ExceptionHelper.trace(e);
       } finally {
         clean(tmp);
       }
     }
+    if (bpmdiag == null) {
+      throw new IllegalArgumentException(
+          String.format(StudioExceptionMessage.STUDIO_NO_BPM_FILE, code));
+    }
+    return bpmdiag;
   }
 
-  @Override
-  @Transactional
-  public WkfModel importWkfModel(File bpmDiagFile) throws IOException {
-    String bpmDiag = readFile(bpmDiagFile);
+  protected boolean isSameCode(String bpmDiag, String code) throws IOException {
     String diagCode = "";
     Pattern pattern = Pattern.compile("camunda:code=\"(.*?)\"");
     Matcher matcher = pattern.matcher(bpmDiag);
     if (matcher.find()) {
       diagCode = matcher.group(1);
     }
+    return code != null && code.equals(diagCode);
+  }
+
+  @Override
+  @Transactional
+  public WkfModel importWkfModel(String code) throws IOException {
+    String bpmDiag = findDiagramByCode(code);
+    if (!isSameCode(bpmDiag, code)) {
+      return null;
+    }
     String diagName = "";
-    pattern = Pattern.compile("camunda:diagramName=\"(.*?)\"");
-    matcher = pattern.matcher(bpmDiag);
+    Pattern pattern = Pattern.compile("camunda:diagramName=\"(.*?)\"");
+    Matcher matcher = pattern.matcher(code);
     if (matcher.find()) {
       diagName = matcher.group(1);
     }
+    code = code.replaceAll("\u0000", "");
     bpmDiag = bpmDiag.replaceAll("\u0000", "");
-    WkfModel wkfModel = wkfModelRepository.findByCode(diagCode);
+    WkfModel wkfModel = wkfModelRepository.findByCode(code);
     if (wkfModel == null) {
       wkfModel = new WkfModel();
       wkfModel.setName(diagName);
-      wkfModel.setCode(diagCode);
+      wkfModel.setCode(code);
       wkfModel.setIsActive(true);
       wkfModel.setDiagramXml(bpmDiag);
       addDmnFiles(wkfModel, bpmDiag);

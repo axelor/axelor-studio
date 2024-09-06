@@ -1,0 +1,7 @@
+---
+title:  Improve automatic deployment of BPM
+type: feature
+description: |
+  Change bpm automatic deployment from server start to a button triggered deployment,
+  Add a new button "Load from sources", this buttons calls a method to search for bpmn file by code from sources and load it withoud deploying it
+  this feature must be activated from app settings using allowBpmLoadingFromSources boolean
