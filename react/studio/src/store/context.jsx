@@ -133,7 +133,7 @@ function StoreProvider({ children }) {
 				if (widget) {
 					Object.keys(props).forEach((key) => {
 						let value = props[key]
-						if (/^[a-z]/i.test(widget["name"])) {
+						if (/^[a-z]/i.test(widget["name"]) && changedPropertyName === "name") {
 							widget["name"] = caseConverter(
 								widget["name"],
 								!(props["type"] === TYPE.form)
