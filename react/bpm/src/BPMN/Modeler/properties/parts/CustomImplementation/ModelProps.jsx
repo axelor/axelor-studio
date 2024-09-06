@@ -174,7 +174,7 @@ export default function ModelProps(props) {
     {
       id: 3,
       label: "Deadline",
-      title: "deadline",
+      title: "deadlineField",
     },
   ];
 

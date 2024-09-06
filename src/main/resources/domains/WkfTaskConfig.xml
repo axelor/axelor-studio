@@ -22,7 +22,7 @@
     <string name="userPath" title="User field path"/>
     <string name="userFieldType" title="User field type"/>
     <string name="deadlineFieldPath" title="Deadline field path"/>
-    <string name="deadlineType" title="Deadline type field"/>
+    <string name="deadlineFieldType" title="Deadline type field"/>
     <boolean name="notificationEmail" title="Email notification"/>
     <string name="emailEvent" title="Email event"/>
     <one-to-many name="wkfTaskMenuList" title="Menus"
