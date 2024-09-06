@@ -76,9 +76,7 @@ public class StudioMenuServiceImpl implements StudioMenuService {
     MetaMenu menu = metaService.createMenu(studioMenu);
     StudioAction studioAction = studioMenu.getStudioAction();
     if (studioAction != null) {
-      if (studioAction.getName() == null) {
-        studioAction.setName(menu.getName());
-      }
+      studioAction.setName(menu.getName());
       studioAction.setArchived(studioMenu.getArchived());
       studioAction.setXmlId(studioMenu.getXmlId());
       studioAction.setTitle(menu.getTitle());
