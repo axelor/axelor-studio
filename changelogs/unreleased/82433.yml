@@ -1,0 +1,6 @@
+---
+title: Fix  apply CamelCase on MetaJsonField each time when navigate to another field
+type: fix
+description:  |
+  - the metaJsonField's name are automatically converted in CamelCase.
+  - It's a nice for new field but not for already existing ones.
