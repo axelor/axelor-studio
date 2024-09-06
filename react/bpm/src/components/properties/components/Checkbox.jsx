@@ -14,7 +14,7 @@ export default function Checkbox({
   setDummyProperty = () => {},
 }) {
   const { id, label, modelProperty, get, set } = entry || {};
-  const [value, setValue] = useState(checked);
+  const [value, setValue] = useState(checked || false);
   const { update } = useStore();
   const updateValue = () => {
     setDummyProperty();

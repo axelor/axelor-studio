@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Resizable } from "re-resizable";
 import Service from "../services/Service";
 import BpmnModeler from "./main/baml-js/lib/Modeler";
@@ -26,7 +26,7 @@ const resizeStyle = {
   background: "var(--bs-tertiary-bg)",
 };
 
-const drawerWidth = 380;
+const DRAWER_WIDTH = 380;
 
 const defaultXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <process-actions 
@@ -286,7 +286,7 @@ const fetchId = () => {
 let bpmnModeler = null;
 
 function BamlEditor() {
-  const [width, setWidth] = useState(drawerWidth);
+  const [width, setWidth] = useState(DRAWER_WIDTH);
   const [height, setHeight] = useState("100%");
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [element, setElement] = useState(null);
@@ -298,10 +298,6 @@ function BamlEditor() {
   });
 
   const setCSSWidth = (width) => {
-    document.documentElement.style.setProperty(
-      "--bpmn-container-width",
-      `${width}px`
-    );
     setDrawerOpen(width === "0px" ? false : true);
   };
 
@@ -585,6 +581,31 @@ function BamlEditor() {
     });
   }, []);
 
+  const initialWidth = useRef(window.innerWidth);
+  const availableWidth = useRef(window.innerWidth);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+
+    const checkWindowSize = () => {
+      const windowWidth = window.innerWidth;
+      availableWidth.current = windowWidth;
+      setWidth(() => {
+        const width = Math.round(
+          (windowWidth * DRAWER_WIDTH) / initialWidth.current
+        );
+        const addOn = Math.round(Math.max(0, 1024 - windowWidth) / 5);
+        return width + addOn;
+      });
+    };
+
+    window.addEventListener("resize", checkWindowSize);
+
+    return () => {
+      window.removeEventListener("resize", checkWindowSize);
+    };
+  }, [drawerOpen]);
+
   return (
     <Box bg="body" id="container">
       <div id="bpmncontainer">
@@ -616,69 +637,33 @@ function BamlEditor() {
           </Box>
         </div>
       </div>
-      <div>
-        <Box
-          bg="body-tertiary"
-          borderEnd
-          borderTop
-          borderStart
-          roundedTop
-          userSelect="none"
-          px={3}
-          py={2}
-          className="bpmn-property-toggle"
-          onClick={() => {
-            setWidth((width) => (width === 0 ? 380 : 0));
-            setCSSWidth(width === 0 ? 380 : 0);
-          }}
-        >
-          {translate("Properties panel")}
-        </Box>
+      <Box position="sticky" top={0} right={0} h={100}>
         <Resizable
           style={resizeStyle}
           size={{ width, height }}
           onResizeStop={(e, direction, ref, d) => {
             setWidth((width) => width + d.width);
             setHeight(height + d.height);
-            setCSSWidth(width + d.width);
+            setCSSWidth(`${width + d.width}px`);
           }}
-          maxWidth={window.innerWidth - 150}
+          maxWidth={Math.max(window.innerWidth - 230, DRAWER_WIDTH)}
+          minWidth={
+            !width || !drawerOpen || availableWidth.current <= 1024
+              ? 0
+              : DRAWER_WIDTH
+          }
+          minHeight={height}
+          enable={{ left: true }}
         >
           <Box
-            variant="persistent"
-            anchor="right"
-            open={drawerOpen}
-            style={{
-              width: drawerWidth,
-            }}
-            w={100}
-            bg="body-tertiary"
-            h={100}
-            flexDirection="column"
-            d="flex"
-            textAlign="start"
-            borderLeft
-            overflow="auto"
             id="drawer"
+            bg="body-tertiary"
+            textAlign="start"
+            overflow="auto"
+            w={100}
+            h={100}
           >
-            <Box
-              bg="body-tertiary"
-              borderEnd
-              borderTop
-              borderStart
-              roundedTop
-              userSelect="none"
-              px={3}
-              py={2}
-              className="bpmn-property-toggle"
-              onClick={() => {
-                setWidth((width) => (width === 0 ? 380 : 0));
-                setCSSWidth(width === 0 ? 380 : 0);
-              }}
-            >
-              {translate("Properties panel")}
-            </Box>
-            <Box p={3} h={100}>
+            <Box p={3}>
               <Box as="h6" fontWeight="bolder">
                 {element && element.id}
               </Box>
@@ -690,8 +675,25 @@ function BamlEditor() {
               ))}
             </Box>
           </Box>
+          <Box
+            bg="body-tertiary"
+            borderEnd
+            borderTop
+            borderStart
+            roundedTop
+            userSelect="none"
+            px={3}
+            py={2}
+            className="bpmn-property-toggle"
+            onClick={() => {
+              setWidth((width) => (width === 0 ? DRAWER_WIDTH : 0));
+              setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
+            }}
+          >
+            {translate("Properties panel")}
+          </Box>
         </Resizable>
-      </div>
+      </Box>
       {openSnackbar.open && (
         <Alert variant={openSnackbar.messageType} className="snackbarAlert">
           <Box alignItems="center" d="flex">
