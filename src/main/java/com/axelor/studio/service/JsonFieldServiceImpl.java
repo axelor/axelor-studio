@@ -20,10 +20,10 @@ package com.axelor.studio.service;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.service.constructor.components.StudioSelectionService;
-import com.axelor.utils.helpers.ModelHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import org.apache.commons.lang3.StringUtils;
 
 public class JsonFieldServiceImpl implements JsonFieldService {
 
@@ -71,7 +71,10 @@ public class JsonFieldServiceImpl implements JsonFieldService {
   @Override
   @CallMethod
   public String checkName(String name, boolean isFieldName) {
-    return ModelHelper.normalizeKeyword(name, isFieldName);
+    if (name == null) {
+      return "";
+    }
+    return StringUtils.stripAccents(name).replaceAll("[^a-zA-Z0-9 ]", "");
   }
 
   @Override
