@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.context;
 
+import com.axelor.db.JPA;
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
@@ -26,6 +27,7 @@ import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.helper.DepthFilter;
 import com.axelor.studio.helper.ModelTools;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.helpers.context.FullContextHelper;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -51,6 +53,9 @@ import org.camunda.bpm.engine.variable.Variables.SerializationDataFormats;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
 
 public class WkfContextHelper {
+
+  protected static final int DEFAULT_SERIALIZATION_DEPTH =
+      Math.min(Beans.get(AppSettingsStudioService.class).serializationDepth(), 10);
 
   public static FullContext create(String modelName, Map<String, Object> values) {
     return FullContextHelper.create(modelName, values);
@@ -217,7 +222,7 @@ public class WkfContextHelper {
   }
 
   private static String serializeModel(Model model) throws JsonProcessingException {
-    return serializeMap(model, 3);
+    return serializeMap(model, DEFAULT_SERIALIZATION_DEPTH);
   }
 
   public static Object getObject(String varName, DelegateExecution execution)
@@ -261,7 +266,40 @@ public class WkfContextHelper {
   private static Object deserializeModel(
       String serializedModel, String className, ObjectMapper mapper)
       throws JsonProcessingException {
-    return new FullContext(mapper.readValue(serializedModel, ModelTools.findModelClass(className)));
+
+    Map<String, Object> modelData = mapper.readValue(serializedModel, Map.class);
+
+    Class<?> targetClass = ModelTools.findModelClass(className);
+
+    Long entityId = extractId(modelData);
+    Model existingEntity =
+        (entityId != null) ? (Model) findEntityById(entityId, targetClass) : null;
+
+    if (existingEntity != null) {
+      mapper.setDefaultMergeable(true);
+      mapper.updateValue(existingEntity, modelData);
+      return new FullContext(existingEntity);
+    } else {
+      Model newEntity = (Model) mapper.convertValue(modelData, targetClass);
+      return new FullContext(newEntity);
+    }
+  }
+
+  private static Long extractId(Map<String, Object> modelData) {
+    Object idValue = modelData.get("id");
+    if (idValue instanceof Integer) {
+      return ((Integer) idValue).longValue();
+    } else if (idValue instanceof Long) {
+      return (Long) idValue;
+    }
+    return null;
+  }
+
+  private static Object findEntityById(Long id, Class<?> modelClass) {
+    if (id == null) {
+      return null;
+    }
+    return JPA.em().find(modelClass, id);
   }
 
   protected static String serializeMap(Model model, int depthMax) throws JsonProcessingException {

@@ -1,0 +1,8 @@
+title: Incorrect variable handling causing some fields to be ignored
+type: fix
+description: |
+  Fixed the issue where some fields were ignored due to incorrect variable handling,
+  Updated serialization and deserialization of variables.
+  Added configuration for serialization depth via `axelor-config.properties`:
+  - Introduced property `studio.bpm.serialization.depth` to control the depth of serialization.
+  - Default depth set to 5, with a maximum value of 10.
