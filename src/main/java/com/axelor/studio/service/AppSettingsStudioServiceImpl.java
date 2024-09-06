@@ -64,4 +64,9 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public boolean isAddBpmLog() {
     return appSettings.getBoolean("studio.bpm.logging", false);
   }
+
+  @Override
+  public int serializationDepth() {
+    return appSettings.getInt("studio.bpm.serialization.depth", 5);
+  }
 }

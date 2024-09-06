@@ -11,15 +11,7 @@ import java.util.List;
 public class DepthFilter extends SimpleBeanPropertyFilter {
   private final int maxDepth;
   private final List<String> ignoredFields =
-      Lists.newArrayList(
-          "updatedBy",
-          "createdBy",
-          "password",
-          "image",
-          "processInstanceId",
-          "company",
-          "importId",
-          "hibernateLazyInitializer");
+      Lists.newArrayList("updatedBy", "createdBy", "hibernateLazyInitializer");
 
   public DepthFilter(int maxDepth) {
     super();
