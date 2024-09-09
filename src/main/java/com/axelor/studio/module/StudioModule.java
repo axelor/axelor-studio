@@ -267,6 +267,6 @@ public class StudioModule extends AxelorModule {
     bind(WkfBpmImportService.class).to(WkfBpmImportServiceImpl.class);
     bind(WkfModelImportListener.class);
     bind(ProcessInstanceModificationService.class).to(ProcessInstanceModificationServiceImpl.class);
-   bind(GroovyTemplateService.class).to(GroovyTemplateServiceImpl.class);
+    bind(GroovyTemplateService.class).to(GroovyTemplateServiceImpl.class);
   }
 }
