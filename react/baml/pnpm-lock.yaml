@@ -14,9 +14,15 @@ importers:
       '@date-io/moment':
         specifier: ^1.3.6
         version: 1.3.6(moment@2.29.1)
+      '@monaco-editor/react':
+        specifier: ^4.6.0
+        version: 4.6.0(monaco-editor@0.51.0)(react-dom@17.0.1)(react@17.0.1)
       '@vitejs/plugin-react':
         specifier: ^4.0.4
         version: 4.0.4(vite@4.4.9)
+      classnames:
+        specifier: ^2.5.1
+        version: 2.5.1
       css.escape:
         specifier: ^1.5.1
         version: 1.5.1
@@ -26,6 +32,9 @@ importers:
       diagram-js-direct-editing:
         specifier: ^1.6.1
         version: 1.6.1(diagram-js@6.8.0)
+      generic-builder:
+        specifier: link:../generic-builder
+        version: link:../generic-builder
       ids:
         specifier: ^1.0.0
         version: 1.0.0
@@ -41,6 +50,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      mapper:
+        specifier: link:../mapper
+        version: link:../mapper
       min-dash:
         specifier: ^4.1.1
         version: 4.1.1
@@ -53,6 +65,9 @@ importers:
       object-refs:
         specifier: ^0.3.0
         version: 0.3.0
+      only-allow:
+        specifier: ^1.2.1
+        version: 1.2.1
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -722,6 +737,28 @@ packages:
     resolution: {integrity: sha512-jmbPQlB8lVjRkWVCviTjYQ4AQas9rkM26uTPa4El9xxNl7FKYKUsLvHUiargwWkW5qsBi/mrxIwe66B2kLA0jw==}
     dev: false
 
+  /@monaco-editor/loader@1.4.0(monaco-editor@0.51.0):
+    resolution: {integrity: sha512-00ioBig0x642hytVspPl7DbQyaSWRaolYie/UFNjoTdvoKPzo6xrXLhTk9ixgIKcLH5b5vDOjVNiGyY+uDCUlg==}
+    peerDependencies:
+      monaco-editor: '>= 0.21.0 < 1'
+    dependencies:
+      monaco-editor: 0.51.0
+      state-local: 1.0.7
+    dev: false
+
+  /@monaco-editor/react@4.6.0(monaco-editor@0.51.0)(react-dom@17.0.1)(react@17.0.1):
+    resolution: {integrity: sha512-RFkU9/i7cN2bsq/iTkurMWOEErmYcY6JiQI3Jn+WeR/FGISH8JbHERjpS9oRuSOPvDMJI0Z8nJeKkbOs9sBYQw==}
+    peerDependencies:
+      monaco-editor: '>= 0.25.0 < 1'
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@monaco-editor/loader': 1.4.0(monaco-editor@0.51.0)
+      monaco-editor: 0.51.0
+      react: 17.0.1
+      react-dom: 17.0.1(react@17.0.1)
+    dev: false
+
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
     dev: false
@@ -1040,6 +1077,10 @@ packages:
       readdirp: 3.6.0
     optionalDependencies:
       fsevents: 2.3.3
+
+  /classnames@2.5.1:
+    resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
+    dev: false
 
   /color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
@@ -1470,6 +1511,10 @@ packages:
     resolution: {integrity: sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==}
     dev: false
 
+  /monaco-editor@0.51.0:
+    resolution: {integrity: sha512-xaGwVV1fq343cM7aOYB6lVE4Ugf0UyimdD/x5PWcWBMKENwectaEu77FAN7c5sFiyumqeJdX1RPTh1ocioyDjw==}
+    dev: false
+
   /ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
     dev: false
@@ -1502,6 +1547,13 @@ packages:
 
   /object-refs@0.3.0:
     resolution: {integrity: sha512-eP0ywuoWOaDoiake/6kTJlPJhs+k0qNm4nYRzXLNHj6vh+5M3i9R1epJTdxIPGlhWc4fNRQ7a6XJNCX+/L4FOQ==}
+    dev: false
+
+  /only-allow@1.2.1:
+    resolution: {integrity: sha512-M7CJbmv7UCopc0neRKdzfoGWaVZC+xC1925GitKH9EAqYFzX9//25Q7oX4+jw0tiCCj+t5l6VZh8UPH23NZkMA==}
+    hasBin: true
+    dependencies:
+      which-pm-runs: 1.1.0
     dev: false
 
   /parent-module@1.0.1:
@@ -1783,6 +1835,10 @@ packages:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
 
+  /state-local@1.0.7:
+    resolution: {integrity: sha512-HTEHMNieakEnoe33shBYcZ7NX83ACUjCu8c40iOGEZsngj9zRnkqS9j1pqQPXwobB0ZcVTk27REb7COQ0UR59w==}
+    dev: false
+
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
     engines: {node: '>=4'}
@@ -1893,6 +1949,11 @@ packages:
       sass: 1.70.0
     optionalDependencies:
       fsevents: 2.3.3
+    dev: false
+
+  /which-pm-runs@1.1.0:
+    resolution: {integrity: sha512-n1brCuqClxfFfq/Rb0ICg9giSZqCS+pLtccdag6C2HyufBrh3fBOiy9nb6ggRMvWOVH5GrdJskj5iGTZNxd7SA==}
+    engines: {node: '>=4'}
     dev: false
 
   /yallist@3.1.1:
