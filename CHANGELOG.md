@@ -1,3 +1,27 @@
+## 2.2.6 (2024-09-09)
+
+#### Fix
+
+* Alert when opening a process
+* Fix duplicate request when selecting BPM Model
+* Fix  apply CamelCase on MetaJsonField each time when navigate to another field
+
+  <details>
+  
+  - the metaJsonField's name are automatically converted in CamelCase.
+  - It's a nice for new field but not for already existing ones.
+  
+  </details>
+
+* Correct wrong translation
+
+  <details>
+  
+  - Change in fr translation "Modèles standards importés" to "Importer les modèles standards"
+  
+  </details>
+
+
 ## 2.2.5 (2024-07-24)
 
 #### Fix
