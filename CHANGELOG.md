@@ -1,3 +1,22 @@
+## 3.0.4 (2024-09-09)
+
+#### Fix
+
+* Fix duplicate request when selecting BPM Model
+* Fix sending mail task
+* Fix Wrong translation of "Import standard models"
+* Fix  Alert when opening a process
+* Fix  apply CamelCase on MetaJsonField each time when navigate to another field
+
+  <details>
+  
+  - the metaJsonField's name are automatically converted in CamelCase.
+  - It's a nice for new field but not for already existing ones.
+  
+  </details>
+
+* Fix Bad alignment in messages
+
 ## 3.0.3 (2024-07-24)
 
 #### Fix
