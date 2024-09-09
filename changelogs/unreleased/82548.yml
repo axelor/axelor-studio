@@ -1,6 +1,0 @@
----
-title: Issue when changing browser zoom
-type: fix
-description: |
-  - When zooming, the horizontal scrolling is not available in the properties, making right buttons unavailable.
-  - Moreover, when canceling the resizing, properties panel remains compact.

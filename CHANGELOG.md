@@ -1,3 +1,39 @@
+## 3.1.3 (2024-09-09)
+
+#### Fix
+
+* Issue when changing browser zoom
+
+  <details>
+  
+  - When zooming, the horizontal scrolling is not available in the properties, making right buttons unavailable.
+  - Moreover, when canceling the resizing, properties panel remains compact.
+  
+  </details>
+
+* Fix Code editor on studio field settings
+* Fix duplicate request when selecting BPM Model
+* fix sending mail task
+* Correct wrong translation
+
+  <details>
+  
+  - Change in fr translation "Modèles standards importés" to "Importer les modèles standards"
+  
+  </details>
+
+* Alert when opening a process
+* Fix  apply CamelCase on MetaJsonField each time when navigate to another field
+
+  <details>
+  
+  - the metaJsonField's name are automatically converted in CamelCase.
+  - It's a nice for new field but not for already existing ones.
+  
+  </details>
+
+* Fix Bad alignment in messages
+
 ## 3.1.2 (2024-07-24)
 
 #### Fix
