@@ -1,0 +1,5 @@
+---
+title: Add translation functionality bpmn elements displayed in Merge-split tool
+type: feature
+description:  |
+  - Add translations for BPMN elements in the same way as used in BPM Studio.
