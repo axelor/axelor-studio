@@ -1,6 +1,0 @@
-title: Add helper to retrieve process information in Camunda BPM
-type: feature
-description: |
-  Introduced a new WkfProcessHelper class to access process information at runtime.
-  The helper allows retrieving various details related to process instance and tasks.
-  Methods include getProcessInfo, getActiveTasks, and getTaskById to facilitate process data extraction during execution.

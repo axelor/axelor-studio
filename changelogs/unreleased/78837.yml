@@ -1,5 +1,0 @@
----
-title: Duplicate menu don't generate a duplicate
-type: fix
-description: |
-  Set the name of the studio action while creating/updating it.

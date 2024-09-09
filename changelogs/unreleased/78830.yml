@@ -1,6 +1,0 @@
----
-title: Add controller to check Studio Pro and Connect modules availability
-type: feature
-description: |
-  - Using `Axelor connect` in BPM as a service task requires Studio Pro to be installed alongside with connect module.
-  - Provide controller action to be used from front-end to check the availability of Studio Pro and Connect

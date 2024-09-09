@@ -1,6 +1,0 @@
-title: Update gradle node, node and pnpm plugins to latest version
-type: feature
-description: |
-  Upgraded the Gradle Node plugin from 5.0.0 to 7.0.2.
-  Upgraded Node.js from 18.16.1 to 22.7.0.
-  Upgraded PNPM to version from 8.6.6 to 9.8.0.

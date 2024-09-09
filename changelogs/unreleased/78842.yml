@@ -1,6 +1,0 @@
----
-title: Trigger BPM instance by global listener
-type: feature
-description:  |
-  - Implement a global listener to trigger bpm instance on every entity creation / update 
-  - Add a configuration on WkfProcess to allow using hibernate global listener or AOP observer to trigger the process

@@ -1,4 +1,0 @@
-title: Don't inject `MetaFiles` service in `WkfInstanceServiceImpl`
-type: change
-description: |
-  This service was unused so it has been removed from the fields and the constructor.

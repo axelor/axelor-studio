@@ -1,3 +1,185 @@
+## 3.2.0 (2024-09-09)
+
+#### Feature
+
+* Add controller to check Studio Pro and Connect modules availability
+
+  <details>
+  
+  - Using `Axelor connect` in BPM as a service task requires Studio Pro to be installed alongside with connect module.
+  - Provide controller action to be used from front-end to check the availability of Studio Pro and Connect
+  
+  </details>
+
+* Instead of selecting m2o fields from the model, allow expressions
+
+  <details>
+  
+  - For the Actions on activity, the user can select either a team field or user field and expressions
+  - Each of the user action fields is expecting a m2o (for team and users) or a date field in case of a deadline.
+  
+  </details>
+
+* Trigger BPM instance by global listener
+
+  <details>
+  
+  - Implement a global listener to trigger bpm instance on every entity creation / update 
+  - Add a configuration on WkfProcess to allow using hibernate global listener or AOP observer to trigger the process
+  
+  </details>
+
+* Improve automatic deployment of BPM
+
+  <details>
+  
+  Change bpm automatic deployment from server start to a button triggered deployment,
+  Add a new button "Load from sources", this buttons calls a method to search for bpmn file by code from sources and load it withoud deploying it
+  this feature must be activated from app settings using allowBpmLoadingFromSources boolean
+  
+  </details>
+
+* Update gradle node, node and pnpm plugins to latest version
+
+  <details>
+  
+  Upgraded the Gradle Node plugin from 5.0.0 to 7.0.2.
+  Upgraded Node.js from 18.16.1 to 22.7.0.
+  Upgraded PNPM to version from 8.6.6 to 9.8.0.
+  
+  </details>
+
+* Add Custom Variables in BPM Configurations
+
+  <details>
+  
+  - Added support for custom variables in BPM app configurations.Each variable has a corresponding Groovy expression that is validated for syntax.
+  - Valid variables can be used in BPM scripts.
+  
+  </details>
+
+* Add translation functionality bpmn elements displayed in Merge-split tool
+
+  <details>
+  
+  - Add translations for BPMN elements in the same way as used in BPM Studio.
+  
+  </details>
+
+* Update the bpmn-js library to the latest version
+* Add helper to retrieve process information in Camunda BPM
+
+  <details>
+  
+  Introduced a new WkfProcessHelper class to access process information at runtime.
+  The helper allows retrieving various details related to process instance and tasks.
+  Methods include getProcessInfo, getActiveTasks, and getTaskById to facilitate process data extraction during execution.
+  
+  </details>
+
+* Add buttons to unblock bpm instances
+
+  <details>
+  
+  Add two buttons to unblock the bpm process instances. They can be found under the menu *App -> BPM components -> Technical Monitoring*.
+  1. The first one is in the *Process Instances* menu, more precisely in the form view of a process instance.
+      * This button will allow you to unblock the specific instance you select.
+  2. The second button is in the *BPM Models* menu, in the form view of this menu.
+      * This button will allow you to unblock all the instances linked to a given BPM model.
+      * Even if all the instances of the model are not blocked for one model you can use it safely (it won't impact the non blocked instances).
+  
+  </details>
+
+* Variable management
+
+  <details>
+  
+  Implement a more efficient variable management system to ensure accessibility throughout the entire process.
+  
+  </details>
+
+* A decision can be created by both real an custom models
+
+#### Change
+
+* Don't inject `MetaFiles` service in `WkfInstanceServiceImpl`
+
+  <details>
+  
+  This service was unused so it has been removed from the fields and the constructor.
+  
+  </details>
+
+* Studio builders refactoring
+
+#### Fix
+
+* Issue when changing browser zoom
+
+  <details>
+  
+  - When zooming, the horizontal scrolling is not available in the properties, making right buttons unavailable.
+  - Moreover, when canceling the resizing, properties panel remains compact.
+  
+  </details>
+
+* Resolve Unable to close builder bug
+* Selecting a node doesn't open the properties
+* Fix Code editor on studio field settings
+* When merging BPM models there is a breaking issue
+
+  <details>
+  
+  When having selected a BPM model and then merging it with another model, the application went blank consequently to a 
+  front-end issue.
+  
+  </details>
+
+* Fix duplicate request when selecting BPM Model
+* fix sending mail task
+* Update xsd version on Studio elements
+
+  <details>
+  
+  - Update xsd version on domains from 6.1 to 7.1
+  - Update xsd version on views from 6.1 to 7.1
+  - Update xsd version on import from 6.1 to 7.1
+  
+  </details>
+
+* Incorrect variable handling causing some fields to be ignored
+
+  <details>
+  
+  Fixed the issue where some fields were ignored due to incorrect variable handling,
+  Updated serialization and deserialization of variables.
+  Added configuration for serialization depth via `axelor-config.properties`:
+  - Introduced property `studio.bpm.serialization.depth` to control the depth of serialization.
+  - Default depth set to 5, with a maximum value of 10.
+  
+  </details>
+
+* Include relational fields
+* Alert when opening a process
+* Scrolling is blocked in mapper
+* Fix  apply CamelCase on MetaJsonField each time when navigate to another field
+
+  <details>
+  
+  - the metaJsonField's name are automatically converted in CamelCase.
+  - It's a nice for new field but not for already existing ones.
+  
+  </details>
+
+* Duplicate menu don't generate a duplicate
+
+  <details>
+  
+  Set the name of the studio action while creating/updating it.
+  
+  </details>
+
+
 ## 3.1.0 (2024-05-30)
 
 #### Feature
