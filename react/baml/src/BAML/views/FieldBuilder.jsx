@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import AlertDialog from "../expression-builder/components/AlertDialog";
 
 export default function FieldBuilder({ element, bpmnModeler }) {
   const [openAlert, setAlert] = useState(false);
@@ -227,44 +228,18 @@ export default function FieldBuilder({ element, bpmnModeler }) {
             </DialogFooter>
           </Dialog>
         )}
-        {openAlert && (
-          <Dialog
-            open={openAlert}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogHeader onCloseClick={() => setAlert(false)}>
-              <DialogTitle id="alert-dialog-title">
-                {translate(alertTitle)}
-              </DialogTitle>
-            </DialogHeader>
-            <DialogContent>
-              <Box color="body">{translate(alertMessage)}</Box>
-            </DialogContent>
-            <DialogFooter>
-              <Button
-                onClick={() => {
-                  setAlert(false);
-                  setAlertMessage(null);
-                  setAlertTitle(null);
-                }}
-                variant="primary"
-                size="sm"
-              >
-                {translate("OK")}
-              </Button>
-              <Button
-                onClick={() => {
-                  setAlert(false);
-                }}
-                variant="secondary"
-                size="sm"
-              >
-                {translate("Cancel")}
-              </Button>
-            </DialogFooter>
-          </Dialog>
-        )}
+
+        <AlertDialog
+          openAlert={openAlert}
+          title={alertTitle}
+          message={alertMessage}
+          handleAlertOk={() => {
+            setAlert(false);
+            setAlertMessage(null);
+            setAlertTitle(null);
+          }}
+          alertClose={()=>setAlert(false)}
+        />
       </Box>
     </Box>
   );

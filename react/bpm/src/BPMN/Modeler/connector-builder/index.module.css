@@ -6,9 +6,6 @@
 }
 
 .dialog > div {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
   max-width: calc(100% - 40px) !important;
   min-width: 70% !important;
 }
@@ -23,6 +20,8 @@
 
 .dialogContent {
   overflow: auto !important;
+  width: 100%;
+  align-self: self-start;
 }
 
 .title {

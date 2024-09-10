@@ -205,6 +205,7 @@ export default function TextField({
           value={editorValue}
           onChange={handleEditorChange}
           language={language}
+          width={window?.innerWidth-120}
         />
       </AlertDialog>
     </div>

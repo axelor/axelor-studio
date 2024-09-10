@@ -190,85 +190,56 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
             title={translate("Add expression")}
           />
         )}
-        {openAlert && (
-          <Dialog
-           centered
-            open={openAlert}
-            onClose={(e, reason) => {
-              if (reason !== "backdropClick") {
-                setAlert(false);
-              }
+
+        <AlertDialog
+          openAlert={openAlert}
+          title={alertTitle}
+          message={alertMessage}
+          handleAlertOk={() => {
+            setAlert(false);
+            setAlertMessage(null);
+            setAlertTitle(null);
+            setReadOnly(false);
+            setOpenScriptDialog(true);
+            setScript(getScript()?.script);
+            if (element.businessObject) {
+              setProperty("expressionValue", undefined);
+            }
+          }}
+          alertClose={() => {
+            setAlert(false);
+          }}
+        />
+        {openScriptDialog && (
+          <AlertDialog
+            openAlert={openScriptDialog}
+            alertClose={() => setOpenScriptDialog(false)}
+            handleAlertOk={() => {
+              updateScript({ expr: script });
+              setOpenScriptDialog(false);
             }}
-          >
-            <DialogHeader>
-              <DialogTitle id="alert-dialog-title">
-                {translate(alertTitle)}
-              </DialogTitle>
-            </DialogHeader>
-            <DialogContent>
-              <Box id="alert-dialog-description">{translate(alertMessage)}</Box>
-            </DialogContent>
-            <DialogFooter d="flex" justifyContent="end">
-              <Button
-                onClick={() => {
-                  setAlert(false);
+            title={translate("Add Expression")}
+            children={
+              <Textbox
+                element={element}
+                showLabel={false}
+                defaultHeight={window?.innerHeight - 205}
+                entry={{
+                  id: "script",
+                  name: "expression",
+                  label: translate("Expression"),
+                  modelProperty: "script",
+                  get: function () {
+                    return { expression: script };
+                  },
+                  set: function (e, values) {
+                    setScript(values?.expression);
+                  },
                 }}
-                size="sm"
-                variant="secondary"
-              >
-                {translate("Cancel")}
-              </Button>
-              <Button
-                onClick={() => {
-                  setAlert(false);
-                  setAlertMessage(null);
-                  setAlertTitle(null);
-                  setReadOnly(false);
-                  setOpenScriptDialog(true)
-                  setScript(getScript()?.script)
-                  if(element.businessObject){
-                    setProperty("expressionValue", undefined);
-                  }
-                }}
-                size="sm"
-                variant="primary"
-                autoFocus
-              >
-                {translate("OK")}
-              </Button>
-            </DialogFooter>
-          </Dialog>
-        )}
-         {openScriptDialog && (
-              <AlertDialog
-                openAlert={openScriptDialog}
-                alertClose={() => setOpenScriptDialog(false)}
-                handleAlertOk={() => {
-                  updateScript({ expr: script });
-                  setOpenScriptDialog(false);
-                }}
-                title={translate("Add Expression")}
-                children={
-                  <Textbox
-                    element={element}
-                    showLabel={false}
-                    defaultHeight={window?.innerHeight - 205}
-                    entry={{
-                      id:'script',
-                      name: "expression",
-                      label: translate("Expression"),
-                      modelProperty: "script",
-                      get: function () {
-                        return { expression:script };
-                      },
-                      set: function (e, values) {
-                        setScript(values?.expression);
-                      },
-                    }}
-                  />
-                }
               />
-            )}
+            }
+          />
+        )}
       </Box>
     </Box>
   );

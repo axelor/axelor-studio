@@ -25,7 +25,7 @@ function ScriptEditor({
   minimap = true,
 }) {
   const [height, setHeight] = useState(defaultHeight || INITIAL_HEIGHT);
-  const [width, setWidth] = useState(containerWidth - PADDING * 2);
+  const [width, setWidth] = useState(containerWidth - PADDING * 4);
   const savedDimension = useRef({ width, height });
   const { tokenizer, suggestions, languageConfig, themeRules } =
     useLanguageConfig(language);

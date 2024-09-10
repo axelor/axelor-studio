@@ -50,6 +50,14 @@
   justify-content: space-between;
 }
 
+.dialogContent{
+  width: 100%;
+}
 .select {
   width: 100%;
+}
+
+.decisionRefIcons{
+  display: flex;
+  margin-top:4px;
 }

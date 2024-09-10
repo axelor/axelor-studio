@@ -32,10 +32,11 @@ export default function FieldEditor({
   const [allFieldValues, setAllFieldValues] = useState(null);
 
   let values = null;
-  if (typeof fieldName === "object") {
+  if (typeof fieldName === "object" && fieldName) {
+    
     values = fieldName[fieldType]?.split(".");
-  } else if (typeof fieldName === "string") {
-    values = fieldName.split(".");
+  } else if (typeof fieldName === "string" ) {
+    values = fieldName?.split(".");
   }
 
   const [startValue] = values || [];
@@ -104,10 +105,10 @@ export default function FieldEditor({
 
   useEffect(() => {
     let values = null;
-    if (typeof fieldName === "object") {
+    if (typeof fieldName === "object" && fieldName) {
       values = fieldName[fieldType]?.split(".");
     } else if (typeof fieldName === "string") {
-      values = fieldName.split(".");
+      values = fieldName?.split(".");
     }
 
     const transformValue =

@@ -3,7 +3,7 @@ import AlertDialog from "../../../../../components/AlertDialog";
 import { Textbox } from "../../../../../components/properties/components";
 import { Box } from "@axelor/ui";
 import { translate } from "../../../../../utils";
-import styles from "./ScriptProps.module.css";
+import styles from "./script-props.module.css";
 
 export default function ScriptDialog({
   element,

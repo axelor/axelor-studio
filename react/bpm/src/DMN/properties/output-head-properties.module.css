@@ -40,3 +40,12 @@
   width: 250px;
   margin-right: 10px;
 }
+.dialogContent{
+  display: flex;
+  gap: 10px;
+  width: 100%;
+
+}
+.contentRadio{
+   align-self: flex-end;
+}

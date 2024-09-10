@@ -3,24 +3,20 @@ import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 
 import { Selection } from "../../../../../components/expression-builder/components";
-import { getModels, getMetaFields } from "../../../../../services/api";
-import { translate } from "../../../../../utils";
 import {
   TextField,
   FieldEditor,
 } from "../../../../../components/properties/components";
+import { getMetaFields, getModels } from "../../../../../services/api";
+import { translate } from "../../../../../utils";
 
 import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
-  InputLabel,
-  DialogTitle,
+  InputLabel
 } from "@axelor/ui";
-import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import AlertDialog from "../../../../../components/AlertDialog";
+import useDialog from "../../../../../hooks/useDialog";
+import Title from "../../../Title";
 import styles from "./multi-instance.module.css";
 
 function getProperty(element, propertyName) {
@@ -197,9 +193,7 @@ export default function MultiInstanceLoopCharacteristics({
   const [model, setModel] = useState(null);
   const [collectionVal, setCollectionVal] = useState(null);
   const [field, setField] = useState(null);
-  const [openExpressionAlert, setExpressionAlert] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [errorTitle, setErrorTitle] = useState(null);
+  const openDialog = useDialog();
 
   const getData = () => {
     return model
@@ -321,107 +315,70 @@ export default function MultiInstanceLoopCharacteristics({
             />
           }
         />
-        <Dialog open={open} backdrop centered className={styles.dialog}>
-          <DialogHeader onCloseClick={() => setOpen(false)}>
-            <DialogTitle>{translate("Collection")}</DialogTitle>
-          </DialogHeader>
-          <DialogContent className={styles.dialogContent}>
-            <Selection
-              name="model"
-              title="Model"
-              placeholder="Model"
-              fetchAPI={() => getModels(getProcessConfig(element))}
-              onChange={(e) => {
-                setModel(e);
-              }}
-              optionLabelKey="name"
-              value={model}
-              classes={{ root: styles.MuiAutocompleteRoot }}
-            />
-            {model && (
-              <FieldEditor
-                getMetaFields={() => getMetaFields(getData())}
-                isCollection={true}
-                onChange={(val, field) => {
-                  setCollectionVal(val);
-                  setField(field);
+
+        <AlertDialog
+          openAlert={open}
+          title="Collection"
+          fullscreen={false}
+          handleAlertOk={() => {
+            if (
+              field &&
+              !["ONE_TO_MANY", "MANY_TO_MANY"].includes(field.type)
+            ) {
+              openDialog({
+                title: "Warning",
+                message:
+                  "Last subfield should be many to many or one to many field",
+              });
+              return;
+            }
+            const prefix = "${getIdList(";
+            const value = `${prefix}${lowerCaseFirstLetter(model.name)}${
+              collectionVal ? `.${collectionVal}` : ""
+            })}`;
+            setCollection(value);
+            let loopCharacteristics = getLoopCharacteristics(element);
+            if (!loopCharacteristics) return;
+            loopCharacteristics.collection = value;
+            loopCharacteristics["camunda:collection"] = value || undefined;
+            setOpen(false);
+          }}
+          alertClose={() => {
+            setOpen(false);
+            setInitialValue();
+          }}
+          children={
+            <div className={styles.dialogContent}>
+              <Selection
+                name="model"
+                title="Model"
+                placeholder="Model"
+                fetchAPI={() => getModels(getProcessConfig(element))}
+                onChange={(e) => {
+                  setModel(e);
                 }}
-                value={{
-                  fieldName: collectionVal,
-                }}
-                isParent={true}
+                optionLabelKey="name"
+                value={model}
+                classes={{ root: styles.MuiAutocompleteRoot }}
               />
-            )}
-          </DialogContent>
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                setOpen(false);
-                setInitialValue();
-              }}
-              variant="secondary"
-              className={styles.save}
-            >
-              {translate("Cancel")}
-            </Button>
-            <Button
-              onClick={() => {
-                if (
-                  field &&
-                  !["ONE_TO_MANY", "MANY_TO_MANY"].includes(field.type)
-                ) {
-                  setExpressionAlert(true);
-                  setErrorMessage(
-                    "Last subfield should be many to many or one to many field"
-                  );
-                  return;
-                }
-                const prefix = "${getIdList(";
-                const value = `${prefix}${lowerCaseFirstLetter(model.name)}${
-                  collectionVal ? `.${collectionVal}` : ""
-                })}`;
-                setCollection(value);
-                let loopCharacteristics = getLoopCharacteristics(element);
-                if (!loopCharacteristics) return;
-                loopCharacteristics.collection = value;
-                loopCharacteristics["camunda:collection"] = value || undefined;
-                setOpen(false);
-              }}
-              variant="primary"
-              className={styles.save}
-            >
-              {translate("OK")}
-            </Button>
-          </DialogFooter>
-        </Dialog>
-        <Dialog open={openExpressionAlert} backdrop className={styles.dialog}>
-          <DialogHeader onCloseClick={() => setExpressionAlert(false)}>
-            <DialogTitle>{translate(errorTitle || "Warning")}</DialogTitle>
-          </DialogHeader>
-          <DialogContent className={styles.content}>
-            {translate(errorMessage)}
-          </DialogContent>
-          <DialogFooter>
-            <Button
-              onClick={() => setExpressionAlert(false)}
-              variant="secondary"
-              className={styles.save}
-            >
-              {translate("Cancel")}
-            </Button>
-            <Button
-              className={styles.save}
-              onClick={() => {
-                setExpressionAlert(false);
-                setErrorMessage(null);
-                setErrorTitle(null);
-              }}
-              variant="primary"
-            >
-              {translate("OK")}
-            </Button>
-          </DialogFooter>
-        </Dialog>
+              {model && (
+                <FieldEditor
+                  getMetaFields={() => getMetaFields(getData())}
+                  isCollection={true}
+                  onChange={(val, field) => {
+                    setCollectionVal(val);
+                    setField(field);
+                  }}
+                  value={{
+                    fieldName: collectionVal,
+                  }}
+                  isParent={true}
+                />
+              )}
+            </div>
+          }
+        />
+        
         <TextField
           element={element}
           entry={{

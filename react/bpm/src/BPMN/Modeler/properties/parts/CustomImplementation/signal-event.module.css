@@ -23,3 +23,7 @@
 .newIcon {
   cursor: pointer;
 }
+
+.dialogContent{
+  width: 100%;
+}

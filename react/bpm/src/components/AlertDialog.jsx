@@ -20,12 +20,14 @@ export default function AlertDialog({
   handleAlertOk,
   children,
   className,
+  fullscreen=true,
+  centered=false
 }) {
   return (
     <Dialog
       open={openAlert}
-      fullscreen={children ? true : false}
-      centered={children ? false : true}
+      fullscreen={fullscreen  && children ? true : false}
+      centered
       backdrop
       className={classnames(styles.dialogPaper, className)}
     >

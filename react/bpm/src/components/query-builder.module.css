@@ -11,14 +11,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 80%;
 }
 
 .dialog > div > div {
-  max-height: 100%;
+  /* background-color: yellow; */
   resize: both;
   overflow: auto;
-  min-width: 80%;
-  min-height: 80%;
+  width: 80%;
+  height: 100%;
 }
 
 .dialogContent {

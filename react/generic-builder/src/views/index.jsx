@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import IconButton from '@material-ui/core/IconButton';
-
 import produce from 'immer';
 import moment from 'moment';
 import { flattenDeep, isEmpty } from 'lodash';
-
 import ExpressionComponent from './builder';
 import { Timeline, Button, Select } from '../components';
 import {

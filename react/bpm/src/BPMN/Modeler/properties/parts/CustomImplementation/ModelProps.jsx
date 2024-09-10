@@ -481,6 +481,9 @@ export default function ModelProps(props) {
                       value={defaultForm}
                       label={translate("Default form")}
                       isLabel={false}
+                      optionLabel="name"
+                      optionLabelSecondary="title"
+                    
                     />
                   </div>
                 </React.Fragment>

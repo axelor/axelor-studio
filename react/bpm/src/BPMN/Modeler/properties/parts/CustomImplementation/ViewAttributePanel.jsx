@@ -620,6 +620,8 @@ export default function ViewAttributePanel({
                                       value={val.view || null}
                                       className={styles.select}
                                       isLabel={false}
+                                      optionLabel={'title'}
+                                      optionLabelSecondary={'name'}
                                     />
                                   </div>
                                 )}
@@ -698,6 +700,7 @@ export default function ViewAttributePanel({
                                   multiple={true}
                                   isLabel={false}
                                   className={styles.select}
+                                  optionLabel={'name'}
                                 />
                               </div>
                             )}
@@ -831,6 +834,8 @@ export default function ViewAttributePanel({
                                                     : null
                                                 }
                                                 label="Item"
+                                                 optionLabel={'label'}
+                                                 optionLabelSecondary={'name'}
                                               />
                                             </TableCell>
                                             <TableCell

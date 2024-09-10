@@ -20,9 +20,11 @@ import {
   DialogContent,
   DialogFooter,
   DialogTitle,
+  Alert,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./input-head-properties.module.css";
+import useDialog from "../../hooks/useDialog";
 
 export default function InputHeadProperties({
   element,
@@ -37,12 +39,11 @@ export default function InputHeadProperties({
   const [contextModel, setContextModel] = useState(null);
   const [relationalField, setRelationalField] = useState(null);
   const [allFields, setAllFields] = useState([]);
-  const [openAlert, setOpenAlert] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
   const [expressionLanguage, setExpressionLanguage] = useState("feel");
   const [type, setType] = useState("string");
   const [defaultValue, setDefaultValue] = useState(null);
-
+  const openDialog = useDialog();
   const models = useMemo(() => getData && getData(), [getData]);
 
   const handleClickOpen = () => {
@@ -180,15 +181,11 @@ export default function InputHeadProperties({
     }
   }, [propInput, models, setProperty]);
 
-  const alertClose = () => {
-    setOpenAlert(false);
-  };
+  
 
   const handleAlertOk = () => {
-    setOpenAlert(false);
     setReadOnly(false);
     setType("string");
-
     setProperty(
       {
         typeRef: "string",
@@ -198,7 +195,6 @@ export default function InputHeadProperties({
       },
       input.inputExpression
     );
-
     setProperty({ "camunda:defaultValue": undefined }, input);
   };
 
@@ -268,7 +264,12 @@ export default function InputHeadProperties({
               <MaterialIcon
                 icon="do_not_disturb"
                 className={styles.newIcon}
-                onClick={() => readOnly && setOpenAlert(true)}
+                onClick={() =>
+                  readOnly && openDialog({ title: "Warning",      
+                    message:"Script can't be managed using builder once changed manually.",
+                    onSave:handleAlertOk
+                  })
+                }
               />
             </Tooltip>
             <MaterialIcon
@@ -279,13 +280,26 @@ export default function InputHeadProperties({
           </>
         }
       />
-      {open && (
-        <Dialog open={open} centered backdrop className={styles.dialog}>
-          <DialogHeader onCloseClick={handleClose}>
-            <DialogTitle>{translate("Expression")}</DialogTitle>
-          </DialogHeader>
-          <DialogContent className={styles.dialogContent}>
-            {models?.length > 1 && (
+
+     <AlertDialog 
+         openAlert={open}
+         fullscreen={false}
+         title={'Expression'}
+         handleAlertOk={() => {
+          handleOk();
+          handleClose();
+        }}
+        alertClose={()=>{
+          handleClose();
+          setField(null);
+          setContextModel(null);
+          setMetaField(null);
+          setAllFields([]);
+          setRelationalField(null);
+        }}
+        children={
+          <div className={styles.dialogContent}>
+          {models?.length > 1 && (
               <Selection
                 name="model"
                 title="Model"
@@ -336,36 +350,11 @@ export default function InputHeadProperties({
               }}
               isParent={true}
             />
-          </DialogContent>
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                handleClose();
-                setField(null);
-                setContextModel(null);
-                setMetaField(null);
-                setAllFields([]);
-                setRelationalField(null);
-              }}
-              variant="secondary"
-              className={styles.save}
-            >
-              {translate("Cancel")}
-            </Button>
-            <Button
-              onClick={() => {
-                handleOk();
-                handleClose();
-              }}
-              variant="primary"
-              className={styles.save}
-            >
-              {translate("OK")}
-            </Button>
-          </DialogFooter>
-        </Dialog>
-      )}
+          </div>
+        }
+     />
 
+     
       <SelectBox
         element={element}
         entry={{
@@ -463,13 +452,6 @@ export default function InputHeadProperties({
           canRemove={true}
         />
       )}
-      <AlertDialog
-        openAlert={openAlert}
-        handleAlertOk={handleAlertOk}
-        alertClose={alertClose}
-        message="Script can't be managed using builder once changed manually."
-        title="Warning"
-      />
     </React.Fragment>
   );
 }

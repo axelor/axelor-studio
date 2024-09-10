@@ -21,3 +21,6 @@
 .newIcon {
   cursor: pointer;
 }
+.alertMessageWrapper{
+  width:100%;
+}

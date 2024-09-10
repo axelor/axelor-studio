@@ -18,6 +18,7 @@ import {
   DialogTitle,
 } from "@axelor/ui";
 import styles from "./index.module.css";
+import AlertDialog from "../../../components/AlertDialog";
 
 export default function ConnectorBuilder({
   open,
@@ -134,141 +135,130 @@ export default function ConnectorBuilder({
   }, [getDefaultValues]);
 
   return (
-    <Dialog open={open} backdrop className={styles.dialog}>
-      <DialogHeader onCloseClick={handleClose}>
-        <DialogTitle>{translate("Connector script")}</DialogTitle>
-      </DialogHeader>
-      <DialogContent className={styles.dialogContent}>
-        <Box
-          rounded={2}
-          shadow
-          bgColor="body-tertiary"
-          className={styles.paper}
-        >
-          <Box d="flex">
-            <Box w={50}>
-              <Selection
-                name="connector"
-                placeholder="Connector"
-                fetchAPI={fetchConnectors}
-                optionLabelKey="name"
-                value={connector}
-                onChange={(e) => setConnector(e)}
-                className={styles.MuiAutocompleteRoot}
-              />
-            </Box>
-            {connector && (
+      <AlertDialog
+        openAlert={open}
+        fullscreen={false}
+        className={styles.dialog}
+        alertClose={handleClose}
+        handleAlertOk={generateScript}
+        title={translate("Connector script")}
+        children={
+          <div className={styles.dialogContent}>
+          <Box
+            rounded={2}
+            shadow
+            bgColor="body-tertiary"
+            className={styles.paper}
+          >
+            <Box d="flex">
               <Box w={50}>
                 <Selection
-                  name="request"
-                  title="Request"
-                  placeholder="Request"
-                  fetchAPI={fetchRequests}
+                  name="connector"
+                  placeholder="Connector"
+                  fetchAPI={fetchConnectors}
                   optionLabelKey="name"
-                  value={request}
-                  onChange={(e) => setRequest(e)}
+                  value={connector}
+                  onChange={(e) => setConnector(e)}
                   className={styles.MuiAutocompleteRoot}
                 />
               </Box>
+              {connector && (
+                <Box w={50}>
+                  <Selection
+                    name="request"
+                    title="Request"
+                    placeholder="Request"
+                    fetchAPI={fetchRequests}
+                    optionLabelKey="name"
+                    value={request}
+                    onChange={(e) => setRequest(e)}
+                    className={styles.MuiAutocompleteRoot}
+                  />
+                </Box>
+              )}
+            </Box>
+            {connector && (
+              <React.Fragment>
+                <Box d="flex" className={styles.container}>
+                  <Box w={50}>
+                    <InputField
+                      name="requestVariable"
+                      onChange={(value) => setRequestVariable(value)}
+                      title="Request variable"
+                      value={requestVariable}
+                      style={{ width: "95%" }}
+                    />
+                  </Box>
+                  <Box w={50}>
+                    <InputField
+                      name="resultVariable"
+                      title="Result variable"
+                      onChange={(value) => setResultVariable(value)}
+                      value={resultVariable}
+                      style={{ width: "95%" }}
+                    />
+                  </Box>
+                </Box>
+                <Box d="flex" className={styles.container}>
+                  <Box w={50}>
+                    <InputField
+                      name="returnVariable"
+                      title="Return variable"
+                      value="_res"
+                      readOnly={true}
+                      style={{ width: "95%" }}
+                    />
+                  </Box>
+                  <Box w={50}>
+                    <InputField
+                      name="returnExpression"
+                      title="Return expression"
+                      onChange={(value) => setReturnExpression(value)}
+                      value={returnExpression}
+                      style={{ width: "95%" }}
+                    />
+                  </Box>
+                </Box>
+                <Box className={styles.container}>
+                  <Table
+                    entry={{
+                      id: "menu-context",
+                      labels: [
+                        translate("Key"),
+                        translate("Expression"),
+                        translate("Value"),
+                      ],
+                      modelProperties: ["key", "expression", "value"],
+                      addLabel: translate("Add payload"),
+                      getElements: function () {
+                        return payload;
+                      },
+                      updateElement: function (value, label, optionIndex) {
+                        const payloads = [...(payload || [])];
+                        if (!payloads) return;
+                        const entry = payloads[optionIndex];
+                        entry[label] = value;
+                        setPayload(payloads);
+                      },
+                      addElement: function (entryValue) {
+                        const payloads = [...(payload || [])];
+                        payloads.push(entryValue);
+                        setPayload(payloads);
+                      },
+                      removeElement: function (optionIndex) {
+                        const payloads = [...(payload || [])];
+                        if (!payloads || optionIndex < 0) return;
+                        payloads.splice(optionIndex, 1);
+                        setPayload(payloads);
+                      },
+                    }}
+                  />
+                </Box>
+              </React.Fragment>
             )}
           </Box>
-          {connector && (
-            <React.Fragment>
-              <Box d="flex" className={styles.container}>
-                <Box w={50}>
-                  <InputField
-                    name="requestVariable"
-                    onChange={(value) => setRequestVariable(value)}
-                    title="Request variable"
-                    value={requestVariable}
-                    style={{ width: "95%" }}
-                  />
-                </Box>
-                <Box w={50}>
-                  <InputField
-                    name="resultVariable"
-                    title="Result variable"
-                    onChange={(value) => setResultVariable(value)}
-                    value={resultVariable}
-                    style={{ width: "95%" }}
-                  />
-                </Box>
-              </Box>
-              <Box d="flex" className={styles.container}>
-                <Box w={50}>
-                  <InputField
-                    name="returnVariable"
-                    title="Return variable"
-                    value="_res"
-                    readOnly={true}
-                    style={{ width: "95%" }}
-                  />
-                </Box>
-                <Box w={50}>
-                  <InputField
-                    name="returnExpression"
-                    title="Return expression"
-                    onChange={(value) => setReturnExpression(value)}
-                    value={returnExpression}
-                    style={{ width: "95%" }}
-                  />
-                </Box>
-              </Box>
-              <Box className={styles.container}>
-                <Table
-                  entry={{
-                    id: "menu-context",
-                    labels: [
-                      translate("Key"),
-                      translate("Expression"),
-                      translate("Value"),
-                    ],
-                    modelProperties: ["key", "expression", "value"],
-                    addLabel: translate("Add payload"),
-                    getElements: function () {
-                      return payload;
-                    },
-                    updateElement: function (value, label, optionIndex) {
-                      const payloads = [...(payload || [])];
-                      if (!payloads) return;
-                      const entry = payloads[optionIndex];
-                      entry[label] = value;
-                      setPayload(payloads);
-                    },
-                    addElement: function (entryValue) {
-                      const payloads = [...(payload || [])];
-                      payloads.push(entryValue);
-                      setPayload(payloads);
-                    },
-                    removeElement: function (optionIndex) {
-                      const payloads = [...(payload || [])];
-                      if (!payloads || optionIndex < 0) return;
-                      payloads.splice(optionIndex, 1);
-                      setPayload(payloads);
-                    },
-                  }}
-                />
-              </Box>
-            </React.Fragment>
-          )}
-        </Box>
-      </DialogContent>
-      <DialogFooter>
-        <Button
-          onClick={handleClose}
-          variant="secondary"
-          className={styles.save}
-        >
-          {translate("Cancel")}
-        </Button>
-        <Button
-          onClick={generateScript}
-          variant="primary"
-          className={styles.save}
-        >
-          {translate("OK")}
-        </Button>
-      </DialogFooter>
-    </Dialog>
+          </div>
+        }
+      />
   );
 }

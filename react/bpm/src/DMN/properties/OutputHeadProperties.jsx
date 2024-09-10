@@ -14,18 +14,11 @@ import { RELATIONAL_TYPES, ALL_TYPES } from "../constants";
 import { getNameField } from "../services/api";
 import AlertDialog from "../../components/AlertDialog";
 import Tooltip from "../../components/Tooltip";
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
-  Box,
-  DialogTitle,
-} from "@axelor/ui";
+import { Box } from "@axelor/ui";
 import { BooleanRadio } from "../../components/BooleanRadio";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./output-head-properties.module.css";
+import useDialog from "../../hooks/useDialog";
 
 export default function OutputHeadProperties({
   element,
@@ -45,11 +38,10 @@ export default function OutputHeadProperties({
   const [contextModel, setContextModel] = useState(null);
   const [openAlert, setOpenAlert] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
-
   const models = useMemo(() => getData && getData(), [getData]);
   const [type, setType] = useState("string");
   const [defaultValue, setDefaultValue] = useState(null);
-
+  const openDialog = useDialog();
   const setProperty = React.useCallback(
     (context, field) => {
       const activeEditor = dmnModeler.getActiveViewer();
@@ -217,15 +209,9 @@ export default function OutputHeadProperties({
     }
   }, [propOutput, models, setProperty]);
 
-  const alertClose = () => {
-    setOpenAlert(false);
-  };
-
   const handleAlertOk = () => {
-    setOpenAlert(false);
     setReadOnly(false);
     setType("string");
-
     setProperty(
       {
         typeRef: "string",
@@ -303,7 +289,15 @@ export default function OutputHeadProperties({
               <MaterialIcon
                 icon="do_not_disturb"
                 className={styles.newIcon}
-                onClick={() => readOnly && setOpenAlert(true)}
+                onClick={() =>
+                  readOnly &&
+                  openDialog({
+                    title: "Warning",
+                    message:
+                      "Script can't be managed using builder once changed manually.",
+                    onSave: handleAlertOk,
+                  })
+                }
               />
             </Tooltip>
             <MaterialIcon
@@ -314,18 +308,36 @@ export default function OutputHeadProperties({
           </>
         }
       />
-
-      <Dialog
-        open={openOutputExpression}
-        backdrop
-        centered
-        className={styles.dialog}
-      >
-        <DialogHeader onCloseClick={() => setOpenOutputExpression(false)}>
-          <DialogTitle>{translate("Expression")}</DialogTitle>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
-          <BooleanRadio
+      <AlertDialog
+        openAlert={openOutputExpression}
+        fullscreen={false}
+        title="Expression"
+        handleAlertOk={() => {
+          handleOk();
+          setModel(null);
+          setOpenOutputExpression(false);
+          const field =
+            metaField ||
+            (allFields?.length > 0 && allFields[allFields?.length - 1]);
+          if (valueFrom === "model") {
+            setProperty({ name: model?.name }, output);
+          } else {
+            setProperty({ name: field?.name }, output);
+          }
+        }}
+        alertClose={() => {
+          setOpenOutputExpression(false);
+          setOutputField(null);
+          setModel(null);
+          setContextModel(null);
+          setMetaField(null);
+          setAllFields([]);
+          setRelationalField(null);
+        }}
+        children={
+          <div className={styles.dialogContent}>
+              <BooleanRadio
+                          className={styles.contentRadio}
             name="radioType"
             onChange={(e) => setValueFrom(e?.target?.value)}
             data={[
@@ -405,44 +417,9 @@ export default function OutputHeadProperties({
               </React.Fragment>
             )}
           </Box>
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              setOpenOutputExpression(false);
-              setOutputField(null);
-              setModel(null);
-              setContextModel(null);
-              setMetaField(null);
-              setAllFields([]);
-              setRelationalField(null);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-          <Button
-            onClick={() => {
-              handleOk();
-              setModel(null);
-              setOpenOutputExpression(false);
-              const field =
-                metaField ||
-                (allFields?.length > 0 && allFields[allFields?.length - 1]);
-              if (valueFrom === "model") {
-                setProperty({ name: model?.name }, output);
-              } else {
-                setProperty({ name: field?.name }, output);
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
+          </div>
+        }
+      />
 
       <TextField
         element={element}
@@ -525,14 +502,6 @@ export default function OutputHeadProperties({
           canRemove={true}
         />
       )}
-
-      <AlertDialog
-        openAlert={openAlert}
-        handleAlertOk={handleAlertOk}
-        alertClose={alertClose}
-        message="Script can't be managed using builder once changed manually."
-        title="Warning"
-      />
     </React.Fragment>
   );
 }

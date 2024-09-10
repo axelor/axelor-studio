@@ -5,7 +5,8 @@
 
 .dialogContent {
   max-height: 50vh;
-  overflow: auto;
+  padding: 20px;
+  min-width: fit-content;
 }
 
 .button {

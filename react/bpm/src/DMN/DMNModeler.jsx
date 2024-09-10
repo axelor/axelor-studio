@@ -70,6 +70,7 @@ import "dmn-js/dist/assets/diagram-js.css";
 
 import "./css/dmnModeler.css";
 import Ids from "ids";
+import useDialog from "../hooks/useDialog.jsx";
 
 let dmnModeler = null;
 const DRAWER_WIDTH = 380;
@@ -174,6 +175,7 @@ function DMNModeler() {
   const tab = tabs && tabs[tabValue];
   const { groups = [], id: tabId = "" } = tab || {};
   const { theme = "light" } = useAppTheme();
+  const openDialog = useDialog();
 
   const exportDiagram = () => {
     dmnModeler.saveXML({ format: true }, function (err, xml) {
@@ -698,17 +700,9 @@ function DMNModeler() {
     });
   };
 
-  const alertOpen = () => {
-    setAlert(true);
-  };
-
-  const alertClose = () => {
-    setAlert(false);
-  };
 
   const reloadView = () => {
     fetchDiagram(id, setWkfModel);
-    setAlert(false);
     setInput(null);
     setInputRule(null);
     setOutput(null);
@@ -719,7 +713,11 @@ function DMNModeler() {
     dmnModeler.saveXML({ format: true }, function (err, xml) {
       const diagramXml = diagramXmlRef.current;
       if (`${diagramXml}` !== `${xml}`) {
-        alertOpen();
+        openDialog({
+          title:"Refresh",
+          message:"Current changes will be lost. Do you really want to proceed?",
+          onSave:reloadView
+        })
       } else {
         reloadView();
       }
@@ -927,6 +925,7 @@ function DMNModeler() {
             gap={4}
             style={{
               padding: "6px 20px 8px 20px",
+              backgroundColor: "var(--bs-tertiary-bg)",
             }}
           >
             <CommandBar
@@ -1113,6 +1112,9 @@ function DMNModeler() {
           onClose={handleSnackbarClose}
         />
       )}
+      
+ 
+
       <Dialog
         open={openUploadDialog}
         centered

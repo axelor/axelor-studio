@@ -24,8 +24,8 @@ function useDebounceEffect(handler, interval) {
 
 export default function SelectComponent({
   name,
-  optionLabel = "title",
-  optionLabelSecondary = "name",
+  optionLabel,
+  optionLabelSecondary,
   multiple = false,
   value: oldValue,
   update,
@@ -111,40 +111,19 @@ export default function SelectComponent({
   useDebounceEffect(optionDebounceHandler, 500);
 
   const getOptionLabel = (option) => {
-    let optionName = "";
-    if (name === "itemName" || name === "userFieldPath") {
-      optionName =
-        option["label"] || option["title"]
-          ? `${option["label"] || option["title"]}${
-              option["name"] ? ` (${option["name"]})` : ""
-            }`
-          : typeof option === "object"
-          ? option["name"]
-            ? `(${option["name"]})`
-            : ""
-          : option;
-    } else if (name === "dmnModel") {
-      optionName = `${option["name"]} ${
-        option["decisionId"] ? `(${option["decisionId"]})` : ""
-      }`;
-    } else if (name === "wkfModel") {
-      optionName = `${option?.wkfModel?.name || ""} (${option["name"]})`;
-    } else {
-      optionName =
-        option[optionLabel] && option[optionLabelSecondary]
-          ? `${option[optionLabel]} (${option[optionLabelSecondary]})`
-          : option[optionLabel]
-          ? `${option[optionLabel]}`
-          : option[optionLabelSecondary]
-          ? `${option[optionLabelSecondary]}`
-          : option["title"]
-          ? option["title"]
-          : option["id"]
-          ? `${option["id"]}`
-          : typeof option === "object"
-          ? ""
-          : option;
-    }
+    let optionName=''
+    // if option is not type of object then simply return it
+    if (typeof option !== "object") return option;
+
+   let primaryLabel = optionLabel && optionLabel.split('.').reduce((acc, item) => acc[item] || "" , option);
+   let secondayLabel =optionLabelSecondary && optionLabelSecondary.split('.').reduce((acc, item) => acc[item] || '', option);
+   
+    if (primaryLabel && secondayLabel) {
+      optionName = `${primaryLabel} (${secondayLabel})`;
+    } else if (primaryLabel) {
+      optionName =`${primaryLabel}`;
+    } else if (secondayLabel) {
+      optionName = `${secondayLabel}`;} 
     return isTranslated ? translate(optionName) : optionName;
   };
 

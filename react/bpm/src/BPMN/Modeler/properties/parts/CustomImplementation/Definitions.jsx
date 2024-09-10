@@ -309,6 +309,7 @@ export default function Definition({
             value={studioApp}
             isLabel={false}
             fetchMethod={() => getStudioApp()}
+            optionLabel={"name"}
           />
         </React.Fragment>
       )}
@@ -538,6 +539,7 @@ export default function Definition({
               name="wkfProcessList"
               value={process}
               isLabel={false}
+              optionLabel={"name"}
             />
           </DialogContent>
           <Box d="flex" justifyContent="flex-end">

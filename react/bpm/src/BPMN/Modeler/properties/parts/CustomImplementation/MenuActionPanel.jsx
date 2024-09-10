@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { createElement as _createElement} from "../../../../../utils/ElementUtil";
+import { createElement as _createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { IconButton } from "@material-ui/core";
 
@@ -38,7 +38,6 @@ import {
   DialogFooter,
   InputLabel,
   Box,
-  DialogTitle,
   TableHead,
   TableRow,
   TableCell,
@@ -51,6 +50,8 @@ import styles from "./menu-action.module.css";
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
 import { fetchModels } from "../../../../../services/api";
+import useDialog from "../../../../../hooks/useDialog";
+
 
 const PRIORITIES = [
   { value: "low", id: "low", title: "Low" },
@@ -161,6 +162,9 @@ export default function MenuActionPanel({
   });
 
   const [openValueTextBox, setOpenValueTextBox] = useState(false);
+
+  const openDialog = useDialog();
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -801,8 +805,10 @@ export default function MenuActionPanel({
 
   const openMenu = async (menu) => {
     if (!menu?.menuId) {
-      setAlertMessage("Menu not found");
-      setExpressionAlert(true);
+      openDialog({
+        title: "Error",
+        message: "Menu not found",
+      });
       return;
     }
     const menuRes = await getMenu({
@@ -832,8 +838,10 @@ export default function MenuActionPanel({
         },
       });
     } else {
-      setAlertMessage("Menu not found");
-      setExpressionAlert(true);
+      openDialog({
+        title: "Error",
+        message: "Menu not found",
+      });
     }
   };
 
@@ -1117,6 +1125,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
+                              optionLabel={'title'}
                             />
                           </TableCell>
                           <TableCell as="td">
@@ -1142,6 +1151,7 @@ export default function MenuActionPanel({
                                 value={taskFields.taskRole || null}
                                 isLabel={false}
                                 fetchMethod={(data) => getRoles(data?.criteria)}
+                                optionLabel={'name'}
                               />
                             ) : (
                               <TextField
@@ -1285,6 +1295,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
+                              optionLabel={'title'}
                             />
                           </TableCell>
                           <TableCell>
@@ -1390,6 +1401,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
+                              optionLabel={'title'}
                             />
                           </TableCell>
                           <TableCell>
@@ -1414,6 +1426,7 @@ export default function MenuActionPanel({
                                       );
                                     }}
                                     isLabel={false}
+                                    optionLabel={'title'}
                                   />
                                 </div>
                               </>
@@ -1499,6 +1512,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
+                              optionLabel={"title"}
                             />
                           </TableCell>
                           <TableCell>
@@ -1573,6 +1587,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
+                              optionLabel={'title'}
                             />
                           </TableCell>
                           <TableCell>
@@ -1717,6 +1732,7 @@ export default function MenuActionPanel({
                   disableClearable
                   name="emailEvent"
                   value={emailEvent || null}
+                  optionLabel={'name'}
                 />
               </React.Fragment>
 
@@ -1734,6 +1750,7 @@ export default function MenuActionPanel({
                   value={template}
                   isLabel={false}
                   fetchMethod={() => getTemplates(getProcessConfig())}
+                  optionLabel={'name'}
                 />
               </React.Fragment>
             </Box>
@@ -1816,6 +1833,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
+                              optionLabel={'title'}
                             />
                           </TableCell>
                           <TableCell>
@@ -2005,6 +2023,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
+                              optionLabel={'title'}
                             />
                           </TableCell>
                           <TableCell>
@@ -2187,6 +2206,7 @@ export default function MenuActionPanel({
                           options={filterTypes("value")}
                           disableClearable="false"
                           isLabel={false}
+                          optionLabel={'title'}
                         />
                       </TableCell>
                       <TableCell>
@@ -2401,6 +2421,8 @@ export default function MenuActionPanel({
                           value={menu?.menuParent}
                           isLabel={false}
                           fetchMethod={(options) => getParentMenus(options)}
+                          optionLabel={"title"}
+                          optionLabelSecondary={"name"}
                         />
                       </Box>
                     </Box>
@@ -2421,6 +2443,7 @@ export default function MenuActionPanel({
                             { name: translate("After"), id: "after" },
                             { name: translate("Before"), id: "before" },
                           ]}
+                          optionLabel="name"
                         />
                       </Box>
                       <Box w={50}>
@@ -2436,6 +2459,8 @@ export default function MenuActionPanel({
                           name="positionMenu"
                           value={menu?.positionMenu}
                           isLabel={false}
+                          optionLabel={"title"}
+                          optionLabelSecondary={"name"}
                         />
                       </Box>
                     </Box>
@@ -2489,6 +2514,8 @@ export default function MenuActionPanel({
                           updateValue(value, "roles", "name", key);
                         }}
                         multiple={true}
+                        type={"multiple"}
+                        optionLabel={'name'}
                       />
                     </div>
                     <Box
@@ -2578,6 +2605,8 @@ export default function MenuActionPanel({
                             value={menu?.gridView}
                             label={translate("Grid view")}
                             isLabel={false}
+                            optionLabel={"title"}
+                            optionLabelSecondary={"name"}
                           />
                         </Box>
                         <Box w={50}>
@@ -2596,6 +2625,8 @@ export default function MenuActionPanel({
                             value={menu?.formView}
                             label={translate("Form view")}
                             isLabel={false}
+                            optionLabel={"title"}
+                            optionLabelSecondary={"name"}
                           />
                         </Box>
                       </Box>
@@ -2656,16 +2687,36 @@ export default function MenuActionPanel({
         </Box>
       </div>
 
-      <Dialog
-        open={openTeamPathDialog}
-        backdrop
-        centered
-        className={styles.teamFieldPathDialog}
-      >
-        <DialogHeader onCloseClick={() => setOpenTeamPathDialog(false)}>
-          <DialogTitle>{translate("Team field path")}</DialogTitle>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
+      <AlertDialog
+        openAlert={openTeamPathDialog}
+        fullscreen={false}
+        title="Team field path"
+        handleAlertOk={() => {
+          if (teamField && teamField.target !== "com.axelor.team.db.Team") {
+            setAlertMessage("Last subfield should be related to team");
+            setExpressionAlert(true);
+            return;
+          }
+          setOpenTeamPathDialog(false);
+          if (!teamField && !teamFieldDummy?.teamFieldPath) {
+            setProperty("teamFieldType", undefined);
+          }
+          if (teamField) {
+            setTeamFieldPath(teamFieldDummy);
+            setProperty("teamFieldPath", teamFieldDummy);
+            setProperty("teamFieldType", selectedFieldOption.teamFieldType);
+          }
+          if (teamFieldDummy?.teamFieldPath) {
+            setTeamFieldPath(teamFieldDummy?.teamFieldPath);
+            setProperty("teamFieldPath", teamFieldDummy?.teamFieldPath);
+            setProperty("teamFieldType", selectedFieldOption.teamFieldType);
+          }
+        }}
+        alertClose={() => {
+          setOpenTeamPathDialog(false);
+          setTeamFieldDummy(teamFieldPath);
+        }}
+        children={
           <FieldEditor
             getMetaFields={getFields}
             onChange={(val, field) => {
@@ -2681,58 +2732,45 @@ export default function MenuActionPanel({
             }
             isParent={true}
           />
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              setOpenTeamPathDialog(false);
-              setTeamFieldDummy(teamFieldPath);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-          <Button
-            onClick={() => {
-              if (teamField && teamField.target !== "com.axelor.team.db.Team") {
-                setAlertMessage("Last subfield should be related to team");
-                setExpressionAlert(true);
-                return;
-              }
-              setOpenTeamPathDialog(false);
-              if (!teamField && !teamFieldDummy?.teamFieldPath) {
-                setProperty("teamFieldType", undefined);
-              }
-              if (teamField) {
-                setTeamFieldPath(teamFieldDummy);
-                setProperty("teamFieldPath", teamFieldDummy);
-                setProperty("teamFieldType", selectedFieldOption.teamFieldType);
-              }
-              if (teamFieldDummy?.teamFieldPath) {
-                setTeamFieldPath(teamFieldDummy?.teamFieldPath);
-                setProperty("teamFieldPath", teamFieldDummy?.teamFieldPath);
-                setProperty("teamFieldType", selectedFieldOption.teamFieldType);
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
-      <Dialog
-        open={openDeadlinePathDialog}
-        backdrop
-        centered
-        className={styles.dialog}
-      >
-        <DialogHeader onCloseClick={() => setOpenDeadlinePathDialog(false)}>
-          <DialogTitle>{translate("Deadline field path")}</DialogTitle>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
+        }
+      />
+      <AlertDialog
+        openAlert={openDeadlinePathDialog}
+        title={"Deadline field path"}
+        fullscreen={false}
+        handleAlertOk={() => {
+          if (
+            deadlineField &&
+            deadlineField.type &&
+            !["datetime", "date"].includes(deadlineField.type.toLowerCase())
+          ) {
+            setAlertMessage("Field should be date field");
+            setExpressionAlert(true);
+            return;
+          }
+          setOpenDeadlinePathDialog(false);
+          if (!deadlineField && !deadlineFieldPathDummy?.deadlineFieldPath) {
+            setProperty("deadlineType", undefined);
+          }
+          if (deadlineField) {
+            setDeadlineFieldPath(deadlineFieldPathDummy);
+            setProperty("deadlineFieldPath", deadlineFieldPathDummy);
+            setProperty("deadlineType", selectedFieldOption.deadlineType);
+          }
+          if (deadlineFieldPathDummy?.deadlineFieldPath) {
+            setDeadlineFieldPath(deadlineFieldPathDummy?.deadlineFieldPath);
+            setProperty(
+              "deadlineFieldPath",
+              deadlineFieldPathDummy?.deadlineFieldPath
+            );
+            setProperty("deadlineType", selectedFieldOption.deadlineType);
+          }
+        }}
+        alertClose={() => {
+          setOpenDeadlinePathDialog(false);
+          setDeadlineFieldPathDummy(deadlineFieldPath);
+        }}
+        children={
           <FieldEditor
             getMetaFields={getFields}
             onChange={(val, field) => {
@@ -2749,68 +2787,30 @@ export default function MenuActionPanel({
             allowAllFields={true}
             isDatePath={true}
           />
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              setOpenDeadlinePathDialog(false);
-              setDeadlineFieldPathDummy(deadlineFieldPath);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-          <Button
-            onClick={() => {
-              if (
-                deadlineField &&
-                deadlineField.type &&
-                !["datetime", "date"].includes(deadlineField.type.toLowerCase())
-              ) {
-                setAlertMessage("Field should be date field");
-                setExpressionAlert(true);
-                return;
-              }
-              setOpenDeadlinePathDialog(false);
-              if (
-                !deadlineField &&
-                !deadlineFieldPathDummy?.deadlineFieldPath
-              ) {
-                setProperty("deadlineType", undefined);
-              }
-              if (deadlineField) {
-                setDeadlineFieldPath(deadlineFieldPathDummy);
-                setProperty("deadlineFieldPath", deadlineFieldPathDummy);
-                setProperty("deadlineType", selectedFieldOption.deadlineType);
-              }
-              if (deadlineFieldPathDummy?.deadlineFieldPath) {
-                setDeadlineFieldPath(deadlineFieldPathDummy?.deadlineFieldPath);
-                setProperty(
-                  "deadlineFieldPath",
-                  deadlineFieldPathDummy?.deadlineFieldPath
-                );
-                setProperty("deadlineType", selectedFieldOption.deadlineType);
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
+        }
+      />
 
-      <Dialog
-        open={openUserPathDialog}
-        backdrop
-        centered
-        className={styles.dialog}
-      >
-        <DialogHeader onCloseClick={() => setOpenUserPathDialog(false)}>
-          <DialogTitle>{translate("User field path")}</DialogTitle>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
+      <AlertDialog
+        openAlert={openUserPathDialog}
+        title={"User field path"}
+        fullscreen={false}
+        handleAlertOk={() => {
+          if (field && field.target !== "com.axelor.auth.db.User") {
+            openDialog({
+              title: "Error",
+              message: "Last subfield must be user field",
+            });
+            return;
+          }
+          setOpenUserPathDialog(false);
+          setUserFieldPath(userFieldPathDummy);
+          setProperty("userFieldPath", userFieldPathDummy);
+        }}
+        alertClose={() => {
+          setOpenUserPathDialog(false);
+          setUserFieldPathDummy(userFieldPath);
+        }}
+        children={
           <FieldEditor
             getMetaFields={getFields}
             onChange={(val, field) => {
@@ -2827,47 +2827,9 @@ export default function MenuActionPanel({
             isParent={true}
             isUserPath={true}
           />
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              setOpenUserPathDialog(false);
-              setUserFieldPathDummy(userFieldPath);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-          <Button
-            onClick={() => {
-              if (field && field.target !== "com.axelor.auth.db.User") {
-                setAlertMessage("Last sub field must be user field");
-                setExpressionAlert(true);
-                return;
-              }
-              setOpenUserPathDialog(false);
-              if (!field && !userFieldPathDummy?.userFieldPath) {
-                setProperty("userFieldType", undefined);
-              }
-              if (field) {
-                setUserFieldPath(userFieldPathDummy);
-                setProperty("userFieldPath", userFieldPathDummy);
-                setProperty("userFieldType", selectedFieldOption.userFieldType);
-              }
-              if (userFieldPathDummy?.userFieldPath) {
-                setUserFieldPath(userFieldPathDummy?.userFieldPath);
-                setProperty("userFieldPath", userFieldPathDummy?.userFieldPath);
-                setProperty("userFieldType", selectedFieldOption.userFieldType);
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
+        }
+      />
+
       <Dialog open={openRoleDialog} backdrop centered className={styles.dialog}>
         <DialogHeader onCloseClick={() => setOpenRoleDialog(false)}>
           <h3>{translate("Role field path")}</h3>
@@ -2930,68 +2892,7 @@ export default function MenuActionPanel({
           </Button>
         </DialogFooter>
       </Dialog>
-      <Dialog open={openRoleDialog} backdrop centered className={styles.dialog}>
-        <DialogHeader onCloseClick={() => setOpenRoleDialog(false)}>
-          <h3>{translate("Role field path")}</h3>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
-          <FieldEditor
-            getMetaFields={getFields}
-            onChange={(val, field) => {
-              setRoleDummy(val);
-              setRole(field);
-            }}
-            value={
-              roleDummy
-                ? { fieldName: roleDummy }
-                : roleDummy?.roleFieldPath
-                ? { fieldName: roleDummy?.roleFieldPath }
-                : { fieldName: "" }
-            }
-            isParent={true}
-            isUserPath={true}
-          />
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              if (role && role.target !== "com.axelor.auth.db.Role") {
-                setAlertMessage("Last sub field must be role field");
-                setExpressionAlert(true);
-                return;
-              }
-              setOpenRoleDialog(false);
-              if (!role && !roleDummy) {
-                setProperty("roleType", undefined);
-              }
-              if (role) {
-                setRoleFieldPath(roleDummy);
-                setProperty("roleFieldPath", roleDummy);
-                setProperty("roleType", selectedTaskOption?.roleType);
-              }
-              if (roleDummy?.roleFieldPath) {
-                setRoleFieldPath(roleDummy?.roleFieldPath);
-                setProperty("roleFieldPath", roleDummy?.roleFieldPath);
-                setProperty("roleType", selectedTaskOption?.roleType);
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => {
-              setOpenRoleDialog(false);
-              setRoleDummy(roleFieldPath);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
+
       <Dialog
         open={openExpressionAlert}
         backdrop
@@ -2999,7 +2900,7 @@ export default function MenuActionPanel({
         className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setExpressionAlert(false)}>
-          <DialogTitle>{translate("Error")}</DialogTitle>
+          <h3>{translate("Error")}</h3>
         </DialogHeader>
         <DialogContent className={styles.content}>
           {translate(alertMessage)}
@@ -3025,14 +2926,14 @@ export default function MenuActionPanel({
             variant="primary"
             className={styles.save}
           >
-            {translate("Cancel")}
+            {translate("OK")}
           </Button>
           <Button
             onClick={() => setExpressionAlert(false)}
             variant="secondary"
             className={styles.save}
           >
-            {translate("OK")}
+            {translate("Cancel")}
           </Button>
         </DialogFooter>
       </Dialog>

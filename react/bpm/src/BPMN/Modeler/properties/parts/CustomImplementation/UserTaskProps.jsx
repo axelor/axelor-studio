@@ -1,27 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
+import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
+import React, { useEffect, useState } from "react";
 
-import Textbox from "../../../../../components/properties/components/Textbox";
-import TextField from "../../../../../components/properties/components/TextField";
-import QueryBuilder from "../../../../../components/QueryBuilder";
+import {
+  Box,
+  InputLabel
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import AlertDialog from "../../../../../components/AlertDialog";
+import QueryBuilder from "../../../../../components/QueryBuilder";
 import Select from "../../../../../components/Select";
 import Tooltip from "../../../../../components/Tooltip";
+import TextField from "../../../../../components/properties/components/TextField";
+import Textbox from "../../../../../components/properties/components/Textbox";
+import useDialog from "../../../../../hooks/useDialog";
 import { fetchModels, getButtons } from "../../../../../services/api";
-import { translate, getLowerCase, getBool } from "../../../../../utils";
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
-  InputLabel,
-  Box,
-  DialogTitle,
-} from "@axelor/ui";
+import { getBool, getLowerCase, translate } from "../../../../../utils";
 import Title from "../../../Title";
-import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./user-task.module.css";
 
 export default function UserTaskProps({
@@ -33,13 +28,11 @@ export default function UserTaskProps({
 }) {
   const [isVisible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
-  const [openAlert, setAlert] = useState(false);
   const [buttons, setButtons] = useState(null);
-  const [alertTitle, setAlertTitle] = useState(null);
-  const [alertMessage, setAlertMessage] = useState(null);
   const [readOnly, setReadOnly] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
+  const openDialog = useDialog();
 
   const getProperty = React.useCallback(
     (name) => {
@@ -273,11 +266,17 @@ export default function UserTaskProps({
                     fontSize={18}
                     onClick={() => {
                       if (readOnly) {
-                        setAlertMessage(
-                          "Completed If can't be managed using builder once changed manually."
-                        );
-                        setAlertTitle("Warning");
-                        setAlert(true);
+                        openDialog({
+                            title:"Warning",
+                            message:"Completed If can't be managed using builder once changed manually.",
+                            onSave:() => {
+                              setReadOnly(false);
+                              setScript(getCompletedIf()?.completedIf);
+                              setProperty( "camunda:completedIfValue", undefined);
+                              setProperty("camunda:completedIfCombinator",undefined );
+                              setOpenScriptDialog(true);
+                          }
+                        })
                       } else {
                         setScript(getCompletedIf()?.completedIf);
                         setOpenScriptDialog(true);
@@ -339,43 +338,6 @@ export default function UserTaskProps({
               />
             }
           />
-          <Dialog open={openAlert} centered backdrop className={styles.dialog}>
-            <DialogHeader onCloseClick={() => setAlert(false)}>
-              <DialogTitle>{translate(alertTitle)}</DialogTitle>
-            </DialogHeader>
-            <DialogContent className={styles.content}>
-              <Box as="p" color="body" fontSize={5}>
-                {translate(alertMessage)}
-              </Box>
-            </DialogContent>
-            <DialogFooter>
-              <Button
-                className={styles.save}
-                onClick={() => {
-                  setAlert(false);
-                }}
-                variant="secondary"
-              >
-                {translate("Cancel")}
-              </Button>
-              <Button
-                onClick={() => {
-                  setAlert(false);
-                  setAlertMessage(null);
-                  setAlertTitle(null);
-                  setReadOnly(false);
-                  setScript(getCompletedIf()?.completedIf);
-                  setProperty("camunda:completedIfValue", undefined);
-                  setProperty("camunda:completedIfCombinator", undefined);
-                  setOpenScriptDialog(true);
-                }}
-                variant="primary"
-                className={styles.save}
-              >
-                {translate("OK")}
-              </Button>
-            </DialogFooter>
-          </Dialog>
         </div>
         <div className={styles.allButtons}>
           <InputLabel color="body" className={styles.label}>
@@ -397,6 +359,8 @@ export default function UserTaskProps({
               addButtons(value);
             }}
             optionEqual={(a, b) => a.name === b.name}
+            optionLabel={'title'}
+            optionLabelSecondary={'name'}
           />
         </div>
       </div>

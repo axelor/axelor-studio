@@ -1,5 +1,9 @@
 .nodeTitle {
-  font-weight: bold;
+  font-size: 100%;
+  font-weight: bolder;
+  display: flex;
+  gap: 10px;
+
 }
 
 .navDisable {

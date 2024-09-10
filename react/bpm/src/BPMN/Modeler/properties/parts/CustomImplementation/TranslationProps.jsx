@@ -328,6 +328,7 @@ export default function TranslationProps({
                           )}
                           isLabel={false}
                           options={languages}
+                          optionLabel={'title'}
                         />
                       </TableCell>
                       <TableCell as="th" className={styles.tableCell}>

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Input from '../integer/number';
+import Input from '../input/Input';
 import { translate } from '../../common/utils';
 
 function NumberField({
