@@ -1,18 +1,14 @@
 .add {
-  border: 1px solid #ccc;
   width: fit-content;
   color: inherit;
   overflow: hidden;
   cursor: pointer;
-  border-radius: 0;
 }
 
 .clear {
   width: fit-content;
   overflow: hidden;
   color: inherit;
-  border: 1px solid #ccc;
-  border-radius: 0;
 }
 
 .label {

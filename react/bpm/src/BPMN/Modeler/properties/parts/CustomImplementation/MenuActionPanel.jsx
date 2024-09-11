@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createElement as _createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../../../../components/IconButton";
 
 import Tooltip from "../../../../../components/Tooltip";
 import Select from "../../../../../components/Select";
@@ -51,7 +51,6 @@ import QueryBuilder from "../../../../../components/QueryBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
 import { fetchModels } from "../../../../../services/api";
 import useDialog from "../../../../../hooks/useDialog";
-
 
 const PRIORITIES = [
   { value: "low", id: "low", title: "Low" },
@@ -1125,7 +1124,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
-                              optionLabel={'title'}
+                              optionLabel={"title"}
                             />
                           </TableCell>
                           <TableCell as="td">
@@ -1151,7 +1150,7 @@ export default function MenuActionPanel({
                                 value={taskFields.taskRole || null}
                                 isLabel={false}
                                 fetchMethod={(data) => getRoles(data?.criteria)}
-                                optionLabel={'name'}
+                                optionLabel={"name"}
                               />
                             ) : (
                               <TextField
@@ -1295,7 +1294,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
-                              optionLabel={'title'}
+                              optionLabel={"title"}
                             />
                           </TableCell>
                           <TableCell>
@@ -1401,7 +1400,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
-                              optionLabel={'title'}
+                              optionLabel={"title"}
                             />
                           </TableCell>
                           <TableCell>
@@ -1426,7 +1425,7 @@ export default function MenuActionPanel({
                                       );
                                     }}
                                     isLabel={false}
-                                    optionLabel={'title'}
+                                    optionLabel={"title"}
                                   />
                                 </div>
                               </>
@@ -1587,7 +1586,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
-                              optionLabel={'title'}
+                              optionLabel={"title"}
                             />
                           </TableCell>
                           <TableCell>
@@ -1732,7 +1731,7 @@ export default function MenuActionPanel({
                   disableClearable
                   name="emailEvent"
                   value={emailEvent || null}
-                  optionLabel={'name'}
+                  optionLabel={"name"}
                 />
               </React.Fragment>
 
@@ -1750,7 +1749,7 @@ export default function MenuActionPanel({
                   value={template}
                   isLabel={false}
                   fetchMethod={() => getTemplates(getProcessConfig())}
-                  optionLabel={'name'}
+                  optionLabel={"name"}
                 />
               </React.Fragment>
             </Box>
@@ -1833,7 +1832,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
-                              optionLabel={'title'}
+                              optionLabel={"title"}
                             />
                           </TableCell>
                           <TableCell>
@@ -2023,7 +2022,7 @@ export default function MenuActionPanel({
                               }}
                               disableClearable="false"
                               isLabel={false}
-                              optionLabel={'title'}
+                              optionLabel={"title"}
                             />
                           </TableCell>
                           <TableCell>
@@ -2206,7 +2205,7 @@ export default function MenuActionPanel({
                           options={filterTypes("value")}
                           disableClearable="false"
                           isLabel={false}
-                          optionLabel={'title'}
+                          optionLabel={"title"}
                         />
                       </TableCell>
                       <TableCell>
@@ -2515,7 +2514,7 @@ export default function MenuActionPanel({
                         }}
                         multiple={true}
                         type={"multiple"}
-                        optionLabel={'name'}
+                        optionLabel={"name"}
                       />
                     </div>
                     <Box

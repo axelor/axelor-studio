@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../../../../components/IconButton";
 import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import Select from "../../../../../components/Select";
@@ -33,16 +33,7 @@ import {
   removeAllTranslations,
 } from "../../../../../services/api";
 
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
-  InputLabel,
-  Box,
-  DialogTitle,
-} from "@axelor/ui";
+import { InputLabel, Box } from "@axelor/ui";
 import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./process-config.module.css";

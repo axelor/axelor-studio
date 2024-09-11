@@ -3,12 +3,8 @@
 }
 
 .iconButton {
-  margin: 5px 0 5px 5px;
-  border-radius: 0;
-  padding: 2px;
   color: inherit !important;
   width: fit-content;
-  border: 1px solid #ccc;
 }
 
 .clear {

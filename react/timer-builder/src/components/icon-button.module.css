@@ -1,0 +1,29 @@
+.iconButton {
+  flex: 0 0 auto;
+  color: initial;
+  overflow: visible;
+  font-size: 1.5rem;
+  text-align: center;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border-radius: 50% !important;
+  display: inline-flex;
+  outline: 0 !important;
+  position: relative !important;
+  align-items: center;
+  user-select: none;
+  vertical-align: middle !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.iconButton:hover {
+  /* background-color: var(--ax-theme-table-active-bg) !important; */
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.iconButton:disabled,
+.iconButton:active {
+  border: none !important;
+}

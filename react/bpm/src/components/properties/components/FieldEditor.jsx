@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../IconButton";
 
 import { translate } from "../../../utils";
 import { Selection } from "../../expression-builder/components";
@@ -33,9 +33,8 @@ export default function FieldEditor({
 
   let values = null;
   if (typeof fieldName === "object" && fieldName) {
-    
     values = fieldName[fieldType]?.split(".");
-  } else if (typeof fieldName === "string" ) {
+  } else if (typeof fieldName === "string") {
     values = fieldName?.split(".");
   }
 

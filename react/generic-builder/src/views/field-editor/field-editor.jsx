@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classnames from 'classnames';
-import IconButton from '@material-ui/core/IconButton';
 
-import { Tooltip ,Selection} from '../../components';
+import { Tooltip, Selection, IconButton } from '../../components';
 import { getSubMetaField } from '../../services/api';
 import { translate, isBPMQuery } from '../../common/utils';
 import { JOIN_OPERATOR } from '../../common/constants';

@@ -30,6 +30,10 @@
   /* font-size: 12px; */
   text-align: center;
 }
+.processContainer {
+  overflow: auto;
+  max-height: 40vh;
+}
 
 .process {
   margin-top: 10px;

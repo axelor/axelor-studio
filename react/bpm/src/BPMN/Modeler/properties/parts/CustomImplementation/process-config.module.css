@@ -29,11 +29,7 @@
 }
 
 .iconButton {
-  margin: 5px 0 5px 5px;
-  border-radius: 0;
-  border: 1px solid #ccc;
   color: inherit;
-  padding: 2px;
   width: fit-content;
 }
 

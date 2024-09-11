@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../../../../components/IconButton";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import Select from "../../../../../components/Select";
@@ -620,8 +620,8 @@ export default function ViewAttributePanel({
                                       value={val.view || null}
                                       className={styles.select}
                                       isLabel={false}
-                                      optionLabel={'title'}
-                                      optionLabelSecondary={'name'}
+                                      optionLabel={"title"}
+                                      optionLabelSecondary={"name"}
                                     />
                                   </div>
                                 )}
@@ -700,7 +700,7 @@ export default function ViewAttributePanel({
                                   multiple={true}
                                   isLabel={false}
                                   className={styles.select}
-                                  optionLabel={'name'}
+                                  optionLabel={"name"}
                                 />
                               </div>
                             )}
@@ -834,8 +834,8 @@ export default function ViewAttributePanel({
                                                     : null
                                                 }
                                                 label="Item"
-                                                 optionLabel={'label'}
-                                                 optionLabelSecondary={'name'}
+                                                optionLabel={"label"}
+                                                optionLabelSecondary={"name"}
                                               />
                                             </TableCell>
                                             <TableCell

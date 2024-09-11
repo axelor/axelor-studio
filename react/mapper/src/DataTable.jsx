@@ -1,5 +1,5 @@
 import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from './components/IconButton';
 import get from 'lodash/get';
 import classNames from 'classnames';
 
@@ -276,7 +276,7 @@ function DataTable(props) {
           />
         </Box>
       )}
-      <Box overflow="auto" maxH={100} maxW={100}>
+      <Box overflow="auto" maxW={100} style={{ maxHeight: '60vh' }}>
         <Table
           className={styles.table}
           aria-label="simple table"

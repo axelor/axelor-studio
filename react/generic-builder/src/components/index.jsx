@@ -7,6 +7,7 @@ import Selection from './auto-complete/AutoComplete';
 import Timeline from './timeline/timeline';
 import Tooltip from './tooltip/tooltip';
 import BooleanRadio from './radio/boolean-radio';
+import IconButton from './iconButton/iconButton';
 
 export {
   Timeline,
@@ -17,5 +18,6 @@ export {
   DateTimePicker,
   Selection,
   Tooltip,
-  BooleanRadio
+  BooleanRadio,
+  IconButton,
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import IconButton from "../../../IconButton";
+import IconButton from "../../../../../components/IconButton";
 import Select from "../../../../../components/Select";
 import StaticSelect from "../../../../../components/StaticSelect";
 import {
@@ -382,15 +382,13 @@ export default function Definition({
             <InputLabel className={styles.label} style={{ marginTop: 10 }}>
               {translate("Previous versions")}
             </InputLabel>
-            <Box color="body">
-              <Tooltip
-                title={translate("Refresh")}
-                children={
-                  <IconButton conClick={getVersionList} aria-label="Refresh">
-                    <MaterialIcon icon="refresh" fontSize={16} />
-                  </IconButton>
-                }
-              />
+            <Box color="body" d={"flex"} alignItems={"center"}>
+              <IconButton conClick={getVersionList} aria-label="Refresh">
+                <Tooltip
+                  title={translate("Refresh")}
+                  children={<MaterialIcon icon="refresh" fontSize={16} />}
+                />
+              </IconButton>
               <IconButton
                 className={classnames(styles.expand, {
                   [styles.expandOpen]: expanded,

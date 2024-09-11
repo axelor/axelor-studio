@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '../iconButton/iconButton';
 
 import { translate } from '../../common/utils';
 import { Button } from '@axelor/ui';
@@ -24,7 +24,7 @@ function ButtonComp({
         style={{ padding: '0px 12px' }}
         disabled={disabled}
       >
-        <Icon fontSize="small" />
+        <MaterialIcon icon={icon} fontSize="small" />
       </IconButton>
     );
   } else if (!icon) {

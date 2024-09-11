@@ -1,6 +1,5 @@
 import React from 'react';
-
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from "../IconButton"
 
 import ExpressionBuilder from 'generic-builder/src/views';
 import { fetchModelByFullName } from '../../services/api';

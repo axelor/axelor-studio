@@ -5,8 +5,8 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from "@axelor/ui";
-import { DialogTitle } from "@material-ui/core";
 import React, { useContext } from "react";
 import { DialogContext } from "../../context/dialog-context";
 import { translate } from "../../utils";
@@ -32,7 +32,7 @@ const DialogBox = () => {
   return (
     <Dialog centered backdrop open={open} className={styles.dialogPaper}>
       <DialogHeader onCloseClick={handleClose}>
-        <DialogTitle className={styles.dialogTitle} >
+        <DialogTitle className={styles.dialogTitle}>
           {translate(title)}
         </DialogTitle>
       </DialogHeader>
@@ -42,17 +42,10 @@ const DialogBox = () => {
         </Box>
       </DialogContent>
       <DialogFooter>
-        <Button
-          variant="secondary"
-          onClick={handleClose}
-        >
+        <Button variant="secondary" onClick={handleClose}>
           {translate("Cancel")}
         </Button>
-        <Button
-          className={styles.save}
-          variant="primary"
-          onClick={handleSave}
-        >
+        <Button className={styles.save} variant="primary" onClick={handleSave}>
           {translate("OK")}
         </Button>
       </DialogFooter>

@@ -154,49 +154,54 @@ export default function DeployDialog({
               />
             </Box>
           )}
-        {oldElements &&
-          Object.entries(oldElements).map(([key, value]) => (
-            <Box color="body" key={key} className={styles.process}>
-              <InputLabel fontWeight="bolder" className={styles.processHeader}>
-                {key}
-              </InputLabel>
-              <Box rounded={2} bgColor="body-tertiary" shadow>
-                <Table size="sm" aria-label="a dense table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell className={styles.tableHead} F>
-                        {translate("Source node")}
-                      </TableCell>
-                      <TableCell className={styles.tableHead}>
-                        {translate("Target node")}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {value?.elements?.map((oldEle, index) => (
-                      <TableRow key={index}>
-                        <TableCell as="th" className={styles.tableCell}>
-                          {oldEle.name}
+        <Box className={styles.processContainer}>
+          {oldElements &&
+            Object.entries(oldElements).map(([key, value]) => (
+              <Box color="body" key={key} className={styles.process}>
+                <InputLabel
+                  fontWeight="bolder"
+                  className={styles.processHeader}
+                >
+                  {key}
+                </InputLabel>
+                <Box rounded={2} bgColor="body-tertiary" shadow>
+                  <Table size="sm" aria-label="a dense table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell className={styles.tableHead} F>
+                          {translate("Source node")}
                         </TableCell>
-                        <TableCell as="th" className={styles.tableCell}>
-                          <Select
-                            className={styles.select}
-                            isLabel={false}
-                            options={getCurrentElements(key, oldEle.type)}
-                            value={getValue(key, oldEle.id)}
-                            update={(value) => handleAdd(oldEle, value, key)}
-                            isTranslated={false}
-                            optionLabel="name"
-                            optionLabelSecondary="id"
-                          />
+                        <TableCell className={styles.tableHead}>
+                          {translate("Target node")}
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHead>
+                    <TableBody>
+                      {value?.elements?.map((oldEle, index) => (
+                        <TableRow key={index}>
+                          <TableCell as="th" className={styles.tableCell}>
+                            {oldEle.name}
+                          </TableCell>
+                          <TableCell as="th" className={styles.tableCell}>
+                            <Select
+                              className={styles.select}
+                              isLabel={false}
+                              options={getCurrentElements(key, oldEle.type)}
+                              value={getValue(key, oldEle.id)}
+                              update={(value) => handleAdd(oldEle, value, key)}
+                              isTranslated={false}
+                              optionLabel="name"
+                              optionLabelSecondary="id"
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
               </Box>
-            </Box>
-          ))}
+            ))}
+        </Box>
       </DialogContent>
       <DialogFooter>
         <Button onClick={onConfirm} className={styles.button} variant="primary">

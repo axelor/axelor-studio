@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../../../../components/IconButton";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import {
@@ -328,7 +328,7 @@ export default function TranslationProps({
                           )}
                           isLabel={false}
                           options={languages}
-                          optionLabel={'title'}
+                          optionLabel={"title"}
                         />
                       </TableCell>
                       <TableCell as="th" className={styles.tableCell}>

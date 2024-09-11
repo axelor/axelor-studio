@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../../../../components/IconButton";
 
 import { getTranslations } from "../../../../../services/api";
 import { TextField } from "../../../../../components/properties/components";

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
-import IconButton from '@material-ui/core/IconButton';
 import { firstCharLowerCase } from 'xml2js/lib/processors';
 
 import FieldEditor from '../field-editor/field-editor';
@@ -14,6 +13,7 @@ import {
   NumberField,
   InputField,
   Tooltip,
+  IconButton,
 } from '../../components';
 import {
   COMBINATOR,
@@ -39,7 +39,6 @@ import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 import { BooleanRadio } from '../../components';
 
 import styles from './editor.module.css';
-
 
 async function fetchField(metaModals, type) {
   const isQuery = isBPMQuery(type);
@@ -138,15 +137,8 @@ function RenderRelationalWidget(props) {
 
 function RenderSimpleWidget(props) {
   const { Component, operator, editor, internalProps } = props;
-  const {
-    onChange,
-    value,
-    value2,
-    classes,
-    style,
-    targetName,
-    ...rest
-  } = internalProps;
+  const { onChange, value, value2, classes, style, targetName, ...rest } =
+    internalProps;
   if (['=', '!=', '>', '>=', '<', '<=', 'like', 'notLike'].includes(operator)) {
     return (
       <Component
@@ -403,7 +395,7 @@ const Rule = React.memo(function Rule(props) {
     isShowElseMetaModelField,
     isShowMetaModelField,
   } = value;
- const type = fieldType && fieldType.toLowerCase().replaceAll('-', '_');
+  const type = fieldType && fieldType.toLowerCase().replaceAll('-', '_');
 
   const [elseNameValue, setElseNameValue] = useState(null);
   const [nameValue, setNameValue] = useState(null);
@@ -993,7 +985,7 @@ export default function Editor({
   isAllowButtons = false,
   isBPMN = false,
   isMapper,
-  isBamlQuery=false
+  isBamlQuery = false,
 }) {
   const [isBPM, setBPM] = useState(false);
   const { id, rules = [] } = editor;

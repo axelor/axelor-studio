@@ -1,36 +1,8 @@
-import { IconButton, InputAdornment, OutlinedInput } from "@material-ui/core"
 import { useState } from "react"
-import { makeStyles } from "@material-ui/core"
 import { Box, Input, InputLabel } from "@axelor/ui"
 import { MaterialIcon } from "@axelor/ui/icons/material-icon"
-
-const useStyle = makeStyles({
-  root: {
-    width: "10ch",
-    color: "currentColor",
-    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-      display: "none",
-    },
-    "& input[type=number]": {
-      MozAppearance: "textfield",
-    },
-    "& input": {
-      textAlign: "center",
-    },
-    "& .MuiInputAdornment-root": {
-      display: "none",
-    },
-    "&:hover .MuiInputAdornment-root, & input:focus + .MuiInputAdornment-root": {
-      display: "flex",
-    },
-    "&:hover, &:focus-within": {
-      paddingRight: 0,
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "var(--bs-border-color) !important",
-    },
-  },
-})
+import IconButton from "./components/IconButton"
+import styles from "./Tile.module.css"
 
 const roundToTwoDecimalPlace = value => {
   const n = 2
@@ -57,7 +29,6 @@ function isLeftClick(event) {
 function Tile({ label, onChange, value, name, integer, allowNegetiveOne }) {
   const [timerId, setTimerId] = useState(null)
   const [isFocused, setIsFocused] = useState(false)
-  const classes = useStyle()
   const increment = () => {
     onChange(value => ({ ...value, [name]: (value[name] || 0) + 1 }))
   }
@@ -170,56 +141,54 @@ function Tile({ label, onChange, value, name, integer, allowNegetiveOne }) {
           </InputAdornment>
         }
       /> */}
-      <Input
-        className={classes.root}
-        type="number"
-        id={label}
-        value={isFocused ? value[name] || "" : value[name] || 0}
-        onChange={handleChange}
-        onWheel={handleWheel}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        endAdornment={
-          <InputAdornment position="end">
-            <Box d="flex" flexDirection="column" onMouseDown={handleMouseDown}>
-              <IconButton
-                tabIndex={-1}
-                onClick={increment}
-                onMouseDown={e =>
-                  isLeftClick(e) && startTimer(500, 75, increment)
-                }
-                onMouseUp={clearTimer}
-                size="small"
-              >
-                <MaterialIcon
-                  icon="keyboard_arrow_up"
-                  fontSize="small"
-                  color="body"
-                />
-              </IconButton>
-              <IconButton
-                tabIndex={-1}
-                onClick={decrement}
-                size="small"
-                onMouseDown={
-                  e => isLeftClick(e) && startTimer(500, 75, decrement)
-                  /* 
+      <Box className={styles.root}>
+        <Input
+          className={styles.inputContainer}
+          type="number"
+          id={label}
+          value={isFocused ? value[name] || "" : value[name] || 0}
+          onChange={handleChange}
+          onWheel={handleWheel}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+        />
+        <Box className={styles.buttonContainer} onMouseDown={handleMouseDown}>
+          <IconButton
+            tabIndex={-1}
+            onClick={increment}
+            onMouseDown={
+              e => isLeftClick(e) && startTimer(500, 75, increment) /*  
+                    start timer only on left mousedown,  
+                    on rightClick, mousedown event fires but not mouseup 
+                     */
+            }
+            onMouseUp={clearTimer}
+          >
+            <MaterialIcon
+              icon="keyboard_arrow_up"
+              fontSize="1rem"
+              color="body"
+            />
+          </IconButton>
+          <IconButton
+            tabIndex={-1}
+            onClick={decrement}
+            onMouseDown={e =>
+              isLeftClick(e) && startTimer(500, 75, decrement)
+            } /* 
                     start timer only on left mousedown, 
                     on rightClick, mousedown event fires but not mouseup
                      */
-                }
-                onMouseUp={clearTimer}
-              >
-                <MaterialIcon
-                  icon="keyboard_arrow_down"
-                  fontSize="small"
-                  color="body"
-                />
-              </IconButton>
-            </Box>
-          </InputAdornment>
-        }
-      />
+            onMouseUp={clearTimer}
+          >
+            <MaterialIcon
+              icon="keyboard_arrow_down"
+              fontSize="1rem"
+              color="body"
+            />
+          </IconButton>
+        </Box>
+      </Box>
       <InputLabel htmlFor={label}>{label}</InputLabel>
     </Box>
   )

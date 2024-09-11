@@ -1,9 +1,8 @@
 import React from "react";
 import classnames from "classnames";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
+import { Button } from "@axelor/ui";
+import IconButton from "../../IconButton";
 import styles from "./button.module.css";
-
 import { translate } from "../../../utils";
 
 function ButtonComp({ title, Icon, onClick, className }) {
