@@ -154,7 +154,10 @@ export default function Textbox({
           defaultHeight={defaultHeight}
           readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
           width={containerWidth}
-          onChange={setValue}
+          onChange={(value) => {
+            setValue(value);
+            updateProperty((value ?? "").trim());
+          }}
           onBlur={(e, editor) => {
             if (typeof readOnly === "function" ? !readOnly() : !readOnly) {
               updateProperty((value ?? "").trim());
@@ -176,6 +179,7 @@ export default function Textbox({
           }}
           onChange={(e) => {
             setValue(e.target.value);
+            updateProperty(e.target.value);
           }}
           invalid={isError}
           disabled={readOnly}
