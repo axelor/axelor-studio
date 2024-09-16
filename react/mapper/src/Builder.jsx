@@ -1,6 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
 import IconButton from './components/IconButton';
+import { clsx } from '@axelor/ui';
 
 import DataTable from './DataTable';
 import { Selection, MultiSelection } from './components/form';
@@ -627,7 +628,7 @@ function Builder({
                   classes={{ colorPrimary: styles.saveIcon }}
                   color="primary"
                   onClick={handleSave}
-                  className={classNames(styles.iconButtonClassName)}
+                  className={clsx(styles.iconButtonClassName)}
                   disabled={!model}
                 >
                   <MaterialIcon icon="save" fontSize={20} />
