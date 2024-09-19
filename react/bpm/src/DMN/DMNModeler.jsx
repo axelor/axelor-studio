@@ -16,7 +16,6 @@ import RuleProperties from "./properties/RuleProperties";
 import InputHeadProperties from "./properties/InputHeadProperties";
 import OutputHeadProperties from "./properties/OutputHeadProperties";
 import decisionTableHeadEditorModule from "./custom-modeler/dmn-js-decision-table/lib/features/decision-table-head/editor";
-import hitPolicyEditorModule from "./custom-modeler/dmn-js-decision-table/lib/features/hit-policy/editor/index.js";
 import simpleModeModule from "./custom-modeler/dmn-js-decision-table/lib/features/simple-mode";
 import propertiesTabs from "./properties/properties";
 import propertiesCustomProviderModule from "./custom-provider";
@@ -859,11 +858,7 @@ function DMNModeler() {
         keyboard: { bindTo: document },
       },
       decisionTable: {
-        additionalModules: [
-          decisionTableHeadEditorModule,
-          simpleModeModule,
-          hitPolicyEditorModule,
-        ],
+        additionalModules: [decisionTableHeadEditorModule, simpleModeModule],
       },
       container: "#canvas",
       moddleExtensions: {
