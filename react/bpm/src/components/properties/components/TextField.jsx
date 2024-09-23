@@ -155,12 +155,15 @@ export default function TextField({
             onChange={(e) => {
               if (modelProperty === "code") {
                 setValue(e.target.value && e.target.value.toUpperCase());
+                updateProperty(e.target.value && e.target.value.toUpperCase());
                 return;
               }
               if (type === "number") {
                 setValue(e.target.value && parseInt(e.target.value));
+                updateProperty(e.target.value && parseInt(e.target.value));
                 return;
               }
+              updateProperty(e.target.value);
               setValue(e.target.value);
             }}
             disabled={readOnly || disabled}
