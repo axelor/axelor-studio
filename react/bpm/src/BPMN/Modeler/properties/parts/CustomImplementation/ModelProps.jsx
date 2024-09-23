@@ -1035,7 +1035,7 @@ export function FieldAction({
               condition: field?.target !== "com.axelor.auth.db.User",
               message: "Last sub field must be user field",
             },
-            deadline: {
+            deadlineField: {
               condition:
                 field?.type &&
                 !["datetime", "date"].includes(field.type.toLowerCase()),
