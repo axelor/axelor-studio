@@ -72,6 +72,8 @@ import styles from "./BpmnModeler.module.css";
 import { openWebApp } from "./properties/parts/CustomImplementation/utils.js";
 import { createElement } from "../../utils/ElementUtil.js";
 import { getExtensionElements } from "../../utils/ExtensionElementsUtil.js";
+import Loader from "../../components/Loader";
+import { wsProgress } from "../../services/Progress";
 
 const resizeStyle = {
   display: "flex",
@@ -139,12 +141,14 @@ function BpmnModelerComponent() {
   const [tabs, setTabs] = useState([]);
   const [width, setWidth] = useState(DRAWER_WIDTH);
   const [height, setHeight] = useState("100%");
+  const [progress, setProgress] = useState(0);
   const [enableStudioApp, setEnableStudioApp] = useState(false);
   const [showError, setError] = useState(false);
   const [initialState, setInitialState] = useState(false);
   const { update, state } = useStore();
   const { info } = state || {};
   const [drawerOpen, setDrawerOpen] = useState(true);
+
 
   const diagramXmlRef = React.useRef(null);
 
@@ -1138,6 +1142,7 @@ function BpmnModelerComponent() {
   };
 
   const deploy = async (wkfMigrationMap, isMigrateOld, newWkf = wkf) => {
+    wsProgress.init();
     try {
       const { context, res } =
         (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
@@ -1882,6 +1887,23 @@ function BpmnModelerComponent() {
     fetchApp();
   }, []);
 
+  useEffect(() => {
+    const handleProgress = (newProgress) => setProgress(newProgress);
+    wsProgress.subscribe(handleProgress);
+    return () => {
+      wsProgress.unsubscribe(handleProgress);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (progress === 100) {
+      const timeout = setTimeout(() => {
+        setProgress(0);
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [progress]);
+
   useKeyPress(["s"], onSave);
 
   return (
@@ -2041,6 +2063,12 @@ function BpmnModelerComponent() {
           />
         )}
       </Box>
+      {progress > 0 && (
+        <Loader
+          classes={styles.loader}
+          text={`${progress}% migration is done...`}
+        />
+      )}
       <Logo />
     </React.Fragment>
   );
