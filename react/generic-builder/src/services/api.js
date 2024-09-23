@@ -460,9 +460,17 @@ export async function saveRecord(model, record) {
   return res && res.data && res.data[0];
 }
 
-
-
 export async function fetchUserPreferences() {
-  const userInfo = await services.info()
-  return userInfo
+  const userInfo = await services.info();
+  return userInfo;
+}
+
+export async function getCustomVariables() {
+  const res = await services.search('com.axelor.studio.db.CustomVariable', {
+    data: {
+      criteria: [{ fieldName: 'status', operator: '=', value: 1 }],
+    },
+  });
+  if (res && res.status === -1) return [];
+  return (res && res.data) || [];
 }

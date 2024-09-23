@@ -33,6 +33,7 @@ import DialogBox from './components/Dialog';
 import { Box, InputLabel, Switch } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 import styles from './Builder.module.css';
+import { VAR_TYPES } from './constants';
 
 function isFieldInvalid(field) {
   const { from, selected, subFields } = field.value || {};
@@ -97,10 +98,11 @@ function checkInvalidSubfields(builderFields) {
       const { target, fullName, name, type, jsonTarget, targetModel } =
         data || {};
 
-      // ignore built-in-variables
+      // ignore variables
       if (
         subFields &&
-        (subFields.length === 0 || subFields[0].title === 'Built In Variables')
+        (subFields.length === 0 ||
+          Object.values(VAR_TYPES)?.includes(subFields[0]?.type))
       ) {
         return false;
       }
@@ -364,7 +366,7 @@ function Builder({
         [params.sourceField]: getSourceModelString(sourceModelList),
       };
       onSave &&
-      onSave({ resultField: scriptString, resultMetaField: jsonQuery ,sourceField:record[params.sourceField],targetField:model?.name});
+        onSave({ resultField: scriptString, resultMetaField: jsonQuery ,sourceField:record[params.sourceField],targetField:model?.name});
       if (!params?.model) return;
       const result = await saveRecord(params, record);
       if (result) {
@@ -459,13 +461,13 @@ function Builder({
         try {
           setLoading(true);
           const result = isBPMN || isBAML
-            ? true
-            : await fetchRecord(params.model, params.id);
+              ? true
+              : await fetchRecord(params.model, params.id);
           if (result) {
             !isBPMN && setBuilderRecord(result);
             const jsonData = isBPMN || isBAML
-              ? getJSON(params, 'resultMetaField')
-              : getJSON(result, params.resultMetaField);
+                ? getJSON(params, 'resultMetaField')
+                : getJSON(result, params.resultMetaField);
             if (jsonData) {
               const {
                 fields = [],
