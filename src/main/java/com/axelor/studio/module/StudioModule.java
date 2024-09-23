@@ -64,6 +64,7 @@ import com.axelor.studio.bpm.service.dashboard.WkfDashboardService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardServiceImpl;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentServiceImpl;
+import com.axelor.studio.bpm.service.deployment.BpmDeploymentWebSocket;
 import com.axelor.studio.bpm.service.deployment.MetaAttrsService;
 import com.axelor.studio.bpm.service.deployment.MetaAttrsServiceImpl;
 import com.axelor.studio.bpm.service.deployment.WkfMenuService;
@@ -223,6 +224,7 @@ public class StudioModule extends AxelorModule {
     bind(WkfDisplayService.class).to(WkfDisplayServiceImpl.class);
     bind(WkfModelService.class).to(WkfModelServiceImpl.class);
     bind(BpmDeploymentService.class).to(BpmDeploymentServiceImpl.class);
+    bind(BpmDeploymentWebSocket.class).asEagerSingleton();
     bind(MetaAttrsService.class).to(MetaAttrsServiceImpl.class);
     bind(WkfEmailService.class).to(WkfEmailServiceImpl.class);
     bind(WkfInstanceService.class).to(WkfInstanceServiceImpl.class);

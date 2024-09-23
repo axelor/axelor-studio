@@ -342,9 +342,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
 
     log.debug("Process instances to migrate: {}", processInstanceIds.size());
-
+    String sessionId = BpmDeploymentWebSocket.sessionMap.keySet().stream().findFirst().orElse(null);
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
-
+    int iterationNumber = 1;
     for (String processInstanceId : processInstanceIds) {
       try {
         // get active tasks before migration
@@ -362,8 +362,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
         wkfInstanceService.updateProcessInstance(
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
       }
+      BpmDeploymentWebSocket.updateProgress(
+          sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
+      iterationNumber++;
     }
     return isMigrationError;
+  }
+
+  public int calculatePercentage(double part, double whole) {
+    return (int) ((part / whole) * 100);
   }
 
   protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId) {
