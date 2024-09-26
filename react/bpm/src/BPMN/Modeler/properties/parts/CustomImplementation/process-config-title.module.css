@@ -1,0 +1,22 @@
+.tableHead {
+  text-align: center;
+}
+
+.iconButton {
+  color: inherit !important;
+  width: fit-content;
+}
+
+.clear {
+  font-size: 1rem;
+}
+
+.table {
+  margin: 10px 0;
+  overflow: auto;
+  max-height: 65vh;
+}
+
+.textRoot {
+  margin-top: 0;
+}

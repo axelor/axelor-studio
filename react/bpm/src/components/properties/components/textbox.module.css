@@ -1,0 +1,60 @@
+/* styles.css */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.label {
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  /* font-size: var(----ax-theme-panel-header-font-size, 1rem); */
+  display: inline-block;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}
+
+.editor {
+  font-family: monospace;
+  background: var(--bs-body-bg) !important;
+  border: 1px solid var(--bs-tertiary-bg) !important;
+  border-radius: 4px;
+}
+
+.editor.ace_focus {
+  border: 1px solid #666cff !important;
+}
+
+.error {
+  border-color: #cc3333 !important;
+}
+
+.error:focus,
+.error.ace_focus {
+  border-color: #cc3333 !important;
+}
+
+.readOnly {
+  border-color: #ccc !important;
+  background: #e3e3e3;
+  color: #7e7e7e;
+}
+
+.readOnly:focus,
+.readOnly.ace_focus {
+  box-shadow: none !important;
+  outline: none;
+  border-color: #ccc !important;
+}
+
+.clearButton {
+  background: transparent;
+  border: none;
+  height: 23px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}

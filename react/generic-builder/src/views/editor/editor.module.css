@@ -1,0 +1,31 @@
+.paper {
+    margin: 8px 0;
+    padding: 24px 16px;
+  }
+
+  .MuiAutocompleteRoot {
+    width: 250px;
+    margin-right: 10px;
+  }
+
+  .rules {
+    margin-bottom: 15px;
+  }
+
+  .disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .operators {
+    min-width: 75px;
+  }
+
+  .iconButton {
+  padding: 5px;
+  margin-right: 10px;
+  }
+
+  .combinator {
+    width: fit-content;
+  }

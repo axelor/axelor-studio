@@ -1,0 +1,37 @@
+.typography {
+  display: flex;
+  align-items: center;
+  color: var(--red) !important;
+}
+
+.icon {
+  color: var(--red);
+  margin-right: 10px;
+}
+
+.newIcon {
+  cursor: pointer;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.dialog > div {
+  max-width: 90%;
+  width: fit-content;
+  min-width: 500px;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: flex-end;
+  overflow: auto;
+}
+
+.MuiAutocompleteRoot {
+  width: 250px;
+  margin-right: 10px;
+}

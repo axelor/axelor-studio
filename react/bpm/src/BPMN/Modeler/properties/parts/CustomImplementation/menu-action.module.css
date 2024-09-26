@@ -1,0 +1,52 @@
+.main {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  margin-top: 10px;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+}
+
+.select {
+  margin: 0 5px 0 0;
+}
+
+.iconButton {
+  border-radius: 0;
+  color: inherit;
+  width: fit-content;
+}
+
+.newIcon {
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: flex-end;
+  overflow: auto;
+}
+
+.dialog {
+  min-width: 300px;
+}
+
+.teamFieldPathDialog > div {
+  max-width: 90%;
+  width: fit-content;
+  min-width: 500px;
+}

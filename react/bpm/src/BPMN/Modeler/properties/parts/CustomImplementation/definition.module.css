@@ -1,0 +1,49 @@
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+  font-size: var(----ax-theme-panel-header-font-size, 1rem);
+}
+
+.select {
+  margin: 0;
+}
+
+.tableCell {
+  padding: 3px !important;
+}
+
+.tableHead {
+  padding: 3px !important;
+  margin: 3px 0;
+  text-align: center;
+}
+
+.linkIcon {
+  color: inherit;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.save {
+  margin: 8px;
+  text-transform: none;
+  width: 100%;
+}
+
+.cardContent {
+  overflow: auto;
+  max-height: 80%;
+  min-width: 250px;
+}
+
+.expand {
+  transform: rotate(0deg);
+  margin-left: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+.expandOpen {
+  transform: rotate(180deg);
+}

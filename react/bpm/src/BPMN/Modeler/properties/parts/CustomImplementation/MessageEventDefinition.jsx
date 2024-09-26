@@ -18,9 +18,11 @@ import {
   DialogHeader,
   DialogContent,
   DialogFooter,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./MessageEventDefinition.module.css";
+import styles from "./message-event.module.css";
+import AlertDialog from "../../../../../components/AlertDialog";
 
 const setProperty = (name, value, element) => {
   const bo = getBusinessObject(element);
@@ -281,12 +283,19 @@ export default function MessageProps({
           canRemove={true}
         />
       )}
-      {open && (
-        <Dialog open={open} centered backdrop className={styles.dialogPaper}>
-          <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
-            <h3>{translate("Select Message")}</h3>
-          </DialogHeader>
-          <DialogContent className={styles.dialogContent}>
+
+      <AlertDialog
+        openAlert={open}
+        title={"Select Message"}
+        fullscreen={false}
+        handleAlertOk={() => {
+          addElement(catchMsgObj);
+          setMsgObj(null);
+          handleClose();
+        }}
+        alertClose={handleClose}
+        children={
+          <div className={styles.alertMessageWrapper}>
             <InputLabel className={styles.label}>
               {translate("BPM model")}
             </InputLabel>
@@ -344,29 +353,11 @@ export default function MessageProps({
                 />
               </>
             )}
-          </DialogContent>
-          <DialogFooter>
-            <Button
-              onClick={handleClose}
-              className={styles.button}
-              variant="secondary"
-            >
-              {translate("Cancel")}
-            </Button>
-            <Button
-              onClick={() => {
-                addElement(catchMsgObj);
-                setMsgObj(null);
-                handleClose();
-              }}
-              className={styles.button}
-              variant="primary"
-            >
-              {translate("OK")}
-            </Button>
-          </DialogFooter>
-        </Dialog>
-      )}
+          </div>
+        }
+      />
+
+     
     </div>
   );
 }

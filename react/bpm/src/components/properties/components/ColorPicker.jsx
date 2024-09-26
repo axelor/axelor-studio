@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import { translate } from "../../../utils";
 import { Box, Input, InputLabel } from "@axelor/ui";
-import styles from "./ColorPicker.module.css";
 
 import "../css/colorpicker.css";
+import styles from "./colorpicker.module.css";
 
 export default function ColorPickerComponent({
   changeColor,

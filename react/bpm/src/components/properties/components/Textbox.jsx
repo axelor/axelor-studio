@@ -8,7 +8,7 @@ import { translate } from "../../../utils";
 import { useStore } from "../../../store";
 import { getNameProperty } from "../../../BPMN/Modeler/extra";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import styles from "./Textbox.module.css";
+import styles from "./textbox.module.css";
 
 const getValue = (element) => {
   if (!element) return;
@@ -153,7 +153,7 @@ export default function Textbox({
           isError={isError}
           defaultHeight={defaultHeight}
           readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
-          width={containerWidth}
+          width={window?.innerWidth-120}
           onChange={(value) => {
             setValue(value);
             updateProperty((value ?? "").trim());

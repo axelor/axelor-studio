@@ -8,7 +8,7 @@ import {
 import { DateTimePicker } from "../../expression-builder/components";
 import { translate } from "../../../utils";
 import { InputLabel } from "@axelor/ui";
-import styles from "./DatePicker.module.css";
+import styles from "./datepicker.module.css";
 
 const formats = {
   date: "YYYY/MM/DD",

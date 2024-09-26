@@ -198,7 +198,7 @@ export default function AutoComplete(props) {
             </Badge>
           ));
         }}
-        optionKey={(option) => option.name}
+        optionKey={(option) => option.id || option.name}
         {...(isMulti ? { disableCloseOnSelect } : {})}
         {...other}
       />

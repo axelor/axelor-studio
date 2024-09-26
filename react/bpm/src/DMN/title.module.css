@@ -1,0 +1,9 @@
+.divider {
+  margin-top: 1rem;
+}
+
+.label {
+  font-weight: bold;
+  margin-block: 10px;
+  transition: margin 0.218s linear;
+}

@@ -1,0 +1,35 @@
+.inputContainer {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.root:hover {
+  border: 1px solid #6c67fa;
+  border-width: 0 0 1px 0;
+}
+
+.buttonContainer {
+  display: none;
+  flex-direction: column;
+}
+
+.root:hover .buttonContainer {
+  display: flex;
+}
+
+.root {
+  width: 10ch;
+  height: 3ch;
+  display: flex;
+  color: currentColor;
+}
+
+.root input[type="number"]::-webkit-inner-spin-button,
+.root input[type="number"]::-webkit-inner-spin-button {
+  display: none;
+}
+
+.root {
+  text-align: center;
+}

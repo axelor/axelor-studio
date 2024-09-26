@@ -1,0 +1,9 @@
+.MuiAutocompleteRoot {
+  width: 250px;
+  margin-right: 10px;
+}
+
+.iconButton {
+  padding: 5px;
+  margin-right: 10px !important;
+}

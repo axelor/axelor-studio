@@ -23,20 +23,16 @@ import {
 import Tooltip from "../../../../../components/Tooltip";
 import AlertDialog from "../../../../../components/AlertDialog";
 import { translate, getBool } from "../../../../../utils";
-import styles from "./ScriptProps.module.css";
-
 import {
-  Button,
-  Dialog,
-  DialogFooter,
-  DialogHeader,
-  DialogContent,
+
   Badge,
   InputLabel,
-  Box,
-  Divider,
+
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import styles from "./script-props.module.css";
+import useDialog from "../../../../../hooks/useDialog";
 
 const implementationOptions = [
   { name: translate("Script"), value: "script" },
@@ -64,18 +60,15 @@ export default function ScriptProps({
   const [formViews, setFormViews] = useState(null);
   const [isDefaultFormVisible, setDefaultFormVisible] = useState(false);
   const [isReadOnly, setReadOnly] = useState(false);
-  const [openAlert, setAlert] = useState(false);
   const [openMapper, setMapper] = useState(false);
-  const [alertTitle, setAlertTitle] = useState(null);
-  const [alertMessage, setAlertMessage] = useState(null);
   const [isCustom, setIsCustom] = useState(false);
   const [openConnector, setOpenConnector] = useState(false);
   const [type, setType] = useState("script");
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
+  const openDialog = useDialog();
 
   const handleClickOpen = () => {
-    setAlertMessage("Add all values");
     setMapper(false);
     setOpen(true);
   };
@@ -119,7 +112,7 @@ export default function ScriptProps({
         if (!values.length) {
           values = null;
         }
-      } catch (errror) {}
+      } catch (errror) { }
     }
     let obj = { values: values, combinator, checked };
     return obj;
@@ -420,12 +413,7 @@ export default function ScriptProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <SelectBox
           element={element}
           entry={{
@@ -516,11 +504,20 @@ export default function ScriptProps({
                 fontSize={18}
                 onClick={() => {
                   if (isReadOnly) {
-                    setAlertMessage(
-                      "Script can't be managed using builder once changed manually."
-                    );
-                    setAlertTitle("Warning");
-                    setAlert(true);
+                    openDialog({
+                      title: "Warning",
+                      message:
+                        "Script can't be managed using builder once changed manually.",
+                      onSave: () => {
+                        setReadOnly(false);
+                        setOpenScriptDialog(true);
+                        setScript(getScript()?.script);
+                        if (element.businessObject) {
+                          setProperty("scriptOperatorType", undefined);
+                          setProperty("scriptValue", undefined);
+                        }
+                      },
+                    });
                   } else {
                     setScript(getScript()?.script);
                     setOpenScriptDialog(true);
@@ -536,24 +533,24 @@ export default function ScriptProps({
                 type === "connector"
                   ? setOpenConnector(true)
                   : type === "request"
-                  ? handleClickOpen()
-                  : handleMapperOpen();
+                    ? handleClickOpen()
+                    : handleMapperOpen();
               }}
             />
             {type === "connector"
               ? openConnector && (
-                  <ConnectorBuilder
-                    open={openConnector}
-                    handleClose={() => {
-                      setOpenConnector(false);
-                    }}
-                    updateScript={(val) => {
-                      updateScript(val);
-                      setReadOnly(true);
-                    }}
-                    getDefaultValues={() => getProperty("scriptValue")}
-                  />
-                )
+                <ConnectorBuilder
+                  open={openConnector}
+                  handleClose={() => {
+                    setOpenConnector(false);
+                  }}
+                  updateScript={(val) => {
+                    updateScript(val);
+                    setReadOnly(true);
+                  }}
+                  getDefaultValues={() => getProperty("scriptValue")}
+                />
+              )
               : type === "request"
               ? open && (
                   <QueryBuilder
@@ -583,43 +580,6 @@ export default function ScriptProps({
                     element={element}
                   />
                 )}
-            <Dialog open={openAlert} centered className={styles.Dialog}>
-              <DialogHeader onCloseClick={() => setAlert(false)}>
-                <h3>{translate(alertTitle)}</h3>
-              </DialogHeader>
-              <DialogContent className={styles.content}>
-                {translate(alertMessage)}
-              </DialogContent>
-              <DialogFooter>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                    setAlertMessage(null);
-                    setAlertTitle(null);
-                    setReadOnly(false);
-                    setOpenScriptDialog(true);
-                    setScript(getScript()?.script);
-                    if (element.businessObject) {
-                      setProperty("scriptOperatorType", undefined);
-                      setProperty("scriptValue", undefined);
-                    }
-                  }}
-                  variant="primary"
-                  className={styles.save}
-                >
-                  {translate("OK")}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                  }}
-                  variant="secondary"
-                  className={styles.save}
-                >
-                  {translate("Cancel")}
-                </Button>
-              </DialogFooter>
-            </Dialog>
             {openScriptDialog && (
               <AlertDialog
                 className={styles.scriptDialog}
@@ -765,6 +725,8 @@ export default function ScriptProps({
                   value={defaultForm}
                   label={translate("Default form")}
                   isLabel={false}
+                  optionLabel={'title'}
+                  optionLabelSecondary={'name'}
                 />
               </React.Fragment>
             )}

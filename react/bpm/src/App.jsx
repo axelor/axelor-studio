@@ -6,6 +6,8 @@ import { useAppTheme } from "./custom-hooks/useAppTheme";
 import Loader from "./components/Loader";
 import { ThemeProvider } from "@axelor/ui";
 import StoreProvider from "./store";
+import DialogBox from "./components/dialog-box/DialogBox";
+import { DialogContextProvider } from "./context/dialog-context";
 
 let isInstance = false;
 
@@ -39,7 +41,7 @@ function App() {
   const [type, setType] = useState(null);
   const data = useAppTheme();
   const { theme, options, loading } = data;
-
+  
   useEffect(() => {
     let type = fetchId() || {};
     setType(type);
@@ -52,18 +54,23 @@ function App() {
   return (
     <StoreProvider>
       <ThemeProvider options={options} theme={theme}>
-        {(() => {
-          switch (type) {
-            case "dmnModeler":
-              return <DMNModeler />;
-            case "bpmnModeler":
-              return <BpmnModelerComponent />;
-            case "bpmnViewer":
-              return <BpmnViewerComponent isInstance={isInstance} />;
-            default:
-              return <BpmnModelerComponent />;
-          }
-        })()}
+        <DialogContextProvider>
+          <>
+            {(() => {
+              switch (type) {
+                case "dmnModeler":
+                  return <DMNModeler />;
+                case "bpmnModeler":
+                  return <BpmnModelerComponent />;
+                case "bpmnViewer":
+                  return <BpmnViewerComponent isInstance={isInstance} />;
+                default:
+                  return <BpmnModelerComponent />;
+              }
+            })()}
+            <DialogBox />
+          </>
+        </DialogContextProvider>
       </ThemeProvider>
     </StoreProvider>
   );

@@ -10,17 +10,14 @@ import { translate, getBool } from "../../../../../utils";
 import QueryBuilder from "../../../../../components/QueryBuilder";
 import { fetchModels } from "../../../../../services/api";
 import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
   Box,
-  Divider,
+
 } from "@axelor/ui";
 import Tooltip from "../../../../../components/Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ConditionalProps.module.css";
+import styles from "./conditional-props.module.css";
+import Title from "../../../Title";
+import useDialog from "../../../../../hooks/useDialog";
 
 let CONDITIONAL_SOURCES = [
   "bpmn:Activity",
@@ -41,19 +38,16 @@ export default function ConditionalProps({
   label,
   bpmnFactory,
   bpmnModeler,
-  setDummyProperty = () => {},
+  setDummyProperty = () => { },
 }) {
   const [isVisible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
-  const [openAlert, setAlert] = useState(false);
-  const [alertTitle, setAlertTitle] = useState(null);
-  const [alertMessage, setAlertMessage] = useState(null);
-  const [readOnly, setReadOnly] = useState(false);
+ const [readOnly, setReadOnly] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
+  const openDialog = useDialog();
 
   const handleClickOpen = () => {
-    setAlertMessage("Add all values");
     setOpen(true);
   };
   const handleClose = () => {
@@ -69,7 +63,7 @@ export default function ConditionalProps({
     if (value !== undefined) {
       try {
         values = JSON.parse(value);
-      } catch (errror) {}
+      } catch (errror) { }
     }
     return { values: values, combinator, checked };
   };
@@ -238,12 +232,7 @@ export default function ConditionalProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {label}
-        </Box>
+        <Title divider={index > 0} label={label} />
         <div className={styles.expressionBuilder}>
           <Textbox
             element={element}
@@ -270,11 +259,17 @@ export default function ConditionalProps({
                 fontSize={18}
                 onClick={() => {
                   if (readOnly) {
-                    setAlertMessage(
-                      "Expression can't be managed using builder once changed manually."
-                    );
-                    setAlertTitle("Warning");
-                    setAlert(true);
+                    openDialog({
+                      title: "Warning",
+                      message:"Expression can't be managed using builder once changed manually.",
+                      onSave: () => {
+                        setReadOnly(false);
+                        setScript(getScript()?.script);
+                        setProperty("camunda:conditionValue", undefined);
+                        setProperty("camunda:conditionCombinator", undefined);
+                        setOpenScriptDialog(true);
+                      },
+                    });
                   } else {
                     setScript(getScript()?.script);
                     setOpenScriptDialog(true);
@@ -333,50 +328,9 @@ export default function ConditionalProps({
               }
             />
           )}
-          {openAlert && (
-            <Dialog
-              open={openAlert}
-              backdrop
-              centered
-              className={styles.dialog}
-            >
-              <DialogHeader onCloseClick={() => setAlert(false)}>
-                <h3>{translate(alertTitle)}</h3>
-              </DialogHeader>
-              <DialogContent className={styles.content}>
-                {translate(alertMessage)}
-              </DialogContent>
-              <DialogFooter>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                    setAlertMessage(null);
-                    setAlertTitle(null);
-                    setReadOnly(false);
-                    setScript(getScript()?.script);
-                    setProperty("camunda:conditionValue", undefined);
-                    setProperty("camunda:conditionCombinator", undefined);
-                    setOpenScriptDialog(true);
-                  }}
-                  variant="primary"
-                  className={styles.save}
-                >
-                  {translate("OK")}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setAlert(false);
-                  }}
-                  variant="secondary"
-                  className={styles.save}
-                >
-                  {translate("Cancel")}
-                </Button>
-              </DialogFooter>
-            </Dialog>
-          )}
         </div>
       </div>
     )
   );
 }
+

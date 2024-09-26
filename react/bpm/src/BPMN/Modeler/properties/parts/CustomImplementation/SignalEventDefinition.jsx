@@ -9,15 +9,11 @@ import {
 import { getWkfModels } from "../../../../../services/api";
 import { translate } from "../../../../../utils";
 import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
   InputLabel,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./SignalEventDefinition.module.css";
+import styles from "./signal-event.module.css";
+import AlertDialog from "../../../../../components/AlertDialog";
 
 export default function SignalEventProps({
   element,
@@ -236,12 +232,19 @@ export default function SignalEventProps({
           }}
         />
       )}
-      {open && (
-        <Dialog open={open} backdrop centered className={styles.dialogPaper}>
-          <DialogHeader id="form-dialog-title" onCloseClick={handleClose}>
-            <h3>{translate("Select Signal")}</h3>
-          </DialogHeader>
-          <DialogContent>
+
+      <AlertDialog
+        openAlert={open}
+        fullscreen={false}
+        title={"Select Signal"}
+        handleAlertOk={() => {
+          addElement(catchSignalObj);
+          setSignalObj(null);
+          handleClose();
+        }}
+        alertClose={handleClose}
+        children={
+          <div className={styles.dialogContent}>
             <InputLabel color="body">{translate("BPM model")}</InputLabel>
             <Select
               className={styles.select}
@@ -275,54 +278,9 @@ export default function SignalEventProps({
               disableUnderline={true}
               isOptionEllipsis={true}
             />
-            {catchSignalObj?.wkf && (
-              <>
-                <InputLabel color="body" className={styles.label}>
-                  {translate("Signals")}
-                </InputLabel>
-                <Select
-                  className={styles.select}
-                  disableClearable={true}
-                  update={(value) => {
-                    setSignalObj((signalObj) => ({
-                      ...(signalObj || {}),
-                      signal: value,
-                    }));
-                  }}
-                  name="signal"
-                  value={catchSignalObj?.signal}
-                  optionLabel="name"
-                  optionLabelSecondary="description"
-                  isLabel={false}
-                  fetchMethod={getSignals}
-                  disableUnderline={true}
-                  isOptionEllipsis={true}
-                />
-              </>
-            )}
-          </DialogContent>
-          <DialogFooter>
-            <Button
-              onClick={handleClose}
-              className={styles.button}
-              variant="secondary"
-            >
-              {translate("Cancel")}
-            </Button>
-            <Button
-              onClick={() => {
-                addElement(catchSignalObj);
-                setSignalObj(null);
-                handleClose();
-              }}
-              className={styles.button}
-              variant="primary"
-            >
-              {translate("OK")}
-            </Button>
-          </DialogFooter>
-        </Dialog>
-      )}
+          </div>
+        }
+      />
     </div>
   );
 }

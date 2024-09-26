@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import NotInterested from "@material-ui/icons/NotInterested";
+import React, { useEffect, useState } from "react";
+import { createElement } from "../../../../../utils/ElementUtil";
 
-import TimerBuilder from "../../../../../components/TimerBuilder";
-import AlertDialog from "../../../../../components/AlertDialog";
-import {
-  TextField,
-  SelectBox,
-} from "../../../../../components/properties/components";
-import Tooltip from "../../../../../components/Tooltip";
-import { getBool, translate } from "../../../../../utils";
 import {
   Box,
   Button,
   Dialog,
+  DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogContent,
+  DialogTitle,
   Input,
   InputLabel,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import moment from "moment";
-import styles from "./TimerEventDefinition.module.css";
+import TimerBuilder from "../../../../../components/TimerBuilder";
+import Tooltip from "../../../../../components/Tooltip";
+import {
+  SelectBox,
+  TextField,
+} from "../../../../../components/properties/components";
+import useDialog from "../../../../../hooks/useDialog";
+import { getBool, translate } from "../../../../../utils";
+import styles from "./timer-event.module.css";
+import AlertDialog from "../../../../../components/AlertDialog";
 
 const timerOptions = [
   { value: "timeDate", name: translate("Date") },
@@ -72,12 +73,8 @@ export default function TimerEventProps({
   const [timerDefinitionType, setTimerDefinitionType] = useState("");
   const [open, setOpen] = useState(false);
   const [isFromBuilder, setFromBuilder] = useState(false);
-  const [openAlert, setAlert] = useState({
-    open: false,
-    alertMessage: "Error",
-    title: "Error",
-  });
   const [date, setDate] = useState();
+  const openDialog = useDialog();
 
   function createTimerEventDefinition(bo) {
     let eventDefinitions = bo.get("eventDefinitions") || [],
@@ -139,20 +136,6 @@ export default function TimerEventProps({
       handleFromBuilder(false);
     }
   };
-
-  const handleAlertAction = (key) => {
-    if (openAlert?.onCancel && key === "cancel") {
-      openAlert.onCancel();
-    } else if (openAlert?.onOk && key === "ok") {
-      openAlert.onOk();
-    }
-    setAlert({
-      open: false,
-      alertMessage: "Error",
-      title: "Error",
-    });
-  };
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -271,18 +254,17 @@ export default function TimerEventProps({
             endAdornment={
               <Box color="body" className={styles.new}>
                 <Tooltip title="Enable" aria-label="enable">
-                  <NotInterested
+                  <MaterialIcon
+                    icon="do_not_disturb"
+                    fontSize={16}
                     className={styles.newIcon}
                     onClick={() => {
                       if (isFromBuilder) {
-                        setAlert({
-                          open: true,
-                          alertMessage:
-                            "Expression can't be managed using builder once changed manually.",
+                        openDialog({
                           title: "Warning",
-                          onOk: () => {
-                            handleFromBuilder(false);
-                          },
+                          message:
+                            "Expression can't be managed using builder once changed manually.",
+                          onSave: () => handleFromBuilder(false),
                         });
                       }
                     }}
@@ -298,46 +280,29 @@ export default function TimerEventProps({
             }
           />
           {open && timerDefinitionType === "timeDate" && (
-            <Dialog
-              centered
-              backdrop
-              open={open}
-              className={styles.timeDateDialog}
-            >
-              <DialogHeader onCloseClick={handleClose}>
-                <h3>{translate("Timer definition")}</h3>
-              </DialogHeader>
-              <DialogContent className={styles.timeDateContent}>
-                <InputLabel style={{ fontSize: 14 }}>
-                  {translate("Select datetime")}
-                </InputLabel>
-                <Input
-                  type="datetime-local"
-                  value={moment(date).format("YYYY-MM-DDTHH:mm")}
-                  onChange={(e) => setDate(moment(e?.target?.value))}
-                  rounded
-                />
-              </DialogContent>
-              <DialogFooter>
-                <Button
-                  className={styles.button}
-                  variant="primary"
-                  onClick={() => {
-                    handleChange(moment(date).format("YYYY-MM-DDTHH:mm"));
-                    handleClose();
-                  }}
-                >
-                  OK
-                </Button>
-                <Button
-                  className={styles.button}
-                  variant="secondary"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-              </DialogFooter>
-            </Dialog>
+            <AlertDialog
+             openAlert={open}
+             fullscreen={false}
+             title={"Timer definition"}
+             handleAlertOk={()=>{
+              handleChange(moment(date).format("YYYY-MM-DDTHH:mm"));
+              handleClose();
+            }}
+            alertClose={handleClose}
+            children={
+              <>
+              <InputLabel style={{ fontSize: 14 }}>
+                {translate("Select datetime")}
+              </InputLabel>
+              <Input
+                type="datetime-local"
+                value={moment(date).format("YYYY-MM-DDTHH:mm")}
+                onChange={(e) => setDate(moment(e?.target?.value))}
+                rounded
+              />
+              </>
+            }
+            />
           )}
           {open && timerDefinitionType !== "timeDate" && (
             <TimerBuilder
@@ -347,15 +312,6 @@ export default function TimerEventProps({
               handleClose={handleClose}
               handleChange={handleChange}
               t={translate}
-            />
-          )}
-          {openAlert && (
-            <AlertDialog
-              openAlert={openAlert?.open}
-              alertClose={() => handleAlertAction("cancel")}
-              handleAlertOk={() => handleAlertAction("ok")}
-              message={openAlert?.alertMessage}
-              title={openAlert?.title}
             />
           )}
         </>

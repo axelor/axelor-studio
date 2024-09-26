@@ -52,10 +52,12 @@ import {
   Box,
   InputLabel,
   NavTabs,
-  Divider,
   Input,
   CommandBar,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "./Title";
+import styles from "./dmn-modeler.module.css";
 
 import Alert from "../components/Alert";
 import { useAppTheme } from "../custom-hooks/useAppTheme.jsx";
@@ -68,7 +70,7 @@ import "dmn-js/dist/assets/diagram-js.css";
 
 import "./css/dmnModeler.css";
 import Ids from "ids";
-import styles from "./DMNModeler.module.css";
+import useDialog from "../hooks/useDialog.jsx";
 
 let dmnModeler = null;
 const DRAWER_WIDTH = 380;
@@ -173,6 +175,7 @@ function DMNModeler() {
   const tab = tabs && tabs[tabValue];
   const { groups = [], id: tabId = "" } = tab || {};
   const { theme = "light" } = useAppTheme();
+  const openDialog = useDialog();
 
   const exportDiagram = () => {
     dmnModeler.saveXML({ format: true }, function (err, xml) {
@@ -317,11 +320,8 @@ function DMNModeler() {
       const latestDecision = definitions?.drgElement?.find(
         (d) => d.id === decision?.id
       );
-      const {
-        input: inputs,
-        output: outputs,
-        rule: elementRules,
-      } = latestDecision?.decisionLogic || {};
+      const { input: inputs, output: outputs, rule: elementRules } =
+        latestDecision?.decisionLogic || {};
       const { col, row } = cell || {};
       let column = inputs?.find((i) => i.id === col.id);
       const rules =
@@ -700,17 +700,9 @@ function DMNModeler() {
     });
   };
 
-  const alertOpen = () => {
-    setAlert(true);
-  };
-
-  const alertClose = () => {
-    setAlert(false);
-  };
 
   const reloadView = () => {
     fetchDiagram(id, setWkfModel);
-    setAlert(false);
     setInput(null);
     setInputRule(null);
     setOutput(null);
@@ -721,7 +713,11 @@ function DMNModeler() {
     dmnModeler.saveXML({ format: true }, function (err, xml) {
       const diagramXml = diagramXmlRef.current;
       if (`${diagramXml}` !== `${xml}`) {
-        alertOpen();
+        openDialog({
+          title:"Refresh",
+          message:"Current changes will be lost. Do you really want to proceed?",
+          onSave:reloadView
+        })
       } else {
         reloadView();
       }
@@ -803,12 +799,7 @@ function DMNModeler() {
         ) : (
           group.entries.length > 0 && (
             <React.Fragment>
-              <React.Fragment>
-                {index > 0 && <Divider className={styles.divider} />}
-              </React.Fragment>
-              <Box color="body" className={styles.groupLabel}>
-                {translate(group.label)}
-              </Box>
+              <Title divider={index > 0} label={group.label} />
               <div>
                 {group.entries.map((entry, i) => (
                   <Entry entry={entry} key={i} />
@@ -1121,6 +1112,9 @@ function DMNModeler() {
           onClose={handleSnackbarClose}
         />
       )}
+      
+ 
+
       <Dialog
         open={openUploadDialog}
         centered
@@ -1128,7 +1122,7 @@ function DMNModeler() {
         className={styles.dialog}
       >
         <DialogHeader onCloseClick={() => setUploadDialog(false)}>
-          <h3>{translate("Upload")}</h3>
+          <DialogTitle>{translate("Upload")}</DialogTitle>
         </DialogHeader>
         <DialogContent>
           <input

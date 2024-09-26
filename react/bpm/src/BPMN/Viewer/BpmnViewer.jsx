@@ -3,7 +3,6 @@ import BpmnModeler from "bpmn-js/lib/Modeler";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 
 import Service from "../../services/Service";
-import Tooltip from "../../components/Tooltip";
 import readOnlyModule from "./custom/readonly";
 import { download, getBool, translate } from "../../utils";
 import {
@@ -15,12 +14,12 @@ import { Logo } from "../../components/Logo";
 import { getElements } from "../Modeler/extra";
 import Alert from "../../components/Alert";
 
-import { Box, Button } from "@axelor/ui";
+import { Box, CommandBar } from "@axelor/ui";
 
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import "../css/bpmn.css";
-import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import styles from "./bpmn-viewer.module.css";
 
 let bpmnViewer = null;
 
@@ -316,34 +315,34 @@ function BpmnViewerComponent({ isInstance }) {
     download(svg, "diagram.svg", false);
   };
 
-  const toolBarButtons = [
+  const commandItems = [
     {
-      name: "DownloadSVG",
-      icon: "photo",
-      tooltipText: translate("Download SVG"),
+      key: "download",
+      iconOnly: true,
+      description: translate("Download SVG"),
+      iconProps: { icon: "photo" },
       onClick: saveSVG,
-      classname: "zoom-buttons",
     },
     {
-      name: "ZoomInIcon",
-      icon: "add",
-      tooltipText: translate("Zoom in"),
+      key: "zoom-in",
+      iconOnly: true,
+      description: translate("Zoom in"),
+      iconProps: { icon: "add" },
       onClick: zoomIn,
-      classname: "zoom-buttons",
     },
     {
-      name: "zoomOut",
-      icon: "remove",
-      tooltipText: translate("Zoom out"),
+      key: "zoom-out",
+      iconOnly: true,
+      description: translate("Zoom out"),
+      iconProps: { icon: "remove" },
       onClick: zoomOut,
-      classname: "zoom-buttons",
     },
     {
-      name: "resetZoom",
-      icon: "refresh",
-      tooltipText: translate("Reset zoom"),
+      key: "zoom-reset",
+      iconOnly: true,
+      description: translate("Reset zoom"),
+      iconProps: { icon: "refresh" },
       onClick: resetZoom,
-      classname: "zoom-buttons",
     },
   ];
 
@@ -494,103 +493,35 @@ function BpmnViewerComponent({ isInstance }) {
     });
   }, [isInstance, taskIds, activityCounts]);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      function checkPosition(event) {
-        const element = document.getElementById("targetElement");
-        if (!element) return;
-
-        const rect = element.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const position =
-          rect.top + rect.height + 250 > windowHeight ? "below" : "above";
-
-        const errorPopup = document.querySelector(".error-popup");
-        if (errorPopup) {
-          if (position === "above") {
-            errorPopup.classList.remove("above");
-            errorPopup.classList.add("below");
-          } else {
-            errorPopup.classList.remove("below");
-            errorPopup.classList.add("above");
-          }
-        }
-      }
-
-      const targetElement = document.getElementById("targetElement");
-      if (targetElement) {
-        targetElement.addEventListener("mousemove", checkPosition);
-      }
-
-      return () => {
-        if (targetElement) {
-          targetElement.removeEventListener("mousemove", checkPosition);
-        }
-      };
-    }, 400);
-
-    return () => clearTimeout(timeoutId);
-  }, []);
+  const getItems = React.useMemo(() => {
+    return !isInstance
+      ? commandItems
+      : activityIds?.includes(node?.id)
+      ? [
+          ...commandItems,
+          {
+            key: "restart",
+            text: translate("Restart"),
+            onClick: restartBefore,
+          },
+        ]
+      : taskIds?.includes(node?.id)
+      ? [
+          ...commandItems,
+          {
+            key: "cancel",
+            text: translate("Cancel node"),
+            onClick: cancelNode,
+          },
+        ]
+      : commandItems;
+  }, [isInstance, activityIds, taskIds, node]);
 
   return (
     <React.Fragment>
-      <div
-        style={{
-          display: "flex",
-          padding: 10,
-          position: "absolute",
-          zIndex: 100,
-        }}
-      >
-        {toolBarButtons.map((btn) => (
-          <Box d="flex" key={btn.name}>
-            <Tooltip
-              title={btn.tooltipText}
-              children={
-                <Button
-                  border
-                  color="body"
-                  bgColor="body"
-                  variant="light"
-                  onClick={btn.onClick}
-                  className={btn.classname}
-                >
-                  <MaterialIcon icon={btn.icon} fontSize={20} />
-                </Button>
-              }
-            />
-          </Box>
-        ))}
-        {isInstance && (
-          <React.Fragment>
-            {node && activityIds?.includes(node?.id) && (
-              <Tooltip
-                title="Restart"
-                children={
-                  <Button
-                    variant="light"
-                    border
-                    onClick={restartBefore}
-                    className="restart-button"
-                  >
-                    {translate("Restart")}
-                  </Button>
-                }
-              />
-            )}
-            {node && taskIds && taskIds.includes(node.id) && (
-              <Tooltip
-                title="Cancel Node"
-                children={
-                  <button onClick={cancelNode} className="restart-button">
-                    {translate("Cancel node")}
-                  </button>
-                }
-              />
-            )}
-          </React.Fragment>
-        )}
-      </div>
+      <Box d="flex" position="absolute" className={styles.container}>
+        <CommandBar items={getItems} className={styles.commandButtons} />
+      </Box>
       <div id="canvas-task"></div>
       {openSnackbar.open && (
         <Alert

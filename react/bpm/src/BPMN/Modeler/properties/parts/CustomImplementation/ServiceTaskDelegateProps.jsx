@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { getServiceTaskLikeBusinessObject, isServiceTaskLike } from "../../../../../utils/ImplementationTypeUtils";
 import { is } from "bpmn-js/lib/util/ModelUtil";
+import React, { useEffect, useState } from "react";
+import {
+  getServiceTaskLikeBusinessObject,
+  isServiceTaskLike,
+} from "../../../../../utils/ImplementationTypeUtils";
 
 import Select from "../../../../../components/Select";
 import {
@@ -19,20 +22,12 @@ import {
 } from "../../../../../services/api";
 import { getBool, translate } from "../../../../../utils";
 
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  Divider,
-  InputLabel,
-} from "@axelor/ui";
+import { Box, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import AlertDialog from "../../../../../components/AlertDialog";
+import Title from "../../../Title";
+import styles from "./service-task.module.css";
 
-import { useStore } from "../../../../../store";
-import styles from "./ServiceTaskDelegateProps.module.css";
 import { openWebApp } from "./utils";
 const eventTypes = [
   "bpmn:StartEvent",
@@ -41,7 +36,6 @@ const eventTypes = [
   "bpmn:EndEvent",
   "bpmn:BoundaryEvent",
 ];
-
 
 function getBusinessObject(element) {
   return getServiceTaskLikeBusinessObject(element);
@@ -348,14 +342,7 @@ export default function ServiceTaskDelegateProps({
     isVisible && (
       <div>
         {element && element.type !== "bpmn:SendTask" && (
-          <React.Fragment>
-            <React.Fragment>
-              {index > 0 && <Divider className={styles.divider} />}
-            </React.Fragment>
-            <Box color="body" className={styles.groupLabel}>
-              {translate(label)}
-            </Box>
-          </React.Fragment>
+          <Title divider={index > 0} label={label} />
         )}
         {element && element.type === "bpmn:ServiceTask" && (
           <Checkbox
@@ -412,6 +399,7 @@ export default function ServiceTaskDelegateProps({
                 fetchMethod={(options) =>
                   getBamlModels(options && options.criteria)
                 }
+                optionLabel={"name"}
               />
               {bamlModel && (
                 <div
@@ -679,7 +667,7 @@ export default function ServiceTaskDelegateProps({
                   }}
                   canRemove={true}
                   endAdornment={
-                    <>
+                    <Box  className={styles.decisionRefIcons}>
                       <div onClick={handleClickOpen} className={styles.link}>
                         <MaterialIcon
                           icon="add"
@@ -707,7 +695,7 @@ export default function ServiceTaskDelegateProps({
                             />
                           </div>
                         )}
-                    </>
+                    </Box>
                   }
                 />
                 <TextField
@@ -913,12 +901,10 @@ export default function ServiceTaskDelegateProps({
                   }}
                   canRemove={true}
                 />
-                <React.Fragment>
-                  {index > 0 && <Divider className={styles.divider} />}
-                </React.Fragment>
-                <Box color="body" className={styles.groupLabel}>
-                  {translate("External task configuration")}
-                </Box>
+                <Title
+                  divider={index > 0}
+                  label="External task configuration"
+                />
                 <TextField
                   element={element}
                   entry={{
@@ -1068,44 +1054,34 @@ export default function ServiceTaskDelegateProps({
           </React.Fragment>
         )}
 
-        <Dialog open={open} centered backdrop className={styles.dialogPaper}>
-          <DialogHeader onCloseClick={() => setOpen(false)}>
-            <h3>{translate("Select DMN")}</h3>
-          </DialogHeader>
-          <DialogContent>
-            <InputLabel color="body" className={styles.label}>
-              {translate("DMN")}
-            </InputLabel>
-            <Select
-              className={styles.select}
-              update={(value) => {
-                setDmnModel(value);
-              }}
-              value={dmnModel}
-              name="dmnModel"
-              isLabel={true}
-              fetchMethod={(options) =>
-                getDMNModels(options && options.criteria)
-              }
-            />
-          </DialogContent>
-          <DialogFooter>
-            <Button
-              onClick={handleClose}
-              className={styles.button}
-              variant="secondary"
-            >
-              {translate("Cancel")}
-            </Button>
-            <Button
-              onClick={onConfirm}
-              className={styles.button}
-              variant="primary"
-            >
-              {translate("OK")}
-            </Button>
-          </DialogFooter>
-        </Dialog>
+        <AlertDialog
+          openAlert={open}
+          title={"Select DMN"}
+          fullscreen={false}
+          handleAlertOk={onConfirm}
+          alertClose={handleClose}
+          children={
+            <div className={styles.dialogContent}>
+              <InputLabel color="body" className={styles.label}>
+                {translate("DMN")}
+              </InputLabel>
+              <Select
+                className={styles.select}
+                update={(value) => {
+                  setDmnModel(value);
+                }}
+                value={dmnModel}
+                name="dmnModel"
+                isLabel={true}
+                fetchMethod={(options) =>
+                  getDMNModels(options && options.criteria)
+                }
+                optionLabel={"name"}
+                optionLabelSecondary={"decisionId"}
+              />
+            </div>
+          }
+        />
       </div>
     )
   );

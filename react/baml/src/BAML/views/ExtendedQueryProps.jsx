@@ -242,86 +242,55 @@ export default function ExtendedQueryProps({ element, bpmnModeler }) {
                 isBamlQuery={true}
               />
             )}
-            {openAlert && (
-              <Dialog
-              centered
-                open={openAlert}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogHeader onCloseClick={() => setAlert(false)}>
-                  <DialogTitle id="alert-dialog-title">
-                    {translate(alertTitle)}
-                  </DialogTitle>
-                </DialogHeader>
-                <DialogContent>
-                  <Box id="alert-dialog-description">
-                    {translate(alertMessage)}
-                  </Box>
-                </DialogContent>
-                <DialogFooter>
-                  <Button
-                    onClick={() => {
-                      setAlert(false);
-                      setAlertMessage(null);
-                      setAlertTitle(null);
-                      setReadOnly(false);
-                      setOpenScriptDialog(true)
-                      setScript(getScript()?.script)
-                      if(element.businessObject){
-                        setProperty("expressionValue", undefined);
-                      }
-                    }}
-                    variant="primary"
-                    size="sm"
-                    autoFocus
-                  >
-                    {translate("OK")}
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setAlert(false);
-                    }}
-                    variant="secondary"
-                  >
-                    {translate("Cancel")}
-                  </Button>
-                </DialogFooter>
-              </Dialog>
-            )}
-            {
-              openScriptDialog && 
-              <AlertDialog 
-              openAlert={openScriptDialog}
-              alertClose={()=>setOpenScriptDialog(false)}
-              handleAlertOk={()=>{
-                updateScript({expr:script})
-                setOpenScriptDialog(false)
+            <AlertDialog
+              openAlert={openAlert}
+              title={alertTitle}
+              message={alertMessage}
+              handleAlertOk={() => {
+                setAlert(false);
+                setAlertMessage(null);
+                setAlertTitle(null);
+                setReadOnly(false);
+                setOpenScriptDialog(true);
+                setScript(getScript()?.script);
+                if (element.businessObject) {
+                  setProperty("expressionValue", undefined);
+                }
               }}
-              title={translate("Add Query")}
-                children={
-                  <Textbox 
-                  element={element}
-                  showLabel={false}
-                  defaultHeight={window?.innerHeight - 210}
-                  entry={{
-                    id:'script',
-                    name: "expression",
-                    label: translate("Query"),
-                    modelProperty: "expression",
-                    get: function () {
-                      return { expression:script };
-                    },
-                    set: function (e, values) {
-                      setScript(values?.expression);
-                    },
-                  }}
+              alertClose={() => setAlert(false)}
 
+            />
+
+            {openScriptDialog && (
+              <AlertDialog
+                openAlert={openScriptDialog}
+                alertClose={() => setOpenScriptDialog(false)}
+                handleAlertOk={() => {
+                  updateScript({ expr: script });
+                  setOpenScriptDialog(false);
+                }}
+                title={translate("Add Query")}
+                children={
+                  <Textbox
+                    element={element}
+                    showLabel={false}
+                    defaultHeight={window?.innerHeight - 210}
+                    entry={{
+                      id: "script",
+                      name: "expression",
+                      label: translate("Query"),
+                      modelProperty: "expression",
+                      get: function () {
+                        return { expression: script };
+                      },
+                      set: function (e, values) {
+                        setScript(values?.expression);
+                      },
+                    }}
                   />
                 }
-
               />
-            }
+            )}
           </Box>
         )}
       </Box>

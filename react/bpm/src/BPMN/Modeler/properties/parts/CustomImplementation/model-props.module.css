@@ -1,0 +1,19 @@
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+}
+
+.select {
+  margin: 0;
+}
+
+.metajsonModel {
+  margin-top: 10px;
+}

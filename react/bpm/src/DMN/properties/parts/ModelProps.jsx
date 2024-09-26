@@ -11,8 +11,9 @@ import {
   mergeModels,
 } from "../../../utils";
 
-import { Box, Divider, InputLabel } from "@axelor/ui";
-import styles from "./ModelProps.module.css";
+import { Box, InputLabel } from "@axelor/ui";
+import Title from "../../Title";
+import styles from "./model-props.module.css";
 
 export default function ModelProps({ element, label }) {
   const [isVisible, setVisible] = useState(false);
@@ -139,10 +140,7 @@ export default function ModelProps({ element, label }) {
   return (
     isVisible && (
       <Box d="flex" flexDirection="column">
-        <Divider className={styles.divider} />
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={true} label={label} />
         <InputLabel color="body" className={styles.label}>
           {translate("Models")}
         </InputLabel>

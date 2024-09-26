@@ -72,15 +72,6 @@ body,
   user-select: none;
 }
 
-.snackbarAlert {
-  display: flex;
-  align-items: center;
-}
-
-.snackbarAlert > .MuiAlert-message {
-  font-size: 14px;
-}
-
 .dpp-properties-entry {
   text-align: left;
 }

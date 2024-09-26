@@ -14,7 +14,6 @@ import DrawerContent from "./DrawerContent";
 import propertiesCustomProviderModule from "./custom-provider";
 import camundaModdleDescriptor from "./resources/camunda.json";
 import Service from "../../services/Service";
-import AlertDialog from "../../components/AlertDialog";
 import DeployDialog from "./views/DeployDialog";
 import Select from "../../components/Select";
 import {
@@ -68,10 +67,11 @@ import "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
 import "../css/tokens.css";
-import styles from "./BpmnModeler.module.css";
+import styles from "./bpmn-modeler.module.css";
 import { openWebApp } from "./properties/parts/CustomImplementation/utils.js";
 import { createElement } from "../../utils/ElementUtil.js";
 import { getExtensionElements } from "../../utils/ExtensionElementsUtil.js";
+import useDialog from "../../hooks/useDialog.jsx";
 import Loader from "../../components/Loader";
 import { wsProgress } from "../../services/Progress";
 
@@ -118,11 +118,6 @@ function setColors(element, forceUpdate = false) {
 function BpmnModelerComponent() {
   const [wkf, setWkf] = useState(null);
   const [id, setId] = useState(null);
-  const [openAlert, setAlert] = useState({
-    open: false,
-    alertMessage: "Item is required.",
-    title: "Error",
-  });
   const [openDelopyDialog, setDelopyDialog] = useState(false);
   const [isTimerTask, setIsTimerTask] = useState(true);
   const [ids, setIds] = useState({
@@ -148,6 +143,7 @@ function BpmnModelerComponent() {
   const { update, state } = useStore();
   const { info } = state || {};
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const openDialog = useDialog();
 
 
   const diagramXmlRef = React.useRef(null);
@@ -175,37 +171,6 @@ function BpmnModelerComponent() {
     },
     [tabs]
   );
-
-  const alertOpen = (
-    actions,
-    alertMessage = "Item is required.",
-    title = "Error"
-  ) => {
-    const { onOk = () => {}, onCancel = () => {} } = actions || {
-      onOk: () => {},
-      onCancel: () => {},
-    };
-    setAlert({
-      open: true,
-      alertMessage,
-      title,
-      onOk,
-      onCancel,
-    });
-  };
-
-  const handleAlertAction = (key) => {
-    if (openAlert?.onCancel && key === "cancel") {
-      openAlert.onCancel();
-    } else if (openAlert?.onOk && key === "ok") {
-      openAlert.onOk();
-    }
-    setAlert({
-      open: false,
-      alertMessage: "Item is required.",
-      title: "Error",
-    });
-  };
 
   const handleSnackbarClick = (messageType, message) => {
     setSnackbar({
@@ -494,13 +459,11 @@ function BpmnModelerComponent() {
   const onRefresh = async () => {
     const isDirty = await checkIfUpdated();
     if (isDirty) {
-      alertOpen(
-        {
-          onOk: reloadView,
-        },
-        "Current changes will be lost. Do you really want to proceed?",
-        "Refresh"
-      );
+      openDialog({
+        title: "Refresh",
+        message: "Current changes will be lost. Do you really want to proceed?",
+        onSave: reloadView,
+      });
     } else {
       reloadView();
     }
@@ -524,14 +487,13 @@ function BpmnModelerComponent() {
     async (value, oldValue) => {
       const isDirty = await checkIfUpdated();
       if (isDirty) {
-        alertOpen(
-          {
-            onOk: () => updateWkf(value),
-            onCancel: () => setWkf(oldValue),
-          },
-          "Current changes will be lost. Do you really want to proceed?",
-          "Update"
-        );
+        openDialog({
+          title: "Update",
+          message:
+            "Current changes will be lost. Do you really want to proceed?",
+          onSave: () => updateWkf(value),
+          onClose: () => setWkf(oldValue),
+        });
       } else {
         updateWkf(value);
       }
@@ -543,13 +505,12 @@ function BpmnModelerComponent() {
     async (isSkipAlert = false) => {
       const isDirty = await checkIfUpdated();
       if (isDirty && !isSkipAlert) {
-        alertOpen(
-          {
-            onOk: addNewDiagram,
-          },
-          "Current changes will be lost. Do you really want to proceed?",
-          "New"
-        );
+        openDialog({
+          title: "New",
+          message:
+            "Current changes will be lost. Do you really want to proceed?",
+          onSave: addNewDiagram,
+        });
       } else {
         addNewDiagram();
       }
@@ -636,7 +597,10 @@ function BpmnModelerComponent() {
           (businessObject && businessObject.name) ||
           (viewElement && viewElement.id);
         if (!viewElement.id) {
-          alertOpen(null, `${translate("Id is required in")} ${nodeName}`);
+          openDialog({
+            title: "Error",
+            message: `${translate("Id is required in")} ${nodeName}`,
+          });
           isValid = false;
           return;
         }
@@ -732,10 +696,10 @@ function BpmnModelerComponent() {
               values.forEach((value) => {
                 const { items = [], relatedField, model } = value;
                 if (!processModels?.includes(model?.name) && !relatedField) {
-                  alertOpen(
-                    null,
-                    `${"Related field is required in"} ${nodeName}`
-                  );
+                  openDialog({
+                    title: "Error",
+                    message: `${"Related field is required in"} ${nodeName}`,
+                  });
                   isValid = false;
                   return;
                 }
@@ -743,7 +707,10 @@ function BpmnModelerComponent() {
                   (item) => item && (!item.itemName || !item.attributeName)
                 );
                 if (items.length < 1 || checkItems.length === items.length) {
-                  alertOpen(null, `${"Item is required in"} ${nodeName}`);
+                  openDialog({
+                    title: "Error",
+                    message: `${"Item is required in"} ${nodeName}`,
+                  });
                   isValid = false;
                   return;
                 }
@@ -751,10 +718,10 @@ function BpmnModelerComponent() {
                   items.forEach((item) => {
                     let { itemName, attributeName, attributeValue } = item;
                     if (!itemName || !attributeName) {
-                      alertOpen(
-                        null,
-                        `${"Item name is required in"} ${nodeName}`
-                      );
+                      openDialog({
+                        title: "Error",
+                        message: `${"Item name is required in"} ${nodeName}`,
+                      });
                       isValid = false;
                       return;
                     }
@@ -767,10 +734,10 @@ function BpmnModelerComponent() {
                         attributeValue = false;
                       } else {
                         isValid = false;
-                        alertOpen(
-                          null,
-                          `${"Item value is required in"} ${nodeName}`
-                        );
+                        openDialog({
+                          title: "Error",
+                          message: `${"Item value is required in"} ${nodeName}`,
+                        });
                         return;
                       }
                     }
@@ -1264,21 +1231,19 @@ function BpmnModelerComponent() {
   };
 
   const onDelete = () => {
-    alertOpen(
-      {
-        onOk: async () => {
-          const res = await removeWkf(id);
-          if (typeof res !== "string") {
-            handleSnackbarClick("success", "Deleted Successfully");
-            onNew(true);
-          } else {
-            handleSnackbarClick("danger", res);
-          }
-        },
+    openDialog({
+      title: "Question",
+      message: `Are you sure you want to delete this record?`,
+      onSave: async () => {
+        const res = await removeWkf(id);
+        if (typeof res !== "string") {
+          handleSnackbarClick("success", "Deleted Successfully");
+          onNew(true);
+        } else {
+          handleSnackbarClick("danger", res);
+        }
       },
-      `Are you sure you want to delete this record?`,
-      "Question"
-    );
+    });
   };
 
   const setProperty = (name, value, isInitial = false) => {
@@ -2040,15 +2005,7 @@ function BpmnModelerComponent() {
             onClose={handleSnackbarClose}
           />
         )}
-        {openAlert?.open && (
-          <AlertDialog
-            openAlert={openAlert?.open}
-            alertClose={() => handleAlertAction("cancel")}
-            handleAlertOk={() => handleAlertAction("ok")}
-            message={openAlert?.alertMessage}
-            title={openAlert?.title}
-          />
-        )}
+
         {openDelopyDialog && (
           <DeployDialog
             open={openDelopyDialog}

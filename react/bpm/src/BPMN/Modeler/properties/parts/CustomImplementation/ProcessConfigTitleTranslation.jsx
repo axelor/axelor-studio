@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../../../../components/IconButton";
 
 import { getTranslations } from "../../../../../services/api";
 import { TextField } from "../../../../../components/properties/components";
@@ -14,7 +14,7 @@ import {
   TableBody,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ProcessConfigTitleTranslation.module.css";
+import styles from "./process-config-title.module.css";
 
 export default function ProcessConfigTitleTranslation({
   configKey,

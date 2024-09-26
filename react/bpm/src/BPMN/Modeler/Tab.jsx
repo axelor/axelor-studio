@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { NavTabs } from "@axelor/ui";
 import { Box } from "@axelor/ui";
-import styles from "./Tab.module.css";
+import styles from "./tab.module.css";
 
 const Tab = ({
   onItemClick,
@@ -16,7 +16,6 @@ const Tab = ({
     const childElement = tabRef.current?.querySelector(
       `div[data-tab-id='${value}']`
     );
-
     if (childElement) {
       childElement.classList.toggle(styles.navDisable, isMenuActionDisable);
     }

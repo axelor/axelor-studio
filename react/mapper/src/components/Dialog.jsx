@@ -8,7 +8,7 @@ import {
   Button,
   Box,
 } from '@axelor/ui';
-import styles from './Dialog.module.css';
+import styles from './dialog.module.css';
 
 function DialogBox({ open, children, handleSave, handleClose }) {
   return (
@@ -22,16 +22,17 @@ function DialogBox({ open, children, handleSave, handleClose }) {
         </Box>
       </DialogContent>
       <DialogFooter>
-        <Button variant="primary" className={styles.save} onClick={handleSave}>
-          {translate('OK')}
-        </Button>
-        <Button
+      <Button
           variant="secondary"
           className={styles.save}
           onClick={handleClose}
         >
           {translate('Cancel')}
         </Button>
+        <Button variant="primary" className={styles.save} onClick={handleSave}>
+          {translate('OK')}
+        </Button>
+        
       </DialogFooter>
     </Dialog>
   );

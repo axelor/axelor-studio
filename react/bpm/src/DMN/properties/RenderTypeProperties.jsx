@@ -31,7 +31,7 @@ import {
 } from "../constants";
 
 import { InputLabel } from "@axelor/ui";
-import styles from "./RenderTypeProperties.module.css";
+import styles from "./render-type.module.css";
 
 const DISJUNCTION = "disjunction";
 const NEGATION = "negation";
@@ -249,6 +249,7 @@ export default function RenderTypeProperties({
                   options={STRING_OPTIONS}
                   isLabel={false}
                   disableClearable
+                  optionLabel={"name"}
                 />
               )}
               <TextField
@@ -319,6 +320,7 @@ export default function RenderTypeProperties({
             value={defaultType}
             options={BOOLEAN_OPTIONS}
             isLabel={false}
+            optionLabel={'name'}
           />
         </React.Fragment>
       );
@@ -373,6 +375,7 @@ export default function RenderTypeProperties({
             options={DATE_OPTIONS}
             isLabel={false}
             disableClearable
+            optionLabel={'name'}
           />
           {defaultType && defaultType.id === "between" ? (
             <React.Fragment>
@@ -512,6 +515,7 @@ export default function RenderTypeProperties({
             options={NUMBER_OPTIONS}
             isLabel={false}
             disableClearable
+            optionLabel={'name'}
           />
           {defaultType?.id === "range" ? (
             <React.Fragment>
@@ -536,6 +540,7 @@ export default function RenderTypeProperties({
                 options={RANGE_OPTIONS}
                 isLabel={false}
                 disableClearable
+                optionLabel={'name'}
               />
               <InputLabel color="body" className={styles.label}>
                 {translate("Value")}
@@ -579,6 +584,7 @@ export default function RenderTypeProperties({
                 options={RANGE_OPTIONS}
                 isLabel={false}
                 disableClearable
+                optionLabel={'name'}
               />
               <InputLabel color="body" className={styles.label}>
                 {translate("Value")}
@@ -624,6 +630,7 @@ export default function RenderTypeProperties({
                 options={COMPARISON_OPTIONS}
                 isLabel={false}
                 disableClearable
+                optionLabel={'name'}
               />
               <InputLabel color="body" className={styles.label}>
                 {translate("Value")}
@@ -763,6 +770,7 @@ export default function RenderTypeProperties({
                 options={STRING_OPTIONS}
                 isLabel={false}
                 disableClearable
+                optionLabel={'name'}
               />
             </React.Fragment>
           )}
@@ -811,6 +819,7 @@ export default function RenderTypeProperties({
               value={defaultType}
               options={STRING_OPTIONS}
               isLabel={false}
+              optionLabel={'name'}
             />
           )}
           <TextField

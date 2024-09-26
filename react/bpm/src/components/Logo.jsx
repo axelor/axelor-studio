@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Tooltip from "./Tooltip";
 import { translate } from "../utils";
 import { Box, Dialog, DialogHeader } from "@axelor/ui";
-import styles from "./Logo.module.css";
+import styles from "./logo.module.css";
 
 const BPMLogo = React.forwardRef((props, ref) => {
   return (

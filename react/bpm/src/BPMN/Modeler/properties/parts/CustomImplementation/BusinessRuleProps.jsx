@@ -7,8 +7,7 @@ import {
   SelectBox,
 } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
-import { Box, Divider } from "@axelor/ui";
-import styles from "./BusinessRuleProps.module.css";
+import Title from "../../../Title";
 
 export default function BusinessRuleTaskProps({
   element,
@@ -126,12 +125,10 @@ export default function BusinessRuleTaskProps({
         />
         {assignOutputToFields && (
           <React.Fragment>
-            <React.Fragment>
-              {index > 0 && <Divider className={styles.divider} />}
-            </React.Fragment>
-            <Box color="body" className={styles.groupLabel}>
-              {translate("Relational field search")}
-            </Box>
+            <Title
+              divider={index > 0}
+              label={translate("Relational field search")}
+            />
             <SelectBox
               element={element}
               entry={{

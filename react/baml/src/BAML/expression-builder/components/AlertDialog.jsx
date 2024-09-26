@@ -18,12 +18,13 @@ export default function AlertDialog({
   title,
   handleAlertOk,
   children,
+  fullscreen=false,
   className,
 }) {
   return (
     <Dialog
       open={openAlert}
-      fullscreen={children ? true : false}
+      fullscreen={fullscreen || children ? true : false}
       centered={children ? false : true}
       backdrop
       className={classnames(styles.dialogPaper, className)}
@@ -37,18 +38,18 @@ export default function AlertDialog({
       </DialogContent>
       <DialogFooter>
         <Button
-          onClick={handleAlertOk}
-          className={styles.save}
-          variant="primary"
-        >
-          {translate("OK")}
-        </Button>
-        <Button
           onClick={alertClose}
           className={styles.save}
           variant="secondary"
         >
           {translate("Cancel")}
+        </Button>
+        <Button
+          onClick={handleAlertOk}
+          className={styles.save}
+          variant="primary"
+        >
+          {translate("OK")}
         </Button>
       </DialogFooter>
     </Dialog>

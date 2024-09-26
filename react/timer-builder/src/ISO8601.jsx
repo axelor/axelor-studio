@@ -106,6 +106,7 @@ function ISO8601({
             gap: "1rem",
             flexWrap: "wrap",
             justifyContent: "center",
+            alignItems:"flex-end",
             marginBottom: "1rem",
           }}
         >
@@ -123,7 +124,6 @@ function ISO8601({
             flexDirection="column"
             style={{
               gap: "0.5rem",
-              top: "-5px",
               position: "relative",
             }}
           >

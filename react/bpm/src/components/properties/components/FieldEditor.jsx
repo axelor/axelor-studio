@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../IconButton";
 
 import { translate } from "../../../utils";
 import { Selection } from "../../expression-builder/components";
@@ -8,7 +8,7 @@ import { getSubMetaField } from "../../../services/api";
 import { UI_TYPES } from "../../../DMN/constants";
 import Tooltip from "../../Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./FieldEditor.module.css";
+import styles from "./field-editor.module.css";
 
 export default function FieldEditor({
   initValue = "",
@@ -32,10 +32,10 @@ export default function FieldEditor({
   const [allFieldValues, setAllFieldValues] = useState(null);
 
   let values = null;
-  if (typeof fieldName === "object") {
+  if (typeof fieldName === "object" && fieldName) {
     values = fieldName[fieldType]?.split(".");
   } else if (typeof fieldName === "string") {
-    values = fieldName.split(".");
+    values = fieldName?.split(".");
   }
 
   const [startValue] = values || [];
@@ -104,10 +104,10 @@ export default function FieldEditor({
 
   useEffect(() => {
     let values = null;
-    if (typeof fieldName === "object") {
+    if (typeof fieldName === "object" && fieldName) {
       values = fieldName[fieldType]?.split(".");
     } else if (typeof fieldName === "string") {
-      values = fieldName.split(".");
+      values = fieldName?.split(".");
     }
 
     const transformValue =

@@ -1,4 +1,3 @@
-import React from 'react';
 import classnames from 'classnames';
 
 import { Select, Box } from '@axelor/ui';
@@ -35,7 +34,7 @@ export default function Selection({
         placeholder={translate(title) || ''}
         invalid={error && !value}
         options={options}
-        optionKey={(option) => option.name}
+        optionKey={(option) => option.id || option.name}
         optionLabel={(option) => translate(option.title)}
         {...rest}
       />

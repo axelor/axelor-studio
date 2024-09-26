@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import styles from './DNDRow.module.css';
+import styles from './dnd.module.css';
 
 const dndItemTypes = {
   ROW: 'row',

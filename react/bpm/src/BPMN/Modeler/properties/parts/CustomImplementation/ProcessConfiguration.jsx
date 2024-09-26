@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createElement } from "../../../../../utils/ElementUtil";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import { IconButton } from "@material-ui/core";
+import IconButton from "../../../../../components/IconButton";
 import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 
 import Select from "../../../../../components/Select";
@@ -33,18 +33,11 @@ import {
   removeAllTranslations,
 } from "../../../../../services/api";
 
-import {
-  Button,
-  Dialog,
-  DialogHeader,
-  DialogContent,
-  DialogFooter,
-  InputLabel,
-  Box,
-  Divider,
-} from "@axelor/ui";
+import { InputLabel, Box } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ProcessConfiguration.module.css";
+import styles from "./process-config.module.css";
+import useDialog from "../../../../../hooks/useDialog";
 
 const initialProcessConfigList = {
   isStartModel: "false",
@@ -73,9 +66,6 @@ export default function ProcessConfiguration({
   const [openProcessPathDialog, setOpenProcessDialog] = useState(false);
   const [openUserPathDialog, setOpenUserPathDialog] = useState(false);
   const [startModel, setStartModel] = useState(null);
-  const [alert, setAlert] = useState({
-    open: false,
-  });
   const [selectedProcessConfig, setSelectedProcessConfig] = useState(null);
   const [openExpressionBuilder, setExpressionBuilder] = useState(false);
   const [pathCondition, setPathCondition] = useState(null);
@@ -85,6 +75,7 @@ export default function ProcessConfiguration({
   const [removedTranslations, setRemovedTranslations] = useState(null);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState(null);
+  const openDialog = useDialog();
 
   const handleExpressionBuilder = () => {
     setExpressionBuilder(false);
@@ -391,15 +382,8 @@ export default function ProcessConfiguration({
 
   return (
     <div>
-      <React.Fragment>
-        {index > 0 && <Divider className={styles.divider} />}
-      </React.Fragment>
+      <Title divider={index > 0} label={label} />
       <div>
-        <Box d="flex" alignItems="center">
-          <InputLabel color="body" className={styles.groupLabel}>
-            {label}
-          </InputLabel>
-        </Box>
         <Box>
           {(!processConfigList?.length ||
             !!processConfigList?.find(
@@ -762,12 +746,11 @@ export default function ProcessConfiguration({
                                           processConfig &&
                                           processConfig.pathConditionValue
                                         ) {
-                                          setAlert({
-                                            open: true,
+                                          openDialog({
+                                            title: "Warning",
                                             message:
                                               "Path condition can't be managed using builder once changed manually.",
-                                            title: "Warning",
-                                            callback: () => {
+                                            onSave: () => {
                                               updateValue(
                                                 processConfig?.pathCondition,
                                                 "pathCondition",
@@ -878,16 +861,36 @@ export default function ProcessConfiguration({
           </IconButton>
         </Box>
       </div>
-      <Dialog
-        open={openProcessPathDialog}
-        backdrop
-        centered
-        className={styles.processPathDialog}
-      >
-        <DialogHeader onCloseClick={() => setOpenProcessDialog(false)}>
-          <h3>{translate("Process Path")}</h3>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
+
+      <AlertDialog
+        openAlert={openProcessPathDialog}
+        title={"Process Path"}
+        fullscreen={false}
+        handleAlertOk={() => {
+          if (
+            field &&
+            field.target !== (startModel && startModel.fullName) &&
+            field.jsonTarget !== (startModel && startModel.name)
+          ) {
+            openDialog({
+              message: "Last subfield should be related to start model",
+              title: "Warning",
+            });
+            return;
+          }
+          setOpenProcessDialog(false);
+          if (selectedProcessConfig) {
+            updateValue(
+              selectedProcessConfig.processConfig &&
+                selectedProcessConfig.processConfig.processPath,
+              "processPath",
+              undefined,
+              selectedProcessConfig.key
+            );
+          }
+        }}
+        alertClose={() => setOpenProcessDialog(false)}
+        children={
           <FieldEditor
             getMetaFields={() =>
               getMetaFields(
@@ -917,49 +920,9 @@ export default function ProcessConfiguration({
             }}
             isParent={true}
           />
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              if (
-                field &&
-                field.target !== (startModel && startModel.fullName) &&
-                field.jsonTarget !== (startModel && startModel.name)
-              ) {
-                setAlert({
-                  open: true,
-                  message: "Last subfield should be related to start model",
-                  title: "Warning",
-                });
-                return;
-              }
-              setOpenProcessDialog(false);
-              if (selectedProcessConfig) {
-                updateValue(
-                  selectedProcessConfig.processConfig &&
-                    selectedProcessConfig.processConfig.processPath,
-                  "processPath",
-                  undefined,
-                  selectedProcessConfig.key
-                );
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => {
-              setOpenProcessDialog(false);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
+        }
+      />
+
       {openExpressionBuilder && (
         <QueryBuilder
           open={openExpressionBuilder}
@@ -1008,51 +971,31 @@ export default function ProcessConfiguration({
           }
         />
       )}
-      <Dialog centered open={alert?.open} backdrop>
-        <DialogHeader onCloseClick={() => setAlert({ open: false })}>
-          <h3>{translate(alert?.title || translate("Warning"))}</h3>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
-          <Box as="p" color="body" fontSize={5}>
-            {translate(alert?.message)}
-          </Box>
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            className={styles.save}
-            onClick={() => {
-              alert?.callback && alert.callback();
-              setAlert({ open: false });
-            }}
-            variant="primary"
-          >
-            {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => setAlert({ open: false })}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
-      <Dialog
-        open={openUserPathDialog}
-        backdrop
-        centered
-        className={styles.processPathDialog}
-      >
-        <DialogHeader
-          id="alert-dialog-title"
-          onCloseClick={() => {
-            setOpenUserPathDialog(false);
-            setSelectedProcessConfig(null);
-          }}
-        >
-          <h3>{translate("User default Path")}</h3>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
+
+      <AlertDialog
+        openAlert={openUserPathDialog}
+        title={"User default Path"}
+        fullscreen={false}
+        handleAlertOk={() => {
+          if (field && field.target !== "com.axelor.auth.db.User") {
+            openDialog({
+              title: "Warning",
+              message: "Last subfield should be related to user",
+            });
+            return;
+          }
+          setOpenUserPathDialog(false);
+          if (selectedProcessConfig) {
+            updateValue(
+              selectedProcessConfig.processConfig &&
+                selectedProcessConfig.processConfig.userDefaultPath,
+              "userDefaultPath",
+              undefined,
+              selectedProcessConfig.key
+            );
+          }
+        }}
+        children={
           <FieldEditor
             getMetaFields={() =>
               getMetaFields(
@@ -1082,87 +1025,40 @@ export default function ProcessConfiguration({
             isParent={true}
             isUserPath={true}
           />
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              if (field && field.target !== "com.axelor.auth.db.User") {
-                setAlert({
-                  open: true,
-                  message: "Last subfield should be related to user",
-                });
-                return;
+        }
+        alertClose={() => {
+          setOpenUserPathDialog(false);
+          setSelectedProcessConfig(null);
+        }}
+      />
+
+      <AlertDialog
+        openAlert={openTranslationDialog}
+        title="Translations"
+        fullscreen={false}
+        handleAlertOk={onConfirm}
+        alertClose={() => {
+          setTranslationDialog(false);
+        }}
+        children={
+          <div>
+            <ProcessConfigTitleTranslation
+              element={element}
+              configKey={
+                selectedProcessConfig &&
+                selectedProcessConfig.processConfig &&
+                selectedProcessConfig.processConfig.title
               }
-              setOpenUserPathDialog(false);
-              if (selectedProcessConfig) {
-                updateValue(
-                  selectedProcessConfig.processConfig &&
-                    selectedProcessConfig.processConfig.userDefaultPath,
-                  "userDefaultPath",
-                  undefined,
-                  selectedProcessConfig.key
-                );
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => {
-              setOpenUserPathDialog(false);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
-      <Dialog backdrop centered open={openTranslationDialog}>
-        <DialogHeader
-          id="alert-dialog-title"
-          onCloseClick={(event, reason) => {
-            if (reason !== "backdropClick") {
-              setTranslationDialog(false);
-              setSelectedProcessConfig(null);
-            }
-          }}
-        >
-          <h3>{translate("Translations")}</h3>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
-          <ProcessConfigTitleTranslation
-            element={element}
-            configKey={
-              selectedProcessConfig &&
-              selectedProcessConfig.processConfig &&
-              selectedProcessConfig.processConfig.title
-            }
-            onChange={(translations, removedTranslations) => {
-              setTranslations(translations);
-              setRemovedTranslations(removedTranslations);
-            }}
-            bpmnModeler={bpmnModeler}
-            setDummyProperty={setDummyProperty}
-          />
-        </DialogContent>
-        <DialogFooter>
-          <Button onClick={onConfirm} variant="primary" className={styles.save}>
-            {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => {
-              setTranslationDialog(false);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
+              onChange={(translations, removedTranslations) => {
+                setTranslations(translations);
+                setRemovedTranslations(removedTranslations);
+              }}
+              bpmnModeler={bpmnModeler}
+              setDummyProperty={setDummyProperty}
+            />
+          </div>
+        }
+      />
     </div>
   );
 }

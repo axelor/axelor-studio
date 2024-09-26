@@ -28,10 +28,12 @@ import {
   DialogContent,
   DialogFooter,
   Box,
-  Divider,
+  DialogTitle,
 } from "@axelor/ui";
+import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ListenerProps.module.css";
+import styles from "./listener-props.module.css";
+import useDialog from "../../../../../hooks/useDialog";
 
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
 const CAMUNDA_TASK_LISTENER_ELEMENT = "camunda:TaskListener";
@@ -110,8 +112,8 @@ export default function ListenerProps({
   const [openAlert, setAlert] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
-
   const isSequenceFlow = _isSequenceFlow(element);
+  const openDialog = useDialog();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -408,12 +410,7 @@ export default function ListenerProps({
   return (
     isVisible && (
       <div>
-        <React.Fragment>
-          {index > 0 && <Divider className={styles.divider} />}
-        </React.Fragment>
-        <Box color="body" className={styles.groupLabel}>
-          {translate(label)}
-        </Box>
+        <Title divider={index > 0} label={label} />
         {showExecutionListener() && (
           <ExtensionElementTable
             element={element}
@@ -582,7 +579,17 @@ export default function ListenerProps({
                     onClick={() => {
                       const listener = getListener();
                       if (listener?.script?.scriptValue) {
-                        setAlert(true);
+                        openDialog({
+                          title: "Warning",
+                          message:"Script can't be managed using builder once changed manually.",
+                          onSave: () => {
+                            const listener = getListener();
+                            if (!listener) return;
+                            setScript(listener?.script?.value);
+                            listener.script.scriptValue = undefined;
+                            setOpenScriptDialog(true);
+                          },
+                        });
                       } else {
                         setScript(listener?.script?.value);
                         setOpenScriptDialog(true);
@@ -645,48 +652,6 @@ export default function ListenerProps({
                           />
                         }
                       />
-                    )}
-                    {openAlert && (
-                      <Dialog
-                        open={openAlert}
-                        backdrop
-                        centered
-                        className={styles.dialog}
-                      >
-                        <DialogHeader onCloseClick={() => setAlert(false)}>
-                          <h3>{translate("Warning")}</h3>
-                        </DialogHeader>
-                        <DialogContent className={styles.content}>
-                          {translate(
-                            "Script can't be managed using builder once changed manually."
-                          )}
-                        </DialogContent>
-                        <DialogFooter>
-                          <Button
-                            onClick={() => {
-                              setAlert(false);
-                              const listener = getListener();
-                              if (!listener) return;
-                              setScript(listener?.script?.value);
-                              listener.script.scriptValue = undefined;
-                              setOpenScriptDialog(true);
-                            }}
-                            variant="primary"
-                            className={styles.save}
-                          >
-                            {translate("OK")}
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setAlert(false);
-                            }}
-                            variant="secondary"
-                            className={styles.save}
-                          >
-                            {translate("Cancel")}
-                          </Button>
-                        </DialogFooter>
-                      </Dialog>
                     )}
                   </>
                 )}

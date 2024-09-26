@@ -6,7 +6,7 @@ function StaticSelect({ value = [], onChange, options = [] }) {
   const [val, setVal] = useState(value);
 
   useEffect(() => {
-    setVal(value);
+    setVal(value ?? []);
   }, [value]);
 
   const handleSelectChange = (newValue) => {
@@ -34,7 +34,7 @@ function StaticSelect({ value = [], onChange, options = [] }) {
         </Badge>
       )}
       options={options}
-      optionKey={(x) => x.name}
+      optionKey={(x) => x.id || x.name}
       optionLabel={(x) => x.title}
       renderOption={({ option }) => (
         <MenuItem value={option.name} key={option.name}>

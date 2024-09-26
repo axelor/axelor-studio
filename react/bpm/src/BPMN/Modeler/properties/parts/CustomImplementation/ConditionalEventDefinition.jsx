@@ -24,9 +24,11 @@ import {
   Button,
   InputLabel,
   Box,
+  DialogTitle,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
-import styles from "./ConditionalEventDefinition.module.css";
+import styles from "./conditional-event.module.css";
+import useDialog from "../../../../../hooks/useDialog";
 
 const conditionType = "script";
 
@@ -38,13 +40,11 @@ export default function ConditionalEventProps({
   setDummyProperty = () => {},
 }) {
   const [open, setOpen] = useState(false);
-  const [openAlert, setAlert] = useState(false);
-  const [alertTitle, setAlertTitle] = useState(null);
-  const [alertMessage, setAlertMessage] = useState(null);
   const [readOnly, setReadOnly] = useState(false);
   const [variableEventValue, setVariableEventValue] = useState("");
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
   const [script, setScript] = useState("");
+  const openDialog = useDialog();
 
   const getter = () => {
     const { scriptValue: value } = getValue("scriptValue")(element);
@@ -71,7 +71,6 @@ export default function ConditionalEventProps({
   };
 
   const handleClickOpen = () => {
-    setAlertMessage("Add all values");
     setOpen(true);
   };
   const handleClose = () => {
@@ -212,8 +211,9 @@ export default function ConditionalEventProps({
           </InputLabel>
           <Select
             multiple
+            type="multiple"
             options={TASK_LISTENER_EVENT_TYPE_OPTION}
-            update={(value) => {
+            update={(value = []) => {
               const optionString = value?.map((item) => item?.value)?.join(",");
               setVariableEventValue(optionString);
               setValue("variableEvent")(element, {
@@ -279,11 +279,23 @@ export default function ConditionalEventProps({
                 fontSize={18}
                 onClick={() => {
                   if (readOnly) {
-                    setAlertMessage(
-                      "Script can't be managed using builder once changed manually."
-                    );
-                    setAlertTitle("Warning");
-                    setAlert(true);
+                    openDialog({
+                      title: "Warning",
+                      message:
+                        "Script can't be managed using builder once changed manually.",
+                      onSave: () => {
+                        setReadOnly(false);
+                        setScript(getCondition()?.script);
+                        setValue("scriptValue")(element, {
+                          scriptValue: undefined,
+                        });
+                        setValue("combinator")(element, {
+                          combinator: undefined,
+                        });
+                        setScript(getCondition()?.script);
+                        setOpenScriptDialog(true);
+                      },
+                    });
                   } else {
                     setScript(getCondition()?.script);
                     setOpenScriptDialog(true);
@@ -343,44 +355,6 @@ export default function ConditionalEventProps({
             />
           }
         />
-      )}
-      {openAlert && (
-        <Dialog open={openAlert} backdrop centered className={styles.dialog}>
-          <DialogHeader onCloseClick={() => setAlert(false)}>
-            <h3>{translate(alertTitle)}</h3>
-          </DialogHeader>
-          <DialogContent className={styles.content}>
-            {translate(alertMessage)}
-          </DialogContent>
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                setAlert(false);
-                setAlertMessage(null);
-                setAlertTitle(null);
-                setReadOnly(false);
-                setScript(getCondition()?.script);
-                setValue("scriptValue")(element, { scriptValue: undefined });
-                setValue("combinator")(element, { combinator: undefined });
-                setScript(getCondition()?.script);
-                setOpenScriptDialog(true);
-              }}
-              variant="primary"
-              className={styles.save}
-            >
-              {translate("OK")}
-            </Button>
-            <Button
-              onClick={() => {
-                setAlert(false);
-              }}
-              variant="secondary"
-              className={styles.save}
-            >
-              {translate("Cancel")}
-            </Button>
-          </DialogFooter>
-        </Dialog>
       )}
     </div>
   );

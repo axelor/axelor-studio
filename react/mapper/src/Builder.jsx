@@ -1,7 +1,7 @@
 import React from 'react';
-import classNames from 'classnames';
 import update from 'immutability-helper';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from './components/IconButton';
+import { clsx } from '@axelor/ui';
 
 import DataTable from './DataTable';
 import { Selection, MultiSelection } from './components/form';
@@ -32,8 +32,7 @@ import Loader from './components/Loader';
 import DialogBox from './components/Dialog';
 import { Box, InputLabel, Switch } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
-import styles from './Builder.module.css';
-import { VAR_TYPES } from './constants';
+import styles from './builder.module.css';
 
 function isFieldInvalid(field) {
   const { from, selected, subFields } = field.value || {};
@@ -172,7 +171,7 @@ function Builder({
   getProcessElement,
   isDMNAllow,
   getDMNValues,
-  isBAML
+  isBAML,
 }) {
   const [loading, setLoading] = React.useState(false);
   const [builderRecord, setBuilderRecord] = React.useState({});
@@ -366,7 +365,12 @@ function Builder({
         [params.sourceField]: getSourceModelString(sourceModelList),
       };
       onSave &&
-        onSave({ resultField: scriptString, resultMetaField: jsonQuery ,sourceField:record[params.sourceField],targetField:model?.name});
+        onSave({
+          resultField: scriptString,
+          resultMetaField: jsonQuery,
+          sourceField: record[params.sourceField],
+          targetField: model?.name,
+        });
       if (!params?.model) return;
       const result = await saveRecord(params, record);
       if (result) {
@@ -460,12 +464,14 @@ function Builder({
       if (params) {
         try {
           setLoading(true);
-          const result = isBPMN || isBAML
+          const result =
+            isBPMN || isBAML
               ? true
               : await fetchRecord(params.model, params.id);
           if (result) {
             !isBPMN && setBuilderRecord(result);
-            const jsonData = isBPMN || isBAML
+            const jsonData =
+              isBPMN || isBAML
                 ? getJSON(params, 'resultMetaField')
                 : getJSON(result, params.resultMetaField);
             if (jsonData) {
@@ -617,12 +623,12 @@ function Builder({
         <Box className={styles.topView}>
           <Box style={{ marginBottom: 10 }}>
             <Box d="flex" flexWrap="wrap" alignItems="center">
-              {!isBPMN &&  !isBAML && (
+              {!isBPMN && !isBAML && (
                 <IconButton
                   classes={{ colorPrimary: styles.saveIcon }}
                   color="primary"
                   onClick={handleSave}
-                  className={classNames(styles.iconButtonClassName)}
+                  className={clsx(styles.iconButtonClassName)}
                   disabled={!model}
                 >
                   <MaterialIcon icon="save" fontSize={20} />
