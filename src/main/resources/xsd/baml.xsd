@@ -92,6 +92,9 @@
     <complexType name="QueryType">
       <complexContent>
         <extension base="xsd:BaseNodeType">
+            <sequence>
+                <element name="parameter" type="xsd:ParameterLineType" minOccurs="0" maxOccurs="unbounded"/>
+            </sequence>
           <attribute name="target" type="string" use="required"></attribute>
           <attribute name="expression" type="string"
             use="required" />
