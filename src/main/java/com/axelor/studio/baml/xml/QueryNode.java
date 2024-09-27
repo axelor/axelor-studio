@@ -19,8 +19,8 @@ package com.axelor.studio.baml.xml;
 
 import com.axelor.meta.db.MetaJsonRecord;
 import com.google.common.base.Strings;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType
 public class QueryNode extends BaseTaskNode {
