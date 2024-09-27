@@ -17,7 +17,7 @@
  */
 package com.axelor.studio.baml.xml;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType
 public class NewRecordNode extends BaseTaskNode {

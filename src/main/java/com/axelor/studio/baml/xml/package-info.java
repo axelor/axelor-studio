@@ -15,11 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-@javax.xml.bind.annotation.XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
-@javax.xml.bind.annotation.XmlSchema(
+@jakarta.xml.bind.annotation.XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
+@jakarta.xml.bind.annotation.XmlSchema(
     namespace = "http://www.example.org/baml",
     xmlns = {
-      @javax.xml.bind.annotation.XmlNs(namespaceURI = "http://www.example.org/baml", prefix = ""),
+      @jakarta.xml.bind.annotation.XmlNs(namespaceURI = "http://www.example.org/baml", prefix = ""),
     },
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+    elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package com.axelor.studio.baml.xml;
