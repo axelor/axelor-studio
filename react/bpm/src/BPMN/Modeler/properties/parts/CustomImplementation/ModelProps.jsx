@@ -907,6 +907,7 @@ export function FieldAction({
               clearPropertises();
             }}
             disableClearable="false"
+            optionLabel={"title"}
             isLabel={false}
           />
         </TableCell>
@@ -922,6 +923,7 @@ export function FieldAction({
                 setPath(value?.name);
               }}
               isLabel={false}
+              optionLabel={"name"}
             />
           ) : (
             <TextField

@@ -35,6 +35,19 @@
   text-transform: none;
 }
 
+
+.title {
+  font-weight: bolder;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 100%;
+  transition: margin 0.218s linear;
+  width: 100%;
+  padding-left: 5px;
+  background-color: transparent;
+  border: none;
+}
+
 .dialogContent {
   display: flex;
   align-items: flex-end;

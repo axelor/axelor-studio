@@ -41,12 +41,19 @@
   overflow: auto;
 }
 
+
 .tableHead {
   padding: 6px !important;
   margin: 3px 0px;
   text-align: center;
 }
 
+.textbox {
+  width: 100%;
+  text-overflow: ellipsis;
+  margin-top: -7px;
+  box-sizing: border-box;
+}
 
 .tableCell {
   padding: 6px;
