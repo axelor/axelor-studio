@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classnames from "classnames";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
@@ -6,20 +6,39 @@ import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
 import Select from "../../../../../components/Select";
 import {
   Checkbox,
+  FieldEditor,
   Textbox,
+  TextField,
 } from "../../../../../components/properties/components";
 import {
+  getAllModels,
   getCustomModels,
   getMetaModels,
-  getAllModels,
+  getMetaFields,
   getViews,
+  fetchModels,
 } from "../../../../../services/api";
-import { translate, getBool } from "../../../../../utils";
-import { USER_TASKS_TYPES, DATA_STORE_TYPES } from "../../../constants";
+import { getBool, translate } from "../../../../../utils";
+import { DATA_STORE_TYPES, USER_TASKS_TYPES } from "../../../constants";
 
-import { InputLabel } from "@axelor/ui";
-import Title from "../../../Title";
+import {
+  Box,
+  clsx,
+  Divider,
+  InputLabel,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@axelor/ui";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import QueryBuilder from "../../../../../components/QueryBuilder";
+import Tooltip from "../../../../../components/Tooltip";
 import styles from "./model-props.module.css";
+import AlertDialog from "../../../../../components/AlertDialog";
+import Title from "../../../Title";
+
 const GATEWAY = ["bpmn:EventBasedGateway"];
 
 const CONDITIONAL_SOURCES = [
@@ -64,6 +83,52 @@ const HELP_TITLE_SOURCES = [
   "bpmn:DataObjectReference",
   "bpmn:DataStoreReference",
 ];
+
+const typesWithMenuAction = [
+  "bpmn:StartEvent",
+  "bpmn:AdHocSubProcess",
+  "bpmn:Transaction",
+  "bpmn:Group",
+  "bpmn:Association",
+  "bpmn:EndEvent",
+  "bpmn:UserTask",
+  "bpmn:ReceiveTask",
+  "bpmn:CallActivity",
+  "bpmn:SubProcess",
+];
+
+const EVENT_DEFINITIONS_TYPES = {
+  "bpmn:StartEvent": [
+    "bpmn:MessageEventDefinition",
+    "bpmn:TimerEventDefinition",
+    "bpmn:ConditionalEventDefinition",
+    "bpmn:SignalEventDefinition",
+    "bpmn:IntermediateCatchEvent",
+  ],
+  "bpmn:IntermediateCatchEvent": [
+    "bpmn:MessageEventDefinition",
+    "bpmn:TimerEventDefinition",
+    "bpmn:ConditionalEventDefinition",
+    "bpmn:LinkEventDefinition",
+    "bpmn:SignalEventDefinition",
+  ],
+  "bpmn:EndEvent": [
+    "bpmn:MessageEventDefinition",
+    "bpmn:CompensateEventDefinition",
+    "bpmn:ErrorEventDefinition",
+    "bpmn:TerminateEventDefinition",
+    "bpmn:EscalationEventDefinition",
+  ],
+  "bpmn:IntermediateThrowEvent": ["bpmn:SignalEventDefinition"],
+};
+
+const PRIORITIES = [
+  { value: "low", id: "low", title: "Low" },
+  { value: "normal", id: "normal", title: "Normal" },
+  { value: "high", id: "high", title: "High" },
+  { value: "urgent", id: "urgent", title: "Urgent" },
+];
+
 function isConditionalSource(element) {
   return isAny(element, CONDITIONAL_SOURCES);
 }
@@ -87,12 +152,38 @@ export default function ModelProps(props) {
   const [isDefaultFormVisible, setDefaultFormVisible] = useState(false);
   const [isModelsDisable, setModelsDisable] = useState(false);
   const [isCustom, setIsCustom] = useState(false);
+  const [renderActions, setRenderActions] = useState(false);
 
   const subType =
     element?.businessObject &&
     element.businessObject.eventDefinitions &&
     element.businessObject.eventDefinitions[0] &&
     element.businessObject.eventDefinitions[0].$type;
+
+  const FIELD_ACTIONS = [
+    {
+      id: 1,
+      label: "User",
+      title: "userField",
+    },
+    {
+      id: 2,
+      label: "Team",
+      title: "teamField",
+    },
+    {
+      id: 3,
+      label: "Deadline",
+      title: "deadlineField",
+    },
+  ];
+
+  const FIELD_ACTIONS_HEADER = [
+    { id: 1, label: "Field path", className: styles.leftAlign },
+    { id: 2, label: "Type" },
+    { id: 3, label: "Value" },
+    { id: 4, label: "Action" },
+  ];
 
   function getBO(element) {
     if (
@@ -176,7 +267,7 @@ export default function ModelProps(props) {
       } else {
         bo.$attrs = { [propertyName]: value };
       }
-      if (value === undefined || value === null) {
+      if (!value) {
         delete bo.$attrs[propertyName];
       }
     },
@@ -198,11 +289,15 @@ export default function ModelProps(props) {
   const getSelectValue = React.useCallback(
     (name, element) => {
       let label = getProperty(`${name}Label`, element);
+      let fullName = getProperty(`${name}ModelName`);
       let newName = getProperty(name, element);
       if (newName) {
         let value = { name: newName };
         if (label) {
           value.title = label;
+        }
+        if (fullName) {
+          value.fullName = fullName;
         }
         return value;
       } else {
@@ -366,6 +461,16 @@ export default function ModelProps(props) {
     }
   }, [getProperty, getSelectValue, getFormViews]);
 
+  useEffect(() => {
+    const bo = getBusinessObject(element);
+    const eventDefinitionType = bo.get("eventDefinitions")?.[0]?.$type;
+    if (
+      (typesWithMenuAction.includes(bo.$type) && !eventDefinitionType) ||
+      EVENT_DEFINITIONS_TYPES[bo.$type]?.includes(eventDefinitionType)
+    ) {
+      setRenderActions(true);
+    } else setRenderActions(false);
+  }, [element]);
   return (
     <>
       {isVisible && (
@@ -550,6 +655,67 @@ export default function ModelProps(props) {
       {HELP_TITLE_SOURCES.includes(element && element.type) && (
         <Title divider={index > 0} label={label} />
       )}
+
+      {renderActions && (
+        <Box
+          style={{
+            position: "relative",
+            margin: "10px 0",
+          }}
+        >
+          <h1 className={styles.title}>{translate("Field config")}</h1>
+          <Box
+            key={2}
+            w={100}
+            rounded={2}
+            border
+            bg="body-tertiary"
+            color="body"
+            style={{
+              marginTop: 5,
+              paddingTop: 35,
+              marginBottom: 10,
+              position: "relative",
+            }}
+          >
+            <Box color="body">
+              <Box overflow="auto">
+                <Box rounded={2} bgColor="body" shadow color="body">
+                  <Table size="sm" textAlign="center">
+                    <TableHead>
+                      <TableRow className={styles.tableRow}>
+                        {FIELD_ACTIONS_HEADER.map((item) => (
+                          <TableCell
+                            key={item.id}
+                            className={clsx(styles.tableHead, item.className)}
+                          >
+                            {translate(item.label)}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {FIELD_ACTIONS.map((action) => (
+                        <FieldAction
+                          key={action.id}
+                          initialType="field"
+                          label={action.label}
+                          title={action.title}
+                          element={element}
+                          getProperty={getProperty}
+                          setProperty={setProperty}
+                          metaModel={metaModel}
+                          fieldTypes={["field", "script"]}
+                        />
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      )}
       <Textbox
         element={element}
         className={styles.textbox}
@@ -576,6 +742,401 @@ export default function ModelProps(props) {
             }
           },
         }}
+      />
+    </>
+  );
+}
+
+export function FieldAction({
+  initialType,
+  label,
+  title,
+  element,
+  getProperty,
+  setProperty,
+  metaModel,
+  isUserAction = false,
+  fetchMethod,
+  fieldTypes = ["field", "script"],
+}) {
+  const [currentType, setCurrentType] = useState({
+    title: "Field",
+    value: "field",
+  });
+  const [openAlertDialog, setOpenAlertDialog] = useState(false);
+  const [openBuilder, setOpenBuilder] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openScript, setOpenScript] = useState(false);
+  const [dummyState, setDummyState] = useState(null);
+  const [readOnly, setReadOnly] = useState(false);
+  const [path, setPath] = useState(null);
+  const [model, setModel] = useState(null);
+  const [field, setField] = useState(null);
+  const TYPES = [
+    { value: "value", title: "Value" },
+    { value: "field", title: "Field" },
+    { value: "script", title: "Script" },
+  ];
+
+  const toPath = (text) => `${text}Path`;
+  const toPathValue = (text) => `${text}PathValue`;
+  const toType = (text) => `${text}Type`;
+  const toTask = (text) => `task${text}`;
+  const toLowerCase = (text) => text.toLowerCase();
+
+  useEffect(() => {
+    const selectedType = TYPES.find((type) => type.value === initialType);
+    setCurrentType(selectedType);
+  }, []);
+
+  const getFields = useCallback(() => {
+    const m = getMetaFields(model);
+    return m;
+  }, [model]);
+
+  const getSelectValue = React.useCallback(
+    (name, element) => {
+      let label = getProperty(`${name}Label`, element);
+      let fullName = getProperty(`${name}ModelName`);
+      let newName = getProperty(name, element);
+      if (newName) {
+        let value = { name: newName };
+        if (label) {
+          value.title = label;
+        }
+        if (fullName) {
+          value.fullName = fullName;
+        }
+        return value;
+      } else {
+        return null;
+      }
+    },
+    [getProperty]
+  );
+
+  useEffect(() => {
+    const metaModel = getSelectValue("metaModel");
+    const metaJsonModel = getSelectValue("metaJsonModel");
+    if (metaModel) {
+      setModel({
+        ...metaModel,
+        type: "metaModel",
+      });
+    } else if (metaJsonModel) {
+      setModel({
+        ...metaJsonModel,
+        type: "metaJsonModel",
+      });
+    }
+  }, [metaModel]);
+
+  const clearPropertises = () => {
+    setDummyState(null);
+    setPath(null);
+    setProperty(toPath(title), undefined);
+    setProperty(toPathValue(title), undefined);
+    setProperty(
+      isUserAction ? toType(toLowerCase(label)) : toType(title),
+      undefined
+    );
+    setProperty(toTask(label), undefined);
+  };
+
+  const updateScript = () => {
+    if (!dummyState) {
+      setProperty(toPath(title), undefined);
+      setProperty(toPathValue(title), undefined);
+      return;
+    }
+
+    setPath(dummyState);
+    setProperty(toPath(title), dummyState);
+    setProperty(
+      isUserAction ? toType(toLowerCase(label)) : toType(title),
+      currentType.value
+    );
+    setProperty(toPathValue(title), undefined);
+  };
+
+  useEffect(() => {
+    const fieldType = getProperty(
+      isUserAction ? toType(toLowerCase(label)) : toType(title)
+    );
+    const fieldPath = getProperty(
+      fieldType === "value" ? toTask(label) : toPath(title)
+    );
+    setPath(fieldPath);
+    if (fieldType) {
+      const matchedType = TYPES.find((item) => item.value === fieldType);
+      setCurrentType(matchedType || {});
+    }
+
+    fieldPath && setReadOnly(true);
+    setDummyState(fieldPath);
+  }, [getProperty, getSelectValue, element]);
+
+  const getterMethod = (field) => {
+    const fieldPathValue = getProperty(toPathValue(field));
+    let values;
+    if (!fieldPathValue) return { checked: true };
+    let json = JSON.parse(fieldPathValue || "{}");
+    const { value, scriptOperatorType } = json;
+    values = JSON.parse(value || "{}");
+    if (!values.length) {
+      values = null;
+    }
+    return { values, combinator: scriptOperatorType, checked: true };
+  };
+
+  return (
+    <>
+      <TableRow>
+        <TableCell>
+          <InputLabel className={styles.label}>{label}</InputLabel>
+        </TableCell>
+        <TableCell className={styles.tableCell}>
+          <Select
+            className={styles.select}
+            value={currentType.title}
+            type="text"
+            options={TYPES.filter((type) => fieldTypes.includes(type.value))}
+            update={(value, label) => {
+              setCurrentType(value);
+              clearPropertises();
+            }}
+            disableClearable="false"
+            optionLabel={"title"}
+            isLabel={false}
+          />
+        </TableCell>
+        <TableCell>
+          {currentType.value === "value" ? (
+            <Select
+              name={title}
+              fetchMethod={fetchMethod}
+              value={path}
+              update={(value) => {
+                setProperty(toTask(label), value?.name);
+                setProperty(toType(toLowerCase(label)), currentType.value);
+                setPath(value?.name);
+              }}
+              isLabel={false}
+              optionLabel={"name"}
+            />
+          ) : (
+            <TextField
+              className={styles.textbox}
+              element={element}
+              type="text"
+              readOnly={readOnly && getProperty(toPathValue(title))}
+              placeholder={label}
+              entry={{
+                id: "fieldPath",
+                name: "fieldPath",
+                modelProperty: "fieldPath",
+                get: function () {
+                  return {
+                    fieldPath: path,
+                  };
+                },
+                set: function (e, value) {
+                  if (!value.fieldPath) return;
+                  setPath(value?.fieldPath);
+                  setDummyState({
+                    fieldPath: value?.fieldPath,
+                  });
+                  setProperty(toPath(title), value.fieldPath);
+                  setProperty(
+                    isUserAction ? toType(toLowerCase(label)) : toType(title),
+                    value?.fieldPath !== "" && currentType.value
+                  );
+                },
+              }}
+              canRemove={true}
+              clearPropertises={clearPropertises}
+            />
+          )}
+        </TableCell>
+        <TableCell className={styles.tableCell}>
+          {currentType.value === "field" && (
+            <MaterialIcon
+              fontSize={16}
+              icon="edit"
+              className={styles.newIcon}
+              onClick={() => {
+                setOpenDialog(true);
+              }}
+            />
+          )}
+          {currentType.value === "script" && (
+            <Box className={styles.iconGroup}>
+              <Tooltip title="Script" aria-label="enable">
+                <i
+                  className="fa fa-code"
+                  style={{ fontSize: 18, marginLeft: 5 }}
+                  onClick={() => {
+                    if (readOnly && getProperty(toPathValue(title))) {
+                      setAlertMessage(
+                        `${label} field can't be managed using builder once changed manually.`
+                      );
+                      setOpenAlertDialog(true);
+                    } else {
+                      setOpenScript(true);
+                    }
+                  }}
+                ></i>
+              </Tooltip>
+              <MaterialIcon
+                fontSize={18}
+                icon="edit"
+                className={styles.newIcon}
+                onClick={() => {
+                  setOpenBuilder(true);
+                }}
+              />
+            </Box>
+          )}
+        </TableCell>
+      </TableRow>
+
+      <AlertDialog
+        openAlert={openAlertDialog}
+        message={alertMessage}
+        title="Error"
+        handleAlertOk={() => {
+          if (currentType.value === "script") setOpenScript(true);
+
+          setReadOnly(false);
+          setOpenAlertDialog(false);
+        }}
+        alertClose={() => setOpenAlertDialog(false)}
+      />
+      <AlertDialog
+        openAlert={openDialog}
+        title={`${label} field path`}
+        fullscreen={false}
+        children={
+          <div className={styles.dialogContent}>
+            <FieldEditor
+              getMetaFields={getFields}
+              onChange={(val, field) => {
+                setDummyState(val);
+                setField(field);
+              }}
+              value={{ fieldName: dummyState || "" }}
+              isParent={true}
+              isUserPath={true}
+            />
+          </div>
+        }
+        handleAlertOk={() => {
+          const alerts = {
+            userField: {
+              condition: field?.target !== "com.axelor.auth.db.User",
+              message: "Last sub field must be user field",
+            },
+            deadlineField: {
+              condition:
+                field?.type &&
+                !["datetime", "date"].includes(field.type.toLowerCase()),
+              message: "Field should be date field",
+            },
+            teamField: {
+              condition: field?.target !== "com.axelor.team.db.Team",
+              message: "Last subfield should be related to team",
+            },
+            roleField: {
+              condition: field?.target !== "com.axelor.auth.db.Role",
+              message: "Last sub field must be role field",
+            },
+          };
+
+          const alert = alerts[title];
+
+          if (alert?.condition) {
+            setAlertMessage(alert.message);
+            setOpenAlertDialog(true);
+            return;
+          }
+          setProperty(toPath(title), dummyState);
+          setProperty(
+            isUserAction ? toType(toLowerCase(label)) : toType(title),
+            currentType.value
+          );
+          setPath(dummyState);
+          setReadOnly(true);
+          setOpenDialog(false);
+        }}
+        alertClose={() => {
+          setOpenDialog(false);
+        }}
+      />
+
+      <QueryBuilder
+        open={openBuilder}
+        close={() => setOpenBuilder(false)}
+        type="bpmQuery"
+        title="Add query"
+        setProperty={(val) => {
+          const { expression, value, combinator, checked } = val;
+          if (val) {
+            setPath(expression);
+            const pathValue = JSON.stringify({
+              scriptOperatorType: combinator,
+              checked,
+              value: (value || "")?.replace(
+                /[\u200B-\u200D\uFEFF]/g,
+                undefined
+              ),
+            });
+            setDummyState(expression);
+            setProperty(toPath(title), expression);
+            setProperty(toPathValue(title), pathValue);
+            setProperty(
+              isUserAction ? toType(toLowerCase(label)) : toType(title),
+              currentType.value
+            );
+            setReadOnly(true);
+          }
+        }}
+        getExpression={() => getterMethod(title)}
+        fetchModels={() => fetchModels(element)}
+      />
+      <AlertDialog
+        className={styles.scriptDialog}
+        openAlert={openScript}
+        alertClose={() => setOpenScript(false)}
+        handleAlertOk={() => {
+          updateScript();
+          setOpenScript(false);
+        }}
+        title={translate("Add script")}
+        children={
+          <Box color="body" className={styles.new}>
+            <Textbox
+              element={element}
+              className={styles.textbox}
+              readOnly={readOnly && getProperty(toPathValue(title))}
+              showLabel={false}
+              defaultHeight={window?.innerHeight - 205}
+              entry={{
+                id: "script",
+                label: translate("Script"),
+                modelProperty: "script",
+                get: function () {
+                  return { script: getProperty(toPath(title)) };
+                },
+                set: function (e, values) {
+                  const updatedValue = values?.script;
+                  setDummyState(updatedValue);
+                },
+              }}
+              suggestion={true}
+            />
+          </Box>
+        }
       />
     </>
   );

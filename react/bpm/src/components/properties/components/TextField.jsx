@@ -27,9 +27,8 @@ export default function TextField({
   isScript,
   language,
   setDummyProperty = () => {},
-  setTeamField,
   setField,
-  setDeadlineField,
+  clearPropertises,
   placeholder,
 }) {
   const {
@@ -79,9 +78,8 @@ export default function TextField({
     setValue("");
     const isError = getValidation();
     setError(isError);
-    setTeamField && setTeamField(null);
     setField && setField(null);
-    setDeadlineField && setDeadlineField(null);
+    clearPropertises && clearPropertises();
     if (!isError) {
       updateProperty("");
     }

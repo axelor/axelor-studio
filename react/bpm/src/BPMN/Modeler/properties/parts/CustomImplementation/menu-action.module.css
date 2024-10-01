@@ -8,7 +8,7 @@
 }
 
 .label {
-  display: inline-block;
+  display: flex;
   vertical-align: middle;
   margin: 3px 0;
   color: rgba(var(--bs-body-color-rgb), 0.65) !important;
@@ -41,12 +41,30 @@
   overflow: auto;
 }
 
+
+.tableHead {
+  padding: 6px !important;
+  margin: 3px 0px;
+  text-align: center;
+}
+
+.textbox {
+  width: 100%;
+  text-overflow: ellipsis;
+  margin-top: -7px;
+  box-sizing: border-box;
+}
+
+.tableCell {
+  padding: 6px;
+  text-align: center;
+  vertical-align: bottom;
+}
+
 .dialog {
   min-width: 300px;
 }
 
-.teamFieldPathDialog > div {
-  max-width: 90%;
-  width: fit-content;
-  min-width: 500px;
+.leftAlign{
+  text-align: left;
 }

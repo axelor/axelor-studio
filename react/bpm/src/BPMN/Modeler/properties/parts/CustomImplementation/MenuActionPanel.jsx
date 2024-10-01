@@ -9,7 +9,6 @@ import {
   TextField,
   Checkbox,
   Table as AxTable,
-  FieldEditor,
   Textbox,
 } from "../../../../../components/properties/components";
 import {
@@ -17,12 +16,10 @@ import {
   getSubMenus,
   getViews,
   getTemplates,
-  getMetaFields,
   getRoles,
   getMenu,
 } from "../../../../../services/api";
 import { translate, getBool } from "../../../../../utils";
-import { USER_TASKS_TYPES } from "../../../constants";
 import {
   createElement,
   createParameter,
@@ -43,13 +40,13 @@ import {
   TableCell,
   TableBody,
   Table,
+  clsx,
 } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import ScriptDialog from "./ScriptDialog";
 import styles from "./menu-action.module.css";
-import QueryBuilder from "../../../../../components/QueryBuilder";
 import AlertDialog from "../../../../../components/AlertDialog";
-import { fetchModels } from "../../../../../services/api";
+import { FieldAction } from "./ModelProps";
 import useDialog from "../../../../../hooks/useDialog";
 
 const PRIORITIES = [
@@ -65,13 +62,6 @@ const TYPES = [
   { value: "script", id: "script", title: "Script" },
 ];
 
-const FIELDSTOMAP = {
-  taskRole: "roleType",
-  taskName: "taskNameType",
-  taskPriority: "priorityType",
-  description: "descriptionType",
-  duration: "durationType",
-};
 const menuObj = {
   menuName: null,
   menuParent: null,
@@ -98,89 +88,50 @@ export default function MenuActionPanel({
   setDummyProperty = () => {},
 }) {
   const [createUserAction, setCreateUserAction] = useState(false);
-  const [deadlineFieldPath, setDeadlineFieldPath] = useState(null);
   const [emailNotification, setEmailNotification] = useState(false);
-  const [userFieldPath, setUserFieldPath] = useState(null);
-  const [userFieldPathDummy, setUserFieldPathDummy] = useState(null);
   const [model, setModel] = useState(null);
   const [template, setTemplate] = useState(null);
   const [emailEvent, setEmailEvent] = useState();
-  const [role, setRole] = useState(null);
-  const [roleFieldPath, setRoleFieldPath] = useState(null);
-  const [roleDummy, setRoleDummy] = useState(null);
-  const [openRoleDialog, setOpenRoleDialog] = useState(false);
-  const [openUserPathDialog, setOpenUserPathDialog] = useState(false);
-  const [field, setField] = useState(null);
   const [openExpressionAlert, setExpressionAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState(null);
-  const [openDeadlinePathDialog, setOpenDeadlinePathDialog] = useState(false);
-  const [deadlineField, setDeadlineField] = useState(null);
-  const [deadlineFieldPathDummy, setDeadlineFieldPathDummy] = useState(null);
-  const [openTeamPathDialog, setOpenTeamPathDialog] = useState(false);
-  const [teamFieldPath, setTeamFieldPath] = useState(null);
-  const [teamField, setTeamField] = useState(null);
-  const [teamFieldDummy, setTeamFieldDummy] = useState(null);
   const [menus, setMenus] = useState([]);
-  const [taskFields, setTaskFields] = useState({
-    taskRole: null,
+  const [actionDummy, setActionDummy] = useState({
     taskName: null,
     taskPriority: null,
     description: null,
+  });
+  const [taskFields, setTaskFields] = useState({
+    taskName: null,
+    taskPriority: null,
     duration: null,
   });
-  const [actionTitleDummy, setActionTitleDummy] = useState(null);
-  const [priorityDummy, setPriorityDummy] = useState(null);
-  const [descriptionDummy, setDescriptionDummy] = useState(null);
-  const [durationDummy, setDurationDummy] = useState(null);
   const [fieldTypes, setFieldTypes] = useState(null);
   const [selectedTaskOption, setSelectedTaskOption] = useState({
-    roleType: "Value",
     taskNameType: "Value",
     priorityType: "Value",
-    durationType: "Value",
     descriptionType: "Value",
   });
-
-  const [selectedFieldOption, setSelectedFieldOption] = useState({
-    userFieldType: "Field",
-    teamFieldType: "Field",
-    deadlineType: "Field",
-  });
-  const [open, setOpen] = useState(false);
   const [openScriptDialog, setOpenScriptDialog] = useState(false);
-  const [isTeamField, setIsTeamField] = useState(false);
-  const [readOnlyFields, setReadOnlyFields] = useState({
-    userFieldPath: false,
-    teamFieldPath: false,
-    deadlineFieldPath: false,
-    roleFieldPath: false,
-  });
-  const [openDialogs, setOpenDialogs] = useState({
-    scriptEditor: false,
-    fieldEditor: false,
-  });
-
   const [openValueTextBox, setOpenValueTextBox] = useState(false);
-
+  const [metaModel, setMetaModel] = useState(null);
   const openDialog = useDialog();
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+
+  const USER_ACTIONS_HEADER = [
+    { label: "Task field", className: styles.leftAlign },
+    { label: "Type" },
+    { label: "Value" },
+    { label: "Action" },
+  ];
+
   const closeEditor = () => {
     setOpenValueTextBox(false);
   };
-  const getFields = useCallback(() => {
-    return getMetaFields(model);
-  }, [model]);
 
   const filterTypes = (type1, type2) => {
     const excludeValues = [type1, type2];
     return TYPES.filter((task) => !excludeValues.includes(task.value));
   };
-  const IsUserMenu = useCallback(() => {
-    return menus.find((menu) => getBool(menu?.isUserMenu));
-  }, [menus]);
 
   const setProperty = useCallback(
     (name, value) => {
@@ -475,104 +426,21 @@ export default function MenuActionPanel({
     }
   };
 
-  const dummyStates =
-    fieldTypes === "userFieldPath"
-      ? setUserFieldPathDummy
-      : fieldTypes === "teamFieldPath"
-      ? setTeamFieldDummy
-      : fieldTypes === "deadlineFieldPath"
-      ? setDeadlineFieldPathDummy
-      : fieldTypes === "roleFieldPath"
-      ? setRoleDummy
-      : null;
-
-  const fieldPathState =
-    fieldTypes === "userFieldPath"
-      ? setUserFieldPath
-      : fieldTypes === "teamFieldPath"
-      ? setTeamFieldPath
-      : fieldTypes === "deadlineFieldPath"
-      ? setDeadlineFieldPath
-      : fieldTypes === "roleFieldPath"
-      ? setRoleFieldPath
-      : null;
-
-  function handleFieldChange(fieldType) {
-    let alertMessage = "";
-    let openDialog = true;
-
-    switch (fieldType) {
-      case "roleFieldPath":
-        if (readOnlyFields?.roleFieldPath && getProperty(fieldType + "Value")) {
-          alertMessage =
-            "Role field can't be managed using builder once changed manually.";
-          openDialog = false;
-        }
-        break;
-      case "deadlineFieldPath":
-        if (
-          readOnlyFields?.deadlineFieldPath &&
-          getProperty(fieldType + "Value")
-        ) {
-          alertMessage =
-            "Deadline field can't be managed using builder once changed manually.";
-          openDialog = false;
-        }
-        break;
-      case "teamFieldPath":
-        if (readOnlyFields?.teamFieldPath && getProperty(fieldType + "Value")) {
-          alertMessage =
-            "Team field can't be managed using builder once changed manually.";
-          openDialog = false;
-        }
-        break;
-      case "userFieldPath":
-        if (readOnlyFields?.userFieldPath && getProperty(fieldType + "Value")) {
-          alertMessage =
-            "User field can't be managed using builder once changed manually.";
-          openDialog = false;
-        }
-        break;
-      default:
-        break;
-    }
-
-    if (openDialog) {
-      setOpenScriptDialog(true);
-    } else {
-      setAlertMessage(alertMessage);
-      setExpressionAlert(true);
-    }
-  }
-
   const updateScript = (fieldType) => {
     const extractDummyField = {
-      userFieldPath: userFieldPathDummy,
-      teamFieldPath: teamFieldDummy,
-      deadlineFieldPath: deadlineFieldPathDummy,
-      roleFieldPath: roleDummy,
-      taskPriority: priorityDummy,
-      taskName: actionTitleDummy,
-      duration: durationDummy,
-      description: descriptionDummy,
+      taskPriority: actionDummy,
+      taskName: actionDummy,
+      description: actionDummy,
     };
     const extractTypes = {
-      roleFieldPath: "roleType",
       taskName: "taskNameType",
       taskPriority: "priorityType",
       description: "descriptionType",
-      userFieldPath: "userFieldType",
-      teamFieldPath: "teamFieldType",
-      deadlineFieldPath: "deadlineType",
     };
     const propertiesType = {
-      roleFieldPath: selectedTaskOption.roleType,
       taskName: selectedTaskOption.taskNameType,
       taskPriority: selectedTaskOption.priorityType,
       description: selectedTaskOption.descriptionType,
-      userFieldPath: selectedFieldOption.userFieldType,
-      teamFieldPath: selectedFieldOption.teamFieldType,
-      deadlineFieldPath: selectedFieldOption.deadlineType,
     };
 
     // Retrieve the relevant dummy object based on fieldType
@@ -594,162 +462,14 @@ export default function MenuActionPanel({
     } = fieldPathDummy || {};
 
     if (fieldPath) {
-      switch (fieldType) {
-        case "userFieldPath":
-          setUserFieldPath(fieldPath);
-          setUserFieldPathDummy(fieldPath);
-          break;
-        case "teamFieldPath":
-          setTeamFieldPath(fieldPath);
-          setTeamFieldDummy(fieldPath);
-          break;
-        case "deadlineFieldPath":
-          setDeadlineFieldPath(fieldPath);
-          setDeadlineFieldPathDummy(fieldPath);
-          break;
-        case "roleFieldPath":
-          setRoleFieldPath(fieldPath);
-          setRoleDummy(fieldPath);
-          break;
-        case "taskName":
-          setTaskFields((prevState) => ({
-            ...prevState,
-            taskName: fieldPath,
-          }));
-          setActionTitleDummy(fieldPath);
-          break;
-        case "taskPriority":
-          setTaskFields((prevState) => ({
-            ...prevState,
-            taskPriority: fieldPath,
-          }));
-          setPriorityDummy(fieldPath);
-          break;
-        case "duration":
-          setTaskFields((prevState) => ({ ...prevState, duration: fieldPath }));
-          setDurationDummy(fieldPath);
-          break;
-        case "description":
-          setTaskFields((prevState) => ({
-            ...prevState,
-            description: fieldPath,
-          }));
-          setDescriptionDummy(fieldPath);
-          break;
-        default:
-          break;
-      }
+      setTaskFields((prevState) => ({
+        ...prevState,
+        [fieldType]: fieldPath,
+      }));
+      setActionDummy((prev) => ({ ...prev, [fieldType]: fieldPath }));
       setProperty(fieldType, fieldPath);
       setProperty(`${fieldType}Value`, fieldPathValue);
     }
-  };
-
-  const clearFieldPathsData = (fieldType) => {
-    const clearField = (fieldName, openDialogFunction) => {
-      setProperty(`${fieldName}Value`, undefined);
-      setExpressionAlert(false);
-      setAlertMessage(null);
-      setReadOnlyFields((prevState) => ({
-        ...prevState,
-        [fieldName]: false,
-      }));
-      openDialogs?.scriptEditor && setOpenScriptDialog(true);
-      openDialogs?.fieldEditor && openDialogFunction(true);
-    };
-
-    switch (fieldType) {
-      case "userFieldPath":
-        clearField("userFieldPath", setOpenUserPathDialog);
-        break;
-      case "teamFieldPath":
-        clearField("teamFieldPath", setOpenTeamPathDialog);
-        break;
-      case "deadlineFieldPath":
-        clearField("deadlineFieldPath", setOpenDeadlinePathDialog);
-        break;
-      case "roleFieldPath":
-        clearField("roleFieldPath", setOpenRoleDialog);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const clearValues = (type, fieldstate, dummyState) => {
-    fieldstate(null);
-    dummyState({
-      [type]: null,
-    });
-    setProperty(type, undefined);
-    setProperty(`${type}Value`, undefined);
-    setExpressionAlert(false);
-    setAlertMessage(null);
-    setReadOnlyFields((prevState) => ({
-      ...prevState,
-      [type]: false,
-    }));
-  };
-
-  const getter = (fieldType) => {
-    const fieldPathValue = getProperty(`${fieldType}Value`);
-    let values;
-    if (!fieldPathValue) return { checked: true };
-    let json = JSON.parse(fieldPathValue || "{}");
-    const { value, scriptOperatorType } = json;
-    values = JSON.parse(value || "{}");
-    if (!values.length) {
-      values = null;
-    }
-    return { values, combinator: scriptOperatorType, checked: true };
-  };
-
-  const setter = (val, dummyState, fieldPathState, fieldPath) => {
-    const { expression, value, combinator, checked } = val;
-    const pathValue = `${fieldPath}Value`;
-    const extractTypes = {
-      roleFieldPath: "roleType",
-      userFieldPath: "userFieldType",
-      teamFieldPath: "teamFieldType",
-      deadlineFieldPath: "deadlineType",
-    };
-    const propertiesType = {
-      roleFieldPath: selectedTaskOption.roleType,
-      userFieldPath: selectedFieldOption.userFieldType,
-      teamFieldPath: selectedFieldOption.teamFieldType,
-      deadlineFieldPath: selectedFieldOption.deadlineType,
-    };
-    if (value) {
-      setProperty(extractTypes[fieldPath], propertiesType[fieldPath]);
-    } else {
-      setProperty(extractTypes[fieldPath], undefined);
-    }
-    dummyState({
-      [fieldPath]: expression,
-      [pathValue]: JSON.stringify({
-        scriptOperatorType: combinator,
-        checked,
-        value: (value || "")?.replace(/[\u200B-\u200D\uFEFF]/g, undefined),
-      }),
-    });
-    fieldPathState(expression);
-    setProperty(fieldPath, expression);
-    setProperty();
-    setProperty(
-      pathValue,
-      JSON.stringify({
-        scriptOperatorType: combinator,
-        checked,
-        value: (value || "")?.replace(/[\u200B-\u200D\uFEFF]/g, undefined),
-      })
-    );
-    value &&
-      setReadOnlyFields((prevState) => ({
-        ...prevState,
-        [fieldPath]: true,
-      }));
-
-    setOpen(false);
-    setOpenScriptDialog(false);
   };
 
   const removeElement = (optionIndex) => {
@@ -857,15 +577,8 @@ export default function MenuActionPanel({
     const taskName = getProperty("taskName");
     const emailNotification = getProperty("emailNotification");
     const emailEvent = getProperty("emailEvent") || "start";
-    const roleFieldPath = getProperty("roleFieldPath");
-    const taskRole = getProperty("taskRole");
-    const deadlineFieldPath = getProperty("deadlineFieldPath");
     const template = getSelectValue("template");
-    const userFieldPath = getProperty("userFieldPath");
-    const teamFieldPath = getProperty("teamFieldPath");
     const descriptionField = getProperty("description");
-    const durationField = getProperty("duration");
-    const isTeamField = getProperty("isTeamField");
 
     let priorityField;
     const isPriorityValid = PRIORITIES.some(
@@ -879,20 +592,12 @@ export default function MenuActionPanel({
 
     setTaskFields((prevState) => ({
       ...prevState,
-      taskRole: taskRole,
       taskName: taskName,
       taskPriority: priorityField,
       description: descriptionField,
-      duration: durationField,
     }));
 
-    const taskTypes = [
-      "roleType",
-      "taskNameType",
-      "priorityType",
-      "descriptionType",
-      "durationType",
-    ];
+    const taskTypes = ["taskNameType", "priorityType", "descriptionType"];
 
     taskTypes.forEach((field) => {
       if (!hasProperty(field)) {
@@ -905,36 +610,16 @@ export default function MenuActionPanel({
         }));
       }
     });
-    const fieldTypes = ["userFieldType", "teamFieldType", "deadlineType"];
-    fieldTypes.forEach((field) => {
-      if (!hasProperty(field)) {
-        setProperty(field, selectedFieldOption[field].toLowerCase());
-      } else {
-        const selectedOptionValue = formattedValue(getProperty(field));
-        setSelectedFieldOption((prevState) => ({
-          ...prevState,
-          [field]: selectedOptionValue,
-        }));
-      }
-    });
-    setIsTeamField(getBool(isTeamField));
     setCreateUserAction(getBool(userAction));
     setEmailNotification(getBool(emailNotification));
     setEmailEvent(emailEvent);
-    setUserFieldPath(userFieldPath);
-    setUserFieldPathDummy(userFieldPath);
-    setTeamFieldPath(teamFieldPath);
-    setTeamFieldDummy(teamFieldPath);
-    setDeadlineFieldPath(deadlineFieldPath);
-    setDeadlineFieldPathDummy(deadlineFieldPath);
     setTemplate(template);
-    setRoleFieldPath(roleFieldPath);
-    setRoleDummy(roleFieldPath);
   }, [getProperty, getSelectValue, element]);
 
   useEffect(() => {
     const metaModel = getSelectValue("metaModel");
     const metaJsonModel = getSelectValue("metaJsonModel");
+    setMetaModel(metaModel);
     if (metaModel) {
       setModel({
         ...metaModel,
@@ -956,45 +641,6 @@ export default function MenuActionPanel({
     }
   }, [emailNotification, setProperty, emailEvent]);
 
-  useEffect(() => {
-    const scriptValueUser = getProperty("userFieldPathValue");
-    const scriptValueTeam = getProperty("teamFieldPathValue");
-    const scriptValueDeadline = getProperty("deadlineFieldPathValue");
-    const scriptValueRole = getProperty("roleFieldPathValue");
-
-    if (scriptValueUser) {
-      setReadOnlyFields((prevState) => ({
-        ...prevState,
-        userFieldPath: !!scriptValueUser,
-      }));
-    }
-    if (scriptValueTeam) {
-      setReadOnlyFields((prevState) => ({
-        ...prevState,
-        teamFieldPath: !!scriptValueTeam,
-      }));
-    }
-    if (scriptValueDeadline) {
-      setReadOnlyFields((prevState) => ({
-        ...prevState,
-        deadlineFieldPath: !!scriptValueDeadline,
-      }));
-    }
-    if (scriptValueRole) {
-      setReadOnlyFields((prevState) => ({
-        ...prevState,
-        roleFieldPath: !!scriptValueRole,
-      }));
-    }
-  }, [getProperty]);
-
-  useEffect(() => {
-    if (isTeamField) {
-      setProperty("userFieldType", undefined);
-    } else {
-      setProperty("teamFieldType", undefined);
-    }
-  }, [isTeamField]);
   return (
     <div className={styles.main}>
       <div className={styles.container}>
@@ -1032,7 +678,6 @@ export default function MenuActionPanel({
                   taskName: null,
                   taskPriority: null,
                   description: null,
-                  duration: null,
                 }));
 
                 Object.keys(taskFields).forEach((key) =>
@@ -1043,7 +688,6 @@ export default function MenuActionPanel({
                   roleType: null,
                   taskNameType: null,
                   priorityType: null,
-                  durationType: null,
                   descriptionType: null,
                 }));
 
@@ -1073,191 +717,17 @@ export default function MenuActionPanel({
                     <Table size="sm" textAlign="center">
                       <TableHead>
                         <TableRow>
-                          <TableCell className={styles.tableHead}>
-                            {translate("Task field")}
-                          </TableCell>
-                          <TableCell className={styles.tableHead}>
-                            {translate("Type")}
-                          </TableCell>
-                          <TableCell className={styles.tableHead}>
-                            {translate("Value")}
-                          </TableCell>
-                          <TableCell className={styles.tableHead}>
-                            {translate("Action")}
-                          </TableCell>
+                          {USER_ACTIONS_HEADER.map((item) => (
+                            <TableCell
+                              key={item.label}
+                              className={clsx(styles.tableHead, item.className)}
+                            >
+                              {translate(item.label)}
+                            </TableCell>
+                          ))}
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        <TableRow>
-                          <TableCell>
-                            <InputLabel className={styles.label}>
-                              {translate("Role")}
-                            </InputLabel>
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              className={styles.select}
-                              type="text"
-                              value={selectedTaskOption.roleType || null}
-                              options={TYPES}
-                              update={(value, label) => {
-                                setSelectedTaskOption((prevState) => ({
-                                  ...prevState,
-                                  roleType: value?.title,
-                                }));
-                                const roleTypes = ["Value", "Field", "Script"];
-                                if (
-                                  roleTypes.includes(
-                                    selectedTaskOption.roleType
-                                  ) ||
-                                  roleTypes.includes(getProperty("roleType"))
-                                ) {
-                                  handleChange("taskRole", null);
-                                  setProperty("taskRole", undefined);
-                                  setProperty("roleType", undefined);
-                                  clearValues(
-                                    "roleFieldPath",
-                                    setRoleFieldPath,
-                                    setRoleDummy
-                                  );
-                                }
-                              }}
-                              disableClearable="false"
-                              isLabel={false}
-                              optionLabel={"title"}
-                            />
-                          </TableCell>
-                          <TableCell as="td">
-                            {selectedTaskOption.roleType === "Value" ? (
-                              <Select
-                                className={styles.select}
-                                type="text"
-                                update={(value, label) => {
-                                  setProperty("taskRole", value?.name);
-                                  setProperty(
-                                    "roleType",
-                                    value?.name && selectedTaskOption?.roleType
-                                  );
-                                  handleChange("taskRole", value?.name);
-                                  updateMenuValue(
-                                    "taskRole",
-                                    value,
-                                    label,
-                                    "name"
-                                  );
-                                }}
-                                name="taskRole"
-                                value={taskFields.taskRole || null}
-                                isLabel={false}
-                                fetchMethod={(data) => getRoles(data?.criteria)}
-                                optionLabel={"name"}
-                              />
-                            ) : (
-                              <TextField
-                                className={styles.textbox}
-                                type="text"
-                                element={element}
-                                readOnly={
-                                  roleFieldPath && readOnlyFields?.roleFieldPath
-                                }
-                                entry={{
-                                  id: "roleFieldPath",
-                                  name: "roleFieldPath",
-                                  modelProperty: "roleFieldPath",
-                                  get: function () {
-                                    return {
-                                      roleFieldPath: roleFieldPath || "",
-                                    };
-                                  },
-                                  set: function (e, value) {
-                                    setRoleFieldPath(value.roleFieldPath);
-                                    setRoleDummy({
-                                      roleFieldPath: value.roleFieldPath,
-                                    });
-                                    setProperty(
-                                      "roleFieldPath",
-                                      value.roleFieldPath
-                                    );
-                                    setProperty(
-                                      "roleType",
-                                      value.roleFieldPath !== ""
-                                        ? selectedTaskOption.roleType
-                                        : undefined
-                                    );
-                                  },
-                                  validate: function (e, values) {
-                                    if (!values.roleFieldPath && IsUserMenu()) {
-                                      return {
-                                        roleFieldPath: translate(
-                                          "Must provide a value"
-                                        ),
-                                      };
-                                    }
-                                  },
-                                }}
-                                canRemove={true}
-                              />
-                            )}
-                          </TableCell>
-                          <TableCell className={styles.tableCell}>
-                            {selectedTaskOption.roleType === "Field" && (
-                              <MaterialIcon
-                                className={styles.newIcon}
-                                icon="edit"
-                                fontSize={16}
-                                onClick={() => {
-                                  setFieldTypes("roleFieldPath");
-                                  setOpenDialogs({
-                                    fieldEditor: true,
-                                    scriptEditor: false,
-                                  });
-                                  if (
-                                    readOnlyFields?.roleFieldPath &&
-                                    getProperty("roleFieldPathValue")
-                                  ) {
-                                    setAlertMessage(
-                                      "Role field can't be managed using builder once changed manually."
-                                    );
-                                    setExpressionAlert(true);
-                                  } else {
-                                    setOpenRoleDialog(true);
-                                  }
-                                }}
-                              />
-                            )}
-                            {selectedTaskOption.roleType === "Script" && (
-                              <>
-                                <Tooltip title="Script" aria-label="enable">
-                                  <i
-                                    className="fa fa-code"
-                                    style={{ fontSize: 18, marginLeft: 5 }}
-                                    onClick={() => {
-                                      setFieldTypes("roleFieldPath");
-                                      setOpenDialogs({
-                                        scriptEditor: true,
-                                        fieldEditor: false,
-                                      });
-                                      setRoleDummy({
-                                        roleFieldPath:
-                                          getScript("roleFieldPath"),
-                                      });
-                                      handleFieldChange("roleFieldPath");
-                                    }}
-                                  ></i>
-                                </Tooltip>
-                                <MaterialIcon
-                                  fontSize={18}
-                                  icon="edit"
-                                  className={styles.newIcon}
-                                  onClick={() => {
-                                    setFieldTypes("roleFieldPath");
-                                    setOpen(true);
-                                  }}
-                                />
-                              </>
-                            )}
-                          </TableCell>
-                        </TableRow>
                         <TableRow>
                           <TableCell>
                             <InputLabel className={styles.label}>
@@ -1270,7 +740,7 @@ export default function MenuActionPanel({
                               type="text"
                               value={selectedTaskOption.taskNameType || null}
                               options={filterTypes("field")}
-                              update={(value, label) => {
+                              update={(value) => {
                                 setSelectedTaskOption((prevState) => ({
                                   ...prevState,
                                   taskNameType: value?.title,
@@ -1287,9 +757,10 @@ export default function MenuActionPanel({
                                   handleChange("taskName", null);
                                   setProperty("taskName", undefined);
                                   setProperty("taskNameType", undefined);
-                                  setActionTitleDummy({
+                                  setActionDummy((prev) => ({
+                                    ...prev,
                                     taskName: null,
-                                  });
+                                  }));
                                 }
                               }}
                               disableClearable="false"
@@ -1321,9 +792,11 @@ export default function MenuActionPanel({
                                       ? selectedTaskOption?.taskNameType
                                       : undefined
                                   );
-                                  setActionTitleDummy({
+
+                                  setActionDummy((prev) => ({
+                                    ...prev,
                                     taskName: value.taskName,
-                                  });
+                                  }));
                                 },
                                 validate: function (e, values) {
                                   true;
@@ -1346,13 +819,11 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18 }}
                                   onClick={() => {
                                     setFieldTypes("taskName");
-                                    setOpenDialogs({
-                                      scriptEditor: true,
-                                      fieldEditor: false,
-                                    });
-                                    setActionTitleDummy({
+                                    setActionDummy((prev) => ({
+                                      ...prev,
                                       taskName: getScript("taskName"),
-                                    });
+                                    }));
+
                                     setOpenScriptDialog(true);
                                   }}
                                 ></i>
@@ -1393,9 +864,10 @@ export default function MenuActionPanel({
                                   handleChange("taskPriority", null);
                                   setProperty("taskPriority", undefined);
                                   setProperty("priorityType", undefined);
-                                  setPriorityDummy({
+                                  setActionDummy((prev) => ({
+                                    ...prev,
                                     taskPriority: null,
-                                  });
+                                  }));
                                 }
                               }}
                               disableClearable="false"
@@ -1460,9 +932,10 @@ export default function MenuActionPanel({
                                         ? selectedTaskOption?.priorityType
                                         : undefined
                                     );
-                                    setPriorityDummy({
+                                    setActionDummy((prev) => ({
+                                      ...prev,
                                       taskPriority: value.taskPriority,
-                                    });
+                                    }));
                                   },
                                 }}
                               />
@@ -1476,75 +949,16 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18 }}
                                   onClick={() => {
                                     setFieldTypes("taskPriority");
-                                    setOpenDialogs({
-                                      scriptEditor: true,
-                                      fieldEditor: false,
-                                    });
-
-                                    setPriorityDummy({
+                                    setActionDummy((prev) => ({
+                                      ...prev,
                                       taskPriority: getScript("taskPriority"),
-                                    });
+                                    }));
                                     setOpenScriptDialog(true);
                                   }}
                                 ></i>
                               </Tooltip>
                             )}
                           </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>
-                            <InputLabel className={styles.label}>
-                              {translate("Duration")}
-                            </InputLabel>
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              className={styles.select}
-                              value={selectedTaskOption.durationType || null}
-                              type="text"
-                              options={filterTypes("field", "script")}
-                              update={(value, label) => {
-                                setSelectedTaskOption((prevState) => ({
-                                  ...prevState,
-                                  durationType: value?.title,
-                                }));
-                              }}
-                              disableClearable="false"
-                              isLabel={false}
-                              optionLabel={"title"}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              className={styles.textbox}
-                              element={element}
-                              entry={{
-                                id: "duration",
-                                name: "duration",
-                                modelProperty: "duration",
-                                get: function () {
-                                  return {
-                                    duration: taskFields.duration || "",
-                                  };
-                                },
-                                set: function (e, value) {
-                                  handleChange("duration", value.duration);
-                                  setProperty("duration", value.duration);
-                                  setProperty(
-                                    "durationType",
-                                    value.duration !== ""
-                                      ? selectedTaskOption?.durationType
-                                      : undefined
-                                  );
-                                  setDurationDummy({
-                                    duration: value.duration,
-                                  });
-                                },
-                              }}
-                              type="number"
-                            />
-                          </TableCell>
-                          <TableCell></TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>
@@ -1579,9 +993,10 @@ export default function MenuActionPanel({
                                   handleChange("description", null);
                                   setProperty("description", undefined);
                                   setProperty("descriptionType", undefined);
-                                  setDescriptionDummy({
+                                  setActionDummy((prev) => ({
+                                    ...prev,
                                     description: null,
-                                  });
+                                  }));
                                 }
                               }}
                               disableClearable="false"
@@ -1615,9 +1030,10 @@ export default function MenuActionPanel({
                                       ? selectedTaskOption?.descriptionType
                                       : undefined
                                   );
-                                  setDescriptionDummy({
+                                  setActionDummy((prev) => ({
+                                    ...prev,
                                     description: value.description,
-                                  });
+                                  }));
                                 },
                               }}
                               canRemove={true}
@@ -1632,17 +1048,14 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18, marginLeft: 1 }}
                                   onClick={() => {
                                     setFieldTypes("description");
-                                    setOpenDialogs({
-                                      scriptEditor: true,
-                                      fieldEditor: false,
-                                    });
                                     setProperty(
                                       "descriptionType",
                                       selectedTaskOption?.descriptionType
                                     );
-                                    setDescriptionDummy({
+                                    setActionDummy((prev) => ({
+                                      ...prev,
                                       description: getScript("description"),
-                                    });
+                                    }));
                                     setOpenScriptDialog(true);
                                   }}
                                 ></i>
@@ -1655,13 +1068,10 @@ export default function MenuActionPanel({
                                   style={{ fontSize: 18, marginLeft: 1 }}
                                   onClick={() => {
                                     setFieldTypes("description");
-                                    // setOpenDialogs({
-                                    //   scriptEditor: true,
-                                    //   fieldEditor: false,
-                                    // });
-                                    setDescriptionDummy({
+                                    setActionDummy((prev) => ({
+                                      ...prev,
                                       description: getScript("description"),
-                                    });
+                                    }));
                                     setOpenValueTextBox(true);
                                   }}
                                 ></i>
@@ -1669,6 +1079,19 @@ export default function MenuActionPanel({
                             )}
                           </TableCell>
                         </TableRow>
+                        <FieldAction
+                          key="role"
+                          isUserAction={true}
+                          initialType="value"
+                          label="Role"
+                          title="roleField"
+                          element={element}
+                          getProperty={getProperty}
+                          setProperty={setProperty}
+                          metaModel={metaModel}
+                          fieldTypes={["value", "field", "script"]}
+                          fetchMethod={(data) => getRoles(data?.criteria)}
+                        />
                       </TableBody>
                     </Table>
                   </Box>
@@ -1755,575 +1178,6 @@ export default function MenuActionPanel({
             </Box>
           </Box>
         )}
-        <Box
-          w={100}
-          rounded={2}
-          border
-          bg="body-tertiary"
-          color="body"
-          style={{
-            marginTop: 5,
-            marginBottom: 10,
-          }}
-        >
-          <Box color="body" style={{ padding: 10 }}>
-            <Box overflow="auto">
-              <Box rounded={2} bgColor="body" shadow color="body">
-                <Table size="sm" textAlign="center">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell className={styles.tableHead}>
-                        {translate("Field path")}
-                      </TableCell>
-                      <TableCell className={styles.tableHead}>
-                        {translate("Type")}
-                      </TableCell>
-                      <TableCell className={styles.tableHead}>
-                        {translate("Value")}
-                      </TableCell>
-                      <TableCell className={styles.tableHead}>
-                        {translate("Is team field ?")}
-                      </TableCell>
-                      <TableCell className={styles.tableHead}>
-                        {translate("Action")}
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <TableRow>
-                      {!isTeamField && (
-                        <>
-                          <TableCell>
-                            <InputLabel className={styles.label}>
-                              {translate("User / Team field path")}
-                            </InputLabel>
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              className={styles.select}
-                              value={selectedFieldOption.userFieldType || null}
-                              type="text"
-                              options={filterTypes("value")}
-                              update={(value, label) => {
-                                setSelectedFieldOption((prevState) => ({
-                                  ...prevState,
-                                  userFieldType: value?.title,
-                                }));
-                                setProperty("userFieldType", undefined);
-                                const userFieldTypes = [
-                                  "Value",
-                                  "Field",
-                                  "Script",
-                                ];
-                                if (
-                                  userFieldTypes.includes(
-                                    selectedFieldOption.userFieldType
-                                  ) ||
-                                  userFieldTypes.includes(
-                                    getProperty("userFieldType")
-                                  )
-                                ) {
-                                  clearValues(
-                                    "userFieldPath",
-                                    setUserFieldPath,
-                                    setUserFieldPathDummy
-                                  );
-                                }
-                              }}
-                              disableClearable="false"
-                              isLabel={false}
-                              optionLabel={"title"}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              className={styles.textbox}
-                              element={element}
-                              canRemove={true}
-                              type="text"
-                              placeholder=" User field path"
-                              readOnly={
-                                readOnlyFields?.userFieldPath &&
-                                userFieldPath &&
-                                getProperty("userFieldPathValue")
-                              }
-                              entry={{
-                                id: "userFieldPath",
-                                name: "userFieldPath",
-                                modelProperty: "userFieldPath",
-                                get: function () {
-                                  return {
-                                    userFieldPath: userFieldPath || "",
-                                  };
-                                },
-                                set: function (e, value) {
-                                  setUserFieldPath(value.userFieldPath);
-                                  setUserFieldPathDummy({
-                                    userFieldPath: value.userFieldPath,
-                                  });
-                                  setProperty(
-                                    "userFieldPath",
-                                    value.userFieldPath
-                                  );
-                                  setProperty(
-                                    "userFieldType",
-                                    value?.userFieldPath !== "" &&
-                                      selectedFieldOption?.userFieldType
-                                  );
-                                },
-                                validate: function (e, values) {
-                                  if (
-                                    !values.userFieldPath &&
-                                    IsUserMenu() &&
-                                    !!!teamFieldPath
-                                  ) {
-                                    return {
-                                      userFieldPath: translate(
-                                        "Must provide a value"
-                                      ),
-                                    };
-                                  }
-                                },
-                              }}
-                              setField={setField}
-                            />
-                          </TableCell>
-                          <TableCell className={styles.tableCell}>
-                            <Checkbox
-                              className={styles.checkBox}
-                              element={element}
-                              type="text"
-                              entry={{
-                                id: "isTeamField",
-                                modelProperty: "isTeamField",
-                                get: function () {
-                                  return {
-                                    isTeamField: isTeamField,
-                                  };
-                                },
-                                set: function (e, value) {
-                                  let teamField = !value.isTeamField;
-                                  setIsTeamField(teamField);
-                                  setProperty("isTeamField", teamField);
-                                  if (teamField) {
-                                    clearValues(
-                                      "userFieldPath",
-                                      setUserFieldPath,
-                                      setUserFieldPathDummy
-                                    );
-                                  }
-                                },
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell className={styles.tableCell}>
-                            {USER_TASKS_TYPES.includes(element.type) &&
-                              selectedFieldOption.userFieldType === "Field" &&
-                              !isTeamField && (
-                                <MaterialIcon
-                                  fontSize={16}
-                                  icon="edit"
-                                  className={styles.newIcon}
-                                  onClick={() => {
-                                    setFieldTypes("userFieldPath");
-                                    setOpenDialogs({
-                                      scriptEditor: false,
-                                      fieldEditor: true,
-                                    });
-                                    if (
-                                      readOnlyFields?.userFieldPath &&
-                                      getProperty("userFieldPathValue")
-                                    ) {
-                                      setAlertMessage(
-                                        "User field can't be managed using builder once changed manually."
-                                      );
-                                      setExpressionAlert(true);
-                                    } else {
-                                      setOpenUserPathDialog(true);
-                                    }
-                                  }}
-                                />
-                              )}
-                            {USER_TASKS_TYPES.includes(element.type) &&
-                              selectedFieldOption.userFieldType === "Script" &&
-                              !isTeamField && (
-                                <>
-                                  <Tooltip title="Script" aria-label="enable">
-                                    <i
-                                      className="fa fa-code"
-                                      style={{ fontSize: 18, marginLeft: 5 }}
-                                      onClick={() => {
-                                        setFieldTypes("userFieldPath");
-                                        setOpenDialogs({
-                                          scriptEditor: true,
-                                          fieldEditor: false,
-                                        });
-
-                                        setUserFieldPathDummy({
-                                          userFieldPath:
-                                            getScript("userFieldPath"),
-                                        });
-                                        handleFieldChange("userFieldPath");
-                                      }}
-                                    ></i>
-                                  </Tooltip>
-                                  <MaterialIcon
-                                    fontSize={18}
-                                    icon="edit"
-                                    className={styles.newIcon}
-                                    onClick={() => {
-                                      setFieldTypes("userFieldPath");
-                                      setOpen(true);
-                                    }}
-                                  />
-                                </>
-                              )}
-                          </TableCell>
-                        </>
-                      )}
-                      {isTeamField && (
-                        <>
-                          <TableCell>
-                            <InputLabel className={styles.label}>
-                              {translate("User / Team field path")}
-                            </InputLabel>
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              className={styles.select}
-                              value={selectedFieldOption.teamFieldType || null}
-                              type="text"
-                              options={filterTypes("value")}
-                              update={(value, label) => {
-                                setSelectedFieldOption((prevState) => ({
-                                  ...prevState,
-                                  teamFieldType: value?.title,
-                                }));
-                                setProperty("teamFieldType", undefined);
-                                const teamFieldTypes = [
-                                  "Value",
-                                  "Field",
-                                  "Script",
-                                ];
-                                if (
-                                  teamFieldTypes.includes(
-                                    selectedFieldOption.teamFieldType
-                                  ) ||
-                                  teamFieldTypes.includes(
-                                    getProperty("teamFieldType")
-                                  )
-                                ) {
-                                  clearValues(
-                                    "teamFieldPath",
-                                    setTeamFieldPath,
-                                    setTeamFieldDummy
-                                  );
-                                }
-                              }}
-                              disableClearable="false"
-                              isLabel={false}
-                              optionLabel={"title"}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <TextField
-                              className={styles.textbox}
-                              element={element}
-                              type="text"
-                              readOnly={
-                                readOnlyFields?.teamFieldPath &&
-                                teamFieldPath &&
-                                getProperty("teamFieldPathValue")
-                              }
-                              placeholder=" Team field path"
-                              entry={{
-                                id: "teamFieldPath",
-                                name: "teamFieldPath",
-                                modelProperty: "teamFieldPath",
-                                get: function () {
-                                  return {
-                                    teamFieldPath: teamFieldPath || "",
-                                  };
-                                },
-                                set: function (e, value) {
-                                  setTeamFieldPath(value.teamFieldPath);
-                                  setTeamFieldDummy({
-                                    teamFieldPath: value.teamFieldPath,
-                                  });
-                                  setProperty(
-                                    "teamFieldPath",
-                                    value.teamFieldPath
-                                  );
-                                  setProperty(
-                                    "teamFieldType",
-                                    value?.teamFieldPath !== "" &&
-                                      selectedFieldOption?.teamFieldType
-                                  );
-                                },
-                                validate: function (e, values) {
-                                  if (
-                                    !values.teamFieldPath &&
-                                    IsUserMenu() &&
-                                    !!!userFieldPath
-                                  ) {
-                                    return {
-                                      teamFieldPath: translate(
-                                        "Must provide a value"
-                                      ),
-                                    };
-                                  }
-                                },
-                              }}
-                              canRemove={true}
-                              setTeamField={setTeamField}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Checkbox
-                              className={styles.checkBox}
-                              element={element}
-                              entry={{
-                                id: "isTeamField",
-                                modelProperty: "isTeamField",
-                                get: function () {
-                                  return {
-                                    isTeamField: isTeamField,
-                                  };
-                                },
-                                set: function (e, value) {
-                                  let teamField = !value.isTeamField;
-                                  setIsTeamField(teamField);
-                                  setProperty("isTeamField", teamField);
-                                  if (!teamField) {
-                                    clearValues(
-                                      "teamFieldPath",
-                                      setTeamFieldPath,
-                                      setTeamFieldDummy
-                                    );
-                                  }
-                                },
-                              }}
-                            />
-                          </TableCell>
-                          <TableCell className={styles.tableCell}>
-                            {selectedFieldOption.teamFieldType === "Field" &&
-                              isTeamField && (
-                                <MaterialIcon
-                                  fontSize={16}
-                                  icon="edit"
-                                  className={styles.newIcon}
-                                  onClick={() => {
-                                    setFieldTypes("teamFieldPath");
-                                    setOpenDialogs({
-                                      scriptEditor: false,
-                                      fieldEditor: true,
-                                    });
-                                    if (
-                                      readOnlyFields?.teamFieldPath &&
-                                      getProperty("teamFieldPathValue")
-                                    ) {
-                                      setAlertMessage(
-                                        "Team field can't be managed using builder once changed manually."
-                                      );
-                                      setExpressionAlert(true);
-                                    } else {
-                                      setOpenTeamPathDialog(true);
-                                    }
-                                  }}
-                                />
-                              )}
-                            {selectedFieldOption.teamFieldType === "Script" &&
-                              isTeamField && (
-                                <>
-                                  <Tooltip title="Script" aria-label="enable">
-                                    <i
-                                      className="fa fa-code"
-                                      style={{ fontSize: 18, marginLeft: 5 }}
-                                      onClick={() => {
-                                        setFieldTypes("teamFieldPath");
-                                        setOpenDialogs({
-                                          scriptEditor: true,
-                                          fieldEditor: false,
-                                        });
-
-                                        setTeamFieldDummy({
-                                          teamFieldPath:
-                                            getScript("teamFieldPath"),
-                                        });
-                                        handleFieldChange("teamFieldPath");
-                                      }}
-                                    ></i>
-                                  </Tooltip>
-                                  <MaterialIcon
-                                    fontSize={18}
-                                    icon="edit"
-                                    className={styles.newIcon}
-                                    onClick={() => {
-                                      setFieldTypes("teamFieldPath");
-                                      setOpen(true);
-                                    }}
-                                  />
-                                </>
-                              )}
-                          </TableCell>
-                        </>
-                      )}
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <InputLabel className={styles.label}>
-                          {translate("Deadline field path")}
-                        </InputLabel>
-                      </TableCell>
-                      <TableCell>
-                        <Select
-                          className={styles.select}
-                          value={selectedFieldOption.deadlineType || null}
-                          type="text"
-                          update={(value, label) => {
-                            setSelectedFieldOption((prevState) => ({
-                              ...prevState,
-                              deadlineType: value?.title,
-                            }));
-                            setProperty("deadlineType", undefined);
-                            const deadlineTypes = ["Value", "Field", "Script"];
-                            if (
-                              deadlineTypes.includes(
-                                selectedFieldOption.deadlineType
-                              ) ||
-                              deadlineTypes.includes(
-                                getProperty("deadlineType")
-                              )
-                            ) {
-                              clearValues(
-                                "deadlineFieldPath",
-                                setDeadlineFieldPath,
-                                setDeadlineFieldPathDummy
-                              );
-                            }
-                          }}
-                          options={filterTypes("value")}
-                          disableClearable="false"
-                          isLabel={false}
-                          optionLabel={"title"}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          className={styles.textbox}
-                          element={element}
-                          type="text"
-                          canRemove={true}
-                          readOnly={
-                            deadlineFieldPath &&
-                            readOnlyFields?.deadlineFieldPath
-                          }
-                          placeholder=" Deadline field path"
-                          entry={{
-                            id: "deadlineFieldPath",
-                            name: "deadlineFieldPath",
-                            modelProperty: "deadlineFieldPath",
-                            get: function () {
-                              return {
-                                deadlineFieldPath: deadlineFieldPath || "",
-                              };
-                            },
-                            set: function (e, value) {
-                              setDeadlineFieldPath(value.deadlineFieldPath);
-                              setDeadlineFieldPathDummy({
-                                deadlineFieldPath: value.deadlineFieldPath,
-                              });
-                              setProperty(
-                                "deadlineFieldPath",
-                                value.deadlineFieldPath
-                              );
-
-                              setProperty(
-                                "deadlineType",
-                                value?.deadlineFieldPath !== "" &&
-                                  selectedFieldOption.deadlineType
-                              );
-                            },
-                            validate: function (e, values) {
-                              if (!values.deadlineFieldPath && IsUserMenu()) {
-                                return {
-                                  deadlineFieldPath: translate(
-                                    "Must provide a value"
-                                  ),
-                                };
-                              }
-                            },
-                          }}
-                          setDeadlineField={setDeadlineField}
-                        />
-                      </TableCell>
-                      <TableCell></TableCell>
-                      <TableCell className={styles.tableCell}>
-                        {selectedFieldOption.deadlineType === "Field" && (
-                          <MaterialIcon
-                            fontSize={16}
-                            icon="edit"
-                            className={styles.newIcon}
-                            onClick={() => {
-                              setFieldTypes("deadlineFieldPath");
-                              setOpenDialogs({
-                                scriptEditor: false,
-                                fieldEditor: true,
-                              });
-                              if (
-                                readOnlyFields?.deadlineFieldPath &&
-                                getProperty("deadlineFieldPathValue")
-                              ) {
-                                setAlertMessage(
-                                  "Deadline field can't be managed using builder once changed manually."
-                                );
-                                setExpressionAlert(true);
-                              } else {
-                                setOpenDeadlinePathDialog(true);
-                              }
-                            }}
-                          />
-                        )}
-                        {selectedFieldOption.deadlineType === "Script" && (
-                          <>
-                            <Tooltip title="Script" aria-label="enable">
-                              <i
-                                className="fa fa-code"
-                                style={{ fontSize: 18, marginLeft: 5 }}
-                                onClick={() => {
-                                  setFieldTypes("deadlineFieldPath");
-                                  setOpenDialogs({
-                                    scriptEditor: true,
-                                    fieldEditor: false,
-                                  });
-
-                                  setDeadlineFieldPathDummy({
-                                    deadlineFieldPath:
-                                      getScript("deadlineFieldPath"),
-                                  });
-                                  handleFieldChange("deadlineFieldPath");
-                                }}
-                              ></i>
-                            </Tooltip>
-                            <MaterialIcon
-                              fontSize={18}
-                              icon="edit"
-                              className={styles.newIcon}
-                              onClick={() => {
-                                setFieldTypes("deadlineFieldPath");
-                                setOpen(true);
-                              }}
-                            />
-                          </>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
         {openScriptDialog && (
           <ScriptDialog
             element={element}
@@ -2332,28 +1186,13 @@ export default function MenuActionPanel({
             setOpenScriptDialog={setOpenScriptDialog}
             taskFields={taskFields}
             setTaskFields={setTaskFields}
-            actionTitleDummy={actionTitleDummy}
-            priorityDummy={priorityDummy}
-            durationDummy={durationDummy}
-            descriptionDummy={descriptionDummy}
-            setActionTitleDummy={setActionTitleDummy}
-            setPriorityDummy={setPriorityDummy}
-            setDurationDummy={setDurationDummy}
-            setDescriptionDummy={setDescriptionDummy}
-            setUserFieldPathDummy={setUserFieldPathDummy}
-            setTeamFieldDummy={setTeamFieldDummy}
-            setDeadlineFieldPathDummy={setDeadlineFieldPathDummy}
-            setRoleDummy={setRoleDummy}
-            userDummy={userFieldPathDummy}
-            teamDummy={teamFieldDummy}
-            deadlineDummy={deadlineFieldPathDummy}
-            roleDummy={roleDummy}
             alertMessage={alertMessage}
-            readOnlyFields={readOnlyFields}
             openExpressionAlert={openExpressionAlert}
             getScript={getScript}
             getProperty={getProperty}
             setProperty={setProperty}
+            setActionDummy={setActionDummy}
+            actionDummy={actionDummy}
           ></ScriptDialog>
         )}
       </div>
@@ -2686,212 +1525,6 @@ export default function MenuActionPanel({
         </Box>
       </div>
 
-      <AlertDialog
-        openAlert={openTeamPathDialog}
-        fullscreen={false}
-        title="Team field path"
-        handleAlertOk={() => {
-          if (teamField && teamField.target !== "com.axelor.team.db.Team") {
-            setAlertMessage("Last subfield should be related to team");
-            setExpressionAlert(true);
-            return;
-          }
-          setOpenTeamPathDialog(false);
-          if (!teamField && !teamFieldDummy?.teamFieldPath) {
-            setProperty("teamFieldType", undefined);
-          }
-          if (teamField) {
-            setTeamFieldPath(teamFieldDummy);
-            setProperty("teamFieldPath", teamFieldDummy);
-            setProperty("teamFieldType", selectedFieldOption.teamFieldType);
-          }
-          if (teamFieldDummy?.teamFieldPath) {
-            setTeamFieldPath(teamFieldDummy?.teamFieldPath);
-            setProperty("teamFieldPath", teamFieldDummy?.teamFieldPath);
-            setProperty("teamFieldType", selectedFieldOption.teamFieldType);
-          }
-        }}
-        alertClose={() => {
-          setOpenTeamPathDialog(false);
-          setTeamFieldDummy(teamFieldPath);
-        }}
-        children={
-          <FieldEditor
-            getMetaFields={getFields}
-            onChange={(val, field) => {
-              setTeamFieldDummy(val);
-              setTeamField(field);
-            }}
-            value={
-              teamFieldDummy
-                ? { fieldName: teamFieldDummy }
-                : teamFieldDummy?.teamFieldPath
-                ? { fieldName: teamFieldDummy?.teamFieldPath }
-                : { fieldName: "" }
-            }
-            isParent={true}
-          />
-        }
-      />
-      <AlertDialog
-        openAlert={openDeadlinePathDialog}
-        title={"Deadline field path"}
-        fullscreen={false}
-        handleAlertOk={() => {
-          if (
-            deadlineField &&
-            deadlineField.type &&
-            !["datetime", "date"].includes(deadlineField.type.toLowerCase())
-          ) {
-            setAlertMessage("Field should be date field");
-            setExpressionAlert(true);
-            return;
-          }
-          setOpenDeadlinePathDialog(false);
-          if (!deadlineField && !deadlineFieldPathDummy?.deadlineFieldPath) {
-            setProperty("deadlineType", undefined);
-          }
-          if (deadlineField) {
-            setDeadlineFieldPath(deadlineFieldPathDummy);
-            setProperty("deadlineFieldPath", deadlineFieldPathDummy);
-            setProperty("deadlineType", selectedFieldOption.deadlineType);
-          }
-          if (deadlineFieldPathDummy?.deadlineFieldPath) {
-            setDeadlineFieldPath(deadlineFieldPathDummy?.deadlineFieldPath);
-            setProperty(
-              "deadlineFieldPath",
-              deadlineFieldPathDummy?.deadlineFieldPath
-            );
-            setProperty("deadlineType", selectedFieldOption.deadlineType);
-          }
-        }}
-        alertClose={() => {
-          setOpenDeadlinePathDialog(false);
-          setDeadlineFieldPathDummy(deadlineFieldPath);
-        }}
-        children={
-          <FieldEditor
-            getMetaFields={getFields}
-            onChange={(val, field) => {
-              setDeadlineFieldPathDummy(val);
-              setDeadlineField(field);
-            }}
-            value={
-              deadlineFieldPathDummy
-                ? { fieldName: deadlineFieldPathDummy }
-                : deadlineFieldPathDummy?.deadlineFieldPath
-                ? { fieldName: deadlineFieldPathDummy?.deadlineFieldPath }
-                : { fieldName: "" }
-            }
-            allowAllFields={true}
-            isDatePath={true}
-          />
-        }
-      />
-
-      <AlertDialog
-        openAlert={openUserPathDialog}
-        title={"User field path"}
-        fullscreen={false}
-        handleAlertOk={() => {
-          if (field && field.target !== "com.axelor.auth.db.User") {
-            openDialog({
-              title: "Error",
-              message: "Last subfield must be user field",
-            });
-            return;
-          }
-          setOpenUserPathDialog(false);
-          setUserFieldPath(userFieldPathDummy);
-          setProperty("userFieldPath", userFieldPathDummy);
-        }}
-        alertClose={() => {
-          setOpenUserPathDialog(false);
-          setUserFieldPathDummy(userFieldPath);
-        }}
-        children={
-          <FieldEditor
-            getMetaFields={getFields}
-            onChange={(val, field) => {
-              setUserFieldPathDummy(val);
-              setField(field);
-            }}
-            value={
-              userFieldPathDummy
-                ? { fieldName: userFieldPathDummy }
-                : userFieldPathDummy?.userFieldPath
-                ? { fieldName: userFieldPathDummy?.userFieldPath }
-                : { fieldName: "" }
-            }
-            isParent={true}
-            isUserPath={true}
-          />
-        }
-      />
-
-      <Dialog open={openRoleDialog} backdrop centered className={styles.dialog}>
-        <DialogHeader onCloseClick={() => setOpenRoleDialog(false)}>
-          <h3>{translate("Role field path")}</h3>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
-          <FieldEditor
-            getMetaFields={getFields}
-            onChange={(val, field) => {
-              setRoleDummy(val);
-              setRole(field);
-            }}
-            value={
-              roleDummy
-                ? { fieldName: roleDummy }
-                : roleDummy?.roleFieldPath
-                ? { fieldName: roleDummy?.roleFieldPath }
-                : { fieldName: "" }
-            }
-            isParent={true}
-            isUserPath={true}
-          />
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            onClick={() => {
-              if (role && role.target !== "com.axelor.auth.db.Role") {
-                setAlertMessage("Last sub field must be role field");
-                setExpressionAlert(true);
-                return;
-              }
-              setOpenRoleDialog(false);
-              if (!role && !roleDummy) {
-                setProperty("roleType", undefined);
-              }
-              if (role) {
-                setRoleFieldPath(roleDummy);
-                setProperty("roleFieldPath", roleDummy);
-                setProperty("roleType", selectedTaskOption?.roleType);
-              }
-              if (roleDummy?.roleFieldPath) {
-                setRoleFieldPath(roleDummy?.roleFieldPath);
-                setProperty("roleFieldPath", roleDummy?.roleFieldPath);
-                setProperty("roleType", selectedTaskOption?.roleType);
-              }
-            }}
-            variant="primary"
-            className={styles.save}
-          >
-            {translate("OK")}
-          </Button>
-          <Button
-            onClick={() => {
-              setOpenRoleDialog(false);
-              setRoleDummy(roleFieldPath);
-            }}
-            variant="secondary"
-            className={styles.save}
-          >
-            {translate("Cancel")}
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
       <Dialog
         open={openExpressionAlert}
         backdrop
@@ -2907,19 +1540,6 @@ export default function MenuActionPanel({
         <DialogFooter>
           <Button
             onClick={() => {
-              if (openExpressionAlert) {
-                const fieldPathsMap = {
-                  userFieldPath: "userFieldPath",
-                  teamFieldPath: "teamFieldPath",
-                  deadlineFieldPath: "deadlineFieldPath",
-                  roleFieldPath: "roleFieldPath",
-                };
-
-                const fieldPath = fieldPathsMap[fieldTypes];
-                if (fieldPath) {
-                  clearFieldPathsData(fieldPath);
-                }
-              }
               setExpressionAlert(false);
             }}
             variant="primary"
@@ -2937,19 +1557,6 @@ export default function MenuActionPanel({
         </DialogFooter>
       </Dialog>
 
-      {open && (
-        <QueryBuilder
-          open={open}
-          close={handleClose}
-          type="bpmQuery"
-          title="Add query"
-          setProperty={(val) =>
-            setter(val, dummyStates, fieldPathState, fieldTypes)
-          }
-          getExpression={() => getter(fieldTypes)}
-          fetchModels={() => fetchModels(element)}
-        />
-      )}
       {openValueTextBox && (
         <AlertDialog
           className={styles.scriptDialog}
@@ -2972,10 +1579,13 @@ export default function MenuActionPanel({
                   label: translate("Value"),
                   modelProperty: "script",
                   get: function () {
-                    return { script: descriptionDummy?.description };
+                    return { script: actionDummy?.description };
                   },
                   set: function (e, values) {
-                    setDescriptionDummy({ description: values?.script });
+                    setActionDummy((prev) => ({
+                      ...prev,
+                      description: values?.script,
+                    }));
                   },
                 }}
                 suggestion={false}
