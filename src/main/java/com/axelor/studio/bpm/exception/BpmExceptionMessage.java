@@ -722,4 +722,6 @@ public final class BpmExceptionMessage {
 
   public static final String BPM_VARIABLE_UNSUPPORTED_TYPE = /*$$(*/
       "Unsupported variable type or empty map" /*)*/;
+  public static final String BPM_WKF_INSTANCE_NOT_FOUND = /*$$(*/
+      "Process instance not found : %s" /*)*/;
 }

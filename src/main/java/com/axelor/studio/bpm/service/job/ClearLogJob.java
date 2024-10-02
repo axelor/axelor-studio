@@ -51,7 +51,7 @@ public class ClearLogJob implements Job {
       wkfInstanceList =
           wkfInstanceRepo
               .all()
-              .filter("self.logText IS NOT NULL AND self.logText != ''")
+              .filter("self.logFile IS NOT NULL")
               .order("id")
               .fetch(FETCH_LIMIT, offset);
       while (!wkfInstanceList.isEmpty()) {
@@ -64,9 +64,7 @@ public class ClearLogJob implements Job {
         wkfInstanceList =
             wkfInstanceRepo
                 .all()
-                .filter(
-                    "self.logText IS NOT NULL AND self.logText != '' AND self.id NOT IN (?1)",
-                    processedIdSet)
+                .filter("self.logFile IS NOT NULL AND self.id NOT IN (?1)", processedIdSet)
                 .order("id")
                 .fetch(FETCH_LIMIT, offset);
       }
