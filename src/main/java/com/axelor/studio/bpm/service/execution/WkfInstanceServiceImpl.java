@@ -42,6 +42,7 @@ import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.helpers.context.FullContextHelper;
@@ -107,6 +108,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   protected WkfLogService wkfLogService;
 
+  protected AppSettingsStudioService appSettingsStudioService;
+
   @Inject
   public WkfInstanceServiceImpl(
       ProcessEngineService engineService,
@@ -118,7 +121,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfEmailService wkfEmailService,
       WkfUserActionService wkfUserActionService,
       BpmErrorMessageService bpmErrorMessageService,
-      WkfLogService wkfLogService) {
+      WkfLogService wkfLogService,
+      AppSettingsStudioService appSettingsStudioService) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -129,6 +133,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.wkfUserActionService = wkfUserActionService;
     this.bpmErrorMessageService = bpmErrorMessageService;
     this.wkfLogService = wkfLogService;
+    this.appSettingsStudioService = appSettingsStudioService;
   }
 
   @Override
@@ -140,6 +145,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     String helpText = null;
 
     OutputStreamAppender<ILoggingEvent> appender = null;
+
     String processInstanceId = null;
 
     try {
@@ -171,7 +177,10 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
         if (processInstance != null && !processInstance.isEnded()) {
           processInstanceId = processInstance.getId();
-          appender = wkfLogService.createOrAttachAppender(processInstanceId);
+          boolean isLog = appSettingsStudioService.isAddBpmLog();
+          if (isLog) {
+            appender = wkfLogService.createOrAttachAppender(processInstanceId);
+          }
           helpText = wkfTaskService.runTasks(engine, wkfInstance, processInstance, signal, model);
         }
       } catch (Exception e) {

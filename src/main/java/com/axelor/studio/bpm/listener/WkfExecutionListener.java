@@ -27,6 +27,7 @@ import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
@@ -53,6 +54,7 @@ public class WkfExecutionListener implements ExecutionListener {
   protected WkfProcessRepository wkfProcessRepo;
   protected WkfTaskConfigRepository wkfTaskConfigRepo;
   protected WkfLogService wkfLogService;
+  protected AppSettingsStudioService appSettingsStudioService;
 
   @Inject
   public WkfExecutionListener(
@@ -60,13 +62,15 @@ public class WkfExecutionListener implements ExecutionListener {
       WkfInstanceService wkfInstanceService,
       WkfProcessRepository wkfProcessRepo,
       WkfTaskConfigRepository wkfTaskConfigRepo,
-      WkfLogService wkfLogService) {
+      WkfLogService wkfLogService,
+      AppSettingsStudioService appSettingsStudioService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
     this.wkfProcessRepo = wkfProcessRepo;
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
     this.wkfLogService = wkfLogService;
+    this.appSettingsStudioService = appSettingsStudioService;
   }
 
   @Override
@@ -147,7 +151,8 @@ public class WkfExecutionListener implements ExecutionListener {
     setInstanceCurrentNode(instanceId, flowElement);
 
     log.debug("Executing: id={},name={}", flowElement.getId(), flowElement.getName());
-    if (!blocking) {
+    boolean isLog = appSettingsStudioService.isAddBpmLog();
+    if (!blocking && isLog) {
       wkfLogService.createOrAttachAppender(instanceId);
     }
 

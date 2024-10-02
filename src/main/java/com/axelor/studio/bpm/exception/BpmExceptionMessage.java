@@ -710,4 +710,6 @@ public final class BpmExceptionMessage {
   public static final String BPM_YAML_NOT_FOUND_FILE = /*$$(*/ "File not found" /*)*/;
   public static final String BPM_LOG_INVALID_DATES = /*$$(*/
       "Invalid date: start date is after end date" /*)*/;
+  public static final String BPM_WKF_INSTANCE_NOT_FOUND = /*$$(*/
+      "Process instance not found : %s" /*)*/;
 }
