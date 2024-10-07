@@ -1,3 +1,9 @@
+## 3.2.1 (2024-10-07)
+
+#### Fix
+
+* BAML Bug on instance generation
+
 ## 3.2.0 (2024-09-09)
 
 #### Feature
