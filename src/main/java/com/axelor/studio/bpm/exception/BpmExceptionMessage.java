@@ -719,4 +719,6 @@ public final class BpmExceptionMessage {
 
   public static final String BPM_WKF_MODEL_UNIQUE_CODE = /*$$(*/
       "The code %s is already in use. Please choose a different code." /*)*/;
+  public static final String BPM_WKF_INSTANCE_NOT_FOUND = /*$$(*/
+      "Process instance not found : %s" /*)*/;
 }

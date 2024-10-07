@@ -10,15 +10,12 @@ import lombok.Setter;
 @Setter
 public class ParameterLineType {
 
-    @XmlAttribute(name = "id")
-    protected String id;
+  @XmlAttribute(name = "id")
+  protected String id;
 
-    @XmlAttribute(name = "expression")
-    protected String expression;
+  @XmlAttribute(name = "expression")
+  protected String expression;
 
-    @XmlAttribute(name = "target")
-    protected String target;
-
-
-
+  @XmlAttribute(name = "target")
+  protected String target;
 }
