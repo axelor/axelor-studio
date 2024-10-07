@@ -20,12 +20,12 @@ package com.axelor.studio.baml.service;
 import com.axelor.studio.baml.xml.ProcessActionRootNode;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.io.Resources;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 

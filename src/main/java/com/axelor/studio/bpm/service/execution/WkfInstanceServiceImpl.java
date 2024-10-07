@@ -101,6 +101,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected WkfUserActionService wkfUserActionService;
   protected BpmErrorMessageService bpmErrorMessageService;
   protected WkfLogService wkfLogService;
+  protected AppSettingsStudioService appSettingsStudioService;
 
   public static final int EXECUTION_SOURCE_LISTENER = 0;
   public static final int EXECUTION_SOURCE_OBSERVER = 1;

@@ -1,3 +1,9 @@
+## 3.2.1 (2024-10-07)
+
+#### Fix
+
+* BAML Bug on instance generation
+
 ## 3.2.0 (2024-09-09)
 
 #### Feature
@@ -180,6 +186,85 @@
   </details>
 
 
+## 3.1.4 (2024-10-07)
+
+#### Fix
+
+* BAML Bug on instance generation
+
+## 3.1.3 (2024-09-09)
+
+#### Fix
+
+* Issue when changing browser zoom
+
+  <details>
+  
+  - When zooming, the horizontal scrolling is not available in the properties, making right buttons unavailable.
+  - Moreover, when canceling the resizing, properties panel remains compact.
+  
+  </details>
+
+* Fix Code editor on studio field settings
+* Fix duplicate request when selecting BPM Model
+* fix sending mail task
+* Correct wrong translation
+
+  <details>
+  
+  - Change in fr translation "Modèles standards importés" to "Importer les modèles standards"
+  
+  </details>
+
+* Alert when opening a process
+* Fix  apply CamelCase on MetaJsonField each time when navigate to another field
+
+  <details>
+  
+  - the metaJsonField's name are automatically converted in CamelCase.
+  - It's a nice for new field but not for already existing ones.
+  
+  </details>
+
+* Fix Bad alignment in messages
+
+## 3.1.2 (2024-07-24)
+
+#### Fix
+
+* When merging BPM models there is a breaking issue
+
+  <details>
+  
+  When having selected a BPM model and then merging it with another model, the application went blank consequently to a 
+  front-end issue.
+  
+  </details>
+
+* Update xsd version on Studio elements
+
+  <details>
+  
+  - Update xsd version on domains from 6.1 to 7.1
+  - Update xsd version on views from 6.1 to 7.1
+  - Update xsd version on import from 6.1 to 7.1
+  
+  </details>
+
+* Builders refactoring
+
+## 3.1.1 (2024-06-26)
+
+#### Change
+
+* Update dependencies to Axelor-message & Axelor-utils
+
+#### Fix
+
+* Fix unused exportation of files, when exporting an empty Studio App
+* Change AOP version to 7.1.0
+* Fix scrolling is blocked in mapper
+
 ## 3.1.0 (2024-05-30)
 
 #### Feature
@@ -257,6 +342,72 @@
   
   </details>
 
+## 3.0.5 (2024-10-07)
+
+#### Fix
+
+* BAML Bug on instance generation
+* Memory leak when large number of instances.
+
+  <details>
+  
+  Resolved the memory leak caused by inefficient log handling for BPM instances. 
+  Replaced ByteArrayOutputStream with BufferedOutputStream around FileOutputStream to reduce heap memory usage and improve performance.
+  Logs are now written directly to disk.
+  
+  </details>
+
+
+## 3.0.4 (2024-09-09)
+
+#### Fix
+
+* Fix duplicate request when selecting BPM Model
+* Fix sending mail task
+* Fix Wrong translation of "Import standard models"
+* Fix  Alert when opening a process
+* Fix  apply CamelCase on MetaJsonField each time when navigate to another field
+
+  <details>
+  
+  - the metaJsonField's name are automatically converted in CamelCase.
+  - It's a nice for new field but not for already existing ones.
+  
+  </details>
+
+* Fix Bad alignment in messages
+
+## 3.0.3 (2024-07-24)
+
+#### Fix
+
+* When merging BPM models there is a breaking issue
+
+  <details>
+  
+  When having selected a BPM model and then merging it with another model, the application went blank consequently to a 
+  front-end issue.
+  
+  </details>
+
+* Update xsd version on Studio elements
+
+  <details>
+  
+  - Update xsd version on domains from 6.1 to 7.0
+  - Update xsd version on views from 6.1 to 7.0
+  - Update xsd version on import from 6.1 to 7.0
+  
+  </details>
+
+* Builders refactoring
+
+## 3.0.2 (2024-06-26)
+
+#### Fix
+
+* Fix unused exportation of files, when exporting an empty Studio App
+* Fix scrolling is blocked in mapper
 
 ## 3.0.1 (2024-04-26)
 
