@@ -106,8 +106,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   public static final int EXECUTION_SOURCE_LISTENER = 0;
   public static final int EXECUTION_SOURCE_OBSERVER = 1;
 
-  protected AppSettingsStudioService appSettingsStudioService;
-
   @Inject
   public WkfInstanceServiceImpl(
       ProcessEngineService engineService,
