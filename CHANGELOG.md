@@ -1,3 +1,19 @@
+## 3.0.5 (2024-10-07)
+
+#### Fix
+
+* BAML Bug on instance generation
+* Memory leak when large number of instances.
+
+  <details>
+  
+  Resolved the memory leak caused by inefficient log handling for BPM instances. 
+  Replaced ByteArrayOutputStream with BufferedOutputStream around FileOutputStream to reduce heap memory usage and improve performance.
+  Logs are now written directly to disk.
+  
+  </details>
+
+
 ## 3.0.4 (2024-09-09)
 
 #### Fix
