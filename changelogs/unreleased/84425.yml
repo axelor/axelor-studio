@@ -1,0 +1,5 @@
+title: Batch processing takes much longer in 3.2.0
+type: fix
+description: |
+  Improved batch processing performance for BPM instances.
+

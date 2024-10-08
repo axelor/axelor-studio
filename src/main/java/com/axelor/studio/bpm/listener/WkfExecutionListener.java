@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.bpm.listener;
 
+import com.axelor.db.JPA;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
@@ -32,6 +33,10 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
+import javax.persistence.FlushModeType;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
@@ -149,7 +154,7 @@ public class WkfExecutionListener implements ExecutionListener {
     boolean blocking = blockingNode(type);
     String instanceId = execution.getProcessInstanceId();
 
-    setInstanceCurrentNode(instanceId, flowElement);
+    setInstanceCurrentNode(instanceId, flowElement.getId());
 
     log.debug("Executing: id={},name={}", flowElement.getId(), flowElement.getName());
     boolean isLog = appSettingsStudioService.isAddBpmLog();
@@ -185,12 +190,13 @@ public class WkfExecutionListener implements ExecutionListener {
   }
 
   @Transactional(rollbackOn = Exception.class)
-  protected void setInstanceCurrentNode(String instanceId, FlowElement flowElement) {
-    WkfInstance wkfInstance = wkfInstanceRepo.findByInstanceId(instanceId);
-    if (wkfInstance != null) {
-      wkfInstance.setNode(flowElement.getId());
-      wkfInstanceRepo.save(wkfInstance);
-    }
+  protected void setInstanceCurrentNode(String instanceId, String flowElementId) {
+    CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
+    CriteriaUpdate<WkfInstance> update = cb.createCriteriaUpdate(WkfInstance.class);
+    Root<WkfInstance> root = update.from(WkfInstance.class);
+    update.set(root.get("node"), flowElementId);
+    update.where(cb.equal(root.get("instanceId"), instanceId));
+    JPA.em().createQuery(update).setFlushMode(FlushModeType.COMMIT).executeUpdate();
   }
 
   protected void processNodeEnd(DelegateExecution execution) {
