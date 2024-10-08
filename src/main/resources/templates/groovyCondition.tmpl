@@ -1,0 +1,4 @@
+<% condition.values.each{ expression -> %> ${condition.values.size()>1?'(':''}${groovyScriptService.buildExpression(expression,condition)}${condition.values.size()>1?')':''} <% if(expression!=condition.values.last()){
+        %>${condition.combinator=='and'?'&&':'||'}<%
+    }%><%
+}%>

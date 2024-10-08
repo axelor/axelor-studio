@@ -153,6 +153,8 @@ import com.axelor.studio.service.constructor.components.actions.StudioActionServ
 import com.axelor.studio.service.constructor.components.actions.StudioActionServiceImpl;
 import com.axelor.studio.service.constructor.components.actions.StudioActionViewService;
 import com.axelor.studio.service.constructor.components.actions.StudioActionViewServiceImpl;
+import com.axelor.studio.service.constructor.components.expressions.GroovyScriptBuilderService;
+import com.axelor.studio.service.constructor.components.expressions.GroovyScriptBuilderServiceImpl;
 import com.axelor.studio.service.constructor.reporting.StudioChartService;
 import com.axelor.studio.service.constructor.reporting.StudioChartServiceImpl;
 import com.axelor.studio.service.constructor.reporting.StudioDashboardService;
@@ -275,5 +277,6 @@ public class StudioModule extends AxelorModule {
     bind(WkfModelMergerSplitterService.class).to(WkfModelMergerSplitterServiceImpl.class);
     bind(ConnectService.class).to(ConnectServiceImpl.class);
     bind(GroovyTemplateService.class).to(GroovyTemplateServiceImpl.class);
+    bind(GroovyScriptBuilderService.class).to(GroovyScriptBuilderServiceImpl.class);
   }
 }

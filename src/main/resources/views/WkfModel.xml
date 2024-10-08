@@ -456,4 +456,14 @@
       if="_ids == null || _ids.size() != 1"/>
   </action-validate>
 
+  <action-method name="action-wkf-model-method-generate-expression">
+    <call class="com.axelor.studio.web.GroovyExpressionBuilderController"
+      method="buildExpression"/>
+  </action-method>
+
+
+  <action-method name="action-wkf-model-method-generate-script">
+    <call class="com.axelor.studio.web.GroovyExpressionBuilderController" method="buildScript"/>
+  </action-method>
+
 </object-views>

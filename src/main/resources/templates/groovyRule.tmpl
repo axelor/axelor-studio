@@ -1,0 +1,22 @@
+<%
+def combinator = rule.combinator=='and'?'&&':'||'
+def rules = rule.rules
+%><%
+if(rule.rules!=null && !rule.rules.isEmpty()){
+rules.each{ childRule ->
+%>${groovyScriptService.buildRule(childRule,metaModelVarName)}${rules.last()!=childRule?combinator:''}<%}%><%}%><%
+if(rule.allField!=null && !rule.allField.isEmpty()){
+%>${('between'==rule.operator)?'(':''}${('notBetween'==rule.operator)?'!(':''}${metaModelVarName}?.${groovyScriptService.buildFieldName(rule.allField)}<%
+if(rule.operator!=null){
+    if('isNotNull'==rule.operator){%>!=null<%}
+    if('isNull'==rule.operator){%>==null<%}
+    if('isTrue'==rule.operator){%>==true<%}
+    if('isFalse'==rule.operator){%>!=true<%}
+    if(['!=','=','>=','<=','<','>'].contains(rule.operator)){
+    %>${rule.operator!='='?rule.operator:'=='}${rule.fieldValue}<%
+    }
+    if(['between','notBetween'].contains(rule.operator)){
+    %>>=${rule.fieldValue}&&${metaModelVarName}?.${groovyScriptService.buildFieldName(rule.allField)}<=${rule.fieldValue2})<%
+    }
+ }
+}%>

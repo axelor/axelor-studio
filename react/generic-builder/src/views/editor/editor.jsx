@@ -24,11 +24,14 @@ import {
   ALLOWED_TYPES,
   BUILT_IN_VARIABLES,
   BUTTON_TYPE_OPERATOR,
+  VAR_TYPES,
+  VAR_OPTIONS,
 } from '../../common/constants';
 import {
   getCustomModelData,
   getNameField,
   getData,
+  getCustomVariables,
   getMetaFields as getMetaFieldsAPI,
 } from '../../services/api';
 import { isBPMQuery, lowerCaseFirstLetter } from '../../common/utils';
@@ -405,7 +408,9 @@ const Rule = React.memo(function Rule(props) {
     isMapper ? null : 'metaModel'
   );
 
-  const isBuiltInVars = metaModal?.name === 'Built In Variables';
+  const isBuiltInVars = metaModal?.type === VAR_TYPES.BUILT_IN;
+  const isCustomVars = metaModal?.type === VAR_TYPES.CUSTOM;
+  const isVariable = isCustomVars || isBuiltInVars;
 
   const onChange = React.useCallback(
     (e, editor) => _onChange(e, editor, index),
@@ -442,12 +447,7 @@ const Rule = React.memo(function Rule(props) {
         ? await fetchModels()
         : await fetchMetaModels({ search });
       if (isBPMN && !isBPMQuery(parentType)) {
-        const obj = {
-          title: translate('Built In Variables'),
-          name: 'Built In Variables',
-          type: 'variable',
-        };
-        data = [obj, ...(data || [])];
+        data = [...VAR_OPTIONS, ...(data || [])];
       }
       return data || [];
     },
@@ -459,8 +459,8 @@ const Rule = React.memo(function Rule(props) {
   }, [isParameterShow]);
 
   useEffect(() => {
-    isBuiltInVars && handleChange('isShowMetaModelField', true);
-  }, [isBuiltInVars, handleChange]);
+    isVariable && handleChange('isShowMetaModelField', true);
+  }, [isVariable, handleChange]);
 
   useEffect(() => {
     const {
@@ -523,6 +523,14 @@ const Rule = React.memo(function Rule(props) {
     }
     return [...data, { label: 'None', value: 'none' }];
   }, [operator, isCondition, parentType, isBPMQuery]);
+
+  const getVariables = async () => {
+    return isBuiltInVars
+        ? BUILT_IN_VARIABLES.map(v => ({ name: v.name, title: v.title }))
+        : await getCustomVariables();
+  };
+
+
 
   return (
     <Box d="flex" alignItems="flex-end" gap={4} className={styles.rules}>
@@ -640,7 +648,7 @@ const Rule = React.memo(function Rule(props) {
                 optionLabelKey="name"
                 onChange={e => {
                   handleChange('relatedValueModal', e);
-                  if (e && e.name !== 'Built In Variables') {
+                  if (e && Object.values(VAR_TYPES).includes(e)) {
                     const fieldValue = `${firstCharLowerCase(
                       e?.name
                     )}?.getTarget()`;
@@ -664,15 +672,21 @@ const Rule = React.memo(function Rule(props) {
                   onClick={() => {
                     handleChange('isShowMetaModelField', false);
                     if (!metaModal) return;
-                    const model = metaModal.name;
-                    const fieldValue = `${firstCharLowerCase(
-                      model
-                    )}?.getTarget()`;
-                    setNameValue({
-                      fieldValue,
-                    });
-                    handleChange('relatedValueModal', metaModal);
-                    handleChange('fieldValue', fieldValue);
+                    const isVariableOption=Object.values(VAR_TYPES).includes(metaModal.type)
+                    if (!isVariableOption) {
+                      const model = metaModal.name;
+                      const fieldValue = `${firstCharLowerCase(
+                          model
+                      )}?.getTarget()`;
+                      setNameValue({
+                        fieldValue,
+                      });
+                      handleChange('relatedValueModal', metaModal);
+                      handleChange('fieldValue', fieldValue);
+                    } else {
+                      setNameValue({ fieldValue: null });
+                      handleChange('fieldValue', null);
+                    }
                   }}
                   className={styles.iconButton}
                 >
@@ -689,8 +703,8 @@ const Rule = React.memo(function Rule(props) {
               isBPM
               getMetaFields={
                 isField === 'context' && isBPMN
-                  ? isBuiltInVars
-                    ? getBuiltInVariables
+                    ? isVariable
+                        ? getVariables
                     : fetchMetaModalField
                   : getMetaFields
               }
@@ -732,7 +746,7 @@ const Rule = React.memo(function Rule(props) {
                   fieldNameValue
                     ? isBPM && isField === 'self'
                       ? `self.${fieldNameValue}`
-                      : isBuiltInVars
+                      : isVariable
                       ? `${fieldNameValue}`
                       : `${lowerCaseFirstLetter(metaModal?.name)}${
                           isContextValue
