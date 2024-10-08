@@ -1,0 +1,17 @@
+<%if(script?.savedRecord){%>def rec = __ctx__.find('${script?.targetModel}',${__inflector__.camelize(script?.targetModel,true)+"Id"})<%}%>
+<%if(script?.newRecord){%>def rec = __ctx__.create('${script?.targetModel}')<%}%>
+<%if(script?.sourceModelList!=null&&!script?.sourceModelList?.isEmpty()){%>def src =  <%if(script.modelFrom!=null&&script.modelFrom.id=='process'){
+%>__ctx__.getVariable(${script.processId},'<%
+}%><%script.sourceModelList?.each{ sourceModel -> %>${__inflector__.camelize(sourceModel.name,true)}${sourceModel==script?.sourceModelList?.last()?"":"?."}<%}%><%}%>
+<%if(script.modelFrom!=null&&script.modelFrom.id=='process'){%>')<%}%>
+<% script.fields.each { field -> %>
+<%if(field.condition!=null||field.conditionMeta!=null){%>
+if(${field.conditionMeta!=null?groovyScriptService.buildCondition(field.conditionMeta):field.condition}){
+<%}%>rec.${field.name} = <%if(field.value.from=='process'){
+%>__ctx__.getVariable(${field.processId},'<%}%>${field.value.from=='source'?'src?.':(field.value.from=='self'?'rec?.':'')}<% if(field.value.subFields!=null&&!field.value.subFields.isEmpty()){
+field.value.subFields.each {subField -> %><%if(subField.name!=null){%>${__inflector__.camelize(subField.name,true)}<%if(field.value.from=='process'&&subField==field.value.subFields.first()){%>')<%}%>${subField==field.value.subFields.last()?"":"?."}<%}%><%}}
+else{%>${field.value.value}<%
+}%><%if(field.condition!=null){%>
+}<%}%>
+<% } %>
+<%if(script?.save){%>return<%if(script.createVariable){%> __ctx__.createObject(<%}%>__ctx__.save(rec)<%if(script.createVariable){%>,execution)<%}%><%}%>

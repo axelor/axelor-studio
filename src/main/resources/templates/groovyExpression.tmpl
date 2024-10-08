@@ -1,0 +1,7 @@
+<%
+def isBpmn = condition.isBPMN
+def generateWithId = condition.generateWithId
+def metaModelVarName = isBpmn&&generateWithId?"__ctx__.find('${__inflector__.camelize(expression.metaModalName)}', ${__inflector__.camelize(expression.metaModalName,true)}Id)":__inflector__.camelize(expression.metaModalName,true)
+def combinator = condition.combinator == 'and'?'&&':'||'
+%><%
+expression.rules.each{ rule -> %>${expression.rules.size()>1?'(':''}${groovyScriptService.buildRule(rule,metaModelVarName)}${expression.rules.size()>1?')':''}${expression.rules.last()!=rule?combinator:''}<%}%>

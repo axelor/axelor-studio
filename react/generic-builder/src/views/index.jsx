@@ -22,7 +22,7 @@ import {
   upperCaseFirstLetter,
   translate,
 } from '../common/utils';
-import { getRecord, getModels, saveRecord } from '../services/api';
+import { getRecord, getModels, saveRecord, generateGroovyExpression } from '../services/api';
 import {
   Dialog,
   DialogHeader,
@@ -113,348 +113,6 @@ function ExpressionBuilder({
     );
   }
 
-  function getRelationalCondition(
-    rule,
-    initValue = '',
-    isParent = false,
-    prefix
-  ) {
-    const map_operators =
-      MAP_OPERATOR[isBPMQuery(parentType) ? 'BPM' : expression];
-    const { fieldName: propFieldName, operator, allField } = rule;
-    let {
-      fieldValue,
-      fieldValue2,
-      isRelationalValue,
-      relatedValueFieldName,
-      relatedValueModal,
-      relatedElseValueFieldName,
-      relatedElseValueModal,
-      parent,
-      nameField,
-    } = rule;
-    let fieldName = propFieldName;
-    const values =
-      fieldName &&
-      fieldName
-        .split(JOIN_OPERATOR[isBPMQuery(parentType) ? 'BPM' : expression])
-        .filter(f => f !== '');
-
-    const fName = values[0];
-    const field = allField.find(f => f.name === fName);
-    const { targetName, selectionList, nameField: nameColumn } = field || {};
-    const type =
-      field && field.type && field.type.toLowerCase().replaceAll('-', '_');
-    const typeName = field && field.typeName;
-    const nestedFields = (values && values.splice(1)) || [];
-    if (
-      [
-        'many_to_many',
-        'one_to_many',
-        'json_many_to_many',
-        'json_one_to_many',
-      ].includes(type)
-    ) {
-      const findRelational = initValue.match(/\$\$/g);
-      if (findRelational && findRelational.length > 0) {
-        const str =
-          nestedFields.length >= 1
-            ? `${fName}.find{it->it.$$$$}${
-                POSITIVE_OPERATORS.includes(operator) ? ' != null' : ' == null'
-              }`
-            : `${fName}.${
-                nestedFields.length > 0 ? 'find' : 'collect'
-              }{it->it$$$$}${
-                nestedFields.length > 0
-                  ? POSITIVE_OPERATORS.includes(operator)
-                    ? ' != null'
-                    : ' == null'
-                  : ''
-              }`;
-        initValue = initValue.replace(/\$\$/g, str);
-      } else {
-        const str =
-          nestedFields.length >= 1
-            ? `${fName}.find{it->it.$$}${
-                POSITIVE_OPERATORS.includes(operator) ? ' != null' : ' == null'
-              }`
-            : `${fName}.${
-                nestedFields.length > 0 ? 'find' : 'collect'
-              }{it->it$$}${
-                nestedFields.length > 0
-                  ? POSITIVE_OPERATORS.includes(operator)
-                    ? ' != null'
-                    : ' == null'
-                  : ''
-              }`;
-        initValue += str;
-      }
-      const nestedFieldName = nestedFields.join(JOIN_OPERATOR[expression]);
-      return getRelationalCondition(
-        {
-          fieldName: nestedFieldName,
-          operator,
-          allField,
-          fieldValue,
-          fieldValue2,
-          isRelationalValue,
-          relatedValueFieldName,
-          relatedValueModal,
-          relatedElseValueFieldName,
-          relatedElseValueModal,
-          parent: values && values[0],
-          nameField: nameColumn || nameField,
-        },
-        initValue,
-        nestedFields.length > 1,
-        prefix
-      );
-    } else if (
-      [
-        'json_many_to_one',
-        'json_one_to_one',
-        'many_to_one',
-        'one_to_one',
-      ].includes(type)
-    ) {
-      const nestedFieldName = nestedFields.join(JOIN_OPERATOR[expression]);
-      const findRelational = initValue.match(/\$\$/g);
-      const str =
-        nestedFields.length >= 1
-          ? `${fName}${JOIN_OPERATOR[expression]}`
-          : fName;
-      if (findRelational && findRelational.length > 0) {
-        initValue = initValue.replace(/\$\$/g, `${str}$$$$`);
-      } else {
-        initValue += `${str}$$`;
-      }
-      return getRelationalCondition(
-        {
-          fieldName: nestedFieldName,
-          operator,
-          allField,
-          fieldValue,
-          fieldValue2,
-          isRelationalValue,
-          relatedValueFieldName,
-          relatedValueModal,
-          relatedElseValueFieldName,
-          relatedElseValueModal,
-          nameField: nameColumn || nameField,
-          parent: values && values[0],
-        },
-        initValue,
-        nestedFields.length > 1,
-        prefix
-      );
-    } else {
-      const isNumber = [
-        'integer',
-        'decimal',
-        'boolean',
-        'long',
-        'double',
-        'button',
-        'menu-item',
-      ].includes(type);
-      const isDateTime = ['date', 'time', 'datetime'].includes(type);
-
-      if (isNumber) {
-        if (
-          !fieldValue &&
-          fieldValue !== false &&
-          !selectionList &&
-          !isRelationalValue
-        ) {
-          fieldValue = 0;
-        }
-        if (['between', 'notBetween'].includes(operator) && !fieldValue2) {
-          fieldValue2 = 0;
-        }
-      }
-
-      if (!isRelationalValue && !isNumber && typeof fieldValue !== 'object') {
-        fieldValue = `'${jsStringEscape(fieldValue, withParam)}'`;
-        fieldValue2 = `'${jsStringEscape(fieldValue2, withParam)}'`;
-      }
-
-      if (isDateTime) {
-        if (!isRelationalValue) {
-          fieldValue = getDateTimeValue(type, fieldValue);
-          fieldValue2 = getDateTimeValue(type, fieldValue2);
-        }
-        fieldName = typeName ? `${fieldName}?.toLocalDateTime()` : fieldName;
-      }
-      const isObjectValue = fieldValue && typeof fieldValue === 'object';
-      if (['in', 'notIn'].includes(operator)) {
-        const isManyToManyField = initValue && initValue.includes('{it->it$$}');
-        const field = allField.find(f => f.name === parent) || {};
-        const value =
-          typeof rule?.fieldValue === 'string'
-            ? rule.fieldValue
-            : (rule?.fieldValue || [])
-                .map(f => {
-                  const targetFields =
-                    f['nameField'] ||
-                    f['targetName'] ||
-                    f['fullName'] ||
-                    f[`name`];
-                  return targetFields
-                    ? isNumber
-                      ? targetFields
-                      : `'${targetFields}'`
-                    : f['id'];
-                })
-                .join(',');
-        const name =
-          isParent || nestedFields.length >= 1
-            ? ''
-            : `${fieldName}${
-                selectionList
-                  ? ''
-                  : `${JOIN_OPERATOR[expression]}${
-                      nameField ||
-                      (field && field.targetName) ||
-                      targetName ||
-                      'fullName'
-                    }`
-              }`;
-        const str = `${operator === 'notIn' ? '!' : ''}${`[${value}]`}${
-          JOIN_OPERATOR[expression]
-        }${map_operators[operator]}${isManyToManyField ? 'All' : ''}(${prefix}${
-          JOIN_OPERATOR[expression]
-        }${initValue.replace(/\$\$/g, name)})`;
-        return str;
-      } else if (['contains', 'notContains'].includes(operator)) {
-        const isManyToManyField = initValue && initValue.includes('{it->it$$}');
-        const field = allField.find(f => f.name === parent) || {};
-        const value =
-          typeof rule?.fieldValue === 'string'
-            ? rule.fieldValue
-            : (rule?.fieldValue || [])
-                .map(f => {
-                  const targetFields =
-                    f['nameField'] ||
-                    f['targetName'] ||
-                    f['fullName'] ||
-                    f[`name`];
-                  return targetFields
-                    ? isNumber
-                      ? targetFields
-                      : `'${targetFields}'`
-                    : f['id'];
-                })
-                .join(',');
-        const name =
-          isParent || nestedFields.length >= 1
-            ? ''
-            : `${fieldName}${
-                selectionList
-                  ? ''
-                  : `${JOIN_OPERATOR[expression]}${
-                      nameField ||
-                      (field && field.targetName) ||
-                      targetName ||
-                      'fullName'
-                    }`
-              }`;
-        const str = `${operator === 'notContains' ? '!' : ''}(${prefix}${
-          JOIN_OPERATOR[expression]
-        }${initValue.replace(/\$\$/g, name)})${JOIN_OPERATOR[expression]}${
-          map_operators[operator]
-        }${isManyToManyField ? 'All' : ''}(${value})`;
-        return str;
-      } else if (['between', 'notBetween'].includes(operator)) {
-        const temp = initValue.match(/it.\$\$/g);
-        if (temp && temp.length) {
-          const str = `(it.${prefix}${JOIN_OPERATOR[expression]}${fieldName} >= ${fieldValue} && it.${prefix}${JOIN_OPERATOR[expression]}${fieldName} <= ${fieldValue2})`;
-          if ('notBetween' === operator) {
-            return `${initValue.replace(/it.\$\$/g, `!${str}`)}`;
-          }
-          return initValue.replace(/it.\$\$/g, str);
-        } else {
-          const replace = p1 => {
-            const field = (p1 && p1.replace(/\$\$/g, fieldName)) || fieldName;
-            if ('notBetween' === operator) {
-              return `!(${prefix}${JOIN_OPERATOR[expression]}${field} >= ${fieldValue} && ${prefix}${JOIN_OPERATOR[expression]}${field} <= ${fieldValue2})`;
-            }
-            return `(${prefix}${JOIN_OPERATOR[expression]}${field} >= ${fieldValue} && ${prefix}${JOIN_OPERATOR[expression]}${field} <= ${fieldValue2})`;
-          };
-          return replace(initValue);
-        }
-      } else if (['isNotNull', 'isNull'].includes(operator)) {
-        const str = `${fieldName} ${map_operators[operator]}`;
-        const field = allField.find(f => f.name === parent) || {};
-        const isManyToManyField = initValue && initValue.includes('{it->it$$}');
-        if (isManyToManyField) {
-          const name =
-            isParent || nestedFields.length >= 1
-              ? ''
-              : `${fieldName}${
-                  selectionList
-                    ? ''
-                    : `${JOIN_OPERATOR[expression]}${
-                        (field && field.targetName) || targetName || 'fullName'
-                      }`
-                }`;
-          return `${prefix}${JOIN_OPERATOR[expression]}${initValue.replace(
-            /\$\$/g,
-            `${name} ${str}`
-          )}`;
-        }
-        return `${prefix}${JOIN_OPERATOR[expression]}${initValue.replace(
-          /\$\$/g,
-          str
-        )}`;
-      } else if (['isTrue', 'isFalse'].includes(operator)) {
-        const value = operator === 'isTrue' ? true : false;
-        const str = `${fieldName} ${map_operators[operator]} ${value}`;
-        return `${prefix}${JOIN_OPERATOR[expression]}${initValue.replace(
-          /\$\$/g,
-          str
-        )}`;
-      } else if (['like', 'notLike'].includes(operator)) {
-        const str = `${fieldName}${JOIN_OPERATOR[expression]}${map_operators[operator]}(${fieldValue})`;
-        return `${operator === 'notLike' ? '!' : ''}${prefix}${
-          JOIN_OPERATOR[expression]
-        }${initValue.replace(/\$\$/g, str)}`;
-      } else {
-        const fieldNew = field || allField.find(f => f.name === parent) || {};
-        const targetFields =
-          isObjectValue &&
-          (fieldValue[nameField] ||
-            fieldValue[targetName] ||
-            fieldValue['fullName'] ||
-            fieldValue['name']);
-
-        const isRelational =
-          isRelationalValue &&
-          ['json-many-to-one', 'MANY_TO_ONE', 'many-to-one'].includes(
-            fieldNew.type
-          );
-
-        const value = isObjectValue
-          ? targetFields
-            ? `'${jsStringEscape(targetFields, withParam)}'`
-            : fieldValue['id']
-          : fieldValue;
-        const str = `${
-          isObjectValue
-            ? `${fieldName}${JOIN_OPERATOR[expression]}${
-                nameField || fieldNew.targetName || 'fullName'
-              }`
-            : `${fieldName}${isRelational ? `?.getTarget()` : ''}`
-        } ${map_operators[operator]} ${value}`;
-        return ['button', 'menu-item'].includes(type)
-          ? `${initValue.replace(/\$\$/g, str)}`
-          : `${prefix}${JOIN_OPERATOR[expression]}${initValue.replace(
-              /\$\$/g,
-              str
-            )}`;
-      }
-    }
-  }
-
   function getDateTimeValue(type, fieldValue, isJsonField = false) {
     const isQuery = isBPMQuery(parentType);
     if (type === 'date') {
@@ -483,160 +141,6 @@ function ExpressionBuilder({
     }
   }
 
-  function getCondition(rules, modalName) {
-    const isBPM = isBPMQuery(parentType);
-    const prefix = isBPM
-      ? 'self'
-      : isBPMN && generateWithId
-      ? `__ctx__.find('${upperCaseFirstLetter(modalName)}', ${modalName}Id)`
-      : modalName;
-    const map_operators = MAP_OPERATOR[isBPM ? 'BPM' : expression];
-    const returnValues = [];
-    for (let i = 0; i < (rules && rules.length); i++) {
-      const rule = rules[i];
-      const { fieldName: propFieldName, field = {}, operator, allField } = rule;
-      const { targetName, selectionList } = field || {};
-      const type = field && field.type && field.type.toLowerCase();
-      const typeName = field && field.typeName;
-      const isNumber = [
-        'long',
-        'integer',
-        'decimal',
-        'boolean',
-        'button',
-        'menu-item',
-        'double',
-      ].includes(type);
-      const isDateTime = ['date', 'time', 'datetime'].includes(type);
-      let { fieldValue, fieldValue2, isRelationalValue } = rule;
-      let fieldName = propFieldName;
-      if (isNumber && !selectionList && !isRelationalValue) {
-        if (!fieldValue && fieldValue !== false) {
-          fieldValue = 0;
-        }
-        if (['between', 'notBetween'].includes(operator) && !fieldValue2) {
-          fieldValue2 = 0;
-        }
-        if (!fieldName || fieldName === '') {
-          setAlert(true);
-          returnValues.push(null);
-          return;
-        }
-      }
-
-      //check relational field
-      const name = fieldName && fieldName.split(JOIN_OPERATOR[expression])[0];
-      const f = allField && allField.find(f => f.name === name);
-      const isRelational = [
-        'many_to_many',
-        'one_to_many',
-        'many_to_one',
-        'one_to_one',
-        'json_many_to_many',
-        'json_one_to_many',
-        'json_many_to_one',
-        'json_one_to_one',
-      ].includes(
-        f &&
-          f.type &&
-          f.type.toLowerCase() &&
-          f.type.toLowerCase().replaceAll('-', '_')
-      );
-      if (isRelational) {
-        returnValues.push(
-          getRelationalCondition(rule, undefined, false, prefix)
-        );
-      } else {
-        if (!isRelationalValue && !isNumber && typeof fieldValue !== 'object') {
-          fieldValue = `'${jsStringEscape(fieldValue, withParam)}'`;
-          fieldValue2 = `'${jsStringEscape(fieldValue2, withParam)}'`;
-        }
-        if (isDateTime) {
-          if (!isRelationalValue) {
-            fieldValue = getDateTimeValue(type, fieldValue);
-            fieldValue2 = getDateTimeValue(type, fieldValue2);
-          }
-          fieldName = typeName ? `${fieldName}?.toLocalDateTime()` : fieldName;
-        }
-        const map_type = isBPM ? MAP_BPM_COMBINATOR : MAP_COMBINATOR;
-        const isObjectValue = fieldValue && typeof fieldValue === 'object';
-        if (['in', 'notIn'].includes(operator)) {
-          const value = (rule?.fieldValue || [])
-            .map(f => {
-              const targetFields =
-                f['targetName'] || f['fullName'] || f['name'];
-              return targetFields
-                ? isNumber
-                  ? targetFields
-                  : `'${targetFields}'`
-                : f['id'];
-            })
-            .filter(f => f !== '')
-            .join(',');
-          returnValues.push(
-            `${operator === 'notIn' ? '!' : ''}${`[${value}]`}${
-              JOIN_OPERATOR[expression]
-            }${map_operators[operator]}(${prefix}${
-              JOIN_OPERATOR[expression]
-            }${fieldName}${
-              selectionList
-                ? ''
-                : `${JOIN_OPERATOR[expression]} ${targetName || 'fullName'}`
-            })`
-          );
-        } else if (['between', 'notBetween'].includes(operator)) {
-          if (operator === 'notBetween') {
-            returnValues.push(
-              `!(${prefix}${JOIN_OPERATOR[expression]}${fieldName} >= ${fieldValue} ${map_type['and']} ${prefix}${JOIN_OPERATOR[expression]}${fieldName} <= ${fieldValue2})`
-            );
-          }
-          returnValues.push(
-            `(${prefix}${JOIN_OPERATOR[expression]}${fieldName} >= ${fieldValue} ${map_type['and']} ${prefix}${JOIN_OPERATOR[expression]}${fieldName} <= ${fieldValue2})`
-          );
-        } else if (['isNotNull', 'isNull'].includes(operator)) {
-          returnValues.push(
-            `${prefix}${JOIN_OPERATOR[expression]}${fieldName} ${map_operators[operator]}`
-          );
-        } else if (['isTrue', 'isFalse'].includes(operator)) {
-          const value = operator === 'isTrue' ? true : false;
-          returnValues.push(
-            `${prefix}${JOIN_OPERATOR[expression]}${fieldName} ${map_operators[operator]} ${value}`
-          );
-        } else if (['like', 'notLike'].includes(operator)) {
-          returnValues.push(
-            `${operator === 'notLike' ? '!' : ''}${prefix}${
-              JOIN_OPERATOR[expression]
-            }${fieldName}${JOIN_OPERATOR[expression]}${
-              map_operators[operator]
-            }(${fieldValue})`
-          );
-        } else {
-          const targetFields =
-            isObjectValue &&
-            (fieldValue[targetName] ||
-              fieldValue['fullName'] ||
-              fieldValue['name']);
-          const value = isObjectValue
-            ? targetFields
-              ? `'${jsStringEscape(targetFields, withParam)}'`
-              : fieldValue['id']
-            : fieldValue;
-          returnValues.push(
-            ['button', 'menu-item'].includes(type)
-              ? `${fieldName} ${map_operators[operator]} ${value}`
-              : `${prefix}${JOIN_OPERATOR[expression]}${
-                  type === 'many_to_one' || type === 'json_many_to_one'
-                    ? `${fieldName}${JOIN_OPERATOR[expression]}${
-                        field.targetName || 'fullName'
-                      }`
-                    : fieldName
-                } ${map_operators[operator]} ${value}`
-          );
-        }
-      }
-    }
-    return returnValues;
-  }
 
   const isRelationalCustomField = (field, parentFieldName) => {
     if (
@@ -1087,41 +591,6 @@ function ExpressionBuilder({
     }
   }
 
-  function getCriteria(rule, modalName, isChildren) {
-    const { rules, combinator = 'and', children } = rule[0];
-    const condition = (getCondition(rules, modalName) || []).filter(
-      f => f !== ''
-    );
-    const childrenConditions = [];
-    children &&
-      children.length > 0 &&
-      children.forEach(child => {
-        const conditions = getCriteria([child], modalName, true);
-        if (conditions) {
-          childrenConditions.push(conditions);
-        }
-      });
-    const map_type = isBPMQuery(parentType)
-      ? MAP_BPM_COMBINATOR
-      : MAP_COMBINATOR;
-
-    if (children.length > 0 && condition && condition.length > 0) {
-      let isChild = childrenConditions && childrenConditions.length !== 0;
-      return `${isChild ? '(' : ''}${
-        condition ? condition.join(' ' + map_type[combinator] + ' ') : ''
-      } ${
-        isChild
-          ? ` ${map_type[combinator]} ${childrenConditions.join(
-              ' ' + map_type[combinator] + ' '
-            )}`
-          : ''
-      }${isChild ? ')' : ''}`;
-    } else if (isChildren && condition && condition.length > 0) {
-      return '(' + condition.join(' ' + map_type[combinator] + ' ') + ')';
-    } else if (condition && condition.length > 0) {
-      return condition.join(' ' + map_type[combinator] + ' ');
-    }
-  }
 
   function getListOfTree(list) {
     var map = {},
@@ -1259,7 +728,7 @@ function ExpressionBuilder({
     return isValid;
   };
 
-  function generateExpression(combinator, type) {
+  async function generateExpression(combinator, type) {
     const expressionValues = [];
     let model;
     let vals = [];
@@ -1288,16 +757,14 @@ function ExpressionBuilder({
         : modalName;
       let str = '';
       const listOfTree = getListOfTree(rules);
-      const criteria = isBPMQuery(type)
-        ? getBPMCriteria(listOfTree, lowerCaseFirstLetter(modalName), undefined)
-        : getCriteria(listOfTree, lowerCaseFirstLetter(modalName), undefined);
+      const criteria =  getBPMCriteria(listOfTree, lowerCaseFirstLetter(modalName), undefined)
       vals.push(
         ...((criteria &&
           ((criteria.values || []).filter(f => Array.isArray(f)) || [])) ||
           [])
       );
       if (metaModals || isPackage) {
-        str += isBPMQuery(type) ? criteria && criteria.condition : criteria;
+        str +=  criteria && criteria.condition ;
       } else {
         break;
       }
@@ -1309,17 +776,25 @@ function ExpressionBuilder({
       expressionValues.push(expressionValue);
       expressions.push(`${str}`);
     }
-
-    const map_type = isBPMQuery(parentType)
-      ? MAP_BPM_COMBINATOR
-      : MAP_COMBINATOR;
-
+    let expr;
+    if(!isBPMQuery(type))
+    {
+     expr = await  generateGroovyExpression({
+      combinator,
+      values:expressionValues,
+      isBPMN,
+      generateWithId,
+    }
+    );
+  }
+  else {
+    const map_type = MAP_BPM_COMBINATOR
     const str = (expressions.filter(e => e !== '') || [])
       .map(e => (expressions.length > 1 ? `(${e})` : e))
       .join(' ' + map_type[combinator] + ' ');
 
-    let expr = str;
-    if (isBPMQuery(type)) {
+     expr = str;
+
       const {
         value: {
           metaModals: { type },

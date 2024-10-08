@@ -1,0 +1,3 @@
+<%
+fields.each { field ->
+%>${field.name}${field!=fields.last()?'?.':(['MANY_TO_ONE','ONE_TO_ONE'].contains(field.type)?'?.'+field.targetName:'')}<%}%>

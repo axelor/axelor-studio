@@ -474,3 +474,14 @@ export async function getCustomVariables() {
   if (res && res.status === -1) return [];
   return (res && res.data) || [];
 }
+
+
+export async function generateGroovyExpression(jsonQuery) {
+  let res = await services.action(
+    'action-wkf-model-method-generate-expression',
+    {
+      data: jsonQuery
+    }
+  );
+  return  res?.data;
+}
