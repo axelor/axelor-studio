@@ -903,8 +903,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   @Transactional(rollbackOn = Exception.class)
   protected void removeRelatedFailedInstance(Model model, WkfProcess wkfProcess) {
-    JPA.em().refresh(model);
-    JPA.em().refresh(wkfProcess);
     List<WkfInstance> instances =
         wkfInstanceRepository
             .all()
@@ -926,11 +924,10 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     }
   }
 
-  @Transactional(rollbackOn = Exception.class)
   protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value, String error) {
+    JPA.em().refresh(wkfInstance);
     wkfInstance.setInstanceError(value);
     wkfInstance.setCurrentError(error);
-    wkfInstanceRepository.save(wkfInstance);
   }
 
   @Override
