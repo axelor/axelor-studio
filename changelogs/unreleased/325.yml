@@ -1,0 +1,5 @@
+---
+title: Add BPM custom variable support on bpm builder
+type: feature
+description: |
+  - In the expression and script builders the user can use custom variables defined in application configuration

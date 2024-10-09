@@ -1,0 +1,8 @@
+---
+title: Change field title for Menu/Action
+type: fix
+description: |
+  - Changed Action configuration title :
+    User/Team field path was changed to User or Team
+    Deadline field path was changed to Deadline
+    'is team field' was changed to 'Affect to team'

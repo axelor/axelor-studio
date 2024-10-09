@@ -1,0 +1,9 @@
+---
+title: BPM code improvements
+type: change
+description: |
+  - Remove material ui from styles & components completely (Remove makeStyles,IconButton, colors(@material-ui/core/colors)), icons, InputAdornment, OutlinedInput)
+  - Remove code duplication's
+  - Improve component structures
+  - Improve dialog title code with axelor ui properly
+  - Fix Unique key & Uncontrolled components warning in components
