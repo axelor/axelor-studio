@@ -1,3 +1,105 @@
+## 3.3.0 (2024-10-09)
+
+#### Feature
+
+* Display status of migration when deploy new changement in existing BPM model.
+
+  <details>
+  
+  - When deploy new changes in existing BPM model , the status of the migrations process is displayed.
+  - A loading icon is displayed once the deploy button is clicked
+  - Deploy button is deactivated when deploy is in progress
+  - A message that indicate how much instances is migrated and if the migration is successful or not is shown after deploy
+  
+  </details>
+
+* Allow users to change the Hit Policy in Decision Model and Notation
+
+  <details>
+  
+  - As a user, I want to be able to change the Hit Policy in DMN tables to control how results from multiple rules are combined.
+  - The Hit Policy determines how the results of multiple rules are combined.
+  
+  </details>
+
+* Add BPM custom variable support on bpm builder
+
+  <details>
+  
+  - In the expression and script builders the user can use custom variables defined in application configuration
+  
+  </details>
+
+* Implement Data Transformation in BPM Builders(Expression Builder)
+
+  <details>
+  
+  - Add in the expression builder the possibility to use data transformations
+  
+  </details>
+
+#### Change
+
+* BPM code improvements
+
+  <details>
+  
+  - Remove material ui from styles & components completely (Remove makeStyles,IconButton, colors(@material-ui/core/colors)), icons, InputAdornment, OutlinedInput)
+  - Remove code duplication's
+  - Improve component structures
+  - Improve dialog title code with axelor ui properly
+  - Fix Unique key & Uncontrolled components warning in components
+  
+  </details>
+
+#### Fix
+
+* Memory leak when large number of instances.
+
+  <details>
+  
+  Resolved the memory leak caused by inefficient log handling for BPM instances. 
+  Replaced ByteArrayOutputStream with BufferedOutputStream around FileOutputStream to reduce heap memory usage and improve performance.
+  Logs are now written directly to disk.
+  
+  </details>
+
+* Change field title for Menu/Action
+
+  <details>
+  
+  - Changed Action configuration title :
+    User/Team field path was changed to User or Team
+    Deadline field path was changed to Deadline
+    'is team field' was changed to 'Affect to team'
+  
+  </details>
+
+* Batch processing takes much longer in 3.2.0
+
+  <details>
+  
+  Improved batch processing performance for BPM instances.
+  
+  </details>
+
+* Save delete content
+
+  <details>
+  
+  - Save the latest content when using the keyboard shortcut on scripts
+  
+  </details>
+
+* Deploy fail error management
+
+  <details>
+  
+  - Do not start BPM when deployment is failed
+  
+  </details>
+
+
 ## 3.2.1 (2024-10-07)
 
 #### Fix

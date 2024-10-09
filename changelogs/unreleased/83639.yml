@@ -1,5 +1,0 @@
----
-title: Deploy fail error management
-type: fix
-description: |
-  - Do not start BPM when deployment is failed

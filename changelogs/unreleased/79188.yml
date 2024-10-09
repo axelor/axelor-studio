@@ -1,8 +1,0 @@
----
-title: Display status of migration when deploy new changement in existing BPM model.
-type: feature
-description: |
-  - When deploy new changes in existing BPM model , the status of the migrations process is displayed.
-  - A loading icon is displayed once the deploy button is clicked
-  - Deploy button is deactivated when deploy is in progress
-  - A message that indicate how much instances is migrated and if the migration is successful or not is shown after deploy

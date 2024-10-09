@@ -1,5 +1,0 @@
----
-title: Save delete content
-type: fix
-description: |
-  - Save the latest content when using the keyboard shortcut on scripts
