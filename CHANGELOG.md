@@ -1,3 +1,24 @@
+## 3.0.6 (2024-10-09)
+
+#### Fix
+
+* Batch processing takes much longer in 3.2.0
+
+  <details>
+  
+  Improved batch processing performance for BPM instances.
+  
+  </details>
+
+* Deploy fail error management
+
+  <details>
+  
+  - Do not start BPM when deployment is failed
+  
+  </details>
+
+
 ## 3.0.5 (2024-10-07)
 
 #### Fix
