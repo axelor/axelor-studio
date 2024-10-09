@@ -1,3 +1,16 @@
+## 3.2.2 (2024-10-09)
+
+#### Fix
+
+* Batch processing takes much longer in 3.2.0
+
+  <details>
+  
+  Improved batch processing performance for BPM instances.
+  
+  </details>
+
+
 ## 3.2.1 (2024-10-07)
 
 #### Fix
