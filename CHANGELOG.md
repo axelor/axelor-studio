@@ -1,3 +1,16 @@
+## 3.3.1 (2024-10-09)
+
+#### Fix
+
+* Update axelor-message version
+
+  <details>
+  
+  - Update axelor message version to 3.2.0
+  
+  </details>
+
+
 ## 3.3.0 (2024-10-09)
 
 #### Feature
