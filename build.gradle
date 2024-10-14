@@ -11,7 +11,7 @@ buildscript {
     }
     maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
   }
-  ext.aopVersion = '7.2.0'
+  ext.aopVersion = '7.2.+'
   repositories repos
   buildscript.repositories repos
   dependencies {
