@@ -33,6 +33,7 @@ import DialogBox from './components/Dialog';
 import { Box, InputLabel, Switch } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 import styles from './builder.module.css';
+import { VAR_TYPES } from './constants';
 
 function isFieldInvalid(field) {
   const { from, selected, subFields } = field.value || {};

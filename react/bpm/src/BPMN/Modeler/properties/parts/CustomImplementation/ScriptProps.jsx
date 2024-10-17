@@ -487,8 +487,8 @@ export default function ScriptProps({
               get: function () {
                 return getScript();
               },
-              set: function (e, values) {
-                updateScript({ expr: values?.script });
+              set: function (e, values) {      
+             !isReadOnly &&   updateScript({ expr: values?.script });
               },
               validate: function (e, values) {
                 if (!values.script) {
