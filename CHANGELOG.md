@@ -1,3 +1,16 @@
+## 6.1.6 (2024-10-17)
+
+#### Fixed
+
+* Update axelor utils and message version to use aop 6.1.6
+
+  <details>
+  
+  Update axelor utils and message version and use aop 6.1.6 fix
+  
+  </details>
+
+
 ## Current (unreleased)
 
 * Anomaly: fix override AOP translations
