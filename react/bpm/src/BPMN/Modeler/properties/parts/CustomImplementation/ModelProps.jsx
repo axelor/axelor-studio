@@ -587,7 +587,6 @@ export default function ModelProps(props) {
                       isLabel={false}
                       optionLabel="name"
                       optionLabelSecondary="title"
-                    
                     />
                   </div>
                 </React.Fragment>
@@ -846,7 +845,12 @@ export function FieldAction({
 
   const updateScript = () => {
     if (!dummyState) {
+      setPath(undefined);
       setProperty(toPath(title), undefined);
+      setProperty(
+        isUserAction ? toType(toLowerCase(label)) : toType(title),
+        undefined
+      );
       setProperty(toPathValue(title), undefined);
       return;
     }
@@ -858,6 +862,7 @@ export function FieldAction({
       currentType.value
     );
     setProperty(toPathValue(title), undefined);
+    setDummyState(null);
   };
 
   useEffect(() => {
@@ -983,6 +988,7 @@ export function FieldAction({
                       );
                       setOpenAlertDialog(true);
                     } else {
+                      setDummyState(getProperty(toPath(title)));
                       setOpenScript(true);
                     }
                   }}
@@ -1006,7 +1012,10 @@ export function FieldAction({
         message={alertMessage}
         title="Error"
         handleAlertOk={() => {
-          if (currentType.value === "script") setOpenScript(true);
+          if (currentType.value === "script") {
+            setDummyState(getProperty(toPath(title)));
+            setOpenScript(true);
+          }
 
           setReadOnly(false);
           setOpenAlertDialog(false);
@@ -1107,7 +1116,10 @@ export function FieldAction({
       <AlertDialog
         className={styles.scriptDialog}
         openAlert={openScript}
-        alertClose={() => setOpenScript(false)}
+        alertClose={() => {
+          setOpenScript(false);
+          setDummyState(null);
+        }}
         handleAlertOk={() => {
           updateScript();
           setOpenScript(false);
@@ -1126,7 +1138,9 @@ export function FieldAction({
                 label: translate("Script"),
                 modelProperty: "script",
                 get: function () {
-                  return { script: getProperty(toPath(title)) };
+                  return {
+                    script: dummyState,
+                  };
                 },
                 set: function (e, values) {
                   const updatedValue = values?.script;

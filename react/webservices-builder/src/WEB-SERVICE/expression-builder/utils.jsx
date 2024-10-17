@@ -55,7 +55,7 @@ const getJsonExpression = (field, prefix, fieldName) => {
 };
 
 function getModelName(str) {
-  return str && str.split('.').pop();
+  return str && str?.split('.').pop();
 }
 
 function translate(str) {
