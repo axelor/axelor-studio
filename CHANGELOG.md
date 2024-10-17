@@ -1,3 +1,17 @@
+## 2.0.7 (2024-10-17)
+
+#### Fix
+
+* Update axelor utils and message version to use aop 7.0.10
+
+  <details>
+  
+  Update axelor utils and message version and use aop 7.0.10 fix
+  
+  </details>
+
+* BAML Bug on instance generation
+
 ## 2.0.6 (2024-09-09)
 
 #### Fix
