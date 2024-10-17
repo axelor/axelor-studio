@@ -1,3 +1,16 @@
+## 3.0.7 (2024-10-17)
+
+#### Fix
+
+* Update axelor utils and message version to use aop 7.0.10
+
+  <details>
+  
+  Update axelor utils and message version and use aop 7.0.10 fix
+  
+  </details>
+
+
 ## 3.0.6 (2024-10-09)
 
 #### Fix
