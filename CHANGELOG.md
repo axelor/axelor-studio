@@ -1,5 +1,7 @@
 ## Current (unreleased)
 
+## 1.0.7
+
 ## 1.0.6
 
 * Anomaly: fix override AOP translations
