@@ -24,8 +24,6 @@ import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.db.BamlModel;
 import com.axelor.studio.db.repo.BamlModelRepository;
 import com.axelor.utils.helpers.context.FullContext;
-import com.google.inject.Inject;
-
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +37,6 @@ import org.slf4j.LoggerFactory;
 public class WkfBamlService implements JavaDelegate {
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
 
   @Override
   public void execute(DelegateExecution execution) throws Exception {
@@ -72,7 +69,9 @@ public class WkfBamlService implements JavaDelegate {
       String varName = Beans.get(WkfCommonService.class).getVarName(record);
       Map<String, Object> modelMap = new HashMap<String, Object>();
       modelMap.put(varName, record);
-      execution.getProcessInstance().setVariables(Beans.get(WkfCommonService.class).createVariables(modelMap));
+      execution
+          .getProcessInstance()
+          .setVariables(Beans.get(WkfCommonService.class).createVariables(modelMap));
     }
   }
 
