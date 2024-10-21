@@ -1,0 +1,5 @@
+---
+title: DMN viewer - Fix alertClose on DMN viewer 
+type: fix
+description:
+  Fix the alertClose not found error on DMN viewer
