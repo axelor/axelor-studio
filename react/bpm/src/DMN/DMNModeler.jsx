@@ -700,6 +700,9 @@ function DMNModeler() {
     });
   };
 
+  const alertClose = () => {
+    setAlert(false);
+  };
 
   const reloadView = () => {
     fetchDiagram(id, setWkfModel);
