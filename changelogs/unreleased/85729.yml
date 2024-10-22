@@ -1,0 +1,6 @@
+---
+title: Blank screen when opening BPM studio
+type: fix
+description: |
+  - Fix the error in select component that caused blank screen on opening BPM
+
