@@ -1,3 +1,16 @@
+## 2.0.8 (2024-10-22)
+
+#### Fix
+
+* Blank screen when opening BPM studio
+
+  <details>
+  
+  - Fix the error in select component that caused blank screen on opening BPM
+  
+  </details>
+
+
 ## 2.0.7 (2024-10-17)
 
 #### Fix
