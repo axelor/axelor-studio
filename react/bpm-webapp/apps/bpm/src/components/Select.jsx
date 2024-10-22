@@ -314,7 +314,7 @@ export default function SelectComponent({
             );
           }}
           name={name}
-          onInputChange={(val) => setsearchText(val)}
+          onInputChange={(val) => setSearchText(val)}
           //TODO add dynamic support for optionLabel
           optionLabel={(option) => getOptionLabel(option)}
           optionKey={(x) => x.id}
