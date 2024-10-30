@@ -56,10 +56,9 @@ update_properties() {
   echo "Configuring app:properties 🔧"
 
   APP_PROP_FILE_PATH="${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/axelor-config.properties"
-  APP_MODE="prod"
+  APP_MODE="dev"
   LOG_LEVEL="INFO"
   if [ "${DEV_MODE}" = "true" ]; then
-    APP_MODE="dev"
     LOG_LEVEL="DEBUG"
   fi
 
