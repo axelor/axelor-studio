@@ -1,14 +1,17 @@
 services:
   axelor:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXUS_READER_USERNAME: ${NEXUS_READER_USERNAME}
+        NEXUS_READER_PASSWORD: ${NEXUS_READER_PASSWORD}
+        CATALINA_MEMORY_ALLOC_PCT: "25"
     environment:
       PGHOST: postgres
       PGUSER: axelor
       PGPASSWORD: axelor
       PGDATABASE: axelor
-      JAVA_XMS: "4096M"
-      JAVA_XMX: "4096M"
-      APP_LOAD_APPS: "all"
       APP_DEMO_DATA: "true"
       DEV_MODE: "true"
     ports:
