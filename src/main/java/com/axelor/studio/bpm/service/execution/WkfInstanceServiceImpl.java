@@ -65,7 +65,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -203,14 +203,15 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
         final String finalProcessInstanceId = model.getProcessInstanceId();
-        ForkJoinPool.commonPool()
-            .submit(
-                () ->
-                    bpmErrorMessageService.sendBpmErrorMessage(
-                        null,
-                        e.getMessage(),
-                        EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                        finalProcessInstanceId));
+        var executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(
+            () ->
+                bpmErrorMessageService.sendBpmErrorMessage(
+                    null,
+                    e.getMessage(),
+                    EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
+                    finalProcessInstanceId));
+        executorService.shutdown();
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
