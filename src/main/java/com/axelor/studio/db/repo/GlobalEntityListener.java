@@ -14,7 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.persistence.PostPersist;
 import javax.persistence.PostUpdate;
@@ -22,22 +23,22 @@ import javax.persistence.PostUpdate;
 public class GlobalEntityListener {
   @PostPersist
   @PostUpdate
-  protected void onPostPersistOrUpdate(Model model) throws InterruptedException {
-    runOnForkJoinPool(Set.of(model), Set.of());
+  protected void onPostPersistOrUpdate(Model model) {
+    runOnSeparateThread(Set.of(model), Set.of());
   }
 
-  protected void runOnForkJoinPool(Set<Model> updated, Set<Model> deleted) {
-    ForkJoinPool forkJoinPool = new ForkJoinPool();
+  protected void runOnSeparateThread(Set<Model> updated, Set<Model> deleted) {
+    ExecutorService executorService = Executors.newSingleThreadExecutor();
     Callable<Map<String, Object>> callableTask = () -> callWkfProcess(updated, deleted);
-    Future<Map<String, Object>> future = forkJoinPool.submit(callableTask);
+    Future<?> future = executorService.submit(callableTask);
     try {
-      Map<String, Object> result = future.get();
+      future.get();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     } catch (ExecutionException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     } finally {
-      forkJoinPool.shutdown();
+      executorService.shutdown();
     }
   }
 
@@ -52,7 +53,7 @@ public class GlobalEntityListener {
       Beans.get(WkfRequestListener.class)
           .applyProcessChange(updated, deleted, WkfInstanceServiceImpl.EXECUTION_SOURCE_LISTENER);
     } catch (ConcurrentModificationException e) {
-      e.printStackTrace();
+      ExceptionHelper.error(e);
     }
     return result;
   }
