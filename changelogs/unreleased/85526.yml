@@ -1,5 +1,0 @@
----
-title: BPM - Monitor Process Instance Versions
-type: feature
-description:
-  Improved the BPM grid view by adding the status of BPM instances, displaying whether they are “In Progress” or “Stopped.” This enhancement also includes the version of each process instance which is the version of the wkfModel they are working with.

@@ -78,6 +78,4 @@ public interface WkfInstanceService {
 
   public String getInstanceLogs(
       WkfInstance instance, String filter, String startString, String endString, Integer minutes);
-
-  void setInstanceStateStopped(String processInstanceId);
 }
