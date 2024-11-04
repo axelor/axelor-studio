@@ -1,5 +1,0 @@
----
-title: StudioApp - error when exporting an app containing an action with type "Email"
-type: fix
-description:
-  Updated the Groovy template used during the export process removing references to template.birtTemplateSet, a field that does not exist in the Template object.

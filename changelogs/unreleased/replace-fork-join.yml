@@ -1,5 +1,0 @@
----
-title: Replace ForkJoin pool usages by executor services 
-type: fix
-description: |
-  - Replace Fork join usage and use ExecutionService instead

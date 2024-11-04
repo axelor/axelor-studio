@@ -1,3 +1,49 @@
+## 3.3.3 (2024-11-04)
+
+#### Fix
+
+* Responsive anomaly
+
+  <details>
+  
+  - Fix CSS
+  
+  </details>
+
+* DMN viewer - Fix alertClose on DMN viewer
+
+  <details>
+  
+  Fix the alertClose not found error on DMN viewer
+  
+  </details>
+
+* BPM builder - builder does not keep settings
+
+  <details>
+  
+  Fix settings storage after script generation, store settings json in bpmn file
+  
+  </details>
+
+* BPM - Fix script code editor for field configs
+* StudioApp - error when exporting an app containing an action with type "Email"
+
+  <details>
+  
+  Updated the Groovy template used during the export process removing references to template.birtTemplateSet, a field that does not exist in the Template object.
+  
+  </details>
+
+* Replace ForkJoin pool usages by executor services
+
+  <details>
+  
+  - Replace Fork join usage and use ExecutionService instead
+  
+  </details>
+
+
 ## 3.3.1 (2024-10-09)
 
 #### Fix
