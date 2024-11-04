@@ -107,7 +107,8 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
 
               engine.getManagementService().registerDeploymentForJobExecutor(deployment.getId());
             });
-
+    ((WkfProcessEngineConfigurationImpl) engine.getProcessEngineConfiguration())
+        .setTelemetryReporterActivate(false);
     engineMap.put(tenantId, engine);
   }
 
