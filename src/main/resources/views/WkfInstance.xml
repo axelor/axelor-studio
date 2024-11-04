@@ -8,9 +8,7 @@
     <field name="name"/>
     <field name="instanceId"/>
     <field name="wkfProcess.wkfModel"/>
-    <field name="wkfProcess.wkfModel.versionTag" title="Version"/>
     <field name="migrationStatusSelect"/>
-    <field name="statusSelect"/>
   </grid>
 
   <form name="wkf-instance-form" title="Process Instance"

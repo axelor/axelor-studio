@@ -107,9 +107,6 @@ public class WkfExecutionListener implements ExecutionListener {
         wkfLogService.clearLog(execution.getProcessInstanceId());
       }
     }
-    if (executionEntity.isEnded() && executionEntity.getParent() == null) {
-      wkfInstanceService.setInstanceStateStopped(executionEntity.getProcessInstanceId());
-    }
   }
 
   protected void checkDMNValue(DelegateExecution execution) {
