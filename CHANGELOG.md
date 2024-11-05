@@ -1,3 +1,16 @@
+## 3.2.4 (2024-11-05)
+
+#### Fix
+
+* Replace ForkJoin pool usages by executor services
+
+  <details>
+  
+  - Replace Fork join usage and use ExecutionService instead
+  
+  </details>
+
+
 ## 3.2.2 (2024-10-09)
 
 #### Fix
