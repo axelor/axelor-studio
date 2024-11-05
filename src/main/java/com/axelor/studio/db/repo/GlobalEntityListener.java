@@ -36,7 +36,7 @@ public class GlobalEntityListener {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     } catch (ExecutionException e) {
-      ExceptionHelper.error(e);
+      ExceptionHelper.trace(e);
     } finally {
       executorService.shutdown();
     }
@@ -53,7 +53,7 @@ public class GlobalEntityListener {
       Beans.get(WkfRequestListener.class)
           .applyProcessChange(updated, deleted, WkfInstanceServiceImpl.EXECUTION_SOURCE_LISTENER);
     } catch (ConcurrentModificationException e) {
-      ExceptionHelper.error(e);
+      ExceptionHelper.trace(e);
     }
     return result;
   }
