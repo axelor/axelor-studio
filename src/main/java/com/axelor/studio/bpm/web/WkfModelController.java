@@ -50,6 +50,7 @@ import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceVariable;
 import com.axelor.studio.db.WkfModel;
+import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
@@ -608,6 +609,16 @@ public class WkfModelController {
       } catch (IllegalArgumentException e) {
         response.setError(I18n.get(e.getMessage()));
       }
+    }
+  }
+
+  public void forceMigrate(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
+      WkfProcess wkfProcess = context.asType(WkfProcess.class);
+      Beans.get(BpmDeploymentService.class).forceMigrate(wkfProcess);
+    } catch (Exception e) {
+      ExceptionHelper.trace(response, e);
     }
   }
 }
