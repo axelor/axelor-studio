@@ -19,8 +19,12 @@
       <field name="description"/>
       <field name="onlyOnClientChange"/>
       <panel-related field="wkfProcessConfigList" colSpan="12" showTitle="false"/>
+      <button name="forceMigrationBtn" title="Force Migration"
+        onClick="action-method-force-migration-to-latest-version"/>
     </panel>
   </form>
 
-
+  <action-method name="action-method-force-migration-to-latest-version">
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="forceMigrate"/>
+  </action-method>
 </object-views>
