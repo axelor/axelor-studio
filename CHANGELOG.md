@@ -1,3 +1,16 @@
+## 3.2.5 (2024-11-12)
+
+#### Fix
+
+* BPM migration error.
+
+  <details>
+  
+  introduces a method to migrate all active process instances with a specified WkfProcess to the latest deployed version of the process definition. This ensures uniformity across all instances by synchronizing them to the latest version as long as no major structural changes exist between versions.
+  
+  </details>
+
+
 ## 3.2.4 (2024-11-05)
 
 #### Fix
