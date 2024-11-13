@@ -69,4 +69,10 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public int serializationDepth() {
     return appSettings.getInt("studio.bpm.serialization.depth", 5);
   }
+
+  @Override
+  public String[] getPackagesToScan() {
+    var packages = appSettings.get("studio.link.script.packages.to.scan");
+    return StringUtils.isBlank(packages) ? new String[0] : packages.split(",");
+  }
 }
