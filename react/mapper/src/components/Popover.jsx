@@ -68,7 +68,6 @@ function FieldPopoverComponent({
     },
     [onClose]
   );
-  styles;
 
   const handleSubmit = (e) => {
     e.stopPropagation();

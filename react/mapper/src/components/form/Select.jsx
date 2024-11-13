@@ -1,7 +1,6 @@
+import React from 'react';
 import classnames from 'classnames';
-
 import { Select, Box } from '@axelor/ui';
-
 import { translate } from '../../utils';
 import styles from './Select.module.css';
 
