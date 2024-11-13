@@ -1,3 +1,16 @@
+## 3.3.4 (2024-11-13)
+
+#### Change
+
+* Fix aop version on 7.2.1
+
+  <details>
+  
+  Fix aop version on aop7.2.1
+  
+  </details>
+
+
 ## 3.3.3 (2024-11-04)
 
 #### Fix
