@@ -1,7 +1,7 @@
 import React from 'react';
 import get from 'lodash/get';
 import moment from 'moment';
-
+import { Input } from '@axelor/ui';
 import DateTimePicker from '../form/DateTimePicker';
 import {
   Selection,
@@ -9,7 +9,6 @@ import {
   Select,
   NumberInput as NumberField,
   TextInput as InputField,
-  Input,
 } from '../form';
 import {
   fetchFields,
@@ -106,15 +105,8 @@ function RenderRelationalWidget(props) {
 
 function RenderSimpleWidget(props) {
   const { Component, internalProps } = props;
-  const {
-    onChange,
-    value,
-    value2,
-    classes,
-    style,
-    targetName,
-    ...rest
-  } = internalProps;
+  const { onChange, value, value2, classes, style, targetName, ...rest } =
+    internalProps;
   const { error = false } = rest;
   const showError =
     !value || (typeof value === 'string' && value.trim() === '');
@@ -374,6 +366,8 @@ export default function ValueField({
     case VALUE_FROM.EXPRESSION:
       return (
         <Input
+          as="textarea"
+          rows={1}
           value={selected?.value || ''}
           onChange={getOnChange('selected', (e) => ({ value: e.target.value }))}
           error={isRequiredField}
