@@ -1,0 +1,5 @@
+---
+title: Studio - internal server error onClick on the iconBackground.
+type: fix
+description:
+  change widget from TagSelect to SingleSelect for iconBackground field
