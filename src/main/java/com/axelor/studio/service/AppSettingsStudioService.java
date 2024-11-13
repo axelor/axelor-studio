@@ -14,8 +14,6 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
 
   String baseUrl();
 
-  boolean multiTenancy();
-
   String surveyPublicUser();
 
   String surveyPublicPassword();

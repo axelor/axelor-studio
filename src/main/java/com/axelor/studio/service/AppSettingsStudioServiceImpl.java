@@ -41,11 +41,6 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   }
 
   @Override
-  public boolean multiTenancy() {
-    return appSettings.getBoolean("application.multi_tenancy", false);
-  }
-
-  @Override
   public String surveyPublicUser() {
     return appSettings.get("survey.public.user");
   }
