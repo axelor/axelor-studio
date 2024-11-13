@@ -1,0 +1,27 @@
+name;transactional;description;body
+Division de l'âge;true;<p><b>Divise l'âge par deux s'il est supérieur à 18</b> et ajoutes un jour à la date dans tous les cas.</p><p><b>Si l'âge est inférieur à 18 après la division</b>, alors une tâche est créée reprenant toutes les informations.<br></p>;"if (age > 18) {
+    age = age / 2
+}
+
+date = date.plusDays(1)
+
+if (age < 18) {
+    task = new TeamTask()
+    task.setName(echo(name, age, date))
+    task.setPriority(""normal"")
+    task.setStatus(""new"")
+    task.setTaskDate(date)
+    task.setTaskDuration((int)age)
+    task.setAssignedTo(__user__)
+    __repo__(TeamTask).save(task)
+}"
+Récupération du TODO 1;false;Récupère les informations du TODO 1<br>;"url = url ?: ""https://dummyjson.com/todos/1""
+
+r = request(url).get().send()
+
+slurper = new JsonSlurper()
+
+todo = slurper.parseText(r.body())
+
+// __config__.ls.run is also possible if context.ls = com.axelor.studio.ls.service.LinkScriptService property is defined
+inject(__service__).run(""Division de l'âge"", [name: todo.todo, age: todo.userId, date: __date__])"

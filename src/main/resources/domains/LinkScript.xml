@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain-models xmlns="http://axelor.com/xml/ns/domain-models"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/domain-models http://axelor.com/xml/ns/domain-models/domain-models_7.1.xsd">
+
+  <module name="studio" package="com.axelor.studio.db"/>
+
+  <entity name="LinkScript" cacheable="true">
+    <string name="name" title="Name" required="true"/>
+    <boolean name="transactional" title="Transactional" default="false"/>
+    <string name="description" title="Description" large="true" multiline="true"/>
+    <one-to-many name="inParams" title="Input parameters"
+      ref="com.axelor.studio.db.LinkScriptParam" mappedBy="inLinkScript"/>
+    <string name="body" title="Body" required="true" large="true" multiline="true"/>
+    <one-to-many name="outParams" title="Output parameters"
+      ref="com.axelor.studio.db.LinkScriptParam" mappedBy="outLinkScript"/>
+    <one-to-many name="arcs" ref="com.axelor.studio.db.LinkScriptArc"
+      mappedBy="linkScript"/>
+  </entity>
+
+  <entity name="LinkScriptBinding" persistable="false">
+    <string name="parameter" title="Parameter" initParam="true"/>
+    <string name="expression" title="Expression" initParam="true" large="true"
+      help="This field contains a groovy expression that will be evaluated to value the associated parameter."/>
+  </entity>
+
+</domain-models>

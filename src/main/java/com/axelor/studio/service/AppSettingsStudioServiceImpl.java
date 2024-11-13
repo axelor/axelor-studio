@@ -108,4 +108,10 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
 
     return "ERROR";
   }
+
+  @Override
+  public String[] getPackagesToScan() {
+    var packages = appSettings.get("studio.link.script.packages.to.scan");
+    return StringUtils.isBlank(packages) ? new String[0] : packages.split(",");
+  }
 }
