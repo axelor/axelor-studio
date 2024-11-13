@@ -1,5 +1,0 @@
----
-title: BPM builder - builder does not keep settings
-type: fix
-description:
-  Fix settings storage after script generation, store settings json in bpmn file

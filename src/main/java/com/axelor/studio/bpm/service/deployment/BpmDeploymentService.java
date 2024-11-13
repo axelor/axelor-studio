@@ -18,6 +18,7 @@
 package com.axelor.studio.bpm.service.deployment;
 
 import com.axelor.studio.db.WkfModel;
+import com.axelor.studio.db.WkfProcess;
 import com.google.inject.persist.Transactional;
 import java.util.Map;
 
@@ -25,4 +26,6 @@ public interface BpmDeploymentService {
 
   @Transactional
   public void deploy(WkfModel sourceModel, WkfModel targetModel, Map<String, Object> migrationMap);
+
+  public void forceMigrate(WkfProcess process);
 }

@@ -65,6 +65,7 @@ import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.model.bpmn.Bpmn;
@@ -566,6 +567,61 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
           taskMenuRepo.all().filter("self.wkfTaskConfig IN (?)", taskConfigs).fetch();
 
       taskMenus.forEach(taskMenu -> taskMenuRepo.remove(taskMenu));
+    }
+  }
+
+  @Override
+  public void forceMigrate(WkfProcess process) {
+    String sourceProcessDefinitionKey = process.getName();
+
+    ProcessDefinition latestProcessDefinition =
+        processEngineService
+            .getEngine()
+            .getRepositoryService()
+            .createProcessDefinitionQuery()
+            .processDefinitionKey(sourceProcessDefinitionKey)
+            .latestVersion()
+            .singleResult();
+
+    if (latestProcessDefinition == null) {
+      return;
+    }
+
+    List<ProcessInstance> processInstances =
+        processEngineService
+            .getEngine()
+            .getRuntimeService()
+            .createProcessInstanceQuery()
+            .processDefinitionKey(sourceProcessDefinitionKey)
+            .list();
+
+    log.debug("Instances to migrate: {}", processInstances.size());
+
+    for (ProcessInstance instance : processInstances) {
+      String currentProcessDefinitionId = instance.getProcessDefinitionId();
+
+      if (currentProcessDefinitionId.equals(latestProcessDefinition.getId())) {
+        continue;
+      }
+      try {
+        MigrationPlan migrationPlan =
+            processEngineService
+                .getEngine()
+                .getRuntimeService()
+                .createMigrationPlan(currentProcessDefinitionId, latestProcessDefinition.getId())
+                .mapEqualActivities()
+                .build();
+
+        processEngineService
+            .getEngine()
+            .getRuntimeService()
+            .newMigration(migrationPlan)
+            .processInstanceIds(instance.getId())
+            .execute();
+        log.debug("Migration done for instance {}", instance.getId());
+      } catch (Exception e) {
+        log.error("Instance not migrated {} : {}", instance.getId(), e.getMessage());
+      }
     }
   }
 }
