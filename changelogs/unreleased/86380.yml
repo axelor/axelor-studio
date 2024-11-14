@@ -1,7 +1,0 @@
----
-title: BPM migration error.
-type: fix
-description:
-  introduces a method to migrate all active process instances with a specified WkfProcess to the latest deployed version of 
-  the process definition. This ensures uniformity across all instances by synchronizing them to the latest version as long 
-  as no major structural changes exist between versions.
