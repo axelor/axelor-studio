@@ -1,5 +1,0 @@
----
-title: Make custom variables not selectable after deletion
-type: fix
-description:
-  Select only valid custom variable available on AppBpm

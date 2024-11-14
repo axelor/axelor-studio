@@ -1,3 +1,49 @@
+## 3.3.5 (2024-11-14)
+
+#### Fix
+
+* BPM builder - Resolve bpm builder crash issue.
+* Studio - internal server error onClick on the iconBackground.
+
+  <details>
+  
+  change widget from TagSelect to SingleSelect for iconBackground field
+  
+  </details>
+
+* Make custom variables not selectable after deletion
+
+  <details>
+  
+  Select only valid custom variable available on AppBpm
+  
+  </details>
+
+* Expression Builder Handling Null and Comparison Operators.
+
+  <details>
+  
+  Resolve the problem when selecting a null operator and selecting a comparison operator after, this issue comes from the fieldValue not being well initialized
+  
+  </details>
+
+* Fix invalid timer expression.
+
+  <details>
+  
+  Resolve invalid timer expression by not allowing to use weeks and other elements on the same expression.
+  
+  </details>
+
+* Displayed option doesn't match the generated expression
+
+  <details>
+  
+  Added the missing in operator and change the template logic to handle it
+  
+  </details>
+
+
 ## 3.3.4 (2024-11-13)
 
 #### Change

@@ -1,5 +1,0 @@
----
-title: Fix invalid timer expression.
-type: fix
-description:
-  Resolve invalid timer expression by not allowing to use weeks and other elements on the same expression.
