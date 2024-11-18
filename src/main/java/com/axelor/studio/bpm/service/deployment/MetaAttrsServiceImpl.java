@@ -21,6 +21,7 @@ import com.axelor.auth.db.Role;
 import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.db.Query;
 import com.axelor.meta.db.MetaAttrs;
+import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.repo.MetaAttrsRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
@@ -35,6 +36,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
 import org.camunda.bpm.model.xml.instance.ModelElementInstance;
@@ -150,7 +152,12 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
             MetaAttrs metaAttrs = new MetaAttrs();
             metaAttrs.setModel(model);
             metaAttrs.setView(view);
-            metaAttrs.setField(item);
+            if (MetaJsonRecord.class.getName().equals(model)
+                && !Pattern.matches("^.+\\\\..+$", item)) {
+              metaAttrs.setField(String.format("attrs.%s", item));
+            } else {
+              metaAttrs.setField(item);
+            }
             metaAttrs.setRoles(findRoles(roles));
             if (permanent != null && permanent.equals("true")) {
               if (!StringUtils.isEmpty(relatedField)) {
