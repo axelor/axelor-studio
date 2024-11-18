@@ -83,7 +83,7 @@ public class WkfEmailServiceImpl implements WkfEmailService {
 
     String title = wkfTaskConfig.getTaskEmailTitle();
     if (title == null) {
-      return;
+      title = wkfTaskConfig.getName();
     }
 
     FullContext wkfContext = wkfUserActionService.getModelCtx(wkfTaskConfig, execution);
