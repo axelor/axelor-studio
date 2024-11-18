@@ -1,2 +1,3 @@
-"conditionScript";"toLinkScript.name";"mappingScript";"linkScript.name"
-age > 18;Division of age;[name: name, age: age, date: date];Division of age
+conditionScript;varName;toLinkScript.name;outputLinkScript.name;dependencyLinkScript.name
+age > 18;task;Division of age;Division of age;
+;todo;Fetch TODO 1;;Create task for TODO 1

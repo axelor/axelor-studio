@@ -80,6 +80,10 @@ public class LinkScriptGroovyScriptHelper extends AbstractScriptHelper {
     return script.run();
   }
 
+  public GroovyScriptAnalysis analyze(String script) {
+    return GroovyScriptAnalysis.analyze(script, config, GCL);
+  }
+
   public static class Helpers {
     @SuppressWarnings("unchecked")
     public static <T> T doInJPA(Function<EntityManager, T> task) {

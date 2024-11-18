@@ -1,27 +1,24 @@
 name;transactional;description;body
-Division of age;true;<p><b>Divides the age by two if it is greater than 18</b> and adds one day to the date in all cases.</p><p><b>If the age is less than 18 after the division</b>, then a task is created with all the information.<br></p>;"if (age > 18) {
+Division of age;true;<p><b>Divides the age by two if it is greater than 18</b> and adds one day to the date in all cases.</p><p><b>If the age is less than 18 after the division</b>, then a task is created with all the information.<br></p>;"date = date.plusDays(1)
+
+if (age >= 18) {
     age = age / 2
 }
 
-date = date.plusDays(1)
+if (age >= 18) {
+    return
+}
 
-if (age < 18) {
-    task = new TeamTask()
-    task.setName(echo(name, age, date))
-    task.setPriority(""normal"")
-    task.setStatus(""new"")
-    task.setTaskDate(date)
-    task.setTaskDuration((int)age)
-    task.setAssignedTo(__user__)
-    __repo__(TeamTask).save(task)
-}"
-Retrieve TODO 1;false;Retrieve the information of TODO 1<br>;"url = url ?: ""https://dummyjson.com/todos/1""
-
-r = request(url).get().send()
-
-slurper = new JsonSlurper()
-
-todo = slurper.parseText(r.body())
-
-// __config__.ls.run is also possible if context.ls = com.axelor.studio.ls.service.LinkScriptService property is defined
-inject(__service__).run(""Division of age"", [name: todo.todo, age: todo.userId, date: __date__])"
+def task = new TeamTask()
+task.setName(echo(name, age, date))
+task.setPriority(""normal"")
+task.setStatus(""new"")
+task.setTaskDate(date)
+task.setTaskDuration((int)age)
+task.setAssignedTo(__user__)
+return __repo__(TeamTask).save(task)"
+Create task for TODO 1;false;Create a task with the information of TODO 1;"return run(""Division of age"", name: todo.todo, age: todo.userId, date: __date__).evalResult"
+Fetch TODO 1;false;Fetch the first fake TODO;"url = url ?: ""https://dummyjson.com/todos/1""
+def r = request(url).get().send()
+def slurper = new JsonSlurper()
+return slurper.parseText(r.body())"

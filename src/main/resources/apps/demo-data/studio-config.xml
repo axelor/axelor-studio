@@ -6,9 +6,6 @@
   <input file="studio_link_script.csv" separator=";" type="com.axelor.studio.db.LinkScript"
     search="self.name = :name"/>
 
-  <input file="studio_link_script_params.csv" separator=";"
-    type="com.axelor.studio.db.LinkScriptParam"/>
-
   <input file="studio_link_script_arcs.csv" separator=";"
     type="com.axelor.studio.db.LinkScriptArc"/>
 </csv-inputs>
