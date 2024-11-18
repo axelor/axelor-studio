@@ -2,16 +2,16 @@ package com.axelor.studio.ls.evaluator;
 
 import com.axelor.script.ScriptBindings;
 import com.axelor.studio.db.LinkScript;
-import com.axelor.studio.db.LinkScriptArc;
 import com.axelor.studio.helper.TransactionHelper;
 import com.axelor.studio.ls.LinkScriptBindingsService;
 import com.axelor.studio.ls.LinkScriptResult;
 import com.axelor.studio.ls.script.LinkScriptGroovyScriptHelper;
 import com.google.inject.Inject;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.script.Bindings;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class LinkScriptGroovyEvaluator
@@ -24,36 +24,53 @@ public class LinkScriptGroovyEvaluator
     this.linkScriptBindingsService = linkScriptBindingsService;
   }
 
-  protected String computeReturnStatement(LinkScript linkScript) {
-    if (CollectionUtils.isEmpty(linkScript.getOutParams())) {
-      return "[:]";
-    }
-    return linkScript.getOutParams().stream()
-        .map(it -> it.getName() + ": " + it.getName())
-        .collect(Collectors.joining(", ", "[", "]"));
-  }
-
   @Override
   public LinkScriptGroovyScriptHelper newHelper(LinkedHashMap<String, Object> context) {
     return new LinkScriptGroovyScriptHelper(
         bindings(context), linkScriptBindingsService.getImportCustomizer());
   }
 
-  public String preProcess(LinkScript linkScript) {
-    return linkScript.getBody() + "\n" + computeReturnStatement(linkScript);
+  @Override
+  public String preProcess(String script, LinkedHashMap<String, Object> context) {
+    var gsh = newHelper(context);
+
+    var analysis = gsh.analyze(script);
+    var variables = new HashSet<>();
+    variables.addAll(context.keySet());
+    variables.addAll(analysis.getExpressionVariables());
+
+    String contextMap =
+        variables.stream()
+            .map(variable -> variable + ": " + variable)
+            .collect(Collectors.joining(", ", "[", "]"));
+
+    if (!analysis.getFinalReturnPresent()) {
+      script = script + "\nreturn " + contextMap;
+    }
+
+    return script;
   }
 
   @Override
   public void eval(
-      LinkScriptGroovyScriptHelper scriptHelper, LinkScriptResult result, LinkScript linkScript) {
-    var body = preProcess(linkScript);
-    @SuppressWarnings("unchecked")
+      LinkScriptGroovyScriptHelper scriptHelper,
+      LinkScriptResult result,
+      LinkScript linkScript,
+      String varName,
+      LinkedHashMap<String, Object> context) {
     var evalResult =
         TransactionHelper.runInTransaction(
             linkScript.getTransactional(),
-            () -> (LinkedHashMap<String, Object>) scriptHelper.eval(body));
-    result.step(linkScript.getName(), evalResult);
-    scriptHelper.setBindings(bindings(evalResult));
+            () -> scriptHelper.eval(preProcess(linkScript.getBody(), context)));
+    if (varName == null && evalResult instanceof Map) {
+      ((Map<?, ?>) evalResult)
+          .entrySet().stream()
+              .filter(e -> e.getKey() instanceof String)
+              .forEach(e -> context.put((String) e.getKey(), e.getValue()));
+    } else if (evalResult != null) {
+      context.put(varName != null ? varName : "result", evalResult);
+    }
+    result.step(linkScript.getName(), context);
   }
 
   protected Bindings bindings(LinkedHashMap<String, Object> context) {
@@ -65,14 +82,5 @@ public class LinkScriptGroovyEvaluator
   @Override
   public boolean test(LinkScriptGroovyScriptHelper scriptHelper, String conditionScript) {
     return StringUtils.isBlank(conditionScript) || scriptHelper.test(conditionScript);
-  }
-
-  @Override
-  public LinkedHashMap<String, Object> transform(
-      LinkScriptGroovyScriptHelper scriptHelper, LinkScriptArc linkScriptArc) {
-    var mappingScript = linkScriptArc.getMappingScript();
-    @SuppressWarnings("unchecked")
-    var evalResult = (LinkedHashMap<String, Object>) scriptHelper.eval(mappingScript);
-    return evalResult;
   }
 }

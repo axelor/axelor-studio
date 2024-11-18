@@ -6,23 +6,17 @@
   <grid name="link-script-arc-grid" title="LinkScript Arcs" edit-icon="false"
     model="com.axelor.studio.db.LinkScriptArc" editable="true" x-selector="checkbox">
     <field name="conditionScript"/>
+    <field name="varName" validIf="/^[a-z][a-zA-Z0-9]+$/.test(varName)"/>
     <field name="toLinkScript" onChange="action-link-script-arc-record-set-mapping"/>
-    <field name="mappingScript"/>
   </grid>
 
   <form name="link-script-arc-form" title="LinkScript Arc"
     model="com.axelor.studio.db.LinkScriptArc">
     <panel name="mainPanel" itemSpan="12">
       <field name="conditionScript"/>
+      <field name="varName" validIf="/^[a-z][a-zA-Z0-9]+$/.test(varName)"/>
       <field name="toLinkScript" onChange="action-link-script-arc-record-set-mapping"/>
-      <field name="mappingScript"/>
     </panel>
   </form>
-
-  <action-record name="action-link-script-arc-record-set-mapping"
-    model="com.axelor.studio.db.LinkScriptArc">
-    <field name="mappingScript"
-      expr="eval: '[' + toLinkScript?.inParams?.collect{it.name + ': ' + it.name}.join(', ') + ']'"/>
-  </action-record>
 
 </object-views>
