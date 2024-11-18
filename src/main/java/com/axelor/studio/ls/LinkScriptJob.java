@@ -4,6 +4,9 @@ import com.axelor.studio.db.LinkScript;
 import com.axelor.studio.db.LinkScriptArc;
 import com.axelor.studio.ls.evaluator.LinkScriptEvaluator;
 import com.axelor.studio.ls.script.LinkScriptGroovyScriptHelper;
+import com.google.inject.servlet.RequestScoper;
+import com.google.inject.servlet.ServletScopes;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -40,8 +43,11 @@ public class LinkScriptJob implements Callable<LinkScriptResult> {
 
   @Override
   public LinkScriptResult call() throws Exception {
-    log.debug("Call link script: {}", linkScript.getName());
-    run(result, linkScript, context);
-    return result;
+    final RequestScoper scope = ServletScopes.scopeRequest(Collections.emptyMap());
+    try (RequestScoper.CloseableScope ignored = scope.open()) {
+      log.debug("Call link script: {}", linkScript.getName());
+      run(result, linkScript, context);
+      return result;
+    }
   }
 }
