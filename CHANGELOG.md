@@ -1,3 +1,24 @@
+## 3.2.6 (2024-11-19)
+
+#### Fix
+
+* Resolve Bpm user task send email issue
+
+  <details>
+  
+  Resolve BPM mail sending issue by changing the mail event storage in the bpmn file
+  
+  </details>
+
+* Resolve BPM view attributes on custom model
+
+  <details>
+  
+  Resolve BPM view attributes creation on custom models
+  
+  </details>
+
+
 ## 3.2.5 (2024-11-12)
 
 #### Fix
