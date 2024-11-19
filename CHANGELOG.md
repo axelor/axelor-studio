@@ -1,3 +1,23 @@
+## 3.2.6 (2024-11-19)
+
+#### Fix
+
+* Resolve Bpm user task send email issue
+
+  <details>
+  
+  Resolve BPM mail sending issue by changing the mail event storage in the bpmn file
+  
+  </details>
+
+* Resolve BPM view attributes on custom model
+
+  <details>
+  
+  Resolve BPM view attributes creation on custom models
+  
+  </details>
+
 ## 3.3.5 (2024-11-14)
 
 #### Fix
@@ -55,6 +75,45 @@
   Fix aop version on aop7.2.1
   
   </details>
+
+## 3.2.5 (2024-11-12)
+
+#### Fix
+
+* BPM migration error.
+
+  <details>
+
+  introduces a method to migrate all active process instances with a specified WkfProcess to the latest deployed version of the process definition. This ensures uniformity across all instances by synchronizing them to the latest version as long as no major structural changes exist between versions.
+
+  </details>
+
+
+## 3.2.4 (2024-11-05)
+
+#### Fix
+
+* Replace ForkJoin pool usages by executor services
+
+  <details>
+
+    - Replace Fork join usage and use ExecutionService instead
+
+  </details>
+
+
+## 3.2.2 (2024-10-09)
+
+#### Fix
+
+* Batch processing takes much longer in 3.2.0
+
+  <details>
+
+  Improved batch processing performance for BPM instances.
+
+  </details>
+
 
 
 ## 3.3.3 (2024-11-04)
