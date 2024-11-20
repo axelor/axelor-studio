@@ -1,0 +1,5 @@
+---
+title: Resolve error when using self as data source
+type: fix
+description: |
+  Resolve the issue with self source type, use targetModel as prefix before using the field name
