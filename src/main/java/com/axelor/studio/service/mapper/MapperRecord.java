@@ -152,7 +152,8 @@ public class MapperRecord {
   public void addFields() {
 
     if (fields != null) {
-      fields.forEach(field -> scriptBuilder.append(field.toScript(targetVariable) + "\n"));
+      fields.forEach(
+          field -> scriptBuilder.append(field.toScript(targetVariable, targetModel) + "\n"));
     }
   }
 
