@@ -826,7 +826,7 @@ function ExpressionBuilder({
       const expBPMN = str
         ? isBamlQuery
           ? `"${str}"${vals && vals.length > 0 ? `${valueParameters}` : ``}`
-          : `return __ctx__.createVariable(__ctx__.${
+          : `return __ctx__.createObject(__ctx__.${
               singleResult ? 'filterOne' : 'filter'
             }("${model}","${str}"${
               vals && vals.length > 0 ? `${valueParameters}` : ``

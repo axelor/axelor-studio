@@ -1,0 +1,5 @@
+---
+title: Fix Issue with `createVariable` Usage in Script Task for Query Generation Causing Deserialization Error
+type: fix
+description: |
+  Replace the `createVariable` function with `createObject` to ensure correct type handling.
