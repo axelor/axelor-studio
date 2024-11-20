@@ -95,7 +95,9 @@ public class BpmMapperRecord extends MapperRecord {
 
     if (bpmMapperFields != null) {
       bpmMapperFields.forEach(
-          field -> getScriptBuilder().append(field.toScript(getTargetVariable()) + "\n"));
+          field ->
+              getScriptBuilder()
+                  .append(field.toScript(getTargetVariable(), getTargetModel()) + "\n"));
     }
   }
 }

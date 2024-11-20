@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.service.mapper;
 
+import com.axelor.common.Inflector;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.StringUtils;
 
@@ -103,14 +104,18 @@ public class MapperField {
     this.condition = condition;
   }
 
-  public String toScript(String parent) {
+  public String toScript(String parent, String targetModel) {
 
     this.parent = parent;
     StringBuilder stb = new StringBuilder();
 
     String field = parent + "." + name;
-
-    stb.append(field + " = " + value.toScript(this));
+    stb.append(field + " = ");
+    if ("self".equals(value.getFrom())) {
+      stb.append(Inflector.getInstance().camelize(targetModel, true));
+      stb.append(".");
+    }
+    stb.append(value.toScript(this));
 
     if (!StringUtils.isBlank(condition)) {
       return "if (" + condition + ") {\n\t" + stb.toString() + "\n}";
