@@ -52,6 +52,7 @@ function ExpressionBuilder({
   setProperty,
   getExpression,
   close,
+  isCreateObject,
   defaultModel,
   fetchModels,
   isAllowButtons = false,
@@ -1215,7 +1216,7 @@ function ExpressionBuilder({
     return isValid;
   };
 
-  function generateExpression(combinator, type) {
+  function generateExpression(combinator, type,isCreateObject) {
     const expressionValues = [];
     let model;
     let vals = [];
@@ -1305,10 +1306,12 @@ function ExpressionBuilder({
       const expBPMN = str
         ? isBamlQuery
           ? `"${str}"${vals && vals.length > 0 ? `${valueParameters}` : ``}`
-          : `return __ctx__.createObject(__ctx__.${singleResult ? 'filterOne' : 'filter'
-          }("${model}","${str}"${vals && vals.length > 0 ? `${valueParameters}` : ``
-          }))`
-        : undefined;
+          : `return ${isCreateObject ? `__ctx__.createObject(` : ''}__ctx__.${
+                  singleResult ? 'filterOne' : 'filter'
+              }("${model}","${str}"${
+                  vals && vals.length > 0 ? `${valueParameters}` : ``
+              })${isCreateObject ? ')' : ''}`
+          : undefined;
       expr = isBPMN ? expBPMN : exp;
     }
     paramCount = 0;
@@ -1575,7 +1578,7 @@ function ExpressionBuilder({
           variant="primary"
           title="OK"
           className={styles.save}
-          onClick={() => generateExpression(combinator, parentType)}
+          onClick={() => generateExpression(combinator, parentType,isCreateObject)}
         />
         {dialogActionButton && (
           <React.Fragment>{dialogActionButton}</React.Fragment>

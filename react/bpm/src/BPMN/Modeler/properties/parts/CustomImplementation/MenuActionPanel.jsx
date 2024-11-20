@@ -2976,6 +2976,7 @@ export default function MenuActionPanel({
           close={handleClose}
           type="bpmQuery"
           title="Add query"
+          isCreateObject={false}
           setProperty={(val) =>
             setter(val, dummyStates, fieldPathState, fieldTypes)
           }
