@@ -494,7 +494,7 @@ const Rule = React.memo(function Rule(props) {
       let data = fetchModels
         ? await fetchModels()
         : await fetchMetaModels({ search });
-      if (isBPMN && !isBPMQuery(parentType)) {
+      if (isBPMN) {
         const obj = {
           title: translate('Built In Variables'),
           name: 'Built In Variables',
