@@ -446,7 +446,7 @@ const Rule = React.memo(function Rule(props) {
       let data = fetchModels
         ? await fetchModels()
         : await fetchMetaModels({ search });
-      if (isBPMN && !isBPMQuery(parentType)) {
+      if (isBPMN) {
         data = [...VAR_OPTIONS, ...(data || [])];
       }
       return data || [];
