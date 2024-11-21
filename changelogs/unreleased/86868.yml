@@ -1,0 +1,5 @@
+---
+title: Resolve Bpm builder createObject MethodNotFoundException
+type: fix
+description: |
+  Resolve BPM builder createObject error by not using execution variable on generation
