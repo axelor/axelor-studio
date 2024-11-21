@@ -33,11 +33,11 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
+import java.util.Map;
 import javax.persistence.FlushModeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
-import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
@@ -176,16 +176,9 @@ public class WkfExecutionListener implements ExecutionListener {
   }
 
   protected void removeInstanceVariables(DelegateExecution execution) {
-    RuntimeService runtimeService = execution.getProcessEngineServices().getRuntimeService();
-    String processInstanceId = execution.getProcessInstanceId();
-    ProcessInstance processInstance =
-        runtimeService
-            .createProcessInstanceQuery()
-            .processInstanceId(processInstanceId)
-            .singleResult();
-    if (processInstance == null || processInstance.isEnded()) {
-      runtimeService.removeVariables(
-          processInstanceId, runtimeService.getVariables(processInstanceId).keySet());
+    Map<String, Object> localVariables = execution.getVariablesLocal();
+    for (String variableName : localVariables.keySet()) {
+      execution.removeVariableLocal(variableName);
     }
   }
 
