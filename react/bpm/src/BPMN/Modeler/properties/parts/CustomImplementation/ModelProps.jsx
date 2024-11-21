@@ -1087,6 +1087,7 @@ export function FieldAction({
         open={openBuilder}
         close={() => setOpenBuilder(false)}
         type="bpmQuery"
+        isCreateObject={false}
         title="Add query"
         setProperty={(val) => {
           const { expression, value, combinator, checked } = val;

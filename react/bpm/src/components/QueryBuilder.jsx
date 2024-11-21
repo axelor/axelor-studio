@@ -21,6 +21,7 @@ function QueryBuilder({
   type,
   defaultModel,
   setProperty,
+  isCreateObject,
   getExpression,
   fetchModels,
   setOpen,
@@ -44,6 +45,7 @@ function QueryBuilder({
             isBPMN={true}
             isAllowButtons={true}
             close={close}
+            isCreateObject={isCreateObject}
             setProperty={setProperty}
             getExpression={getExpression}
             defaultModel={defaultModel}
