@@ -94,7 +94,7 @@ export default function TranslationProps({
       const language = info?.user?.lang;
       if (!language) return;
       const selectedTranslation = translations?.find(
-        (t) => t.language === language
+        (t) => t.language === language.split("-")?.[0]
       );
       const diagramValue =
         selectedTranslation?.message ||
@@ -261,7 +261,7 @@ export default function TranslationProps({
                     {translate("Translation")}
                   </TableCell>
                   <TableCell textAlign="center" className={styles.tableHead}>
-                    {translate("Language")} ({translate("Hint")}: en, fr)
+                    {translate("Language")} 
                   </TableCell>
                   <TableCell
                     textAlign="center"
