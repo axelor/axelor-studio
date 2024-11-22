@@ -2,6 +2,12 @@
 
 #### Fix
 
+* Add Built-in variable to Query builder
+
+## 3.2.7 (2024-11-22)
+
+#### Fix
+
 * Resolve Error while using studio helper in task configuration
 * Resolve error when using self as data source
 
