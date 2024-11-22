@@ -1,5 +1,0 @@
----
-title: Sub-process evaluated when it shouldn't.
-type: fix
-description:
-  Updated functionality to ensure that only local variables specific to the current execution scope are removed at the end of each process/sub-process, preserving the integrity of necessary global variables.

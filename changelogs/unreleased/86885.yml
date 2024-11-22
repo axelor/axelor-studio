@@ -1,5 +1,0 @@
----
-title: Resolve BPM view attributes on custom model
-type: fix
-description: |
-  Resolve BPM view attributes creation on custom models

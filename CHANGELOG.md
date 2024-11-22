@@ -1,3 +1,59 @@
+## 3.3.6 (2024-11-22)
+
+#### Fix
+
+* Resolve Error while using studio helper in task configuration
+* Resolve Bpm user task send email issue
+
+  <details>
+  
+  Resolve BPM mail sending issue by changing the mail event storage in the bpmn file
+  
+  </details>
+
+* Sub-process evaluated when it shouldn't.
+
+  <details>
+  
+  Updated functionality to ensure that only local variables specific to the current execution scope are removed at the end of each process/sub-process, preserving the integrity of necessary global variables.
+  
+  </details>
+
+* Add Built-in variable and custom variable to Query builder
+* Resolve BPM view attributes on custom model
+
+  <details>
+  
+  Resolve BPM view attributes creation on custom models
+  
+  </details>
+
+* Resolve error when using self as data source
+
+  <details>
+  
+  Resolve the issue with self source type, use targetModel as prefix before using the field name
+  
+  </details>
+
+* Resolve Bpm builder createObject MethodNotFoundException
+
+  <details>
+  
+  Resolve BPM builder createObject error by not using execution variable on generation
+  
+  </details>
+
+* Resolve BPM node translation issue
+* Fix Issue with `createVariable` Usage in Script Task for Query Generation Causing Deserialization Error
+
+  <details>
+  
+  Replace the `createVariable` function with `createObject` to ensure correct type handling.
+  
+  </details>
+
+
 ## 3.2.6 (2024-11-19)
 
 #### Fix
