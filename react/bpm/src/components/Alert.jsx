@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Box, Alert } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import { translate } from "../utils";
-import styles from "./alert.module.css";
+
+const ICON = {
+  danger: "error",
+  success: "beenhere",
+};
 
 export default function AlertComponent({
   open = false,
@@ -32,12 +36,22 @@ export default function AlertComponent({
     <Alert
       variant={messageType}
       d="flex"
-      alignItems="center"
-      className={styles.alertContainer}
       gap={5}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: "50%",
+        right: "auto",
+        transform: "translateX(-50%)",
+        zIndex: 3,
+        display: "flex",
+      }}
     >
+      <Box d="flex" alignItems="center" justifyContent="center">
+        <MaterialIcon icon={ICON[messageType] || "beenhere"} />
+      </Box>
       <Box
         d="flex"
         alignItems="center"
