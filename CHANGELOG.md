@@ -1,3 +1,25 @@
+## 3.2.7 (2024-11-22)
+
+#### Fix
+
+* Resolve Error while using studio helper in task configuration
+* Resolve error when using self as data source
+
+  <details>
+  
+  Resolve the issue with self source type, use targetModel as prefix before using the field name
+  
+  </details>
+
+* Resolve Bpm builder createObject MethodNotFoundException
+
+  <details>
+  
+  Resolve BPM builder createObject error by not using execution variable on generation
+  
+  </details>
+
+
 ## 3.2.6 (2024-11-19)
 
 #### Fix
