@@ -1,3 +1,17 @@
+## 3.0.8 (2024-11-22)
+
+#### Fix
+
+* Add Built-in variable to Query builder
+* Resolve error when using self as data source
+
+  <details>
+  
+  Resolve the issue with self source type, use targetModel as prefix before using the field name
+  
+  </details>
+
+
 ## 3.0.7 (2024-10-17)
 
 #### Fix
