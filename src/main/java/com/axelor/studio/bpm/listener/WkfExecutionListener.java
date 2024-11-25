@@ -175,6 +175,7 @@ public class WkfExecutionListener implements ExecutionListener {
     }
   }
 
+  @Transactional(rollbackOn = Exception.class)
   protected void removeInstanceVariables(DelegateExecution execution) {
     Map<String, Object> localVariables = execution.getVariablesLocal();
     for (String variableName : localVariables.keySet()) {

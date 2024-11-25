@@ -1,0 +1,5 @@
+---
+title: Fix Iteration and Database Connection Issue in Camunda BPM Process
+type: fix
+description:
+  Iteration and Database Connection Issue in Camunda BPM Process by initiating a transaction when deleting variables
