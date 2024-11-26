@@ -158,6 +158,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     OutputStreamAppender<ILoggingEvent> appender = null;
 
     String processInstanceId = null;
+    WkfInstance wkfInstance = null;
 
     try {
       if (Strings.isNullOrEmpty(model.getProcessInstanceId())) {
@@ -175,8 +176,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
       ProcessEngine engine = engineService.getEngine();
 
-      WkfInstance wkfInstance =
-          wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
+      wkfInstance = wkfInstanceRepository.findByInstanceId(model.getProcessInstanceId());
 
       if (wkfInstance == null) {
         return helpText;
@@ -926,6 +926,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value, String error) {
+    error = (error == null || error.length() <= 250) ? error : error.substring(0, 250);
     JPA.em().refresh(wkfInstance);
     wkfInstance.setInstanceError(value);
     wkfInstance.setCurrentError(error);
