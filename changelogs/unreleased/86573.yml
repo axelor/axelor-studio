@@ -1,0 +1,5 @@
+---
+title: Fix studio app versions updating and formatting
+type: fix
+description:
+  Fix the app version update on server startup, and fix version regex

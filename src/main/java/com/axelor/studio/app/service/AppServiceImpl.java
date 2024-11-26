@@ -28,6 +28,7 @@ import com.axelor.db.Model;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
@@ -36,6 +37,7 @@ import com.axelor.meta.db.MetaModule;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.db.repo.MetaModuleRepository;
+import com.axelor.meta.loader.ModuleManager;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
@@ -503,6 +505,8 @@ public class AppServiceImpl implements AppService {
     Mapper mapper = Mapper.of(App.class);
     String appCode = appDataMap.get(APP_CODE).toString();
     App app = appRepo.findByCode(appCode);
+    Beans.get(ModuleManager.class).update(false, app.getName());
+    app = appRepo.findByCode(appCode);
     if (app == null) {
       app = new App();
     }
