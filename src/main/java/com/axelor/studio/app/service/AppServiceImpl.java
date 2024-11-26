@@ -505,8 +505,10 @@ public class AppServiceImpl implements AppService {
     Mapper mapper = Mapper.of(App.class);
     String appCode = appDataMap.get(APP_CODE).toString();
     App app = appRepo.findByCode(appCode);
-    Beans.get(ModuleManager.class).update(false, app.getName());
-    app = appRepo.findByCode(appCode);
+    if(app!=null){
+      Beans.get(ModuleManager.class).update(false, app.getName());
+      app = appRepo.findByCode(appCode);
+    }
     if (app == null) {
       app = new App();
     }
