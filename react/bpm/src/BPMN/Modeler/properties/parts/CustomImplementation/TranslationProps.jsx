@@ -253,7 +253,7 @@ export default function TranslationProps({
           )}
         </div>
         {isTranslations && translations && translations.length > 0 && (
-          <Box rounded={2} bgColor="body" shadow style={{ margin: "10px 0" }}>
+          <Box rounded={2} bgColor="body" shadow style={{ margin: "10px 0" }} overflow="auto">
             <Table size="sm" aria-label="a dense table">
               <TableHead>
                 <TableRow>
@@ -295,6 +295,7 @@ export default function TranslationProps({
                               });
                             },
                           }}
+                          updateXMLProperty={false}
                           isLabel={false}
                         />
                       </TableCell>
