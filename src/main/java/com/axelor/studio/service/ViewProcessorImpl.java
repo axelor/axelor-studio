@@ -31,8 +31,9 @@ public class ViewProcessorImpl implements ViewProcessor {
         userRepository
             .all()
             .filter(
-                "self.group.technicalStaff = true AND self.group.viewCustomizationPermission = ?1",
-                ViewCustomizationPermission.CAN_CUSTOMIZE)
+                "self.group.technicalStaff = true AND (self.group.viewCustomizationPermission = ?1 OR self.group.viewCustomizationPermission = ?2) ",
+                ViewCustomizationPermission.CAN_CUSTOMIZE,
+                ViewCustomizationPermission.CAN_SHARE)
             .fetch();
     if (!allowedUsers.contains(AuthUtils.getUser())) {
       return;
