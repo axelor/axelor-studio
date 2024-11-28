@@ -64,4 +64,14 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public int serializationDepth() {
     return appSettings.getInt("studio.bpm.serialization.depth", 5);
   }
+
+  @Override
+  public int processEngineMaxIdleConnections() {
+    return appSettings.getInt("studio.bpm.max.idle.connections", 10);
+  }
+
+  @Override
+  public int processEngineMaxActiveConnections() {
+    return appSettings.getInt("studio.bpm.max.active.connections", 50);
+  }
 }

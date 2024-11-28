@@ -1,0 +1,9 @@
+---
+title: BPM instance are not started when the record is created from an other bpm.
+type: fix
+description:
+  Resolved the issue where BPM instances were not starting when triggered by another BPM process.
+  Added two configurable parameters in axelor-config.properties to address potential database connection issues;
+  "studio.bpm.max.idle.connections" Controls the maximum number of idle database connections (default 10). And
+  "studio.bpm.max.active.connections" Defines the maximum number of active database connections (default 50).
+

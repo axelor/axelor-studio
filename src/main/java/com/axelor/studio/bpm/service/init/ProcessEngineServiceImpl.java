@@ -25,6 +25,7 @@ import com.axelor.inject.Beans;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.bpm.service.log.WkfLoggerInitService;
+import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.lang.invoke.MethodHandles;
@@ -46,12 +47,15 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
   protected static final Map<String, ProcessEngine> engineMap = new ConcurrentHashMap<>();
 
   protected final WkfLoggerInitService wkfLoggerInitService;
+  protected final AppSettingsStudioService appSettingsStudioService;
 
   @Inject
   public ProcessEngineServiceImpl(
       WkfLoggerInitService wkfLoggerInitService,
-      TenantConnectionProvider tenantConnectionProvider) {
+      TenantConnectionProvider tenantConnectionProvider,
+      AppSettingsStudioService appSettingsStudioService) {
     this.wkfLoggerInitService = wkfLoggerInitService;
+    this.appSettingsStudioService = appSettingsStudioService;
     addEngine(BpmTools.getCurentTenant());
     WkfCache.initWkfModelCache();
     WkfCache.initWkfButttonCache();
@@ -84,8 +88,9 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
             .setJdbcPassword(tenantConfig.getJdbcPassword())
             .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE)
             .setHistory(ProcessEngineConfiguration.HISTORY_AUDIT)
-            .setJdbcMaxIdleConnections(1)
-            .setJdbcMaxActiveConnections(1)
+            .setJdbcMaxIdleConnections(appSettingsStudioService.processEngineMaxIdleConnections())
+            .setJdbcMaxActiveConnections(
+                appSettingsStudioService.processEngineMaxActiveConnections())
             .setJobExecutorActivate(!multiTenant)
             .setMetricsEnabled(false)
             .setJobExecutor(Beans.get(WkfJobExecutor.class))
