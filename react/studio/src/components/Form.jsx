@@ -57,17 +57,17 @@ function FormComponent({ attrs = {}, items = [], design, widgets, ...rest }) {
 		<div className="flex-container">
 			{rootPanel.items.map(({ items, colSpan, panelType, ...attrs }, i) => (
 				<div
-					style={
-						colSpan === 9
+					style={{
+						maxWidth: "100%",
+						...(colSpan === 9
 							? {
-									maxWidth: "100%",
 									overflow: "hidden",
 							  }
 							: {
 									overflow: "clip" /* required */,
 									overflowClipMargin: " 20px",
-							  }
-					}
+							  }),
+					}}
 					className={`flex-item span-${colSpan}`}
 					key={i}
 				>
