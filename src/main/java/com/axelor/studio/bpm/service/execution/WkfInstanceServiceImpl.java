@@ -138,8 +138,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     if (wkfProcessConfig != null) {
       WkfProcess wkfProcess = wkfProcessConfig.getWkfProcess();
       executeProcess =
-          (wkfProcess.getOnlyOnClientChange() && EXECUTION_SOURCE_LISTENER == source)
-              || (source == EXECUTION_SOURCE_OBSERVER && !wkfProcess.getOnlyOnClientChange());
+          (!wkfProcess.getOnlyOnClientChange() && EXECUTION_SOURCE_LISTENER == source)
+              || (source == EXECUTION_SOURCE_OBSERVER && wkfProcess.getOnlyOnClientChange());
     }
     if (executeProcess) {
       return evalInstance(model, signal);
