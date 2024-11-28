@@ -550,10 +550,7 @@ export default function MenuActionPanel({
         viewType: "form",
         action: `action-wkf-view-open-editor-${menuRes?.id}`,
         views: [{ type: "form", name: "meta-menu-form" }],
-        options: {
-          mode: "edit",
-          state: menuRes?.id,
-        },
+        context: { _showRecord: menuRes?.id },
       });
     } else {
       openDialog({
