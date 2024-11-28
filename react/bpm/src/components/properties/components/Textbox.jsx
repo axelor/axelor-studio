@@ -153,7 +153,7 @@ export default function Textbox({
           isError={isError}
           defaultHeight={defaultHeight}
           readOnly={typeof readOnly === "function" ? readOnly() : readOnly}
-          width={window?.innerWidth-120}
+          width={containerWidth}
           onChange={(value) => {
             setValue(value);
             updateProperty((value ?? "").trim());

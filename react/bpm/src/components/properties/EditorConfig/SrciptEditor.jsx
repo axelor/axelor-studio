@@ -40,6 +40,7 @@ function ScriptEditor({
     },
     suggestOnTriggerCharacters: suggestion,
     quickSuggestions: suggestion,
+    wordWrap: "on",
   };
 
   function handleChange(newValue) {
