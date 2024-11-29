@@ -75,6 +75,7 @@
     model="com.axelor.studio.db.LinkScript">
     <view type="grid" name="link-script-grid"/>
     <view type="form" name="link-script-form"/>
+    <view-param name="forceEdit" value="true"/>
   </action-view>
 
   <!-- Reporting menu -->

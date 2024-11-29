@@ -1,5 +1,7 @@
 name;transactional;description;body
-Division de l'âge;true;<p><b>Divise l'âge par deux s'il est supérieur à 18</b> et ajoutes un jour à la date dans tous les cas.</p><p><b>Si l'âge est inférieur à 18 après la division</b>, alors une tâche est créée reprenant toutes les informations.<br></p>;"date = date.plusDays(1)
+Division de l'âge;true;<p><b>Divise l'âge par deux s'il est supérieur à 18</b> et ajoutes un jour à la date dans tous les cas.</p><p><b>Si l'âge est inférieur à 18 après la division</b>, alors une tâche est créée reprenant toutes les informations.<br></p>;"date = date?.plusDays(1) ?: __date__
+age = age ?: 50
+name = name ?: ""Example""
 
 if (age >= 18) {
     age = age / 2
@@ -17,8 +19,28 @@ task.setTaskDate(date)
 task.setTaskDuration((int)age)
 task.setAssignedTo(__user__)
 return __repo__(TeamTask).save(task)"
-Créer une tâche pour TODO 1;false;Créer une tâche avec les informations de TODO 1;"return run(""Division of age"", name: todo.todo, age: todo.userId, date: __date__).evalResult"
+Créer une tâche pour TODO 1;false;Créer une tâche avec les informations de TODO 1;"return @""Division of age"""
 Récupérer TODO 1;false;Récupérer le premier faux TODO;"url = url ?: ""https://dummyjson.com/todos/1""
-def r = request(url).get().send()
-def slurper = new JsonSlurper()
-return slurper.parseText(r.body())"
+def todo = new JsonSlurper().parseText(request(url).get().send().body())
+def name = todo.todo
+def age = todo.userId"
+Calculer la quantité;false;Calculer une quantité depuis tous les tiers;return __repo__(Partner).all().count()
+Créer un produits;false;Créer un nouveau produit vide;return new Product()
+Créer un devis de vente;true;Créer un nouveau devis de vente;"def so = new SaleOrder()
+
+so.addSaleOrderLineListItem(sol)
+so.setCreationDate(__date__)
+so.setCompany(__repo__(Company).find(1))
+so.setClientPartner(__repo__(Partner).find(1))
+
+return __repo__(SaleOrder).save(so)"
+Créer une ligne de devis de vente;false;Créer une nouvelle ligne de devis de vente;"def sol = new SaleOrderLine();
+
+sol.setProduct(product)
+sol.setProductName(code + "" - "" + name)
+sol.setQty(qty)
+
+return sol"
+Valoriser les champs d'un produit;false;Valoriser les champs d'un produit;"product.setName(name)
+product.setCode(code)
+product.setProductTypeSelect(type ?: ""storable"")"

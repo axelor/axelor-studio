@@ -27,4 +27,6 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   int serializationDepth();
 
   String[] getPackagesToScan();
+
+  int getMaximumRecursion();
 }

@@ -7,8 +7,9 @@
 
   <entity name="LinkScriptArc">
 
+    <integer name="sequence" title="Sequence" readonly="true"/>
+    <string name="name" title="Name"/>
     <string name="conditionScript" title="Condition" large="true"/>
-    <string name="varName" title="Variable name" required="true"/>
     <many-to-one name="toLinkScript" title="To LinkScript"
       ref="com.axelor.studio.db.LinkScript" required="true"/>
 

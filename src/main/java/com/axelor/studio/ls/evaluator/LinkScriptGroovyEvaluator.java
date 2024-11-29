@@ -9,9 +9,11 @@ import com.axelor.studio.ls.script.LinkScriptGroovyScriptHelper;
 import com.google.inject.Inject;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.script.Bindings;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class LinkScriptGroovyEvaluator
@@ -33,44 +35,51 @@ public class LinkScriptGroovyEvaluator
   @Override
   public String preProcess(String script, LinkedHashMap<String, Object> context) {
     var gsh = newHelper(context);
+    String patternString = "@\"(.*?)\"";
+    Pattern pattern = Pattern.compile(patternString);
+    Matcher matcher = pattern.matcher(script);
+
+    StringBuilder result = new StringBuilder();
+    String arguments =
+        context.keySet().stream().map(key -> key + ":" + key).collect(Collectors.joining(","));
+    while (matcher.find()) {
+      matcher.appendReplacement(
+          result,
+          "run(\""
+              + matcher.group(1)
+              + "\","
+              + (StringUtils.isBlank(arguments) ? "[:]" : arguments)
+              + ")");
+    }
+    matcher.appendTail(result);
+    script = result.toString();
 
     var analysis = gsh.analyze(script);
     var variables = new HashSet<>();
     variables.addAll(context.keySet());
     variables.addAll(analysis.getExpressionVariables());
 
-    String contextMap =
-        variables.stream()
-            .map(variable -> variable + ": " + variable)
-            .collect(Collectors.joining(", ", "[", "]"));
-
-    if (!analysis.getFinalReturnPresent()) {
-      script = script + "\nreturn " + contextMap;
+    if (!analysis.getFinalReturnPresent() && CollectionUtils.isNotEmpty(variables)) {
+      script =
+          script
+              + "\nreturn "
+              + variables.stream()
+                  .map(variable -> variable + ": " + variable)
+                  .collect(Collectors.joining(", ", "[", "]"));
     }
 
     return script;
   }
 
   @Override
-  public void eval(
+  public Object eval(
       LinkScriptGroovyScriptHelper scriptHelper,
       LinkScriptResult result,
       LinkScript linkScript,
-      String varName,
       LinkedHashMap<String, Object> context) {
-    var evalResult =
-        TransactionHelper.runInTransaction(
-            linkScript.getTransactional(),
-            () -> scriptHelper.eval(preProcess(linkScript.getBody(), context)));
-    if (varName == null && evalResult instanceof Map) {
-      ((Map<?, ?>) evalResult)
-          .entrySet().stream()
-              .filter(e -> e.getKey() instanceof String)
-              .forEach(e -> context.put((String) e.getKey(), e.getValue()));
-    } else if (evalResult != null) {
-      context.put(varName != null ? varName : "result", evalResult);
-    }
-    result.step(linkScript.getName(), context);
+    return TransactionHelper.runInTransaction(
+        linkScript.getTransactional(),
+        () -> scriptHelper.eval(preProcess(linkScript.getBody(), context)));
   }
 
   protected Bindings bindings(LinkedHashMap<String, Object> context) {

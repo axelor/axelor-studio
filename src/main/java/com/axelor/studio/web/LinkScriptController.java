@@ -4,7 +4,6 @@ import com.axelor.inject.Beans;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.LinkScriptBinding;
-import com.axelor.studio.db.repo.LinkScriptRepository;
 import com.axelor.studio.ls.LinkScriptService;
 import com.axelor.studio.ls.evaluator.LinkScriptGroovyEvaluator;
 import com.axelor.studio.ls.script.LinkScriptGroovyScriptHelper;
@@ -67,10 +66,9 @@ public class LinkScriptController {
   public void run(ActionRequest request, ActionResponse response) {
     try {
       var context = request.getContext();
-      var repo = Beans.get(LinkScriptRepository.class);
       var linkScript = MapHelper.get(context, String.class, "linkScriptName");
       var bindings = parseBindings(context.get("bindings")).orElse(new LinkedHashMap<>());
-      var result = Beans.get(LinkScriptService.class).run(repo.findByName(linkScript), bindings);
+      var result = Beans.get(LinkScriptService.class).run(linkScript, bindings);
       response.setInfo(result.toString().replace("\n", "<br>"));
     } catch (Exception e) {
       ExceptionHelper.error(response, e);

@@ -1,3 +1,7 @@
-conditionScript;varName;toLinkScript.name;outputLinkScript.name;dependencyLinkScript.name
-age > 18;task;Division de l'âge;Division de l'âge;
-;todo;Récupérer TODO 1;;Créer une tâche pour TODO 1
+conditionScript;sequence;name;toLinkScript.name;outputLinkScript.name;dependencyLinkScript.name
+age > 18;1;task;Division de l'âge;Division de l'âge;
+;1;;Récupérer TODO 1;;Créer une tâche pour TODO 1
+;1;product;Valoriser les champs d'un produit;Créer un produits;
+;1;qty;Calculer la quantité;;Créer une ligne de devis de vente
+;2;product;Créer un produits;;Créer une ligne de devis de vente
+;1;sol;Créer un devis de vente;Créer une ligne de devis de vente;

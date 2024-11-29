@@ -24,21 +24,23 @@
       <field name="description" widget="html" colSpan="12"/>
     </panel>
 
-    <panel-related field="dependencyArcs" grid-view="link-script-arc-grid"
-      form-view="link-script-arc-form"/>
-
-    <panel-related field="outputArcs" grid-view="link-script-arc-grid"
-      form-view="link-script-arc-form"/>
-
-    <panel name="bodyPanel" title="Body" itemSpan="12">
-      <help>
-        <![CDATA[
+    <panel-tabs>
+      <panel name="bodyPanel" title="Body" itemSpan="12">
+        <help>
+          <![CDATA[
           If you don't add a return on the last line of the body, then all variables of the current context plus all variables you've defined in the body will be implicitly returned.<br>Either implicitly or explicitly declared, the returned value will be injected in the context in a variable named following the name defined in the arc.
         ]]>
-      </help>
-      <field name="body" showTitle="false" widget="code-editor" x-code-syntax="java"
-        height="500"/>
-    </panel>
+        </help>
+        <field name="body" showTitle="false" widget="code-editor" x-code-syntax="java"
+          height="500"/>
+      </panel>
+
+      <panel-related field="dependencyArcs" grid-view="link-script-arc-grid"
+        form-view="link-script-arc-form"/>
+
+      <panel-related field="outputArcs" grid-view="link-script-arc-grid"
+        form-view="link-script-arc-form"/>
+    </panel-tabs>
 
     <panel-mail name="mailPanel">
       <mail-messages limit="4"/>
