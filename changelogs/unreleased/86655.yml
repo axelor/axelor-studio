@@ -1,5 +1,0 @@
----
-title: Fix generated user action view when the user path is a script
-type: fix
-description:
-  Fix the generated action view when the user path is an action view and directly using the script instead of browsing the properties

@@ -1,3 +1,60 @@
+## 3.3.7 (2024-11-29)
+
+#### Fix
+
+* Fix missing visual error feedback on process node
+
+  <details>
+  
+  Fix the char size error when saving a bpm instance current error when the error trace is too long
+  
+  </details>
+
+* Fix Translation field issue
+* Fix open studio menu button
+* Fix generated user action view when the user path is a script
+
+  <details>
+  
+  Fix the generated action view when the user path is an action view and directly using the script instead of browsing the properties
+  
+  </details>
+
+* Fix studio app versions updating and formatting
+
+  <details>
+  
+  Fix the app version update on server startup, and fix version regex
+  
+  </details>
+
+* Fix studio sidebar boolean doesn't put the panel on the side anymore
+* OpenStudioButton missing when viewCustomizationPermission = CAN_SHARE
+* Fix Iteration and Database Connection Issue in Camunda BPM Process
+
+  <details>
+  
+  Iteration and Database Connection Issue in Camunda BPM Process by initiating a transaction when deleting variables
+  
+  </details>
+
+* BPM instance are not started when the record is created from an other bpm.
+
+  <details>
+  
+  Resolved the issue where BPM instances were not starting when triggered by another BPM process. Added two configurable parameters in axelor-config.properties to address potential database connection issues; "studio.bpm.max.idle.connections" Controls the maximum number of idle database connections (default 10). And "studio.bpm.max.active.connections" Defines the maximum number of active database connections (default 50).
+  
+  </details>
+
+* Improved script task display
+
+  <details>
+  
+  Improved script task display when the script is too long
+  
+  </details>
+
+
 ## 3.3.6 (2024-11-22)
 
 #### Fix
