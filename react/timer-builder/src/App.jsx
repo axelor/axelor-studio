@@ -11,7 +11,7 @@ import TabPanel from "./TabPanel"
 import ISO8601 from "./ISO8601"
 import { localization } from "./localization"
 import Service from "./services/Service"
-import { CRON_OVERRIDE, TYPE } from "./utils"
+import { CRON_OVERRIDE, TYPE, validateIsoDuration } from "./utils"
 import {
   Button,
   Dialog,
@@ -22,8 +22,7 @@ import {
   NavTabs,
   InputLabel,
 } from "@axelor/ui"
-import styles from "./App.module.css";
-
+import styles from "./App.module.css"
 
 const CRON_INITIAL_VALUE = "* * * ? * * *"
 function Cron({
@@ -262,7 +261,7 @@ function App({
   const [tabIds, setTabIds] = useState([])
   const [timerDefinition, setTimerDefinition] = useState("")
   const [error, setError] = useState("") // errors due to invalid originalExpression
-
+  const [openAlert, setAlert] = useState(false)
   const handleTabChange = newValue => {
     const val = tabIds.findIndex(id => id === newValue.id)
     const ind = val > -1 ? val : 0
@@ -271,8 +270,12 @@ function App({
   }
 
   const handleOK = useCallback(() => {
-    timerDefinition && onChange(timerDefinition)
-    onClose()
+    if (timerDefinition && validateIsoDuration(timerDefinition)) {
+      onChange(timerDefinition)
+      onClose()
+    } else {
+      setAlert(true)
+    }
   }, [onChange, onClose, timerDefinition])
 
   useEffect(() => {
@@ -285,53 +288,72 @@ function App({
     setTabIds(TIMER_DEFINITION_TYPE_TABS[timerDefinitionType] || [])
   }, [timerDefinitionType])
 
-  return isDialog ? (
-    <Dialog open={open} backdrop centered>
-      <DialogHeader className={styles.dialogTitle}>
-        <TabBar
-          tabs={tabIds}
-          tabIndex={tabIndex}
-          onChange={handleTabChange}
-          t={t}
-        />
-      </DialogHeader>
-      <DialogContent className={styles.dialogContent}>
-        <Panels
-          tabs={tabIds}
-          tabIndex={tabIndex}
-          lang={lang}
-          originalExpression={originalExpression}
-          timerDefinition={timerDefinition}
-          onChange={setTimerDefinition}
-          t={t}
-          setError={setError}
-          expressionType={expressionType}
-        />
-      </DialogContent>
-      <DialogFooter className={styles.dialogActions}>
-        <Actions onCancel={onClose} onOK={handleOK} t={t} error={error} />
-      </DialogFooter>
-    </Dialog>
-  ) : (
-    <div className="App">
-      <TabBar
-        tabs={tabIds}
-        tabIndex={tabIndex}
-        onChange={handleTabChange}
-        t={t}
-      />
-      <Panels
-        tabs={tabIds}
-        tabIndex={tabIndex}
-        lang={lang}
-        originalExpression={originalExpression}
-        timerDefinition={timerDefinition}
-        onChange={setTimerDefinition}
-        t={t}
-        setError={setError}
-        expressionType={expressionType}
-      />
-    </div>
+  return (
+    <>
+      {isDialog ? (
+        <Dialog open={open} backdrop centered>
+          <DialogHeader className={styles.dialogTitle}>
+            <TabBar
+              tabs={tabIds}
+              tabIndex={tabIndex}
+              onChange={handleTabChange}
+              t={t}
+            />
+          </DialogHeader>
+          <DialogContent className={styles.dialogContent}>
+            <Panels
+              tabs={tabIds}
+              tabIndex={tabIndex}
+              lang={lang}
+              originalExpression={originalExpression}
+              timerDefinition={timerDefinition}
+              onChange={setTimerDefinition}
+              t={t}
+              setError={setError}
+              expressionType={expressionType}
+            />
+          </DialogContent>
+          <DialogFooter className={styles.dialogActions}>
+            <Actions onCancel={onClose} onOK={handleOK} t={t} error={error} />
+          </DialogFooter>
+        </Dialog>
+      ) : (
+        <div className="App">
+          <TabBar
+            tabs={tabIds}
+            tabIndex={tabIndex}
+            onChange={handleTabChange}
+            t={t}
+          />
+          <Panels
+            tabs={tabIds}
+            tabIndex={tabIndex}
+            lang={lang}
+            originalExpression={originalExpression}
+            timerDefinition={timerDefinition}
+            onChange={setTimerDefinition}
+            t={t}
+            setError={setError}
+            expressionType={expressionType}
+          />
+        </div>
+      )}
+      <Dialog centered open={openAlert} size="sm">
+        <DialogHeader onCloseClick={() => setAlert(false)}>
+          <h3>{t("Error")}</h3>
+        </DialogHeader>
+        <DialogContent style={{ font: "16px" }}>
+          {t(
+            "Week format should not be combined with others(years, months, days, hours, minutes, or seconds)."
+          )}
+        </DialogContent>
+        <DialogFooter>
+          <Button variant="primary" title="OK" onClick={() => setAlert(false)}>
+            {t("OK")}
+          </Button>
+        </DialogFooter>
+      </Dialog>
+    </>
   )
 }
 

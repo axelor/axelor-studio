@@ -1,5 +1,0 @@
----
-title: Displayed option doesn't match the generated expression
-type: fix
-description:
-  Added the missing in operator and change the template logic to handle it

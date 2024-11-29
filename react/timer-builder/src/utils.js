@@ -56,6 +56,14 @@ const generateISO8601Expression = (value, shouldAppendRepeat) => {
   return shouldAppendRepeat ? appendRepeat(expression, value) : expression
 }
 
+function validateIsoDuration(duration) {
+  const hasWeeks = duration.includes("W")
+  const hasOtherComponents = ["Y", "M", "D", "H", "M", "S"].some(unit =>
+    duration.includes(unit)
+  )
+  return !(hasWeeks && hasOtherComponents)
+}
+
 const TYPE = {
   cron: "cron",
   iso: "iso",
@@ -70,5 +78,6 @@ export {
   REGEX_FOR_REPEAT,
   generateISO8601Expression,
   appendRepeat,
+  validateIsoDuration,
   TYPE,
 }

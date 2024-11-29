@@ -1142,6 +1142,7 @@
 "WkfModel",,,
 "Workflow dashboard","Tableau de bord de workflow",,
 "Ws Connector",,,
+"Week format should not be combined with others(years, months, days, hours, minutes, or seconds).","Le format 'semaine' ne doit pas être combiné avec d'autres (années, mois, jours, heures, minutes ou secondes).",,
 "X-Access-Token",,,
 "X-Content-Type-Options",,,
 "X-Custom-Header",,,

@@ -31,7 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class AppVersionServiceImpl implements AppVersionService {
 
-  protected static final String VERSION_PATTERN = "(\\d(\\.\\d)+)+";
+  protected static final String VERSION_PATTERN = "(\\d+(\\.\\d+)+)";
 
   protected MetaModuleRepository metaModuleRepo;
 

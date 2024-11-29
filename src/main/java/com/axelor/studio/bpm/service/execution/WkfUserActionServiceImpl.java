@@ -22,7 +22,6 @@ import com.axelor.auth.db.Role;
 import com.axelor.auth.db.User;
 import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.auth.db.repo.UserRepository;
-import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaModelRepository;
@@ -366,13 +365,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     }
 
     String varName = wkfService.getVarName(modelName);
-    Object id = execution.getVariable(varName + "Id");
-    FullContext wkfContext = null;
-    if (id != null && id instanceof Long) {
-      Model record = JPA.find(modelClass, Long.parseLong(id.toString()));
-      wkfContext = new FullContext(record);
-    }
-    return wkfContext;
+    return (FullContext) execution.getVariable(varName);
   }
 
   protected LocalDate getDeadLineDate(String deadLineFieldPath, FullContext wkfContext) {

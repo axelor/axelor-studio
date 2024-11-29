@@ -67,7 +67,7 @@ public class BpmMapperRecord extends MapperRecord {
     }
 
     if (createVariable) {
-      scriptBuilder.append("__ctx__.createObject(" + saveStr + ", execution)");
+      scriptBuilder.append("__ctx__.createObject(" + saveStr + ")");
 
     } else if (isNewRecord() || isSavedRecord() || isSave()) {
       scriptBuilder.append("return " + saveStr);
@@ -95,7 +95,9 @@ public class BpmMapperRecord extends MapperRecord {
 
     if (bpmMapperFields != null) {
       bpmMapperFields.forEach(
-          field -> getScriptBuilder().append(field.toScript(getTargetVariable()) + "\n"));
+          field ->
+              getScriptBuilder()
+                  .append(field.toScript(getTargetVariable(), getTargetModel()) + "\n"));
     }
   }
 }

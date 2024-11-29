@@ -720,7 +720,6 @@ table .empty-row .dump-field {
 
 .flex-container {
   display: flex;
-  flex-direction: column;
 }
 
 .span-3 {

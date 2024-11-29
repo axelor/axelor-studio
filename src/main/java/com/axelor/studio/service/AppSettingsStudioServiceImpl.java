@@ -41,11 +41,6 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   }
 
   @Override
-  public boolean multiTenancy() {
-    return appSettings.getBoolean("application.multi_tenancy", false);
-  }
-
-  @Override
   public String surveyPublicUser() {
     return appSettings.get("survey.public.user");
   }
@@ -68,6 +63,16 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   @Override
   public int serializationDepth() {
     return appSettings.getInt("studio.bpm.serialization.depth", 5);
+  }
+
+  @Override
+  public int processEngineMaxIdleConnections() {
+    return appSettings.getInt("studio.bpm.max.idle.connections", 10);
+  }
+
+  @Override
+  public int processEngineMaxActiveConnections() {
+    return appSettings.getInt("studio.bpm.max.active.connections", 50);
   }
 
   @Override

@@ -116,7 +116,6 @@ export default function MenuActionPanel({
   const [metaModel, setMetaModel] = useState(null);
   const openDialog = useDialog();
 
-
   const USER_ACTIONS_HEADER = [
     { label: "Task field", className: styles.leftAlign },
     { label: "Type" },
@@ -551,10 +550,7 @@ export default function MenuActionPanel({
         viewType: "form",
         action: `action-wkf-view-open-editor-${menuRes?.id}`,
         views: [{ type: "form", name: "meta-menu-form" }],
-        options: {
-          mode: "edit",
-          state: menuRes?.id,
-        },
+        context: { _showRecord: menuRes?.id },
       });
     } else {
       openDialog({
@@ -576,7 +572,10 @@ export default function MenuActionPanel({
     const userAction = getProperty("createUserAction");
     const taskName = getProperty("taskName");
     const emailNotification = getProperty("emailNotification");
-    const emailEvent = getProperty("emailEvent") || "start";
+    const emailEvent = {
+      id: getProperty("emailEvent") || "start",
+      name: getProperty("emailEventLabel") || translate("start"),
+    };
     const template = getSelectValue("template");
     const descriptionField = getProperty("description");
 
@@ -632,14 +631,6 @@ export default function MenuActionPanel({
       });
     }
   }, [getSelectValue]);
-
-  useEffect(() => {
-    if (emailNotification) {
-      setProperty("emailEvent", emailEvent);
-    } else {
-      setProperty("emailEvent", undefined);
-    }
-  }, [emailNotification, setProperty, emailEvent]);
 
   return (
     <div className={styles.main}>
@@ -1118,7 +1109,8 @@ export default function MenuActionPanel({
                 if (emailNotification === false) {
                   setTemplate(undefined);
                   setProperty("template", undefined);
-                  setEmailEvent("start");
+                  updateMenuValue("emailEvent", undefined);
+                  setEmailEvent(null);
                 }
               },
             }}
@@ -1143,8 +1135,8 @@ export default function MenuActionPanel({
                 <Select
                   className={styles.select}
                   update={(value, label) => {
-                    setEmailEvent(value?.name);
-                    updateMenuValue("emailEvent", value, label, "name");
+                    setEmailEvent(value);
+                    updateMenuValue("emailEvent", value, label, "id");
                   }}
                   options={[
                     { name: translate("start"), id: "start" },

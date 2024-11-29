@@ -42,7 +42,7 @@ public class GlobalEntityListener {
     }
   }
 
-  protected synchronized Map<String, Object> callWkfProcess(Set<Model> updated, Set<Model> deleted)
+  protected Map<String, Object> callWkfProcess(Set<Model> updated, Set<Model> deleted)
       throws ClassNotFoundException {
 
     Map<String, Object> result = new HashMap<>();

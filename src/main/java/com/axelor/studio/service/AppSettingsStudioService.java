@@ -14,8 +14,6 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
 
   String baseUrl();
 
-  boolean multiTenancy();
-
   String surveyPublicUser();
 
   String surveyPublicPassword();
@@ -25,6 +23,10 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   public boolean isAddBpmLog();
 
   int serializationDepth();
+
+  int processEngineMaxIdleConnections();
+
+  int processEngineMaxActiveConnections();
 
   String[] getPackagesToScan();
 

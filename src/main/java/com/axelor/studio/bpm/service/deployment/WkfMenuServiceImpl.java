@@ -196,6 +196,11 @@ public class WkfMenuServiceImpl implements WkfMenuService {
             + (userMenu && !Strings.isNullOrEmpty(wkfTaskConfig.getTeamPath())
                 ? "\t<context name=\"teamIds\" expr=\"call:com.axelor.studio.bpm.service.deployment.WkfMenuService:getTeamIds(__user__)\" />\n"
                 : "")
+            + ("script".equals(wkfTaskConfig.getUserFieldType())
+                ? "\t<context name=\"userPath\" expr=\"eval:"
+                    + wkfTaskConfig.getUserPath()
+                    + "?.id\" />\n"
+                : "")
             + (isJson
                 ? "\t<context name=\"jsonModel\" expr=\""
                     + wkfTaskConfig.getJsonModelName()
@@ -264,21 +269,23 @@ public class WkfMenuServiceImpl implements WkfMenuService {
         }
         param = ":teamIds";
       }
-
-      if (!isJson) {
-        String model = getModelName(wkfTaskConfig);
-        try {
-          property = Mapper.of(Class.forName(model)).getProperty(path.split("\\.")[0]);
-        } catch (ClassNotFoundException e) {
-          ExceptionHelper.trace(e);
+      if (!"script".equals(wkfTaskConfig.getUserFieldType())) {
+        if (!isJson) {
+          String model = getModelName(wkfTaskConfig);
+          try {
+            property = Mapper.of(Class.forName(model)).getProperty(path.split("\\.")[0]);
+          } catch (ClassNotFoundException e) {
+            ExceptionHelper.trace(e);
+          }
         }
-      }
 
-      if (property == null) {
-        path = "attrs." + path;
+        if (property == null) {
+          path = "attrs." + path;
+        }
+        query += " AND self." + path + ".id in (" + param + ")";
+      } else {
+        query += " AND :userPath in (" + param + ")";
       }
-
-      query += " AND self." + path + ".id in (" + param + ")";
     }
 
     return query;

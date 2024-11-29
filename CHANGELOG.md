@@ -1,3 +1,234 @@
+## 3.3.7 (2024-11-29)
+
+#### Fix
+
+* Fix missing visual error feedback on process node
+
+  <details>
+  
+  Fix the char size error when saving a bpm instance current error when the error trace is too long
+  
+  </details>
+
+* Fix Translation field issue
+* Fix open studio menu button
+* Fix generated user action view when the user path is a script
+
+  <details>
+  
+  Fix the generated action view when the user path is an action view and directly using the script instead of browsing the properties
+  
+  </details>
+
+* Fix studio app versions updating and formatting
+
+  <details>
+  
+  Fix the app version update on server startup, and fix version regex
+  
+  </details>
+
+* Fix studio sidebar boolean doesn't put the panel on the side anymore
+* OpenStudioButton missing when viewCustomizationPermission = CAN_SHARE
+* Fix Iteration and Database Connection Issue in Camunda BPM Process
+
+  <details>
+  
+  Iteration and Database Connection Issue in Camunda BPM Process by initiating a transaction when deleting variables
+  
+  </details>
+
+* BPM instance are not started when the record is created from an other bpm.
+
+  <details>
+  
+  Resolved the issue where BPM instances were not starting when triggered by another BPM process. Added two configurable parameters in axelor-config.properties to address potential database connection issues; "studio.bpm.max.idle.connections" Controls the maximum number of idle database connections (default 10). And "studio.bpm.max.active.connections" Defines the maximum number of active database connections (default 50).
+  
+  </details>
+
+* Improved script task display
+
+  <details>
+  
+  Improved script task display when the script is too long
+  
+  </details>
+
+
+## 3.3.6 (2024-11-22)
+
+#### Fix
+
+* Resolve Error while using studio helper in task configuration
+* Resolve Bpm user task send email issue
+
+  <details>
+  
+  Resolve BPM mail sending issue by changing the mail event storage in the bpmn file
+  
+  </details>
+
+* Sub-process evaluated when it shouldn't.
+
+  <details>
+  
+  Updated functionality to ensure that only local variables specific to the current execution scope are removed at the end of each process/sub-process, preserving the integrity of necessary global variables.
+  
+  </details>
+
+* Add Built-in variable and custom variable to Query builder
+* Resolve BPM view attributes on custom model
+
+  <details>
+  
+  Resolve BPM view attributes creation on custom models
+  
+  </details>
+
+* Resolve error when using self as data source
+
+  <details>
+  
+  Resolve the issue with self source type, use targetModel as prefix before using the field name
+  
+  </details>
+
+* Resolve Bpm builder createObject MethodNotFoundException
+
+  <details>
+  
+  Resolve BPM builder createObject error by not using execution variable on generation
+  
+  </details>
+
+* Resolve BPM node translation issue
+* Fix Issue with `createVariable` Usage in Script Task for Query Generation Causing Deserialization Error
+
+  <details>
+  
+  Replace the `createVariable` function with `createObject` to ensure correct type handling.
+  
+  </details>
+
+
+## 3.2.6 (2024-11-19)
+
+#### Fix
+
+* Resolve Bpm user task send email issue
+
+  <details>
+  
+  Resolve BPM mail sending issue by changing the mail event storage in the bpmn file
+  
+  </details>
+
+* Resolve BPM view attributes on custom model
+
+  <details>
+  
+  Resolve BPM view attributes creation on custom models
+  
+  </details>
+
+## 3.3.5 (2024-11-14)
+
+#### Fix
+
+* BPM builder - Resolve bpm builder crash issue.
+* Studio - internal server error onClick on the iconBackground.
+
+  <details>
+  
+  change widget from TagSelect to SingleSelect for iconBackground field
+  
+  </details>
+
+* Make custom variables not selectable after deletion
+
+  <details>
+  
+  Select only valid custom variable available on AppBpm
+  
+  </details>
+
+* Expression Builder Handling Null and Comparison Operators.
+
+  <details>
+  
+  Resolve the problem when selecting a null operator and selecting a comparison operator after, this issue comes from the fieldValue not being well initialized
+  
+  </details>
+
+* Fix invalid timer expression.
+
+  <details>
+  
+  Resolve invalid timer expression by not allowing to use weeks and other elements on the same expression.
+  
+  </details>
+
+* Displayed option doesn't match the generated expression
+
+  <details>
+  
+  Added the missing in operator and change the template logic to handle it
+  
+  </details>
+
+
+## 3.3.4 (2024-11-13)
+
+#### Change
+
+* Fix aop version on 7.2.1
+
+  <details>
+  
+  Fix aop version on aop7.2.1
+  
+  </details>
+
+## 3.2.5 (2024-11-12)
+
+#### Fix
+
+* BPM migration error.
+
+  <details>
+
+  introduces a method to migrate all active process instances with a specified WkfProcess to the latest deployed version of the process definition. This ensures uniformity across all instances by synchronizing them to the latest version as long as no major structural changes exist between versions.
+
+  </details>
+
+
+## 3.2.4 (2024-11-05)
+
+#### Fix
+
+* Replace ForkJoin pool usages by executor services
+
+  <details>
+
+    - Replace Fork join usage and use ExecutionService instead
+
+  </details>
+
+
+## 3.2.2 (2024-10-09)
+
+#### Fix
+
+* Batch processing takes much longer in 3.2.0
+
+  <details>
+
+  Improved batch processing performance for BPM instances.
+
+  </details>
+
+
+
 ## 3.3.3 (2024-11-04)
 
 #### Fix

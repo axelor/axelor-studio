@@ -32,7 +32,7 @@
         required="true"/>
       <field name="parentMenu" domain="self.name != :name"/>
       <field name="icon" widget="ImageSelect"/>
-      <field name="iconBackground" widget="TagSelect"/>
+      <field name="iconBackground" widget="SingleSelect"/>
       <field name="order" colSpan="3"/>
       <field name="showAction" colSpan="3" widget="boolean-switch"
         onChange="action-studio-menu-show-action" title="Show actions"/>

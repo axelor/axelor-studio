@@ -46,6 +46,7 @@ function ExpressionBuilder({
   exprVal,
   dialogActionButton,
   isBPMN = false,
+  isCreateObject = true,
   setProperty,
   getExpression,
   close,
@@ -728,7 +729,7 @@ function ExpressionBuilder({
     return isValid;
   };
 
-  async function generateExpression(combinator, type) {
+  async function generateExpression(combinator, type,isCreateObject) {
     const expressionValues = [];
     let model;
     let vals = [];
@@ -826,11 +827,11 @@ function ExpressionBuilder({
       const expBPMN = str
         ? isBamlQuery
           ? `"${str}"${vals && vals.length > 0 ? `${valueParameters}` : ``}`
-          : `return __ctx__.createVariable(__ctx__.${
+          : `return ${isCreateObject ? `__ctx__.createObject(` : ''}__ctx__.${
               singleResult ? 'filterOne' : 'filter'
             }("${model}","${str}"${
               vals && vals.length > 0 ? `${valueParameters}` : ``
-            }))`
+            })${isCreateObject ? ')' : ''}`
         : undefined;
       expr = isBPMN ? expBPMN : exp;
     }
@@ -1096,7 +1097,7 @@ function ExpressionBuilder({
           variant="primary"
           title="OK"
           className={styles.save}
-          onClick={() => generateExpression(combinator, parentType)}
+          onClick={() => generateExpression(combinator, parentType,isCreateObject)}
         />
         {dialogActionButton && (
           <React.Fragment>{dialogActionButton}</React.Fragment>

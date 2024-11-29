@@ -466,22 +466,19 @@ export async function fetchUserPreferences() {
 }
 
 export async function getCustomVariables() {
-  const res = await services.search('com.axelor.studio.db.CustomVariable', {
-    data: {
-      criteria: [{ fieldName: 'status', operator: '=', value: 1 }],
-    },
-  });
+  const res = await services.action(
+    'com.axelor.studio.bpm.web.AppBpmController:getCustomVariables'
+  );
   if (res && res.status === -1) return [];
   return (res && res.data) || [];
 }
-
 
 export async function generateGroovyExpression(jsonQuery) {
   let res = await services.action(
     'action-wkf-model-method-generate-expression',
     {
-      data: jsonQuery
+      data: jsonQuery,
     }
   );
-  return  res?.data;
+  return res?.data;
 }

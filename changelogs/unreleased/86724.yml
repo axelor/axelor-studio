@@ -1,5 +1,0 @@
----
-title: Expression Builder Handling Null and Comparison Operators.
-type: fix
-description:
-  Resolve the problem when selecting a null operator and selecting a comparison operator after, this issue comes from the fieldValue not being well initialized

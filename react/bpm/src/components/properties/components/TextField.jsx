@@ -30,6 +30,7 @@ export default function TextField({
   setField,
   clearPropertises,
   placeholder,
+  updateXMLProperty=true
 }) {
   const {
     label,
@@ -151,24 +152,21 @@ export default function TextField({
             name={modelProperty}
             value={value || ""}
             onChange={(e) => {
-              if (modelProperty === "code") {
-                setValue(e.target.value && e.target.value.toUpperCase());
-                updateProperty(e.target.value && e.target.value.toUpperCase());
-                return;
+             const {value} = e.target;
+             const updatedValue =  
+              modelProperty ==="code" ? value?.toUpperCase() :
+             type === "number" && value ? parseInt() : value;
+              setValue(updatedValue)
+              if (updateXMLProperty) {
+                updateProperty(updatedValue);  
               }
-              if (type === "number") {
-                setValue(e.target.value && parseInt(e.target.value));
-                updateProperty(e.target.value && parseInt(e.target.value));
-                return;
-              }
-              updateProperty(e.target.value);
-              setValue(e.target.value);
-            }}
+
+              }}
             disabled={readOnly || disabled}
             invalid={isError}
             className={className}
             style={{ textOverflow: "ellipsis" }}
-            onBlur={(e) => updateProperty(e.target.value)}
+            onBlur={(e) => !updateXMLProperty && updateProperty(value)}
             placeholder={placeholder}
           />
           {canRemove && !readOnly && (
