@@ -26,6 +26,8 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
 
   String[] getPackagesToScan();
 
+  int getMaximumRecursion();
+
   int processEngineMaxIdleConnections();
 
   int processEngineMaxActiveConnections();

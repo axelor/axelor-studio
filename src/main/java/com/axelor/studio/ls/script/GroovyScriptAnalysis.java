@@ -58,6 +58,9 @@ public class GroovyScriptAnalysis {
                         @Override
                         public void visitVariableExpression(VariableExpression expression) {
                           Variable variable = expression.getAccessedVariable();
+                          if (variable == null) {
+                            return;
+                          }
                           Matcher matcher = pattern.matcher(variable.getName());
                           if (variable instanceof DynamicVariable && !matcher.matches()) {
                             dynamicVariables.add(variable.getName());

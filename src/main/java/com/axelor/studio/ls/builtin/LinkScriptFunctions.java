@@ -1,7 +1,6 @@
 package com.axelor.studio.ls.builtin;
 
 import com.axelor.inject.Beans;
-import com.axelor.studio.db.repo.LinkScriptRepository;
 import com.axelor.studio.ls.LinkScriptService;
 import com.axelor.studio.ls.annotation.LinkScriptFunction;
 import java.util.Arrays;
@@ -23,9 +22,6 @@ public class LinkScriptFunctions {
 
   @LinkScriptFunction("run")
   public static Object run(LinkedHashMap<String, Object> argument, String linkScriptName) {
-    var repo = Beans.get(LinkScriptRepository.class);
-    return Beans.get(LinkScriptService.class)
-        .run(repo.findByName(linkScriptName), argument)
-        .getFinalResult();
+    return Beans.get(LinkScriptService.class).run(linkScriptName, argument).getFinalResult();
   }
 }

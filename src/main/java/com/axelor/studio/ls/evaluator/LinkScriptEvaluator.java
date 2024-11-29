@@ -10,11 +10,10 @@ public interface LinkScriptEvaluator<T extends ScriptHelper> {
 
   String preProcess(String script, LinkedHashMap<String, Object> context);
 
-  void eval(
+  Object eval(
       T scriptHelper,
       LinkScriptResult result,
       LinkScript linkScript,
-      String varName,
       LinkedHashMap<String, Object> context);
 
   boolean test(T scriptHelper, String conditionScript);
