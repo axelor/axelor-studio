@@ -1,0 +1,5 @@
+---
+title: Improved script task display
+type: fix
+description:
+ Improved script task display when the script is too long
