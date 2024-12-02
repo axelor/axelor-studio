@@ -41,9 +41,7 @@ public class LinkScriptGroovyEvaluator
 
     StringBuilder result = new StringBuilder();
     String arguments =
-        context.keySet().stream()
-            .map(key -> key + ":" + key)
-            .collect(Collectors.joining(","));
+        context.keySet().stream().map(key -> key + ":" + key).collect(Collectors.joining(","));
     while (matcher.find()) {
       matcher.appendReplacement(
           result,
