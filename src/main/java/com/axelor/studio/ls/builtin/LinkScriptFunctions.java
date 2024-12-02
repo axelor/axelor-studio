@@ -21,7 +21,7 @@ public class LinkScriptFunctions {
   }
 
   @LinkScriptFunction("run")
-  public static Object run(LinkedHashMap<String, Object> argument, String linkScriptName) {
+  public static Object run(String linkScriptName, LinkedHashMap<String, Object> argument) {
     return Beans.get(LinkScriptService.class).run(linkScriptName, argument).getFinalResult();
   }
 }
