@@ -43,13 +43,10 @@ public class LinkScriptGroovyEvaluator
     String arguments =
         context.keySet().stream().map(key -> key + ":" + key).collect(Collectors.joining(","));
     while (matcher.find()) {
+      var name = "\"" + matcher.group(1) + "\"";
       matcher.appendReplacement(
           result,
-          "run(\""
-              + matcher.group(1)
-              + "\","
-              + (StringUtils.isBlank(arguments) ? "[:]" : arguments)
-              + ")");
+          "run(" + (StringUtils.isBlank(arguments) ? "[:]," + name : name + "," + arguments) + ")");
     }
     matcher.appendTail(result);
     script = result.toString();
