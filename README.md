@@ -46,6 +46,12 @@ studio.bpm.logging = true
 
 # Configure Utils process timeout
 utils.process.timeout = 10
+
+#Controls the maximum number of idle database connections (default 10)
+studio.bpm.max.idle.connections = 10
+
+#Maximum number of active database connections (default 50)
+studio.bpm.max.active.connections = 50
 ```
 
 ## BPM Groovy Script Variables
