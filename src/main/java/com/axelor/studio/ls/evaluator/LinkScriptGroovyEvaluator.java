@@ -41,12 +41,17 @@ public class LinkScriptGroovyEvaluator
 
     StringBuilder result = new StringBuilder();
     String arguments =
-        context.keySet().stream().map(key -> key + ":" + key).collect(Collectors.joining(","));
+        context.keySet().stream()
+            .map(key -> key + ":" + key)
+            .collect(Collectors.joining(","));
     while (matcher.find()) {
-      var name = "\"" + matcher.group(1) + "\"";
       matcher.appendReplacement(
           result,
-          "run(" + (StringUtils.isBlank(arguments) ? "[:]," + name : name + "," + arguments) + ")");
+          "run(\""
+              + matcher.group(1)
+              + "\",["
+              + (StringUtils.isBlank(arguments) ? ":" : arguments)
+              + "])");
     }
     matcher.appendTail(result);
     script = result.toString();
