@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class LinkScriptServiceImpl implements LinkScriptService {
   protected static final String DEFAULT_RESULT_KEY = "result";
+  protected static final String VARIABLES_MAP_NAME = "variables";
   protected final Logger log = LoggerFactory.getLogger(LinkScriptServiceImpl.class);
   protected final LinkScriptEvaluator<LinkScriptGroovyScriptHelper> groovyEvaluator;
   protected final LinkScriptRepository repo;
@@ -46,7 +47,8 @@ public class LinkScriptServiceImpl implements LinkScriptService {
   protected LinkedHashMap<String, Object> inject(
       LinkedHashMap<String, Object> context, String name, Object value) {
     var newContext = new LinkedHashMap<>(context);
-    newContext.put(name, value);
+    newContext.put(StringUtils.isBlank(name) ? DEFAULT_RESULT_KEY : name, value);
+    newContext.remove(VARIABLES_MAP_NAME);
     return newContext;
   }
 
@@ -60,6 +62,12 @@ public class LinkScriptServiceImpl implements LinkScriptService {
     } else if (evalResult != null) {
       context.put(StringUtils.isBlank(name) ? DEFAULT_RESULT_KEY : name, evalResult);
     }
+    @SuppressWarnings("unchecked")
+    var variables =
+        (LinkedHashMap<String, Object>)
+            context.getOrDefault(VARIABLES_MAP_NAME, new LinkedHashMap<String, Object>());
+    variables.put(StringUtils.isBlank(name) ? DEFAULT_RESULT_KEY : name, evalResult);
+    context.put(VARIABLES_MAP_NAME, variables);
   }
 
   protected Object run(
