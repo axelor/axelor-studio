@@ -23,4 +23,6 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   String getLoggers();
 
   public boolean isAddBpmLog();
+
+  boolean isEnabledBpmErrorTracking();
 }
