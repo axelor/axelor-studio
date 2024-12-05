@@ -74,4 +74,9 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public int processEngineMaxActiveConnections() {
     return appSettings.getInt("studio.bpm.max.active.connections", 50);
   }
+
+  @Override
+  public boolean isEnabledBpmErrorTracking() {
+    return appSettings.getBoolean("studio.bpm.enable.bpm.error.tracking", false);
+  }
 }

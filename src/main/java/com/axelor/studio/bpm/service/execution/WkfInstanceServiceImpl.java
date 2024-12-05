@@ -215,7 +215,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
-      throw e;
+      ExceptionHelper.trace(e);
 
     } finally {
       wkfTaskService.reset();
@@ -926,10 +926,13 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   }
 
   protected void setWkfInstanceError(WkfInstance wkfInstance, boolean value, String error) {
-    error = (error == null || error.length() <= 250) ? error : error.substring(0, 250);
-    JPA.em().refresh(wkfInstance);
-    wkfInstance.setInstanceError(value);
-    wkfInstance.setCurrentError(error);
+    boolean enableNodeErrorMarking = appSettingsStudioService.isEnabledBpmErrorTracking();
+    if (enableNodeErrorMarking) {
+      error = (error == null || error.length() <= 250) ? error : error.substring(0, 250);
+      JPA.em().refresh(wkfInstance);
+      wkfInstance.setInstanceError(value);
+      wkfInstance.setCurrentError(error);
+    }
   }
 
   @Override
