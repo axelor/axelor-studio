@@ -69,4 +69,9 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public int serializationDepth() {
     return appSettings.getInt("studio.bpm.serialization.depth", 5);
   }
+
+  @Override
+  public boolean isEnabledBpmErrorTracking() {
+    return appSettings.getBoolean("studio.bpm.enable.bpm.error.tracking", false);
+  }
 }

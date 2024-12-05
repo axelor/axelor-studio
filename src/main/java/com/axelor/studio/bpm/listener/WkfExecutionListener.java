@@ -153,8 +153,10 @@ public class WkfExecutionListener implements ExecutionListener {
 
     boolean blocking = blockingNode(type);
     String instanceId = execution.getProcessInstanceId();
-
-    setInstanceCurrentNode(instanceId, flowElement.getId());
+    boolean enableNodeErrorMarking = appSettingsStudioService.isEnabledBpmErrorTracking();
+    if (enableNodeErrorMarking) {
+      setInstanceCurrentNode(instanceId, flowElement.getId());
+    }
 
     log.debug("Executing: id={},name={}", flowElement.getId(), flowElement.getName());
     boolean isLog = appSettingsStudioService.isAddBpmLog();
