@@ -15,21 +15,34 @@
     <panel name="mainPanel">
       <field name="sourceVersion" required="true"
         onChange="action-wkf-migration-attrs-unset-target-version,action-wkf-migration-attrs-unset-mapping"
-        target-name="code"/>
+        target-name="code" colSpan="4"/>
+      <field name="sourceVersion.versionTag" title="Version" readonly="true" colSpan="2"/>
       <field name="targetVersion" onSelect="action-wkf-migration-method-target-version-domain"
         requiredIf="sourceVersion" onChange="action-wkf-migration-attrs-unset-mapping"
-        target-name="code"/>
+        target-name="code" colSpan="4"/>
+      <field name="targetVersion.versionTag" title="Version" readonly="true" colSpan="2"/>
+      <field name="upgradeAllInstances"/>
+      <field name="removeOldVersionMenu"/>
+      <spacer colSpan="12"/>
       <button name="generateNodeMappingBtn" title="Generate Node Mapping"
-        onClick="save,action-wkf-migration-method-generate-node-map,save" colSpan="4"
+        onClick="save,action-wkf-migration-method-generate-node-map,save" colSpan="2"
         showIf="sourceVersion &amp;&amp; targetVersion"/>
 
-      <field name="removeOldVersionMenu"/>
       <panel-dashlet name="mappingPanelDashlet" title="Node mapping"
         action="action-wkf-migration-view-mapping" colSpan="12" hideIf="!mapping" height="500"/>
 
       <field name="mapping" colSpan="12" hidden="true"/>
     </panel>
+    <panel title="Migration report" name="migrationReport">
+      <field name="totalInstancesToMigrate" colSpan="4"/>
+      <field name="successfulMigrations" colSpan="4"/>
+      <field name="failedMigrations" colSpan="4"/>
+      <button name="instancesNotMigratedBtn" title="Instances not migrated due to error"
+        onClick="action.view.instances.migration.error" colSpan="3" showIf="failedMigrations &gt; 0"/>
+    </panel>
   </form>
+
+
 
   <custom name="wkf-migration-mapping-custom" title="Node mapping">
     <dataset type="rpc"><![CDATA[ com.axelor.studio.bpm.web.WkfMigrationController:getNodeMap ]]></dataset>
@@ -45,22 +58,22 @@
           <TableCell style={{textAlign:"center"}}><b>Source node</b></TableCell>
           <TableCell style={{textAlign:"center"}}><b>Target node</b></TableCell>
         </TableRow >
-		  <TableBody>
-            {value?.nodes?.map((node) => (
-              <TableRow key={node.nodeId}>
-                <TableCell>{node.nodeName}</TableCell>
-                <TableCell>
-                  <Box as="select" m={1} style={{ width: "90%" }}>
-                    <option value=""></option>
-                    {node?.options?.map((option) => (
-                      <option key={option.nodeId} value={option.nodeId} selected={option.nodeId === node?.selected?.nodeId}>
-                        {option.nodeName}
-                      </option>
-                    ))}
-                  </Box>
-                </TableCell>
-              </TableRow>
+        <TableBody>
+          {value?.nodes?.map((node) => (
+          <TableRow key={node.nodeId}>
+            <TableCell style={{ padding: "8px", textAlign: "center" }}>{node.nodeName}</TableCell>
+            <TableCell style={{ padding: "8px", textAlign: "center" }}>
+            <Box as="select" m={1} style={{ width: "90%", padding: "6px", borderRadius: "4px" }}>
+            <option value=""></option>
+            {node?.options?.map((option) => (
+            <option key={option.nodeId} value={option.nodeId} selected={option.nodeId === node?.selected?.nodeId}>
+              {option.nodeName}
+            </option>
             ))}
+            </Box>
+            </TableCell>
+          </TableRow>
+         ))}
           </TableBody>
         </Table>
       </div>
@@ -113,5 +126,16 @@
     <attribute name="readonly" for="sourceVersion" expr="eval: true"
       if="_sourceVersion != null"/>
   </action-attrs>
+
+
+  <action-view name="action.view.instances.migration.error"
+    title="Instances not migrated due to error" model="com.axelor.studio.db.WkfInstance">
+    <view type="grid" name="wkf-instance-grid"/>
+    <domain>self.wkfProcess.wkfModel.id = :modelId and self.migrationStatusSelect = 3</domain>
+    <context name="modelId" expr="eval: sourceVersion.id"/>
+  </action-view>
+
+
+
 
 </object-views>

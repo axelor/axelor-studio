@@ -600,7 +600,7 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
       wkfModel.setDiagramXml(diagram);
       wkfModelService.start(null, wkfModel);
       if (deploy) {
-        bpmDeploymentService.deploy(null, wkfModel, null);
+        bpmDeploymentService.deploy(null, wkfModel, null, false);
       }
       wkfModelRepository.save(wkfModel);
       return wkfModel.getId();

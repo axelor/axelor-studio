@@ -189,6 +189,7 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
 
     WkfModel sourceModel = wkfModelRepo.find(migration.getSourceVersion().getId());
     WkfModel targetModel = wkfModelRepo.find(migration.getTargetVersion().getId());
+    boolean upgradeToLatest = migration.getUpgradeAllInstances();
 
     Map<String, Object> migrationMap = new HashMap<>();
 
@@ -220,7 +221,10 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
     migrationMap.put("removeOldVersionMenu", migration.getRemoveOldVersionMenu());
     migrationMap.put("instanceId", contextMap.get("instanceId"));
 
-    bpmDeploymentService.deploy(sourceModel, targetModel, migrationMap);
+    bpmDeploymentService.deploy(sourceModel, targetModel, migrationMap, upgradeToLatest);
+    migration.setTotalInstancesToMigrate((Integer) migrationMap.get("totalInstancesToMigrate"));
+    migration.setSuccessfulMigrations((Integer) migrationMap.get("successfulMigrations"));
+    migration.setFailedMigrations((Integer) migrationMap.get("failedMigrations"));
 
     try {
       migration.setMapping(new ObjectMapper().writeValueAsString(contextMap));
