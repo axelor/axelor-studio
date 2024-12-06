@@ -25,7 +25,11 @@ import java.util.Map;
 public interface BpmDeploymentService {
 
   @Transactional
-  public void deploy(WkfModel sourceModel, WkfModel targetModel, Map<String, Object> migrationMap);
+  public void deploy(
+      WkfModel sourceModel,
+      WkfModel targetModel,
+      Map<String, Object> migrationMap,
+      boolean upgradeToLatest);
 
   public void forceMigrate(WkfProcess process);
 }
