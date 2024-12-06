@@ -21,6 +21,7 @@ import com.axelor.common.ObjectUtils;
 import com.axelor.db.tenants.TenantModule;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
@@ -32,6 +33,7 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
+import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
@@ -49,6 +51,7 @@ import java.io.ByteArrayInputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +59,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
@@ -136,7 +140,11 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   @Override
-  public void deploy(WkfModel sourceModel, WkfModel targetModel, Map<String, Object> migrationMap) {
+  public void deploy(
+      WkfModel sourceModel,
+      WkfModel targetModel,
+      Map<String, Object> migrationMap,
+      boolean upgradeToLatest) {
 
     if (targetModel.getDiagramXml() == null) {
       return;
@@ -172,7 +180,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
 
     Map<String, String> processMap =
-        deployProcess(engine, deploymentBuilder, bpmInstance, tenantId);
+        deployProcess(engine, deploymentBuilder, bpmInstance, tenantId, upgradeToLatest);
 
     List<MetaAttrs> metaAttrsList =
         wkfNodeService.extractNodes(targetModel, bpmInstance, processMap);
@@ -205,8 +213,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       ProcessEngine engine,
       DeploymentBuilder deploymentBuilder,
       BpmnModelInstance bpmInstance,
-      String tenantId) {
-
+      String tenantId,
+      boolean force) {
     Deployment deployment = deploymentBuilder.deploy();
 
     Map<String, String> processMap = new HashMap<String, String>();
@@ -254,9 +262,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     if (sourceModel.getDeploymentId() != null && migrationMap != null) {
       migrateRunningInstances(
-          sourceModel.getDeploymentId(), engine, definitions, migrationProcessMap);
+          sourceModel.getDeploymentId(), engine, definitions, migrationProcessMap, force);
     }
-
     targetModel.setDeploymentId(deployment.getId());
 
     engine
@@ -270,7 +277,22 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       String oldDeploymentId,
       ProcessEngine engine,
       List<ProcessDefinition> definitions,
-      Map<String, WkfProcess> migrationProcessMap) {
+      Map<String, WkfProcess> migrationProcessMap,
+      boolean upgradeToLatest) {
+
+    final AtomicBoolean isMigrationError = new AtomicBoolean(false);
+    if (upgradeToLatest) {
+      List<WkfInstance> wkfInstances = getAllSourceModelInstances(sourceModel);
+
+      Set<String> processDefinitionIds = extractProcessDefinitionIds(wkfInstances);
+
+      addLatestProcessDefinition(processDefinitionIds, oldDeploymentId, engine);
+
+      List<ProcessDefinition> sortedDefinitions =
+          getSortedProcessDefinitions(processDefinitionIds, engine);
+
+      migrateInstancesToLatest(sortedDefinitions, engine, isMigrationError);
+    }
 
     List<ProcessDefinition> oldDefinitions =
         engine
@@ -279,7 +301,6 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .deploymentId(oldDeploymentId)
             .list();
 
-    final AtomicBoolean isMigrationError = new AtomicBoolean(false);
     log.debug("Old definition size " + oldDefinitions.size());
     oldDefinitions.forEach(
         oldDefinition ->
@@ -328,7 +349,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .processDefinitionId(oldDefinition.getId());
 
     long nbInstances = query.count();
-
+    int migratedInstances = 0;
+    int UnmigratedInstances = 0;
     if (nbInstances < 1) {
       log.debug("Process instances to migrate: {}", nbInstances);
       return isMigrationError;
@@ -343,6 +365,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
 
     log.debug("Process instances to migrate: {}", processInstanceIds.size());
+    migrationMap.put("totalInstancesToMigrate", processInstanceIds.size());
+
     String sessionId = BpmDeploymentWebSocket.sessionMap.keySet().stream().findFirst().orElse(null);
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
     int iterationNumber = 1;
@@ -358,15 +382,20 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
         updateTasksStatus(activeTasks, processInstanceId);
         wkfInstanceService.updateProcessInstance(
             targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+        migratedInstances++;
       } catch (Exception e) {
         isMigrationError.set(true);
         wkfInstanceService.updateProcessInstance(
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
+        UnmigratedInstances++;
       }
       BpmDeploymentWebSocket.updateProgress(
           sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
       iterationNumber++;
     }
+    migrationMap.put("successfulMigrations", migratedInstances);
+    migrationMap.put("failedMigrations", UnmigratedInstances);
+
     return isMigrationError;
   }
 
@@ -622,6 +651,134 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       } catch (Exception e) {
         log.error("Instance not migrated {} : {}", instance.getId(), e.getMessage());
       }
+    }
+  }
+
+  private List<WkfInstance> getAllSourceModelInstances(WkfModel sourceModel) {
+    return Beans.get(WkfInstanceRepository.class)
+        .all()
+        .filter(" self.wkfProcess.wkfModel.id = ?", sourceModel.getId())
+        .fetch();
+  }
+
+  private Set<String> extractProcessDefinitionIds(List<WkfInstance> wkfInstances) {
+    return wkfInstances.stream()
+        .map(
+            instance -> {
+              String instanceName = instance.getName();
+              String[] parts = instanceName.split(" : ");
+              return parts.length > 1 ? parts[0].trim() : null;
+            })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toSet());
+  }
+
+  private void addLatestProcessDefinition(
+      Set<String> processDefinitionIds, String oldDeploymentId, ProcessEngine engine) {
+    List<ProcessDefinition> latestDefinition =
+        engine
+            .getRepositoryService()
+            .createProcessDefinitionQuery()
+            .deploymentId(oldDeploymentId)
+            .orderByProcessDefinitionVersion()
+            .desc()
+            .list();
+    if (latestDefinition != null) {
+      for (ProcessDefinition processDefinition : latestDefinition) {
+        processDefinitionIds.add(processDefinition.getId());
+      }
+    }
+  }
+
+  private List<ProcessDefinition> getSortedProcessDefinitions(
+      Set<String> processDefinitionIds, ProcessEngine engine) {
+    return processDefinitionIds.stream()
+        .map(
+            id ->
+                engine
+                    .getRepositoryService()
+                    .createProcessDefinitionQuery()
+                    .processDefinitionId(id)
+                    .singleResult())
+        .filter(Objects::nonNull)
+        .sorted(Comparator.comparing(ProcessDefinition::getVersion))
+        .collect(Collectors.toList());
+  }
+
+  private void migrateInstancesToLatest(
+      List<ProcessDefinition> sortedDefinitions,
+      ProcessEngine engine,
+      AtomicBoolean isMigrationError) {
+    sortedDefinitions.sort(Comparator.comparing(ProcessDefinition::getVersion));
+
+    ProcessDefinition latestDefinition = sortedDefinitions.get(sortedDefinitions.size() - 1);
+
+    for (int i = 0; i < sortedDefinitions.size() - 1; i++) {
+      ProcessDefinition fromVersion = sortedDefinitions.get(i);
+      ProcessDefinition toVersion = sortedDefinitions.get(i + 1);
+
+      if (latestDefinition != null && latestDefinition.getId().equals(fromVersion.getId())) {
+        continue;
+      }
+
+      String processKey = fromVersion.getKey();
+
+      log.debug(
+          "Migrating from version {} to version {} for process key {}",
+          fromVersion.getVersion(),
+          toVersion.getVersion(),
+          processKey);
+
+      MigrationPlan plan =
+          engine
+              .getRuntimeService()
+              .createMigrationPlan(fromVersion.getId(), toVersion.getId())
+              .mapEqualActivities()
+              .build();
+
+      if (plan != null) {
+        migrateInstancesToNextProcessDefinition(
+            engine, plan, fromVersion, toVersion, isMigrationError);
+      }
+    }
+
+    log.debug("Completed migration to the latest version for all instances.");
+  }
+
+  private void migrateInstancesToNextProcessDefinition(
+      ProcessEngine engine,
+      MigrationPlan plan,
+      ProcessDefinition fromVersion,
+      ProcessDefinition toVersion,
+      AtomicBoolean isMigrationError) {
+    List<ProcessInstance> instancesToMigrate =
+        engine
+            .getRuntimeService()
+            .createProcessInstanceQuery()
+            .processDefinitionId(fromVersion.getId())
+            .list();
+
+    for (ProcessInstance instance : instancesToMigrate) {
+      try {
+        engine
+            .getRuntimeService()
+            .newMigration(plan)
+            .processInstanceIds(instance.getId())
+            .execute();
+      } catch (Exception e) {
+        isMigrationError.set(true);
+        log.error(
+            "Migration failed for instance {} from version {} to {} for process key {}",
+            instance.getId(),
+            fromVersion.getVersion(),
+            toVersion.getVersion(),
+            fromVersion.getKey(),
+            e);
+      }
+    }
+
+    if (isMigrationError.get()) {
+      throw new IllegalStateException(I18n.get(BpmExceptionMessage.MIGRATION_ERR));
     }
   }
 }

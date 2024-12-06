@@ -184,7 +184,7 @@ public class WkfModelServiceImpl implements WkfModelService {
           @Override
           public void imported(Model arg0) {
             WkfModel wkfModel = (WkfModel) arg0;
-            bpmDeploymentService.deploy(null, wkfModel, null);
+            bpmDeploymentService.deploy(null, wkfModel, null, false);
           }
 
           @Override
