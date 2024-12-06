@@ -1,3 +1,17 @@
+## 3.1.8 (2024-12-06)
+
+#### Feature
+
+* Added configuration to enable BPM error tracking.
+
+  <details>
+  
+  Introduced a new configuration property, `studio.bpm.enable.bpm.error.tracking`, in axelor-config.properties file to enable or disable error tracking in BPM processes. 
+  By default, this property is set to `false`.
+  
+  </details>
+
+
 ## 3.1.7 (2024-11-22)
 
 #### Fix
