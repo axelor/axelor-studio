@@ -2,7 +2,7 @@ import { translate } from "../../../../../utils";
 
 export var START_EVENT = [
   {
-    label: translate("Start Event"),
+    label: translate("Start event"),
     actionName: "replace-with-none-start",
     className: "bpmn-icon-start-event-none",
     target: {
@@ -10,7 +10,7 @@ export var START_EVENT = [
     },
   },
   {
-    label: translate("Intermediate Throw Event"),
+    label: translate("Intermediate throw event"),
     actionName: "replace-with-none-intermediate-throwing",
     className: "bpmn-icon-intermediate-event-none",
     target: {
@@ -18,7 +18,7 @@ export var START_EVENT = [
     },
   },
   {
-    label: translate("End Event"),
+    label: translate("End event"),
     actionName: "replace-with-none-end",
     className: "bpmn-icon-end-event-none",
     target: {
@@ -26,7 +26,7 @@ export var START_EVENT = [
     },
   },
   {
-    label: translate("Message Start Event"),
+    label: translate("Message start event"),
     actionName: "replace-with-message-start",
     className: "bpmn-icon-start-event-message",
     target: {
@@ -35,7 +35,7 @@ export var START_EVENT = [
     },
   },
   {
-    label: translate("Timer Start Event"),
+    label: translate("Timer start event"),
     actionName: "replace-with-timer-start",
     className: "bpmn-icon-start-event-timer",
     target: {
@@ -44,7 +44,7 @@ export var START_EVENT = [
     },
   },
   {
-    label: translate("Conditional Start Event"),
+    label: translate("Conditional start event"),
     actionName: "replace-with-conditional-start",
     className: "bpmn-icon-start-event-condition",
     target: {
@@ -53,7 +53,7 @@ export var START_EVENT = [
     },
   },
   {
-    label: translate("Signal Start Event"),
+    label: translate("Signal start event"),
     actionName: "replace-with-signal-start",
     className: "bpmn-icon-start-event-signal",
     target: {
@@ -65,7 +65,7 @@ export var START_EVENT = [
 
 export var START_EVENT_SUB_PROCESS = [
   {
-    label: translate("Start Event"),
+    label: translate("Start event"),
     actionName: "replace-with-none-start",
     className: "bpmn-icon-start-event-none",
     target: {
@@ -73,7 +73,7 @@ export var START_EVENT_SUB_PROCESS = [
     },
   },
   {
-    label: translate("Intermediate Throw Event"),
+    label: translate("Intermediate throw event"),
     actionName: "replace-with-none-intermediate-throwing",
     className: "bpmn-icon-intermediate-event-none",
     target: {
@@ -81,7 +81,7 @@ export var START_EVENT_SUB_PROCESS = [
     },
   },
   {
-    label: translate("End Event"),
+    label: translate("End event"),
     actionName: "replace-with-none-end",
     className: "bpmn-icon-end-event-none",
     target: {
@@ -92,7 +92,7 @@ export var START_EVENT_SUB_PROCESS = [
 
 export var INTERMEDIATE_EVENT = [
   {
-    label: translate("Start Event"),
+    label: translate("Start event"),
     actionName: "replace-with-none-start",
     className: "bpmn-icon-start-event-none",
     target: {
@@ -100,7 +100,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Intermediate Throw Event"),
+    label: translate("Intermediate throw event"),
     actionName: "replace-with-none-intermediate-throw",
     className: "bpmn-icon-intermediate-event-none",
     target: {
@@ -108,7 +108,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("End Event"),
+    label: translate("End event"),
     actionName: "replace-with-none-end",
     className: "bpmn-icon-end-event-none",
     target: {
@@ -116,7 +116,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Message Intermediate Catch Event"),
+    label: translate("Message intermediate catch event"),
     actionName: "replace-with-message-intermediate-catch",
     className: "bpmn-icon-intermediate-event-catch-message",
     target: {
@@ -125,7 +125,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Message Intermediate Throw Event"),
+    label: translate("Message intermediate throw event"),
     actionName: "replace-with-message-intermediate-throw",
     className: "bpmn-icon-intermediate-event-throw-message",
     target: {
@@ -134,7 +134,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Timer Intermediate Catch Event"),
+    label: translate("Timer intermediate catch event"),
     actionName: "replace-with-timer-intermediate-catch",
     className: "bpmn-icon-intermediate-event-catch-timer",
     target: {
@@ -143,7 +143,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Escalation Intermediate Throw Event"),
+    label: translate("Escalation intermediate throw event"),
     actionName: "replace-with-escalation-intermediate-throw",
     className: "bpmn-icon-intermediate-event-throw-escalation",
     target: {
@@ -152,7 +152,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Conditional Intermediate Catch Event"),
+    label: translate("Conditional intermediate catch event"),
     actionName: "replace-with-conditional-intermediate-catch",
     className: "bpmn-icon-intermediate-event-catch-condition",
     target: {
@@ -161,7 +161,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Link Intermediate Catch Event"),
+    label: translate("Link intermediate catch event"),
     actionName: "replace-with-link-intermediate-catch",
     className: "bpmn-icon-intermediate-event-catch-link",
     target: {
@@ -173,7 +173,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Link Intermediate Throw Event"),
+    label: translate("Link intermediate throw event"),
     actionName: "replace-with-link-intermediate-throw",
     className: "bpmn-icon-intermediate-event-throw-link",
     target: {
@@ -185,7 +185,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Compensation Intermediate Throw Event"),
+    label: translate("Compensation intermediate throw event"),
     actionName: "replace-with-compensation-intermediate-throw",
     className: "bpmn-icon-intermediate-event-throw-compensation",
     target: {
@@ -194,7 +194,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Signal Intermediate Catch Event"),
+    label: translate("Signal intermediate catch event"),
     actionName: "replace-with-signal-intermediate-catch",
     className: "bpmn-icon-intermediate-event-catch-signal",
     target: {
@@ -203,7 +203,7 @@ export var INTERMEDIATE_EVENT = [
     },
   },
   {
-    label: translate("Signal Intermediate Throw Event"),
+    label: translate("Signal intermediate throw event"),
     actionName: "replace-with-signal-intermediate-throw",
     className: "bpmn-icon-intermediate-event-throw-signal",
     target: {
@@ -215,7 +215,7 @@ export var INTERMEDIATE_EVENT = [
 
 export var END_EVENT = [
   {
-    label: translate("Start Event"),
+    label: translate("Start event"),
     actionName: "replace-with-none-start",
     className: "bpmn-icon-start-event-none",
     target: {
@@ -223,7 +223,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Intermediate Throw Event"),
+    label: translate("Intermediate throw event"),
     actionName: "replace-with-none-intermediate-throw",
     className: "bpmn-icon-intermediate-event-none",
     target: {
@@ -231,7 +231,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("End Event"),
+    label: translate("End event"),
     actionName: "replace-with-none-end",
     className: "bpmn-icon-end-event-none",
     target: {
@@ -239,7 +239,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Message End Event"),
+    label: translate("Message end event"),
     actionName: "replace-with-message-end",
     className: "bpmn-icon-end-event-message",
     target: {
@@ -248,7 +248,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Escalation End Event"),
+    label: translate("Escalation end event"),
     actionName: "replace-with-escalation-end",
     className: "bpmn-icon-end-event-escalation",
     target: {
@@ -257,7 +257,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Error End Event"),
+    label: translate("Error end event"),
     actionName: "replace-with-error-end",
     className: "bpmn-icon-end-event-error",
     target: {
@@ -266,7 +266,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Cancel End Event"),
+    label: translate("Cancel end event"),
     actionName: "replace-with-cancel-end",
     className: "bpmn-icon-end-event-cancel",
     target: {
@@ -275,7 +275,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Compensation End Event"),
+    label: translate("Compensation end event"),
     actionName: "replace-with-compensation-end",
     className: "bpmn-icon-end-event-compensation",
     target: {
@@ -284,7 +284,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Signal End Event"),
+    label: translate("Signal end event"),
     actionName: "replace-with-signal-end",
     className: "bpmn-icon-end-event-signal",
     target: {
@@ -293,7 +293,7 @@ export var END_EVENT = [
     },
   },
   {
-    label: translate("Terminate End Event"),
+    label: translate("Terminate end event"),
     actionName: "replace-with-terminate-end",
     className: "bpmn-icon-end-event-terminate",
     target: {
@@ -305,7 +305,7 @@ export var END_EVENT = [
 
 export var GATEWAY = [
   {
-    label: translate("Exclusive Gateway"),
+    label: translate("Exclusive gateway"),
     actionName: "replace-with-exclusive-gateway",
     className: "bpmn-icon-gateway-xor",
     target: {
@@ -313,7 +313,7 @@ export var GATEWAY = [
     },
   },
   {
-    label: translate("Parallel Gateway"),
+    label: translate("Parallel gateway"),
     actionName: "replace-with-parallel-gateway",
     className: "bpmn-icon-gateway-parallel",
     target: {
@@ -321,7 +321,7 @@ export var GATEWAY = [
     },
   },
   {
-    label: translate("Inclusive Gateway"),
+    label: translate("Inclusive gateway"),
     actionName: "replace-with-inclusive-gateway",
     className: "bpmn-icon-gateway-or",
     target: {
@@ -329,7 +329,7 @@ export var GATEWAY = [
     },
   },
   {
-    label: translate("Complex Gateway"),
+    label: translate("Complex gateway"),
     actionName: "replace-with-complex-gateway",
     className: "bpmn-icon-gateway-complex",
     target: {
@@ -337,7 +337,7 @@ export var GATEWAY = [
     },
   },
   {
-    label: translate("Event based Gateway"),
+    label: translate("Event-based gateway"),
     actionName: "replace-with-event-based-gateway",
     className: "bpmn-icon-gateway-eventbased",
     target: {
@@ -346,30 +346,6 @@ export var GATEWAY = [
       eventGatewayType: "Exclusive",
     },
   },
-
-  // Gateways deactivated until https://github.com/bpmn-io/bpmn-js/issues/194
-  // {
-  //   label: 'Event based instantiating Gateway',
-  //   actionName: 'replace-with-exclusive-event-based-gateway',
-  //   className: 'bpmn-icon-exclusive-event-based',
-  //   target: {
-  //     type: 'bpmn:EventBasedGateway'
-  //   },
-  //   options: {
-  //     businessObject: { instantiate: true, eventGatewayType: 'Exclusive' }
-  //   }
-  // },
-  // {
-  //   label: 'Parallel Event based instantiating Gateway',
-  //   actionName: 'replace-with-parallel-event-based-instantiate-gateway',
-  //   className: 'bpmn-icon-parallel-event-based-instantiate-gateway',
-  //   target: {
-  //     type: 'bpmn:EventBasedGateway'
-  //   },
-  //   options: {
-  //     businessObject: { instantiate: true, eventGatewayType: 'Parallel' }
-  //   }
-  // }
 ];
 
 export var SUBPROCESS_EXPANDED = [
@@ -383,7 +359,7 @@ export var SUBPROCESS_EXPANDED = [
     },
   },
   {
-    label: translate("Event Sub Process"),
+    label: translate("Event sub-process"),
     actionName: "replace-with-event-subprocess",
     className: "bpmn-icon-event-subprocess-expanded",
     target: {
@@ -393,7 +369,7 @@ export var SUBPROCESS_EXPANDED = [
     },
   },
   {
-    label: translate("Sub Process (collapsed)"),
+    label: `${translate("Sub-process")} (${translate("collapsed")}})`,
     actionName: "replace-with-collapsed-subprocess",
     className: "bpmn-icon-subprocess-collapsed",
     target: {
@@ -405,7 +381,16 @@ export var SUBPROCESS_EXPANDED = [
 
 export var TRANSACTION = [
   {
-    label: translate("Sub Process"),
+    label: translate("Transaction"),
+    actionName: "replace-with-transaction",
+    className: "bpmn-icon-transaction",
+    target: {
+      type: "bpmn:Transaction",
+      isExpanded: true,
+    },
+  },
+  {
+    label: translate("Sub-process"),
     actionName: "replace-with-subprocess",
     className: "bpmn-icon-subprocess-expanded",
     target: {
@@ -414,7 +399,7 @@ export var TRANSACTION = [
     },
   },
   {
-    label: translate("Event Sub Process"),
+    label: translate("Event sub-process"),
     actionName: "replace-with-event-subprocess",
     className: "bpmn-icon-event-subprocess-expanded",
     target: {
@@ -425,26 +410,7 @@ export var TRANSACTION = [
   },
 ];
 
-export var EVENT_SUB_PROCESS = [
-  {
-    label: translate("Sub Process"),
-    actionName: "replace-with-subprocess",
-    className: "bpmn-icon-subprocess-expanded",
-    target: {
-      type: "bpmn:SubProcess",
-      isExpanded: true,
-    },
-  },
-  {
-    label: translate("Transaction"),
-    actionName: "replace-with-transaction",
-    className: "bpmn-icon-transaction",
-    target: {
-      type: "bpmn:Transaction",
-      isExpanded: true,
-    },
-  },
-];
+export var EVENT_SUB_PROCESS = TRANSACTION;
 
 export var TASK = [
   {
@@ -456,23 +422,7 @@ export var TASK = [
     },
   },
   {
-    label: translate("Send Task"),
-    actionName: "replace-with-send-task",
-    className: "bpmn-icon-send",
-    target: {
-      type: "bpmn:SendTask",
-    },
-  },
-  {
-    label: translate("Receive Task"),
-    actionName: "replace-with-receive-task",
-    className: "bpmn-icon-receive",
-    target: {
-      type: "bpmn:ReceiveTask",
-    },
-  },
-  {
-    label: translate("User Task"),
+    label: translate("User task"),
     actionName: "replace-with-user-task",
     className: "bpmn-icon-user",
     target: {
@@ -480,23 +430,7 @@ export var TASK = [
     },
   },
   {
-    label: translate("Manual Task"),
-    actionName: "replace-with-manual-task",
-    className: "bpmn-icon-manual",
-    target: {
-      type: "bpmn:ManualTask",
-    },
-  },
-  {
-    label: translate("Business Rule Task"),
-    actionName: "replace-with-rule-task",
-    className: "bpmn-icon-business-rule",
-    target: {
-      type: "bpmn:BusinessRuleTask",
-    },
-  },
-  {
-    label: translate("Service Task"),
+    label: translate("Service task"),
     actionName: "replace-with-service-task",
     className: "bpmn-icon-service",
     target: {
@@ -504,7 +438,39 @@ export var TASK = [
     },
   },
   {
-    label: translate("Script Task"),
+    label: translate("Send task"),
+    actionName: "replace-with-send-task",
+    className: "bpmn-icon-send",
+    target: {
+      type: "bpmn:SendTask",
+    },
+  },
+  {
+    label: translate("Receive task"),
+    actionName: "replace-with-receive-task",
+    className: "bpmn-icon-receive",
+    target: {
+      type: "bpmn:ReceiveTask",
+    },
+  },
+  {
+    label: translate("Manual task"),
+    actionName: "replace-with-manual-task",
+    className: "bpmn-icon-manual",
+    target: {
+      type: "bpmn:ManualTask",
+    },
+  },
+  {
+    label: translate("Business rule task"),
+    actionName: "replace-with-rule-task",
+    className: "bpmn-icon-business-rule",
+    target: {
+      type: "bpmn:BusinessRuleTask",
+    },
+  },
+  {
+    label: translate("Script task"),
     actionName: "replace-with-script-task",
     className: "bpmn-icon-script",
     target: {
@@ -512,7 +478,7 @@ export var TASK = [
     },
   },
   {
-    label: translate("Call Activity"),
+    label: translate("Call activity"),
     actionName: "replace-with-call-activity",
     className: "bpmn-icon-call-activity",
     target: {
@@ -520,7 +486,7 @@ export var TASK = [
     },
   },
   {
-    label: `${translate("Sub Process")} (${translate("collapsed")})`,
+    label: `${translate("Sub-process")} (${translate("collapsed")})`,
     actionName: "replace-with-collapsed-subprocess",
     className: "bpmn-icon-subprocess-collapsed",
     target: {
@@ -529,7 +495,7 @@ export var TASK = [
     },
   },
   {
-    label: `${translate("Sub Process")} (${translate("expanded")})`,
+    label: `${translate("Sub-process")} (${translate("expanded")})`,
     actionName: "replace-with-expanded-subprocess",
     className: "bpmn-icon-subprocess-expanded",
     target: {
@@ -541,7 +507,7 @@ export var TASK = [
 
 export var DATA_OBJECT_REFERENCE = [
   {
-    label: translate("Data Store Reference"),
+    label: translate("Data store reference"),
     actionName: "replace-with-data-store-reference",
     className: "bpmn-icon-data-store",
     target: {
@@ -552,7 +518,7 @@ export var DATA_OBJECT_REFERENCE = [
 
 export var DATA_STORE_REFERENCE = [
   {
-    label: translate("Data Object Reference"),
+    label: translate("Data object reference"),
     actionName: "replace-with-data-object-reference",
     className: "bpmn-icon-data-object",
     target: {
@@ -563,79 +529,87 @@ export var DATA_STORE_REFERENCE = [
 
 export var BOUNDARY_EVENT = [
   {
-    label: translate("Message Boundary Event"),
+    label: translate("Message boundary event"),
     actionName: "replace-with-message-boundary",
     className: "bpmn-icon-intermediate-event-catch-message",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:MessageEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: translate("Timer Boundary Event"),
+    label: translate("Timer boundary event"),
     actionName: "replace-with-timer-boundary",
     className: "bpmn-icon-intermediate-event-catch-timer",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:TimerEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: translate("Escalation Boundary Event"),
+    label: translate("Escalation boundary event"),
     actionName: "replace-with-escalation-boundary",
     className: "bpmn-icon-intermediate-event-catch-escalation",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:EscalationEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: translate("Conditional Boundary Event"),
+    label: translate("Conditional boundary event"),
     actionName: "replace-with-conditional-boundary",
     className: "bpmn-icon-intermediate-event-catch-condition",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:ConditionalEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: translate("Error Boundary Event"),
+    label: translate("Error boundary event"),
     actionName: "replace-with-error-boundary",
     className: "bpmn-icon-intermediate-event-catch-error",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:ErrorEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: translate("Cancel Boundary Event"),
+    label: translate("Cancel boundary event"),
     actionName: "replace-with-cancel-boundary",
     className: "bpmn-icon-intermediate-event-catch-cancel",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:CancelEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: translate("Signal Boundary Event"),
+    label: translate("Signal boundary event"),
     actionName: "replace-with-signal-boundary",
     className: "bpmn-icon-intermediate-event-catch-signal",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:SignalEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: translate("Compensation Boundary Event"),
+    label: translate("Compensation boundary event"),
     actionName: "replace-with-compensation-boundary",
     className: "bpmn-icon-intermediate-event-catch-compensation",
     target: {
       type: "bpmn:BoundaryEvent",
       eventDefinitionType: "bpmn:CompensateEventDefinition",
+      cancelActivity: true,
     },
   },
   {
-    label: `${translate("Message Boundary Event")} (${translate(
+    label: `${translate("Message boundary event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-message-boundary",
@@ -647,7 +621,7 @@ export var BOUNDARY_EVENT = [
     },
   },
   {
-    label: `${translate("Timer Boundary Event")} (${translate(
+    label: `${translate("Timer boundary event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-timer-boundary",
@@ -659,7 +633,7 @@ export var BOUNDARY_EVENT = [
     },
   },
   {
-    label: `${translate("Escalation Boundary Event")} (${translate(
+    label: `${translate("Escalation boundary event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-escalation-boundary",
@@ -671,7 +645,7 @@ export var BOUNDARY_EVENT = [
     },
   },
   {
-    label: `${translate("Conditional Boundary Event")} (${translate(
+    label: `${translate("Conditional boundary event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-conditional-boundary",
@@ -683,7 +657,7 @@ export var BOUNDARY_EVENT = [
     },
   },
   {
-    label: `${translate("Signal Boundary Event")} (${translate(
+    label: `${translate("Signal boundary event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-signal-boundary",
@@ -698,70 +672,77 @@ export var BOUNDARY_EVENT = [
 
 export var EVENT_SUB_PROCESS_START_EVENT = [
   {
-    label: translate("Message Start Event"),
+    label: translate("Message start event"),
     actionName: "replace-with-message-start",
     className: "bpmn-icon-start-event-message",
     target: {
       type: "bpmn:StartEvent",
       eventDefinitionType: "bpmn:MessageEventDefinition",
+      isInterrupting: true,
     },
   },
   {
-    label: translate("Timer Start Event"),
+    label: translate("Timer start event"),
     actionName: "replace-with-timer-start",
     className: "bpmn-icon-start-event-timer",
     target: {
       type: "bpmn:StartEvent",
       eventDefinitionType: "bpmn:TimerEventDefinition",
+      isInterrupting: true,
     },
   },
   {
-    label: translate("Conditional Start Event"),
+    label: translate("Conditional start event"),
     actionName: "replace-with-conditional-start",
     className: "bpmn-icon-start-event-condition",
     target: {
       type: "bpmn:StartEvent",
       eventDefinitionType: "bpmn:ConditionalEventDefinition",
+      isInterrupting: true,
     },
   },
   {
-    label: translate("Signal Start Event"),
+    label: translate("Signal start event"),
     actionName: "replace-with-signal-start",
     className: "bpmn-icon-start-event-signal",
     target: {
       type: "bpmn:StartEvent",
       eventDefinitionType: "bpmn:SignalEventDefinition",
+      isInterrupting: true,
     },
   },
   {
-    label: translate("Error Start Event"),
+    label: translate("Error start event"),
     actionName: "replace-with-error-start",
     className: "bpmn-icon-start-event-error",
     target: {
       type: "bpmn:StartEvent",
       eventDefinitionType: "bpmn:ErrorEventDefinition",
+      isInterrupting: true,
     },
   },
   {
-    label: translate("Escalation Start Event"),
+    label: translate("Escalation start event"),
     actionName: "replace-with-escalation-start",
     className: "bpmn-icon-start-event-escalation",
     target: {
       type: "bpmn:StartEvent",
       eventDefinitionType: "bpmn:EscalationEventDefinition",
+      isInterrupting: true,
     },
   },
   {
-    label: translate("Compensation Start Event"),
+    label: translate("Compensation start event"),
     actionName: "replace-with-compensation-start",
     className: "bpmn-icon-start-event-compensation",
     target: {
       type: "bpmn:StartEvent",
       eventDefinitionType: "bpmn:CompensateEventDefinition",
+      isInterrupting: true,
     },
   },
   {
-    label: `${translate("Message Start Event")} (${translate(
+    label: `${translate("Message start event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-message-start",
@@ -773,7 +754,7 @@ export var EVENT_SUB_PROCESS_START_EVENT = [
     },
   },
   {
-    label: `${translate("Timer Start Event")} (${translate(
+    label: `${translate("Timer start event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-timer-start",
@@ -785,7 +766,7 @@ export var EVENT_SUB_PROCESS_START_EVENT = [
     },
   },
   {
-    label: `${translate("Conditional Start Event")} (${translate(
+    label: `${translate("Conditional start event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-conditional-start",
@@ -797,7 +778,7 @@ export var EVENT_SUB_PROCESS_START_EVENT = [
     },
   },
   {
-    label: `${translate("Signal Start Event")} (${translate(
+    label: `${translate("Signal start event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-signal-start",
@@ -809,7 +790,7 @@ export var EVENT_SUB_PROCESS_START_EVENT = [
     },
   },
   {
-    label: `${translate("Escalation Start Event")} (${translate(
+    label: `${translate("Escalation start event")} (${translate(
       "non-interrupting"
     )})`,
     actionName: "replace-with-non-interrupting-escalation-start",
@@ -824,17 +805,17 @@ export var EVENT_SUB_PROCESS_START_EVENT = [
 
 export var SEQUENCE_FLOW = [
   {
-    label: translate("Sequence Flow"),
+    label: translate("Sequence flow"),
     actionName: "replace-with-sequence-flow",
     className: "bpmn-icon-connection",
   },
   {
-    label: translate("Default Flow"),
+    label: translate("Default flow"),
     actionName: "replace-with-default-flow",
     className: "bpmn-icon-default-flow",
   },
   {
-    label: translate("Conditional Flow"),
+    label: translate("Conditional flow"),
     actionName: "replace-with-conditional-flow",
     className: "bpmn-icon-conditional-flow",
   },
@@ -842,12 +823,30 @@ export var SEQUENCE_FLOW = [
 
 export var PARTICIPANT = [
   {
-    label: translate("Expanded Pool"),
+    label: translate("Expanded pool/participant"),
     actionName: "replace-with-expanded-pool",
     className: "bpmn-icon-participant",
     target: {
       type: "bpmn:Participant",
       isExpanded: true,
+    },
+  },
+  {
+    label: function (element) {
+      var label = translate("Empty pool/participant");
+
+      if (element.children && element.children.length) {
+        label += " (removes content)";
+      }
+
+      return label;
+    },
+    actionName: "replace-with-collapsed-pool",
+
+    className: "bpmn-icon-lane",
+    target: {
+      type: "bpmn:Participant",
+      isExpanded: false,
     },
   },
 ];
