@@ -847,7 +847,6 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       wkfInstance.setInstanceError(value);
       wkfInstance.setCurrentError(error);
     }
-
   }
 
   @Override
