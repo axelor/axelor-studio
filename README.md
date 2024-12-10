@@ -68,3 +68,18 @@ Some variables are available to be used with groovy script expressions in BPM. T
 * `__transform__` - workflow transformation helper for web service connector as `WkfTransformationHelper`
 * `__repo__` - repository of given model class
 * `__log__` - get the global instance of the Logger
+
+## Versioning compatibility
+
+It is recommended to use the module with AOP and AOS versions as described below:
+
+| Studio module version | AOP compatible version | AOS compatible version |
+|-----------------------|------------------------|------------------------|
+| 1.0                   | 6.1                    | 7.0                    |
+| 1.1                   | 6.1                    | 7.0                    |
+| 1.2                   | 6.1                    | 7.1                    |
+| 1.3                   | 6.1                    | 7.2                    |
+| 2.x                   | 7.0                    | 8.0                    |
+| 3.1                   | 7.1                    | 8.1                    |
+| 3.2                   | 7.1                    | 8.1                    |
+| 3.3                   | 7.2                    | 8.2                    |
