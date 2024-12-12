@@ -1,3 +1,24 @@
+## 3.1.10 (2024-12-12)
+
+#### Fix
+
+* Define BPM max idle and active connections via properties
+
+  <details>
+  
+  Added two configurable parameters in axelor-config.properties to address potential database connection issues; "studio.bpm.max.idle.connections" Controls the maximum number of idle database connections (default 10). And "studio.bpm.max.active.connections" Defines the maximum number of active database connections (default 50).
+  
+  </details>
+
+* StudioApp - error when exporting an app containing an action with type "Email"
+
+  <details>
+  
+  Updated the Groovy template used during the export process removing references to template.birtTemplateSet, a field that does not exist in the Template object.
+  
+  </details>
+
+
 ## 3.1.9 (2024-12-09)
 
 #### Fix
