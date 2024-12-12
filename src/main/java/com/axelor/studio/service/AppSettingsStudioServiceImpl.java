@@ -66,11 +66,6 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   }
 
   @Override
-  public boolean isEnabledBpmErrorTracking() {
-    return appSettings.getBoolean("studio.bpm.enable.bpm.error.tracking", false);
-  }
-
-  @Override
   public int processEngineMaxIdleConnections() {
     return appSettings.getInt("studio.bpm.max.idle.connections", 10);
   }
