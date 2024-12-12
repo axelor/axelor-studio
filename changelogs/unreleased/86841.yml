@@ -1,5 +1,0 @@
----
-title: Fix missing visual error feedback on process node
-type: fix
-description:
-  Fix the char size error when saving a bpm instance current error when the error trace is too long

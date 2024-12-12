@@ -1,3 +1,24 @@
+## 3.2.9 (2024-12-12)
+
+#### Fix
+
+* Fix missing visual error feedback on process node
+
+  <details>
+  
+  Fix the char size error when saving a bpm instance current error when the error trace is too long
+  
+  </details>
+
+* StudioApp - error when exporting an app containing an action with type "Email"
+
+  <details>
+  
+  Updated the Groovy template used during the export process removing references to template.birtTemplateSet, a field that does not exist in the Template object.
+  
+  </details>
+
+
 ## 3.2.8 (2024-12-10)
 
 #### Feature
