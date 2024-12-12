@@ -1,0 +1,7 @@
+---
+title: Define BPM max idle and active connections via properties
+type: fix
+description:
+  Added two configurable parameters in axelor-config.properties to address potential database connection issues;
+  "studio.bpm.max.idle.connections" Controls the maximum number of idle database connections (default 10). And
+  "studio.bpm.max.active.connections" Defines the maximum number of active database connections (default 50).

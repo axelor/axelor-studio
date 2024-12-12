@@ -25,4 +25,8 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   public boolean isAddBpmLog();
 
   boolean isEnabledBpmErrorTracking();
+
+  int processEngineMaxIdleConnections();
+
+  int processEngineMaxActiveConnections();
 }
