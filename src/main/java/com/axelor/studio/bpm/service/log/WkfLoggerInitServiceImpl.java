@@ -127,11 +127,16 @@ public class WkfLoggerInitServiceImpl implements WkfLoggerInitService {
   private void addLoggers() {
 
     Logger logger = context.getLogger(DEFAULT_LOGGER);
-    logger.setLevel(Level.DEBUG);
+    String camundaEngineScriptLogLevel = appSettingsStudioService.getCamundaEngineScriptLogLevel();
+    Level defaultLoggerLevel = Level.toLevel(camundaEngineScriptLogLevel);
+    logger.setLevel(defaultLoggerLevel);
     loggers.add(logger);
 
     Logger contextLogger = context.getLogger((DEFAULT_CONTEXT_LOGGER));
-    contextLogger.setLevel(Level.ERROR);
+    String camundaEngineContextLogLevel =
+        appSettingsStudioService.getCamundaEngineContextLogLevel();
+    Level defaultContextLoggerLevel = Level.toLevel(camundaEngineContextLogLevel);
+    contextLogger.setLevel(defaultContextLoggerLevel);
     loggers.add(contextLogger);
 
     String loggerNames = appSettingsStudioService.getLoggers();

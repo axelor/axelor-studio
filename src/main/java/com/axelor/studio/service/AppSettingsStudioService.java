@@ -27,4 +27,8 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   int serializationDepth();
 
   boolean isEnabledBpmErrorTracking();
+
+  String getCamundaEngineScriptLogLevel();
+
+  String getCamundaEngineContextLogLevel();
 }
