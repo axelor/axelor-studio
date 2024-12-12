@@ -79,4 +79,33 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public boolean isEnabledBpmErrorTracking() {
     return appSettings.getBoolean("studio.bpm.enable.bpm.error.tracking", false);
   }
+
+  @Override
+  public String getCamundaEngineScriptLogLevel() {
+    return getLoggerLogLevel("org.camunda.bpm.engine.script");
+  }
+
+  @Override
+  public String getCamundaEngineContextLogLevel() {
+    return getLoggerLogLevel("org.camunda.bpm.engine.context");
+  }
+
+  private String getLoggerLogLevel(String loggerPrefix) {
+    String[] logLevels = {
+      "logging.level." + loggerPrefix,
+      "logging.level." + loggerPrefix.replaceFirst("\\.[^.]+$", ""),
+      "logging.level." + loggerPrefix.replaceFirst("\\.[^.]+\\.[^.]+$", ""),
+      "logging.level." + loggerPrefix.replaceFirst("\\.[^.]+\\.[^.]+\\.[^.]+$", ""),
+      "logging.level.root"
+    };
+
+    for (String logLevel : logLevels) {
+      String value = appSettings.get(logLevel);
+      if (value != null) {
+        return value;
+      }
+    }
+
+    return "ERROR";
+  }
 }
