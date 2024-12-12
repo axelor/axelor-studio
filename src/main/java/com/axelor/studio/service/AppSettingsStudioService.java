@@ -29,4 +29,8 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   int processEngineMaxActiveConnections();
 
   boolean isEnabledBpmErrorTracking();
+
+  String getCamundaEngineScriptLogLevel();
+
+  String getCamundaEngineContextLogLevel();
 }
