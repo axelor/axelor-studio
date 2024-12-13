@@ -5,7 +5,7 @@ import { translate, getBool } from "../../../../../utils";
 
 export default function StartOnListenerProps(props) {
   const { element, bpmnModeler, setDummyProperty = () => {} } = props;
-  const [startOnListener, setStartOnListener] = useState(true);
+  const [onlyOnClientChange, setOnlyOnClientChange] = useState(true);
 
   const getProperty = React.useCallback(
     (name) => {
@@ -41,8 +41,8 @@ export default function StartOnListenerProps(props) {
   );
 
   useEffect(() => {
-    const startOnListener = getProperty("startOnListener");
-    setStartOnListener(getBool(startOnListener));
+    const onlyOnClientChange = getProperty("onlyOnClientChange");
+    setOnlyOnClientChange(getBool(onlyOnClientChange));
   });
 
   return (
@@ -52,16 +52,16 @@ export default function StartOnListenerProps(props) {
         entry={{
           id: "process-is-start-on-listener",
           label: translate("Trigger only on client change"),
-          modelProperty: "startOnListener",
+          modelProperty: "onlyOnClientChange",
           get: function () {
             return {
-              startOnListener: startOnListener,
+              onlyOnClientChange: onlyOnClientChange,
             };
           },
           set: function (e, value) {
-            const startOnListener = !value.startOnListener;
-            setStartOnListener(startOnListener);
-            setProperty("startOnListener", startOnListener);
+            const onlyOnClientChange = !value.onlyOnClientChange;
+            setOnlyOnClientChange(onlyOnClientChange);
+            setProperty("onlyOnClientChange", onlyOnClientChange);
           },
         }}
       />

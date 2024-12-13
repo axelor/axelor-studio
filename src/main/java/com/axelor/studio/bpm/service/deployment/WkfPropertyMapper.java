@@ -65,6 +65,7 @@ public class WkfPropertyMapper {
   static {
     PROCESS_DISPLAY_PROPERTIES.put("displayStatus", "displayStatus");
     PROCESS_DISPLAY_PROPERTIES.put("displayOnModels", "displayOnModels");
+    PROCESS_DISPLAY_PROPERTIES.put("onlyOnClientChange", "onlyOnClientChange");
   }
 
   protected static final Map<String, String> PROCESS_CONFIG_PROPERTIES =
