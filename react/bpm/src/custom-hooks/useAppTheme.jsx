@@ -15,7 +15,11 @@ export function useAppTheme() {
       const userTheme = info?.user?.theme ?? info?.application?.theme;
       const appTheme =
         userTheme === "auto" ? preferred : userTheme ?? preferred;
-      const themeOptions = await loadTheme(appTheme);
+        let themeOptions;
+           themeOptions = await loadTheme(appTheme);
+           if(themeOptions?.options?.ok===false){
+            themeOptions = await loadTheme(preferred)
+           }
       setThemeOptions(themeOptions);
       setLoading(false);
     })();
