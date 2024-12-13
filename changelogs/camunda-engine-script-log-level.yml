@@ -1,4 +1,0 @@
-title: fix configuration for logging level of the package org.camunda
-type: fix
-description: |
-  Logging level for org.camunda is now managed in the same way as other packages through axelor-config.properties.
