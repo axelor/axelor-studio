@@ -18,6 +18,7 @@
 
 package com.axelor.studio.bpm.service.execution;
 
+import com.axelor.common.Inflector;
 import com.axelor.db.Model;
 import com.axelor.inject.Beans;
 import com.axelor.meta.MetaStore;
@@ -70,9 +71,13 @@ public class WkfActionService implements JavaDelegate {
 
     FullContext fullContext;
     if (jsonModel != null) {
-      fullContext = (FullContext) execution.getVariable(jsonModel.getName().toLowerCase());
+      fullContext =
+          (FullContext)
+              execution.getVariable(Inflector.getInstance().camelize(jsonModel.getName(), true));
     } else {
-      fullContext = (FullContext) execution.getVariable(metaModel.getName().toLowerCase());
+      fullContext =
+          (FullContext)
+              execution.getVariable(Inflector.getInstance().camelize(metaModel.getName(), true));
     }
 
     String value =
