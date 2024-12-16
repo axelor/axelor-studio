@@ -1,3 +1,24 @@
+## 3.2.10 (2024-12-16)
+
+#### Fix
+
+* fix configuration for logging level of the package org.camunda
+
+  <details>
+  
+  Logging level for org.camunda is now managed in the same way as other packages through axelor-config.properties.
+  
+  </details>
+
+* StudioApp - error when exporting an app containing an action with type "Email"
+
+  <details>
+  
+  Updated the Groovy template used during the export process removing references to template.birtTemplateSet, a field that does not exist in the Template object.
+  
+  </details>
+
+
 ## 3.2.9 (2024-12-12)
 
 #### Fix
