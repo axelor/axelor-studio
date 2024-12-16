@@ -262,7 +262,7 @@ export default function ConditionalEventProps({
               return getCondition();
             },
             set: function (e, values) {
-              setCondition(e, values);
+              !readOnly && setCondition(e, values);
             },
             validate: function (e, values) {
               if (!values.script && conditionType === "script") {
@@ -349,7 +349,7 @@ export default function ConditionalEventProps({
                   return { script };
                 },
                 set: function (e, values) {
-                  setScript(values?.script);
+                  !readOnly && setScript(values?.script);
                 },
               }}
             />
