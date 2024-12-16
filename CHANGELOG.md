@@ -1,3 +1,32 @@
+## 3.3.8 (2024-12-16)
+
+#### Feature
+
+* Added configuration to enable BPM error tracking.
+
+  <details>
+  
+  Introduced a new configuration property, `studio.bpm.enable.bpm.error.tracking`, in axelor-config.properties file to enable or disable error tracking in BPM processes. 
+  By default, this property is set to `false`.
+  
+  </details>
+
+#### Fix
+
+* Inconsistent Behavior with Boundary Events in BPMN Modeler
+* Fix default theme in bpm studio
+* fix Code editor issue in user task
+* Long startup due to unnecessary view computation
+* Cannot run a standard bpm with listener
+* Fix camunda service task action execution issue
+
+  <details>
+  
+  Service tasks in Camunda appear to correctly read actions (action-attrs and action-method), as verified through logs. However, the actions themselves do not execute as expected, despite no errors being logged during their initialization.
+  
+  </details>
+
+
 ## 3.3.7 (2024-11-29)
 
 #### Fix

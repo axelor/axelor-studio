@@ -1,5 +1,0 @@
----
-title: Fix camunda service task action execution issue
-type: fix
-description:
-  Service tasks in Camunda appear to correctly read actions (action-attrs and action-method), as verified through logs. However, the actions themselves do not execute as expected, despite no errors being logged during their initialization.
