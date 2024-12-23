@@ -17,8 +17,10 @@
  */
 package com.axelor.studio.bpm.script;
 
+import com.axelor.db.tenants.TenantAware;
 import com.axelor.inject.Beans;
 import com.axelor.script.GroovyScriptHelper;
+import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
@@ -52,8 +54,13 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
       var executorService = Executors.newSingleThreadExecutor();
       executorService.submit(
           () ->
-              Beans.get(BpmErrorMessageService.class)
-                  .sendBpmErrorMessage(execution, e.getMessage(), null, null));
+              new TenantAware(
+                      () -> {
+                        Beans.get(BpmErrorMessageService.class)
+                            .sendBpmErrorMessage(execution, e.getMessage(), null, null);
+                      })
+                  .tenantId(BpmTools.getCurentTenant())
+                  .run());
       executorService.shutdown();
       throw new AxelorScriptEngineException(e);
     }

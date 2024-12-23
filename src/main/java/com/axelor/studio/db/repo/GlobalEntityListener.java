@@ -1,7 +1,9 @@
 package com.axelor.studio.db.repo;
 
 import com.axelor.db.Model;
+import com.axelor.db.tenants.TenantAware;
 import com.axelor.inject.Beans;
+import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.utils.helpers.ExceptionHelper;
@@ -30,7 +32,20 @@ public class GlobalEntityListener {
   protected void runOnSeparateThread(Set<Model> updated, Set<Model> deleted) {
     ExecutorService executorService = Executors.newSingleThreadExecutor();
     Callable<Map<String, Object>> callableTask = () -> callWkfProcess(updated, deleted);
-    Future<?> future = executorService.submit(callableTask);
+
+    Future<?> future =
+        executorService.submit(
+            () ->
+                new TenantAware(
+                        () -> {
+                          try {
+                            callableTask.call();
+                          } catch (Exception e) {
+                            throw new IllegalStateException(e);
+                          }
+                        })
+                    .tenantId(BpmTools.getCurentTenant())
+                    .run());
     try {
       future.get();
     } catch (InterruptedException e) {
