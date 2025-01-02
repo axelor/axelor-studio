@@ -24,11 +24,13 @@ import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.db.Query;
+import com.axelor.db.tenants.TenantAware;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.MetaModel;
+import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
@@ -211,12 +213,17 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         var executorService = Executors.newSingleThreadExecutor();
         executorService.submit(
             () ->
-                bpmErrorMessageService.sendBpmErrorMessage(
-                    null,
-                    e.getMessage(),
-                    EntityHelper.getEntity(wkfProcessConfig.getWkfProcess().getWkfModel()),
-                    finalProcessInstanceId));
-        executorService.shutdown();
+                new TenantAware(
+                        () -> {
+                          bpmErrorMessageService.sendBpmErrorMessage(
+                              null,
+                              e.getMessage(),
+                              EntityHelper.getEntity(
+                                  wkfProcessConfig.getWkfProcess().getWkfModel()),
+                              finalProcessInstanceId);
+                        })
+                    .tenantId(BpmTools.getCurentTenant())
+                    .run());
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
