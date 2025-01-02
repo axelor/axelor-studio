@@ -904,7 +904,7 @@ export async function getOrganization() {
     action:
       "com.axelor.studio.pro.web.StudioAppConnectController:getOrganizations",
   });
-  const { organizations } = res?.data[0]?.values;
+  const { organizations } = res?.data?.[0]?.values || {};
   return organizations || [];
 }
 
