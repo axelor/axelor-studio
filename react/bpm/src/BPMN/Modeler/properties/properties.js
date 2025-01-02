@@ -251,9 +251,33 @@ function createGeneralTabGroups(
   ) {
     groups.push(startOnListenerProps);
   }
+  if (element && element.type !== "bpmn:Process") {
+    groups.push(externalTaskGroup);
+    groups.push(jobConfigurationGroup);
+  }
+  if (
+      element &&
+      (element.type === "bpmn:StartEvent")
+  ) {
+    groups.push(startEventInitiator);
+    groups.push(eventProps);
+    groups.push(modelProps);
+    groups.push(translationGroup);
+    groups.push(multiInstanceGroup);
+    return  groups;
+  }
+  if (
+      element &&
+      (element.type === "bpmn:ServiceTask")
+  ) {
+    groups.push(serviceTaskDelegateProps);
+    groups.push(modelProps);
+    groups.push(multiInstanceGroup);
+    groups.push(translationGroup);
+    return  groups;
+  }
 
   groups.push(userTaskProps);
-  groups.push(serviceTaskDelegateProps);
   groups.push(scriptProps);
   groups.push(linkProps);
   groups.push(callActivityProps);
@@ -265,10 +289,7 @@ function createGeneralTabGroups(
   groups.push(multiInstanceGroup);
   groups.push(translationGroup);
 
-  if (element && element.type !== "bpmn:Process") {
-    groups.push(externalTaskGroup);
-    groups.push(jobConfigurationGroup);
-  }
+
   return groups;
 }
 
