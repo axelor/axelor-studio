@@ -215,8 +215,8 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
                 metaAttrs.getModel(),
                 metaAttrs.getView(),
                 metaAttrs.getField(),
-                metaAttrs.getName(),
-                metaAttrs.getCondition())
+                metaAttrs.getCondition(),
+                metaAttrs.getName())
             .fetchOne();
 
     if (savedAttrs != null) {
