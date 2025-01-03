@@ -1,3 +1,12 @@
+## 3.3.9 (2025-01-03)
+
+#### Fix
+
+* Fix Error throwing when using BPM without studio pro
+* Synchronization Issue After Updating Process Record
+* Use TenantAware utility for all multi threading code
+* Save builder settings on bpmn file when using conditional event
+
 ## 3.3.8 (2024-12-16)
 
 #### Feature
