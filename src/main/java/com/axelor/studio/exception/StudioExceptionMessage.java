@@ -19,13 +19,13 @@ package com.axelor.studio.exception;
 
 public final class StudioExceptionMessage {
 
-  protected StudioExceptionMessage() {}
+  private StudioExceptionMessage() {}
 
   /** Check if studio app code is not conflicting with existing app. */
   public static final String STUDIO_APP_1 = /*$$(*/
       "Please provide unique code. The code '%s' is already used" /*)*/;
 
-  /** Check if chart name doesn't contains any space. */
+  /** Check if chart name doesn't contain any space. */
   public static final String STUDIO_CHART_1 = /*$$(*/ "The name must not contain spaces" /*)*/;
 
   public static final String CANNOT_ALTER_NODES = /*$$(*/
@@ -42,9 +42,6 @@ public final class StudioExceptionMessage {
   public static final String REFRESH_APP_ERROR = /*$$(*/ "Error in refreshing app" /*)*/;
 
   public static final String ROLE_IMPORT_SUCCESS = /*$$(*/ "Roles imported successfully" /*)*/;
-
-  public static final String ACCESS_CONFIG_IMPORTED = /*$$(*/
-      "Access config imported successfully" /*)*/;
 
   public static final String NO_LANGUAGE_SELECTED = /*$$(*/
       "No application language set. Please set 'application.locale' property." /*)*/;
@@ -91,10 +88,10 @@ public final class StudioExceptionMessage {
       "Are you sure, do you want to delete translations?" /*)*/;
   public static final String STUDIO_ARE_YOU_SURE_DO_YOU_WANT_TO_DELETE_IT = /*$$(*/
       "Are you sure? Do you want to delete it?" /*)*/;
-  public static final String STUDIO_ATLEAST_ONE_CHILDREN_REQUIRED = /*$$(*/
-      "Atleast one children required" /*)*/;
-  public static final String STUDIO_ATLEAST_ONE_MENU_ITEM_REQUIRED = /*$$(*/
-      "Atleast one menu item required" /*)*/;
+  public static final String STUDIO_AT_LEAST_ONE_CHILDREN_REQUIRED = /*$$(*/
+      "At least one children required" /*)*/;
+  public static final String STUDIO_AT_LEAST_ONE_MENU_ITEM_REQUIRED = /*$$(*/
+      "At least one menu item required" /*)*/;
   public static final String STUDIO_CLOSE = /*$$(*/ "Close" /*)*/;
   public static final String STUDIO_CONFIRM = /*$$(*/ "Confirm" /*)*/;
   public static final String
@@ -130,10 +127,10 @@ public final class StudioExceptionMessage {
   public static final String STUDIO_SELECTION_ITEMS = /*$$(*/ "Selection items" /*)*/;
   public static final String STUDIO_SHOW_MORE = /*$$(*/ "Show more..." /*)*/;
   public static final String STUDIO_SOME_ERROR_OCCURRED = /*$$(*/ "Some error occurred" /*)*/;
-  public static final String STUDIO_SURE_WANT_TO_DELETE = /*$$(*/ "Sure want to delete?" /*)*/;
+  public static final String STUDIO_REALLY_WANT_TO_DELETE = /*$$(*/ "Do you really want to delete?" /*)*/;
   public static final String STUDIO_TAB = /*$$(*/ "Tab" /*)*/;
-  public static final String STUDIO_TABS_SHOULD_HAVE_ATLEAST_ONE_PANEL = /*$$(*/
-      "Tabs should have atleast one panel" /*)*/;
+  public static final String STUDIO_TABS_SHOULD_HAVE_AT_LEAST_ONE_PANEL = /*$$(*/
+      "Tabs should have at least one panel" /*)*/;
   public static final String STUDIO_SCALE = /*$$(*/ "Scale" /*)*/;
   public static final String STUDIO_VALUE_IS_REQUIRED = /*$$(*/ "Value is required" /*)*/;
   public static final String STUDIO_VIEW = /*$$(*/ "View" /*)*/;

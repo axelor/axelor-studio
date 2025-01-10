@@ -111,7 +111,7 @@ export default function Definition({
       actionRes.data[0] &&
       actionRes.data[0].reload
     ) {
-      handleSnackbarClick("success", "Sucessfully drafted");
+      handleSnackbarClick("success", "Successfully drafted");
       reloadView();
     }
   };
