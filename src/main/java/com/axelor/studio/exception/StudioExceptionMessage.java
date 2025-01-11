@@ -127,7 +127,8 @@ public final class StudioExceptionMessage {
   public static final String STUDIO_SELECTION_ITEMS = /*$$(*/ "Selection items" /*)*/;
   public static final String STUDIO_SHOW_MORE = /*$$(*/ "Show more..." /*)*/;
   public static final String STUDIO_SOME_ERROR_OCCURRED = /*$$(*/ "Some error occurred" /*)*/;
-  public static final String STUDIO_REALLY_WANT_TO_DELETE = /*$$(*/ "Do you really want to delete?" /*)*/;
+  public static final String STUDIO_REALLY_WANT_TO_DELETE = /*$$(*/
+      "Do you really want to delete?" /*)*/;
   public static final String STUDIO_TAB = /*$$(*/ "Tab" /*)*/;
   public static final String STUDIO_TABS_SHOULD_HAVE_AT_LEAST_ONE_PANEL = /*$$(*/
       "Tabs should have at least one panel" /*)*/;
