@@ -44,6 +44,7 @@ public class GlobalEntityListener {
                             throw new IllegalStateException(e);
                           }
                         })
+                    .withTransaction(false)
                     .tenantId(BpmTools.getCurentTenant())
                     .run());
     try {
