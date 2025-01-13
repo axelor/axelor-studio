@@ -222,6 +222,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
                                   wkfProcessConfig.getWkfProcess().getWkfModel()),
                               finalProcessInstanceId);
                         })
+                    .withTransaction(false)
                     .tenantId(BpmTools.getCurentTenant())
                     .run());
       }
