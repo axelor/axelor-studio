@@ -1,3 +1,21 @@
+## 3.3.10 (2025-01-15)
+
+#### Change
+
+* Update AOP version to 7.2.5
+
+#### Fix
+
+* Multi tenant Use TenantAware utility for all multi threading code
+* Message on event are not sent
+
+  <details>
+  
+  Fixed issue where messages defined on events using the "Menu/Action" menu were not being sent.
+  
+  </details>
+
+
 ## 3.3.9 (2025-01-03)
 
 #### Fix

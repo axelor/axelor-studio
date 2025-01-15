@@ -1,4 +1,0 @@
-title: Message on event are not sent
-type: fix
-description: |
-  Fixed issue where messages defined on events using the "Menu/Action" menu were not being sent.
