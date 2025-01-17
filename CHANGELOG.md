@@ -1,3 +1,49 @@
+## 4.0.0-beta (2025-01-17)
+
+#### Feature
+
+* BPM Migration tool enhancement
+
+  <details>
+  
+  Enhances the migration tool by adding a boolean option, "Migrate all instances of the previous version," 
+  which ensures that all instances of the source Wkf model are first migrated to the latest version of the process definition 
+  before migrating to the target Wkf model.
+  The migration view is enhanced with useful information such as source and target model versions, the number of instances participating in the migration, 
+  the number of successfully migrated instances, and the number of instances that failed migration due to errors.
+  
+  </details>
+
+* Add LinkScript feature
+
+  <details>
+  
+  LinkScript is a library of chainable, multi-output, extendable, Groovy functions that can be created and assembled to run complex business logic in Axelor applications.
+  
+  The following property can be added to the webapp to be able to quickly call a LinkScript in any AOP's Groovy evaluated expression:
+  context.ls = com.axelor.studio.ls.service.LinkScriptService
+  
+  </details>
+
+* BPM - Monitor Process Instance Versions
+
+  <details>
+  
+  Improved the BPM grid view by adding the status of BPM instances, displaying whether they are “In Progress” or “Stopped.” This enhancement also includes the version of each process instance which is the version of the wkfModel they are working with.
+  
+  </details>
+
+#### Fix
+
+* Update the favicon
+
+  <details>
+  
+  - Update the favicon
+  
+  </details>
+
+
 ## 3.3.7 (2024-11-29)
 
 #### Fix

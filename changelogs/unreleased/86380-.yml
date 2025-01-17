@@ -1,8 +1,0 @@
-title: BPM Migration tool enhancement
-type: feature
-description: |
-  Enhances the migration tool by adding a boolean option, "Migrate all instances of the previous version," 
-  which ensures that all instances of the source Wkf model are first migrated to the latest version of the process definition 
-  before migrating to the target Wkf model.
-  The migration view is enhanced with useful information such as source and target model versions, the number of instances participating in the migration, 
-  the number of successfully migrated instances, and the number of instances that failed migration due to errors.

@@ -1,7 +1,0 @@
-title: Add LinkScript feature
-type: feature
-description: |
-  LinkScript is a library of chainable, multi-output, extendable, Groovy functions that can be created and assembled to run complex business logic in Axelor applications.
-  
-  The following property can be added to the webapp to be able to quickly call a LinkScript in any AOP's Groovy evaluated expression:
-  context.ls = com.axelor.studio.ls.service.LinkScriptService
