@@ -85,7 +85,8 @@ public class LinkScriptServiceImpl implements LinkScriptService {
         continue;
       }
       var runResult = run(depth + 1, result, arc.getToLinkScript(), new LinkedHashMap<>(context));
-      variables.put(StringUtils.isBlank(arc.getName()) ? DEFAULT_RESULT_KEY : arc.getName(), runResult);
+      variables.put(
+          StringUtils.isBlank(arc.getName()) ? DEFAULT_RESULT_KEY : arc.getName(), runResult);
       valueContext(context, arc.getName(), runResult);
     }
 
