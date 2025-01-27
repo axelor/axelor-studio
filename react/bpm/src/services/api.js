@@ -290,7 +290,8 @@ export async function getSubMetaField(
   relationJsonModel,
   isCollection = false,
   allowAllFields = false,
-  excludeUITypes = false
+  excludeUITypes = false,
+  isDatePath
 ) {
   if (model === "com.axelor.meta.db.MetaJsonRecord" && relationJsonModel) {
     const res = await Service.get(
@@ -308,6 +309,10 @@ export async function getSubMetaField(
             )
           : allowAllFields
           ? r
+          : isDatePath
+          ? ["date", "datetime", "many_to_one", "many-to-one"].includes(
+              r.type.toLowerCase()
+            )
           : ["many_to_one", "many-to-one"].includes(r.type.toLowerCase())
       )
     );
@@ -334,6 +339,10 @@ export async function getSubMetaField(
             )
           : allowAllFields
           ? r
+          : isDatePath
+          ? ["date", "datetime", "many_to_one", "many-to-one"].includes(
+              r.type.toLowerCase()
+            )
           : ["many_to_one", "many-to-one"].includes(r.type.toLowerCase())
       )
     );

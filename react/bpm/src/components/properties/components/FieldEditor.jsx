@@ -80,20 +80,23 @@ export default function FieldEditor({
       const data = await getMetaFields();
       if (isSubscribed) {
         setFields(
-          data &&
-            data.filter((d) =>
-              excludeUITypes
-                ? !UI_TYPES.includes(d.type && d.type.toLowerCase())
-                : isCollection
-                ? ["many_to_one", "one_to_many", "many_to_many"].includes(
-                    d.type.toLowerCase()
-                  )
-                : allowAllFields
-                ? isDatePath
-                  ? ["date", "datetime"].includes(d.type.toLowerCase())
-                  : d
-                : ["many_to_one", "many-to-one"].includes(d.type.toLowerCase())
-            )
+          data?.filter((d) =>
+            excludeUITypes
+              ? !UI_TYPES.includes(d.type && d.type.toLowerCase())
+              : isCollection
+              ? ["many_to_one", "one_to_many", "many_to_many"].includes(
+                  d.type.toLowerCase()
+                )
+              : allowAllFields
+              ? isDatePath
+                ? ["date", "datetime"].includes(d.type.toLowerCase())
+                : d
+              : isDatePath
+              ? ["date", "datetime", "many_to_one", "many-to-one"].includes(
+                  d.type.toLowerCase()
+                )
+              : ["many_to_one", "many-to-one"].includes(d.type.toLowerCase())
+          )
         );
       }
     })();
@@ -227,7 +230,8 @@ export default function FieldEditor({
                     relationJsonModel,
                     isCollection,
                     allowAllFields,
-                    excludeUITypes
+                    excludeUITypes,
+                    isDatePath
                   );
                 }}
                 initValue={`${initValue}${startValue}${"."}`}
