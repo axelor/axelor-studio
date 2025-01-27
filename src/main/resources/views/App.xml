@@ -38,6 +38,7 @@
 				  	<span class="label" style="background-color: #94846B; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
 				  	<span class="label" style="background-color: #6F908C; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
 				  	<span class="label" style="background-color: #ff3400; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'pro'" x-translate>Pro</span>
+				  	<span class="label" style="background-color: #009688; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'customer'" x-translate>Customer</span>
 
 				  	<span class="label" style="background-color: slategrey; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.appVersion">{{record.appVersion}}</span>
 				  </h4>
@@ -131,6 +132,7 @@
 				  	<span style="color: #94846B; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
 				  	<span style="color: #6F908C; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
 				  	<span style="color: #ff3400; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'pro'" x-translate>Pro</span>
+				  	<span style="color: #009688; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'customer'" x-translate>Customer</span>
 				  	</br>
 				  	<span style="color: #ffb000; font-size: 13px; font-weight: bolder;" ng-show="record.isExperimental"><i class="fa fa-flask"/> <span x-translate>Experimental</span></span>
 				  </div>
