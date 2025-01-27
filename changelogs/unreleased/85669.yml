@@ -1,0 +1,5 @@
+---
+title: New type "customer" for StudioApp
+type: feature
+description:  |
+  - Enhanced the typeSelect field for Studio App by adding a new selection option, "Customer"

@@ -5,7 +5,8 @@
 
   <form name="user-form" title="User" model="com.axelor.auth.db.User"
     id="studio-auth-user-form" extension="true">
-    <extend target="panel[@name='mainUserPanel']/panel[@name='overviewPanel']/field[@name='group']">
+    <extend
+      target="panel[@name='mainUserPanel']/panel[@name='overviewPanel']/field[@name='group']">
       <insert position="after">
         <field name="isBpmAdministrator"/>
       </insert>

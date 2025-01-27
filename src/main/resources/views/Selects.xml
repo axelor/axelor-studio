@@ -27,6 +27,7 @@
     <option value="pro">Pro</option>
     <option value="custom">Custom</option>
     <option value="others">Others</option>
+    <option value="customer">Customer</option>
   </selection>
 
   <selection name="wkf.instance.migration.status.select">
