@@ -18,3 +18,24 @@
   min-width: 150px;
   margin-top: 0;
 }
+
+.commandBar>div>button {
+  font-size: 14px;
+}
+
+.bottomBar {
+  position: absolute;
+  bottom: 10px;
+  font-size: 21px;
+  right: 10px;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+}
+.bottomBar button{
+  padding: 4.5px;
+}
+.bottomBar  button span{
+  font-size: 21px;
+}

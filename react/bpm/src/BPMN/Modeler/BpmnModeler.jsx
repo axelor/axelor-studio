@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import find from "lodash/find";
 import BpmnModeler from "bpmn-js/lib/Modeler";
+import minimapModule from "diagram-js-minimap";
 import {
   BpmnPropertiesProviderModule,
   BpmnPropertiesPanelModule,
@@ -64,6 +65,7 @@ import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import "@bpmn-io/properties-panel/dist/assets/properties-panel.css";
 import "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
+import "diagram-js-minimap/assets/diagram-js-minimap.css";
 import "../css/bpmn.css";
 import "../css/colors.css";
 import "../css/tokens.css";
@@ -1307,6 +1309,38 @@ function BpmnModelerComponent() {
     fetchDiagram(id);
   };
 
+  const toggleMinimap = () => {
+    bpmnModeler?.get("minimap").toggle();
+  };
+
+  const zoomIn = () => {
+    bpmnModeler?.get("zoomScroll").stepZoom(1);
+  };
+
+  const zoomOut = () => {
+    bpmnModeler?.get("zoomScroll").stepZoom(-1);
+  };
+
+  const resetViewport = () => {
+    bpmnModeler?.get("canvas").zoom("fit-viewport", "auto");
+  };
+
+  const enterFullscreen = () => {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+      // Firefox
+      elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+      // Chrome, Safari and Opera
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      // IE/Edge
+      elem.msRequestFullscreen();
+    }
+  };
+
   const leftToolbar = [
     {
       key: "new",
@@ -1411,6 +1445,44 @@ function BpmnModelerComponent() {
           `bpm-merge-split/?type=merge&&id=${id}`,
           translate("Merge editor")
         ),
+    },
+  ];
+
+  const bottomToolbar = [
+    {
+      key: "minimap",
+      iconOnly: true,
+      description: translate("Toggle Minimap"),
+      iconProps: { icon: "map" },
+      onClick: toggleMinimap,
+    },
+    {
+      key: "zoomIn",
+      iconOnly: true,
+      description: translate("Zoom In"),
+      iconProps: { icon: "add" },
+      onClick: zoomIn,
+    },
+    {
+      key: "zoomOut",
+      iconOnly: true,
+      description: translate("Zoom Out"),
+      iconProps: { icon: "remove" },
+      onClick: zoomOut,
+    },
+    {
+      key: "resetViewport",
+      iconOnly: true,
+      description: translate("Reset Viewport"),
+      iconProps: { icon: "restart_alt" },
+      onClick: resetViewport,
+    },
+    {
+      key: "fullscreen",
+      iconOnly: true,
+      description: translate("Enter Fullscreen"),
+      iconProps: { icon: "fullscreen" },
+      onClick: enterFullscreen,
     },
   ];
 
@@ -1741,6 +1813,7 @@ function BpmnModelerComponent() {
         BpmnPropertiesPanelModule,
         BpmnPropertiesProviderModule,
         propertiesCustomProviderModule,
+        minimapModule,
         TokenSimulationModule,
         {
           elementColors: [
@@ -1877,7 +1950,7 @@ function BpmnModelerComponent() {
         <React.Suspense fallback={<></>}>
           {!isTimerTask && <TimerEvents />}
         </React.Suspense>
-        <Box id="bpmncontainer" color="body">
+        <Box id="bpmncontainer" pos="relative" color="body">
           <div id="propview"></div>
           <div id="bpmnview">
             <Box
@@ -1925,6 +1998,7 @@ function BpmnModelerComponent() {
               />
             </Box>
           </div>
+          <CommandBar items={bottomToolbar} className={styles.bottomBar} />
         </Box>
         <Box position="sticky" top={0} right={0} h={100}>
           <Resizable

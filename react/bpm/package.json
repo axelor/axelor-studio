@@ -23,6 +23,7 @@
     "dayjs": "^1.11.10",
     "diagram-js": "^14.7.1",
     "diagram-js-direct-editing": "^2.1.2",
+    "diagram-js-minimap": "^5.1.0",
     "dmn-js": "^15.1.0",
     "dmn-js-decision-table": "^15.1.0",
     "dmn-js-properties-panel": "^3.3.0",
