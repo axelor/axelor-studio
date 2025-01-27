@@ -1729,3 +1729,7 @@
 "zoom-in",,,
 "zoom-out",,,
 "{{$fmt('name')}}",,,
+"Show timer-blocked instances",,,
+"Resume timer-blocked instances",,,
+"Timer-Blocked instances",,,
+"Please select at least one instance blocked on a timer to resume processing.",,,

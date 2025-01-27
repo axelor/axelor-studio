@@ -1728,3 +1728,7 @@ Signal intermediate catch event","Événement intermédiaire de réception de si
 "zoom-in",,,
 "zoom-out",,,
 "{{$fmt('name')}}",,,
+"Show timer-blocked instances","Afficher les instances bloquées par un timer",,
+"Resume timer-blocked instances","Reprendre les instances bloquées par un timer",,
+"Timer-Blocked instances","Instances bloquées par un timer",,
+"Please select at least one instance blocked on a timer to resume processing.","Veuillez sélectionner au moins une instance bloquée par un timer pour reprendre le traitement.",,
