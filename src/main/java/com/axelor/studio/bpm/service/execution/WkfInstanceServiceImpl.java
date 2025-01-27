@@ -71,6 +71,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.camunda.bpm.engine.ManagementService;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RuntimeService;
@@ -78,6 +79,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.camunda.bpm.engine.variable.VariableMap;
@@ -1039,5 +1041,45 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected boolean isLogDetailsIncluded(
       LocalDateTime validDateTime, LocalDateTime inf, LocalDateTime sup) {
     return validDateTime != null && validDateTime.isBefore(sup) && validDateTime.isAfter(inf);
+  }
+
+  public List<String> getBlockedInstancesOnTimer() {
+    ProcessEngine engine = engineService.getEngine();
+    ManagementService managementService = engine.getManagementService();
+    List<String> strings = new ArrayList<>();
+    List<Job> timerJobs =
+        managementService.createJobQuery().timers().active().noRetriesLeft().list();
+    for (Job job : timerJobs) {
+      strings.add(job.getProcessInstanceId());
+    }
+    return strings;
+  }
+
+  public void unblockTimers(Integer id) {
+    WkfInstance wkfInstance = wkfInstanceRepository.find(id.longValue());
+    if (wkfInstance == null) {
+      return;
+    }
+    ProcessEngine engine = engineService.getEngine();
+    ManagementService managementService = engine.getManagementService();
+
+    List<Job> timerJobs =
+        managementService
+            .createJobQuery()
+            .processInstanceId(wkfInstance.getInstanceId())
+            .timers()
+            .active()
+            .noRetriesLeft()
+            .list();
+    if (timerJobs.isEmpty()) {
+      log.debug("No stucked timer found for instance{} ", wkfInstance.getInstanceId());
+    }
+
+    for (Job job : timerJobs) {
+      if (job.getRetries() == 0) {
+        managementService.setJobRetries(job.getId(), 3);
+        log.debug("Unblocked timer job ID: {} by resetting retries to 3", job.getId());
+      }
+    }
   }
 }

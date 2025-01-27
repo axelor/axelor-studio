@@ -5,6 +5,14 @@
 
   <grid name="wkf-instance-grid" title="Process Instance"
     model="com.axelor.studio.db.WkfInstance" canNew="false" canEdit="false">
+    <menubar>
+      <menu title="Timer-Blocked instances" icon="fa-clock-o">
+        <item title="Show timer-blocked instances"
+          action="action-method-show-timer-blocked-instances"/>
+        <item title="Resume timer-blocked instances"
+          action="action-validate-resume-req,action-method-resume-timer-blocked-instances"/>
+      </menu>
+    </menubar>
     <field name="name"/>
     <field name="instanceId"/>
     <field name="wkfProcess.wkfModel"/>
@@ -139,6 +147,19 @@
   <action-attrs name="action-attr-reset-log-text">
     <attribute for="$logText" name="value" expr=""/>
   </action-attrs>
+  <action-method name="action-method-show-timer-blocked-instances">
+    <call class="com.axelor.studio.bpm.web.WkfInstanceController"
+      method="showTimerBlockedInstances"/>
+  </action-method>
+  <action-method name="action-method-resume-timer-blocked-instances">
+    <call class="com.axelor.studio.bpm.web.WkfInstanceController"
+      method="resumeTimerBlockedInstances"/>
+  </action-method>
+  <action-validate name="action-validate-resume-req">
+    <error
+      message="Please select at least one instance blocked on a timer to resume processing."
+      if="_ids == null || _ids.size() &lt; 1"/>
+  </action-validate>
 
 
 
