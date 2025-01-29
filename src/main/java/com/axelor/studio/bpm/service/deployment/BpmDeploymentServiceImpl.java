@@ -21,6 +21,7 @@ import com.axelor.common.ObjectUtils;
 import com.axelor.db.tenants.TenantModule;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
@@ -28,6 +29,7 @@ import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
+import com.axelor.studio.bpm.service.app.AppBpmService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
@@ -343,7 +345,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
 
     log.debug("Process instances to migrate: {}", processInstanceIds.size());
-    String sessionId = BpmDeploymentWebSocket.sessionMap.keySet().stream().findFirst().orElse(null);
+    // Progress bar on deploy
+    Boolean isWebSocketSupported = Beans.get(AppBpmService.class).getAppBpm().getUseProgressDeploymentBar();
+    String sessionId = null;
+    if (isWebSocketSupported) sessionId = BpmDeploymentWebSocket.sessionMap.keySet().stream().findFirst().orElse(null);
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
     int iterationNumber = 1;
     for (String processInstanceId : processInstanceIds) {
@@ -363,8 +368,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
         wkfInstanceService.updateProcessInstance(
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
       }
-      BpmDeploymentWebSocket.updateProgress(
-          sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
+      if(isWebSocketSupported) BpmDeploymentWebSocket.updateProgress(sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
       iterationNumber++;
     }
     return isMigrationError;

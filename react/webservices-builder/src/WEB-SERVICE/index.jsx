@@ -1286,7 +1286,6 @@ function WebServiceEditor() {
     if (!verificationFieldsConnector()) return;
     const requests = [];
     let sequence = 0;
-    console.log(ele.children)
     ele?.children.forEach((child) => {
       if (
         child.type === "bpmn:Mapper" &&

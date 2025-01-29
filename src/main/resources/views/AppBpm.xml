@@ -6,13 +6,14 @@
   <form name="app-bpm-config-form" title="App BPM" model="com.axelor.studio.db.AppBpm"
     width="large" canDelete="false" canNew="false" canCopy="false"
     onSave="action-method-custom-variable-list-validate">
-
+    <panel name="migrationPanel" title="Migration" colSpan="12">
+      <field name="useProgressDeploymentBar" title="Enable Using progress deployment display bar" widget="boolean-switch" colSpan="4"/>
+    </panel>
     <panel name="taskEvaluationPanel" title="Task evaluation">
       <field name="allowBpmLoadingFromSources" widget="boolean-switch"/>
       <help colSpan="12">A suspicion of infinite loop occurs when both of these limits are exceeded.</help>
       <field name="taskExecutionRecursivityDurationLimit"/>
       <field name="taskExecutionRecursivityDepthLimit"/>
-
     </panel>
     <panel name="customVariablePanel">
       <field name="customVariableList" form-view="custom-variable-form"

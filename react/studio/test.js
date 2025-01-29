@@ -7,7 +7,6 @@ items.forEach((itemId, itemIndex) => {
     // item has Movement
     if (itemIndex !== newItemIndex) {
       // check for item removal
-      console.log(newItems, item)
       if (!getNewWidgetByName(item.name)) {
         removed = true
       } else if (newItemIndex !== -1) {
