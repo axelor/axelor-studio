@@ -2,17 +2,7 @@ import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 import React, { useEffect, useState } from "react";
 import { createElement } from "../../../../../utils/ElementUtil";
 
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Input,
-  InputLabel,
-} from "@axelor/ui";
+import { Box, Input, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import moment from "moment";
 import TimerBuilder from "../../../../../components/TimerBuilder";
@@ -30,6 +20,11 @@ const timerOptions = [
   { value: "timeDate", name: translate("Date") },
   { value: "timeDuration", name: translate("Duration") },
   { value: "timeCycle", name: translate("Cycle") },
+];
+
+const valueTypeOptions = [
+  { value: "value", name: translate("Value") },
+  { value: "expression", name: translate("Expression") },
 ];
 
 function getTimerDefinitionType(timer) {
@@ -73,8 +68,10 @@ export default function TimerEventProps({
   const [timerDefinitionType, setTimerDefinitionType] = useState("");
   const [open, setOpen] = useState(false);
   const [isFromBuilder, setFromBuilder] = useState(false);
+  const [valueType, setValueType] = useState("value");
   const [date, setDate] = useState();
   const openDialog = useDialog();
+  const timerDefinitionRef = React.useRef(null);
 
   function createTimerEventDefinition(bo) {
     let eventDefinitions = bo.get("eventDefinitions") || [],
@@ -112,6 +109,38 @@ export default function TimerEventProps({
     }
   };
 
+  const getTypeProperty = React.useCallback(
+    (name, timerDefinitionType) => {
+      let propertyName = `camunda:${name}`;
+      const bo = getBusinessObject(element);
+      const target = bo?.eventDefinitions?.[0]?.[timerDefinitionType];
+      return (target?.$attrs && target?.$attrs[propertyName]) || "";
+    },
+    [element]
+  );
+
+  const setTypeProperty = (name, value, timerDefinitionType) => {
+    setDummyProperty({ bpmnModeler, element, value });
+    const bo = getBusinessObject(element);
+    let propertyName = `camunda:${name}`;
+
+    if (!bo) return;
+
+    const target = bo?.eventDefinitions?.[0]?.[timerDefinitionType];
+
+    if (target) {
+      if (target?.$attrs) {
+        target.$attrs[propertyName] = value;
+      } else {
+        target.$attrs = { [propertyName]: value };
+      }
+
+      if (!value) {
+        delete target.$attrs[propertyName];
+      }
+    }
+  };
+
   const handleFromBuilder = (value) => {
     setFromBuilder(value);
     setProperty("isFromBuilder", value);
@@ -135,6 +164,8 @@ export default function TimerEventProps({
     if (!values.timerDefinition) {
       handleFromBuilder(false);
     }
+
+    timerDefinitionRef.current = values.timerDefinition;
   };
   const handleClickOpen = () => {
     setOpen(true);
@@ -178,6 +209,18 @@ export default function TimerEventProps({
       setDate(getTimerValue());
     }
   }, [open, timerDefinitionType]);
+
+  useEffect(() => {
+    let timerDef = timerEventDefinition;
+    let timerDefType = getTimerDefinitionType(timerDef) || "";
+    const type = getTypeProperty("valueType", timerDefType);
+    type && setValueType(type);
+
+    if (timerDefinitionType && type === "") {
+      setTypeProperty("valueType", "value", timerDefinitionType);
+      setValueType("value");
+    }
+  }, [timerDefinitionType, timerEventDefinition, timerDefinitionRef.current]);
 
   return (
     <div>
@@ -231,77 +274,130 @@ export default function TimerEventProps({
       />
       {(timerDefinitionType || timerDefinitionType !== "") && (
         <>
-          <TextField
+          <SelectBox
             element={element}
-            canRemove={true}
-            readOnly={isFromBuilder}
             entry={{
-              id: "timer-event-definition",
-              label: translate("Timer definition"),
-              modelProperty: "timerDefinition",
+              id: "timer-event-definition-value-type",
+              label: translate("Type"),
+              selectOptions: valueTypeOptions,
+              emptyParameter: true,
+              modelProperty: "valueType",
               get: function () {
-                return {
-                  timerDefinition: getTimerDefinition(),
-                };
+                let timerDefinition = timerEventDefinition;
+                let timerDefinitionType =
+                  getTimerDefinitionType(timerDefinition) || "";
+                const value = getTypeProperty("valueType", timerDefinitionType);
+                return { valueType: value || "value" };
               },
-              set: handleTimerDefinitionChange,
-              validate: function (e, values) {
-                if (!values.timerDefinition && timerDefinitionType) {
-                  return { timerDefinition: translate("Must provide a value") };
-                }
+              set: function (e, value) {
+                const valueType = value.valueType;
+                let timerDefinition = timerEventDefinition;
+                let timerDefinitionType =
+                  getTimerDefinitionType(timerDefinition) || "";
+                setValueType(valueType);
+                setTypeProperty("valueType", valueType, timerDefinitionType);
+                handleTimerDefinitionChange(element, "");
               },
             }}
-            endAdornment={
-              <Box color="body" className={styles.new}>
-                <Tooltip title="Enable" aria-label="enable">
+          />
+          {valueType === "value" ? (
+            <TextField
+              element={element}
+              canRemove={true}
+              readOnly={isFromBuilder}
+              entry={{
+                id: "timer-event-definition",
+                label: translate("Timer definition"),
+                modelProperty: "timerDefinition",
+                get: function () {
+                  return {
+                    timerDefinition: getTimerDefinition(),
+                  };
+                },
+                set: handleTimerDefinitionChange,
+                validate: function (e, values) {
+                  if (!values.timerDefinition && timerDefinitionType) {
+                    return {
+                      timerDefinition: translate("Must provide a value"),
+                    };
+                  }
+                },
+              }}
+              endAdornment={
+                <Box color="body" className={styles.new}>
+                  <Tooltip title="Enable" aria-label="enable">
+                    <MaterialIcon
+                      icon="do_not_disturb"
+                      fontSize={16}
+                      className={styles.newIcon}
+                      onClick={() => {
+                        if (isFromBuilder) {
+                          openDialog({
+                            title: "Warning",
+                            message:
+                              "Expression can't be managed using builder once changed manually.",
+                            onSave: () => handleFromBuilder(false),
+                          });
+                        }
+                      }}
+                    />
+                  </Tooltip>
                   <MaterialIcon
-                    icon="do_not_disturb"
+                    icon="edit"
                     fontSize={16}
                     className={styles.newIcon}
-                    onClick={() => {
-                      if (isFromBuilder) {
-                        openDialog({
-                          title: "Warning",
-                          message:
-                            "Expression can't be managed using builder once changed manually.",
-                          onSave: () => handleFromBuilder(false),
-                        });
-                      }
-                    }}
+                    onClick={handleClickOpen}
                   />
-                </Tooltip>
-                <MaterialIcon
-                  icon="edit"
-                  fontSize={16}
-                  className={styles.newIcon}
-                  onClick={handleClickOpen}
-                />
-              </Box>
-            }
-          />
+                </Box>
+              }
+            />
+          ) : (
+            <TextField
+              element={element}
+              canRemove={true}
+              entry={{
+                id: "expression",
+                label: translate("Expression"),
+                modelProperty: "timerDefinition",
+                get: function () {
+                  return {
+                    timerDefinition: getTimerDefinition(),
+                  };
+                },
+                set: handleTimerDefinitionChange,
+                validate: function (e, values) {
+                  if (!values.timerDefinition && timerDefinitionType) {
+                    return {
+                      timerDefinition: translate("Must provide a value"),
+                    };
+                  }
+                },
+              }}
+            />
+          )}
           {open && timerDefinitionType === "timeDate" && (
             <AlertDialog
-             openAlert={open}
-             fullscreen={false}
-             title={"Timer definition"}
-             handleAlertOk={()=>{
-              handleChange(moment(date).format("YYYY-MM-DDTHH:mm"));
-              handleClose();
-            }}
-            alertClose={handleClose}
-            children={
-              <>
-              <InputLabel style={{ fontSize: 14 }}>
-                {translate("Select datetime")}
-              </InputLabel>
-              <Input
-                type="datetime-local"
-                value={moment(date).format("YYYY-MM-DDTHH:mm")}
-                onChange={(e) => setDate(moment(e?.target?.value))}
-                rounded
-              />
-              </>
-            }
+              openAlert={open}
+              fullscreen={false}
+              title={"Timer definition"}
+              handleAlertOk={() => {
+                handleChange(moment(date).format("YYYY-MM-DDTHH:mm"));
+                handleClose();
+              }}
+              alertClose={handleClose}
+              children={
+                <>
+                  <InputLabel style={{ fontSize: 14 }}>
+                    {translate("Select datetime")}
+                  </InputLabel>
+                  <Input
+                    type="datetime-local"
+                    value={moment(date).format("YYYY-MM-DDTHH:mm")}
+                    onChange={(e) => setDate(moment(e?.target?.value))}
+                    rounded
+                  />
+                </>
+              }
             />
           )}
           {open && timerDefinitionType !== "timeDate" && (
