@@ -91,13 +91,14 @@ function Cron({
           fontSize="5"
           textAlign="center"
           fontWeight="bold"
+          textTransform="capitalize"
           style={{
             marginBlock: "0.5rem",
             color: "red",
             marginInlineEnd: "auto",
           }}
         >
-          {capitalize(t(localError))}
+          {t(localError)}
         </InputLabel>
       )}
       <ReQuartzCron
@@ -214,7 +215,7 @@ function Actions({ onOK, onCancel, t, error }) {
             marginInlineEnd: "auto",
           }}
         >
-          {capitalize(t(error))}
+          {t(error)}
         </InputLabel>
       )}
       <Button variant="secondary" className={styles.button} onClick={onCancel}>
