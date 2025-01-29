@@ -87,6 +87,12 @@ export const getAppStudioConfig = async (id) => {
   return appConfig;
 };
 
+export const getAppBPMConfig = async (id) => {
+  let res = await Service.fetchId("com.axelor.studio.db.AppBpm", id);
+  const appConfig = (res && res.data && res.data[0]) || {};
+  return appConfig;
+};
+
 export const getApp = async (options) => {
   let res = await Service.search("com.axelor.studio.db.App", options);
   const app = (res && res.data && res.data[0]) || {};

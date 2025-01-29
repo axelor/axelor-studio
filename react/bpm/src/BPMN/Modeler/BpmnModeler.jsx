@@ -38,6 +38,7 @@ import {
   getApp,
   getAppStudioConfig,
   getBPMNModels,
+  getAppBPMConfig,
 } from "../../services/api";
 import {
   getAxelorScope,
@@ -140,6 +141,7 @@ function BpmnModelerComponent() {
   const [height, setHeight] = useState("100%");
   const [progress, setProgress] = useState(0);
   const [enableStudioApp, setEnableStudioApp] = useState(false);
+  const [allowProgressBarDisplay,setAllowProgressBarDisplay] = useState(true);
   const [showError, setError] = useState(false);
   const [initialState, setInitialState] = useState(false);
   const { update, state } = useStore();
@@ -1111,7 +1113,7 @@ function BpmnModelerComponent() {
   };
 
   const deploy = async (wkfMigrationMap, isMigrateOld, newWkf = wkf) => {
-    wsProgress.init();
+    allowProgressBarDisplay && wsProgress.init();
     try {
       const { context, res } =
         (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
@@ -1927,7 +1929,18 @@ function BpmnModelerComponent() {
 
   useEffect(() => {
     const handleProgress = (newProgress) => setProgress(newProgress);
-    wsProgress.subscribe(handleProgress);
+    async function fetchApp() {
+      const app = await getApp({
+        data: {
+          _domain: `self.code = 'bpm'`,
+        },
+      });
+      if (!app) return;
+      const appConfig = await getAppBPMConfig(app.appBpm && app.appBpm.id);
+      setAllowProgressBarDisplay(appConfig && appConfig.useProgressDeploymentBar);
+      if(appConfig.useProgressDeploymentBar) wsProgress.subscribe(handleProgress);
+    }
+    fetchApp();
     return () => {
       wsProgress.unsubscribe(handleProgress);
     };
@@ -2094,7 +2107,7 @@ function BpmnModelerComponent() {
           />
         )}
       </Box>
-      {progress > 0 && (
+      {allowProgressBarDisplay && progress > 0 && (
         <Loader
           classes={styles.loader}
           text={`${progress}% migration is done...`}
