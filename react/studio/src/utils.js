@@ -773,7 +773,17 @@ export const generateCustomModelSchema = (
         type: formType,
         cols: 12,
         ...record,
-        ...getMenuBuilder(record ? record.studioMenu : undefined),
+        ...getMenuBuilder(
+          record
+            ? {
+                ...(record.studioMenu || {}),
+                title: record.studioMenu?.title || record["studioMenu.title"],
+                parentMenu:
+                  record.studioMenu?.parentMenu ||
+                  record["studioMenu.parentMenu"],
+              }
+            : undefined
+        ),
       },
       [IDS.dumpField]: {
         type: TYPE.dumpField,

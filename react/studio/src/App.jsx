@@ -36,9 +36,10 @@ function AppContent() {
 			getParams()
 		if (!model && (!type || !isStudioLite)) return
 		async function init() {
+			const isCustomModel = type || isStudioLite
 			const metaModelService = new AxelorService({
 				model:
-					type || isStudioLite
+					isCustomModel
 						? "com.axelor.meta.db.MetaJsonModel"
 						: "com.axelor.meta.db.MetaModel",
 			})
@@ -47,8 +48,31 @@ function AppContent() {
 					menuBuilder: ["title", "parentMenu"],
 				},
 				data: {
-					_domain: `name = '${model}'`,
+					criteria: [
+						{
+							fieldName: "name",
+							value: model,
+							operator: "=",
+						},
+					],
+					operator: "and",
 				},
+			}
+			if (isCustomModel) {
+				data.fields = [
+					"name",
+					"title",
+					"studioMenu",
+					"studioMenu.title",
+					"studioMenu.parentMenu",
+					"studioApp",
+					"formWidth",
+					"orderBy",
+					"isGenerateMenu",
+					"onNew",
+					"onSave",
+					"fields",
+				]
 			}
 			if (view && !isStudioLite) {
 				data = {
@@ -67,7 +91,7 @@ function AppContent() {
 
 			update((draft) => {
 				draft.modelType =
-					type || isStudioLite ? MODEL_TYPE.CUSTOM : MODEL_TYPE.BASE
+					isCustomModel ? MODEL_TYPE.CUSTOM : MODEL_TYPE.BASE
 				draft.loader = true
 			})
 			const res = await metaModelService.search(data)
@@ -127,7 +151,7 @@ function AppContent() {
 						getCustomFieldsData(model, customField, update)
 					} else {
 						draft.loader = false
-						if (type || isStudioLite) {
+						if (isCustomModel) {
 							fetchJSONFields(
 								fields.map((f) => f.id),
 								rest,
