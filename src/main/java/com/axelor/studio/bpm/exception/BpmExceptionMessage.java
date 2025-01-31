@@ -19,7 +19,7 @@ package com.axelor.studio.bpm.exception;
 
 public final class BpmExceptionMessage {
 
-  protected BpmExceptionMessage() {}
+  private BpmExceptionMessage() {}
 
   public static final String MISSING_INPUT_LABEL = /*$$(*/ "Missing input label" /*)*/;
 
@@ -49,8 +49,7 @@ public final class BpmExceptionMessage {
   public static final String CANT_RESTART_INACTIVE_PROCESS = /*$$(*/
       "Can't restart inactive process" /*)*/;
 
-  public static final String INFINITE_EXECUTION = /*$$(*/
-      "Infinite loop execution suspsected"; /*)*/
+  public static final String INFINITE_EXECUTION = /*$$(*/ "Infinite loop execution suspected"; /*)*/
 
   // BPM studio
   public static final String BPM_STUDIO_TEXT = /*$$(*/ "Text" /*)*/;
@@ -206,7 +205,7 @@ public final class BpmExceptionMessage {
       BPM_STUDIO_SCRIPT_CANT_BE_MANAGED_USING_BUILDER_ONCE_CHANGED_MANUALLY = /*$$(*/
           "Script can't be managed using builder once changed manually." /*)*/;
   public static final String BPM_STUDIO_ADD_ALL_VALUES = /*$$(*/ "Add all values" /*)*/;
-  public static final String BPM_STUDIO_SUCESSFULLY_DRAFTED = /*$$(*/ "Sucessfully drafted" /*)*/;
+  public static final String BPM_STUDIO_SUCCESSFULLY_DRAFTED = /*$$(*/ "Successfully drafted" /*)*/;
   public static final String BPM_STUDIO_TERMINATED = /*$$(*/ "Terminated" /*)*/;
   public static final String BPM_STUDIO_BPM_STATE = /*$$(*/ "BPM State" /*)*/;
   public static final String BPM_STUDIO_CODE = /*$$(*/ "Code" /*)*/;
