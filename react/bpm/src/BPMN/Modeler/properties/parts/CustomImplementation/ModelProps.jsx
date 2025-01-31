@@ -1136,28 +1136,30 @@ export function FieldAction({
         }}
         title={translate("Add script")}
         children={
-          <Textbox
-            element={element}
-            className={styles.textbox}
-            readOnly={readOnly && getProperty(toPathValue(title))}
-            showLabel={false}
-            defaultHeight={window?.innerHeight - 205}
-            entry={{
-              id: "script",
-              label: translate("Script"),
-              modelProperty: "script",
-              get: function () {
-                return {
-                  script: dummyState,
-                };
-              },
-              set: function (e, values) {
-                const updatedValue = values?.script;
-                setDummyState(updatedValue);
-              },
-            }}
-            suggestion={true}
-          />
+          <Box color="body" className={styles.new}>
+            <Textbox
+              element={element}
+              className={styles.textbox}
+              readOnly={readOnly && getProperty(toPathValue(title))}
+              showLabel={false}
+              defaultHeight={window?.innerHeight - 205}
+              entry={{
+                id: "script",
+                label: translate("Script"),
+                modelProperty: "script",
+                get: function () {
+                  return {
+                    script: dummyState,
+                  };
+                },
+                set: function (e, values) {
+                  const updatedValue = values?.script;
+                  setDummyState(updatedValue);
+                },
+              }}
+              suggestion={true}
+            />
+          </Box>
         }
       />
     </>
