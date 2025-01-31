@@ -57,9 +57,9 @@ const PRIORITIES = [
 ];
 
 const TYPES = [
-  { value: "value", id: "value", title: "Value" },
-  { value: "field", id: "field", title: "Field" },
-  { value: "script", id: "script", title: "Script" },
+  { value: "value", id: "value", title: translate("Value") },
+  { value: "field", id: "field", title: translate("Field") },
+  { value: "script", id: "script", title: translate("Script") },
 ];
 
 const menuObj = {

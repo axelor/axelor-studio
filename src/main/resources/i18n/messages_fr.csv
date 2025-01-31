@@ -1696,3 +1696,8 @@
 "Resume timer-blocked instances","Reprendre les instances bloquées par un timer",,
 "Timer-Blocked instances","Instances bloquées par un timer",,
 "Please select at least one instance blocked on a timer to resume processing.","Veuillez sélectionner au moins une instance bloquée par un timer pour reprendre le traitement.",,
+"Field config","Configuration du champ",,
+"Field path","Chemin du champ",,
+"User","Utilisateur",,
+"Team","Équipe",,
+"Deadline","Date d'échéance",,

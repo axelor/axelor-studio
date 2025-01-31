@@ -163,17 +163,17 @@ export default function ModelProps(props) {
   const FIELD_ACTIONS = [
     {
       id: 1,
-      label: "User",
+      label: translate("User"),
       title: "userField",
     },
     {
       id: 2,
-      label: "Team",
+      label: translate("Team"),
       title: "teamField",
     },
     {
       id: 3,
-      label: "Deadline",
+      label: translate("Deadline"),
       title: "deadlineField",
     },
   ];
@@ -759,7 +759,7 @@ export function FieldAction({
   fieldTypes = ["field", "script"],
 }) {
   const [currentType, setCurrentType] = useState({
-    title: "Field",
+    title: translate("Field"),
     value: "field",
   });
   const [openAlertDialog, setOpenAlertDialog] = useState(false);
@@ -773,9 +773,9 @@ export function FieldAction({
   const [model, setModel] = useState(null);
   const [field, setField] = useState(null);
   const TYPES = [
-    { value: "value", title: "Value" },
-    { value: "field", title: "Field" },
-    { value: "script", title: "Script" },
+    { value: "value", title: translate("Value") },
+    { value: "field", title: translate("Field") },
+    { value: "script", title: translate("Script") },
   ];
 
   const toPath = (text) => `${text}Path`;
