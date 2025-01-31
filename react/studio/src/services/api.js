@@ -55,7 +55,7 @@ class AxelorService {
   }
 
   info() {
-    const url = "ws/app/info"
+    const url = "ws/public/app/info"
     return services.get(url)
   }
 }
