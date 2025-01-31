@@ -81,7 +81,7 @@ dependencies {
 
   implementation "ch.qos.logback:logback-core:1.4.14"
   implementation "ch.qos.logback:logback-classic:1.4.14"
-  implementation "org.yaml:snakeyaml:1.28"
+  implementation "org.yaml:snakeyaml:2.3"
   implementation 'javax.websocket:javax.websocket-api:1.1'
   compileOnly 'org.projectlombok:lombok:1.18.30'
   annotationProcessor 'org.projectlombok:lombok:1.18.30'
