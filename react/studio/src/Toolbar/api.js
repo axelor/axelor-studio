@@ -297,8 +297,8 @@ export async function deleteAttrsList(list, handleError = () => {}) {
 
 export async function fetchUserPreferences() {
   const userInfo = await appUserService.info()
-  if (userInfo?.user?.id) {
-    const userResponse = await appUserService.fetch(userInfo.user.id, {
+  if (userInfo && userInfo["user.id"]) {
+    const userResponse = await appUserService.fetch(userInfo["user.id"], {
       fields: ["theme"],
     })
     if (userResponse && userResponse.data && userResponse.data[0]) {

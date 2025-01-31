@@ -280,8 +280,8 @@ function App({
   }, [onChange, onClose, timerDefinition])
 
   useEffect(() => {
-    Service.get("/ws/public/app/info").then(
-      data => data?.user?.lang && setLang(data?.user?.lang)
+    Service.get("/ws/app/info").then(
+      data => data?.["user.lang"] && setLang(data["user.lang"])
     )
   }, [])
 
