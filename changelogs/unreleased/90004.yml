@@ -1,0 +1,5 @@
+---
+title: Menu created through the studio directly, the magic wand action is messy
+type: fix
+description: |
+  if a menu is created directly from the studio, when clicking further on the magic wand, the information is missing, causing issues while saving.
