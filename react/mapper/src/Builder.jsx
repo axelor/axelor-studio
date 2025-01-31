@@ -816,9 +816,12 @@ function Builder({
     <>
       {isDialog ? (
         <DialogBox
+          fullscreen={true}
           open={open}
+          title="Script"
           handleSave={handleSave}
           handleClose={handleClose}
+          className={styles.dialogPaper}
         >
           {UI()}
         </DialogBox>

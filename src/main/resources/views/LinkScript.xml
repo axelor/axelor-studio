@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_7.1.xsd">
+
+  <grid name="link-script-grid" title="LinkScript" model="com.axelor.studio.db.LinkScript">
+    <field name="name"/>
+    <field name="priority"/>
+    <field name="transactional"/>
+    <button name="testBtn" icon="play" onClick="save,action-link-script-view-open-test-popup"/>
+  </grid>
+
+  <form name="link-script-form" title="LinkScript" model="com.axelor.studio.db.LinkScript"
+    onLoad="action-link-script-attrs-focus-arcs-panel" width="large">
+
+    <toolbar>
+      <button name="testBtn" title="Test" icon="play"
+        onClick="save,action-link-script-view-open-test-popup"/>
+    </toolbar>
+
+    <panel name="mainPanel">
+      <field name="name"/>
+      <field name="transactional" widget="BooleanSwitch"/>
+      <field name="description" widget="html" colSpan="12"/>
+    </panel>
+
+    <panel-tabs>
+      <panel name="bodyPanel" title="Body" itemSpan="12">
+        <help>
+          <![CDATA[
+          If you don't add a return on the last line of the body, then all variables of the current context plus all variables you've defined in the body will be implicitly returned.<br>Either implicitly or explicitly declared, the returned value will be injected in the context in a variable named following the name defined in the arc.
+        ]]>
+        </help>
+        <field name="body" showTitle="false" widget="code-editor" x-code-syntax="java"
+          height="500"/>
+      </panel>
+
+      <panel-related field="dependencyArcs" grid-view="link-script-arc-grid"
+        form-view="link-script-arc-form"/>
+
+      <panel-related field="outputArcs" grid-view="link-script-arc-grid"
+        form-view="link-script-arc-form"/>
+    </panel-tabs>
+
+    <panel-mail name="mailPanel">
+      <mail-messages limit="4"/>
+      <mail-followers/>
+    </panel-mail>
+
+  </form>
+
+  <action-view name="action-link-script-view-open-test-popup" title="Test LinkScript"
+    model="com.axelor.utils.db.Wizard">
+    <view type="form" name="link-script-test-form"/>
+    <view-param name="popup" value="true"/>
+    <view-param name="show-toolbar" value="false"/>
+    <view-param name="show-confirm" value="false"/>
+    <view-param name="popup-save" value="false"/>
+    <context name="linkScriptName" expr="eval: name"/>
+    <context name="script" expr="eval: body"/>
+  </action-view>
+
+  <form title="Test LinkScript" name="link-script-test-form" model="com.axelor.utils.db.Wizard"
+    onNew="action-link-script-method-set-bindings">
+    <panel>
+      <help colSpan="12">
+        <![CDATA[
+          Expressions are evaluated as groovy expressions <b>if</b> it starts with <b>'eval:'</b>. Otherwise, it's considered as a string.
+        ]]>
+      </help>
+      <field name="bindings" showTitle="false" x-dirty="false" colSpan="12"
+        type="many-to-many" target="com.axelor.studio.db.LinkScriptBinding" canSelect="false">
+        <editor>
+          <field name="parameter"/>
+          <field name="expression" height="1"/>
+        </editor>
+      </field>
+      <button name="testBtn" title="Test" icon="play"
+        onClick="action-link-script-method-test" colOffset="6"/>
+    </panel>
+  </form>
+
+  <action-method name="action-link-script-method-set-bindings">
+    <call class="com.axelor.studio.web.LinkScriptController" method="setBindings"/>
+  </action-method>
+
+  <action-method name="action-link-script-method-test">
+    <call class="com.axelor.studio.web.LinkScriptController" method="run"/>
+  </action-method>
+
+</object-views>

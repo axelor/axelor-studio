@@ -3,6 +3,7 @@ package com.axelor.studio.service.constructor.components.expressions.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,10 @@ public class RuleDto {
   private FieldValueDto fieldValue2;
   private String operator;
   private List<ElementDto> allField;
+
+  private List<TransformationDto> transformations = new ArrayList<>();
+  private List<TransformationDto> valueTransformations = new ArrayList<>();
+  private List<TransformationDto> valueTransformations2 = new ArrayList<>();
 
   @JsonProperty(value = "field")
   public void unpackField(Map<String, Object> fieldMap) {
@@ -88,5 +93,38 @@ public class RuleDto {
         fieldValue2 = new SimpleFieldValueDto(fieldValueObj.toString());
       }
     }
+  }
+
+  @JsonProperty("fieldTransformations")
+  private void unpackFieldTransformations(List<Map<String, Object>> fieldTransformations) {
+    processTransformations(fieldTransformations, transformations);
+  }
+
+  @JsonProperty("valueTransformations")
+  private void unpackValueTransformations(List<Map<String, Object>> valueTransformations) {
+    processTransformations(valueTransformations, this.valueTransformations);
+  }
+
+  @JsonProperty("valueTransformations2")
+  private void unpackValueTransformations2(List<Map<String, Object>> valueTransformations) {
+    processTransformations(valueTransformations, this.valueTransformations2);
+  }
+
+  private void processTransformations(
+      List<Map<String, Object>> transformationsData, List<TransformationDto> targetList) {
+    transformationsData.forEach(
+        transformationData -> {
+          if (transformationData.containsKey("operation")) {
+            TransformationDto transformationDto =
+                new ObjectMapper()
+                    .convertValue(transformationData.get("operation"), TransformationDto.class);
+            if (transformationData.containsKey("library")
+                && transformationData.get("library") != null) {
+              transformationDto.setLibrary(
+                  (String) ((Map<String, Object>) transformationData.get("library")).get("name"));
+            }
+            targetList.add(transformationDto);
+          }
+        });
   }
 }

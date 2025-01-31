@@ -473,12 +473,72 @@ export async function getCustomVariables() {
   return (res && res.data) || [];
 }
 
+export async function getLibraries(params) {
+  const res = await services.get('ws/rest/com.axelor.studio.db.Library');
+  return res && res.data;
+}
+
+export async function getTransformations(libraryId) {
+  const data = {
+    data: {
+      criteria: [
+        {
+          operator: 'and',
+          criteria: [
+            {
+              fieldName: 'library.id',
+              operator: '=',
+              value: libraryId,
+            },
+          ],
+        },
+      ],
+    },
+    fields: [
+      'name',
+      'description',
+      'multiArg',
+      'multiArgType',
+      'groovyTemplate',
+      'parameters',
+    ],
+  };
+  const res = await services.search(
+    'com.axelor.studio.db.Transformation',
+    data
+  );
+  return res && res.data && res.data;
+}
+
+export async function getParams(transformationId) {
+  const data = {
+    data: {
+      criteria: [
+        {
+          operator: 'and',
+          criteria: [
+            {
+              fieldName: 'transformation.id',
+              operator: '=',
+              value: transformationId,
+            },
+          ],
+        },
+      ],
+    },
+    fields: ['name', 'type', 'description', 'isOptional'],
+  };
+  const res = await services.search('com.axelor.studio.db.Parameter', data);
+  return res && res.data && res.data;
+}
+
+
 export async function generateGroovyExpression(jsonQuery) {
   let res = await services.action(
     'action-wkf-model-method-generate-expression',
     {
-      data: jsonQuery,
+      data: jsonQuery
     }
   );
-  return res?.data;
+  return  res?.data;
 }

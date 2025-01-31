@@ -171,7 +171,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
       wkfModel.setDiagramXml(bpmDiag);
       addDmnFiles(wkfModel, bpmDiag);
       wkfModelService.start(null, wkfModel);
-      bpmDeploymentService.deploy(null, wkfModel, null);
+      bpmDeploymentService.deploy(null, wkfModel, null, false);
     } else {
       WkfModel lasVersionModel = wkfModel;
       while (lasVersionModel != null) {

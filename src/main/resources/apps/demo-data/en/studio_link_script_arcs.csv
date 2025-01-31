@@ -1,0 +1,7 @@
+conditionScript;sequence;name;toLinkScript.name;outputLinkScript.name;dependencyLinkScript.name
+age > 18;1;task;Division of age;Division of age;
+;1;;Fetch TODO 1;;Create task for TODO 1
+;1;product;Set product fields;Create product;
+;1;qty;Compute quantity;;Create sale order line
+;2;product;Create product;;Create sale order line
+;1;sol;Create sale order;Create sale order line;

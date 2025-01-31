@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import produce from 'immer';
 import moment from 'moment';
 import { flattenDeep, isEmpty } from 'lodash';
 import ExpressionComponent from './builder';
-import { Timeline, Button, Select, IconButton } from '../components';
+import {
+  Timeline,
+  Button,
+  Select,
+  IconButton,
+  GenericDialogBox,
+} from '../components';
 import {
   COMBINATOR as COMBINATORS,
   MAP_OPERATOR,
@@ -11,7 +17,6 @@ import {
   DATE_FORMAT,
   MAP_COMBINATOR,
   MAP_BPM_COMBINATOR,
-  POSITIVE_OPERATORS,
   MANY_TO_ONE_TYPES,
   RELATIONAL_TYPES,
 } from '../common/constants';
@@ -19,10 +24,14 @@ import {
   isBPMQuery,
   lowerCaseFirstLetter,
   jsStringEscape,
-  upperCaseFirstLetter,
   translate,
 } from '../common/utils';
-import { getRecord, getModels, saveRecord, generateGroovyExpression } from '../services/api';
+import {
+  getRecord,
+  getModels,
+  saveRecord,
+  generateGroovyExpression,
+} from '../services/api';
 import {
   Dialog,
   DialogHeader,
@@ -41,6 +50,8 @@ let paramCount = 0;
 let count = 0;
 
 function ExpressionBuilder({
+  open,
+  title,
   parameters,
   onSave,
   exprVal,
@@ -77,6 +88,8 @@ function ExpressionBuilder({
   const [expressionComponents, setExpressionComponents] = useState([{}]);
   const [singleResult, setSingleResult] = useState(false);
   const [generateWithId, setGenerateWithId] = useState(false);
+
+  const { DialogBox } = useDialog();
 
   function onAddExpressionEditor() {
     setExpressionComponents(
@@ -141,7 +154,6 @@ function ExpressionBuilder({
       return `LocalTime.parse(${time})`;
     }
   }
-
 
   const isRelationalCustomField = (field, parentFieldName) => {
     if (
@@ -592,7 +604,6 @@ function ExpressionBuilder({
     }
   }
 
-
   function getListOfTree(list) {
     var map = {},
       node,
@@ -729,7 +740,7 @@ function ExpressionBuilder({
     return isValid;
   };
 
-  async function generateExpression(combinator, type,isCreateObject) {
+  async function generateExpression(combinator, type) {
     const expressionValues = [];
     let model;
     let vals = [];
@@ -758,14 +769,18 @@ function ExpressionBuilder({
         : modalName;
       let str = '';
       const listOfTree = getListOfTree(rules);
-      const criteria =  getBPMCriteria(listOfTree, lowerCaseFirstLetter(modalName), undefined)
+      const criteria = getBPMCriteria(
+        listOfTree,
+        lowerCaseFirstLetter(modalName),
+        undefined
+      );
       vals.push(
         ...((criteria &&
           ((criteria.values || []).filter(f => Array.isArray(f)) || [])) ||
           [])
       );
       if (metaModals || isPackage) {
-        str +=  criteria && criteria.condition ;
+        str += criteria && criteria.condition;
       } else {
         break;
       }
@@ -778,23 +793,20 @@ function ExpressionBuilder({
       expressions.push(`${str}`);
     }
     let expr;
-    if(!isBPMQuery(type))
-    {
-     expr = await  generateGroovyExpression({
-      combinator,
-      values:expressionValues,
-      isBPMN,
-      generateWithId,
-    }
-    );
-  }
-  else {
-    const map_type = MAP_BPM_COMBINATOR
-    const str = (expressions.filter(e => e !== '') || [])
-      .map(e => (expressions.length > 1 ? `(${e})` : e))
-      .join(' ' + map_type[combinator] + ' ');
+    if (!isBPMQuery(type)) {
+      expr = await generateGroovyExpression({
+        combinator,
+        values: expressionValues,
+        isBPMN,
+        generateWithId,
+      });
+    } else {
+      const map_type = MAP_BPM_COMBINATOR;
+      const str = (expressions.filter(e => e !== '') || [])
+        .map(e => (expressions.length > 1 ? `(${e})` : e))
+        .join(' ' + map_type[combinator] + ' ');
 
-     expr = str;
+      expr = str;
 
       const {
         value: {
@@ -1054,80 +1066,110 @@ function ExpressionBuilder({
   }
 
   return (
-    <Box d="flex" flexDirection="column" overflow="hidden" flex="1">
-      <Box d="flex" flexDirection="column" color="body" className={styles.root}>
-        <Box rounded={2} border={!isBamlQuery} className={styles.paper}>
-          <Box maxH={100} maxW={100}>
-            {isBPMN &&
-              !isBPMQuery(parentType) &&
-              renderCheckbox(
-                'Generate with saved record',
-                generateWithId,
-                setGenerateWithId
-              )}
-            {isBPMN &&
-              !isBamlQuery &&
-              isBPMQuery(parentType) &&
-              renderCheckbox('Single result', singleResult, setSingleResult)}
-            {isBamlQuery ? (
-              <div>{UI()}</div>
-            ) : (
-              <Timeline
-                isBPMN={isBPMN}
-                title={
-                  <Select
-                    className={styles.combinator}
-                    name="expression"
-                    value={combinator}
-                    options={COMBINATORS}
-                    onChange={value => setCombinator(value)}
-                    disableUnderline={true}
-                  />
-                }
-              >
-                {UI()}
-              </Timeline>
+    <DialogBox
+      fullscreen={true}
+      open={open}
+      title={title}
+      isFooterShow={false}
+      handleClose={close}
+      className={styles.dialogPaper}
+      children={
+        <Box d="flex" flexDirection="column" overflow="hidden" flex="1">
+          <Box
+            d="flex"
+            flexDirection="column"
+            color="body"
+            className={styles.root}
+          >
+            <Box rounded={2} border={!isBamlQuery} className={styles.paper}>
+              <Box maxH={100} maxW={100}>
+                {isBPMN &&
+                  !isBPMQuery(parentType) &&
+                  renderCheckbox(
+                    'Generate with saved record',
+                    generateWithId,
+                    setGenerateWithId
+                  )}
+                {isBPMN &&
+                  !isBamlQuery &&
+                  isBPMQuery(parentType) &&
+                  renderCheckbox(
+                    'Single result',
+                    singleResult,
+                    setSingleResult
+                  )}
+                {isBamlQuery ? (
+                  <div>{UI()}</div>
+                ) : (
+                  <Timeline
+                    isBPMN={isBPMN}
+                    title={
+                      <Select
+                        className={styles.combinator}
+                        name="expression"
+                        value={combinator}
+                        options={COMBINATORS}
+                        onChange={value => setCombinator(value)}
+                        disableUnderline={true}
+                      />
+                    }
+                  >
+                    {UI()}
+                  </Timeline>
+                )}
+              </Box>
+            </Box>
+          </Box>
+
+          <Box className={styles.dialogFooter}>
+            <Button
+              variant="primary"
+              title="OK"
+              className={styles.save}
+              onClick={() => generateExpression(combinator, parentType)}
+            />
+            {dialogActionButton && (
+              <React.Fragment>{dialogActionButton}</React.Fragment>
             )}
           </Box>
+
+          <Dialog centered open={openAlert} className={styles.dialog}>
+            <DialogHeader onCloseClick={() => setAlert(false)}>
+              <h3>{translate('Error')}</h3>
+            </DialogHeader>
+            <DialogContent className={styles.dialogContent}>
+              {translate('Add all values')}
+            </DialogContent>
+            <DialogFooter>
+              <Button
+                variant="primary"
+                title="OK"
+                onClick={() => setAlert(false)}
+              />
+            </DialogFooter>
+          </Dialog>
         </Box>
-      </Box>
-
-      <Box className={styles.dialogFooter}>
-        <Button
-          variant="primary"
-          title="OK"
-          className={styles.save}
-          onClick={() => generateExpression(combinator, parentType,isCreateObject)}
-        />
-        {dialogActionButton && (
-          <React.Fragment>{dialogActionButton}</React.Fragment>
-        )}
-      </Box>
-
-      <Dialog centered open={openAlert} className={styles.dialog}>
-        <DialogHeader onCloseClick={() => setAlert(false)}>
-          <h3>{translate('Error')}</h3>
-        </DialogHeader>
-        <DialogContent className={styles.dialogContent}>
-          {translate('Add all values')}
-        </DialogContent>
-        <DialogFooter>
-          <Button
-            variant="primary"
-            title="OK"
-            onClick={() => setAlert(false)}
-          />
-        </DialogFooter>
-      </Dialog>
-    </Box>
+      }
+    />
   );
 }
 
+export const DialogContext = createContext();
+
 export default function ExpressionBuilderApp(props) {
   const { theme, options } = useAppTheme();
+
+  const DialogBox = props?.DialogBox || GenericDialogBox;
+
   return (
     <ThemeProvider theme={theme} options={options}>
-      <ExpressionBuilder {...props} />
+      <DialogContext.Provider value={{ DialogBox }}>
+        <ExpressionBuilder {...props} />
+      </DialogContext.Provider>
     </ThemeProvider>
   );
+}
+
+export function useDialog() {
+  return useContext(DialogContext);
 }

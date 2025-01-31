@@ -40,7 +40,7 @@ import { translate } from '../../common/utils';
 import { Box } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 import { BooleanRadio } from '../../components';
-
+import TransformationBuilder from '../../tranformation-builder';
 import styles from './editor.module.css';
 
 async function fetchField(metaModals, type) {
@@ -139,7 +139,7 @@ function RenderRelationalWidget(props) {
 }
 
 function RenderSimpleWidget(props) {
-  const { Component, operator, editor, internalProps } = props;
+  const { Component, operator, editor, internalProps, handleOpen } = props;
   const { onChange, value, value2, classes, style, targetName, ...rest } =
     internalProps;
   if (['=', '!=', '>', '>=', '<', '<=', 'like', 'notLike'].includes(operator)) {
@@ -162,7 +162,20 @@ function RenderSimpleWidget(props) {
           value={value}
           {...rest}
         />
-
+        <React.Fragment>
+          <IconButton size="small" className={styles.iconButton}>
+            <Tooltip title={translate('Add Data transformation')}>
+              <MaterialIcon
+                icon="calculate"
+                color="body"
+                fontSize={18}
+                onClick={() => {
+                  handleOpen('valueTransformations');
+                }}
+              />
+            </Tooltip>
+          </IconButton>
+        </React.Fragment>
         <Component
           name="fieldValue2"
           onChange={value =>
@@ -172,6 +185,20 @@ function RenderSimpleWidget(props) {
           style={style}
           {...rest}
         />
+        <React.Fragment>
+          <IconButton size="small" className={styles.iconButton}>
+            <Tooltip title={translate('Add Data transformation')}>
+              <MaterialIcon
+                icon="calculate"
+                color="body"
+                fontSize={18}
+                onClick={() => {
+                  handleOpen('valueTransformations2');
+                }}
+              />
+            </Tooltip>
+          </IconButton>
+        </React.Fragment>
       </React.Fragment>
     );
   } else if (['in', 'notIn'].includes(operator)) {
@@ -216,6 +243,7 @@ function RenderWidget({
   classes,
   parentType,
   editor,
+  handleOpen,
   ...rest
 }) {
   const props = {
@@ -254,6 +282,7 @@ function RenderWidget({
           Component={DateTimePicker}
           operator={operator}
           editor={editor}
+          handleOpen={handleOpen}
           internalProps={{
             type,
             value: stringToDate(value.fieldValue),
@@ -282,6 +311,7 @@ function RenderWidget({
 
       widgetProps = {
         Component: options ? Select : NumberField,
+        handleOpen,
         operator,
         editor,
         internalProps: {
@@ -311,6 +341,7 @@ function RenderWidget({
           Component={Select}
           operator={operator}
           editor={editor}
+          handleOpen={handleOpen}
           internalProps={{
             options,
             classes,
@@ -330,6 +361,7 @@ function RenderWidget({
         Component: options ? Select : InputField,
         operator,
         editor,
+        handleOpen,
         internalProps: {
           ...(options
             ? { options, classes, ...props }
@@ -397,12 +429,23 @@ const Rule = React.memo(function Rule(props) {
     relatedElseValueFieldName,
     isShowElseMetaModelField,
     isShowMetaModelField,
+    fieldTransformations,
+    valueTransformations,
+    valueTransformations2,
   } = value;
   const type = fieldType && fieldType.toLowerCase().replaceAll('-', '_');
-
+  const [open, setOpen] = useState(false);
   const [elseNameValue, setElseNameValue] = useState(null);
   const [nameValue, setNameValue] = useState(null);
   const [isParameter, setIsParameter] = useState(true);
+  const [transform, setTransform] = useState('field');
+
+  const transformationsMap = {
+    fieldTransformations: fieldTransformations,
+    valueTransformations: valueTransformations,
+    valueTransformations2: valueTransformations2,
+  };
+
   const fetchMetaModels = useMetaModelSearch(
     element,
     isMapper ? null : 'metaModel'
@@ -524,6 +567,11 @@ const Rule = React.memo(function Rule(props) {
     return [...data, { label: 'None', value: 'none' }];
   }, [operator, isCondition, parentType, isBPMQuery]);
 
+  function handleOpen(type = 'fieldTransformations') {
+    setOpen(true);
+    setTransform(type);
+  }
+
   const getVariables = async () => {
     return isBuiltInVars
         ? BUILT_IN_VARIABLES.map(v => ({ name: v.name, title: v.title }))
@@ -548,6 +596,23 @@ const Rule = React.memo(function Rule(props) {
           handleChange('isField', 'none');
         }}
       />
+      {parentType !== 'bpmQuery' && field && (
+        <React.Fragment>
+          <IconButton size="small" className={styles.iconButton}>
+            <Tooltip title={translate('Add Data transformation')}>
+              <MaterialIcon
+                icon="calculate"
+                color="body"
+                fontSize={18}
+                onClick={() => {
+                  handleOpen('fieldTransformations');
+                }}
+              />
+            </Tooltip>
+          </IconButton>
+        </React.Fragment>
+      )}
+
       <React.Fragment>
         <Select
           name="operator"
@@ -966,14 +1031,44 @@ const Rule = React.memo(function Rule(props) {
             classes={styles}
             editor={editor}
             field={field}
+            handleOpen={handleOpen}
           />
         ))
       )}
-      <div>
+      {![
+        'isNull',
+        'isNotNull',
+        'isTrue',
+        'isFalse',
+        'between',
+        'notBetween',
+      ].includes(operator) && (
+        <IconButton size="small" className={styles.iconButton}>
+          <Tooltip title={translate('Add Data transformation')}>
+            <MaterialIcon
+              icon="calculate"
+              color="body"
+              fontSize={18}
+              onClick={() => {
+                handleOpen('valueTransformations');
+              }}
+            />
+          </Tooltip>
+        </IconButton>
+      )}
+      <div style={{ display: 'flex' }}>
         <IconButton size="small" onClick={e => onRemove(editor.id, index)}>
           <MaterialIcon icon="delete" color="body" fontSize={18} />
         </IconButton>
       </div>
+      {open && (
+        <TransformationBuilder
+          initialData={transformationsMap[transform]}
+          open={open}
+          onClose={() => setOpen(false)}
+          handleOk={value => onChange({ name: transform, value }, editor)}
+        />
+      )}
     </Box>
   );
 });

@@ -40,3 +40,40 @@
   align-items: center;
 
 }
+
+
+.dialogPaper {
+  margin: 20px;
+  display: flex;
+  max-height: calc(100% - 40px);
+  max-width: calc(100% - 40px);
+}
+
+.dialogPaper > div {
+  max-width: 100%;
+  min-width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialogPaper > div > div {
+  border-radius: 4px!important;
+  resize: both;
+  padding: 0px!important;
+  overflow: auto;
+  width: 80%;
+  height: 80%!important;
+  border-width: 1px;
+
+}
+
+.cancelButton {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.dialogPaper >div > div > div > div{
+  box-shadow: none;
+}

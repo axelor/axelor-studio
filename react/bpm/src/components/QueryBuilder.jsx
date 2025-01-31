@@ -34,39 +34,35 @@ function QueryBuilder({
   };
 
   return (
-    <Dialog backdrop open={open} className={styles.dialog}>
-      <DialogHeader onCloseClick={close}>
-        <DialogTitle>{translate(title)}</DialogTitle>
-      </DialogHeader>
-      <DialogContent className={styles.dialogContent}>
-        {ExpressionBuilder ? (
-          <ExpressionBuilder
-            parameters={parameters}
-            isBPMN={true}
-            isAllowButtons={true}
-            close={close}
-            isCreateObject={isCreateObject}
-            setProperty={setProperty}
-            getExpression={getExpression}
-            defaultModel={defaultModel}
-            fetchModels={fetchModels}
-            setOpen={setOpen}
-            setOpenScriptDialog={setOpenScriptDialog}
-            dialogActionButton={
-              <Button
-                onClick={close}
-                className={styles.cancelButton}
-                variant="secondary"
-              >
-                {translate("Cancel")}
-              </Button>
-            }
-          />
-        ) : (
-          <ExpressionBuilderDummy />
-        )}
-      </DialogContent>
-    </Dialog>
+    <div>
+      {ExpressionBuilder ? (
+        <ExpressionBuilder
+          open={open}
+          title={title}
+          parameters={parameters}
+          isBPMN={true}
+          isAllowButtons={true}
+          close={close}
+          setProperty={setProperty}
+          getExpression={getExpression}
+          defaultModel={defaultModel}
+          fetchModels={fetchModels}
+          setOpen={setOpen}
+          setOpenScriptDialog={setOpenScriptDialog}
+          dialogActionButton={
+            <Button
+              onClick={close}
+              className={styles.cancelButton}
+              variant="secondary"
+            >
+              {translate("Cancel")}
+            </Button>
+          }
+        />
+      ) : (
+        <ExpressionBuilderDummy />
+      )}
+    </div>
   );
 }
 export default QueryBuilder;

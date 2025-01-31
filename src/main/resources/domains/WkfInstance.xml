@@ -22,6 +22,8 @@
     <one-to-many ref="com.axelor.studio.db.WkfInstanceMigrationHistory"
       name="wkfInstanceMigrationHistory" title="Migration History" mappedBy="wkfInstance"
       orderBy="-createdOn"/>
+    <integer name="statusSelect" title="Status" selection="wkf.instance.status.select"
+      default="1"/>
 
     <finder-method name="findByInstanceId" using="instanceId"/>
 
@@ -29,6 +31,8 @@
         public static final int STATUS_NOT_MIGRATED = 1;
         public static final int STATUS_MIGRATED_SUCCESSFULLY = 2;
         public static final int STATUS_MIGRATION_ERROR = 3;
+        public static final int STATUS_IN_PROGRESS = 1;
+        public static final int STATUS_STOPPED = 2;
     ]]></extra-code>
 
   </entity>

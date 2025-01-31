@@ -122,6 +122,13 @@ import com.axelor.studio.dmn.service.DmnImportService;
 import com.axelor.studio.dmn.service.DmnImportServiceImpl;
 import com.axelor.studio.dmn.service.DmnService;
 import com.axelor.studio.dmn.service.DmnServiceImpl;
+import com.axelor.studio.ls.LinkScriptBindingsService;
+import com.axelor.studio.ls.LinkScriptBindingsServiceImpl;
+import com.axelor.studio.ls.LinkScriptService;
+import com.axelor.studio.ls.LinkScriptServiceImpl;
+import com.axelor.studio.ls.evaluator.LinkScriptEvaluator;
+import com.axelor.studio.ls.evaluator.LinkScriptGroovyEvaluator;
+import com.axelor.studio.ls.script.LinkScriptGroovyScriptHelper;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.studio.service.AppSettingsStudioServiceImpl;
 import com.axelor.studio.service.ChartRecordViewService;
@@ -179,6 +186,7 @@ import com.axelor.studio.service.ws.WsAuthenticatorService;
 import com.axelor.studio.service.ws.WsAuthenticatorServiceImpl;
 import com.axelor.studio.service.ws.WsConnectorService;
 import com.axelor.studio.service.ws.WsConnectorServiceImpl;
+import com.google.inject.TypeLiteral;
 
 public class StudioModule extends AxelorModule {
 
@@ -278,5 +286,10 @@ public class StudioModule extends AxelorModule {
     bind(ConnectService.class).to(ConnectServiceImpl.class);
     bind(GroovyTemplateService.class).to(GroovyTemplateServiceImpl.class);
     bind(GroovyScriptBuilderService.class).to(GroovyScriptBuilderServiceImpl.class);
+    bind(LinkScriptService.class).to(LinkScriptServiceImpl.class);
+    bind(LinkScriptBindingsService.class).to(LinkScriptBindingsServiceImpl.class);
+
+    bind(new TypeLiteral<LinkScriptEvaluator<LinkScriptGroovyScriptHelper>>() {})
+        .to(LinkScriptGroovyEvaluator.class);
   }
 }

@@ -8,6 +8,7 @@ import Timeline from './timeline/timeline';
 import Tooltip from './tooltip/tooltip';
 import BooleanRadio from './radio/boolean-radio';
 import IconButton from './iconButton/iconButton';
+import GenericDialogBox from './dialog-box/Dialogbox';
 
 export {
   Timeline,
@@ -20,4 +21,5 @@ export {
   Tooltip,
   BooleanRadio,
   IconButton,
+  GenericDialogBox,
 };

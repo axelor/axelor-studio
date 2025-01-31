@@ -66,6 +66,18 @@
     <view type="form" name="library-form"/>
   </action-view>
 
+  <!-- LinkScript menu -->
+
+  <menuitem name="studio-link-script" title="LinkScript" order="21"
+    parent="studio-app-root" action="action.link.script.all"/>
+
+  <action-view name="action.link.script.all" title="LinkScript"
+    model="com.axelor.studio.db.LinkScript">
+    <view type="grid" name="link-script-grid"/>
+    <view type="form" name="link-script-form"/>
+    <view-param name="forceEdit" value="true"/>
+  </action-view>
+
   <!-- Reporting menu -->
 
   <menuitem name="studio-app-reporting" title="Reporting" parent="studio-app-root"
@@ -208,7 +220,7 @@
   <menuitem title="BPM Studio" name="menu-wkf-bpm-studio" parent="studio-app-root"
     action="action-wkf-view-open-editor" order="19" if="__config__.app?.isApp('bpm')"/>
 
-  <menuitem name="bpm-app-bpm-components" title="BPM components" order="21"
+  <menuitem name="bpm-app-bpm-components" title="BPM components" order="22"
     parent="studio-app-root"/>
 
   <menuitem title="BPM Dashboard" name="menu-wkf-bpm-manager"
@@ -287,8 +299,5 @@
   <action-view name="action-view-cron-builder" title="CRON builder">
     <view type="html" name="timer-builder"/>
   </action-view>
-
-
-
 
 </object-views>

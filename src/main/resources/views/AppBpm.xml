@@ -7,7 +7,8 @@
     width="large" canDelete="false" canNew="false" canCopy="false"
     onSave="action-method-custom-variable-list-validate">
     <panel name="migrationPanel" title="Migration" colSpan="12">
-      <field name="useProgressDeploymentBar" title="Enable Using progress deployment display bar" widget="boolean-switch" colSpan="4"/>
+      <field name="useProgressDeploymentBar"
+        title="Enable Using progress deployment display bar" widget="boolean-switch" colSpan="4"/>
     </panel>
     <panel name="taskEvaluationPanel" title="Task evaluation">
       <field name="allowBpmLoadingFromSources" widget="boolean-switch"/>
