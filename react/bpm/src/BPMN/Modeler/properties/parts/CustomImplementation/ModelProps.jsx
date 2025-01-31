@@ -163,6 +163,7 @@ export default function ModelProps(props) {
   const FIELD_ACTIONS = [
     {
       id: 1,
+      isUserPath: true,
       label: translate("User"),
       title: "userField",
     },
@@ -173,6 +174,7 @@ export default function ModelProps(props) {
     },
     {
       id: 3,
+      isDatePath: true,
       label: translate("Deadline"),
       title: "deadlineField",
     },
@@ -704,7 +706,10 @@ export default function ModelProps(props) {
                           getProperty={getProperty}
                           setProperty={setProperty}
                           metaModel={metaModel}
+                          metaJsonModel={metaJsonModel}
                           fieldTypes={["field", "script"]}
+                          isUserPath={action.isUserPath}
+                          isDatePath={action.isDatePath}
                         />
                       ))}
                     </TableBody>
@@ -754,6 +759,9 @@ export function FieldAction({
   getProperty,
   setProperty,
   metaModel,
+  metaJsonModel,
+  isUserPath,
+  isDatePath,
   isUserAction = false,
   fetchMethod,
   fieldTypes = ["field", "script"],
@@ -829,7 +837,7 @@ export function FieldAction({
         type: "metaJsonModel",
       });
     }
-  }, [metaModel]);
+  }, [metaModel, metaJsonModel]);
 
   const clearPropertises = () => {
     setDummyState(null);
@@ -1036,7 +1044,8 @@ export function FieldAction({
               }}
               value={{ fieldName: dummyState || "" }}
               isParent={true}
-              isUserPath={true}
+              isUserPath={isUserPath}
+              isDatePath={isDatePath}
             />
           </div>
         }
