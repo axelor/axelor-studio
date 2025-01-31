@@ -27,14 +27,12 @@ const QueryBuilder = ({
     isParameterShow: false,
   };
   return (
-    <Dialog backdrop open={open} className={styles.dialog}>
-      <DialogHeader onCloseClick={close}>
-        <h3>{translate(title)}</h3>
-      </DialogHeader>
-      <DialogContent className={styles.dialogContent}>
+        <div>
         {ExpressionBuilder ? (
 
           <ExpressionBuilder
+           open={open}
+           title={title}
             parameters={parameters}
             isBPMN={isBPMN}
             isBamlQuery={isBamlQuery}
@@ -55,8 +53,7 @@ const QueryBuilder = ({
           />) : (
           <ExpressionBuilderDummy />
         )}
-      </DialogContent>
-    </Dialog>
+ </div>
   );
 }
 export default QueryBuilder;

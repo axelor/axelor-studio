@@ -40,8 +40,5 @@
     <call class="com.axelor.studio.web.TransformationsLibrariesController"
       method="validateTransformationOnSave"/>
   </action-method>
-  <action-method name="transformation-test-btn">
-    <call class="com.axelor.studio.web.TransformationsLibrariesController" method=""/>
-  </action-method>
 
 </object-views>

@@ -12,7 +12,12 @@
     <many-to-one name="targetVersion" ref="com.axelor.studio.db.WkfModel"
       title="Target version"/>
     <string name="mapping" title="Mapping" large="true"/>
+    <boolean name="upgradeAllInstances"
+      title="migrate all the instances of previous version"/>
     <boolean name="removeOldVersionMenu" title="Remove old version menu" default="false"/>
+    <integer name="totalInstancesToMigrate" title="Total instances to migrate"/>
+    <integer name="successfulMigrations" title="Successful migrations"/>
+    <integer name="failedMigrations" title="Failed migrations"/>
 
   </entity>
 

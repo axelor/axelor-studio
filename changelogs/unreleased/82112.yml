@@ -1,0 +1,6 @@
+---
+title: Allow users to change the Hit Policy in Decision Model and Notation
+type: feature
+description: |
+  - As a user, I want to be able to change the Hit Policy in DMN tables to control how results from multiple rules are combined.
+  - The Hit Policy determines how the results of multiple rules are combined.

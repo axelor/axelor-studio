@@ -1,0 +1,18 @@
+.select {
+  min-width: 10rem;
+}
+
+.arrowIcon {
+  margin: 0 10px;
+}
+
+.paramsButton {
+  cursor: pointer;
+  margin-left: 5%;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.deleteButton {
+  margin-left: auto;
+}

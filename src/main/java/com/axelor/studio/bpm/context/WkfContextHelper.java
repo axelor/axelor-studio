@@ -25,6 +25,7 @@ import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.bpm.transformation.WkfTransformationHelper;
 import com.axelor.studio.helper.DepthFilter;
 import com.axelor.studio.helper.ModelTools;
 import com.axelor.studio.service.AppSettingsStudioService;
@@ -56,6 +57,20 @@ public class WkfContextHelper {
 
   protected static final int DEFAULT_SERIALIZATION_DEPTH =
       Math.min(Beans.get(AppSettingsStudioService.class).serializationDepth(), 10);
+
+  public static Object transform(
+      String transformation, String library, Map<String, Object> parameters) {
+    String target = null;
+    if ("Text".equals(library)) {
+      target = "'"+parameters.get("target").toString()+"'";
+    } else {
+      target = parameters.get("target").toString();
+    }
+    parameters.remove("target");
+    List<String> parametersList =
+        parameters.values().stream().map(Object::toString).collect(Collectors.toList());
+    return WkfTransformationHelper.transform(target, parametersList, library, transformation);
+  }
 
   public static FullContext create(String modelName, Map<String, Object> values) {
     return FullContextHelper.create(modelName, values);

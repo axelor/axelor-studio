@@ -1,0 +1,4 @@
+<%def transformation = transformations[0]
+%>__ctx__.transform('${transformation?.name}','${transformation?.library}',['target':<%if(transformations?.size()>1){
+transformations.remove(transformation)
+%>${groovyScriptService.buildTransformation(transformations,target)}<%}else{%>${target}<%}%><%transformation.parameters.each{it->%>,'${it.name}':<%if(it.type=='String'){%>"<%}%>${it.value}<%if(it.type=='String'){%>"<%}%><%}%>])

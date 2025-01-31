@@ -1,0 +1,62 @@
+.dialog {
+  margin: 20px;
+  display: flex !important;
+  max-height: calc(100% - 40px);
+  max-width: calc(100% - 40px);
+}
+
+.dialog > div {
+  max-width: 100%;
+  min-width: 456px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dialog > div > div {
+  max-height: 100%;
+  resize: both;
+  overflow: auto;
+  min-width: 20%;
+  min-height: 40%;
+
+}
+
+
+.dialog > div > div > div> div{
+  box-shadow: none;
+}
+
+
+
+
+.dialogContent {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.addButton {
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.filter {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.param {
+  width: 100%;
+  margin-right: 2%;
+  justify-content: center;
+}

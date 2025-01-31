@@ -23,6 +23,7 @@ import com.axelor.events.StartupEvent;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
+import com.axelor.studio.ls.LinkScriptBindingsService;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
@@ -41,20 +42,24 @@ public class AppServerStartListener {
   protected final AppService appService;
   protected final AppRepository appRepository;
   protected final AppSettingsStudioService appSettingsService;
+  protected final LinkScriptBindingsService linkScriptBindingsService;
 
   @Inject
   public AppServerStartListener(
       AppService appService,
       AppRepository appRepository,
-      AppSettingsStudioService appSettingsService) {
+      AppSettingsStudioService appSettingsService,
+      LinkScriptBindingsService linkScriptBindingsService) {
     this.appService = appService;
     this.appRepository = appRepository;
     this.appSettingsService = appSettingsService;
+    this.linkScriptBindingsService = linkScriptBindingsService;
   }
 
   public void onStartUp(@Observes @Priority(value = -1) StartupEvent event) {
     try {
       appService.initApps();
+      linkScriptBindingsService.loadBindings();
     } catch (Exception e) {
       ExceptionHelper.trace(e);
     }

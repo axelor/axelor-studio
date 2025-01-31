@@ -1,0 +1,5 @@
+---
+title: Implement Data Transformation in BPM Builders(Expression Builder)
+type: feature
+description: |
+  - Add in the expression builder the possibility to use data transformations

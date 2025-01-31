@@ -78,4 +78,9 @@
     <option value="2">Invalid</option>
   </selection>
 
+  <selection name="wkf.instance.status.select">
+    <option value="1">In progress</option>
+    <option value="2">Stopped</option>
+  </selection>
+
 </object-views>

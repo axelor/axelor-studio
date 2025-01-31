@@ -1,0 +1,46 @@
+name;transactional;description;body
+Division of age;true;<p><b>Divides the age by two if it is greater than 18</b> and adds one day to the date in all cases.</p><p><b>If the age is less than 18 after the division</b>, then a task is created with all the information.<br></p>;"date = date?.plusDays(1) ?: __date__
+age = age ?: 50
+name = name ?: ""Example""
+
+if (age >= 18) {
+    age = age / 2
+}
+
+if (age >= 18) {
+    return
+}
+
+def task = new TeamTask()
+task.setName(echo(name, age, date))
+task.setPriority(""normal"")
+task.setStatus(""new"")
+task.setTaskDate(date)
+task.setTaskDuration((int)age)
+task.setAssignedTo(__user__)
+return __repo__(TeamTask).save(task)"
+Create task for TODO 1;false;Create a task with the information of TODO 1;"return @""Division of age"""
+Fetch TODO 1;false;Fetch the first fake TODO;"url = url ?: ""https://dummyjson.com/todos/1""
+def todo = new JsonSlurper().parseText(request(url).get().send().body())
+def name = todo.todo
+def age = todo.userId"
+Compute quantity;false;Compute quantity from all partners;return __repo__(Partner).all().count()
+Create product;false;Create a new empty product;return new Product()
+Create sale order;true;Create a new sale order;"def so = new SaleOrder()
+
+so.addSaleOrderLineListItem(sol)
+so.setCreationDate(__date__)
+so.setCompany(__repo__(Company).find(1))
+so.setClientPartner(__repo__(Partner).find(1))
+
+return __repo__(SaleOrder).save(so)"
+Create sale order line;false;Create a new sale order line;"def sol = new SaleOrderLine();
+
+sol.setProduct(product)
+sol.setProductName(code + "" - "" + name)
+sol.setQty(qty)
+
+return sol"
+Set product fields;false;Value a product's fields;"product.setName(name)
+product.setCode(code)
+product.setProductTypeSelect(type ?: ""storable"")"

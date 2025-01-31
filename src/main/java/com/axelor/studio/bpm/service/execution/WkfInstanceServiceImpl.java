@@ -1082,4 +1082,15 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       }
     }
   }
+
+  @Override
+  @Transactional(rollbackOn = Exception.class)
+  public void setInstanceStateStopped(String processInstanceId) {
+    WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
+    if (wkfInstance == null) {
+      return;
+    }
+    wkfInstance.setStatusSelect(WkfInstanceRepository.STATUS_STOPPED);
+    wkfInstanceRepository.save(wkfInstance);
+  }
 }

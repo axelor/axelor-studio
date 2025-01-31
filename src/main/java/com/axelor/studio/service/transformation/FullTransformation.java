@@ -28,7 +28,9 @@ public class FullTransformation {
     String groovy = transformation.getGroovyTemplate().replace("#{target}", target);
     if (transformation.getParameters().isEmpty()) return groovy;
     for (int i = 0; i < transformation.getParameters().size(); i++) {
-      groovy.replace("#" + transformation.getParameters().get(i).getName(), parameters.get(i));
+      groovy =
+          groovy.replace(
+              "#{" + transformation.getParameters().get(i).getName() + "}", parameters.get(i));
     }
     return groovy;
   }

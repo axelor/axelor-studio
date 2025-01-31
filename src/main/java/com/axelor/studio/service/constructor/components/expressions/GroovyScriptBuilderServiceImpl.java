@@ -6,6 +6,7 @@ import com.axelor.studio.service.constructor.components.expressions.dto.ElementD
 import com.axelor.studio.service.constructor.components.expressions.dto.ExpressionDto;
 import com.axelor.studio.service.constructor.components.expressions.dto.RuleDto;
 import com.axelor.studio.service.constructor.components.expressions.dto.ScriptDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.TransformationDto;
 import com.axelor.text.GroovyTemplates;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
@@ -23,6 +24,7 @@ public class GroovyScriptBuilderServiceImpl implements GroovyScriptBuilderServic
   protected static final String CONDITION_TEMPLATE_PATH = "templates/groovyCondition.tmpl";
   protected static final String FIELD_NAME_TEMPLATE_PATH = "templates/groovyFieldName.tmpl";
   protected static final String RULE_TEMPLATE_PATH = "templates/groovyRule.tmpl";
+  protected static final String TRANSFORMATION_TEMPLATE_PATH = "templates/transformation.tmpl";
 
   @Inject
   public GroovyScriptBuilderServiceImpl(GroovyTemplates groovyTemplates) {
@@ -123,6 +125,25 @@ public class GroovyScriptBuilderServiceImpl implements GroovyScriptBuilderServic
             this);
     return groovyTemplates
         .from(new InputStreamReader(Resources.getResource(FIELD_NAME_TEMPLATE_PATH).openStream()))
+        .make(bindings)
+        .render();
+  }
+
+  public String buildTransformation(List<TransformationDto> transformations, String target)
+      throws IOException {
+    Map<String, Object> bindings =
+        Maps.of(
+            "transformations",
+            transformations,
+            "target",
+            target,
+            "__inflector__",
+            Inflector.getInstance(),
+            "groovyScriptService",
+            this);
+    return groovyTemplates
+        .from(
+            new InputStreamReader(Resources.getResource(TRANSFORMATION_TEMPLATE_PATH).openStream()))
         .make(bindings)
         .render();
   }

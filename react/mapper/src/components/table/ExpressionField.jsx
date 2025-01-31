@@ -1,5 +1,5 @@
 import React from 'react';
-import IconButton from "../IconButton"
+import IconButton from '../IconButton';
 
 import ExpressionBuilder from 'generic-builder/src/views';
 import { fetchModelByFullName } from '../../services/api';
@@ -7,6 +7,7 @@ import { translate } from '../../utils';
 import { Box, Button, Input, Dialog, DialogContent } from '@axelor/ui';
 import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 import styles from './expression-field.module.css';
+import DialogBox from '../Dialog';
 
 function ExpressionBuilderDummy() {
   return <p>Integrate Generic builder</p>;
@@ -82,30 +83,28 @@ export default function ExpressionField({
       >
         <MaterialIcon icon="edit" fontSize={16} style={{ marginLeft: 1.5 }} />
       </IconButton>
-      <Dialog open={open} className={styles.dialogPaper}>
-        <DialogContent className={styles.dialogContent}>
-          {ExpressionBuilder ? (
-            <ExpressionBuilder
-              parameters={parameters}
-              defaultModel={defaultModel}
-              onSave={handleExpression}
-              exprVal={expression}
-              isMapper={true}
-              dialogActionButton={
-                <Button
-                  onClick={handleClose}
-                  variant="secondary"
-                  className={styles.cancelButton}
-                >
-                  {translate('Cancel')}
-                </Button>
-              }
-            />
-          ) : (
-            <ExpressionBuilderDummy />
-          )}
-        </DialogContent>
-      </Dialog>
+      {ExpressionBuilder ? (
+        <ExpressionBuilder
+          open={open}
+          DialogBox={DialogBox}
+          parameters={parameters}
+          defaultModel={defaultModel}
+          onSave={handleExpression}
+          exprVal={expression}
+          isMapper={true}
+          dialogActionButton={
+            <Button
+              onClick={handleClose}
+              variant="secondary"
+              className={styles.cancelButton}
+            >
+              {translate('Cancel')}
+            </Button>
+          }
+        />
+      ) : (
+        <ExpressionBuilderDummy />
+      )}
     </Box>
   );
 }

@@ -1,0 +1,43 @@
+.dialogPaper {
+  display: flex;
+  max-width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+}
+
+.dialogPaper > div {
+  min-width: 70%;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.dialogPaper > div > div {
+  max-width: 95%;
+  max-height: 95%;
+  overflow: auto;
+  min-width: 70%;
+  min-height: 400px;
+  resize: both;
+
+}
+
+.dialogPaper > div > div > div > div{
+  box-shadow: none;
+}
+
+
+.dialogContent {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
