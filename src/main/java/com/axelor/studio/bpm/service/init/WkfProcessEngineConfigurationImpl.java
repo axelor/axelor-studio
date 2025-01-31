@@ -21,12 +21,11 @@ import com.axelor.db.JPA;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.script.AxelorScriptEngineFactory;
-import java.lang.reflect.Method;
+import com.axelor.studio.bpm.script.ContextFunctionMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
-import org.camunda.bpm.engine.impl.el.ExpressionManager;
 import org.camunda.bpm.engine.impl.variable.serializer.JavaObjectSerializer;
 import org.camunda.bpm.engine.impl.variable.serializer.TypedValueSerializer;
 import org.camunda.bpm.engine.impl.variable.serializer.jpa.EntityManagerSession;
@@ -86,12 +85,6 @@ public class WkfProcessEngineConfigurationImpl extends StandaloneProcessEngineCo
   @Override
   protected void initExpressionManager() {
     super.initExpressionManager();
-    addFunctions(expressionManager);
-  }
-
-  public void addFunctions(ExpressionManager expressionManager) {
-    for (Method method : WkfContextHelper.class.getDeclaredMethods()) {
-      expressionManager.addFunction(method.getName(), method);
-    }
+    expressionManager.addFunctionMapper(new ContextFunctionMapper());
   }
 }

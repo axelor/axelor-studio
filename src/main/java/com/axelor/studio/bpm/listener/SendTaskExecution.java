@@ -19,11 +19,11 @@ package com.axelor.studio.bpm.listener;
 
 import java.lang.invoke.MethodHandles;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.delegate.Expression;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.el.ExpressionManager;
+import org.camunda.bpm.engine.impl.javax.el.ELContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +48,8 @@ public class SendTaskExecution implements JavaDelegate {
           (StandaloneProcessEngineConfiguration)
               execution.getProcessEngine().getProcessEngineConfiguration();
       ExpressionManager manager = configuration.getExpressionManager();
-      Expression expression = manager.createExpression(message);
-      String msg = (String) expression.getValue(execution);
+      ELContext elContext = manager.getElContext(execution);
+      String msg = (String) manager.createValueExpression(message).getValue(elContext);
       log.debug("Message after eval expression: {}", msg);
       execution
           .getProcessEngineServices()
