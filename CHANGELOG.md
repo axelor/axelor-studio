@@ -1,3 +1,169 @@
+## 3.4.0 (2025-01-31)
+
+#### Feature
+
+* BPM Migration tool enhancement
+
+  <details>
+  
+  Enhances the migration tool by adding a boolean option, "Migrate all instances of the previous version," 
+  which ensures that all instances of the source Wkf model are first migrated to the latest version of the process definition 
+  before migrating to the target Wkf model.
+  The migration view is enhanced with useful information such as source and target model versions, the number of instances participating in the migration, 
+  the number of successfully migrated instances, and the number of instances that failed migration due to errors.
+  
+  </details>
+
+* Allow users to change the Hit Policy in Decision Model and Notation
+
+  <details>
+  
+  - As a user, I want to be able to change the Hit Policy in DMN tables to control how results from multiple rules are combined.
+  - The Hit Policy determines how the results of multiple rules are combined.
+  
+  </details>
+
+* Implement Data Transformation in BPM Builders(Expression Builder)
+
+  <details>
+  
+  - Add in the expression builder the possibility to use data transformations
+  
+  </details>
+
+* New type "customer" for StudioApp
+
+  <details>
+  
+  - Enhanced the typeSelect field for Studio App by adding a new selection option, "Customer"
+  
+  </details>
+
+* Add possibility to choose the display bar in deployment of BPM model
+
+  <details>
+  
+  the display of the progress bar in deployment is parameterizable in the BPM app Config . this can enable or disable the use of the webSocket  .
+  
+  </details>
+
+* Add LinkScript feature
+
+  <details>
+  
+  LinkScript is a library of chainable, multi-output, extendable, Groovy functions that can be created and assembled to run complex business logic in Axelor applications.
+  
+  The following property can be added to the webapp to be able to quickly call a LinkScript in any AOP's Groovy evaluated expression:
+  context.ls = com.axelor.studio.ls.service.LinkScriptService
+  
+  </details>
+
+* BPM - Monitor Process Instance Versions
+
+  <details>
+  
+  Improved the BPM grid view by adding the status of BPM instances, displaying whether they are “In Progress” or “Stopped.” This enhancement also includes the version of each process instance which is the version of the wkfModel they are working with.
+  
+  </details>
+
+* Provide functionality to identify and unblock timer-blocked BPM instances.
+
+  <details>
+  
+  Added the ability to identify BPM instances blocked on a timer that will no longer trigger due to rollback scenarios and 
+  enabled users to unblock them.
+  
+  </details>
+
+#### Change
+
+* Upgrade logback to 1.4.14
+
+  <details>
+  
+  Fix several vulnerabilities present in former versions of `logback-core` and `logback-classic`.
+  
+  </details>
+
+* Upgrade AOP to 7.3.0
+
+  <details>
+  
+  Change to the latest version of AOP
+  
+  </details>
+
+* Upgrade snakeyaml to 2.3
+
+  <details>
+  
+  Fix several vulnerabilities present in former versions.
+  
+  </details>
+
+#### Fix
+
+* Fix Ui Script popup in field config
+* CRON Builder is unstable
+
+  <details>
+  
+  Fix crash BPM app when using CRON builder
+  
+  </details>
+
+* Update the favicon
+
+  <details>
+  
+  - Update the favicon
+  
+  </details>
+
+* Indicators in the “WkfModel” view are not visible to an admin user who does not have the exact name “admin”.
+
+  <details>
+  
+  Resolved issue where supervision elements in the “WkfModel” view were only visible to users with the exact code “admin.” 
+  Introduced a new boolean field, isBpmAdministrator, on the User entity to designate BPM administrative privileges. 
+  Ensure that supervision elements are accessible to all users configured as BPM administrators.
+  
+  </details>
+
+* We can't select DMN options
+
+  <details>
+  
+  in the service rule task we can't select the dmn properties
+  
+  </details>
+
+* Missing translations in front components
+
+  <details>
+  
+  Added translation support for the field configuration panel.
+  
+  </details>
+
+* Menu created through the studio directly, the magic wand action is messy
+
+  <details>
+  
+  if a menu is created directly from the studio, when clicking further on the magic wand, the information is missing, causing issues while saving.
+  
+  </details>
+
+* Change connector script from create Object to create Variable
+
+  <details>
+  
+  Use createVariable instead of creatObject for webservices call in BPM scripts.
+  
+  </details>
+
+* Missing Expression Option in Timer Configuration
+
 ## 3.3.10 (2025-01-15)
 
 #### Change

@@ -1,5 +1,0 @@
----
-title: CRON Builder is unstable
-type: fix
-description:
-  Fix crash BPM app when using CRON builder

@@ -1,4 +1,0 @@
-title: Upgrade snakeyaml to 2.3
-type: change
-description: |
-  Fix several vulnerabilities present in former versions.

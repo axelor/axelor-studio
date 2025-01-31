@@ -1,5 +1,0 @@
----
-title: Add possibility to choose the display bar in deployment of BPM model
-type: feature
-description: |
-  the display of the progress bar in deployment is parameterizable in the BPM app Config . this can enable or disable the use of the webSocket  .

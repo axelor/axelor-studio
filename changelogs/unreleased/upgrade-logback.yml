@@ -1,4 +1,0 @@
-title: Upgrade logback to 1.4.14
-type: change
-description: |
-  Fix several vulnerabilities present in former versions of `logback-core` and `logback-classic`.

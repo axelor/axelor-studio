@@ -1,5 +1,0 @@
-title: Provide functionality to identify and unblock timer-blocked BPM instances.
-type: feature
-description: |
-    Added the ability to identify BPM instances blocked on a timer that will no longer trigger due to rollback scenarios and 
-    enabled users to unblock them.
