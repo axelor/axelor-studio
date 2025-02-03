@@ -4,6 +4,22 @@ import { isIdValid } from "../../../utils/ValidationUtil";
 export default function IdProps(group, element, translate, options) {
   let description = options && options.description;
   // Id
+
+  function changeRequiredDecisionIds(element, id) {
+    if (!element) return;
+    const requiredDecisions = [
+      ...(element.incoming || []),
+      ...(element.outgoing || []),
+    ];
+
+    requiredDecisions?.forEach((decision) => {
+      const businessObject = getBusinessObject(decision);
+
+      if (businessObject?.requiredDecision && id) {
+        businessObject.requiredDecision.href = id;
+      }
+    });
+  }
   group.entries.push({
     id: "id",
     label: translate("Id"),
@@ -17,6 +33,7 @@ export default function IdProps(group, element, translate, options) {
       element = element.labelTarget || element;
       if (element.businessObject) {
         element.businessObject.id = properties["id"];
+        changeRequiredDecisionIds(element, properties["id"]);
       }
     },
     validate: function (element, values) {
