@@ -413,8 +413,8 @@ public class WkfModelController {
       WkfModel wkfModel = request.getContext().asType(WkfModel.class);
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
       User user = AuthUtils.getUser();
-      boolean superUser = user.getCode().equals("admin");
-      if (superUser) {
+      boolean bpmAdministrator = user.getIsBpmAdministrator();
+      if (bpmAdministrator) {
         return;
       }
 
