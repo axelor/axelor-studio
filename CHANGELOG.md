@@ -1,3 +1,35 @@
+## 3.3.11 (2025-02-05)
+
+#### Fix
+
+* Fix Ui Script popup in field config
+* Indicators in the “WkfModel” view are not visible to an admin user who does not have the exact name “admin”.
+
+  <details>
+  
+  Resolved issue where supervision elements in the “WkfModel” view were only visible to users with the exact code “admin.” 
+  Introduced a new boolean field, isBpmAdministrator, on the User entity to designate BPM administrative privileges. 
+  Ensure that supervision elements are accessible to all users configured as BPM administrators.
+  
+  </details>
+
+* We can't select DMN options
+
+  <details>
+  
+  in the service rule task we can't select the dmn properties
+  
+  </details>
+
+* Missing translations in front components
+
+  <details>
+  
+  Added translation support for the field configuration panel.
+  
+  </details>
+
+
 ## 3.3.10 (2025-01-15)
 
 #### Change

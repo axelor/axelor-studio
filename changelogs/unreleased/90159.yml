@@ -1,5 +1,0 @@
----
-title: We can't select DMN options
-type: fix
-description:
-  in the service rule task we can't select the dmn properties
