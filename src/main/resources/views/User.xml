@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_7.1.xsd">
+
+  <form name="user-form" title="User" model="com.axelor.auth.db.User"
+    id="studio-auth-user-form" extension="true">
+    <extend target="panel[@name='mainUserPanel']/panel[@name='overviewPanel']/field[@name='group']">
+      <insert position="after">
+        <field name="isBpmAdministrator"/>
+      </insert>
+    </extend>
+  </form>
+</object-views>
