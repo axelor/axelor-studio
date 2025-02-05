@@ -28,7 +28,7 @@ export default function PopoverAlert({
 				style={{ height: "70px" }}
 			>
 				<Box textAlign="center" mb={1}>
-					{translate("Sure want to delete?")}
+					{translate("Do you really want to delete?")}
 				</Box>
 				<Box d="flex" justifyContent="flex-end">
 					<Button
