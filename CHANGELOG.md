@@ -1,3 +1,19 @@
+## 3.2.11 (2025-02-05)
+
+#### Fix
+
+* Indicators in the “WkfModel” view are not visible to an admin user who does not have the exact name “admin”.
+
+  <details>
+  
+  Resolved issue where supervision elements in the “WkfModel” view were only visible to users with the exact code “admin.” 
+  Introduced a new boolean field, isBpmAdministrator, on the User entity to designate BPM administrative privileges. 
+  Ensure that supervision elements are accessible to all users configured as BPM administrators.
+  
+  </details>
+
+* fix typos and translations
+
 ## 3.2.10 (2024-12-16)
 
 #### Fix
