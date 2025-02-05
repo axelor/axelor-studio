@@ -354,7 +354,7 @@ function ToolbarContainer() {
 			) || []
 		const panelTab = propertyValues.find((v) => v.type === TYPE.tabs)
 		if (panelTab && !panelTab?.items?.length) {
-			showAlert("Tabs should have atleast one panel")
+			showAlert("Tabs should have at least one panel")
 			return false
 		} else {
 			return true

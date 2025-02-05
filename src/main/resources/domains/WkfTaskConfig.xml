@@ -17,7 +17,7 @@
     <string name="roleName" title="Role"/>
     <string name="roleType" title="Role type"/>
     <string name="roleFieldPath" title="Role field path"/>
-    <string name="taskEmailTitle" title="Action/Email Title"/>
+    <string name="taskEmailTitle" title="Action/Email title"/>
     <string name="taskNameType" title="task name type"/>
     <string name="userPath" title="User field path"/>
     <string name="userFieldType" title="User field type"/>
