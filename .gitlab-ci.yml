@@ -22,7 +22,7 @@ include:
       - if: '$CI_PIPELINE_SOURCE != "schedule" && $CI_COMMIT_BRANCH !~ /^\d+\.\d+$/ && $CI_COMMIT_TAG == null'
 
 .global-env:
-  image: axelor/app-builder:6.1
+  image: axelor/app-builder:7.3
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
