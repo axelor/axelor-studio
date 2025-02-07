@@ -62,7 +62,7 @@ public class WkfContextHelper {
       String transformation, String library, Map<String, Object> parameters) {
     String target = null;
     if ("Text".equals(library)) {
-      target = "'"+parameters.get("target").toString()+"'";
+      target = "'" + parameters.get("target").toString() + "'";
     } else {
       target = parameters.get("target").toString();
     }

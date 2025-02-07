@@ -67,6 +67,7 @@ import "dmn-js/dist/assets/dmn-js-drd.css";
 import "dmn-js/dist/assets/dmn-js-literal-expression.css";
 import "dmn-js/dist/assets/dmn-js-shared.css";
 import "dmn-js/dist/assets/diagram-js.css";
+import { getBusinessObject } from "dmn-js-shared/lib/util/ModelUtil.js";
 
 import "./css/dmnModeler.css";
 import Ids from "ids";
@@ -361,7 +362,12 @@ function DMNModeler() {
     switch (entry.widget) {
       case "textField":
         return (
-          <TextField entry={entry} element={selectedElement} canRemove={true} />
+          <TextField
+            entry={entry}
+            element={selectedElement}
+            canRemove={true}
+            readOnly={getReadOnly(entry)}
+          />
         );
       case "textBox":
         return <Textbox entry={entry} element={selectedElement} />;
@@ -569,7 +575,15 @@ function DMNModeler() {
   const fetchDiagram = React.useCallback(
     async (id, setWkf) => {
       if (id) {
-        let res = await Service.fetchId("com.axelor.studio.db.WkfDmnModel", id);
+        let res = await Service.fetchId(
+          "com.axelor.studio.db.WkfDmnModel",
+          id,
+          {
+            related: {
+              dmnTableList: ["name", "decisionId"],
+            },
+          }
+        );
         const wkf = (res && res.data && res.data[0]) || {};
         let { diagramXml, id: wkfId } = wkf;
         setId(wkfId);
@@ -580,6 +594,18 @@ function DMNModeler() {
       }
     },
     [newBpmnDiagram]
+  );
+
+  const getReadOnly = React.useCallback(
+    (entry) => {
+      const decisionId = getBusinessObject(selectedElement)?.id;
+      const list = wkfModel?.dmnTableList;
+      if (decisionId && list && entry?.modelProperty === "id") {
+        return Boolean(list.find((item) => item.decisionId === decisionId));
+      }
+      return false;
+    },
+    [selectedElement, wkfModel]
   );
 
   const uploadFile = (e) => {
