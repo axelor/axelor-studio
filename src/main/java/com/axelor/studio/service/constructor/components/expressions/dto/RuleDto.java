@@ -31,12 +31,16 @@ public class RuleDto {
   private List<TransformationDto> transformations = new ArrayList<>();
   private List<TransformationDto> valueTransformations = new ArrayList<>();
   private List<TransformationDto> valueTransformations2 = new ArrayList<>();
+  private static String DEFAULT_TARGET_NAME = "name";
 
   @JsonProperty(value = "field")
   public void unpackField(Map<String, Object> fieldMap) {
     if (fieldMap != null) {
       field = new ObjectMapper().convertValue(fieldMap, FieldDto.class);
       if (this.fieldValue != null && fieldValue instanceof RelationalFieldValueDto) {
+        if (field.getTargetName() == null) {
+          field.setTargetName(DEFAULT_TARGET_NAME);
+        }
         ((RelationalFieldValueDto) fieldValue).setTargetName(field.getTargetName());
         Object valueMap = ((RelationalFieldValueDto) fieldValue).getValueMap();
         if (valueMap != null) {
