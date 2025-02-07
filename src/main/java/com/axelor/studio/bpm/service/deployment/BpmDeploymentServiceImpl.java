@@ -367,9 +367,11 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     log.debug("Process instances to migrate: {}", processInstanceIds.size());
     migrationMap.put("totalInstancesToMigrate", processInstanceIds.size());
     // Progress bar on deploy
-    Boolean isWebSocketSupported = Beans.get(AppBpmService.class).getAppBpm().getUseProgressDeploymentBar();
+    Boolean isWebSocketSupported =
+        Beans.get(AppBpmService.class).getAppBpm().getUseProgressDeploymentBar();
     String sessionId = null;
-    if (isWebSocketSupported) sessionId = BpmDeploymentWebSocket.sessionMap.keySet().stream().findFirst().orElse(null);
+    if (isWebSocketSupported)
+      sessionId = BpmDeploymentWebSocket.sessionMap.keySet().stream().findFirst().orElse(null);
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
     int iterationNumber = 1;
     for (String processInstanceId : processInstanceIds) {
@@ -391,7 +393,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
         UnmigratedInstances++;
       }
-      if(isWebSocketSupported) BpmDeploymentWebSocket.updateProgress(sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
+      if (isWebSocketSupported)
+        BpmDeploymentWebSocket.updateProgress(
+            sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
       iterationNumber++;
     }
     migrationMap.put("successfulMigrations", migratedInstances);
