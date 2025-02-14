@@ -790,8 +790,7 @@ export function FieldAction({
   }, []);
 
   const getFields = useCallback(() => {
-    const m = getMetaFields(model);
-    return m;
+    return getMetaFields(model);
   }, [model]);
 
   const getSelectValue = React.useCallback(
@@ -816,8 +815,6 @@ export function FieldAction({
   );
 
   useEffect(() => {
-    const metaModel = getSelectValue("metaModel");
-    const metaJsonModel = getSelectValue("metaJsonModel");
     if (metaModel) {
       setModel({
         ...metaModel,
