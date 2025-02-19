@@ -999,6 +999,7 @@ export function FieldAction({
                   }}
                 ></i>
               </Tooltip>
+              { !(title === "deadlineField") &&
               <MaterialIcon
                 fontSize={18}
                 icon="edit"
@@ -1007,6 +1008,7 @@ export function FieldAction({
                   setOpenBuilder(true);
                 }}
               />
+              }
             </Box>
           )}
         </TableCell>
