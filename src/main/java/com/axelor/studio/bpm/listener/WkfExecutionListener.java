@@ -172,7 +172,8 @@ public class WkfExecutionListener implements ExecutionListener {
       if (type.equals(BpmnModelConstants.BPMN_ELEMENT_END_EVENT)) {
         sendMessage(flowElement, execution);
       }
-    } else if (userActionOrEmailNode(type)) {
+    }
+    if (userActionOrEmailNode(type)) {
       WkfTaskConfig wkfTaskConfig = getWkfTaskConfig(execution);
       wkfInstanceService.onNodeActivation(wkfTaskConfig, execution);
     }
@@ -329,6 +330,6 @@ public class WkfExecutionListener implements ExecutionListener {
   protected boolean userActionOrEmailNode(String type) {
     return blockingNode(type)
         || type.equals(BpmnModelConstants.BPMN_ELEMENT_INTERMEDIATE_CATCH_EVENT)
-        || type.equals((BpmnModelConstants.BPMN_ELEMENT_START_EVENT));
+        || type.equals(BpmnModelConstants.BPMN_ELEMENT_START_EVENT);
   }
 }
