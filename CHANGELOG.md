@@ -1,3 +1,24 @@
+## 3.4.1 (2025-02-19)
+
+#### Change
+
+* Upgrade to AOP 7.3
+* Update to Axelor-utils 3.4
+
+#### Fix
+
+* Fix task creation when user task is activated on mode task
+* Once aa decision is deployed, the id can't be change
+
+  <details>
+  
+  To avoid deployment issues, when a decision is deployed, the id can't be changed.
+  
+  </details>
+
+* Fix BPM crash using expression generator with selection values
+* Wrong settings while using Field config on a custom object
+
 ## 3.4.0 (2025-01-31)
 
 #### Feature

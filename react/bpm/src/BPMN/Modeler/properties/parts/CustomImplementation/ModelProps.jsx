@@ -798,8 +798,7 @@ export function FieldAction({
   }, []);
 
   const getFields = useCallback(() => {
-    const m = getMetaFields(model);
-    return m;
+    return getMetaFields(model);
   }, [model]);
 
   const getSelectValue = React.useCallback(
@@ -824,8 +823,6 @@ export function FieldAction({
   );
 
   useEffect(() => {
-    const metaModel = getSelectValue("metaModel");
-    const metaJsonModel = getSelectValue("metaJsonModel");
     if (metaModel) {
       setModel({
         ...metaModel,
@@ -1002,6 +999,7 @@ export function FieldAction({
                   }}
                 ></i>
               </Tooltip>
+              { !(title === "deadlineField") &&
               <MaterialIcon
                 fontSize={18}
                 icon="edit"
@@ -1010,6 +1008,7 @@ export function FieldAction({
                   setOpenBuilder(true);
                 }}
               />
+              }
             </Box>
           )}
         </TableCell>

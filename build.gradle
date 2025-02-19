@@ -64,7 +64,7 @@ dependencies {
   if (findProject(":modules:axelor-utils") != null) {
     api project(":modules:axelor-utils")
   } else {
-    implementation "com.axelor.addons:axelor-utils:3.2.2"
+    implementation "com.axelor.addons:axelor-utils:3.4.0"
   }
 
   implementation "org.camunda.bpm:camunda-engine:7.17.0"
