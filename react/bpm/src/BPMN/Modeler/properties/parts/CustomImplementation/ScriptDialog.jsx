@@ -28,7 +28,7 @@ export default function ScriptDialog({
     set: function (e, values) {
       const updatedValue = values?.script;
       setActionDummy((prev)=>({[fieldType]:updatedValue}))
-     
+
     },
   };
 
@@ -47,7 +47,6 @@ export default function ScriptDialog({
       }}
       title={translate("Add script")}
       children={
-        <Box color="body" className={styles.new}>
           <Textbox
             element={element}
             className={styles.textbox}
@@ -57,7 +56,6 @@ export default function ScriptDialog({
             entry={scriptEntry}
             suggestion={true}
           />
-        </Box>
       }
     />
   );
