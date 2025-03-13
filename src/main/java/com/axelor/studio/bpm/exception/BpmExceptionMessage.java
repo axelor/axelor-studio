@@ -723,4 +723,7 @@ public final class BpmExceptionMessage {
       "Unsupported variable type or empty map" /*)*/;
   public static final String BPM_WKF_INSTANCE_NOT_FOUND = /*$$(*/
       "Process instance not found : %s" /*)*/;
+  public static final String MIGRATION_IS_ALREADY_ONGOING = /*$$(*/
+      "Migration is already ongoing."; /*)*/
+  ;
 }
