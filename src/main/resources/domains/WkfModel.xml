@@ -41,6 +41,7 @@
     <boolean name="sendUserNotification" title="Send users notification" default="false"/>
     <many-to-many name="userSet" title="Users" ref="com.axelor.auth.db.User"/>
     <many-to-many name="roleSet" title="Roles" ref="com.axelor.auth.db.Role"/>
+    <boolean name="isMigrationOnGoing"/>
     <unique-constraint columns="code,versionTag"/>
     <extra-code><![CDATA[
 		public static final int STATUS_NEW = 1;

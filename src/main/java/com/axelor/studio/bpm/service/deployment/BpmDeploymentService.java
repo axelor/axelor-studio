@@ -28,4 +28,6 @@ public interface BpmDeploymentService {
   public void deploy(WkfModel sourceModel, WkfModel targetModel, Map<String, Object> migrationMap);
 
   public void forceMigrate(WkfProcess process);
+
+  void setIsMigrationOnGoing(WkfModel wkfModel, boolean isMigrationOnGoing);
 }
