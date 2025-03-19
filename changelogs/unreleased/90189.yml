@@ -1,4 +1,0 @@
-title: Once aa decision is deployed, the id can't be change
-type: fix
-description:
-  To avoid deployment issues, when a decision is deployed, the id can't be changed.
