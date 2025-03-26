@@ -150,7 +150,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     if (targetModel.getDiagramXml() == null) {
       return;
     }
-
+    setIsMigrationOnGoing(targetModel, true);
     this.sourceModel = ObjectUtils.isEmpty(sourceModel) ? targetModel : sourceModel;
     this.targetModel = targetModel;
     this.migrationMap = migrationMap;
@@ -203,6 +203,14 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     if (isRemove.equals("true") && targetModel.getPreviousVersion() != null) {
       removePreviousVersionMenus(targetModel.getPreviousVersion());
     }
+    setIsMigrationOnGoing(targetModel, false);
+  }
+
+  @Transactional(rollbackOn = Exception.class)
+  @Override
+  public void setIsMigrationOnGoing(WkfModel wkfModel, boolean isMigrationOnGoing) {
+    wkfModel.setIsMigrationOnGoing(isMigrationOnGoing);
+    wkfModelRepository.save(wkfModel);
   }
 
   @Transactional(rollbackOn = Exception.class)
