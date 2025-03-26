@@ -13,6 +13,24 @@
   height: 100%;
   width: 100%;
 }
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* ensure it sits above other content */
+}
+
+.loaderContainer {
+  text-align: center;
+  color: white; /* or any color that suits your loader */
+}
+
 
 .select {
   min-width: 150px;
