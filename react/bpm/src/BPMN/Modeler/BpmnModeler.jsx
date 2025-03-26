@@ -141,14 +141,13 @@ function BpmnModelerComponent() {
   const [height, setHeight] = useState("100%");
   const [progress, setProgress] = useState(0);
   const [enableStudioApp, setEnableStudioApp] = useState(false);
-  const [allowProgressBarDisplay,setAllowProgressBarDisplay] = useState(true);
+  const [allowProgressBarDisplay, setAllowProgressBarDisplay] = useState(true);
   const [showError, setError] = useState(false);
   const [initialState, setInitialState] = useState(false);
   const { update, state } = useStore();
   const { info } = state || {};
   const [drawerOpen, setDrawerOpen] = useState(true);
   const openDialog = useDialog();
-
 
   const diagramXmlRef = React.useRef(null);
 
@@ -1937,8 +1936,11 @@ function BpmnModelerComponent() {
       });
       if (!app) return;
       const appConfig = await getAppBPMConfig(app.appBpm && app.appBpm.id);
-      setAllowProgressBarDisplay(appConfig && appConfig.useProgressDeploymentBar);
-      if(appConfig.useProgressDeploymentBar) wsProgress.subscribe(handleProgress);
+      setAllowProgressBarDisplay(
+        appConfig && appConfig.useProgressDeploymentBar
+      );
+      if (appConfig.useProgressDeploymentBar)
+        wsProgress.subscribe(handleProgress);
     }
     fetchApp();
     return () => {
@@ -2108,10 +2110,14 @@ function BpmnModelerComponent() {
         )}
       </Box>
       {allowProgressBarDisplay && progress > 0 && (
-        <Loader
-          classes={styles.loader}
-          text={`${progress}% migration is done...`}
-        />
+        <div className={styles.overlay}>
+          <div className={styles.loaderContainer}>
+            <Loader
+              classes={styles.loader}
+              text={`${progress}% migration is done...`}
+            />
+          </div>
+        </div>
       )}
       <Logo />
     </React.Fragment>
