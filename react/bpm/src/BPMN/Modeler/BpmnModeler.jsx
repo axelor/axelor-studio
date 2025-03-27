@@ -1806,7 +1806,6 @@ function BpmnModelerComponent() {
   useEffect(() => {
     let modeler = {
       container: "#bpmnview",
-      keyboard: { bindTo: document },
       propertiesPanel: {
         parent: "#js-properties-panel",
       },

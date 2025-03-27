@@ -68,10 +68,7 @@ export default function SignalEventProps({
   };
 
   const getSignals = async () => {
-    let modeler = {
-      keyboard: { bindTo: document },
-    };
-    let bpmnModelerTest = new BpmnModeler({ ...modeler });
+    let bpmnModelerTest = new BpmnModeler();
     await bpmnModelerTest.importXML(catchSignalObj?.wkf?.diagramXml);
     const rootElements = bpmnModelerTest?.get("canvas")?.getRootElement()
       ?.businessObject?.$parent.rootElements;

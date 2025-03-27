@@ -1,0 +1,12 @@
+---
+title: Update bpmn.js library to version 18.2.0
+type: feature
+description: |
+  This change updates several important libraries in the bpm module:
+  
+  - Upgrade of bpmn.js from version 17.11.1 to 18.2.0
+  - Update of bpmn-js-properties-panel from 5.26.0 to 5.31.1
+  - Other updates to associated libraries (@axelor/ui, dmn-js, etc.)
+  
+  This update brings the latest features and bug fixes from the bpmn-js ecosystem,
+  improving business process modeling and visualization capabilities.
