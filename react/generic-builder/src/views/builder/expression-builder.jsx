@@ -2,12 +2,17 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { Box } from '@axelor/ui';
+import { MaterialIcon } from '@axelor/ui/icons/material-icon';
 
 import Editor from '../editor/editor';
-import { Selection } from "../../components";
-import { getButtons, getMetaFields, getPackageFields } from '../../services/api';
-import { useMetaModelSearch } from '../utils';
-import { isBPMQuery } from '../../common/utils';
+import { Selection, Tooltip } from '../../components';
+import {
+  getButtons,
+  getMetaFields,
+  getPackageFields,
+} from '../../services/api';
+import { getModelFilter, useMetaModelSearch } from '../utils';
+import { isBPMQuery, translate } from '../../common/utils';
 import { ALLOWED_TYPES } from '../../common/constants';
 import styles from './expression-builder.module.css';
 
@@ -40,7 +45,7 @@ function ExpressionBuilder(props) {
     isAllowButtons = false,
     isBPMN,
     isMapper,
-    isBamlQuery
+    isBamlQuery,
   } = props;
   const { metaModals, rules } = value || defaultState;
   const expression = 'GROOVY';
@@ -205,7 +210,7 @@ function ExpressionBuilder(props) {
     async e => {
       let data = [];
       if (fetchModels && !isBPMQuery(type)) {
-        data = await fetchModels();
+        data = await fetchModels(getModelFilter(element, e));
       } else {
         data = await fetchMetaModels(e);
       }
@@ -216,29 +221,50 @@ function ExpressionBuilder(props) {
 
   return (
     <div className={styles.container}>
-      <Box border={!isBamlQuery}  className={styles.paper}>
+      <Box border={!isBamlQuery} className={styles.paper}>
         <div className={styles.content}>
           <div className={styles.flex}>
-            {(isBPMQuery(type) ? (index === 0 ? true : false) : true) && !isBamlQuery &&(
-              <Selection
-                name="metaModal"
-                title="Meta model"
-                placeholder="Meta model"
-                fetchAPI={fetchAPI}
-                className={classNames({
-                  [styles.hide]: (isCondition && isBPMQuery(type)) || isPackage,
-                })}
-                optionLabelKey="name"
-                onChange={setMetaModal}
-                value={metaModals}
-                classes={{ root: styles.MuiAutocompleteRoot }}
-                readOnly={
-                  (queryModel && isBPMQuery(type)) || (isBPMN && defaultModel)
-                    ? true
-                    : false
-                }
-              />
-            )}
+            {(isBPMQuery(type) ? (index === 0 ? true : false) : true) &&
+              !isBamlQuery && (
+                <Box d="flex" alignItems="center">
+                  <Selection
+                    name="metaModal"
+                    title="Meta model"
+                    placeholder="Meta model"
+                    fetchAPI={fetchAPI}
+                    className={classNames({
+                      [styles.hide]:
+                        (isCondition && isBPMQuery(type)) || isPackage,
+                    })}
+                    optionLabelKey="name"
+                    onChange={setMetaModal}
+                    value={metaModals}
+                    classes={{ root: styles.MuiAutocompleteRoot }}
+                    readOnly={
+                      (queryModel && isBPMQuery(type)) ||
+                      (isBPMN && defaultModel)
+                        ? true
+                        : false
+                    }
+                  />
+                  {type === 'expressionBuilder' && (
+                    <Box className={styles.info}>
+                      <Tooltip
+                        title={translate(
+                          "If you select a MetaModel not configured in the process parameters, ensure a variable with the MetaModel's name has been defined prior to executing this script."
+                        )}
+                        className={styles.tooltip}
+                      >
+                        <MaterialIcon
+                          icon="info"
+                          color="primary"
+                          fontSize="1rem"
+                        />
+                      </Tooltip>
+                    </Box>
+                  )}
+                </Box>
+              )}
           </div>
         </div>
 
