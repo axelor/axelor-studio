@@ -94,10 +94,7 @@ export default function MessageProps({
   };
 
   const getMessages = async () => {
-    let modeler = {
-      keyboard: { bindTo: document },
-    };
-    let bpmnModelerTest = new BpmnModeler({ ...modeler });
+    let bpmnModelerTest = new BpmnModeler();
     await bpmnModelerTest.importXML(catchMsgObj?.wkf?.diagramXml);
     const rootElements = bpmnModelerTest?.get("canvas")?.getRootElement()
       ?.businessObject?.$parent.rootElements;

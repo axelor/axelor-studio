@@ -874,8 +874,7 @@ function DMNModeler() {
           DmnPropertiesPanelModule,
           DmnPropertiesProviderModule,
           propertiesCustomProviderModule,
-        ],
-        keyboard: { bindTo: document },
+        ]
       },
       decisionTable: {
         additionalModules: [decisionTableHeadEditorModule, simpleModeModule],
