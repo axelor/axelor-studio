@@ -1,8 +1,14 @@
 import React, { cloneElement } from 'react';
-import { Box, ClickAwayListener, Popper, usePopperTrigger } from '@axelor/ui';
+import {
+  Box,
+  ClickAwayListener,
+  clsx,
+  Popper,
+  usePopperTrigger,
+} from '@axelor/ui';
 import styles from './tooltip.module.css';
 
-export default function Tooltip({ title, children }) {
+export default function Tooltip({ title, children, className }) {
   const {
     open,
     targetEl,
@@ -10,13 +16,13 @@ export default function Tooltip({ title, children }) {
     setContentEl,
     onClickAway,
   } = usePopperTrigger({
-    trigger: 'hover',
-    interactive: true,
-    delay: {
-      open: 10,
-      close: 100,
-    },
-  });
+      trigger: 'hover',
+      interactive: true,
+      delay: {
+        open: 10,
+        close: 100,
+      },
+    });
 
   return (
     <>
@@ -25,7 +31,7 @@ export default function Tooltip({ title, children }) {
       })}
       <Popper
         id="simple-popover"
-        className={styles.tooltip}
+        className={clsx(className, styles.tooltip)}
         open={open}
         target={targetEl}
         offset={[0, 4]}

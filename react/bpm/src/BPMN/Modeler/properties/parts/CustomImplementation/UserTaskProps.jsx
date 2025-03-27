@@ -14,7 +14,7 @@ import Tooltip from "../../../../../components/Tooltip";
 import TextField from "../../../../../components/properties/components/TextField";
 import Textbox from "../../../../../components/properties/components/Textbox";
 import useDialog from "../../../../../hooks/useDialog";
-import { fetchModels, getButtons } from "../../../../../services/api";
+import { getButtons, getModels } from "../../../../../services/api";
 import { getBool, getLowerCase, translate } from "../../../../../utils";
 import Title from "../../../Title";
 import styles from "./user-task.module.css";
@@ -297,7 +297,7 @@ export default function UserTaskProps({
                     title="Add expression"
                     setProperty={setter}
                     getExpression={getter}
-                    fetchModels={() => fetchModels(element)}
+                    fetchModels={getModels}
                   />
                 )}
               </Box>
