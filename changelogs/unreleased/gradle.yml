@@ -1,0 +1,8 @@
+---
+title: Enhanced Gradle build system for React components
+type: change
+description: |
+  Improved build system configuration for React components integration.
+
+  Added new dependencies.gradle file to resolve task dependencies between React component builds and Java compilation.  
+  Updated build.gradle with better organization of conditional dependencies.
