@@ -1,6 +1,16 @@
+/**
+ * React Build Integration Configuration for Gradle
+ * This file handles the build process for React frontend components within the project.
+ */
+
+/**
+ * Buildscript configuration for Node.js integration
+ * Sets up repositories and dependencies needed for the Node.js plugin
+ */
 buildscript {
     repositories {
         gradlePluginPortal()
+        // Ivy repository configuration for downloading Node.js binaries
         ivy {
             name = "Node.js"
             setUrl("https://nodejs.org/dist/")
@@ -15,53 +25,84 @@ buildscript {
             }
         }
     }
+    // Include the Node.js Gradle plugin
     dependencies {
         classpath "com.github.node-gradle:gradle-node-plugin:7.0.2"
     }
 }
 
+// Apply the Node.js plugin
 apply plugin: com.github.gradle.node.NodePlugin
 
+/**
+ * Node.js configuration
+ * Specifies Node.js and package manager versions
+ */
 node {
-    version = '22.7.0'
-    pnpmVersion = '9.8.0'
+    version = project.hasProperty('nodeVersion') ? project.nodeVersion : '22.7.0'
+    pnpmVersion = project.hasProperty('pnpmVersion') ? project.pnpmVersion : '9.8.0'
+    download = true  // Download the Node.js distribution
+
+    // Optimize node download by caching it
     download = true
+    workDir = file("${project.buildDir}/.node")
+    npmWorkDir = file("${project.buildDir}/.npm")
+    yarnWorkDir = file("${project.buildDir}/.yarn")
+    pnpmWorkDir = file("${project.buildDir}/.pnpm")
 }
 
-def reactDirs = []
-file("react").traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
-    if (new File(it, "package.json").exists()) {
-        reactDirs.add(it)
+/**
+ * Detect React projects
+ * Scans the react directory for subdirectories containing package.json files
+ * Returns a list of maps with metadata about each React project
+ */
+def detectReactProjects() {
+    def reactDir = file("react")
+    if (!reactDir.exists()) {
+        return []
     }
+
+    def projects = []
+    reactDir.traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { dir ->
+        def packageJsonFile = new File(dir, "package.json")
+        if (packageJsonFile.exists()) {
+            def buildDir = "$projectDir/react/${dir.name}/build"
+            def webappPath = "webapp/${dir.name}"
+
+            projects.add([
+                name: dir.name,
+                dir: dir,
+                buildDir: buildDir,
+                webappPath: webappPath,
+                packageJson: packageJsonFile,
+                packageLock: new File(dir, "pnpm-lock.yaml"),
+                srcDir: new File(dir, "src"),
+                publicDir: new File(dir, "public")
+            ])
+        }
+    }
+    return projects
 }
 
+// Set the detected React projects as a project property
+ext.reactProjects = detectReactProjects()
+
+// Lists to track build tasks, clean tasks, and component paths
 def buildTasks = []
 def cleanTasks = []
+def installTasks = []
 def componentPaths = []
 
-reactDirs.each { dir ->
-    def dirName = dir.name
+/**
+ * Configure tasks for each React project
+ * For each discovered React directory, creates build, install, and clean tasks
+ */
+reactProjects.each { reactProject ->
+    def dirName = reactProject.name
+    def dir = reactProject.dir
 
-    buildTasks.add(tasks.register("${dirName}Build", PnpmTask) {
-        group = 'axelor'
-        description = "Build ${dirName}"
-        environment = [
-                CI: 'false'
-        ]
-
-        workingDir = file(dir)
-
-        outputs.dir("$projectDir/react/${dirName}/build")
-        inputs.files("$projectDir/react/${dirName}/package.json", "$projectDir/react/${dirName}/pnpm-lock.yaml")
-        inputs.dir("$projectDir/react/${dirName}/src")
-        inputs.dir("$projectDir/react/${dirName}/public")
-
-        dependsOn "${dirName}Install"
-        mustRunAfter "${dirName}Install"
-        args = ["build"]
-    })
-
-    tasks.register("${dirName}Install", PnpmTask) {
+    // Create install task for the React project dependencies
+    def installTask = tasks.register("${dirName}Install", PnpmTask) {
         group = 'axelor'
         description = "Install ${dirName} dependencies"
         environment = [
@@ -70,48 +111,172 @@ reactDirs.each { dir ->
 
         workingDir = file(dir)
 
+        // Properly define inputs for caching
+        inputs.file(reactProject.packageJson)
+        inputs.file(reactProject.packageLock)
+
+        // Define outputs for caching
+        outputs.dir("$projectDir/react/${dirName}/node_modules")
+
+        // Enable caching for better performance
+        outputs.cacheIf { true }
+
         args = ["install"]
     }
+    installTasks.add(installTask)
 
-    cleanTasks.add(tasks.register("${dirName}Clean", Delete) {
-        delete "$projectDir/react/${dirName}/build", "$projectDir/react/${dirName}/node_modules"
-    })
+    // Create build task for the React project
+    def buildTask = tasks.register("${dirName}Build", PnpmTask) {
+        group = 'axelor'
+        description = "Build ${dirName}"
+        environment = [
+                CI: 'false',
+                NODE_ENV: 'production'
+        ]
 
-    componentPaths.add([from: "$projectDir/react/${dirName}/build", to: "webapp/${dirName}"])
+        workingDir = file(dir)
+
+        // Define inputs and outputs for incremental build support
+        inputs.file(reactProject.packageJson)
+        inputs.file(reactProject.packageLock)
+        inputs.dir("$projectDir/react/${dirName}/src")
+        if (reactProject.publicDir.exists()) {
+            inputs.dir("$projectDir/react/${dirName}/public")
+        }
+
+        // Consider node_modules a dependency
+        inputs.dir("$projectDir/react/${dirName}/node_modules")
+
+        // Define the output directory
+        outputs.dir(reactProject.buildDir)
+
+        // Enable caching for better performance
+        outputs.cacheIf { true }
+
+        dependsOn installTask
+        args = ["build"]
+    }
+    buildTasks.add(buildTask)
+
+    // Create clean task for the React project
+    def cleanTask = tasks.register("${dirName}Clean", Delete) {
+        delete reactProject.buildDir, "$projectDir/react/${dirName}/node_modules"
+    }
+    cleanTasks.add(cleanTask)
+
+    // Track the build output and destination path
+    componentPaths.add([from: reactProject.buildDir, to: reactProject.webappPath])
 }
 
+/**
+ * Add diagnostic task to check React dependencies
+ * This task prints information about the React projects configuration
+ */
+task checkReactDependencies() {
+    group = 'axelor'
+    description = 'Checks React project configurations'
+
+    doLast {
+        println "Checking React project configurations:"
+        reactProjects.each { project ->
+            println "  - ${project.name}: Building from ${project.dir} to ${project.webappPath}"
+        }
+
+        if (reactProjects.isEmpty()) {
+            logger.warn("No React projects found in ${projectDir}/react")
+        }
+    }
+}
+
+/**
+ * Create aggregator task for installing all React dependencies
+ */
+def frontInstall = tasks.register('frontInstall') {
+    group = 'axelor'
+    description = 'Install all React dependencies'
+    dependsOn installTasks
+}
+
+/**
+ * Create aggregator task for building all React projects
+ */
 def frontBuild = tasks.register('frontBuild') {
     group = 'axelor'
     description = 'Build all React projects'
-    dependsOn buildTasks
+    dependsOn buildTasks, checkReactDependencies
 }
 
+// Configure task dependencies for parallel execution
+if (buildTasks.size() > 1) {
+    buildTasks.each { task ->
+        task.configure {
+            mustRunAfter frontInstall
+        }
+    }
+}
+
+/**
+ * Create aggregator task for cleaning all React projects
+ */
 tasks.register('frontClean') {
     group = 'axelor'
     description = 'Clean all React projects'
     dependsOn cleanTasks
 }
 
+/**
+ * Create task to copy React build outputs to the webapp directory
+ */
 def frontCopy = tasks.register('frontCopy', Copy) {
     description = 'Copy all React projects into webapp'
+    group = 'axelor'
 
     dependsOn frontBuild
 
+    // Define the destination directory
     destinationDir = file(rootProject.buildDir)
+
+    // Define inputs and outputs for proper incremental builds
+    outputs.cacheIf { true }
+
+    // Skip if no changes in React builds
+    onlyIf {
+        // Check if any build task actually did work
+        buildTasks.any { buildTask ->
+            buildTask.get().didWork
+        }
+    }
 
     componentPaths.each { paths ->
         into("${paths.to}") {
             from "${paths.from}"
         }
     }
+
+    doFirst {
+        logger.lifecycle("Copying React build outputs to webapp directory")
+    }
 }
 
+/**
+ * Configure JAR task to include React build outputs
+ * Skip configuration if the JAR task doesn't exist
+ */
 try {
     tasks.named("jar").configure {
         dependsOn frontBuild
+
+        // Each React output will be added to the JAR at configuration time
         componentPaths.each { paths ->
-            into("${paths.to}") {
-                from "${paths.from}"
+            // Create a task output that includes the contents when they exist
+            def reactSource = fileTree(paths.from) {
+                // This configuration is done at configuration time, not execution time
+                builtBy frontBuild  // Mark this fileTree as built by frontBuild
+            }
+
+            // Add the React source to the JAR at configuration time
+            into(paths.to) {
+                from reactSource
             }
         }
     }
@@ -119,10 +284,45 @@ try {
     // Do nothing if no jar task
 }
 
+/**
+ * Configure WAR task to depend on React build outputs
+ * Skip configuration if the WAR task doesn't exist
+ */
 try {
     rootProject.tasks.named("war").configure {
         dependsOn frontCopy
     }
 } catch (UnknownTaskException ignored) {
     // Do nothing if no war tasks
+}
+
+/**
+ * Additional configuration to resolve dependency issues
+ * Sets up explicit dependencies between React builds and Java compilation
+ */
+afterEvaluate {
+    // Configure root tasks to properly depend on frontCopy
+    ['compileJava', 'classes', 'assemble'].each { taskName ->
+        def rootTask = rootProject.tasks.findByName(taskName)
+        if (rootTask != null && tasks.findByName('frontCopy') != null) {
+            rootTask.dependsOn tasks.frontCopy
+        }
+    }
+
+    // Handle the relationship with copyWebapp to avoid circular dependencies
+    def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
+    if (copyWebappTask != null && tasks.findByName('frontCopy') != null) {
+        tasks.frontCopy.mustRunAfter copyWebappTask
+
+        // Explicitly declare inputs for compileJava
+        if (rootProject.tasks.findByName('compileJava') != null) {
+            def webappDir = file("${rootProject.buildDir}/webapp")
+            rootProject.tasks.compileJava.inputs.dir(webappDir)
+        }
+    }
+
+    // Log for debugging
+    logger.info("React module configuration complete:")
+    logger.info("  - React projects: ${reactProjects.size()}")
+    logger.info("  - Frontend tasks: ${buildTasks.size()} build, ${cleanTasks.size()} clean")
 }

@@ -72,3 +72,9 @@ tasks.register('formatCode') {
 }
 
 build.dependsOn 'spotlessApply'
+
+// Configure spotless tasks to properly depend on node and pnpm setup
+tasks.withType(com.diffplug.gradle.spotless.SpotlessTask) {
+    mustRunAfter tasks.findByName('nodeSetup')
+    mustRunAfter tasks.findByName('pnpmSetup')
+}

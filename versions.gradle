@@ -1,0 +1,57 @@
+/**
+ * Centralized version management for axelor-studio
+ * This file handles both module version and dependency versions.
+ * It replaces both version.gradle and the previous versions.gradle
+ */
+
+// Read module version from version.txt
+project.ext.moduleVersion = project.file("version.txt").text.trim()
+project.ext.version = project.hasProperty("finalRelease") ?
+    moduleVersion : "${moduleVersion}-SNAPSHOT"
+
+// All dependency versions centralized here
+project.ext {
+    // Axelor platform and core dependencies
+    aopVersion = '7.3.0'
+
+    // Camunda related versions
+    camundaVersion = '7.17.0'
+    camundaSpinVersion = '1.17.0'
+
+    // Build and utility tools
+    groovyVersion = '3.0.19'
+    lombokVersion = '1.18.30'
+    jacocoVersion = '0.8.11'
+
+    // Logging
+    logbackVersion = '1.4.14'
+
+    // Apache Commons
+    commonsExecVersion = '1.3'
+    commonsTextVersion = '1.11.0'
+    commonsLang3Version = '3.17.0'
+
+    // JSON and Data formats
+    jacksonVersion = '2.15.3'
+    jsonVersion = '20231013'
+
+    // Others
+    reflectionsVersion = '0.10.2'
+    snakeyamlVersion = '2.3'
+    resteasyVersion = '6.2.5.Final'
+    websocketApiVersion = '1.1'
+
+    // Node.js related
+    nodeVersion = '22.7.0'
+    pnpmVersion = '9.8.0'
+
+    // Axelor modules
+    axelorMessageVersion = '3.2.2'
+    axelorUtilsVersion = '3.4.0'
+    axelorGuardianVersion = '2.2.+'
+
+    // Declare the actual dependencies here to ensure consistent usage
+    axelorMessageDep = "com.axelor.addons:axelor-message:${axelorMessageVersion}"
+    axelorUtilsDep = "com.axelor.addons:axelor-utils:${axelorUtilsVersion}"
+    axelorGuardianDep = "com.axelor:axelor-guardian:${axelorGuardianVersion}"
+}

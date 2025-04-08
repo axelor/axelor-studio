@@ -1,0 +1,65 @@
+// This file contains configurations to resolve dependency issues
+// between React component tasks and Java compilation tasks
+
+afterEvaluate {
+    // List of root project tasks that should depend on the frontCopy task
+    def rootTasks = [
+            'compileJava',
+            'classes',
+            'assemble'
+    ]
+
+    // List of module tasks that produce React components
+    def reactModules = [
+            project(':modules:axelor-studio'),
+    ]
+
+    // For each root project task
+    rootTasks.each { taskName ->
+        def rootTask = rootProject.tasks.findByName(taskName)
+        if (rootTask != null) {
+            // Add dependencies from React modules
+            reactModules.each { reactModule ->
+                def frontCopyTask = reactModule.tasks.findByName('frontCopy')
+                if (frontCopyTask != null) {
+                    rootTask.dependsOn frontCopyTask
+                }
+            }
+
+            // Add dependency to copyWebapp if it exists
+            def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
+            if (copyWebappTask != null) {
+                rootTask.dependsOn copyWebappTask
+
+                // Explicitly declare inputs to avoid validation issues
+                if (taskName == 'compileJava') {
+                    def webappDir = file("${rootProject.buildDir}/webapp")
+                    rootTask.inputs.dir(webappDir)
+                }
+            }
+        }
+    }
+
+    // Manage the relationship between processResources and copyWebapp to avoid circular dependencies
+    def processResourcesTask = rootProject.tasks.findByName('processResources')
+    def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
+
+    if (processResourcesTask != null && copyWebappTask != null) {
+        // Use mustRunAfter instead of dependsOn to avoid circular dependencies
+        copyWebappTask.mustRunAfter processResourcesTask
+
+        // Declare copyWebapp outputs as inputs for processResources
+        def webappDir = file("${rootProject.buildDir}/webapp")
+        processResourcesTask.inputs.dir(webappDir)
+    }
+
+    // Ensure copyWebapp depends on frontCopy tasks from modules
+    if (copyWebappTask != null) {
+        reactModules.each { reactModule ->
+            def frontCopyTask = reactModule.tasks.findByName('frontCopy')
+            if (frontCopyTask != null) {
+                copyWebappTask.dependsOn frontCopyTask
+            }
+        }
+    }
+}

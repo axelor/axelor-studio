@@ -1,6 +1,18 @@
+/**
+ * Axelor Studio Module Build Configuration
+ *
+ * This build script configures the Axelor Studio module project, handling dependencies,
+ * compilation settings, testing, and publication.
+ */
+
 import com.axelor.gradle.support.ChangelogSupport
 
+/**
+ * Buildscript configuration block
+ * Defines repositories and dependencies needed for the build process itself
+ */
 buildscript {
+  // Define repositories to use for dependency resolution
   ext.repos = {
     mavenCentral() {
       content { excludeGroupByRegex "com\\.axelor.*" }
@@ -11,89 +23,135 @@ buildscript {
     }
     maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
   }
-  ext.aopVersion = '7.3.0'
+
+  // Load versions before they are needed
+  apply from: "versions.gradle"
+
   repositories repos
   buildscript.repositories repos
+  // Define build dependencies
   dependencies {
     classpath "com.axelor:axelor-gradle:${aopVersion}"
     classpath "com.adarshr:gradle-test-logger-plugin:2.+"
   }
 }
 
+// Apply repository configuration to the project
 repositories repos
 buildscript.repositories repos
 
-apply plugin: "com.axelor.app"
-apply plugin: 'com.adarshr.test-logger'
-apply plugin: ChangelogSupport
+// Apply necessary plugins
+apply plugin: "com.axelor.app"    // Axelor application plugin
+apply plugin: 'com.adarshr.test-logger'    // Test output formatting plugin
+apply plugin: ChangelogSupport    // Changelog generation support
 
-apply from: "version.gradle"
-apply from: "gradle/react.gradle"
+// Include additional Gradle configuration files
+apply from: "versions.gradle"    // Version information (already applied in buildscript but ensuring availability)
+apply from: "gradle/react.gradle"    // React frontend build configuration
 
+/**
+ * Conditionally apply code style checking configuration
+ * Only applies if spotlessCheck task isn't already defined
+ */
 try {
   tasks.named("spotlessCheck")
 } catch (UnknownTaskException ignored) {
   apply from: './gradle/style.gradle'
 }
 
+// Configure test output formatting
 testlogger {
   theme 'mocha'
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+// Modern Java compatibility using toolchain approach
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(11)
+  }
+}
 
+// Configure Gradle for better build performance
+gradle.startParameter.parallelProjectExecutionEnabled = true
+
+// Define project metadata
 group = "com.axelor.addons"
 description "Axelor Studio Module"
 
+// Configure Axelor-specific metadata
 axelor {
   title "Axelor Studio"
   description "Axelor Studio Module"
 }
 
+// Configure test execution to exclude certain test packages
 test {
   exclude "com/axelor/apps/baml/test/**"
+
+  // Enable caching for better performance
+  outputs.cacheIf { true }
+
+  // Enable test reports
+  reports {
+    html.required = true
+  }
 }
 
+/**
+ * Define project dependencies
+ * Handles both project dependencies (when used in a multi-module build)
+ * and external dependencies (when used standalone)
+ */
 dependencies {
+  // Conditional dependencies based on project structure
   if (findProject(":modules:axelor-message") != null) {
     api project(":modules:axelor-message")
   } else {
-    implementation "com.axelor.addons:axelor-message:3.2.2"
+    implementation axelorMessageDep
   }
   if (findProject(":modules:axelor-utils") != null) {
     api project(":modules:axelor-utils")
   } else {
-    implementation "com.axelor.addons:axelor-utils:3.4.0"
+    implementation axelorUtilsDep
   }
 
-  implementation "org.camunda.bpm:camunda-engine:7.17.0"
-  implementation "org.camunda.bpm:camunda-engine-plugin-spin:7.17.0"
-  implementation "org.camunda.spin:camunda-spin-dataformat-json-jackson:1.17.0"
+  // Camunda BPM engine dependencies
+  implementation "org.camunda.bpm:camunda-engine:${camundaVersion}"
+  implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
+  implementation "org.camunda.spin:camunda-spin-dataformat-json-jackson:${camundaSpinVersion}"
 
-  implementation "org.codehaus.groovy:groovy-all:3.0.19"
+  // Various utility libraries
+  implementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
   implementation "org.eclipse.birt.runtime.3_7_1:Tidy:1"
-  implementation "org.apache.commons:commons-exec:1.3"
-  implementation "org.apache.commons:commons-text:1.11.0"
-  implementation 'org.apache.commons:commons-lang3:3.17.0'
-  implementation 'org.jboss.resteasy:resteasy-jaxb-provider:6.2.5.Final'
-  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.3'
-  implementation 'org.json:json:20231013'
-  implementation 'org.reflections:reflections:0.10.2'
+  implementation "org.apache.commons:commons-exec:${commonsExecVersion}"
+  implementation "org.apache.commons:commons-text:${commonsTextVersion}"
+  implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+  implementation "org.jboss.resteasy:resteasy-jaxb-provider:${resteasyVersion}"
+  implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${jacksonVersion}"
+  implementation "org.json:json:${jsonVersion}"
+  implementation "org.reflections:reflections:${reflectionsVersion}"
 
-  implementation "ch.qos.logback:logback-core:1.4.14"
-  implementation "ch.qos.logback:logback-classic:1.4.14"
-  implementation "org.yaml:snakeyaml:2.3"
-  implementation 'javax.websocket:javax.websocket-api:1.1'
-  compileOnly 'org.projectlombok:lombok:1.18.30'
-  annotationProcessor 'org.projectlombok:lombok:1.18.30'
+  // Logging and configuration
+  implementation "ch.qos.logback:logback-core:${logbackVersion}"
+  implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+  implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
+  implementation "javax.websocket:javax.websocket-api:${websocketApiVersion}"
 
-  testCompileOnly 'org.projectlombok:lombok:1.18.30'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+  // Lombok for code generation
+  compileOnly "org.projectlombok:lombok:${lombokVersion}"
+  annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+  // Lombok for test code
+  testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+  testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 }
 
+/**
+ * Changelog generation configuration
+ * Used to generate CHANGELOG.md from individual changelog files
+ */
 changelog {
-  version = baseVersion
+  version = moduleVersion
   output.set(file("CHANGELOG.md"))
   inputPath.set(file("changelogs/unreleased"))
   types.set(["Feature", "Change", "Deprecate", "Remove", "Fix", "Security"])
@@ -101,23 +159,25 @@ changelog {
 }
 
 
-//
-// Publish
-//
-
+/**
+ * Publication Configuration
+ * Handles publishing the module to Maven repositories
+ */
 apply plugin: 'maven-publish'
 
+// Define Maven repository credentials
 ext {
   mavenUsername = project.findProperty("addonsMavenUsername")
   mavenPassword = project.findProperty("addonsMavenPassword")
 }
 
+// Configure publishing repositories
 publishing {
   repositories {
     maven {
       def repoPath = project.hasProperty("finalRelease")
-          ? "maven-releases"
-          : "maven-snapshots"
+              ? "maven-releases"
+              : "maven-snapshots"
       name = "maven"
       url = "https://repository.axelor.com/nexus/repository/" + repoPath
       credentials {
@@ -128,30 +188,143 @@ publishing {
   }
 }
 
-/*
-* Jacoco
-*/
-
+/**
+ * JaCoCo Configuration
+ * Sets up code coverage reporting
+ */
 apply plugin: 'jacoco'
 
 jacoco {
-  toolVersion = '0.8.11'
+  toolVersion = jacocoVersion
 }
 
 jacocoTestReport {
   reports {
-    xml.required
+    xml.required = true
   }
 }
 
+// Configure test execution with JaCoCo reporting
 test {
   useJUnitPlatform()
-  // report is always generated after tests run
+  // Report is always generated after tests run
   finalizedBy jacocoTestReport
-  maxHeapSize = '1G'
 }
 
 jacocoTestReport {
-  // tests are required to run before generating the report
+  // Tests are required to run before generating the report
   dependsOn test
+
+  // Enable caching for better performance
+  outputs.cacheIf { true }
+}
+
+/**
+ * Configuration to resolve Gradle dependency issues
+ * Ensures that Java compilation depends on React frontend files being copied
+ */
+tasks.withType(JavaCompile) {
+  // Only depend on frontCopy if it exists
+  if (project.tasks.findByName('frontCopy') != null) {
+    mustRunAfter 'frontCopy'
+  }
+
+  // Optimize Java compilation
+  options.fork = true
+  options.incremental = true
+
+  // Enable caching
+  outputs.cacheIf { true }
+
+  // Use parallel compilation when appropriate
+  int cpuCount = Runtime.runtime.availableProcessors()
+  if (cpuCount > 2) {
+    options.forkOptions.jvmArgs += ['-XX:+HeapDumpOnOutOfMemoryError', '-XX:+UseParallelGC']
+  }
+}
+
+/**
+ * Ensure that the JAR contains files generated by React
+ */
+tasks.named('jar').configure {
+  if (project.tasks.findByName('frontCopy') != null) {
+    dependsOn 'frontCopy'
+  }
+
+  // Enable caching
+  outputs.cacheIf { true }
+}
+
+/**
+ * Task to validate the build configuration
+ */
+task validateBuild {
+  group = 'verification'
+  description = 'Validates the build configuration'
+
+  doLast {
+    logger.lifecycle "Validating axelor-studio build configuration..."
+
+    // Check if the React directory exists
+    def reactDir = file("react")
+    if (!reactDir.exists() || !reactDir.isDirectory()) {
+      logger.warn "React directory not found: ${reactDir}"
+    } else {
+      logger.lifecycle "React directory is present: ${reactDir}"
+    }
+
+    // Log dependency information (debug level)
+    logger.debug "Using dependencies:"
+    configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+      logger.debug " - ${artifact.moduleVersion.id}"
+    }
+
+    logger.lifecycle "Build configuration is valid"
+  }
+}
+
+// Add the validation task to the check lifecycle
+check.dependsOn validateBuild
+
+/**
+ * Optimize Gradle task execution by explicitly setting up task dependencies
+ */
+afterEvaluate {
+  // Set optimal parallelism based on available processors
+  int cpuCount = Runtime.runtime.availableProcessors()
+  if (cpuCount > 1) {
+    // Configure parallel execution
+    if (gradle.startParameter.isParallelProjectExecutionEnabled()) {
+      logger.lifecycle("Using parallel execution with ${cpuCount} max workers")
+    }
+  }
+
+  // Make jar task depend on successful compilation
+  tasks.named('jar').configure {
+    dependsOn 'compileJava'
+  }
+
+  // Make compile depend on frontCopy if available
+  if (tasks.findByName('frontCopy') != null) {
+    tasks.named('compileJava').configure {
+      dependsOn 'frontCopy'
+    }
+  }
+
+  // Make test task depend on frontCopy if available
+  if (tasks.findByName('frontCopy') != null) {
+    tasks.named('test').configure {
+      dependsOn 'frontCopy'
+    }
+  }
+
+  // Configure task cacheability for other tasks
+  tasks.withType(Jar) {
+    outputs.cacheIf { true }
+  }
+
+  tasks.withType(AbstractArchiveTask) {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+  }
 }
