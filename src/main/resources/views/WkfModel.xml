@@ -71,6 +71,11 @@
           <field name="roleSet"/>
         </panel>
       </panel>
+      <panel name="dashboardPanel" title="Dashboard" colSpan="12">
+        <panel-dashlet title="Wkf instances" showTitle="false"
+          name="wkfInstancesPanel" canSearch="true"
+          action="action-wkf-model-method-show-related-wkf-instance" colSpan="12"/>
+      </panel>
     </panel-tabs>
     <panel name="extraPanel">
       <field name="wkfProcessList" colSpan="12" canNew="false" canRemove="true"/>
@@ -466,4 +471,7 @@
     <call class="com.axelor.studio.web.GroovyExpressionBuilderController" method="buildScript"/>
   </action-method>
 
+  <action-method name="action-wkf-model-method-show-related-wkf-instance">
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="showRunningInstances"/>
+  </action-method>
 </object-views>

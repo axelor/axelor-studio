@@ -21,6 +21,7 @@ import com.axelor.auth.AuthUtils;
 import com.axelor.auth.db.User;
 import com.axelor.common.Inflector;
 import com.axelor.common.StringUtils;
+import com.axelor.db.JPA;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaFile;
@@ -65,6 +66,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import javax.persistence.Query;
+import org.apache.commons.collections.CollectionUtils;
 
 public class WkfModelController {
 
@@ -620,5 +624,33 @@ public class WkfModelController {
     } catch (Exception e) {
       ExceptionHelper.trace(response, e);
     }
+  }
+
+  public void showRunningInstances(ActionRequest request, ActionResponse response) {
+    String sql = "SELECT proc_inst_id_ FROM act_ru_execution";
+    Query query = JPA.em().createNativeQuery(sql);
+    List<String> results = query.getResultList();
+    List<WkfInstance> wkfInstanceList =
+        com.axelor.db.Query.of(WkfInstance.class)
+            .filter(
+                "self.wkfProcess.wkfModel.id = ?1 AND self.instanceId IN ?2",
+                request.getContext().asType(WkfModel.class).getId(),
+                results)
+            .fetch();
+    ActionView.ActionViewBuilder actionViewBuilder =
+        ActionView.define(I18n.get("Running instances"))
+            .model("com.axelor.studio.db.WkfInstance")
+            .add("grid", "wkf-instance-grid")
+            .add("form", "wkf-instance-form")
+            .domain(
+                CollectionUtils.isEmpty(wkfInstanceList)
+                    ? String.format("self.id IN (0)")
+                    : String.format(
+                        "self.id IN (%s)",
+                        wkfInstanceList.stream()
+                            .map(WkfInstance::getId)
+                            .map(String::valueOf)
+                            .collect(Collectors.joining(","))));
+    response.setView(actionViewBuilder.map());
   }
 }
