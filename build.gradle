@@ -151,11 +151,11 @@ dependencies {
  * Used to generate CHANGELOG.md from individual changelog files
  */
 changelog {
-  version = moduleVersion
+  version = project.version
   output.set(file("CHANGELOG.md"))
   inputPath.set(file("changelogs/unreleased"))
   types.set(["Feature", "Change", "Deprecate", "Remove", "Fix", "Security"])
-  header.set("${version.get()} (${new Date().format("yyyy-MM-dd")})")
+  header.set("${project.version} (${new Date().format("yyyy-MM-dd")})")
 }
 
 
@@ -172,7 +172,7 @@ ext {
 }
 
 // Set the project version explicitly for all publications
-version = moduleVersion
+version = project.version
 
 // Configure publishing repositories
 publishing {
