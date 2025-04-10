@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import IconButton from "../../../../../components/IconButton";
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
@@ -11,7 +11,7 @@ import {
   TextField,
   Checkbox,
 } from "../../../../../components/properties/components";
-import Select from "../../../../../components/Select";
+import TranslationSelect from "../../../../../components/TranslationSelect";
 import Alert from "../../../../../components/Alert";
 import { translate, getBool } from "../../../../../utils";
 import {
@@ -25,6 +25,7 @@ import {
 import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import { useStore } from "../../../../../store";
+import { useAlert } from "../../../../../context/alert-context";
 import { getNameProperty } from "../../../extra";
 import styles from "./translation-props.module.css";
 
@@ -51,23 +52,12 @@ export default function TranslationProps({
   const [translations, setTranslations] = useState(null);
   const [isVisible, setVisible] = useState(false);
   const { state } = useStore();
-  const { element: storeElement, info, languages } = state;
-  const [openSnackbar, setSnackbar] = useState({
-    open: false,
-    messageType: null,
-    message: null,
-  });
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setSnackbar({
-      open: false,
-      messageType: null,
-      message: null,
-    });
+  const { element: storeElement, info } = state;
+  const { dispatch } = useAlert();
+  const setSnackbar = (payload) => {
+    dispatch({ type: "OPEN_ALERT", payload });
   };
+
   const setDiagramValue = (val) => {
     if (!element) return;
     const modelProperty = getNameProperty(element);
@@ -253,7 +243,13 @@ export default function TranslationProps({
           )}
         </div>
         {isTranslations && translations && translations.length > 0 && (
-          <Box rounded={2} bgColor="body" shadow style={{ margin: "10px 0" }} overflow="auto">
+          <Box
+            rounded={2}
+            bgColor="body"
+            shadow
+            style={{ margin: "10px 0" }}
+            overflow="auto"
+          >
             <Table size="sm" aria-label="a dense table">
               <TableHead>
                 <TableRow>
@@ -261,7 +257,7 @@ export default function TranslationProps({
                     {translate("Translation")}
                   </TableCell>
                   <TableCell textAlign="center" className={styles.tableHead}>
-                    {translate("Language")} 
+                    {translate("Language")}
                   </TableCell>
                   <TableCell
                     textAlign="center"
@@ -300,36 +296,12 @@ export default function TranslationProps({
                         />
                       </TableCell>
                       <TableCell as="th" className={styles.tableCell}>
-                        <Select
-                          className={styles.select}
-                          isTranslated={true}
-                          update={(value) => {
-                            if (translateKey.language === value?.value) return;
-                            const isLang = translations.find(
-                              (t) => t.language === value?.value
-                            );
-                            if (isLang) {
-                              setSnackbar({
-                                open: true,
-                                messageType: "danger",
-                                message: translate(
-                                  "Duplicate languages are not allowed"
-                                ),
-                              });
-                              return;
-                            }
-                            setProperty(index, "language", value?.value, {
-                              ...translateKey,
-                              language: value?.value,
-                            });
-                          }}
-                          name="language"
-                          value={languages?.find(
-                            (l) => l.value === translateKey.language
-                          )}
-                          isLabel={false}
-                          options={languages}
-                          optionLabel={"title"}
+                        <TranslationSelect
+                          translations={translations}
+                          translateKey={translateKey}
+                          setProperty={setProperty}
+                          setSnackbar={setSnackbar}
+                          index={index}
                         />
                       </TableCell>
                       <TableCell as="th" className={styles.tableCell}>
@@ -350,14 +322,6 @@ export default function TranslationProps({
               </TableBody>
             </Table>
           </Box>
-        )}
-        {openSnackbar.open && (
-          <Alert
-            open={openSnackbar.open}
-            message={openSnackbar.message}
-            messageType={openSnackbar.messageType}
-            onClose={handleSnackbarClose}
-          />
         )}
       </div>
     )
