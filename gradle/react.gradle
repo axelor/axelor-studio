@@ -77,7 +77,8 @@ def detectReactProjects() {
                 packageJson: packageJsonFile,
                 packageLock: new File(dir, "pnpm-lock.yaml"),
                 srcDir: new File(dir, "src"),
-                publicDir: new File(dir, "public")
+                publicDir: new File(dir, "public"),
+                nodeModulesDir: new File(dir, "node_modules")
             ])
         }
     }
@@ -116,7 +117,7 @@ reactProjects.each { reactProject ->
         inputs.file(reactProject.packageLock)
 
         // Define outputs for caching
-        outputs.dir("$projectDir/react/${dirName}/node_modules")
+        outputs.dir(reactProject.nodeModulesDir)
 
         // Enable caching for better performance
         outputs.cacheIf { true }
@@ -137,15 +138,14 @@ reactProjects.each { reactProject ->
         workingDir = file(dir)
 
         // Define inputs and outputs for incremental build support
-        inputs.file(reactProject.packageJson)
-        inputs.file(reactProject.packageLock)
-        inputs.dir("$projectDir/react/${dirName}/src")
+        inputs.files(reactProject.packageJson, reactProject.packageLock)
+        inputs.dir(reactProject.srcDir)
         if (reactProject.publicDir.exists()) {
-            inputs.dir("$projectDir/react/${dirName}/public")
+            inputs.dir(reactProject.publicDir)
         }
 
         // Consider node_modules a dependency
-        inputs.dir("$projectDir/react/${dirName}/node_modules")
+        inputs.dir(reactProject.nodeModulesDir)
 
         // Define the output directory
         outputs.dir(reactProject.buildDir)
@@ -160,7 +160,7 @@ reactProjects.each { reactProject ->
 
     // Create clean task for the React project
     def cleanTask = tasks.register("${dirName}Clean", Delete) {
-        delete reactProject.buildDir, "$projectDir/react/${dirName}/node_modules"
+        delete reactProject.buildDir, reactProject.nodeModulesDir
     }
     cleanTasks.add(cleanTask)
 
@@ -168,6 +168,25 @@ reactProjects.each { reactProject ->
     componentPaths.add([from: reactProject.buildDir, to: reactProject.webappPath])
 }
 
+task showReactDependenciesDetails() {
+    group = 'axelor'
+    description = 'Shows React dependencies details'
+
+    doLast {
+        println "React dependencies details:"
+        reactProjects.each { project ->
+            println "Project: ${project.name}"
+            println "  - Dir : ${project.dir}"
+            println "  - Build directory: ${project.buildDir}"
+            println "  - Webapp path: ${project.webappPath}"
+            println "  - Package.json: ${project.packageJson}"
+            println "  - Package-lock.yaml: ${project.packageLock}"
+            println "  - Source directory: ${project.srcDir}"
+            println "  - Public directory: ${project.publicDir}"
+            println "  - Node modules directory: ${project.nodeModulesDir}"
+        }
+    }
+}
 /**
  * Add diagnostic task to check React dependencies
  * This task prints information about the React projects configuration
