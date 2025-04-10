@@ -171,6 +171,9 @@ ext {
   mavenPassword = project.findProperty("addonsMavenPassword")
 }
 
+// Set the project version explicitly for all publications
+version = moduleVersion
+
 // Configure publishing repositories
 publishing {
   repositories {
