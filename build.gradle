@@ -191,6 +191,13 @@ publishing {
   }
 }
 
+// Ensure version is set correctly for publication
+afterEvaluate {
+  publishing.publications.findAll { it.name == 'mavenJava' }.each { pub ->
+    pub.version = project.hasProperty("finalRelease") ? moduleVersion : "${moduleVersion}-SNAPSHOT"
+  }
+}
+
 /**
  * JaCoCo Configuration
  * Sets up code coverage reporting
