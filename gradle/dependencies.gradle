@@ -6,7 +6,8 @@ afterEvaluate {
     def rootTasks = [
             'compileJava',
             'classes',
-            'assemble'
+            'assemble',
+            'processResources'
     ]
 
     // List of module tasks that produce React components

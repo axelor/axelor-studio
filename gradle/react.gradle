@@ -321,7 +321,7 @@ try {
  */
 afterEvaluate {
     // Configure root tasks to properly depend on frontCopy
-    ['compileJava', 'classes', 'assemble'].each { taskName ->
+    ['compileJava', 'classes', 'assemble', 'processResources'].each { taskName ->
         def rootTask = rootProject.tasks.findByName(taskName)
         if (rootTask != null && tasks.findByName('frontCopy') != null) {
             rootTask.dependsOn tasks.frontCopy
