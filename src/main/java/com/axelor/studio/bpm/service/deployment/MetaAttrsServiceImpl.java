@@ -47,6 +47,9 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  protected static final List<String> CONDITION_ATTRIBUTES =
+      Arrays.asList("hidden", "hideIf", "showIf", "readonly", "readonlyIf");
+
   public static final String META_ATTRS_CONDITION =
       "com.axelor.inject.Beans.get("
           + WkfInstanceService.class.getName()
@@ -178,8 +181,17 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
                 metaAttrs.setCondition(String.format(META_ATTRS_CONDITION, taskName));
               }
             }
-
-            metaAttrs.setValue(value);
+            if (Arrays.asList("false", "true").contains(value)) {
+              metaAttrs.setValue(value);
+            } else {
+              if (CONDITION_ATTRIBUTES.contains(name)) {
+                metaAttrs.setCondition(
+                    String.format("(%s)&&(%s)", value, metaAttrs.getCondition()));
+                metaAttrs.setValue("true");
+              } else {
+                metaAttrs.setValue(value);
+              }
+            }
             metaAttrs.setName(checkMetaAttrsName(name));
             metaAttrs.setWkfModelId(wkfModelId);
             metaAttrsList.add(metaAttrs);
