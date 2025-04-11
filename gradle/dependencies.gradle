@@ -2,6 +2,35 @@
 // between React component tasks and Java compilation tasks
 
 afterEvaluate {
+    // Référence directe aux tâches impliquées dans l'erreur
+    def processResourcesTask = rootProject.tasks.findByName('processResources')
+    def rootFrontCopyTask = rootProject.tasks.findByName('frontCopy')
+    
+    // Si les deux tâches existent, établir une relation directe
+    if (processResourcesTask != null && rootFrontCopyTask != null) {
+        // Ajouter une dépendance explicite
+        processResourcesTask.dependsOn rootFrontCopyTask
+        
+        // Déclarer explicitement les répertoires de sortie de frontCopy comme entrées de processResources
+        def webappDir = file("${rootProject.buildDir}/webapp")
+        processResourcesTask.inputs.dir(webappDir)
+        
+        // Déclarer le répertoire problématique mentionné dans l'erreur
+        def srcGenResourcesDir = file("${rootProject.projectDir}/build/src-gen/resources")
+        if (srcGenResourcesDir.exists()) {
+            processResourcesTask.inputs.dir(srcGenResourcesDir)
+        }
+        
+        // Configurer la sortie de frontCopy comme une entrée de processResources, si applicable
+        try {
+            if (rootFrontCopyTask.hasProperty('destinationDir')) {
+                processResourcesTask.inputs.dir(rootFrontCopyTask.destinationDir)
+            }
+        } catch (Exception e) {
+            // Ignorer les erreurs si la propriété n'est pas accessible
+        }
+    }
+    
     // List of root project tasks that should depend on the frontCopy task
     def rootTasks = [
             'compileJava',
@@ -21,15 +50,32 @@ afterEvaluate {
         if (rootTask != null) {
             // Add dependencies from React modules
             reactModules.each { reactModule ->
-                def frontCopyTask = reactModule.tasks.findByName('frontCopy')
-                if (frontCopyTask != null) {
+                def moduleFrontCopyTask = reactModule.tasks.findByName('frontCopy')
+                if (moduleFrontCopyTask != null) {
                     if (taskName == 'processResources') {
-                        rootTask.dependsOn frontCopyTask
+                        // Ajouter une forte dépendance pour processResources
+                        rootTask.dependsOn moduleFrontCopyTask
                         
+                        // Déclarer les entrées/sorties de manière plus complète
                         def webappDir = file("${rootProject.buildDir}/webapp")
                         rootTask.inputs.dir(webappDir)
+                        
+                        // Déclarer le répertoire généré comme entrée
+                        def moduleGenDir = file("${reactModule.projectDir}/build/src-gen/resources")
+                        if (moduleGenDir.exists()) {
+                            rootTask.inputs.dir(moduleGenDir)
+                        }
+                        
+                        // Essayer d'accéder à la propriété destinationDir pour le déclarer comme entrée
+                        try {
+                            if (moduleFrontCopyTask.hasProperty('destinationDir')) {
+                                rootTask.inputs.dir(moduleFrontCopyTask.destinationDir)
+                            }
+                        } catch (Exception e) {
+                            // Ignorer les erreurs
+                        }
                     } else {
-                        rootTask.dependsOn frontCopyTask
+                        rootTask.dependsOn moduleFrontCopyTask
                     }
                 }
             }
@@ -37,12 +83,8 @@ afterEvaluate {
             // Add dependency to copyWebapp if it exists
             def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
             if (copyWebappTask != null) {
-                if (taskName == 'processResources') {
-                    rootTask.dependsOn copyWebappTask
-                } else {
-                    rootTask.dependsOn copyWebappTask
-                }
-
+                rootTask.dependsOn copyWebappTask
+                
                 // Explicitly declare inputs to avoid validation issues
                 if (taskName == 'compileJava' || taskName == 'processResources') {
                     def webappDir = file("${rootProject.buildDir}/webapp")
@@ -56,9 +98,9 @@ afterEvaluate {
     def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
     if (copyWebappTask != null) {
         reactModules.each { reactModule ->
-            def frontCopyTask = reactModule.tasks.findByName('frontCopy')
-            if (frontCopyTask != null) {
-                copyWebappTask.dependsOn frontCopyTask
+            def moduleFrontCopyTask = reactModule.tasks.findByName('frontCopy')
+            if (moduleFrontCopyTask != null) {
+                copyWebappTask.dependsOn moduleFrontCopyTask
             }
         }
     }
@@ -69,10 +111,36 @@ afterEvaluate {
         def moduleFrontCopyTask = reactModule.tasks.findByName('frontCopy')
         
         if (moduleProcessResourcesTask != null && moduleFrontCopyTask != null) {
+            // Établir une forte dépendance
             moduleProcessResourcesTask.dependsOn moduleFrontCopyTask
             
+            // Déclarer toutes les entrées potentielles
             def moduleWebappDir = file("${rootProject.buildDir}/webapp")
             moduleProcessResourcesTask.inputs.dir(moduleWebappDir)
+            
+            // Déclarer le répertoire src-gen comme entrée s'il existe
+            def moduleGenDir = file("${reactModule.projectDir}/build/src-gen/resources")
+            if (moduleGenDir.exists()) {
+                moduleProcessResourcesTask.inputs.dir(moduleGenDir)
+            }
+            
+            // Tenter d'utiliser la propriété destinationDir directement
+            try {
+                if (moduleFrontCopyTask.hasProperty('destinationDir')) {
+                    moduleProcessResourcesTask.inputs.dir(moduleFrontCopyTask.destinationDir)
+                }
+            } catch (Exception e) {
+                // Ignorer les erreurs
+            }
+        }
+    }
+    
+    // Ajouter une tâche de diagnostic pour le débogage
+    if (processResourcesTask != null) {
+        processResourcesTask.doFirst {
+            println "===== Configuration de processResources ====="
+            println "Tâches dont processResources dépend: ${processResourcesTask.dependsOn.collect { it.toString() }}"
+            println "===== Fin de la configuration ====="
         }
     }
 }
