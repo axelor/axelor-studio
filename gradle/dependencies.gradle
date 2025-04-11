@@ -24,7 +24,10 @@ afterEvaluate {
                 def frontCopyTask = reactModule.tasks.findByName('frontCopy')
                 if (frontCopyTask != null) {
                     if (taskName == 'processResources') {
-                        frontCopyTask.mustRunAfter rootTask
+                        rootTask.dependsOn frontCopyTask
+                        
+                        def webappDir = file("${rootProject.buildDir}/webapp")
+                        rootTask.inputs.dir(webappDir)
                     } else {
                         rootTask.dependsOn frontCopyTask
                     }
@@ -35,7 +38,7 @@ afterEvaluate {
             def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
             if (copyWebappTask != null) {
                 if (taskName == 'processResources') {
-                    copyWebappTask.mustRunAfter rootTask
+                    rootTask.dependsOn copyWebappTask
                 } else {
                     rootTask.dependsOn copyWebappTask
                 }
@@ -57,6 +60,19 @@ afterEvaluate {
             if (frontCopyTask != null) {
                 copyWebappTask.dependsOn frontCopyTask
             }
+        }
+    }
+    
+    // Rechercher également les tâches processResources dans les modules
+    reactModules.each { reactModule ->
+        def moduleProcessResourcesTask = reactModule.tasks.findByName('processResources')
+        def moduleFrontCopyTask = reactModule.tasks.findByName('frontCopy')
+        
+        if (moduleProcessResourcesTask != null && moduleFrontCopyTask != null) {
+            moduleProcessResourcesTask.dependsOn moduleFrontCopyTask
+            
+            def moduleWebappDir = file("${rootProject.buildDir}/webapp")
+            moduleProcessResourcesTask.inputs.dir(moduleWebappDir)
         }
     }
 }
