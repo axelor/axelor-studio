@@ -2,109 +2,87 @@
 // between React component tasks and Java compilation tasks
 
 afterEvaluate {
-    // Configuration directe des tâches impliquées dans l'erreur
-    def processResourcesTask = tasks.findByPath(':processResources')
-    def frontCopyTask = tasks.findByPath(':frontCopy')
+    // Accès direct aux tâches via les chemins absolus, plus fiable dans un environnement CI
+    def processResourcesTask = project.tasks.findByPath(':processResources')
+    def frontCopyTask = project.tasks.findByPath(':frontCopy')
     
     if (processResourcesTask != null && frontCopyTask != null) {
-        // Approche forte: Ajouter une dépendance explicite
+        // 1. Ajout d'une dépendance explicite - la solution recommandée par Gradle
         processResourcesTask.dependsOn(frontCopyTask)
         
-        // Approche forte: Déclarer explicitement le chemin problématique comme entrée
-        def srcGenResourcesDir = file("${project.projectDir}/build/src-gen/resources")
-        processResourcesTask.inputs.dir(srcGenResourcesDir)
+        // 2. Manipulation directe de l'ensemble des entrées
+        def problemDir = new File("${project.projectDir}/build/src-gen/resources")
+        processResourcesTask.inputs.files(problemDir)
         
-        // Assurer que le webapp directory est aussi une entrée
-        def webappDir = file("${project.buildDir}/webapp")
-        processResourcesTask.inputs.dir(webappDir)
-        
-        // Essayer d'accéder aux propriétés de destination
+        // 3. Forcage du chemin problématique en tant qu'entrée via l'API Java sous-jacente
         try {
-            if (frontCopyTask.hasProperty('destinationDir')) {
-                processResourcesTask.inputs.dir(frontCopyTask.destinationDir)
-            }
-        } catch (Exception ignored) {}
+            def inputFiles = processResourcesTask.inputs.files
+            inputFiles.from(problemDir)
+        } catch (Exception e) {
+            logger.warn("Impossible d'ajouter directement le répertoire comme entrée: ${e.message}")
+        }
         
-        // Approche pour déboguer
-        processResourcesTask.doFirst {
-            logger.lifecycle("=== Configuration de processResources ===")
-            logger.lifecycle("Dépendances de processResources: ${processResourcesTask.dependsOn}")
-            logger.lifecycle("Inputs de processResources: ${processResourcesTask.inputs.files.files}")
-            logger.lifecycle("=== Fin de la configuration ===")
+        // 4. Logging détaillé pour diagnostic
+        processResourcesTask.doFirst { task ->
+            logger.quiet("====== CONFIGURATION PROCESSRESOURCES ======")
+            logger.quiet("Task: ${task.path}")
+            logger.quiet("Inputs: ${task.inputs.files.files}")
+            logger.quiet("Dépendances: ${task.dependsOn}")
+            logger.quiet("==========================================")
         }
     }
     
-    // Traiter spécifiquement la tâche de publication si elle existe
-    def publishTask = tasks.findByPath(':publish')
-    if (publishTask != null && processResourcesTask != null) {
-        // S'assurer que la publication attend la completion de processResources
-        publishTask.mustRunAfter(processResourcesTask)
-        
-        // Logger des informations sur la publication
-        publishTask.doFirst {
-            logger.lifecycle("=== Configuration de publish ===")
-            logger.lifecycle("Dépendances de publish: ${publishTask.dependsOn}")
-            logger.lifecycle("=== Fin de la configuration ===")
-        }
-    }
-    
-    // Traiter toutes les tâches de publication
-    tasks.withType(org.gradle.api.publish.tasks.PublishToMavenRepository) { pubTask ->
-        if (processResourcesTask != null) {
-            // S'assurer que les tâches de publication dépendent de processResources
+    // Configuration des tâches de publication pour qu'elles dépendent explicitement de frontCopy
+    project.tasks.matching { task -> 
+        task.name.contains('publish') || task.name.contains('Publication')
+    }.all { pubTask ->
+        if (frontCopyTask != null && processResourcesTask != null) {
+            // Assurer que la publication dépend de frontCopy
+            pubTask.dependsOn(frontCopyTask)
             pubTask.dependsOn(processResourcesTask)
             
-            // S'assurer que frontCopy est exécuté avant toute publication
-            if (frontCopyTask != null) {
-                pubTask.dependsOn(frontCopyTask)
+            // Logging pour diagnostic
+            pubTask.doFirst {
+                logger.quiet("====== CONFIGURATION ${pubTask.name} ======")
+                logger.quiet("Dépendances: ${pubTask.dependsOn}")
+                logger.quiet("==========================================")
             }
         }
     }
     
-    // Configuration des modules
-    def reactModules = [
-        project(':modules:axelor-studio')
-    ]
-    
-    // Pour chaque module React
-    reactModules.each { reactModule ->
-        def moduleProcessResourcesTask = reactModule.tasks.findByName('processResources')
-        def moduleFrontCopyTask = reactModule.tasks.findByName('frontCopy')
+    // Configuration spéciale pour les modules React
+    def reactModules = [project(':modules:axelor-studio')]
+    reactModules.each { module ->
+        // Configurer la tâche processResources du module
+        def moduleProcessResources = module.tasks.findByName('processResources')
+        def moduleFrontCopy = module.tasks.findByName('frontCopy')
         
-        if (moduleProcessResourcesTask != null && moduleFrontCopyTask != null) {
-            // Configurer les dépendances au niveau du module
-            moduleProcessResourcesTask.dependsOn(moduleFrontCopyTask)
+        if (moduleProcessResources != null && moduleFrontCopy != null) {
+            // Dépendance explicite
+            moduleProcessResources.dependsOn(moduleFrontCopy)
             
-            // Déclarer les répertoires importants
-            def srcGenDir = file("${reactModule.projectDir}/build/src-gen/resources")
-            if (srcGenDir.exists()) {
-                moduleProcessResourcesTask.inputs.dir(srcGenDir)
-            }
+            // Déclarer le répertoire problématique comme entrée
+            def moduleProblemDir = new File("${module.projectDir}/build/src-gen/resources")
+            moduleProcessResources.inputs.files(moduleProblemDir)
             
-            def webappDir = file("${reactModule.buildDir}/webapp")
-            if (webappDir.exists()) {
-                moduleProcessResourcesTask.inputs.dir(webappDir)
-            }
-            
-            // Configurer la destination de frontCopy comme entrée
-            try {
-                if (moduleFrontCopyTask.hasProperty('destinationDir')) {
-                    moduleProcessResourcesTask.inputs.dir(moduleFrontCopyTask.destinationDir)
-                }
-            } catch (Exception ignored) {}
-            
-            // Configurer les tâches de publication du module
-            reactModule.tasks.withType(org.gradle.api.publish.tasks.PublishToMavenRepository) { pubTask ->
-                pubTask.dependsOn(moduleProcessResourcesTask)
-                pubTask.dependsOn(moduleFrontCopyTask)
+            // Configurer toutes les tâches de publication du module
+            module.tasks.matching { task -> 
+                task.name.contains('publish') || task.name.contains('Publication')
+            }.all { moduleTask ->
+                moduleTask.dependsOn(moduleProcessResources)
+                moduleTask.dependsOn(moduleFrontCopy)
             }
         }
     }
-
-    // Désactiver temporairement la validation pour processResources
-    try {
-        if (processResourcesTask != null) {
+    
+    // MESURE DRASTIQUE - Désactivation temporaire de la validation pour contourner l'erreur
+    // Cette option est controversée, mais peut être nécessaire dans certains environnements CI
+    if (project.hasProperty('disableTaskValidation') && project.disableTaskValidation.toBoolean() && processResourcesTask != null) {
+        try {
             processResourcesTask.notCompatibleWithConfigurationCache("Validation désactivée temporairement")
+            logger.warn("Validation de la tâche processResources désactivée")
+        } catch (Exception e) {
+            logger.warn("Impossible de désactiver la validation: ${e.message}")
         }
-    } catch (Exception ignored) {}
+    }
 }
