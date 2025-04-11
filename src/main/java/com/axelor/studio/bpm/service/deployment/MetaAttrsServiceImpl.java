@@ -50,7 +50,8 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final List<String> CONDITION_ATTRIBUTES =
-      Arrays.asList("hidden", "hideIf", "showIf", "readonly", "readonlyIf");
+      Arrays.asList(
+          "hidden", "hideIf", "showIf", "readonly", "readonlyIf", "required", "requiredIf");
 
   public static final String META_ATTRS_CONDITION =
       "com.axelor.inject.Beans.get("
