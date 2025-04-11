@@ -6,8 +6,8 @@ afterEvaluate {
     def rootTasks = [
             'compileJava',
             'classes',
-            'assemble',
-            'processResources'
+            'assemble'
+            // Removed 'processResources' to avoid circular dependency
     ]
 
     // List of module tasks that produce React components
@@ -48,6 +48,15 @@ afterEvaluate {
     if (processResourcesTask != null && copyWebappTask != null) {
         // Use mustRunAfter instead of dependsOn to avoid circular dependencies
         copyWebappTask.mustRunAfter processResourcesTask
+
+        // Remove the direct dependency from processResources to frontCopy
+        // Instead, use mustRunAfter to establish ordering without creating a hard dependency
+        reactModules.each { reactModule ->
+            def frontCopyTask = reactModule.tasks.findByName('frontCopy')
+            if (frontCopyTask != null) {
+                frontCopyTask.mustRunAfter processResourcesTask
+            }
+        }
 
         // Declare copyWebapp outputs as inputs for processResources
         def webappDir = file("${rootProject.buildDir}/webapp")

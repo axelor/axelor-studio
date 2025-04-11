@@ -314,34 +314,3 @@ try {
 } catch (UnknownTaskException ignored) {
     // Do nothing if no war tasks
 }
-
-/**
- * Additional configuration to resolve dependency issues
- * Sets up explicit dependencies between React builds and Java compilation
- */
-afterEvaluate {
-    // Configure root tasks to properly depend on frontCopy
-    ['compileJava', 'classes', 'assemble', 'processResources'].each { taskName ->
-        def rootTask = rootProject.tasks.findByName(taskName)
-        if (rootTask != null && tasks.findByName('frontCopy') != null) {
-            rootTask.dependsOn tasks.frontCopy
-        }
-    }
-
-    // Handle the relationship with copyWebapp to avoid circular dependencies
-    def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
-    if (copyWebappTask != null && tasks.findByName('frontCopy') != null) {
-        tasks.frontCopy.mustRunAfter copyWebappTask
-
-        // Explicitly declare inputs for compileJava
-        if (rootProject.tasks.findByName('compileJava') != null) {
-            def webappDir = file("${rootProject.buildDir}/webapp")
-            rootProject.tasks.compileJava.inputs.dir(webappDir)
-        }
-    }
-
-    // Log for debugging
-    logger.info("React module configuration complete:")
-    logger.info("  - React projects: ${reactProjects.size()}")
-    logger.info("  - Frontend tasks: ${buildTasks.size()} build, ${cleanTasks.size()} clean")
-}
