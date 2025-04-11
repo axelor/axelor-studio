@@ -6,8 +6,8 @@ afterEvaluate {
     def rootTasks = [
             'compileJava',
             'classes',
-            'assemble'
-            // Removed 'processResources' to avoid circular dependency
+            'assemble',
+            'processResources'
     ]
 
     // List of module tasks that produce React components
@@ -23,17 +23,25 @@ afterEvaluate {
             reactModules.each { reactModule ->
                 def frontCopyTask = reactModule.tasks.findByName('frontCopy')
                 if (frontCopyTask != null) {
-                    rootTask.dependsOn frontCopyTask
+                    if (taskName == 'processResources') {
+                        frontCopyTask.mustRunAfter rootTask
+                    } else {
+                        rootTask.dependsOn frontCopyTask
+                    }
                 }
             }
 
             // Add dependency to copyWebapp if it exists
             def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
             if (copyWebappTask != null) {
-                rootTask.dependsOn copyWebappTask
+                if (taskName == 'processResources') {
+                    copyWebappTask.mustRunAfter rootTask
+                } else {
+                    rootTask.dependsOn copyWebappTask
+                }
 
                 // Explicitly declare inputs to avoid validation issues
-                if (taskName == 'compileJava') {
+                if (taskName == 'compileJava' || taskName == 'processResources') {
                     def webappDir = file("${rootProject.buildDir}/webapp")
                     rootTask.inputs.dir(webappDir)
                 }
@@ -41,29 +49,8 @@ afterEvaluate {
         }
     }
 
-    // Manage the relationship between processResources and copyWebapp to avoid circular dependencies
-    def processResourcesTask = rootProject.tasks.findByName('processResources')
-    def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
-
-    if (processResourcesTask != null && copyWebappTask != null) {
-        // Use mustRunAfter instead of dependsOn to avoid circular dependencies
-        copyWebappTask.mustRunAfter processResourcesTask
-
-        // Remove the direct dependency from processResources to frontCopy
-        // Instead, use mustRunAfter to establish ordering without creating a hard dependency
-        reactModules.each { reactModule ->
-            def frontCopyTask = reactModule.tasks.findByName('frontCopy')
-            if (frontCopyTask != null) {
-                frontCopyTask.mustRunAfter processResourcesTask
-            }
-        }
-
-        // Declare copyWebapp outputs as inputs for processResources
-        def webappDir = file("${rootProject.buildDir}/webapp")
-        processResourcesTask.inputs.dir(webappDir)
-    }
-
     // Ensure copyWebapp depends on frontCopy tasks from modules
+    def copyWebappTask = rootProject.tasks.findByName('copyWebapp')
     if (copyWebappTask != null) {
         reactModules.each { reactModule ->
             def frontCopyTask = reactModule.tasks.findByName('frontCopy')
