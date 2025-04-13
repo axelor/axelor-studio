@@ -5,15 +5,15 @@ afterEvaluate {
     // Accès direct aux tâches via les chemins absolus, plus fiable dans un environnement CI
     def processResourcesTask = project.tasks.findByPath(':processResources')
     def frontCopyTask = project.tasks.findByPath(':frontCopy')
-    
+
     if (processResourcesTask != null && frontCopyTask != null) {
         // 1. Ajout d'une dépendance explicite - la solution recommandée par Gradle
         processResourcesTask.dependsOn(frontCopyTask)
-        
+
         // 2. Manipulation directe de l'ensemble des entrées
         def problemDir = new File("${project.projectDir}/build/src-gen/resources")
         processResourcesTask.inputs.files(problemDir)
-        
+
         // 3. Forcage du chemin problématique en tant qu'entrée via l'API Java sous-jacente
         try {
             def inputFiles = processResourcesTask.inputs.files
@@ -21,7 +21,7 @@ afterEvaluate {
         } catch (Exception e) {
             logger.warn("Impossible d'ajouter directement le répertoire comme entrée: ${e.message}")
         }
-        
+
         // 4. Logging détaillé pour diagnostic
         processResourcesTask.doFirst { task ->
             logger.quiet("====== CONFIGURATION PROCESSRESOURCES ======")
@@ -31,16 +31,16 @@ afterEvaluate {
             logger.quiet("==========================================")
         }
     }
-    
+
     // Configuration des tâches de publication pour qu'elles dépendent explicitement de frontCopy
-    project.tasks.matching { task -> 
+    project.tasks.matching { task ->
         task.name.contains('publish') || task.name.contains('Publication')
     }.all { pubTask ->
         if (frontCopyTask != null && processResourcesTask != null) {
             // Assurer que la publication dépend de frontCopy
             pubTask.dependsOn(frontCopyTask)
             pubTask.dependsOn(processResourcesTask)
-            
+
             // Logging pour diagnostic
             pubTask.doFirst {
                 logger.quiet("====== CONFIGURATION ${pubTask.name} ======")
@@ -49,24 +49,24 @@ afterEvaluate {
             }
         }
     }
-    
+
     // Configuration spéciale pour les modules React
     def reactModules = [project(':modules:axelor-studio')]
     reactModules.each { module ->
         // Configurer la tâche processResources du module
         def moduleProcessResources = module.tasks.findByName('processResources')
         def moduleFrontCopy = module.tasks.findByName('frontCopy')
-        
+
         if (moduleProcessResources != null && moduleFrontCopy != null) {
             // Dépendance explicite
             moduleProcessResources.dependsOn(moduleFrontCopy)
-            
+
             // Déclarer le répertoire problématique comme entrée
             def moduleProblemDir = new File("${module.projectDir}/build/src-gen/resources")
             moduleProcessResources.inputs.files(moduleProblemDir)
-            
+
             // Configurer toutes les tâches de publication du module
-            module.tasks.matching { task -> 
+            module.tasks.matching { task ->
                 task.name.contains('publish') || task.name.contains('Publication')
             }.all { moduleTask ->
                 moduleTask.dependsOn(moduleProcessResources)
@@ -74,7 +74,7 @@ afterEvaluate {
             }
         }
     }
-    
+
     // MESURE DRASTIQUE - Désactivation temporaire de la validation pour contourner l'erreur
     // Cette option est controversée, mais peut être nécessaire dans certains environnements CI
     if (project.hasProperty('disableTaskValidation') && project.disableTaskValidation.toBoolean() && processResourcesTask != null) {
