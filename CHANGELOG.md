@@ -1,3 +1,38 @@
+## 3.1.11 (2025-04-14)
+
+#### Fix
+
+* fix includeIf condition is not managed in studio builder
+* Fix BPM view attribute not correctly interpreted
+
+  <details>
+  
+  This fix addresses the MetaAttrsService implementation, by changing the condition definition to include the value if its not static and if the attribute is a conditional attribute
+  
+  </details>
+
+* Fix creation of view attributes for each new version
+* New config for the non config app does not work
+
+  <details>
+  
+  When adding a new configuration to an existing app without any previous configurations, the new configuration does not work.
+  
+  The code currently checks for the existence of a MetaModel. However, the MetaModel is not populated until a view reload is performed for the new model.
+  
+  </details>
+
+* Indicators in the “WkfModel” view are not visible to an admin user who does not have the exact name “admin”.
+
+  <details>
+  
+  Resolved issue where supervision elements in the “WkfModel” view were only visible to users with the exact code “admin.” 
+  Introduced a new boolean field, isBpmAdministrator, on the User entity to designate BPM administrative privileges. 
+  Ensure that supervision elements are accessible to all users configured as BPM administrators.
+  
+  </details>
+
+
 ## 3.1.10 (2024-12-12)
 
 #### Fix
