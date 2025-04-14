@@ -1,6 +1,0 @@
-title: New config for the non config app does not work
-type: fix
-description: |
-  When adding a new configuration to an existing app without any previous configurations, the new configuration does not work.
-
-  The code currently checks for the existence of a MetaModel. However, the MetaModel is not populated until a view reload is performed for the new model.
