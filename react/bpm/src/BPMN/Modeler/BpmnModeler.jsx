@@ -2107,11 +2107,16 @@ function BpmnModelerComponent() {
           />
         )}
       </Box>
-      {allowProgressBarDisplay && progress > 0 && (
-        <Loader
-          classes={styles.loader}
-          text={`${progress}% migration is done...`}
-        />
+      {allowProgressBarDisplay &&  progress > 0 && (
+          <div className={styles.overlay}>
+            <div className={styles.loaderContainer}>
+              <Loader
+                  classes={styles.loader}
+                  text={`${progress}% migration is done...`}
+              />
+            </div>
+          </div>
+
       )}
       <Logo />
     </React.Fragment>
