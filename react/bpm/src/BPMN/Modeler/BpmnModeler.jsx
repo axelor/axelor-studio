@@ -2021,10 +2021,15 @@ function BpmnModelerComponent() {
         )}
       </Box>
       {progress > 0 && (
-        <Loader
-          classes={styles.loader}
-          text={`${progress}% migration is done...`}
-        />
+          <div className={styles.overlay}>
+            <div className={styles.loaderContainer}>
+              <Loader
+                  classes={styles.loader}
+                  text={`${progress}% migration is done...`}
+              />
+            </div>
+          </div>
+
       )}
       <Logo />
     </React.Fragment>
