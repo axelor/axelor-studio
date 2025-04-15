@@ -97,6 +97,7 @@ public class WkfModelController {
     } catch (Exception e) {
       ExceptionHelper.trace(response, e);
       WkfModel model = request.getContext().asType(WkfModel.class);
+      model = Beans.get(WkfModelRepository.class).find(model.getId());
       Beans.get(BpmDeploymentService.class).setIsMigrationOnGoing(model, false);
       Beans.get(BpmErrorMessageService.class)
           .sendBpmErrorMessage(
