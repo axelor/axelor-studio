@@ -285,16 +285,19 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
 
     WkfModel wkfModelPreviousVersion = wkfModelRepository.find(wkfModelId).getPreviousVersion();
     long attrsPreviousVersionRemoved = 0;
-    if(wkfModelPreviousVersion != null) {
-      if (wkfInstanceRepository.all().filter("wkfProcess.id = ?1", wkfModelPreviousVersion.getId()).count()
-              == 0) {
+    if (wkfModelPreviousVersion != null) {
+      if (wkfInstanceRepository
+              .all()
+              .filter("wkfProcess.id = ?1", wkfModelPreviousVersion.getId())
+              .count()
+          == 0) {
         attrsPreviousVersionRemoved =
-                Query.of(MetaAttrs.class)
-                        .filter(
-                                "self.id not in ?1 and self.wkfModelId = ?2",
-                                metaAttrsIds,
-                                wkfModelPreviousVersion.getId())
-                        .remove();
+            Query.of(MetaAttrs.class)
+                .filter(
+                    "self.id not in ?1 and self.wkfModelId = ?2",
+                    metaAttrsIds,
+                    wkfModelPreviousVersion.getId())
+                .remove();
       }
     }
     log.debug("Total meta attrs removed: {}", attrsRemoved + attrsPreviousVersionRemoved);
