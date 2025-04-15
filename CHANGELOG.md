@@ -1,3 +1,33 @@
+## 3.3.13 (2025-04-15)
+
+#### Feature
+
+* Added dashboard to show ongowing instances informations
+
+#### Fix
+
+* fix includeIf condition is not managed in studio builder
+* Fix BPM view attribute not correctly interpreted
+
+  <details>
+  
+  This fix addresses the MetaAttrsService implementation, by changing the condition definition to include the value if its not static and if the attribute is a conditional attribute
+  
+  </details>
+
+* Fix creation of view attributes for each new version
+* Add lock on bpm migration
+* New config for the non config app does not work
+
+  <details>
+  
+  When adding a new configuration to an existing app without any previous configurations, the new configuration does not work.
+  
+  The code currently checks for the existence of a MetaModel. However, the MetaModel is not populated until a view reload is performed for the new model.
+  
+  </details>
+
+
 ## 3.3.12 (2025-02-19)
 
 #### Fix
