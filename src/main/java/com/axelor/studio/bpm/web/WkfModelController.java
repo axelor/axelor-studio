@@ -94,7 +94,7 @@ public class WkfModelController {
       if (wkfModel.getIsMigrationOnGoing()) {
         response.setError(I18n.get(BpmExceptionMessage.MIGRATION_IS_ALREADY_ONGOING));
       } else {
-        Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap, false);
+        Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap);
         response.setReload(true);
       }
 
