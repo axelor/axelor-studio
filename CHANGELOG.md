@@ -1,3 +1,9 @@
+## 3.3.14 (2025-04-16)
+
+#### Fix
+
+* Freeze the screen of the user during migration
+
 ## 3.3.13 (2025-04-15)
 
 #### Feature
