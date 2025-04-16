@@ -1,3 +1,9 @@
+## 3.1.12 (2025-04-16)
+
+#### Fix
+
+* fix problem when deploying a bpm with no previews versions
+
 ## 3.1.11 (2025-04-14)
 
 #### Fix
