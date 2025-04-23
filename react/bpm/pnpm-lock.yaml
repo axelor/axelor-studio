@@ -41,12 +41,18 @@ importers:
       bpmn-js:
         specifier: ^18.2.0
         version: 18.2.0
+      bpmn-js-bpmnlint:
+        specifier: ^0.23.0
+        version: 0.23.0(bpmn-js@18.2.0)(bpmnlint@11.4.2)(diagram-js@15.2.4)
       bpmn-js-properties-panel:
         specifier: ^5.26.0
         version: 5.31.1(@bpmn-io/properties-panel@3.26.0)(bpmn-js@18.2.0)(camunda-bpmn-js-behaviors@1.9.1(bpmn-js@18.2.0)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.9.0))(diagram-js@15.2.4)
       bpmn-js-token-simulation:
         specifier: ^0.33.2
         version: 0.33.2
+      bpmnlint:
+        specifier: ^11.4.2
+        version: 11.4.2
       camunda-bpmn-moddle:
         specifier: ^7.0.1
         version: 7.0.1
@@ -292,6 +298,9 @@ packages:
 
   '@bpmn-io/feel-lint@1.4.0':
     resolution: {integrity: sha512-1bsdR/9vPD7RQVqWWPk0X0tpjLsYTDrCxIzOVtN/h32o4nPGl0dZBU5m07qaFUGD4wG3eOH4Qim1wexHG8YkBw==}
+
+  '@bpmn-io/moddle-utils@0.2.1':
+    resolution: {integrity: sha512-iv9zwk7PEGupSq9bkVZNFL0ZmoJLHExlUcjsiYx200Nh3a5mH9BHXF+PLaSaiE4882KVEirklpWf3oQLAmShSA==}
 
   '@bpmn-io/properties-panel@3.26.0':
     resolution: {integrity: sha512-pzeGMhMqkCAS/25h2wWTpxzrlQPlxi+amKzU6FCgqz7h8nq7IJ4rdDKa5EOgWWQk9TtMbFPcVoMO6Lk0Svj3GA==}
@@ -871,6 +880,10 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
+  ansi-colors@4.1.3:
+    resolution: {integrity: sha512-/6w/C21Pm1A7aZitlI5Ni/2J6FFQN8i1Cvz3kHABAAbw93v/NlvKdVOqz7CCWz/3iv/JplRSEEZ83XION15ovw==}
+    engines: {node: '>=6'}
+
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
@@ -918,6 +931,13 @@ packages:
     peerDependencies:
       '@popperjs/core': ^2.11.8
 
+  bpmn-js-bpmnlint@0.23.0:
+    resolution: {integrity: sha512-9URqfSR/k55qE59ElPXPJmx4jc+dK4CL8kV+UvZBAyE6pNsXochXOfeeBglcDQ39zkqt67ZBug0/4405nWobnQ==}
+    peerDependencies:
+      bpmn-js: '*'
+      bpmnlint: '>= 3.2'
+      diagram-js: '*'
+
   bpmn-js-properties-panel@5.31.1:
     resolution: {integrity: sha512-DH+IYngB0SVGh5yqDhKoFQMIR3sgnQgh8NFua0OmjKiwyxIaT/nzrPmuY/QEGhS0YbmRPfNIH0xVlFJwGR6jeA==}
     peerDependencies:
@@ -936,6 +956,14 @@ packages:
   bpmn-moddle@9.0.1:
     resolution: {integrity: sha512-jO2P5RBx0cZCCd+imqhpNE5anttaYuGd71u76NEA/qMZwJSW1t5ETAtw9/E2InfiPU2w0TR8oxPyopJXRc9VQg==}
     engines: {node: '>= 18'}
+
+  bpmnlint-utils@1.1.1:
+    resolution: {integrity: sha512-Afdb77FmwNB3INyUfbzXW40yY+mc0qYU3SgDFeI4zTtduiVomOlfqoXiEaUIGI8Hyh7aVYpmf3O97P2w7x0DYQ==}
+
+  bpmnlint@11.4.2:
+    resolution: {integrity: sha512-8nWUq3oGpMfZwLlkWYmPggZHg+TJh1Fi4+ce82VVamhrZ8fBJUvIKGIoGrLpwEnyb8XEPOkEzvDjkE3ueILc9g==}
+    engines: {node: '>= 20'}
+    hasBin: true
 
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
@@ -1004,6 +1032,10 @@ packages:
   classnames@2.5.1:
     resolution: {integrity: sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==}
 
+  cli-table@0.3.11:
+    resolution: {integrity: sha512-IqLQi4lO0nIB4tcdTpN4LCB9FI3uqrJZK7RC515EnhZ6qBaglkIgICb1wjeAqpdoOabm1+SuQtkXIPdYC93jhQ==}
+    engines: {node: '>= 0.2.0'}
+
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
@@ -1018,9 +1050,17 @@ packages:
   color-string@1.9.1:
     resolution: {integrity: sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg==}
 
+  color-support@1.1.3:
+    resolution: {integrity: sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==}
+    hasBin: true
+
   color@4.2.3:
     resolution: {integrity: sha512-1rXeuUUiGGrykh+CeBdu5Ie7OJwinCgQY0bc7GCRxy5xVHy+moaqkpL/jqQq0MtQOeYcrqEz4abc5f0KtU7W4A==}
     engines: {node: '>=12.5.0'}
+
+  colors@1.0.3:
+    resolution: {integrity: sha512-pFGrxThWcWQ2MsAz6RtgeWe4NK2kUE1WfsrvvlctdII745EW9I0yflqhe7++M5LEc7bV2c/9/5zc8sFcpL0Drw==}
+    engines: {node: '>=0.1.90'}
 
   component-event@0.2.1:
     resolution: {integrity: sha512-wGA++isMqiDq1jPYeyv2as/Bt/u+3iLW0rEa+8NQ82jAv3TgqMiCM+B2SaBdn2DfLilLjjq736YcezihRYhfxw==}
@@ -1273,6 +1313,12 @@ packages:
   globals@11.12.0:
     resolution: {integrity: sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==}
     engines: {node: '>=4'}
+
+  globalyzer@0.1.0:
+    resolution: {integrity: sha512-40oNTM9UfG6aBmuKxk/giHn5nQ8RVz/SS4Ir6zgzOv9/qC3kKZ9v4etGTcJbEl/NyVQH7FGU7d+X1egr57Md2Q==}
+
+  globrex@0.1.2:
+    resolution: {integrity: sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==}
 
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
@@ -1531,6 +1577,9 @@ packages:
   min-dash@4.2.2:
     resolution: {integrity: sha512-qbhSYUxk6mBaF096B3JOQSumXbKWHenmT97cSpdNzgkWwGjhjhE/KZODCoDNhI2I4C9Cb6R/Q13S4BYkUSXoXQ==}
 
+  min-dash@4.2.3:
+    resolution: {integrity: sha512-VLMYQI5+FcD9Ad24VcB08uA83B07OhueAlZ88jBK6PyupTvEJwllTMUqMy0wPGYs7pZUEtEEMWdHB63m3LtEcg==}
+
   min-dom@4.2.1:
     resolution: {integrity: sha512-TMoL8SEEIhUWYgkj7XMSgxmwSyGI+4fP2KFFGnN3FbHfbGHVdsLYSz8LoIsgPhz4dWRmLvxWWSMgzZMJW5sZuA==}
 
@@ -1561,6 +1610,10 @@ packages:
 
   monaco-editor@0.52.2:
     resolution: {integrity: sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==}
+
+  mri@1.2.0:
+    resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
+    engines: {node: '>=4'}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -1636,6 +1689,10 @@ packages:
   picomatch@4.0.2:
     resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
     engines: {node: '>=12'}
+
+  pluralize@7.0.0:
+    resolution: {integrity: sha512-ARhBOdzS3e41FbkW/XWrTEtukqqLoK5+Z/4UeDaLuSW+39JPeFgs4gCGqsrJHVZX0fUrx//4OF0K1CUGwlIFow==}
+    engines: {node: '>=4'}
 
   possible-typed-array-names@1.1.0:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
@@ -1918,6 +1975,9 @@ packages:
     peerDependencies:
       diagram-js: ^11.3.0 || ^12 || ^13 || ^14 || ^15
       inferno: ^5.0.5
+
+  tiny-glob@0.2.9:
+    resolution: {integrity: sha512-g/55ssRPUjShh+xkfx9UPDXqhckHEsHr4Vd9zX55oSdGZc/MD0m3sferOkwWtp98bv+kcVfEHtRJgBVJzelrzg==}
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
@@ -2222,6 +2282,10 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.10.8
       lezer-feel: 1.7.0
+
+  '@bpmn-io/moddle-utils@0.2.1':
+    dependencies:
+      min-dash: 4.2.3
 
   '@bpmn-io/properties-panel@3.26.0':
     dependencies:
@@ -2791,6 +2855,8 @@ snapshots:
 
   acorn@8.14.0: {}
 
+  ansi-colors@4.1.3: {}
+
   ansi-regex@5.0.1: {}
 
   ansi-styles@4.3.0:
@@ -2836,6 +2902,14 @@ snapshots:
     dependencies:
       '@popperjs/core': 2.11.8
 
+  bpmn-js-bpmnlint@0.23.0(bpmn-js@18.2.0)(bpmnlint@11.4.2)(diagram-js@15.2.4):
+    dependencies:
+      bpmn-js: 18.2.0
+      bpmnlint: 11.4.2
+      diagram-js: 15.2.4
+      min-dash: 4.2.3
+      min-dom: 4.2.1
+
   bpmn-js-properties-panel@5.31.1(@bpmn-io/properties-panel@3.26.0)(bpmn-js@18.2.0)(camunda-bpmn-js-behaviors@1.9.1(bpmn-js@18.2.0)(camunda-bpmn-moddle@7.0.1)(zeebe-bpmn-moddle@1.9.0))(diagram-js@15.2.4):
     dependencies:
       '@bpmn-io/extract-process-variables': 1.0.1
@@ -2871,6 +2945,21 @@ snapshots:
       min-dash: 4.2.2
       moddle: 7.2.0
       moddle-xml: 11.0.0(moddle@7.2.0)
+
+  bpmnlint-utils@1.1.1: {}
+
+  bpmnlint@11.4.2:
+    dependencies:
+      '@bpmn-io/moddle-utils': 0.2.1
+      ansi-colors: 4.1.3
+      bpmn-moddle: 9.0.1
+      bpmnlint-utils: 1.1.1
+      cli-table: 0.3.11
+      color-support: 1.1.3
+      min-dash: 4.2.3
+      mri: 1.2.0
+      pluralize: 7.0.0
+      tiny-glob: 0.2.9
 
   braces@3.0.3:
     dependencies:
@@ -2911,7 +3000,7 @@ snapshots:
       bpmn-js: 18.2.0
       camunda-bpmn-moddle: 7.0.1
       ids: 1.0.0
-      min-dash: 4.2.2
+      min-dash: 4.2.3
       zeebe-bpmn-moddle: 1.9.0
 
   camunda-bpmn-moddle@7.0.1: {}
@@ -2940,6 +3029,10 @@ snapshots:
 
   classnames@2.5.1: {}
 
+  cli-table@0.3.11:
+    dependencies:
+      colors: 1.0.3
+
   clsx@2.1.1: {}
 
   color-convert@2.0.1:
@@ -2953,10 +3046,14 @@ snapshots:
       color-name: 1.1.4
       simple-swizzle: 0.2.2
 
+  color-support@1.1.3: {}
+
   color@4.2.3:
     dependencies:
       color-convert: 2.0.1
       color-string: 1.9.1
+
+  colors@1.0.3: {}
 
   component-event@0.2.1: {}
 
@@ -3362,6 +3459,10 @@ snapshots:
 
   globals@11.12.0: {}
 
+  globalyzer@0.1.0: {}
+
+  globrex@0.1.2: {}
+
   gopd@1.2.0: {}
 
   graceful-fs@4.2.11: {}
@@ -3611,6 +3712,8 @@ snapshots:
 
   min-dash@4.2.2: {}
 
+  min-dash@4.2.3: {}
+
   min-dom@4.2.1:
     dependencies:
       component-event: 0.2.1
@@ -3647,6 +3750,8 @@ snapshots:
   moment@2.30.1: {}
 
   monaco-editor@0.52.2: {}
+
+  mri@1.2.0: {}
 
   ms@2.1.3: {}
 
@@ -3710,6 +3815,8 @@ snapshots:
   picomatch@2.3.1: {}
 
   picomatch@4.0.2: {}
+
+  pluralize@7.0.0: {}
 
   possible-typed-array-names@1.1.0: {}
 
@@ -4044,6 +4151,11 @@ snapshots:
       min-dash: 4.2.2
       min-dom: 4.2.1
       selection-ranges: 4.0.3
+
+  tiny-glob@0.2.9:
+    dependencies:
+      globalyzer: 0.1.0
+      globrex: 0.1.2
 
   tiny-invariant@1.3.3: {}
 

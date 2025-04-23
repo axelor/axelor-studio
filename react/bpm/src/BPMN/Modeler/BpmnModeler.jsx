@@ -61,7 +61,10 @@ import Ids from "ids";
 import Alert from "../../components/Alert";
 import { Collaboration } from "../../components/Collaboration";
 import { Box, CommandBar } from "@axelor/ui";
+import lintModule from "bpmn-js-bpmnlint";
+import bpmnlintConfig from "../../../bundled-config";
 
+import "bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css";
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import "@bpmn-io/properties-panel/dist/assets/properties-panel.css";
@@ -1797,7 +1800,11 @@ function BpmnModelerComponent() {
       };
       if (!bpmnModeler) return;
       const eventBus = bpmnModeler.get("eventBus");
-      eventBus.on("elements.changed", checkDirty);
+      eventBus.on("elements.changed", (e) => {
+        const linting = bpmnModeler.get("linting");
+        linting._setActive(true);
+        checkDirty();
+      });
       return () => {
         eventBus.off("elements.changed", checkDirty);
       };
@@ -1811,7 +1818,12 @@ function BpmnModelerComponent() {
       propertiesPanel: {
         parent: "#js-properties-panel",
       },
+      linting: {
+        bpmnlint: bpmnlintConfig,
+        active: true,
+      },
       additionalModules: [
+        lintModule,
         BpmnPropertiesPanelModule,
         BpmnPropertiesProviderModule,
         propertiesCustomProviderModule,
@@ -1849,6 +1861,7 @@ function BpmnModelerComponent() {
 
   useEffect(() => {
     if (!bpmnModeler) return;
+
     bpmnModeler.on("commandStack.connection.create.postExecuted", (event) => {
       const element = event?.context?.target;
       setColors(event && event.context && event.context.connection);
