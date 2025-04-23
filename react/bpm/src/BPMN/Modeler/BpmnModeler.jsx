@@ -47,12 +47,15 @@ import {
   convertSVGtoBase64,
   lightenColor,
   updateBusinessObject,
+  getProblemViewData,
 } from "../../utils";
 import {
   FILL_COLORS,
   USER_TASKS_TYPES,
   STROKE_COLORS,
   CONDITIONAL_SOURCES,
+  ICON_TYPE,
+  PALETTE_WIDTHS,
 } from "./constants";
 import { ALL_ATTRIBUTES } from "./properties/parts/CustomImplementation/constants";
 import { useStore } from "../../store.jsx";
@@ -60,7 +63,7 @@ import { useKeyPress } from "../../custom-hooks/useKeyPress";
 import Ids from "ids";
 import Alert from "../../components/Alert";
 import { Collaboration } from "../../components/Collaboration";
-import { Box, CommandBar } from "@axelor/ui";
+import { Box, Button, CommandBar } from "@axelor/ui";
 import lintModule from "bpmn-js-bpmnlint";
 import bpmnlintConfig from "../../../bundled-config";
 
@@ -80,6 +83,10 @@ import { getExtensionElements } from "../../utils/ExtensionElementsUtil.js";
 import useDialog from "../../hooks/useDialog.jsx";
 import Loader from "../../components/Loader";
 import { wsProgress } from "../../services/Progress";
+import IssuePanel from "./IssuePanel.jsx";
+import { IconButton } from "generic-builder/src/components/index.jsx";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import Icons from "../../components/icons/Icons.jsx";
 
 const resizeStyle = {
   display: "flex",
@@ -87,8 +94,16 @@ const resizeStyle = {
   justifyContent: "center",
   borderLeft: "1px solid var(--bs-secondary-bg)",
 };
+const issuePanelStyle = {
+  border: "1px solid var(--bs-secondary-border-subtle, rgb(207, 201, 201))",
+  position: "relative",
+  background: "var(--bs-body-bg, #fff)",
+  zIndex: 50,
+};
+
 const DRAWER_WIDTH = 380;
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
+const TOOL_PANEL_MAX_HEIGHT = 300;
 
 const TimerEvents = React.lazy(() => import("./TimerEvent"));
 
@@ -151,9 +166,13 @@ function BpmnModelerComponent() {
   const { info } = state || {};
   const [drawerOpen, setDrawerOpen] = useState(true);
   const openDialog = useDialog();
-
-
   const diagramXmlRef = React.useRef(null);
+  const [issuePanelHeight, setIssuePanelHeight] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [issues, setIssues] = useState({
+    erros: [],
+    warnings: [],
+  });
 
   const getQueryParamValue = (key = "") => {
     const params = new URL(document.location).searchParams;
@@ -1760,6 +1779,44 @@ function BpmnModelerComponent() {
     setDrawerOpen(width === "0px" ? false : true);
   };
 
+  const handleToolPanelToggle = (e) => {
+    e.preventDefault();
+    if (!bpmnModeler) return;
+    const linting = bpmnModeler.get("linting");
+    if (isOpen && issuePanelHeight >= 50) {
+      linting._setActive(false);
+      setIssuePanelHeight(0);
+      updateElementpaletteHeight(0);
+    } else {
+      linting._setActive(true);
+      setIssuePanelHeight(TOOL_PANEL_MAX_HEIGHT);
+      updateElementpaletteHeight(TOOL_PANEL_MAX_HEIGHT);
+    }
+
+    setIsOpen((isOpen) => !isOpen);
+  };
+
+  const handleToolPanelClose = () => {
+    if (!bpmnModeler) return;
+    const linting = bpmnModeler.get("linting");
+    linting._setActive(false);
+    setIssuePanelHeight(0);
+    setIsOpen(false);
+    updateElementpaletteHeight(0);
+  };
+
+  const updateElementpaletteHeight = (height) => {
+    const palette = document.querySelector(
+      "#bpmnview > .bjs-container > .djs-container > .djs-palette"
+    );
+    if (!palette) return;
+    const width =
+      height > PALETTE_WIDTHS.THRESHOLD
+        ? PALETTE_WIDTHS.EXPANDED
+        : PALETTE_WIDTHS.COLLAPSED;
+    palette.style.width = `${width}px`;
+  };
+
   const initialWidth = useRef(window.innerWidth);
   const availableWidth = useRef(window.innerWidth);
 
@@ -1921,6 +1978,11 @@ function BpmnModelerComponent() {
       updateTabs({
         element: rootElement,
       });
+    });
+
+    bpmnModeler.on("linting.completed", function (event) {
+      const issuesData = getProblemViewData(event?.issues);
+      setIssues(issuesData);
     });
   }, [updateTabs, addCallActivityExtensionElement]);
 
@@ -2155,7 +2217,42 @@ function BpmnModelerComponent() {
           </div>
 
       )}
-      <Logo />
+      <Resizable
+        size={{ width: "100%", height: issuePanelHeight }}
+        maxHeight={TOOL_PANEL_MAX_HEIGHT}
+        minHeight={0}
+        enable={{
+          top: true,
+        }}
+        style={issuePanelStyle}
+        onResizeStop={(e, direction, ref, d) => {
+          const height = issuePanelHeight + d.height;
+          setIssuePanelHeight(height);
+          updateElementpaletteHeight(height);
+        }}
+      >
+        <IssuePanel issues={issues} bpmnModeler={bpmnModeler} t={translate} />
+        <IconButton
+          className={styles.closePanelBtn}
+          onClick={handleToolPanelClose}
+        >
+          <MaterialIcon icon="close" fontSize={16} />
+        </IconButton>
+      </Resizable>
+      <Box className={styles.footer}>
+        <Button className={styles.issueViewBtn} onClick={handleToolPanelToggle}>
+          <Box className="flexCenter" gap={10}>
+            <Icons type={ICON_TYPE.ERROR} disabled={!issues.errors?.length} />
+            <Box> {issues.errors?.length || 0}</Box>
+            <Icons
+              type={ICON_TYPE.WARNING}
+              disabled={!issues.warnings?.length}
+            />
+            <Box>{issues.warnings?.length || 0}</Box>
+          </Box>
+        </Button>
+        <Logo />
+      </Box>
     </React.Fragment>
   );
 }

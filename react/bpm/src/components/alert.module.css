@@ -1,4 +1,4 @@
-.alertContainer > span {
+.alertContainer>span {
   margin-top: 2px !important;
 }
 
@@ -8,6 +8,6 @@
   left: 50%;
   right: auto;
   transform: translateX(-50%);
-  z-index: 3;
+  z-index: 1000;
   min-height: 60px;
 }

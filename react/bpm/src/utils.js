@@ -256,6 +256,26 @@ export function updateBusinessObject(element, businessObject, newProperties) {
   };
 }
 
+export function getProblemViewData(issues = {}) {
+  const errors = [];
+  const warnings = [];
+
+  for (const [key, value] of Object.entries(issues)) {
+    value.forEach((item) => {
+      if (item.category === "error") {
+        errors.push(item);
+      } else if (item.category === "warn") {
+        warnings.push(item);
+      }
+    });
+  }
+
+  return {
+    errors,
+    warnings,
+  };
+}
+
 // helpers functions
 
 function isCancelActivity(element) {

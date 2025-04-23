@@ -219,3 +219,15 @@ export const TASK_LISTENER_EVENT_TYPE_OPTION = [
   { name: translate("update"), value: "update", label: translate("update") },
   { name: translate("timeout"), value: "timeout", label: translate("timeout") },
 ];
+
+export const ICON_TYPE = {
+  SUCCESS: "sucess",
+  WARNING: "warning",
+  ERROR: "error",
+};
+
+export const PALETTE_WIDTHS = {
+  EXPANDED: 96,
+  COLLAPSED: 48,
+  THRESHOLD: 180,
+};
