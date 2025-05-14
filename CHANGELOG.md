@@ -1,3 +1,16 @@
+## 3.4.4 (2025-05-14)
+
+#### Fix
+
+* Add screen lock during BPM migration deployment
+
+  <details>
+  
+  Prevented user interaction by locking the screen during BPM migration deployments. The screen remains locked until the migration process is completed or terminated, ensuring process integrity and preventing accidental interference during critical updates.
+  
+  </details>
+
+
 ## 3.4.3 (2025-04-16)
 
 #### Fix
