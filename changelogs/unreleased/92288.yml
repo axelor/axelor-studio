@@ -1,3 +1,4 @@
----
-title: Add lock on bpm migration
+title: Add screen lock during BPM migration deployment
 type: fix
+description: |
+  Prevented user interaction by locking the screen during BPM migration deployments. The screen remains locked until the migration process is completed or terminated, ensuring process integrity and preventing accidental interference during critical updates.
