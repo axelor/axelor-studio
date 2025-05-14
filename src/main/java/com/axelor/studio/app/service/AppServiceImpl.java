@@ -31,7 +31,6 @@ import com.axelor.i18n.I18n;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
-import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.MetaModule;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;

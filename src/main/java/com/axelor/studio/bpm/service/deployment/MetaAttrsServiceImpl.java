@@ -26,6 +26,7 @@ import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.repo.MetaAttrsRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
@@ -283,19 +284,23 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
                 "self.id not in ?1 and self.wkfModelId = ?2", metaAttrsIds, wkfModelId.toString())
             .remove();
 
-    long wkfModelPreviousVersion = wkfModelRepository.find(wkfModelId).getPreviousVersion().getId();
+    WkfModel wkfModelPreviosVersion = wkfModelRepository.find(wkfModelId).getPreviousVersion();
     long attrsPreviousVersionRemoved = 0;
-    if (wkfInstanceRepository.all().filter("wkfProcess.id = ?1", wkfModelPreviousVersion).count()
-        == 0) {
-      attrsPreviousVersionRemoved =
-          Query.of(MetaAttrs.class)
-              .filter(
-                  "self.id not in ?1 and self.wkfModelId = ?2",
-                  metaAttrsIds,
-                  wkfModelRepository.find(wkfModelId).getPreviousVersion().getId())
-              .remove();
+    if (wkfModelPreviosVersion != null) {
+      if (wkfInstanceRepository
+              .all()
+              .filter("wkfProcess.id = ?1", wkfModelPreviosVersion.getId())
+              .count()
+          == 0) {
+        attrsPreviousVersionRemoved =
+            Query.of(MetaAttrs.class)
+                .filter(
+                    "self.id not in ?1 and self.wkfModelId = ?2",
+                    metaAttrsIds,
+                    wkfModelRepository.find(wkfModelId).getPreviousVersion().getId())
+                .remove();
+      }
     }
-
     log.debug("Total meta attrs removed: {}", attrsRemoved + attrsPreviousVersionRemoved);
   }
 
