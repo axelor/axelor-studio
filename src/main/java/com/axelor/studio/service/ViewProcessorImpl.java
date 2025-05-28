@@ -8,6 +8,7 @@ import com.axelor.meta.schema.views.AbstractView;
 import com.axelor.meta.schema.views.Button;
 import com.axelor.meta.schema.views.FormView;
 import com.axelor.meta.service.ViewProcessor;
+import com.axelor.studio.service.app.AppStudioService;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,12 @@ public class ViewProcessorImpl implements ViewProcessor {
   protected static final String BTN_IF_MODULE = "axelor-studio";
   protected static final String BTN_ICON = "magic";
   protected final UserRepository userRepository;
+  protected final AppStudioService appStudioService;
 
   @Inject
-  public ViewProcessorImpl(UserRepository userRepository) {
+  public ViewProcessorImpl(UserRepository userRepository, AppStudioService appStudioService) {
     this.userRepository = userRepository;
+    this.appStudioService = appStudioService;
   }
 
   @Override
@@ -38,7 +41,9 @@ public class ViewProcessorImpl implements ViewProcessor {
     if (!allowedUsers.contains(AuthUtils.getUser())) {
       return;
     }
-
+    if (!appStudioService.getAppStudio().getEnableStudioButton()) {
+      return;
+    }
     if (abstractView instanceof FormView) {
       FormView formView = (FormView) abstractView;
       formView.setToolbar(addOpenStudioButton(formView.getToolbar()));

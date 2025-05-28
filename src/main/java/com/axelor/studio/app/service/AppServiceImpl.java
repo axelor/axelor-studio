@@ -539,7 +539,6 @@ public class AppServiceImpl implements AppService {
     }
 
     importAppConfig(app);
-
   }
 
   @SuppressWarnings("unchecked")

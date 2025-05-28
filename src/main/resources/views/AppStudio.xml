@@ -9,6 +9,8 @@
     <panel name="mainPanel">
       <field name="enableStudioApp" widget="Boolean-switch"/>
       <field name="enableTrackWebServiceCall"/>
+      <field name="enableStudioButton" widget="booleanSwitch"
+        help="Displays the Studio button in forms for authorized users"/>
     </panel>
 
     <panel-mail name="mailPanel">
