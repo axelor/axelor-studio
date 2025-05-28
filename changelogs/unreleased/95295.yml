@@ -1,0 +1,9 @@
+---
+title: Add option to enable/disable Studio button in forms
+type: feature
+description: |
+  This change adds a configuration option to control the visibility of the Studio button in form views.
+  
+  The implementation:
+  - Adds a new boolean field `enableStudioButton` to the AppStudio configuration
+  - Sets the default value to true to maintain existing behavior
