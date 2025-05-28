@@ -1,0 +1,12 @@
+---
+title: Fix inconsistency in MetaModel availability for Expression Builder across interfaces
+type: fix
+description: |
+  This change addresses inconsistent behavior in the Expression Builder component when accessing MetaModels across different interfaces.
+  
+  The implementation now:
+  - Refactors how models are fetched with a unified approach using `getModels` function
+  - Adds proper filtering of models with `getModelFilter`
+  - Includes an information tooltip to better guide users when selecting MetaModels not configured in process parameters
+  
+  These improvements ensure consistent behavior of the Expression Builder across all interfaces where it's being used, including BPMN components.

@@ -32,4 +32,6 @@ public interface BpmDeploymentService {
       boolean upgradeToLatest);
 
   public void forceMigrate(WkfProcess process);
+
+  void setIsMigrationOnGoing(WkfModel wkfModel, boolean isMigrationOnGoing);
 }

@@ -90,6 +90,7 @@ dependencies {
 
   testCompileOnly 'org.projectlombok:lombok:1.18.30'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+  testImplementation 'org.mockito:mockito-inline:5.2.0'
 }
 
 changelog {
@@ -136,6 +137,20 @@ apply plugin: 'jacoco'
 
 jacoco {
   toolVersion = '0.8.11'
+}
+
+tasks.withType(JavaCompile) {
+  // Only depend on frontCopy if it exists
+  if (project.tasks.findByName('frontCopy') != null) {
+    mustRunAfter project.tasks.findByName('frontCopy')
+  }
+}
+
+tasks.named('spotlessJava') {
+  mustRunAfter tasks.named('pnpmSetup')
+}
+tasks.named('spotlessMarkdown') {
+  mustRunAfter tasks.named('pnpmSetup')
 }
 
 jacocoTestReport {

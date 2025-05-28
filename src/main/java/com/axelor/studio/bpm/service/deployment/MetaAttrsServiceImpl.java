@@ -26,7 +26,10 @@ import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.repo.MetaAttrsRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.studio.db.repo.WkfInstanceRepository;
+import com.axelor.studio.db.repo.WkfModelRepository;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.lang.invoke.MethodHandles;
@@ -46,6 +49,10 @@ import org.slf4j.LoggerFactory;
 public class MetaAttrsServiceImpl implements MetaAttrsService {
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  protected static final List<String> CONDITION_ATTRIBUTES =
+      Arrays.asList(
+          "hidden", "hideIf", "showIf", "readonly", "readonlyIf", "required", "requiredIf");
 
   public static final String META_ATTRS_CONDITION =
       "com.axelor.inject.Beans.get("
@@ -73,14 +80,22 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
 
   protected RoleRepository roleRepository;
 
+  protected WkfModelRepository wkfModelRepository;
+
+  protected WkfInstanceRepository wkfInstanceRepository;
+
   @Inject
   public MetaAttrsServiceImpl(
       MetaModelRepository metaModelRepository,
       MetaAttrsRepository metaAttrsRepository,
-      RoleRepository roleRepository) {
+      RoleRepository roleRepository,
+      WkfModelRepository wkfModelRepository,
+      WkfInstanceRepository wkfInstanceRepository) {
     this.metaModelRepository = metaModelRepository;
     this.metaAttrsRepository = metaAttrsRepository;
     this.roleRepository = roleRepository;
+    this.wkfModelRepository = wkfModelRepository;
+    this.wkfInstanceRepository = wkfInstanceRepository;
   }
 
   @Override
@@ -175,8 +190,17 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
                 metaAttrs.setCondition(String.format(META_ATTRS_CONDITION, taskName));
               }
             }
-
-            metaAttrs.setValue(value);
+            if (Arrays.asList("false", "true").contains(value)) {
+              metaAttrs.setValue(value);
+            } else {
+              if (CONDITION_ATTRIBUTES.contains(name)) {
+                metaAttrs.setCondition(
+                    String.format("(%s)&&(%s)", value, metaAttrs.getCondition()));
+                metaAttrs.setValue("true");
+              } else {
+                metaAttrs.setValue(value);
+              }
+            }
             metaAttrs.setName(checkMetaAttrsName(name));
             metaAttrs.setWkfModelId(wkfModelId);
             metaAttrsList.add(metaAttrs);
@@ -215,10 +239,9 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
                 metaAttrs.getModel(),
                 metaAttrs.getView(),
                 metaAttrs.getField(),
-                metaAttrs.getName(),
-                metaAttrs.getCondition())
+                metaAttrs.getCondition(),
+                metaAttrs.getName())
             .fetchOne();
-
     if (savedAttrs != null) {
       return savedAttrs;
     }
@@ -261,7 +284,24 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
                 "self.id not in ?1 and self.wkfModelId = ?2", metaAttrsIds, wkfModelId.toString())
             .remove();
 
-    log.debug("Total meta attrs removed: {}", attrsRemoved);
+    WkfModel wkfModelPreviosVersion = wkfModelRepository.find(wkfModelId).getPreviousVersion();
+    long attrsPreviousVersionRemoved = 0;
+    if (wkfModelPreviosVersion != null) {
+      if (wkfInstanceRepository
+              .all()
+              .filter("wkfProcess.id = ?1", wkfModelPreviosVersion.getId())
+              .count()
+          == 0) {
+        attrsPreviousVersionRemoved =
+            Query.of(MetaAttrs.class)
+                .filter(
+                    "self.id not in ?1 and self.wkfModelId = ?2",
+                    metaAttrsIds,
+                    wkfModelRepository.find(wkfModelId).getPreviousVersion().getId())
+                .remove();
+      }
+    }
+    log.debug("Total meta attrs removed: {}", attrsRemoved + attrsPreviousVersionRemoved);
   }
 
   protected String checkMetaAttrsName(String name) {

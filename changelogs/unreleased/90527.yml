@@ -1,0 +1,5 @@
+---
+title: Fix BPM view attribute not correctly interpreted
+type: fix
+description: |
+  This fix addresses the MetaAttrsService implementation, by changing the condition definition to include the value if its not static and if the attribute is a conditional attribute

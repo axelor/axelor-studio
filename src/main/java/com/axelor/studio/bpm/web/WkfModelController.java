@@ -87,13 +87,18 @@ public class WkfModelController {
       }
 
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+      if (wkfModel.getIsMigrationOnGoing()) {
+        response.setError(I18n.get(BpmExceptionMessage.MIGRATION_IS_ALREADY_ONGOING));
+      } else {
+        Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap, false);
+        response.setReload(true);
+      }
 
-      Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap, false);
-
-      response.setReload(true);
     } catch (Exception e) {
       ExceptionHelper.trace(response, e);
       WkfModel model = request.getContext().asType(WkfModel.class);
+      model = Beans.get(WkfModelRepository.class).find(model.getId());
+      Beans.get(BpmDeploymentService.class).setIsMigrationOnGoing(model, false);
       Beans.get(BpmErrorMessageService.class)
           .sendBpmErrorMessage(
               null, e.getMessage(), Beans.get(WkfModelRepository.class).find(model.getId()), null);

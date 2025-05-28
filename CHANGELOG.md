@@ -1,3 +1,57 @@
+## 3.4.4 (2025-05-14)
+
+#### Fix
+
+* Add screen lock during BPM migration deployment
+
+  <details>
+  
+  Prevented user interaction by locking the screen during BPM migration deployments. The screen remains locked until the migration process is completed or terminated, ensuring process integrity and preventing accidental interference during critical updates.
+  
+  </details>
+
+
+## 3.4.3 (2025-04-16)
+
+#### Fix
+
+* fix problem when deploying a bpm with no previews versions
+
+## 3.4.2 (2025-04-14)
+
+#### Fix
+
+* Fix issue with language availability after adding a new translation
+* fix includeIf condition is not managed in studio builder
+* Fix BPM view attribute not correctly interpreted
+
+  <details>
+  
+  This fix addresses the MetaAttrsService implementation, by changing the condition definition to include the value if its not static and if the attribute is a conditional attribute
+  
+  </details>
+
+* Fix creation of view attributes for each new version
+* Fix BPM crash using expression generator with selection values
+* New config for the non config app does not work
+
+  <details>
+  
+  When adding a new configuration to an existing app without any previous configurations, the new configuration does not work.
+  
+  The code currently checks for the existence of a MetaModel. However, the MetaModel is not populated until a view reload is performed for the new model.
+  
+  </details>
+
+* Once aa decision is deployed, the id can't be change
+
+  <details>
+  
+  To avoid deployment issues, when a decision is deployed, the id can't be changed.
+  
+  </details>
+
+
 ## 3.4.1 (2025-02-19)
 
 #### Change

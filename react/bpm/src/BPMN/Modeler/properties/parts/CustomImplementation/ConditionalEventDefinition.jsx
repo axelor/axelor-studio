@@ -12,7 +12,7 @@ import {
 } from "../../../../../components/properties/components";
 import Tooltip from "../../../../../components/Tooltip";
 import { translate, getBool } from "../../../../../utils";
-import { fetchModels } from "../../../../../services/api";
+import { getModels } from "../../../../../services/api";
 import Select from "../../../../../components/Select";
 import { TASK_LISTENER_EVENT_TYPE_OPTION } from "../../../constants";
 
@@ -316,7 +316,7 @@ export default function ConditionalEventProps({
                 title="Add expression"
                 setProperty={setter}
                 getExpression={getter}
-                fetchModels={() => fetchModels(element)}
+                fetchModels={getModels}
               />
             )}
           </Box>

@@ -8,7 +8,7 @@ import AlertDialog from "../../../../../components/AlertDialog";
 import { Textbox } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
 import QueryBuilder from "../../../../../components/QueryBuilder";
-import { fetchModels } from "../../../../../services/api";
+import { getModels } from "../../../../../services/api";
 import {
   Box,
 
@@ -290,7 +290,7 @@ export default function ConditionalProps({
                 title="Add expression"
                 setProperty={setter}
                 getExpression={getter}
-                fetchModels={() => fetchModels(element)}
+                fetchModels={getModels}
               />
             )}
           </Box>

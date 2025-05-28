@@ -7,7 +7,9 @@ import Loader from "./components/Loader";
 import { ThemeProvider } from "@axelor/ui";
 import StoreProvider from "./store";
 import DialogBox from "./components/dialog-box/DialogBox";
+import Alert from "./components/alert/Alert";
 import { DialogContextProvider } from "./context/dialog-context";
+import { AlertProvider } from "./context/alert-context";
 
 let isInstance = false;
 
@@ -41,7 +43,7 @@ function App() {
   const [type, setType] = useState(null);
   const data = useAppTheme();
   const { theme, options, loading } = data;
-  
+
   useEffect(() => {
     let type = fetchId() || {};
     setType(type);
@@ -55,21 +57,24 @@ function App() {
     <StoreProvider>
       <ThemeProvider options={options} theme={theme}>
         <DialogContextProvider>
-          <>
-            {(() => {
-              switch (type) {
-                case "dmnModeler":
-                  return <DMNModeler />;
-                case "bpmnModeler":
-                  return <BpmnModelerComponent />;
-                case "bpmnViewer":
-                  return <BpmnViewerComponent isInstance={isInstance} />;
-                default:
-                  return <BpmnModelerComponent />;
-              }
-            })()}
-            <DialogBox />
-          </>
+          <AlertProvider>
+            <>
+              {(() => {
+                switch (type) {
+                  case "dmnModeler":
+                    return <DMNModeler />;
+                  case "bpmnModeler":
+                    return <BpmnModelerComponent />;
+                  case "bpmnViewer":
+                    return <BpmnViewerComponent isInstance={isInstance} />;
+                  default:
+                    return <BpmnModelerComponent />;
+                }
+              })()}
+              <DialogBox />
+              <Alert />
+            </>
+          </AlertProvider>
         </DialogContextProvider>
       </ThemeProvider>
     </StoreProvider>

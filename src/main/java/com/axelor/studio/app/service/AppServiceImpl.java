@@ -31,7 +31,6 @@ import com.axelor.i18n.I18n;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
-import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.db.MetaModule;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
@@ -548,14 +547,12 @@ public class AppServiceImpl implements AppService {
 
     String code = app.getCode();
     String modelName = "App" + Inflector.getInstance().camelize(code);
-
-    MetaModel model = metaModelRepo.findByName(modelName);
-    if (model == null) {
+    Class<Model> klass = null;
+    try {
+      klass = (Class<Model>) Class.forName("com.axelor.studio.db." + modelName);
+    } catch (ClassNotFoundException e) {
       return;
     }
-
-    Class<Model> klass = (Class<Model>) Class.forName(model.getFullName());
-
     JpaRepository<Model> repo = JpaRepository.of(klass);
     long cnt = repo.all().count();
     if (cnt > 0) {

@@ -12,6 +12,7 @@
     <boolean name="enableStudioApp" title="Enable app" default="true"/>
     <boolean name="enableTrackWebServiceCall" title="Enable track web services"
       default="false"/>
+    <boolean name="enableStudioButton" title="Enable quick edit button" default="true"/>
   </entity>
 
 </domain-models>
