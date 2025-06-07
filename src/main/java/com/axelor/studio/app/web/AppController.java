@@ -55,7 +55,7 @@ public class AppController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -68,7 +68,7 @@ public class AppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -104,7 +104,7 @@ public class AppController {
                 .map());
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -117,7 +117,7 @@ public class AppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -133,7 +133,7 @@ public class AppController {
         apps.addAll(appsSet);
       }
 
-      Boolean importDemo = (Boolean) context.get("importDemoData");
+      boolean importDemo = Boolean.TRUE.equals(context.get("importDemoData"));
       String language = (String) context.get("languageSelect");
       AppRepository appRepository = Beans.get(AppRepository.class);
 
@@ -147,7 +147,7 @@ public class AppController {
       response.setSignal("refresh-app", true);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -171,7 +171,7 @@ public class AppController {
               .param("download", "true")
               .map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -185,7 +185,7 @@ public class AppController {
       response.setReload(true);
       response.setInfo(I18n.get(StudioExceptionMessage.ROLE_IMPORT_SUCCESS));
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -196,7 +196,7 @@ public class AppController {
       response.setInfo(I18n.get(StudioExceptionMessage.ROLE_IMPORT_SUCCESS));
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

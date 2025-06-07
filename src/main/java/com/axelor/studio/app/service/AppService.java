@@ -28,30 +28,29 @@ import java.util.Collection;
 
 public interface AppService {
 
-  public App importDataDemo(App app) throws IOException;
+  App importDataDemo(App app) throws IOException;
 
-  public Model getApp(String type);
+  Model getApp(String type);
 
-  public boolean isApp(String type);
+  boolean isApp(String type);
 
-  public App installApp(App app, String language) throws IOException;
+  App installApp(App app, String language) throws IOException;
 
-  public App unInstallApp(App app);
+  App unInstallApp(App app);
 
-  public void initApps() throws IOException;
+  void initApps() throws IOException;
 
-  public void bulkInstall(Collection<App> apps, Boolean importDeomo, String language)
-      throws IOException;
+  void bulkInstall(Collection<App> apps, boolean importDemo, String language) throws IOException;
 
-  public App importRoles(App app) throws IOException;
+  App importRoles(App app) throws IOException;
 
-  public void importRoles() throws IOException;
+  void importRoles() throws IOException;
 
-  public String getDataExportDir();
+  String getDataExportDir();
 
-  public static String getFileUploadDir() {
+  static String getFileUploadDir() {
     String appSettingsPath = MetaFiles.getPath("tmp").getParent().toString();
-    if (appSettingsPath == null || appSettingsPath.isEmpty()) {
+    if (appSettingsPath.isEmpty()) {
       throw new IllegalStateException(I18n.get(StudioExceptionMessage.FILE_UPLOAD_DIR_ERROR));
     }
     return !appSettingsPath.endsWith(File.separator)
