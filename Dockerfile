@@ -1,4 +1,4 @@
-FROM axelor/app-builder:7.1 AS builder
+FROM axelor/app-builder:7.3 AS builder
 
 ARG JAVA_OPTS="-Xmx4g"
 ARG APP_SOURCE="/app/open-platform-demo"
