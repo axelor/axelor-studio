@@ -34,6 +34,7 @@ import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaModule;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaModuleRepository;
+import com.axelor.meta.loader.AppVersionService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
