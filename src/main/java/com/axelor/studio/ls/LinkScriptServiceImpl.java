@@ -62,12 +62,6 @@ public class LinkScriptServiceImpl implements LinkScriptService {
     } else if (evalResult != null) {
       context.put(StringUtils.isBlank(name) ? DEFAULT_RESULT_KEY : name, evalResult);
     }
-    @SuppressWarnings("unchecked")
-    var variables =
-        (LinkedHashMap<String, Object>)
-            context.getOrDefault(VARIABLES_MAP_NAME, new LinkedHashMap<String, Object>());
-    variables.put(StringUtils.isBlank(name) ? DEFAULT_RESULT_KEY : name, evalResult);
-    context.put(VARIABLES_MAP_NAME, variables);
   }
 
   protected Object run(
@@ -81,6 +75,8 @@ public class LinkScriptServiceImpl implements LinkScriptService {
 
     var gsh = groovyEvaluator.newHelper(context);
 
+    var variables = new LinkedHashMap<String, Object>();
+
     for (LinkScriptArc arc :
         linkScript.getDependencyArcs().stream()
             .sorted(Comparator.comparing(LinkScriptArc::getSequence))
@@ -88,8 +84,13 @@ public class LinkScriptServiceImpl implements LinkScriptService {
       if (!groovyEvaluator.test(gsh, arc.getConditionScript())) {
         continue;
       }
-      valueContext(context, arc.getName(), run(depth + 1, result, arc.getToLinkScript(), context));
+      var runResult = run(depth + 1, result, arc.getToLinkScript(), new LinkedHashMap<>(context));
+      variables.put(
+          StringUtils.isBlank(arc.getName()) ? DEFAULT_RESULT_KEY : arc.getName(), runResult);
+      valueContext(context, arc.getName(), runResult);
     }
+
+    context.put(VARIABLES_MAP_NAME, variables);
 
     var initialResult = groovyEvaluator.eval(gsh, result, linkScript, context);
     result.step(linkScript.getName(), initialResult);
