@@ -126,3 +126,11 @@ try {
 } catch (UnknownTaskException ignored) {
     // Do nothing if no war tasks
 }
+
+try {
+    rootProject.tasks.named("processResources").configure {
+        dependsOn frontCopy
+    }
+} catch (UnknownTaskException ignored) {
+    // Do nothing if no processResources task
+}
