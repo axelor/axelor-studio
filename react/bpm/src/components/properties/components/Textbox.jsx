@@ -121,10 +121,10 @@ export default function Textbox({
     let isSubscribed = true;
     if (!isSubscribed) return;
     const readonly =
-      getValue(storeElement) && modelProperty === getNameProperty(element);
+      getValue(element) && modelProperty === getNameProperty(element);
     setReadOnly(readonly || parentReadOnly);
     return () => (isSubscribed = false);
-  }, [parentReadOnly, getValue(storeElement)]);
+  }, [parentReadOnly, getValue(element)]);
 
   useEffect(() => {
     const container = containerRef.current;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import filter from "lodash/filter";
 import { createElement } from "../../../../../utils/ElementUtil";
-import {getExtensionElements} from "../../../../../utils/ExtensionElementsUtil"
+import { getExtensionElements } from "../../../../../utils/ExtensionElementsUtil";
 import { getSignalEventDefinition } from "../../../../../utils/EventDefinitionUtil";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import { isAny } from "bpmn-js/lib/features/modeling/util/ModelingUtil";
@@ -13,7 +13,7 @@ import {
   Checkbox,
 } from "../../../../../components/properties/components";
 import { translate } from "../../../../../utils";
-import Title from "../../../Title";
+import CollapsePanel from "../componants/CollapsePanel";
 
 const inOutTypeOptions = [
   {
@@ -35,14 +35,8 @@ const CAMUNDA_IN_EXTENSION_ELEMENT = "camunda:In",
 
 function getCamundaInOutMappings(element, type) {
   let bo = getBusinessObject(element);
-  let signalEventDefinition =
-    getSignalEventDefinition(bo);
-  return (
-    getExtensionElements(
-      signalEventDefinition || bo,
-      type
-    ) || []
-  );
+  let signalEventDefinition = getSignalEventDefinition(bo);
+  return getExtensionElements(signalEventDefinition || bo, type) || [];
 }
 
 function getVariableMappings(element, type) {
@@ -235,8 +229,7 @@ export default function VariableMapping({
   }, [element, addOptions]);
 
   useEffect(() => {
-    const signalEventDefinition =
-      getSignalEventDefinition(element);
+    const signalEventDefinition = getSignalEventDefinition(element);
     setSignalEventDefinition(signalEventDefinition);
     if (is(element, "camunda:CallActivity") && !signalEventDefinition) {
       setVisible(true);
@@ -255,8 +248,7 @@ export default function VariableMapping({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         <ExtensionElementTable
           element={element}
           options={inOptions}
@@ -470,7 +462,7 @@ export default function VariableMapping({
             />
           </React.Fragment>
         )}
-      </div>
+      </CollapsePanel>
     )
   );
 }

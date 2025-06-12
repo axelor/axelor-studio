@@ -9,7 +9,7 @@ import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
 import { translate } from "../../../../../utils";
-import Title from "../../../Title";
+import CollapsePanel from "../componants/CollapsePanel";
 
 export default function StartEventInitiator({
   element,
@@ -54,8 +54,7 @@ export default function StartEventInitiator({
 
   return (
     isVisible && (
-      <div>
-        {showLabel() && <Title divider={index > 0} label={label} />}
+      <CollapsePanel label={showLabel() && label}>
         <TextField
           element={element}
           entry={{
@@ -77,7 +76,7 @@ export default function StartEventInitiator({
           }}
           canRemove={true}
         />
-      </div>
+      </CollapsePanel>
     )
   );
 }

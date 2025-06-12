@@ -1957,6 +1957,30 @@ function BpmnModelerComponent() {
 
   useKeyPress(["s"], onSave);
 
+
+  useEffect(() => {
+    if (!bpmnModeler || !selectedElement) return;
+    const canvas = bpmnModeler.get("canvas");
+    const container = canvas.getContainer();
+    const contextPad = bpmnModeler.get("contextPad");
+
+    const handleMouseEnter = () => {
+      contextPad.open(selectedElement);
+    };
+
+    const handleMouseLeave = () => {
+      contextPad.close(selectedElement);
+    };
+
+    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [bpmnModeler, selectedElement]);
+  
   return (
     <React.Fragment>
       <Box id="container">

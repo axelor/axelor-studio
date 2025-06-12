@@ -30,10 +30,10 @@ import {
   Box,
   DialogTitle,
 } from "@axelor/ui";
-import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./listener-props.module.css";
 import useDialog from "../../../../../hooks/useDialog";
+import CollapsePanel from "../componants/CollapsePanel";
 
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
 const CAMUNDA_TASK_LISTENER_ELEMENT = "camunda:TaskListener";
@@ -409,8 +409,7 @@ export default function ListenerProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         {showExecutionListener() && (
           <ExtensionElementTable
             element={element}
@@ -779,7 +778,7 @@ export default function ListenerProps({
             )}
           </React.Fragment>
         )}
-      </div>
+      </CollapsePanel>
     )
   );
 }

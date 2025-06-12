@@ -37,7 +37,7 @@ import QueryBuilder from "../../../../../components/QueryBuilder";
 import Tooltip from "../../../../../components/Tooltip";
 import styles from "./model-props.module.css";
 import AlertDialog from "../../../../../components/AlertDialog";
-import Title from "../../../Title";
+import CollapsePanel from "../componants/CollapsePanel";
 
 const GATEWAY = ["bpmn:EventBasedGateway"];
 
@@ -477,184 +477,177 @@ export default function ModelProps(props) {
     <>
       {isVisible && (
         <div className={styles.root}>
-          {(TITLE_SOURCES.includes(element?.type) ||
-            subType === "bpmn:TerminateEventDefinition" ||
-            GATEWAY.includes(element.type) ||
-            (element?.type === "bpmn:EndEvent" && !subType)) && (
-            <Title divider={index > 0} label={label} />
-          )}
-          {![
-            "bpmn:Process",
-            "bpmn:Participant",
-            "bpmn:SendTask",
-            ...GATEWAY,
-            ...DATA_STORE_TYPES,
-          ].includes(element && element.type) && (
-            <React.Fragment>
-              <InputLabel color="body" className={styles.label}>
-                {translate("Model")}
-              </InputLabel>
-              {!isModelsDisable && (
+          <CollapsePanel label={translate("Model")}>
+            {![
+              "bpmn:Process",
+              "bpmn:Participant",
+              "bpmn:SendTask",
+              ...GATEWAY,
+              ...DATA_STORE_TYPES,
+            ].includes(element && element.type) && (
+              <>
+                {!isModelsDisable && (
+                  <Checkbox
+                    className={styles.checkbox}
+                    entry={{
+                      id: `custom-model`,
+                      modelProperty: "isCustom",
+                      label: translate("Custom"),
+                      get: function () {
+                        return {
+                          isCustom: isCustom,
+                        };
+                      },
+                      set: function (e, values) {
+                        const isCustom = !values.isCustom;
+                        setIsCustom(isCustom);
+                        setProperty("isCustom", isCustom);
+                        setMetaJsonModel(undefined);
+                        updateSelectValue("metaJsonModel", undefined);
+                        setMetaModel(undefined);
+                        updateSelectValue("metaModel", undefined);
+                      },
+                    }}
+                    element={element}
+                  />
+                )}
+                {isCustom ? (
+                  <Select
+                    className={classnames(styles.select, styles.metajsonModel)}
+                    fetchMethod={() =>
+                      getCustomModels(getProcessConfig("metaJsonModel"))
+                    }
+                    update={(value, label) => {
+                      setMetaJsonModel(value);
+                      updateSelectValue("metaJsonModel", value, label);
+                      checkMenuActionTab(value, "metaModel");
+                    }}
+                    disabled={isModelsDisable}
+                    name="metaJsonModel"
+                    value={metaJsonModel}
+                    placeholder={translate("Custom model")}
+                    isLabel={false}
+                    optionLabel="name"
+                    optionLabelSecondary="title"
+                  />
+                ) : (
+                  <Select
+                    className={styles.select}
+                    fetchMethod={() =>
+                      getMetaModels(getProcessConfig("metaModel"))
+                    }
+                    update={(value, label) => {
+                      setMetaModel(value);
+                      updateSelectValue("metaModel", value, label);
+                      checkMenuActionTab(value, "metaJsonModel");
+                    }}
+                    name="metaModel"
+                    value={metaModel}
+                    isLabel={false}
+                    disabled={isModelsDisable}
+                    placeholder={translate("Model")}
+                    optionLabel="name"
+                    optionLabelSecondary="title"
+                  />
+                )}
+                {isDefaultFormVisible && (
+                  <React.Fragment>
+                    <InputLabel className={styles.label}>
+                      {translate("Default form")}
+                    </InputLabel>
+                    <div
+                      className={styles.studio}
+                      style={{
+                        alignItems: "flex-end",
+                      }}
+                    >
+                      <Select
+                        className={classnames(
+                          styles.select,
+                          styles.studioSelect
+                        )}
+                        update={(value, label) => {
+                          setDefaultForm(value);
+                          setProperty(
+                            "defaultForm",
+                            value ? value.name : undefined
+                          );
+                          if (!value) {
+                            setProperty(`defaultFormLabel`, undefined);
+                          }
+                          setProperty(`defaultFormLabel`, label);
+                        }}
+                        options={formViews}
+                        name="defaultForm"
+                        value={defaultForm}
+                        label={translate("Default form")}
+                        isLabel={false}
+                        optionLabel="name"
+                        optionLabelSecondary="title"
+                      />
+                    </div>
+                  </React.Fragment>
+                )}
+              </>
+            )}
+            <div className={styles.container}>
+              {!DATA_STORE_TYPES.includes(element && element.type) && (
                 <Checkbox
-                  className={styles.checkbox}
+                  element={element}
                   entry={{
-                    id: `custom-model`,
-                    modelProperty: "isCustom",
-                    label: translate("Custom"),
+                    id: "displayStatus",
+                    label: translate("Display status"),
+                    modelProperty: "displayStatus",
                     get: function () {
                       return {
-                        isCustom: isCustom,
+                        displayStatus: displayStatus,
                       };
                     },
-                    set: function (e, values) {
-                      const isCustom = !values.isCustom;
-                      setIsCustom(isCustom);
-                      setProperty("isCustom", isCustom);
-                      setMetaJsonModel(undefined);
-                      updateSelectValue("metaJsonModel", undefined);
-                      setMetaModel(undefined);
-                      updateSelectValue("metaModel", undefined);
+                    set: function (e, value) {
+                      const displayStatus = !value.displayStatus;
+                      setDisplayStatus(displayStatus);
+                      setProperty("displayStatus", displayStatus);
+                      if (displayStatus === false) {
+                        setModels([]);
+                        addModels([]);
+                      }
                     },
                   }}
-                  element={element}
                 />
               )}
-              {isCustom ? (
-                <Select
-                  className={classnames(styles.select, styles.metajsonModel)}
-                  fetchMethod={() =>
-                    getCustomModels(getProcessConfig("metaJsonModel"))
-                  }
-                  update={(value, label) => {
-                    setMetaJsonModel(value);
-                    updateSelectValue("metaJsonModel", value, label);
-                    checkMenuActionTab(value, "metaModel");
-                  }}
-                  disabled={isModelsDisable}
-                  name="metaJsonModel"
-                  value={metaJsonModel}
-                  placeholder={translate("Custom model")}
-                  isLabel={false}
-                  optionLabel="name"
-                  optionLabelSecondary="title"
-                />
-              ) : (
-                <Select
-                  className={styles.select}
-                  fetchMethod={() =>
-                    getMetaModels(getProcessConfig("metaModel"))
-                  }
-                  update={(value, label) => {
-                    setMetaModel(value);
-                    updateSelectValue("metaModel", value, label);
-                    checkMenuActionTab(value, "metaJsonModel");
-                  }}
-                  name="metaModel"
-                  value={metaModel}
-                  isLabel={false}
-                  disabled={isModelsDisable}
-                  placeholder={translate("Model")}
-                  optionLabel="name"
-                  optionLabelSecondary="title"
-                />
-              )}
-              {isDefaultFormVisible && (
-                <React.Fragment>
-                  <InputLabel className={styles.label}>
-                    {translate("Default form")}
-                  </InputLabel>
-                  <div
-                    className={styles.studio}
-                    style={{
-                      alignItems: "flex-end",
-                    }}
-                  >
-                    <Select
-                      className={classnames(styles.select, styles.studioSelect)}
-                      update={(value, label) => {
-                        setDefaultForm(value);
-                        setProperty(
-                          "defaultForm",
-                          value ? value.name : undefined
-                        );
-                        if (!value) {
-                          setProperty(`defaultFormLabel`, undefined);
-                        }
-                        setProperty(`defaultFormLabel`, label);
-                      }}
-                      options={formViews}
-                      name="defaultForm"
-                      value={defaultForm}
-                      label={translate("Default form")}
-                      isLabel={false}
-                      optionLabel="name"
-                      optionLabelSecondary="title"
-                    />
-                  </div>
-                </React.Fragment>
-              )}
-            </React.Fragment>
-          )}
-          <div className={styles.container}>
-            {!DATA_STORE_TYPES.includes(element && element.type) && (
-              <Checkbox
-                element={element}
-                entry={{
-                  id: "displayStatus",
-                  label: translate("Display status"),
-                  modelProperty: "displayStatus",
-                  get: function () {
-                    return {
-                      displayStatus: displayStatus,
-                    };
-                  },
-                  set: function (e, value) {
-                    const displayStatus = !value.displayStatus;
-                    setDisplayStatus(displayStatus);
-                    setProperty("displayStatus", displayStatus);
-                    if (displayStatus === false) {
-                      setModels([]);
-                      addModels([]);
-                    }
-                  },
-                }}
-              />
-            )}
-            {displayStatus &&
-              !DATA_STORE_TYPES.includes(element && element.type) && (
-                <React.Fragment>
-                  <div>
-                    <InputLabel className={styles.label}>
-                      {translate("Display on models")}
-                    </InputLabel>
-                    <Select
-                      className={styles.select}
-                      update={(value) => {
-                        setModels(value);
-                        addModels(value);
-                      }}
-                      fetchMethod={() => getAllModels(getProcessConfig())}
-                      name="models"
-                      value={models || []}
-                      multiple={true}
-                      optionLabel="name"
-                      optionLabelSecondary="title"
-                      handleRemove={(option) => {
-                        const value = models?.filter(
-                          (r) => r.name !== option.name
-                        );
-                        setModels(value);
-                        addModels(value);
-                      }}
-                    />
-                  </div>
-                </React.Fragment>
-              )}
-          </div>
+              {displayStatus &&
+                !DATA_STORE_TYPES.includes(element && element.type) && (
+                  <React.Fragment>
+                    <div>
+                      <InputLabel className={styles.label}>
+                        {translate("Display on models")}
+                      </InputLabel>
+                      <Select
+                        className={styles.select}
+                        update={(value) => {
+                          setModels(value);
+                          addModels(value);
+                        }}
+                        fetchMethod={() => getAllModels(getProcessConfig())}
+                        name="models"
+                        value={models || []}
+                        multiple={true}
+                        optionLabel="name"
+                        optionLabelSecondary="title"
+                        handleRemove={(option) => {
+                          const value = models?.filter(
+                            (r) => r.name !== option.name
+                          );
+                          setModels(value);
+                          addModels(value);
+                        }}
+                      />
+                    </div>
+                  </React.Fragment>
+                )}
+            </div>
+          </CollapsePanel>
         </div>
-      )}
-      {HELP_TITLE_SOURCES.includes(element && element.type) && (
-        <Title divider={index > 0} label={label} />
       )}
 
       {renderActions && (
@@ -664,89 +657,93 @@ export default function ModelProps(props) {
             margin: "10px 0",
           }}
         >
-          <h1 className={styles.title}>{translate("Field config")}</h1>
-          <Box
-            key={2}
-            w={100}
-            rounded={2}
-            border
-            bg="body-tertiary"
-            color="body"
-            style={{
-              marginTop: 5,
-              paddingTop: 35,
-              marginBottom: 10,
-              position: "relative",
-            }}
-          >
-            <Box color="body">
-              <Box overflow="auto">
-                <Box rounded={2} bgColor="body" shadow color="body">
-                  <Table size="sm" textAlign="center">
-                    <TableHead>
-                      <TableRow className={styles.tableRow}>
-                        {FIELD_ACTIONS_HEADER.map((item) => (
-                          <TableCell
-                            key={item.id}
-                            className={clsx(styles.tableHead, item.className)}
-                          >
-                            {translate(item.label)}
-                          </TableCell>
+          <CollapsePanel label={translate("Field config")}>
+            <Box
+              key={2}
+              w={100}
+              rounded={2}
+              bg="body-tertiary"
+              pt={2}
+              color="body"
+              style={{
+                marginBottom: 10,
+                position: "relative",
+              }}
+            >
+              <Box color="body">
+                <Box overflow="auto">
+                  <Box rounded={2} bgColor="body" shadow color="body">
+                    <Table size="sm" textAlign="center">
+                      <TableHead>
+                        <TableRow className={styles.tableRow}>
+                          {FIELD_ACTIONS_HEADER.map((item) => (
+                            <TableCell
+                              key={item.id}
+                              className={clsx(styles.tableHead, item.className)}
+                            >
+                              {translate(item.label)}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {FIELD_ACTIONS.map((action) => (
+                          <FieldAction
+                            key={action.id}
+                            initialType="field"
+                            label={action.label}
+                            title={action.title}
+                            element={element}
+                            getProperty={getProperty}
+                            setProperty={setProperty}
+                            metaModel={metaModel}
+                            metaJsonModel={metaJsonModel}
+                            fieldTypes={["field", "script"]}
+                            isUserPath={action.isUserPath}
+                            isDatePath={action.isDatePath}
+                          />
                         ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {FIELD_ACTIONS.map((action) => (
-                        <FieldAction
-                          key={action.id}
-                          initialType="field"
-                          label={action.label}
-                          title={action.title}
-                          element={element}
-                          getProperty={getProperty}
-                          setProperty={setProperty}
-                          metaModel={metaModel}
-                          metaJsonModel={metaJsonModel}
-                          fieldTypes={["field", "script"]}
-                          isUserPath={action.isUserPath}
-                          isDatePath={action.isDatePath}
-                        />
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableBody>
+                    </Table>
+                  </Box>
                 </Box>
               </Box>
             </Box>
-          </Box>
+          </CollapsePanel>
         </Box>
       )}
-      <Textbox
-        element={element}
-        className={styles.textbox}
-        rows={3}
-        entry={{
-          id: "help",
-          label: translate("Help"),
-          modelProperty: "help",
-          get: function () {
-            return {
-              help: getProperty("help") || "",
-            };
-          },
-          set: function (e, values) {
-            if (element.businessObject) {
-              setProperty(
-                "help",
-                values.help
-                  ? values.help === ""
-                    ? undefined
-                    : values.help
-                  : undefined
-              );
-            }
-          },
-        }}
-      />
+
+      <CollapsePanel
+        label={HELP_TITLE_SOURCES.includes(element && element.type) && label}
+      >
+        <Textbox
+          element={element}
+          className={styles.textbox}
+          rows={3}
+          entry={{
+            id: "help",
+            label: translate("Help"),
+            modelProperty: "help",
+            get: function () {
+              return {
+                help: getProperty("help") || "",
+              };
+            },
+            set: function (e, values) {
+              if (element.businessObject) {
+                setProperty(
+                  "help",
+                  values.help
+                    ? values.help === ""
+                      ? undefined
+                      : values.help
+                    : undefined
+                );
+              }
+            },
+          }}
+        />
+      </CollapsePanel>
     </>
   );
 }
@@ -999,16 +996,16 @@ export function FieldAction({
                   }}
                 ></i>
               </Tooltip>
-              { !(title === "deadlineField") &&
-              <MaterialIcon
-                fontSize={18}
-                icon="edit"
-                className={styles.newIcon}
-                onClick={() => {
-                  setOpenBuilder(true);
-                }}
-              />
-              }
+              {!(title === "deadlineField") && (
+                <MaterialIcon
+                  fontSize={18}
+                  icon="edit"
+                  className={styles.newIcon}
+                  onClick={() => {
+                    setOpenBuilder(true);
+                  }}
+                />
+              )}
             </Box>
           )}
         </TableCell>
