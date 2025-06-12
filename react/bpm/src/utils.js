@@ -1,4 +1,15 @@
 import { getExtensionElements } from "./utils/ExtensionElementsUtil";
+import { is, getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
+
+import {
+  isExpanded,
+  isEventSubProcess,
+  isInterrupting,
+} from "bpmn-js/lib/util/DiUtil";
+
+import { FILL_COLORS, STROKE_COLORS } from "./BPMN/Modeler/constants";
+import iconsByType from "./BPMN/icons";
+
 const download = (entity, name, isXml = true) => {
   let encodedData = encodeURIComponent(entity);
   let dl = document.createElement("a");
@@ -243,4 +254,143 @@ export function updateBusinessObject(element, businessObject, newProperties) {
       properties: newProperties,
     },
   };
+}
+
+// helpers functions
+
+function isCancelActivity(element) {
+  const businessObject = getBusinessObject(element);
+
+  return businessObject && businessObject.cancelActivity !== false;
+}
+
+function getEventDefinition(element) {
+  const businessObject = getBusinessObject(element),
+    eventDefinitions = businessObject.eventDefinitions;
+
+  return eventDefinitions && eventDefinitions[0];
+}
+
+function getRawType(type) {
+  return type.split(":")[1];
+}
+
+function getEventDefinitionPrefix(eventDefinition) {
+  const rawType = getRawType(eventDefinition.$type);
+
+  return rawType.replace("EventDefinition", "");
+}
+
+function isDefaultFlow(element) {
+  const businessObject = getBusinessObject(element);
+  const sourceBusinessObject = getBusinessObject(element.source);
+
+  if (!is(element, "bpmn:SequenceFlow") || !sourceBusinessObject) {
+    return false;
+  }
+
+  return (
+    sourceBusinessObject.default &&
+    sourceBusinessObject.default === businessObject &&
+    (is(sourceBusinessObject, "bpmn:Gateway") ||
+      is(sourceBusinessObject, "bpmn:Activity"))
+  );
+}
+
+function isConditionalFlow(element) {
+  const businessObject = getBusinessObject(element);
+  const sourceBusinessObject = getBusinessObject(element.source);
+
+  if (!is(element, "bpmn:SequenceFlow") || !sourceBusinessObject) {
+    return false;
+  }
+
+  return (
+    businessObject.conditionExpression &&
+    is(sourceBusinessObject, "bpmn:Activity")
+  );
+}
+
+function isPlane(element) {
+  // Backwards compatibility for bpmn-js<8
+  const di = element && (element.di || getBusinessObject(element).di);
+
+  return is(di, "bpmndi:BPMNPlane");
+}
+
+export function getConcreteType(element) {
+  const elementType = element.$type || element.type;
+
+  let type = getRawType(elementType);
+
+  // (1) event definition types
+  const eventDefinition = getEventDefinition(element);
+
+  if (eventDefinition) {
+    type = `${getEventDefinitionPrefix(eventDefinition)}${type}`;
+
+    // (1.1) interrupting / non interrupting
+    if (
+      (is(element, "bpmn:StartEvent") && !isInterrupting(element)) ||
+      (is(element, "bpmn:BoundaryEvent") && !isCancelActivity(element))
+    ) {
+      type = `${type}NonInterrupting`;
+    }
+
+    return type;
+  }
+
+  // (2) sub process types
+  if (is(element, "bpmn:SubProcess") && !is(element, "bpmn:Transaction")) {
+    if (isEventSubProcess(element)) {
+      type = `Event${type}`;
+    } else {
+      const expanded = isExpanded(element) && !isPlane(element);
+      type = `${expanded ? "Expanded" : "Collapsed"}${type}`;
+    }
+  }
+
+  // (3) conditional + default flows
+  if (isDefaultFlow(element)) {
+    type = "DefaultFlow";
+  }
+
+  if (isConditionalFlow(element)) {
+    type = "ConditionalFlow";
+  }
+
+  return type;
+}
+export function getElementIcon(element) {
+  if (!element) return "";
+  const concreteType = getConcreteType(element);
+  const colors = getIconColors(element);
+  return {
+    ...colors,
+    icon: iconsByType[concreteType],
+    type: concreteType
+      .replace(/(\B[A-Z])/g, " $1")
+      .replace(/(\bNon Interrupting)/g, "($1)"),
+  };
+}
+
+function getIconColors(element) {
+  if (!element) return;
+  if (element?.di?.stroke || element?.di?.fill) {
+    return {
+      stroke: element?.di?.stroke,
+      fill: element?.di?.fill,
+    };
+  }
+  if (element.type === "bpmn:Gateway" || element.$type === "bpmn:Gateway") {
+    return {
+      stroke: STROKE_COLORS["bpmn:Gateway"],
+      fill: FILL_COLORS["bpmn:Gateway"],
+    };
+  } else {
+    return {
+      stroke: STROKE_COLORS[element?.type || element.$type],
+      fill: FILL_COLORS[element?.type || element.$type],
+    };
+  }
 }

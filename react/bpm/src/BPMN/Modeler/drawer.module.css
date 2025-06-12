@@ -26,3 +26,33 @@
   display: flex;
   align-items: center;
 }
+
+.panelHeaderContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 10px 0px 10px;
+  border-bottom: var(--ax-theme-panel-border, 1px solid var(--bs-border-color));
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panelIconTitle {
+  font-size: 14px;
+  text-transform: uppercase;
+
+}
+
+.panelElementName {
+  font-weight: 400;
+  display: inline-block;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
