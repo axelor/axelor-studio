@@ -554,6 +554,7 @@ export default function ListenerProps({
                   id: "script",
                   label: translate("Script"),
                   modelProperty: "script",
+                  required: true,
                   get: function () {
                     const listener = getListener();
                     if (listener?.script) {
@@ -580,7 +581,8 @@ export default function ListenerProps({
                       if (listener?.script?.scriptValue) {
                         openDialog({
                           title: "Warning",
-                          message:"Script can't be managed using builder once changed manually.",
+                          message:
+                            "Script can't be managed using builder once changed manually.",
                           onSave: () => {
                             const listener = getListener();
                             if (!listener) return;

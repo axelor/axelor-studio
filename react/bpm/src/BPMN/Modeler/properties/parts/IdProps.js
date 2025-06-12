@@ -1,5 +1,5 @@
 import { getBusinessObject } from "bpmn-js/lib/util/ModelUtil";
-import {isIdValid} from "../../../../utils/ValidationUtil"
+import { isIdValid } from "../../../../utils/ValidationUtil";
 
 import { getFlowElements } from "../../extra";
 
@@ -18,6 +18,7 @@ export default function IdProps(
     description: description && translate(description),
     modelProperty: "id",
     widget: "textField",
+    required: true,
     isProcess: element?.type === "bpmn:Process",
     getProperty: function (element) {
       return getBusinessObject(element).id;
@@ -25,9 +26,9 @@ export default function IdProps(
     setProperty: function (element, properties) {
       element = element.labelTarget || element;
       if (element.businessObject) {
-        const modeling = bpmnModeler.get('modeling');
+        const modeling = bpmnModeler.get("modeling");
         modeling.updateProperties(element, {
-          id: properties["id"]
+          id: properties["id"],
         });
 
         /**

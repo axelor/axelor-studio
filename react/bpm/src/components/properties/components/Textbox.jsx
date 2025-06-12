@@ -45,6 +45,7 @@ export default function Textbox({
     getProperty,
     setProperty,
     validate,
+    required = false,
   } = entry || {};
   const [value, setValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -144,6 +145,7 @@ export default function Textbox({
       {showLabel && (
         <InputLabel className={styles.label} color="body">
           {translate(label)}
+          {required && <span className={styles.required}>*</span>}
         </InputLabel>
       )}
       {entry.id === "script" ? (

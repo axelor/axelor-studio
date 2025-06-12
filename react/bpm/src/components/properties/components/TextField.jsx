@@ -30,7 +30,7 @@ export default function TextField({
   setField,
   clearPropertises,
   placeholder,
-  updateXMLProperty=true
+  updateXMLProperty = true,
 }) {
   const {
     label,
@@ -41,6 +41,7 @@ export default function TextField({
     setProperty,
     getProperty,
     validate,
+    required = false,
   } = entry || {};
   const [value, setValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -140,6 +141,7 @@ export default function TextField({
           color="body"
         >
           {translate(label)}
+          {required && <span className={styles.required}>*</span>}
         </InputLabel>
       )}
       <div className={styles.fieldWrapper}>
@@ -152,16 +154,18 @@ export default function TextField({
             name={modelProperty}
             value={value || ""}
             onChange={(e) => {
-             const {value} = e.target;
-             const updatedValue =  
-              modelProperty ==="code" ? value?.toUpperCase() :
-             type === "number" && value ? parseInt() : value;
-              setValue(updatedValue)
+              const { value } = e.target;
+              const updatedValue =
+                modelProperty === "code"
+                  ? value?.toUpperCase()
+                  : type === "number" && value
+                  ? parseInt()
+                  : value;
+              setValue(updatedValue);
               if (updateXMLProperty) {
-                updateProperty(updatedValue);  
+                updateProperty(updatedValue);
               }
-
-              }}
+            }}
             disabled={readOnly || disabled}
             invalid={isError}
             className={className}
@@ -201,7 +205,7 @@ export default function TextField({
           value={editorValue}
           onChange={handleEditorChange}
           language={language}
-          width={window?.innerWidth-120}
+          width={window?.innerWidth - 120}
         />
       </AlertDialog>
     </div>
