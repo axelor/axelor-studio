@@ -1215,6 +1215,7 @@ export default function MenuActionPanel({
                             name: "menuName",
                             modelProperty: "menuName",
                             label: translate("Menu name"),
+                            required: true,
                             get: function () {
                               return {
                                 menuName: menu?.menuName,

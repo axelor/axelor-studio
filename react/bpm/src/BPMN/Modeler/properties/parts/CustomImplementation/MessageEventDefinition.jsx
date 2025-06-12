@@ -231,6 +231,7 @@ export default function MessageProps({
             modelProperty: "name",
             shouldValidate: true,
             elementType: "bpmn:Message",
+            required: true,
             set: function (e, values) {
               setDummyProperty({
                 bpmnModeler,
@@ -353,8 +354,6 @@ export default function MessageProps({
           </div>
         }
       />
-
-     
     </div>
   );
 }

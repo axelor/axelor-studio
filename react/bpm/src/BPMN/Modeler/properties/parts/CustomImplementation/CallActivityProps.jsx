@@ -414,6 +414,7 @@ export default function CallActivityProps({
               id: "calledElement",
               label: translate("Called element"),
               modelProperty: "calledElement",
+              required: true,
               get: function () {
                 const bo = getBusinessObject(element);
                 return { calledElement: bo && bo.calledElement };
@@ -491,6 +492,7 @@ export default function CallActivityProps({
               id: "caseRef",
               label: translate("Case ref"),
               modelProperty: "caseRef",
+              required: true,
               get: function () {
                 const bo = getBusinessObject(element);
                 return { caseRef: bo && bo.caseRef };
