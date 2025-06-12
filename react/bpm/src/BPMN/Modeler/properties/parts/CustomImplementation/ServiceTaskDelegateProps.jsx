@@ -29,6 +29,7 @@ import Title from "../../../Title";
 import styles from "./service-task.module.css";
 
 import { openWebApp } from "./utils";
+import CollapsePanel from "../componants/CollapsePanel";
 const eventTypes = [
   "bpmn:StartEvent",
   "bpmn:IntermediateCatchEvent",
@@ -340,10 +341,9 @@ export default function ServiceTaskDelegateProps({
   }, []);
   return (
     isVisible && (
-      <div>
-        {element && element.type !== "bpmn:SendTask" && (
-          <Title divider={index > 0} label={label} />
-        )}
+      <CollapsePanel
+        label={element && element.type !== "bpmn:SendTask" && label}
+      >
         {element && element.type === "bpmn:ServiceTask" && (
           <Checkbox
             element={element}
@@ -667,7 +667,7 @@ export default function ServiceTaskDelegateProps({
                   }}
                   canRemove={true}
                   endAdornment={
-                    <Box  className={styles.decisionRefIcons}>
+                    <Box className={styles.decisionRefIcons}>
                       <div onClick={handleClickOpen} className={styles.link}>
                         <MaterialIcon
                           icon="add"
@@ -1082,7 +1082,7 @@ export default function ServiceTaskDelegateProps({
             </div>
           }
         />
-      </div>
+      </CollapsePanel>
     )
   );
 }

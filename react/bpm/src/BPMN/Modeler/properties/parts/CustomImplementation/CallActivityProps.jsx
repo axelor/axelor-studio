@@ -3,11 +3,7 @@ import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import classnames from "classnames";
 import React, { useEffect, useState } from "react";
 
-import {
-  Box,
-  Divider,
-  InputLabel,
-} from "@axelor/ui";
+import { Box, Divider, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import Ids from "ids";
 import Alert from "../../../../../components/Alert";
@@ -32,9 +28,9 @@ import {
   getMetaModels,
 } from "../../../../../services/api";
 import { getBool, getLowerCase, translate } from "../../../../../utils";
-import Title from "../../../Title";
 import styles from "./callactivity.module.css";
 import { openWebApp } from "./utils";
+import CollapsePanel from "../componants/CollapsePanel";
 
 function nextId() {
   let ids = new Ids([32, 32, 1]);
@@ -381,8 +377,7 @@ export default function CallActivityProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         <SelectBox
           element={element}
           entry={{
@@ -798,7 +793,7 @@ export default function CallActivityProps({
                   });
                 }}
                 optionLabel={`wkfModel.name`}
-                optionLabelSecondary={'name'}
+                optionLabelSecondary={"name"}
               />
             </div>
           }
@@ -812,7 +807,7 @@ export default function CallActivityProps({
             messageType={openSnackbar.messageType}
           />
         )}
-      </div>
+      </CollapsePanel>
     )
   );
 }

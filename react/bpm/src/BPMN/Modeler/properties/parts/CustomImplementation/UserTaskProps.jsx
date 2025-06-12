@@ -2,10 +2,7 @@ import { BootstrapIcon } from "@axelor/ui/icons/bootstrap-icon";
 import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import React, { useEffect, useState } from "react";
 
-import {
-  Box,
-  InputLabel
-} from "@axelor/ui";
+import { Box, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import AlertDialog from "../../../../../components/AlertDialog";
 import QueryBuilder from "../../../../../components/QueryBuilder";
@@ -16,8 +13,8 @@ import Textbox from "../../../../../components/properties/components/Textbox";
 import useDialog from "../../../../../hooks/useDialog";
 import { getButtons, getModels } from "../../../../../services/api";
 import { getBool, getLowerCase, translate } from "../../../../../utils";
-import Title from "../../../Title";
 import styles from "./user-task.module.css";
+import CollapsePanel from "../componants/CollapsePanel";
 
 export default function UserTaskProps({
   element,
@@ -233,8 +230,7 @@ export default function UserTaskProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         <div className={styles.expressionBuilder}>
           <TextField
             element={element}
@@ -267,16 +263,20 @@ export default function UserTaskProps({
                     onClick={() => {
                       if (readOnly) {
                         openDialog({
-                            title:"Warning",
-                            message:"Completed If can't be managed using builder once changed manually.",
-                            onSave:() => {
-                              setReadOnly(false);
-                              setScript(getCompletedIf()?.completedIf);
-                              setProperty( "camunda:completedIfValue", undefined);
-                              setProperty("camunda:completedIfCombinator",undefined );
-                              setOpenScriptDialog(true);
-                          }
-                        })
+                          title: "Warning",
+                          message:
+                            "Completed If can't be managed using builder once changed manually.",
+                          onSave: () => {
+                            setReadOnly(false);
+                            setScript(getCompletedIf()?.completedIf);
+                            setProperty("camunda:completedIfValue", undefined);
+                            setProperty(
+                              "camunda:completedIfCombinator",
+                              undefined
+                            );
+                            setOpenScriptDialog(true);
+                          },
+                        });
                       } else {
                         setScript(getCompletedIf()?.completedIf);
                         setOpenScriptDialog(true);
@@ -359,11 +359,11 @@ export default function UserTaskProps({
               addButtons(value);
             }}
             optionEqual={(a, b) => a.name === b.name}
-            optionLabel={'title'}
-            optionLabelSecondary={'name'}
+            optionLabel={"title"}
+            optionLabelSecondary={"name"}
           />
         </div>
-      </div>
+      </CollapsePanel>
     )
   );
 }

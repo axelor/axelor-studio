@@ -34,10 +34,10 @@ import {
 } from "../../../../../services/api";
 
 import { InputLabel, Box } from "@axelor/ui";
-import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./process-config.module.css";
 import useDialog from "../../../../../hooks/useDialog";
+import CollapsePanel from "../componants/CollapsePanel";
 
 const initialProcessConfigList = {
   isStartModel: "false",
@@ -381,8 +381,7 @@ export default function ProcessConfiguration({
   }, [getProcessConfigs, updateStartModel, element]);
 
   return (
-    <div>
-      <Title divider={index > 0} label={label} />
+    <CollapsePanel label={label}>
       <div>
         <Box>
           {(!processConfigList?.length ||
@@ -1059,6 +1058,6 @@ export default function ProcessConfiguration({
           </div>
         }
       />
-    </div>
+    </CollapsePanel>
   );
 }

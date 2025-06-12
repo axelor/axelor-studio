@@ -29,10 +29,10 @@ import {
   InputLabel,
 
 } from "@axelor/ui";
-import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./script-props.module.css";
 import useDialog from "../../../../../hooks/useDialog";
+import CollapsePanel from "../componants/CollapsePanel";
 
 const implementationOptions = [
   { name: translate("Script"), value: "script" },
@@ -412,8 +412,7 @@ export default function ScriptProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel open={true} label={label}>
         <SelectBox
           element={element}
           entry={{
@@ -786,7 +785,7 @@ export default function ScriptProps({
             </div>
           </React.Fragment>
         )}
-      </div>
+      </CollapsePanel>
     )
   );
 }
