@@ -261,6 +261,16 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
     return roleSet;
   }
 
+  /**
+   * Save or update the list of meta attributes for a workflow model.
+   *
+   * <p>This method ensures that all properties of existing MetaAttrs are properly updated,
+   * including view, model, field, condition, name, value, and roles. This fixes the issue where
+   * changes to view attributes were not being persisted during BPM deployment.
+   *
+   * @param metaAttrsList the list of meta attributes to save or update
+   * @param wkfModelId the workflow model ID
+   */
   @Override
   @Transactional(rollbackOn = Exception.class)
   public void saveMetaAttrs(List<MetaAttrs> metaAttrsList, Long wkfModelId) {
@@ -271,11 +281,29 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
     metaAttrsList.forEach(
         metaAttrs -> {
           MetaAttrs saved = findMetaAttrs(metaAttrs, wkfModelId);
-          log.debug("Creating meta attrs: {}", saved);
+          log.debug(
+              "Processing meta attrs for field '{}' in model '{}' and view '{}'",
+              metaAttrs.getField(),
+              metaAttrs.getModel(),
+              metaAttrs.getView());
+
+          // Update all properties to ensure complete synchronization
           saved.setValue(metaAttrs.getValue());
           saved.setRoles(metaAttrs.getRoles());
+          saved.setView(metaAttrs.getView());
+          saved.setModel(metaAttrs.getModel());
+          saved.setField(metaAttrs.getField());
+          saved.setCondition(metaAttrs.getCondition());
+          saved.setName(metaAttrs.getName());
           metaAttrsRepository.save(saved);
           metaAttrsIds.add(saved.getId());
+
+          log.trace(
+              "Updated meta attrs: id={}, name={}, value={}, view={}",
+              saved.getId(),
+              saved.getName(),
+              saved.getValue(),
+              saved.getView());
         });
     long attrsRemoved =
         Query.of(MetaAttrs.class)
