@@ -10,22 +10,36 @@ if(rule.allField!=null && !rule.allField.isEmpty()){
 if(!['notIn','in'].contains(rule.operator)){%>${['notLike','notBetween'].contains(rule.operator)?'!':''}${(['between','notBetween'].contains(rule.operator))?'(':''}<%if(rule.transformations.isEmpty()){%>${metaModelVarName}?.${groovyScriptService.buildFieldName(rule.allField)}<%}
 else{%>${groovyScriptService.buildTransformation(rule.transformations,metaModelVarName+'?.'+groovyScriptService.buildFieldName(rule.allField))}<%}}
 if(rule.operator!=null){
+    def transformedValue = rule?.fieldValue?.getFieldValue()
+    def transformedValue2 = rule?.fieldValue2?.getFieldValue()
+    if (rule.fieldValue != null && rule.fieldType.toUpperCase() == 'DATE') {
+         transformedValue = "LocalDate.parse('${rule.fieldValue}', java.time.format.DateTimeFormatter.ofPattern('dd/MM/yyyy'))"
+    }
+    if (rule.fieldValue != null && rule.fieldType.toUpperCase() == 'DATETIME') {
+         transformedValue = "LocalDateTime.parse('${rule.fieldValue}', java.time.format.DateTimeFormatter.ofPattern('dd/MM/yyyy HH:mm'))"
+    }
+    if (rule.fieldValue2 != null && rule.fieldType.toUpperCase() == 'DATE') {
+         transformedValue2 = "LocalDate.parse('${rule.fieldValue2}', java.time.format.DateTimeFormatter.ofPattern('dd/MM/yyyy'))"
+    }
+    if (rule.fieldValue2 != null && rule.fieldType.toUpperCase() == 'DATETIME') {
+         transformedValue2 = "LocalDateTime.parse('${rule.fieldValue2}', java.time.format.DateTimeFormatter.ofPattern('dd/MM/yyyy HH:mm'))"
+    }
     if('isNotNull'==rule.operator){%>!=null<%}
     if('isNull'==rule.operator){%>==null<%}
     if('isTrue'==rule.operator){%>==true<%}
     if('isFalse'==rule.operator){%>!=true<%}
     if(['!=','=','>=','<=','<','>'].contains(rule.operator)){
-    %>${rule.operator!='='?rule.operator:'=='}<%if(rule.valueTransformations.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${rule.fieldValue}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}<%}else{%> ${groovyScriptService.buildTransformation(rule.valueTransformations,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+rule.fieldValue+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))}<%
+    %>${rule.operator!='='?rule.operator:'=='}<%if(rule.valueTransformations.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${transformedValue}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}<%}else{%> ${groovyScriptService.buildTransformation(rule.valueTransformations,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+transformedValue+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))}<%
     }}
-    if(['notLike','like'].contains(rule.operator)){%>?.contains(<%if(rule.valueTransformations.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${rule.fieldValue}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''})<%}else{%> ${groovyScriptService.buildTransformation(rule.valueTransformations,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+rule.fieldValue+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))})<%}}
-    if(['notIn','in'].contains(rule.operator)){%>${'notIn'==rule.operator?'!':''}${rule.fieldValue}?.contains(<%if(rule.transformations.isEmpty()){%>${metaModelVarName}?.${groovyScriptService.buildFieldName(rule.allField)}<%}
+    if(['notLike','like'].contains(rule.operator)){%>?.contains(<%if(rule.valueTransformations.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${transformedValue}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''})<%}else{%> ${groovyScriptService.buildTransformation(rule.valueTransformations,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+transformedValue+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))})<%}}
+    if(['notIn','in'].contains(rule.operator)){%>${'notIn'==rule.operator?'!':''}${transformedValue}?.contains(<%if(rule.transformations.isEmpty()){%>${metaModelVarName}?.${groovyScriptService.buildFieldName(rule.allField)}<%}
                                                                               else{%>${rule.operator}${groovyScriptService.buildTransformation(rule.transformations,metaModelVarName+'?.'+groovyScriptService.buildFieldName(rule.allField))}<%}%>)<%}
     if(['between','notBetween'].contains(rule.operator)){
-    %>>=<%if(rule.valueTransformations.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${rule.fieldValue}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')=='STRING'?"'":''}<%}else{%>${groovyScriptService.buildTransformation(rule.valueTransformations,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+rule.fieldValue+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))}<%
+    %>>=<%if(rule.valueTransformations.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${transformedValue}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')=='STRING'?"'":''}<%}else{%>${groovyScriptService.buildTransformation(rule.valueTransformations,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+transformedValue+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))}<%
             }%>&&<%if(rule.transformations.isEmpty()){%>${metaModelVarName}?.${groovyScriptService.buildFieldName(rule.allField)}<%}
-                  else{%>${groovyScriptService.buildTransformation(rule.transformations,metaModelVarName+'?.'+groovyScriptService.buildFieldName(rule.allField))}<%}%><=<%if(rule.valueTransformations2.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${rule.fieldValue2}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":rule.fieldType}<%}else{
-                  %>${groovyScriptService.buildTransformation(rule.valueTransformations2,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+rule.fieldValue2+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))}<%
-                                                                                                         }%><%
+                  else{%>${groovyScriptService.buildTransformation(rule.transformations,metaModelVarName+'?.'+groovyScriptService.buildFieldName(rule.allField))}<%}%><=<%if(rule.valueTransformations2.isEmpty()){%>${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}${transformedValue2}${(rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''}<%}else{
+                  %>${groovyScriptService.buildTransformation(rule.valueTransformations2,((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":'')+transformedValue2+((rule.fieldType!=null && rule.fieldType.toUpperCase()=='STRING')?"'":''))}<%
+                                                                                                         }%>)<%
     }
  }
 }%>
