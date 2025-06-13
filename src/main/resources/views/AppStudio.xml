@@ -7,15 +7,14 @@
     width="large" canDelete="false" canNew="false" canCopy="false">
 
     <panel name="mainPanel">
-      <field name="enableStudioApp" widget="Boolean-switch"/>
-      <field name="enableTrackWebServiceCall"/>
+      <field name="enableStudioApp" widget="BooleanSwitch"/>
+      <field name="enableTrackWebServiceCall" widget="BooleanSwitch"/>
     </panel>
 
     <panel-mail name="mailPanel">
       <mail-messages limit="4"/>
       <mail-followers/>
     </panel-mail>
-
   </form>
 
 </object-views>
