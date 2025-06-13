@@ -88,6 +88,13 @@ export default function CallActivityProps({
     setOpenCondition(false);
   };
 
+  function updateModelingProperty(key, value) {
+    const modeling = bpmnModeler.get("modeling");
+    modeling.updateProperties(element, {
+      [key]: value,
+    });
+  }
+
   const getter = () => {
     const value = getProperty("conditionValue");
     const combinator = getProperty("conditionCombinator");
@@ -122,6 +129,7 @@ export default function CallActivityProps({
     if (wkfModel) {
       if (element && element.businessObject) {
         element.businessObject.calledElement = wkfModel.processId;
+        updateModelingProperty("calledElement", wkfModel.processId);
       }
     }
     handleClose();
@@ -239,6 +247,7 @@ export default function CallActivityProps({
           setWkfModel(data);
           if (element) {
             element.businessObject.calledElement = data.code;
+            updateModelingProperty("calledElement", data.code);
           }
         }
       } else {
@@ -250,6 +259,7 @@ export default function CallActivityProps({
         });
         if (element && element.businessObject) {
           element.businessObject.calledElement = wkfProcess.name;
+          updateModelingProperty("calledElement", wkfProcess.name);
         }
       }
     },
@@ -424,6 +434,7 @@ export default function CallActivityProps({
                   setWkfModel(undefined);
                 }
                 element.businessObject.calledElement = values.calledElement;
+                updateModelingProperty("calledElement", values.calledElement);
                 element.businessObject.calledElementBinding = "latest";
                 element.businessObject.caseRef = undefined;
                 setDummyProperty({

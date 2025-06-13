@@ -385,7 +385,7 @@ export default function Definition({
               {translate("Previous versions")}
             </InputLabel>
             <Box color="body" d={"flex"} alignItems={"center"}>
-              <IconButton conClick={getVersionList} aria-label="Refresh">
+              <IconButton onClick={getVersionList} aria-label="Refresh">
                 <Tooltip
                   title={translate("Refresh")}
                   children={<MaterialIcon icon="refresh" fontSize={16} />}

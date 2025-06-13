@@ -89,6 +89,10 @@ export default function ScriptProps({
   const updateScript = ({ expr, exprMeta } = {}) => {
     element.businessObject.script = expr;
     element.businessObject.scriptFormat = "axelor";
+    const modeling = bpmnModeler.get("modeling");
+    modeling.updateProperties(element, {
+      ["script"]: expr,
+    });
     setScript(expr);
     setProperty("scriptValue", exprMeta ? exprMeta : undefined);
   };
