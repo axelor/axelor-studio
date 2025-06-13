@@ -66,7 +66,7 @@ import { Collaboration } from "../../components/Collaboration";
 import { Box, Button, CommandBar } from "@axelor/ui";
 import lintModule from "bpmn-js-bpmnlint";
 import bpmnlintConfig from "../../../bundled-config";
-
+import XmlEditor from "./XmlEditor";
 import "bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css";
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
@@ -166,6 +166,9 @@ function BpmnModelerComponent() {
   const { info } = state || {};
   const [drawerOpen, setDrawerOpen] = useState(true);
   const openDialog = useDialog();
+  const [isXmlEditorOpen, setXmlEditorOpen] = useState(false);
+
+
   const diagramXmlRef = React.useRef(null);
   const [issuePanelHeight, setIssuePanelHeight] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -173,6 +176,10 @@ function BpmnModelerComponent() {
     erros: [],
     warnings: [],
   });
+
+  const toggleXmlEditor = () => {
+    setXmlEditorOpen(!isXmlEditorOpen);
+  };
 
   const getQueryParamValue = (key = "") => {
     const params = new URL(document.location).searchParams;
@@ -1424,6 +1431,13 @@ function BpmnModelerComponent() {
       },
       onClick: addDiagramProperties,
     },
+    {
+      key: "xmlEditor",
+      iconOnly: true,
+      description: translate("Toggle XML Editor"),
+      iconProps: { icon: "code" },
+      onClick: toggleXmlEditor,
+    },
   ];
 
   const rightToolbar = [
@@ -2064,62 +2078,80 @@ function BpmnModelerComponent() {
         </React.Suspense>
         <Box id="bpmncontainer" pos="relative" color="body">
           <div id="propview"></div>
-          <div id="bpmnview">
-            <Box
-              d="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              flexWrap="wrap"
-              rounded
-              border
-              gap="4"
-              style={{
-                padding: "6px 20px 8px 20px",
-                backgroundColor: "var(--bs-tertiary-bg)",
-              }}
-            >
-              <CommandBar items={leftToolbar} className={styles.commandBar} />
-              <Box flex="1">
-                <Select
-                  className={styles.select}
-                  disableClearable={true}
-                  update={(value, label, oldValue) => {
-                    /**Removing wkf model to avoid flickering of updated value await */
-                    setWkf("");
-                    updateWkfModel(value, oldValue);
-                  }}
-                  name="wkf"
-                  value={wkf}
-                  optionLabel="name"
-                  optionLabelSecondary="description"
-                  isLabel={false}
-                  fetchMethod={(criteria) => getModels(criteria)}
-                  disableUnderline={false}
-                  isOptionEllipsis={true}
-                  placeholder={translate("BPM model")}
-                />
-              </Box>
-              <Collaboration />
-              <CommandBar items={rightToolbar} className={styles.commandBar} />
-              <input
-                id="inputFile"
-                type="file"
-                name="file"
-                onChange={uploadFile}
-                style={{ display: "none" }}
+          <Box
+            d="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            flexWrap="wrap"
+            rounded
+            border
+            gap="4"
+            style={{
+              padding: "6px 20px 8px 20px",
+              backgroundColor: "var(--bs-tertiary-bg)",
+            }}
+          >
+            <CommandBar items={leftToolbar} className={styles.commandBar} />
+            <Box flex="1">
+              <Select
+                className={styles.select}
+                disableClearable={true}
+                update={(value, label, oldValue) => {
+                  /**Removing wkf model to avoid flickering of updated value await */
+                  setWkf("");
+                  updateWkfModel(value, oldValue);
+                }}
+                name="wkf"
+                value={wkf}
+                optionLabel="name"
+                optionLabelSecondary="description"
+                isLabel={false}
+                fetchMethod={(criteria) => getModels(criteria)}
+                disableUnderline={false}
+                isOptionEllipsis={true}
+                placeholder={translate("BPM model")}
               />
             </Box>
+            <Collaboration />
+            <CommandBar items={rightToolbar} className={styles.commandBar} />
+            <input
+              id="inputFile"
+              type="file"
+              name="file"
+              onChange={uploadFile}
+              style={{ display: "none" }}
+            />
+          </Box>
+          <div
+            style={{
+              height: "100%",
+              display: isXmlEditorOpen ? "none" : "block",
+            }}
+          >
+            <div id="bpmnview"></div>
           </div>
-          <CommandBar items={bottomToolbar} className={styles.bottomBar} />
+          {isXmlEditorOpen && (
+            <XmlEditor
+              bpmnModeler={bpmnModeler}
+              onClose={() => setXmlEditorOpen(false)}
+            />
+          )}
+
+          {/* Stop resizing, hide bottom command panel, and disable resizing when isXmlEditorOpen is true */}
+          {!isXmlEditorOpen && (
+            <CommandBar items={bottomToolbar} className={styles.bottomBar} />
+          )}
         </Box>
         <Box position="sticky" top={0} right={0} h={100}>
           <Resizable
             style={resizeStyle}
             size={{ width, height }}
             onResizeStop={(e, direction, ref, d) => {
-              setWidth((width) => width + d.width);
-              setHeight((height) => height + d.height);
-              setCSSWidth(`${width + d.width}px`);
+              if (!isXmlEditorOpen) {
+                setWidth((width) => width + d.width);
+                setHeight((height) => height + d.height);
+                setCSSWidth(`${width + d.width}px`);
+              }
             }}
             maxWidth={Math.max(window.innerWidth - 230, DRAWER_WIDTH)}
             minWidth={
@@ -2129,7 +2161,7 @@ function BpmnModelerComponent() {
             }
             minHeight={height}
             enable={{
-              left: true,
+              left: !isXmlEditorOpen,
             }}
           >
             <Box className={styles.drawerPaper} maxH={100}>
@@ -2171,8 +2203,10 @@ function BpmnModelerComponent() {
               roundedTop
               fontSize={6}
               onClick={() => {
-                setWidth((width) => (width === 0 ? DRAWER_WIDTH : 0));
-                setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
+                if (!isXmlEditorOpen) {
+                  setWidth((width) => (width === 0 ? DRAWER_WIDTH : 0));
+                  setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
+                }
               }}
             >
               {translate("Properties")}
