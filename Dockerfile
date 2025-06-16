@@ -1,4 +1,4 @@
-FROM axelor/app-builder:7.3 AS builder
+FROM axelor/app-builder:7.4 AS builder
 
 ARG JAVA_OPTS="-Xmx4g"
 ARG APP_SOURCE="/app/open-platform-demo"
@@ -17,7 +17,7 @@ ARG NEXUS_READER_USERNAME
 ARG NEXUS_READER_PASSWORD
 
 RUN chmod +x gradlew && \
-    ./gradlew --no-daemon -xtest -xcheck -xspotlessApply clean build -PaxelorMavenUsername=${NEXUS_READER_USERNAME} -PaxelorMavenPassword=${NEXUS_READER_PASSWORD}
+    ./gradlew --no-daemon clean assemble -PaxelorMavenUsername=${NEXUS_READER_USERNAME} -PaxelorMavenPassword=${NEXUS_READER_PASSWORD}
 
 RUN mkdir -p ${APP_SOURCE}/webapps/ROOT && \
     unzip -q -o ${APP_SOURCE}/build/libs/*.war -d ${APP_SOURCE}/webapps/ROOT/
