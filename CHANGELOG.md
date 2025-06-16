@@ -1,3 +1,9 @@
+## 3.3.15 (2025-06-16)
+
+#### Fix
+
+* Fix UI consistency of `AppStudio` config form
+
 ## 3.3.14 (2025-04-16)
 
 #### Fix
