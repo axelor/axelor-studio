@@ -1,3 +1,32 @@
+## 3.4.5 (2025-06-16)
+
+#### Feature
+
+* Add LinkScript feature
+
+  <details>
+  
+  LinkScript is a library of chainable, multi-output, extendable, Groovy functions that can be created and assembled to run complex business logic in Axelor applications.
+  
+  The following property can be added to the webapp to be able to quickly call a LinkScript in any AOP's Groovy evaluated expression:
+  context.ls = com.axelor.studio.ls.service.LinkScriptService
+  
+  </details>
+
+#### Fix
+
+* Fix incorrect data type comparison in BPM Studio script generation
+
+  <details>
+  
+  - Script generation correctly handles String type fields.
+  - Quotes are added around numeric values when compared to String fields.
+  
+  </details>
+
+* Invalid Groovy comparison syntax for Date and DateTime fields in user task
+* Fix UI consistency of `AppStudio` config form
+
 ## 3.4.4 (2025-05-14)
 
 #### Fix
