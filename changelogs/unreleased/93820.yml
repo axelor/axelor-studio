@@ -1,5 +1,0 @@
----
-title: Add option to display node type in properties
-type: feature
-description: |
-  This change improve BPM Studio UI by displaying the node icon at the top of the properties panel.

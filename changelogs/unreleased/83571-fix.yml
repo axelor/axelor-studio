@@ -1,6 +1,0 @@
----
-title: Fix the computation and update of app versions at application startup
-type: fix
-description: |
-  The update of the app version now relies on the version in `Module` instead of `MetaModule`.
-  The latter was updated when the views were restored, which required then another application startup to update the app versions too.

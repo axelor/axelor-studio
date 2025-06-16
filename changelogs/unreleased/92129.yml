@@ -1,6 +1,0 @@
----
-title: Fix incorrect data type comparison in BPM Studio script generation
-type: fix
-description: |
-  - Script generation correctly handles String type fields.
-  - Quotes are added around numeric values when compared to String fields.

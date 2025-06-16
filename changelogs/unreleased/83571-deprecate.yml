@@ -1,7 +1,0 @@
----
-title: Replace `com.axelor.studio.app.service.AppVersionService` by `com.axelor.meta.loader.AppVersionService`. Same for its implementation `AppVersionServiceImpl`.
-type: deprecate
-description: |
-  Such change is necessary to access some technical classes with package visibility.
-
-  The deprecated service and its implementation will be removed in a future version.
