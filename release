@@ -1,5 +1,52 @@
 #!/bin/bash
 #
+# Release Script
+#
+# DESCRIPTION:
+#   This script automates the release process for a software project by performing
+#   the following operations:
+#   1. Updates the CHANGELOG.md file using Gradle
+#   2. Creates a release commit and annotated tag
+#   3. Merges changes into the appropriate release branch
+#   4. Pushes all changes to the remote repository
+#
+# USAGE:
+#   ./release [OPTIONS]
+#
+# OPTIONS:
+#   -b <branch>    Specify the target branch to work on (default: 'main')
+#   -h             Display help information
+#
+# PREREQUISITES:
+#   - Must be on the target branch (default: main)
+#   - Working directory must be clean (no unstaged/uncommitted changes)
+#   - Tag version must not already exist locally or remotely
+#   - Tag must follow semantic versioning format (https://semver.org/)
+#   - version.txt file must exist containing the release version
+#   - Git repository with 'origin' remote configured
+#
+# WORKFLOW:
+#   1. Validates prerequisites (clean workspace, valid tag format, etc.)
+#   2. Prepares sources by updating CHANGELOG.md if it exists
+#   3. Creates release commit and annotated tag
+#   4. Pushes commit and tag to origin
+#   5. Merges changes into release branch (release/x.y format)
+#   6. Provides link to view the created release
+#
+# FILES USED:
+#   - version.txt: Contains the version number to be released
+#   - CHANGELOG.md: Updated automatically using Gradle task
+#   - gradlew: Used to generate changelog
+#
+# EXIT CODES:
+#   0: Success
+#   1: Error (invalid options, prerequisites not met, etc.)
+#
+# EXAMPLES:
+#   ./release                    # Release using default 'main' branch
+#   ./release -b develop         # Release using 'develop' branch
+#   ./release -h                 # Show help
+#
 # Script to release app : `./release --help`
 #
 
