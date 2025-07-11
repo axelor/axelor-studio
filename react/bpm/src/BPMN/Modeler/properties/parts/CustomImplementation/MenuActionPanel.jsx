@@ -467,7 +467,11 @@ export default function MenuActionPanel({
     const createUserAction = getProperty("createUserAction");
     const actionEmailTitle = getProperty("actionEmailTitle");
     const emailNotification = getProperty("emailNotification");
-    const emailEvent = getProperty("emailEvent") || "start";
+    const emailEvent = {
+      id: getProperty("emailEvent") || "start",
+      name: getProperty("emailEventLabel") || translate("start"),
+    };
+
     const role = getProperty("role");
     const deadlineFieldPath = getProperty("deadlineFieldPath");
     const template = getSelectValue("template");
@@ -500,14 +504,6 @@ export default function MenuActionPanel({
       });
     }
   }, [getSelectValue]);
-
-  useEffect(() => {
-    if (emailNotification) {
-      setProperty("emailEvent", emailEvent);
-    } else {
-      setProperty("emailEvent", undefined);
-    }
-  }, [emailNotification, setProperty, emailEvent]);
 
   return (
     <div className={styles.main}>
@@ -574,7 +570,8 @@ export default function MenuActionPanel({
                 if (emailNotification === false) {
                   setTemplate(undefined);
                   setProperty("template", undefined);
-                  setEmailEvent("start");
+                  updateMenuValue("emailEvent", undefined);
+                  setEmailEvent(null);
                   if (createUserAction === false) {
                     setActionEmailTitle(undefined);
                     setProperty("actionEmailTitle", undefined);
@@ -592,8 +589,8 @@ export default function MenuActionPanel({
             <Select
               className={styles.select}
               update={(value, label) => {
-                setEmailEvent(value?.name);
-                updateMenuValue("emailEvent", value, label, "name");
+                setEmailEvent(value);
+                updateMenuValue("emailEvent", value, label, "id");
               }}
               options={[
                 { name: translate("start"), id: "start" },
