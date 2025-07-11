@@ -1,0 +1,5 @@
+---
+title: Resolve Bpm user task send email issue
+type: fix
+description: |
+  Resolve BPM mail sending issue by changing the mail event storage in the bpmn file
