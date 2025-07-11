@@ -1,3 +1,16 @@
+## 3.1.13 (2025-07-11)
+
+#### Fix
+
+* Resolve Bpm user task send email issue
+
+  <details>
+  
+  Resolve BPM mail sending issue by changing the mail event storage in the bpmn file
+  
+  </details>
+
+
 ## 3.1.12 (2025-04-16)
 
 #### Fix
