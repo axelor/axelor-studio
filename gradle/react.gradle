@@ -74,6 +74,9 @@ reactDirs.each { dir ->
     }
 
     cleanTasks.add(tasks.register("${dirName}Clean", Delete) {
+        group = 'axelor'
+        description = "Clean ${dirName} build ressources"
+
         delete "$projectDir/react/${dirName}/build", "$projectDir/react/${dirName}/node_modules"
     })
 
