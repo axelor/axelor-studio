@@ -14,4 +14,4 @@ Provide a descriptive title and in the description of the report, include the fo
 While submitting, please remove or obfuscate any private data.
 
 After it has been submitted, the Security Team will investigate the vulnerability, determine its effects and 
-criticality and notify to the reporter.
+criticality, and notify the reporter.

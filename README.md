@@ -56,7 +56,7 @@ studio.bpm.max.active.connections = 50
 
 ## BPM Groovy Script Variables
 
-Some variables are available to be used with groovy script expressions in BPM. This includes:
+Some variables can be used with groovy script expressions in BPM. This includes:
 
 * `__studiouser__` - current user or admin if no user
 * `__date__` - current date as `LocalDate`
