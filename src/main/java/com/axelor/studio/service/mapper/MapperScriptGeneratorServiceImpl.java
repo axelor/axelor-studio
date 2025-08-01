@@ -32,7 +32,7 @@ public class MapperScriptGeneratorServiceImpl implements MapperScriptGeneratorSe
         return mapperRecord.toScript();
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return null;
@@ -51,7 +51,7 @@ public class MapperScriptGeneratorServiceImpl implements MapperScriptGeneratorSe
       return mapperRecord;
 
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return null;

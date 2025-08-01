@@ -49,7 +49,7 @@ public class TransformationsLibrariesController {
                         I18n.get("Parameter %s has Already been defined!"), parameter.getName()));
               });
     } catch (Exception e) {
-      ExceptionHelper.trace(actionResponse, e);
+      ExceptionHelper.error(actionResponse, e);
     }
   }
 
@@ -112,7 +112,7 @@ public class TransformationsLibrariesController {
               actionResponse.setError(
                   I18n.get("The groovy template in transformation is not valid") + ":\n" + s));
     } catch (Exception e) {
-      ExceptionHelper.trace(actionResponse, e);
+      ExceptionHelper.error(actionResponse, e);
     }
   }
 }

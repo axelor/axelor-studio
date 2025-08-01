@@ -264,7 +264,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       }
       teamTaskRepository.save(teamTask);
     } catch (ClassNotFoundException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 

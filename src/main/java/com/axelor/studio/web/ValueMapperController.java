@@ -81,7 +81,7 @@ public class ValueMapperController {
       }
       response.setCanClose(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

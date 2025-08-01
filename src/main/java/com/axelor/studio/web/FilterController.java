@@ -62,7 +62,7 @@ public class FilterController {
 
       response.setValue("operator", null);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -81,7 +81,7 @@ public class FilterController {
       response.setValue("targetType", targetType);
       response.setValue("filterOperator", null);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -113,7 +113,7 @@ public class FilterController {
       }
       response.setValue("operator", null);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -134,7 +134,7 @@ public class FilterController {
       response.setValue("targetMetaField", null);
       response.setValue("operator", null);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

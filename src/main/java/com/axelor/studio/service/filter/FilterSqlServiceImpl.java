@@ -166,7 +166,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
                 .getProperty(metaField.getName())
                 .getSelection();
       } catch (ClassNotFoundException e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     } else {
       MetaJsonField metaJsonField = (MetaJsonField) target;
@@ -258,7 +258,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
         };
       }
     } catch (ClassNotFoundException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     for (MetaField field : targetModel.getMetaFields()) {

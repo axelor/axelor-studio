@@ -82,7 +82,7 @@ public class WsConnectorController {
       response.setValue("$result", result.toString());
     } catch (Exception e) {
       response.setStatus(-1);
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

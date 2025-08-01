@@ -56,7 +56,7 @@ public class StudioMenuController {
 
       response.setValues(values);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -147,7 +147,7 @@ public class StudioMenuController {
 
       response.setView(actionViewBuilder.map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

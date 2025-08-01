@@ -41,7 +41,7 @@ public class BpmManagerDashboardController {
     try {
       this.showProcess(0, response);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -49,7 +49,7 @@ public class BpmManagerDashboardController {
     try {
       response.setValues(Beans.get(BpmManagerDashboardService.class).showProcess(offset));
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -57,7 +57,7 @@ public class BpmManagerDashboardController {
     try {
       this.showProcess(this.getOffset(request, false), response);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -65,7 +65,7 @@ public class BpmManagerDashboardController {
     try {
       this.showProcess(this.getOffset(request, true), response);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -105,7 +105,7 @@ public class BpmManagerDashboardController {
 
       response.setData(dataMapList);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -127,7 +127,7 @@ public class BpmManagerDashboardController {
 
       response.setData(dataMapList);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -141,7 +141,7 @@ public class BpmManagerDashboardController {
 
       response.setData(dataMapList);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -155,7 +155,7 @@ public class BpmManagerDashboardController {
 
       response.setData(dataMapList);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -169,7 +169,7 @@ public class BpmManagerDashboardController {
 
       response.setData(dataMapList);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -211,7 +211,7 @@ public class BpmManagerDashboardController {
       response.setView(
           actionViewBuilder.context("ids", !recordIds.isEmpty() ? recordIds : 0).map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -250,7 +250,7 @@ public class BpmManagerDashboardController {
       response.setView(
           actionViewBuilder.context("ids", !recordIds.isEmpty() ? recordIds : 0).map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

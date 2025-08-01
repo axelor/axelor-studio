@@ -159,7 +159,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       appLoaderRepository.save(appLoader);
 
     } catch (IOException | ClassNotFoundException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -357,7 +357,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       fileWriter.close();
 
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -445,7 +445,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       fileWriter.close();
 
     } catch (IOException | ClassNotFoundException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 

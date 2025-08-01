@@ -275,7 +275,7 @@ public class WkfMenuServiceImpl implements WkfMenuService {
           try {
             property = Mapper.of(Class.forName(model)).getProperty(path.split("\\.")[0]);
           } catch (ClassNotFoundException e) {
-            ExceptionHelper.trace(e);
+            ExceptionHelper.error(e);
           }
         }
 

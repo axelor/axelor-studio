@@ -33,7 +33,7 @@ public class AppBpmController {
       }
       response.setValues(app);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 

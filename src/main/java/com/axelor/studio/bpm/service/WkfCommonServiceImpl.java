@@ -279,7 +279,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
                       .filter("self.name = ?1", value)
                       .fetchOne();
             } catch (Exception e) {
-              ExceptionHelper.trace(e);
+              ExceptionHelper.error(e);
             }
           }
           mapper.set(model, key, value);

@@ -357,7 +357,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
 
         url = uriBuilder.toString();
       } catch (URISyntaxException e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     } else {
       entity = createEntity(wsRequest, templates, ctx);
@@ -403,7 +403,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
                             ? it.getValue().get(0).asText()
                             : it.getValue().asText())));
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
         throw new IllegalStateException(e);
       }
     }
@@ -566,7 +566,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
       metaFiles.deleteAttachments(wsConnector);
       metaFiles.attach(inputStream, "Log_File", wsConnector);
     } catch (IOException io) {
-      ExceptionHelper.trace(io);
+      ExceptionHelper.error(io);
     }
   }
 
@@ -616,7 +616,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
       metaFiles.deleteAttachments(wsConnector);
       metaFiles.attach(inputStream, "Log_File", wsConnector);
     } catch (IOException io) {
-      ExceptionHelper.trace(io);
+      ExceptionHelper.error(io);
     }
   }
 

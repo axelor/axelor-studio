@@ -13,7 +13,7 @@ public class GroovyExpressionBuilderController {
       Map<String, Object> data = request.getData();
       response.setData(Beans.get(GroovyScriptBuilderService.class).build(data));
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -22,7 +22,7 @@ public class GroovyExpressionBuilderController {
       Map<String, Object> data = request.getData();
       response.setData(Beans.get(GroovyScriptBuilderService.class).buildExpression(data));
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

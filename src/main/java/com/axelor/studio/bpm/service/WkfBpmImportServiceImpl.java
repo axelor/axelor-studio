@@ -93,7 +93,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
         }
 
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       } finally {
         clean(tmp);
       }
@@ -125,7 +125,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
           }
         }
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       } finally {
         clean(tmp);
       }
@@ -291,7 +291,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
           try {
             copy(url.openStream(), tmp, name);
           } catch (IOException e) {
-            ExceptionHelper.trace(e);
+            ExceptionHelper.error(e);
           }
         });
 

@@ -50,7 +50,7 @@ public class WkfDmnModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -75,7 +75,7 @@ public class WkfDmnModelController {
 
       response.setCanClose(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -100,7 +100,7 @@ public class WkfDmnModelController {
 
       response.setValue("script", script);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -132,7 +132,7 @@ public class WkfDmnModelController {
       }
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -153,7 +153,7 @@ public class WkfDmnModelController {
       response.setCanClose(true);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

@@ -48,7 +48,7 @@ public class WkfMigrationController {
       response.setValue("mapping", new ObjectMapper().writeValueAsString(_map));
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -67,7 +67,7 @@ public class WkfMigrationController {
       response.setData(new ObjectMapper().readValue(migration.getMapping(), Map.class));
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -90,7 +90,7 @@ public class WkfMigrationController {
               : "self.id IN (0)");
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -122,7 +122,7 @@ public class WkfMigrationController {
       response.setInfo(I18n.get(BpmExceptionMessage.MIGRATION_DONE));
 
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
       response.setError(e.getMessage(), I18n.get(BpmExceptionMessage.MIGRATION_ERR));
     }
   }

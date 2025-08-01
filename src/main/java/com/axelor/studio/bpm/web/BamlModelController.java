@@ -48,7 +48,7 @@ public class BamlModelController {
         response.setValue("resultScript", resultScript);
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -104,7 +104,7 @@ public class BamlModelController {
 
       response.setView(builder.map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

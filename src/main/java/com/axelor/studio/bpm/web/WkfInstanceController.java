@@ -21,7 +21,7 @@ public class WkfInstanceController {
       Beans.get(WkfInstanceService.class).evalInstance(wkfInstance);
       response.setInfo("Operation completed");
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -39,7 +39,7 @@ public class WkfInstanceController {
 
       response.setView(actionViewBuilder.map());
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -53,7 +53,7 @@ public class WkfInstanceController {
       response.setInfo("Operation completed");
       response.setCanClose(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 }

@@ -109,7 +109,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
       uriBuilder.addParameter("redirect_uri", getRedirectUrl());
       url = uriBuilder.toString();
     } catch (URISyntaxException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return url;
@@ -148,7 +148,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     Response response =
@@ -192,7 +192,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
                           ? it.getValue().get(0).asText()
                           : it.getValue().asText())));
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     Response response =

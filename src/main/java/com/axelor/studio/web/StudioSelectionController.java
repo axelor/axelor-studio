@@ -54,7 +54,7 @@ public class StudioSelectionController {
         response.setValue("name", null);
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -70,7 +70,7 @@ public class StudioSelectionController {
       response.setValue(SELECTION_TEXT, selectionText);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -88,7 +88,7 @@ public class StudioSelectionController {
       response.setValue(SELECTION_OPTION_LIST, selectOptions);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

@@ -20,7 +20,7 @@ public class WkfModelImportListener {
     try {
       wkfBpmImportService.importDmn();
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 }

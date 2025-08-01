@@ -48,7 +48,7 @@ public class StudioAppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -62,7 +62,7 @@ public class StudioAppController {
 
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -95,7 +95,7 @@ public class StudioAppController {
               .param("download", "true")
               .map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -145,7 +145,7 @@ public class StudioAppController {
               .param("download", "true")
               .map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -156,7 +156,7 @@ public class StudioAppController {
       Beans.get(StudioAppService.class).deleteApp(studioApp);
       response.setSignal("refresh-app", true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, I18n.get(StudioExceptionMessage.STUDIO_APP_IN_REF));
+      ExceptionHelper.error(response, I18n.get(StudioExceptionMessage.STUDIO_APP_IN_REF));
     }
   }
 }

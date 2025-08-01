@@ -229,7 +229,7 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
     try {
       migration.setMapping(new ObjectMapper().writeValueAsString(contextMap));
     } catch (JsonProcessingException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
     saveMigration(migration);
   }

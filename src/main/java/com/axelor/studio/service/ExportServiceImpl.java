@@ -43,7 +43,7 @@ public class ExportServiceImpl implements ExportService {
           byte[] img = IOUtils.toByteArray(new FileInputStream(file));
           return Base64.getEncoder().encodeToString(img);
         } catch (IOException e) {
-          ExceptionHelper.trace(e);
+          ExceptionHelper.error(e);
         }
       }
     }

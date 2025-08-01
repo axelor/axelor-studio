@@ -51,7 +51,7 @@ public class WsAuthenticatorController {
                 .map());
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

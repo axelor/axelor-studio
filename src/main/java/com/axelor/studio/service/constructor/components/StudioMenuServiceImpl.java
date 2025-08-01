@@ -135,7 +135,7 @@ public class StudioMenuServiceImpl implements StudioMenuService {
           field.setAccessible(true);
           if (field.get(action) != null) contextList = (List<ActionView.Context>) field.get(action);
         } catch (Exception e) {
-          ExceptionHelper.trace(e);
+          ExceptionHelper.error(e);
         }
 
         if (!CollectionUtils.isEmpty(contextList)) {
@@ -157,7 +157,7 @@ public class StudioMenuServiceImpl implements StudioMenuService {
         return Optional.of(studioAction);
       }
     } catch (JAXBException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
     return Optional.empty();
   }

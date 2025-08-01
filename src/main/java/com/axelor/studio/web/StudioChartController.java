@@ -36,7 +36,7 @@ public class StudioChartController {
           Beans.get(ChartRecordViewService.class).getActionView(chartName, context);
       response.setView(actionView);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

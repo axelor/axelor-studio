@@ -45,7 +45,7 @@ public class StudioActionRepo extends StudioActionRepository {
     try {
       studioActionService.build(studioAction);
     } catch (IOException | ClassNotFoundException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return studioAction;

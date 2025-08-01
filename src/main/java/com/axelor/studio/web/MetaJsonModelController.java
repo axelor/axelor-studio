@@ -47,7 +47,7 @@ public class MetaJsonModelController {
         response.setReload(true);
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

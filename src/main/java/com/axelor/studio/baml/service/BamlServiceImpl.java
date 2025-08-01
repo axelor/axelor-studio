@@ -224,7 +224,7 @@ public class BamlServiceImpl implements BamlService {
       return xml;
 
     } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return xml;

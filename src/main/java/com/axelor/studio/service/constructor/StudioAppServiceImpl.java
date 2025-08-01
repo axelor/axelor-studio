@@ -199,7 +199,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         return metaFiles.upload(logFile);
       }
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     } finally {
       try {
         if (zipFile != null) {
@@ -209,7 +209,7 @@ public class StudioAppServiceImpl implements StudioAppService {
           Files.deleteIfExists(dataDir.toPath());
         }
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     }
     return null;
@@ -233,7 +233,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         zipEntry = zipInputStream.getNextEntry();
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -249,14 +249,14 @@ public class StudioAppServiceImpl implements StudioAppService {
       File zipFile = appLoaderExportService.createExportZip(exportDir);
       exportFile = metaFiles.upload(zipFile);
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     } finally {
       try {
         if (exportDir != null) {
           Files.deleteIfExists(exportDir.toPath());
         }
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     }
 
@@ -274,14 +274,14 @@ public class StudioAppServiceImpl implements StudioAppService {
       File zipFile = appLoaderExportService.createExportZip(exportDir);
       exportFile = metaFiles.upload(zipFile);
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     } finally {
       try {
         if (exportDir != null) {
           Files.deleteIfExists(exportDir.toPath());
         }
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     }
 
@@ -327,7 +327,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         }
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -355,7 +355,7 @@ public class StudioAppServiceImpl implements StudioAppService {
               templates.from(inputStreamReader).make(ctx).render(writer);
             }
           } catch (Exception e) {
-            ExceptionHelper.trace(e);
+            ExceptionHelper.error(e);
           } finally {
             deleteEmptyFile(file);
           }
@@ -380,7 +380,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         }
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -508,7 +508,7 @@ public class StudioAppServiceImpl implements StudioAppService {
             dataFile, stringBuilder.toString(), StandardCharsets.UTF_8);
       }
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 }

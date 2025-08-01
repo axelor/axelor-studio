@@ -95,7 +95,7 @@ public class WkfModelController {
       }
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
       WkfModel model = request.getContext().asType(WkfModel.class);
       model = Beans.get(WkfModelRepository.class).find(model.getId());
       Beans.get(BpmDeploymentService.class).setIsMigrationOnGoing(model, false);
@@ -109,7 +109,7 @@ public class WkfModelController {
     try {
       Beans.get(WkfInstanceService.class).terminateAll();
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -128,7 +128,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -142,7 +142,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -156,7 +156,7 @@ public class WkfModelController {
 
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -170,7 +170,7 @@ public class WkfModelController {
 
       response.setValue("newVersionId", wkfModel.getId());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -196,7 +196,7 @@ public class WkfModelController {
               .context("versionIds", versionIds)
               .map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -208,7 +208,7 @@ public class WkfModelController {
 
       response.setValue("xml", xml);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -234,7 +234,7 @@ public class WkfModelController {
       }
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -258,7 +258,7 @@ public class WkfModelController {
 
       response.setInfo(I18n.get("Instance Restarted"));
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -275,7 +275,7 @@ public class WkfModelController {
 
       response.setInfo(I18n.get("Node cancelled"));
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -285,7 +285,7 @@ public class WkfModelController {
       response.setData(dataList);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -295,7 +295,7 @@ public class WkfModelController {
       response.setData(dataList);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -349,7 +349,7 @@ public class WkfModelController {
       this.openRecordView(request, response, "title", "modelName", "statusRecordIds");
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -358,7 +358,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "recordIdsPerModel");
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -372,7 +372,7 @@ public class WkfModelController {
       response.setView(actionViewBuilder.map());
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -389,7 +389,7 @@ public class WkfModelController {
       response.setView(actionViewBuilder.map());
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -452,7 +452,7 @@ public class WkfModelController {
       response.setAttr("myProcessPanel", "hidden", true);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -461,7 +461,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "taskTodayIds");
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -470,7 +470,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "taskNextIds");
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -479,7 +479,7 @@ public class WkfModelController {
       this.openRecordView(request, response, null, "modelName", "lateTaskIds");
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -490,7 +490,7 @@ public class WkfModelController {
       Beans.get(WkfLogService.class).clearLog(instance.getInstanceId());
       response.setReload(true);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -502,7 +502,7 @@ public class WkfModelController {
           Beans.get(WkfInstanceService.class).getWkfInstanceVariables(instance);
       response.setValue("$variableList", variableList);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -518,7 +518,7 @@ public class WkfModelController {
           Beans.get(WkfInstanceService.class)
               .getInstanceLogs(instance, filter, startString, endString, minutes));
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -531,7 +531,7 @@ public class WkfModelController {
       List<String> results = Beans.get(WkfModelMergerSplitterService.class).split(contributor);
       response.setValue("results", results);
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
       response.setError(e.getMessage());
     }
   }
@@ -546,7 +546,7 @@ public class WkfModelController {
       String result = Beans.get(WkfModelMergerSplitterService.class).merge(contributors);
       response.setValue("result", result);
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
       response.setError(e.getMessage());
     }
   }
@@ -566,7 +566,7 @@ public class WkfModelController {
           Beans.get(WkfModelMergerSplitterService.class).save(results, contributors, deploy);
       response.setValue("createdWkfModels", createdWkfModels);
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
       response.setError(e.getMessage());
     }
   }
@@ -580,7 +580,7 @@ public class WkfModelController {
       }
 
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -592,7 +592,7 @@ public class WkfModelController {
         response.setView(ActionView.define("Merge editor").add("html", link).map());
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -623,7 +623,7 @@ public class WkfModelController {
       WkfProcess wkfProcess = context.asType(WkfProcess.class);
       Beans.get(BpmDeploymentService.class).forceMigrate(wkfProcess);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

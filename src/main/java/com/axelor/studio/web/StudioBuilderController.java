@@ -43,7 +43,7 @@ public class StudioBuilderController {
 
       response.setView(ActionView.define(I18n.get("Studio")).add("html", url).map());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

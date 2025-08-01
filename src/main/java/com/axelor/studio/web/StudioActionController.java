@@ -59,7 +59,7 @@ public class StudioActionController {
         response.setValue("studioActionViews", views);
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -95,7 +95,7 @@ public class StudioActionController {
         response.setValue("_scriptString", scriptString);
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

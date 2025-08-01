@@ -433,7 +433,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
         }
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     if (sourceModel == null && line.getValue() != null && line.getValue().equals("$")) {

@@ -230,7 +230,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
 
     } finally {
       wkfTaskService.reset();
@@ -571,7 +571,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       try {
         wkfEmailService.sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     }
 
@@ -593,7 +593,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       try {
         wkfEmailService.sendEmail(wkfTaskConfig, execution);
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     }
   }
@@ -652,7 +652,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         try {
           return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
-          ExceptionHelper.trace(e);
+          ExceptionHelper.error(e);
         }
       }
     }

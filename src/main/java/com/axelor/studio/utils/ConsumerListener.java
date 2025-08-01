@@ -34,6 +34,6 @@ public final class ConsumerListener implements Listener {
   @Override
   public void handle(Model bean, Exception e) {
     errorConsumer.accept(bean, e);
-    ExceptionHelper.trace(e);
+    ExceptionHelper.error(e);
   }
 }

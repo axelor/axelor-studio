@@ -26,7 +26,7 @@ public class GroovyTemplateServiceImpl implements GroovyTemplateService {
         xml = templates.from(reader).make(binding).render();
       }
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
     return removeEmptyLines(xml);
   }

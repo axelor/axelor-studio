@@ -31,7 +31,7 @@ public class XmlMediaType implements MediaType {
         return jsonObject;
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
       return wsResponse.readEntity(String.class);
     }
   }

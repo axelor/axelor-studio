@@ -56,7 +56,7 @@ public class DmnExportServiceImpl implements DmnExportService {
     try {
       exportFile = File.createTempFile(wkfDmnModel.getName(), ".xlsx");
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     DmnModelInstance dmnModelInstance =
@@ -71,7 +71,7 @@ public class DmnExportServiceImpl implements DmnExportService {
       workbook.write(fout);
       fout.close();
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
     return exportFile;
   }

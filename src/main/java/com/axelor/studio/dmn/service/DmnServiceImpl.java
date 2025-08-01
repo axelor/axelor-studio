@@ -310,7 +310,7 @@ public class DmnServiceImpl implements DmnService {
               mapToMetaCustomModelFields(fields, modelName, searchOperator, multiple, resultVar);
         }
       } catch (ClassNotFoundException e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       }
     }
 
@@ -558,7 +558,7 @@ public class DmnServiceImpl implements DmnService {
                 .replaceAll(String.format(id, matcher.group(2)), String.format(id, randomStr));
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return diagramXml;

@@ -136,7 +136,7 @@ public class WkfLogServiceImpl implements WkfLogService {
       BufferedOutputStream outStream = (BufferedOutputStream) appender.getOutputStream();
       outStream.flush();
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 }

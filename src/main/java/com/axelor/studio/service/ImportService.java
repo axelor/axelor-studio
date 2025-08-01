@@ -244,7 +244,7 @@ public class ImportService {
         return metaFiles.upload(inImg, name);
       }
     } catch (IOException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return null;

@@ -20,7 +20,7 @@ public class ProcessInstanceModificationController {
     try {
       Beans.get(ProcessInstanceModificationService.class).execute(processUpdate);
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
       response.setInfo(
           String.format(I18n.get(UtilsExceptionMessage.EXCEPTION_OCCURRED), e.getMessage()));
     } finally {
@@ -42,7 +42,7 @@ public class ProcessInstanceModificationController {
       }
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -52,7 +52,7 @@ public class ProcessInstanceModificationController {
       Path path = Beans.get(ProcessInstanceModificationService.class).export(wkfProcessUpdate);
       response.setExportFile(path.toString());
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

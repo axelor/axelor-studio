@@ -380,7 +380,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
     try {
       klass = (Class<Model>) Class.forName(model);
     } catch (ClassNotFoundException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     if (user != null && assignedType != null) {

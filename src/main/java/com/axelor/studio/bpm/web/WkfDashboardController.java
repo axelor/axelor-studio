@@ -77,7 +77,7 @@ public class WkfDashboardController {
                 .map());
       }
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -132,7 +132,7 @@ public class WkfDashboardController {
               : "self.id IN (0)");
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 
@@ -171,7 +171,7 @@ public class WkfDashboardController {
       response.setCanClose(true);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 

@@ -44,7 +44,7 @@ public class BamlParser {
       return (ProcessActionRootNode) unmarshaller.unmarshal(xml);
 
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return null;
@@ -65,7 +65,7 @@ public class BamlParser {
       return byteArrayOutputStream.toString();
 
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return null;

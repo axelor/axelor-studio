@@ -38,7 +38,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
     try {
       studioMenu.setMetaMenu(Beans.get(StudioMenuService.class).build(studioMenu));
     } catch (IOException | ClassNotFoundException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
     return studioMenu;
   }

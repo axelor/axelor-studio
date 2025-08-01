@@ -46,7 +46,7 @@ public class MetaJsonFieldController {
 
       Beans.get(StudioMetaService.class).trackJsonField(metaJsonField);
     } catch (Exception e) {
-      ExceptionHelper.trace(response, e);
+      ExceptionHelper.error(response, e);
     }
   }
 }

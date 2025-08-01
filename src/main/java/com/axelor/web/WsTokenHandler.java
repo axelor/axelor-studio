@@ -66,7 +66,7 @@ public class WsTokenHandler {
       authenticator = wsAuthenticatorRepository.save(authenticator);
       Beans.get(WsAuthenticatorService.class).authenticate(authenticator);
     } catch (JsonProcessingException e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
 
     return Response.temporaryRedirect(new URI(baseUrl)).build();
