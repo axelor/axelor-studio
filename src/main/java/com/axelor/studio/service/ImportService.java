@@ -387,7 +387,7 @@ public class ImportService {
     MetaView metaView = (MetaView) bean;
 
     if (metaView != null && metaView.getExtension()) {
-      viewGenerator.process(Collections.singletonList(metaView.getName()), true);
+      viewGenerator.process(Collections.singletonList(metaView.getName()));
     }
 
     return metaViewRepo.find(metaView.getId());
