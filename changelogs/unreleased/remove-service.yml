@@ -1,0 +1,3 @@
+---
+title: Delete deprecated service ` com.axelor.studio.db.App.AppVersionService`. Use ` com.axelor.meta.loader.AppVersionService` instead.
+type: remove

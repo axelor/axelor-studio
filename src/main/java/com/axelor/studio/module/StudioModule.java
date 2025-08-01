@@ -222,8 +222,6 @@ public class StudioModule extends AxelorModule {
     bind(AccessTemplateService.class).to(AccessTemplateServiceImpl.class);
     bind(AppServerStartListener.class);
     bind(AppVersionService.class).to(AppVersionServiceImpl.class);
-    bind(com.axelor.studio.app.service.AppVersionService.class)
-        .to(com.axelor.studio.app.service.AppVersionServiceImpl.class);
 
     // BPM
     bind(WkfRequestListener.class);
