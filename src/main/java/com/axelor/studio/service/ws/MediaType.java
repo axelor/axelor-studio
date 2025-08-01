@@ -1,7 +1,7 @@
 package com.axelor.studio.service.ws;
 
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
-import javax.ws.rs.core.Response;
 
 public interface MediaType {
 

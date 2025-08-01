@@ -1,7 +1,7 @@
 package com.axelor.studio.app.service;
 
 import com.axelor.studio.db.App;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @deprecated use {@link com.axelor.meta.loader.AppVersionServiceImpl} instead.

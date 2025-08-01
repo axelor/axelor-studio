@@ -1,10 +1,10 @@
 package com.axelor.studio.service.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.Response;
 
 public class TextMediaType implements MediaType {
   public Object parseResponse(Response wsResponse) throws IOException {

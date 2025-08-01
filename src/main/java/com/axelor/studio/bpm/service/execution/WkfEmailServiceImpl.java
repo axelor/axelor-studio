@@ -36,9 +36,9 @@ import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.Inject;
+import jakarta.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.mail.MessagingException;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public class WkfEmailServiceImpl implements WkfEmailService {

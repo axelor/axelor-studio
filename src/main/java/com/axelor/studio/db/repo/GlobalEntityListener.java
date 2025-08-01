@@ -9,6 +9,8 @@ import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostUpdate;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -19,8 +21,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
 
 public class GlobalEntityListener {
   @PostPersist

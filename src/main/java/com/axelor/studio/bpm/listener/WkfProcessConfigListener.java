@@ -20,10 +20,10 @@ package com.axelor.studio.bpm.listener;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.db.WkfProcessConfig;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
 import java.util.HashMap;
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
 
 public class WkfProcessConfigListener {
 

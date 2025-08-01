@@ -38,6 +38,14 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.base.Strings;
 import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation.Builder;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -54,14 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -454,7 +454,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
                   ? null
                   : Entity.entity(
                       new FileInputStream(text),
-                      javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                      jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
 
         } catch (FileNotFoundException e) {
           log.error(e.getMessage(), e);
@@ -467,7 +467,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
                   ? null
                   : Entity.entity(
                       new URL(text).openStream(),
-                      javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                      jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         } catch (IOException e) {
           log.error(e.getMessage(), e);
         }
@@ -485,7 +485,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
                 ? null
                 : Entity.entity(
                     new ByteArrayInputStream(bytes),
-                    javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                    jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         break;
       case "stream":
         entity =
@@ -493,7 +493,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
                 ? null
                 : Entity.entity(
                     new ByteArrayInputStream((byte[]) obj),
-                    javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
+                    jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
         break;
       default:
         break;

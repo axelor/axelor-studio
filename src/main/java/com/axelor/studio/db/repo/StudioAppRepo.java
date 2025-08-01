@@ -20,7 +20,7 @@ package com.axelor.studio.db.repo;
 import com.axelor.inject.Beans;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.service.constructor.StudioAppService;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 public class StudioAppRepo extends StudioAppRepository {
 

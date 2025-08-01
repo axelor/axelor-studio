@@ -4,7 +4,7 @@ import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaAction;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioAction;
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 public interface StudioActionEmailService {
 

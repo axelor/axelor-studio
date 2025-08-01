@@ -5,10 +5,10 @@ import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.db.Filter;
 import com.axelor.studio.db.StudioChart;
+import jakarta.xml.bind.JAXBException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.JAXBException;
 
 public interface StudioChartService {
 

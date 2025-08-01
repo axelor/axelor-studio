@@ -4,8 +4,8 @@ import com.axelor.event.Observes;
 import com.axelor.events.StartupEvent;
 import com.axelor.studio.bpm.service.WkfBpmImportService;
 import com.axelor.utils.helpers.ExceptionHelper;
-import javax.annotation.Priority;
-import javax.inject.Inject;
+import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
 
 public class WkfModelImportListener {
 

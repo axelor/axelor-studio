@@ -48,6 +48,7 @@ import com.axelor.studio.db.repo.StudioChartRepository;
 import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import jakarta.persistence.Query;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,7 +63,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.persistence.Query;
 import org.apache.commons.beanutils.ConvertUtils;
 
 public class ChartRecordViewServiceImpl implements ChartRecordViewService {

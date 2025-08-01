@@ -35,11 +35,11 @@ import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.utils.db.Wizard;
 import com.axelor.utils.helpers.ExceptionHelper;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.Table;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

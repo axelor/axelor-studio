@@ -22,8 +22,8 @@ import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.studio.db.StudioChart;
 import com.axelor.studio.service.constructor.reporting.StudioChartService;
 import com.google.inject.Inject;
+import jakarta.validation.ValidationException;
 import java.util.List;
-import javax.validation.ValidationException;
 
 public class StudioChartRepo extends StudioChartRepository {
 

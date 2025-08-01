@@ -29,12 +29,12 @@ import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
+import jakarta.annotation.Priority;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.annotation.Priority;
 
 public class AppServerStartListener {
 

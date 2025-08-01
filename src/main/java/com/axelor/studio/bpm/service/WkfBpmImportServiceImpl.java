@@ -19,6 +19,7 @@ import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.io.ByteStreams;
 import com.google.inject.persist.Transactional;
+import jakarta.inject.Inject;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
@@ -28,7 +29,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

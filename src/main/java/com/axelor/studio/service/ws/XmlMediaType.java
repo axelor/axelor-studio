@@ -1,10 +1,10 @@
 package com.axelor.studio.service.ws;
 
 import com.axelor.utils.helpers.ExceptionHelper;
+import jakarta.ws.rs.core.Response;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
-import javax.ws.rs.core.Response;
 import org.json.JSONObject;
 import org.json.XML;
 

@@ -1,11 +1,11 @@
 package com.axelor.studio.service.ws;
 
 import com.axelor.studio.db.WsAuthenticator;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.core.NewCookie;
+import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 
 public class SessionTypeCookie implements SessionType {
   protected Map<String, NewCookie> cookies = new HashMap<>();

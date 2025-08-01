@@ -28,13 +28,13 @@ import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
+import jakarta.persistence.Query;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.Query;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

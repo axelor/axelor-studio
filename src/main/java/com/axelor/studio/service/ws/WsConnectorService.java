@@ -21,10 +21,10 @@ import com.axelor.studio.db.WsAuthenticator;
 import com.axelor.studio.db.WsConnector;
 import com.axelor.studio.db.WsRequest;
 import com.axelor.text.Templates;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 import java.util.Map;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
 
 public interface WsConnectorService {
 

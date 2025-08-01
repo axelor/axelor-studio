@@ -32,6 +32,7 @@ import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.Inject;
+import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -41,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.persistence.Query;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

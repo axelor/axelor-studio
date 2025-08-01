@@ -19,7 +19,7 @@ package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.utils.helpers.context.FullContext;
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface WkfEmailService {

@@ -18,9 +18,9 @@
 package com.axelor.studio.bpm.service.dashboard;
 
 import com.axelor.db.JPA;
+import jakarta.persistence.Query;
 import java.time.LocalDate;
 import java.util.List;
-import javax.persistence.Query;
 import org.apache.commons.lang3.StringUtils;
 
 public class WkfDashboardServiceImpl implements WkfDashboardService {
