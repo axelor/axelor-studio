@@ -16,15 +16,15 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.github.node-gradle:gradle-node-plugin:7.0.2'
+        classpath 'com.github.node-gradle:gradle-node-plugin:7.1.0'
     }
 }
 
 apply plugin: com.github.gradle.node.NodePlugin
 
 node {
-    version = '22.7.0'
-    pnpmVersion = '9.8.0'
+    version = '24.5.0'
+    pnpmVersion = '10.14.0'
     download = true
 }
 
@@ -46,7 +46,7 @@ reactDirs.each { dir ->
         group = 'axelor'
         description = "Build ${dirName}"
         environment = [
-                CI: 'false'
+            CI: 'false'
         ]
 
         workingDir = file(dir)
@@ -65,7 +65,7 @@ reactDirs.each { dir ->
         group = 'axelor'
         description = "Install ${dirName} dependencies"
         environment = [
-                CI: 'false'
+            CI: 'false'
         ]
 
         workingDir = file(dir)
