@@ -85,3 +85,4 @@ It is recommended to use the module with AOP and AOS versions as described below
 | 3.3                   | 7.2                    | 8.2                    |
 | 3.4                   | 7.3                    | 8.3                    |
 | 3.5                   | 7.4                    | 8.4                    |
+| 4.0                   | 8.0                    | 9.0                    |
