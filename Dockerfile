@@ -1,4 +1,4 @@
-FROM axelor/app-builder:7.4 AS builder
+FROM axelor/app-builder:8.0-beta AS builder
 
 ARG JAVA_OPTS="-Xmx4g"
 ARG APP_SOURCE="/app/axelor-public-webapp"
@@ -22,12 +22,11 @@ RUN chmod +x gradlew && \
 RUN mkdir -p ${APP_SOURCE}/webapps/ROOT && \
     unzip -q -o ${APP_SOURCE}/build/libs/*.war -d ${APP_SOURCE}/webapps/ROOT/
 
-
 # Image to run tomcat with axelor-app
-FROM eclipse-temurin:11-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 ARG BUILD_DATE
-ARG TOMCAT_VERSION=9.0.85
+ARG TOMCAT_VERSION=10.1.43
 
 ARG APP_LANGUAGE
 ARG APP_DEMO_DATA
@@ -45,14 +44,12 @@ ENV ENABLE_QUARTZ=${ENABLE_QUARTZ}
 
 # System Upgrade for security reasons + install tools needed by the entrypoint
 RUN apk upgrade && \
-    apk add --no-cache curl coreutils postgresql-client
+    apk add --no-cache coreutils curl postgresql-client
 
 # Install Tomcat
 RUN export TOMCAT_MINOR_VERSION=$(echo ${TOMCAT_VERSION} | cut -d"." -f 1) && \
     mkdir -p ${CATALINA_HOME} && \
 	  curl -L https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MINOR_VERSION}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz | tar xvzf - --exclude="apache-tomcat*/webapps/*" --strip-components=1 --directory=${CATALINA_HOME}
-
-
 
 # Copy app
 COPY --from=builder /app/axelor-public-webapp/webapps ${CATALINA_HOME}/webapps
