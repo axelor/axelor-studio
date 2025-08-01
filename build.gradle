@@ -40,8 +40,11 @@ testlogger {
   theme 'mocha'
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
+}
 
 group = 'com.axelor.addons'
 description 'Axelor Studio Module'
@@ -59,38 +62,38 @@ dependencies {
   if (findProject(':modules:axelor-message') != null) {
     api project(':modules:axelor-message')
   } else {
-    implementation 'com.axelor.addons:axelor-message:3.2.2'
+    implementation 'com.axelor.addons:axelor-message:4.0.+'
   }
   if (findProject(':modules:axelor-utils') != null) {
     api project(':modules:axelor-utils')
   } else {
-    implementation 'com.axelor.addons:axelor-utils:3.4.0'
+    implementation 'com.axelor.addons:axelor-utils:4.0.+'
   }
 
   implementation 'org.camunda.bpm:camunda-engine:7.17.0'
   implementation 'org.camunda.bpm:camunda-engine-plugin-spin:7.17.0'
   implementation 'org.camunda.spin:camunda-spin-dataformat-json-jackson:1.17.0'
 
-  implementation 'org.codehaus.groovy:groovy-all:3.0.19'
+  implementation 'org.apache.groovy:groovy-all:4.0.28'
   implementation 'org.eclipse.birt.runtime.3_7_1:Tidy:1'
-  implementation 'org.apache.commons:commons-exec:1.3'
-  implementation 'org.apache.commons:commons-text:1.11.0'
-  implementation 'org.apache.commons:commons-lang3:3.17.0'
-  implementation 'org.jboss.resteasy:resteasy-jaxb-provider:6.2.5.Final'
-  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.3'
-  implementation 'org.json:json:20231013'
+  implementation 'org.apache.commons:commons-exec:1.5.0'
+  implementation 'org.apache.commons:commons-text:1.14.0'
+  implementation 'org.apache.commons:commons-lang3:3.18.0'
+  implementation 'org.jboss.resteasy:resteasy-jaxb-provider:6.2.12.Final'
+  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.2'
+  implementation 'org.json:json:20250517'
   implementation 'org.reflections:reflections:0.10.2'
 
-  implementation 'ch.qos.logback:logback-core:1.4.14'
-  implementation 'ch.qos.logback:logback-classic:1.4.14'
-  implementation 'org.yaml:snakeyaml:2.3'
-  implementation 'javax.websocket:javax.websocket-api:1.1'
-  compileOnly 'org.projectlombok:lombok:1.18.30'
-  annotationProcessor 'org.projectlombok:lombok:1.18.30'
+  implementation 'ch.qos.logback:logback-core:1.5.18'
+  implementation 'ch.qos.logback:logback-classic:1.5.18'
+  implementation 'org.yaml:snakeyaml:2.4'
+  implementation 'jakarta.websocket:jakarta.websocket-api:2.2.0'
+  compileOnly 'org.projectlombok:lombok:1.18.38'
+  annotationProcessor 'org.projectlombok:lombok:1.18.38'
 
-  testCompileOnly 'org.projectlombok:lombok:1.18.30'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-  testImplementation 'org.mockito:mockito-inline:5.2.0'
+  testCompileOnly 'org.projectlombok:lombok:1.18.38'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+  testImplementation 'org.mockito:mockito-core:5.18.0'
 }
 
 changelog {
@@ -136,7 +139,7 @@ publishing {
 apply plugin: 'jacoco'
 
 jacoco {
-  toolVersion = '0.8.11'
+  toolVersion = '0.8.13'
 }
 
 tasks.withType(JavaCompile) {
