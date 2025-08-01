@@ -23,7 +23,7 @@ import com.axelor.web.socket.MessageEncoder;
 import com.axelor.web.socket.MessageType;
 import com.axelor.web.socket.inject.WebSocketConfigurator;
 import com.axelor.web.socket.inject.WebSocketSecurity;
-import jakarta.inject.Singleton;
+import com.google.inject.Singleton;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;

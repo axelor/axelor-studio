@@ -10,7 +10,7 @@ import com.axelor.studio.service.constructor.components.expressions.dto.Transfor
 import com.axelor.text.GroovyTemplates;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import jakarta.inject.Inject;
+import com.google.inject.Inject;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
