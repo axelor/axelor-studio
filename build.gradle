@@ -11,7 +11,7 @@ buildscript {
     }
     maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
   }
-  ext.aopVersion = '7.4.0'
+  ext.aopVersion = aopVersion
   repositories repos
   buildscript.repositories repos
   dependencies {
@@ -27,7 +27,7 @@ apply plugin: 'com.axelor.app'
 apply plugin: 'com.adarshr.test-logger'
 apply plugin: ChangelogSupport
 
-apply from: 'version.gradle'
+apply from: 'gradle/version.gradle'
 apply from: 'gradle/react.gradle'
 
 try {
