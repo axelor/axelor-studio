@@ -1,6 +1,5 @@
 package com.axelor.studio.bpm.web;
 
-import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.rpc.ActionRequest;
@@ -8,7 +7,6 @@ import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.bpm.service.ProcessInstanceModificationService;
 import com.axelor.studio.db.WkfProcessUpdate;
 import com.axelor.studio.db.repo.WkfProcessUpdateRepository;
-import com.axelor.utils.exception.UtilsExceptionMessage;
 import com.axelor.utils.helpers.ExceptionHelper;
 import java.nio.file.Path;
 import java.util.Map;
@@ -21,8 +19,7 @@ public class ProcessInstanceModificationController {
       Beans.get(ProcessInstanceModificationService.class).execute(processUpdate);
     } catch (Exception e) {
       ExceptionHelper.error(e);
-      response.setInfo(
-          String.format(I18n.get(UtilsExceptionMessage.EXCEPTION_OCCURRED), e.getMessage()));
+      response.setInfo(e.getMessage());
     } finally {
       response.setReload(true);
     }
