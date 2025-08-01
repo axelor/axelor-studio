@@ -21,6 +21,7 @@ import com.axelor.common.FileUtils;
 import com.axelor.common.ResourceUtils;
 import com.axelor.data.xml.XMLImporter;
 import com.axelor.db.Model;
+import com.axelor.file.temp.TempFiles;
 import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
@@ -130,7 +131,7 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
     File logFile =
         appLoader.getImportLog() != null
             ? MetaFiles.getPath(appLoader.getImportLog()).toFile()
-            : MetaFiles.createTempFile("import-", "log").toFile();
+            : TempFiles.createTempFile("import-", "log").toFile();
 
     try (PrintWriter pw = new PrintWriter(logFile)) {
       for (File configFile : getAppImportConfigFiles(dataDir)) {

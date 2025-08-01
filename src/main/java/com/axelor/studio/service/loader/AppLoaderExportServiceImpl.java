@@ -27,6 +27,7 @@ import com.axelor.data.xml.XMLInput;
 import com.axelor.db.JpaSecurity;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
+import com.axelor.file.temp.TempFiles;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaField;
@@ -540,7 +541,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   @Override
   public File createExportZip(File exportDir) throws IOException, FileNotFoundException {
 
-    File zipFile = MetaFiles.createTempFile("app-", ".zip").toFile();
+    File zipFile = TempFiles.createTempFile("app-", ".zip").toFile();
 
     try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile))) {
       for (File file : exportDir.listFiles()) {

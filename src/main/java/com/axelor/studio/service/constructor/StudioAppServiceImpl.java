@@ -25,6 +25,7 @@ import com.axelor.data.xml.XMLConfig;
 import com.axelor.data.xml.XMLImporter;
 import com.axelor.data.xml.XMLInput;
 import com.axelor.db.JpaSecurity;
+import com.axelor.file.temp.TempFiles;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaStore;
@@ -193,7 +194,7 @@ public class StudioAppServiceImpl implements StudioAppService {
       }
 
       if (logStringBuilder.length() > 0) {
-        File logFile = MetaFiles.createTempFile("import-", "log").toFile();
+        File logFile = TempFiles.createTempFile("import-", "log").toFile();
         org.apache.commons.io.FileUtils.writeStringToFile(
             logFile, logStringBuilder.toString(), StandardCharsets.UTF_8);
         return metaFiles.upload(logFile);

@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.app.service;
 
+import com.axelor.file.temp.TempFiles;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaAction;
 import com.axelor.meta.db.MetaFile;
@@ -242,7 +243,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
 
   public MetaFile createMetaFile(XSSFWorkbook workBook) throws IOException {
 
-    Path path = MetaFiles.createTempFile("AccessConfigTemplate", ".xlsx");
+    Path path = TempFiles.createTempFile("AccessConfigTemplate", ".xlsx");
 
     File file = path.toFile();
     FileOutputStream fout = new FileOutputStream(file);

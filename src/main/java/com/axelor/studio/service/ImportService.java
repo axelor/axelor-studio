@@ -18,6 +18,7 @@
 package com.axelor.studio.service;
 
 import com.axelor.db.JPA;
+import com.axelor.file.temp.TempFiles;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
@@ -331,7 +332,7 @@ public class ImportService {
 
     ZipOutputStream zipOutputStream = null;
     try {
-      File zipFile = MetaFiles.createTempFile("app-", ".zip").toFile();
+      File zipFile = TempFiles.createTempFile("app-", ".zip").toFile();
       zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
       for (URL url : fileUrls) {
         File file = new File(url.getFile());

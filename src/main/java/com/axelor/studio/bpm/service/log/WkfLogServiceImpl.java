@@ -19,6 +19,7 @@ package com.axelor.studio.bpm.service.log;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import com.axelor.file.temp.TempFiles;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaFile;
@@ -108,7 +109,7 @@ public class WkfLogServiceImpl implements WkfLogService {
 
   protected void attachLogFile(WkfInstance wkfInstance) throws IOException {
     Path tempFilePath =
-        MetaFiles.createTempFile("process-instance-log-" + wkfInstance.getInstanceId(), ".txt");
+        TempFiles.createTempFile("process-instance-log-" + wkfInstance.getInstanceId(), ".txt");
     MetaFile logFile = metaFiles.upload(tempFilePath.toFile());
     wkfInstance.setLogFile(logFile);
     wkfInstanceRepository.save(wkfInstance);
