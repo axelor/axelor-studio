@@ -22,7 +22,7 @@ import com.axelor.db.tenants.TenantResolver;
 
 public class BpmTools {
 
-  public static final String getCurentTenant() {
+  public static String getCurentTenant() {
     String tenantId = TenantResolver.currentTenantIdentifier();
 
     if (tenantId == null) {
