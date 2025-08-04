@@ -19,19 +19,17 @@ package com.axelor.studio.baml.xml;
 
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 @XmlType
 public class ConditionalNode extends ProcessActionNode {
 
+  @Getter
   @XmlAttribute(name = "expression")
   protected String expression;
 
   @XmlAttribute(name = "expressionValue")
   protected String expressionValue;
-
-  public String getExpression() {
-    return expression;
-  }
 
   public String expressionValue() {
     return expressionValue;

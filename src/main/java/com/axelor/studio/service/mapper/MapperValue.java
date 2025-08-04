@@ -21,7 +21,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import groovy.json.StringEscapeUtils;
 import java.util.Arrays;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapperValue {
 
@@ -34,22 +38,6 @@ public class MapperValue {
   protected MapperField parentField = null;
 
   protected String from = null;
-
-  public MapperSelected getSelected() {
-    return selected;
-  }
-
-  public void setSelected(MapperSelected selected) {
-    this.selected = selected;
-  }
-
-  public MapperField getParentField() {
-    return parentField;
-  }
-
-  public void setParentField(MapperField parentField) {
-    this.parentField = parentField;
-  }
 
   public String toScript(MapperField parentField) {
 
@@ -87,14 +75,6 @@ public class MapperValue {
     }
 
     return null;
-  }
-
-  public String getFrom() {
-    return from;
-  }
-
-  public void setFrom(String from) {
-    this.from = from;
   }
 
   protected void mapNone(StringBuilder stb) {

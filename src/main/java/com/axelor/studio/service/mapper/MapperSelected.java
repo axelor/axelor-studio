@@ -18,29 +18,17 @@
 package com.axelor.studio.service.mapper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapperSelected {
 
   protected String value = null;
 
   protected String targetName = null;
-
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
-  }
-
-  public String getTargetName() {
-    return targetName;
-  }
-
-  public void setTargetName(String targetName) {
-    this.targetName = targetName;
-  }
 
   public String toScript() {
     String script = value;

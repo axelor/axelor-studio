@@ -22,85 +22,28 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapperRecord {
 
-  protected String targetModel = null;
+  @Setter protected String targetModel = null;
 
-  protected String sourceModel = null;
+  @Setter protected String sourceModel = null;
 
-  protected boolean newRecord = true;
+  @Setter protected boolean newRecord = true;
 
-  protected boolean savedRecord = false;
+  @Setter protected boolean savedRecord = false;
 
-  protected boolean save = true;
+  @Setter protected boolean save = true;
 
-  protected String targetVariable = "rec";
+  @Setter protected String targetVariable = "rec";
 
   protected StringBuilder scriptBuilder = new StringBuilder();
 
-  protected List<MapperField> fields = new ArrayList<>();
-
-  public String getTargetModel() {
-    return targetModel;
-  }
-
-  public void setTargetModel(String targetModel) {
-    this.targetModel = targetModel;
-  }
-
-  public boolean isNewRecord() {
-    return newRecord;
-  }
-
-  public void setNewRecord(boolean newRecord) {
-    this.newRecord = newRecord;
-  }
-
-  public boolean isSavedRecord() {
-    return savedRecord;
-  }
-
-  public void setSavedRecord(boolean savedRecord) {
-    this.savedRecord = savedRecord;
-  }
-
-  public boolean isSave() {
-    return save;
-  }
-
-  public void setSave(boolean save) {
-    this.save = save;
-  }
-
-  public List<MapperField> getFields() {
-    return fields;
-  }
-
-  public void setFields(List<MapperField> fields) {
-    this.fields = fields;
-  }
-
-  public String getSourceModel() {
-    return sourceModel;
-  }
-
-  public void setSourceModel(String sourceModel) {
-    this.sourceModel = sourceModel;
-  }
-
-  public StringBuilder getScriptBuilder() {
-    return this.scriptBuilder;
-  }
-
-  public String getTargetVariable() {
-    return targetVariable;
-  }
-
-  public void setTargetVariable(String targetVariable) {
-    this.targetVariable = targetVariable;
-  }
+  @Setter protected List<MapperField> fields = new ArrayList<>();
 
   public String toScript() {
 

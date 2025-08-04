@@ -22,38 +22,22 @@ import com.axelor.utils.helpers.StringHelper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 public class BpmMapperRecord extends MapperRecord {
 
-  protected String processId = null;
+  @Getter protected String processId = null;
 
   protected boolean createVariable = false;
 
+  @Getter
   @JsonProperty("fields")
   protected List<BpmMapperField> bpmMapperFields = new ArrayList<>();
 
-  public String getProcessId() {
-    return processId;
-  }
-
-  public void setProcessId(String processId) {
-    this.processId = processId;
-  }
-
   public boolean getCreateVariable() {
     return createVariable;
-  }
-
-  public void setCreateVariable(boolean createVariable) {
-    this.createVariable = createVariable;
-  }
-
-  public List<BpmMapperField> getBpmMapperFields() {
-    return bpmMapperFields;
-  }
-
-  public void setBpmMapperFields(List<BpmMapperField> bpmMapperFields) {
-    this.bpmMapperFields = bpmMapperFields;
   }
 
   @Override

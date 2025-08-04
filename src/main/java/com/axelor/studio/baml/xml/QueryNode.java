@@ -21,26 +21,21 @@ import com.axelor.meta.db.MetaJsonRecord;
 import com.google.common.base.Strings;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
 @XmlType
 public class QueryNode extends BaseTaskNode {
 
+  @Getter
   @XmlAttribute(name = "returnType")
   protected ReturnType returnType;
 
+  @Getter
   @XmlAttribute(name = "model")
   protected String model;
 
   @XmlAttribute(name = "isJson")
   protected boolean isJson;
-
-  public ReturnType getReturnType() {
-    return returnType;
-  }
-
-  public String getModel() {
-    return model;
-  }
 
   public boolean getIsJson() {
     return isJson;

@@ -21,7 +21,11 @@ import com.axelor.utils.helpers.StringHelper;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @XmlType
 public class MapperNode extends BaseNode {
 
@@ -36,38 +40,6 @@ public class MapperNode extends BaseNode {
 
   @XmlAttribute(name = "sourceField")
   protected String sourceField;
-
-  public String getScript() {
-    return script;
-  }
-
-  public void setScript(String script) {
-    this.script = script;
-  }
-
-  public String getScriptMeta() {
-    return scriptMeta;
-  }
-
-  public void setScriptMeta(String scriptMeta) {
-    this.scriptMeta = scriptMeta;
-  }
-
-  public String getTargetField() {
-    return targetField;
-  }
-
-  public void setTargetField(String targetField) {
-    this.targetField = targetField;
-  }
-
-  public String getSourceField() {
-    return sourceField;
-  }
-
-  public void setSourceField(String sourceField) {
-    this.sourceField = sourceField;
-  }
 
   @Override
   public String toCode(boolean dynamic) {

@@ -19,7 +19,9 @@ package com.axelor.studio.baml.xml;
 
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlType;
+import lombok.Getter;
 
+@Getter
 @XmlType
 public abstract class BaseNode {
 
@@ -28,14 +30,6 @@ public abstract class BaseNode {
 
   @XmlAttribute(name = "name")
   protected String name;
-
-  public String getId() {
-    return id;
-  }
-
-  public String getName() {
-    return name;
-  }
 
   public abstract String toCode(boolean dynamic);
 }

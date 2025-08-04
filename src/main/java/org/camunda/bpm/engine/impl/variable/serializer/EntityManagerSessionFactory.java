@@ -19,6 +19,7 @@ package org.camunda.bpm.engine.impl.variable.serializer;
 import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureNotNull;
 
 import jakarta.persistence.EntityManagerFactory;
+import lombok.Getter;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.interceptor.Session;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
@@ -28,7 +29,7 @@ import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
  */
 public class EntityManagerSessionFactory implements SessionFactory {
 
-  protected EntityManagerFactory entityManagerFactory;
+  @Getter protected EntityManagerFactory entityManagerFactory;
   protected boolean handleTransactions;
   protected boolean closeEntityManager;
 
@@ -52,9 +53,5 @@ public class EntityManagerSessionFactory implements SessionFactory {
   public Session openSession() {
     return new EntityManagerSessionImpl(
         entityManagerFactory, handleTransactions, closeEntityManager);
-  }
-
-  public EntityManagerFactory getEntityManagerFactory() {
-    return entityManagerFactory;
   }
 }

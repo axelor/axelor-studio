@@ -18,46 +18,25 @@ package org.camunda.bpm.engine.impl.variable.serializer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Class containing meta-data about Entity-classes.
  *
  * @author Frederik Heremans
  */
+@Getter
 public class EntityMetaData {
 
-  private boolean isJPAEntity = false;
-  private Class<?> entityClass;
+  @Setter private boolean isJPAEntity = false;
+  @Setter private Class<?> entityClass;
   private Method idMethod;
   private Field idField;
-
-  public boolean isJPAEntity() {
-    return isJPAEntity;
-  }
-
-  public void setJPAEntity(boolean isJPAEntity) {
-    this.isJPAEntity = isJPAEntity;
-  }
-
-  public Class<?> getEntityClass() {
-    return entityClass;
-  }
-
-  public void setEntityClass(Class<?> entityClass) {
-    this.entityClass = entityClass;
-  }
-
-  public Method getIdMethod() {
-    return idMethod;
-  }
 
   public void setIdMethod(Method idMethod) {
     this.idMethod = idMethod;
     idMethod.setAccessible(true);
-  }
-
-  public Field getIdField() {
-    return idField;
   }
 
   public void setIdField(Field idField) {

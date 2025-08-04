@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import org.apache.commons.beanutils.ConvertUtils;
 
 public class ChartRecordViewServiceImpl implements ChartRecordViewService {
@@ -439,6 +440,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     return modelClass;
   }
 
+  @Getter
   protected static class DateRangeConvertor {
 
     protected static final DateTimeFormatter DATE_FORMAT =
@@ -464,14 +466,6 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
       }
       this.startDateStr = startDate.format(DATE_FORMAT);
       this.endDateStr = endDate.format(DATE_FORMAT);
-    }
-
-    public String getStartDateStr() {
-      return startDateStr;
-    }
-
-    public String getEndDateStr() {
-      return endDateStr;
     }
   }
 }

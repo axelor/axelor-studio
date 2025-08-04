@@ -19,8 +19,12 @@ package com.axelor.studio.service.mapper;
 
 import com.axelor.common.Inflector;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+@Setter
+@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapperField {
 
@@ -39,70 +43,6 @@ public class MapperField {
   protected MapperValue value = null;
 
   protected String condition = null;
-
-  public String getDataPath() {
-    return dataPath;
-  }
-
-  public void setDataPath(String dataPath) {
-    this.dataPath = dataPath;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
-  }
-
-  public String getTarget() {
-    return target;
-  }
-
-  public void setTarget(String target) {
-    this.target = target;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getParent() {
-    return parent;
-  }
-
-  public void setParent(String parent) {
-    this.parent = parent;
-  }
-
-  public MapperValue getValue() {
-    return value;
-  }
-
-  public void setValue(MapperValue value) {
-    this.value = value;
-  }
-
-  public String getJsonModel() {
-    return jsonModel;
-  }
-
-  public void setJsonModel(String jsonModel) {
-    this.jsonModel = jsonModel;
-  }
-
-  public String getCondition() {
-    return condition;
-  }
-
-  public void setCondition(String condition) {
-    this.condition = condition;
-  }
 
   public String toScript(String parent, String targetModel) {
 

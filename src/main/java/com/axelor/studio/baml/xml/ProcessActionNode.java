@@ -22,10 +22,12 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElements;
 import jakarta.xml.bind.annotation.XmlType;
 import java.util.List;
+import lombok.Getter;
 
 @XmlType
 public class ProcessActionNode extends BaseNode {
 
+  @Getter
   @XmlElements(
       value = {
         @XmlElement(name = "new-record", type = NewRecordNode.class),
@@ -37,26 +39,16 @@ public class ProcessActionNode extends BaseNode {
       })
   protected List<BaseNode> nodes;
 
+  @Getter
   @XmlAttribute(name = "sourceModel")
   protected String sourceModel;
 
+  @Getter
   @XmlAttribute(name = "targetModel")
   protected String targetModel;
 
   @XmlAttribute(name = "staticCompile")
   protected boolean staticCompile;
-
-  public List<BaseNode> getNodes() {
-    return nodes;
-  }
-
-  public String getSourceModel() {
-    return sourceModel;
-  }
-
-  public String getTargetModel() {
-    return targetModel;
-  }
 
   public boolean getStaticCompile() {
     return staticCompile;
