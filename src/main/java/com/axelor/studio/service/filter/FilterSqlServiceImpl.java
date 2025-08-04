@@ -135,13 +135,12 @@ public class FilterSqlServiceImpl implements FilterSqlService {
 
   @Override
   public String checkDateTime(String[] fields) {
-    return switch (fields[1]) {
-      case "LocalDateTime" ->
-          "(cast(to_char("
-              + fields[0]
-              + ",'yyyy-MM-dd hh24:mi') as timestamp with time zone)) at time zone 'utc'";
-      default -> fields[0];
-    };
+    if (fields[1].equals("LocalDateTime")) {
+      return "(cast(to_char("
+          + fields[0]
+          + ",'yyyy-MM-dd hh24:mi') as timestamp with time zone)) at time zone 'utc'";
+    }
+    return fields[0];
   }
 
   @Override
