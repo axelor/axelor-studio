@@ -142,7 +142,7 @@ jacoco {
   toolVersion = '0.8.13'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
   // Only depend on frontCopy if it exists
   if (project.tasks.findByName('frontCopy') != null) {
     mustRunAfter project.tasks.findByName('frontCopy')
