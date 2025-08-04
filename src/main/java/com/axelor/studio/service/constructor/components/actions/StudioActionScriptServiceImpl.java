@@ -178,7 +178,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
   @Override
   public void addRootFunction(StudioAction studioAction, StringBuilder stb, int level) {
     List<StudioActionLine> lines = studioAction.getLines();
-    boolean isJsonField = lines.stream().anyMatch(l -> l.getIsTargetJson());
+    boolean isJsonField = lines.stream().anyMatch(StudioActionLine::getIsTargetJson);
     scriptCodeBinding.put("isJsonField", isJsonField);
     addFieldsBinding("target", studioAction.getLines(), level + 1, isJsonField);
   }
@@ -317,7 +317,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
   @Override
   public Set<String> getAttrsFields(List<StudioActionLine> lines) {
     return lines.stream()
-        .filter(l -> l.getIsTargetJson())
+        .filter(StudioActionLine::getIsTargetJson)
         .map(l -> l.getMetaJsonField().getModelField())
         .collect(Collectors.toSet());
   }
@@ -500,7 +500,7 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
 
     List<StudioActionLine> lines = line.getSubLines();
     if (lines != null && !lines.isEmpty()) {
-      boolean isJsonField = lines.stream().anyMatch(l -> l.getIsTargetJson());
+      boolean isJsonField = lines.stream().anyMatch(StudioActionLine::getIsTargetJson);
 
       stb.append(format("if (!val) {", 4));
       stb.append(format("val = new " + tModel + "();", 5));

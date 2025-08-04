@@ -346,7 +346,7 @@ public class DmnServiceImpl implements DmnService {
     }
 
     decisionTables.stream()
-        .map(decisionTable -> decisionTable.getOutputs())
+        .map(DecisionTable::getOutputs)
         .forEach(outputs -> outputs.forEach(output -> fields.add(output.getName())));
 
     log.debug("Output fields: {}", fields);

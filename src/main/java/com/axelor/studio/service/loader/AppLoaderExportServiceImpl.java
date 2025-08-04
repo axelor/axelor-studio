@@ -37,6 +37,7 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.db.repo.MetaJsonRecordRepository;
 import com.axelor.studio.db.AppDataLoader;
 import com.axelor.studio.db.AppLoader;
+import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.utils.helpers.ExceptionHelper;
@@ -168,7 +169,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
     List<Long> ids =
         appLoader.getExportedStudioAppSet().stream()
-            .map(it -> it.getId())
+            .map(StudioApp::getId)
             .collect(Collectors.toList());
 
     Map<String, Object> ctx = new HashMap<>();

@@ -320,7 +320,7 @@ public class StudioChartServiceImpl implements StudioChartService {
     }
 
     filters.stream()
-        .filter(filter -> filter.getIsParameter())
+        .filter(Filter::getIsParameter)
         .forEach(
             filter -> {
               HashMap<String, Object> searchFieldMap = new HashMap<>();

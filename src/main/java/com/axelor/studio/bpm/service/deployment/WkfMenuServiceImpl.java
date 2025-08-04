@@ -387,7 +387,7 @@ public class WkfMenuServiceImpl implements WkfMenuService {
       return teamIds;
     }
 
-    teamIds = teams.stream().map(team -> team.getId()).collect(Collectors.toList());
+    teamIds = teams.stream().map(Team::getId).collect(Collectors.toList());
     return teamIds;
   }
 }

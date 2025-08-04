@@ -355,14 +355,14 @@ public class StudioMetaServiceImpl implements StudioMetaService {
     metaJsonFieldList.removeAll(jsonFieldList);
     if (!metaJsonFieldList.isEmpty()) {
       messageBody =
-          metaJsonFieldList.stream().map(list -> list.getName()).collect(Collectors.joining(", "));
+          metaJsonFieldList.stream().map(MetaJsonField::getName).collect(Collectors.joining(", "));
       trackingFields(jsonModel, messageBody, "Field added");
     }
 
     jsonFieldList.removeAll(commonJsonFieldList);
     if (!jsonFieldList.isEmpty()) {
       messageBody =
-          jsonFieldList.stream().map(list -> list.getName()).collect(Collectors.joining(", "));
+          jsonFieldList.stream().map(MetaJsonField::getName).collect(Collectors.joining(", "));
       trackingFields(jsonModel, messageBody, "Field removed");
     }
   }

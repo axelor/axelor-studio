@@ -363,7 +363,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
     Map<Long, BigInteger> userMap = new HashMap<>();
 
     processes.stream()
-        .map(process -> getUserTaskConfigs(process))
+        .map(this::getUserTaskConfigs)
         .forEach(
             taskConfigs ->
                 taskConfigs.forEach(
