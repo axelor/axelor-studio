@@ -23,11 +23,11 @@ import java.util.Map;
 
 public interface BamlService {
 
-  public String generateGroovyCode(String xml);
+  String generateGroovyCode(String xml);
 
-  public Model execute(BamlModel bamlModel, Model entity);
+  Model execute(BamlModel bamlModel, Model entity);
 
-  public String extractBamlXml(String xml);
+  String extractBamlXml(String xml);
 
-  public Model execute(BamlModel bamlModel, Map<String, Object> context);
+  Model execute(BamlModel bamlModel, Map<String, Object> context);
 }

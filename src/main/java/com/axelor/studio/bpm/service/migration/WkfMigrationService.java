@@ -24,9 +24,9 @@ import java.util.Map;
 
 public interface WkfMigrationService {
 
-  public Map<String, Object> generateNodeMap(WkfMigration migration);
+  Map<String, Object> generateNodeMap(WkfMigration migration);
 
-  public List<Long> getTargetVersionIds(WkfModel sourceVersion);
+  List<Long> getTargetVersionIds(WkfModel sourceVersion);
 
-  public void migrate(WkfMigration migration, Map<String, Object> contextMap);
+  void migrate(WkfMigration migration, Map<String, Object> contextMap);
 }

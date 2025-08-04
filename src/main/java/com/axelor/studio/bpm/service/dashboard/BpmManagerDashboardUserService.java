@@ -25,23 +25,23 @@ import java.util.Map;
 
 public interface BpmManagerDashboardUserService {
 
-  public List<WkfModel> getWkfModelsByUser(User user);
+  List<WkfModel> getWkfModelsByUser(User user);
 
-  public void getAssignedToMeTask(
+  void getAssignedToMeTask(
       WkfProcess process,
       String modelName,
       boolean isMetaModel,
       List<Map<String, Object>> dataMapList,
       User user);
 
-  public void getAssignedToOtherTask(
+  void getAssignedToOtherTask(
       WkfProcess process,
       String modelName,
       boolean isMetaModel,
       List<Map<String, Object>> dataMapList,
       User user);
 
-  public Object[] computeAssignedTaskConfig(
+  Object[] computeAssignedTaskConfig(
       WkfProcess process,
       String modelName,
       boolean isMetaModel,
@@ -49,11 +49,11 @@ public interface BpmManagerDashboardUserService {
       boolean withTask,
       String assignedType);
 
-  public Map<String, Object> getStatusRecords(WkfModel wkfModel, String status, String type);
+  Map<String, Object> getStatusRecords(WkfModel wkfModel, String status, String type);
 
-  public List<Map<String, Object>> getAvgTimePerUserData(WkfModel wkfModel, String unitType);
+  List<Map<String, Object>> getAvgTimePerUserData(WkfModel wkfModel, String unitType);
 
-  public List<Map<String, Object>> getTaskToDoPerUser(WkfModel wkfModel);
+  List<Map<String, Object>> getTaskToDoPerUser(WkfModel wkfModel);
 
-  public List<Map<String, Object>> getTaskDoneTodayPerUser(WkfModel wkfModel);
+  List<Map<String, Object>> getTaskDoneTodayPerUser(WkfModel wkfModel);
 }

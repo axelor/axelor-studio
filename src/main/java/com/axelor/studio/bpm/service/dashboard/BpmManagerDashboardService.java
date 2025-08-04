@@ -23,8 +23,7 @@ import java.util.Map;
 
 public interface BpmManagerDashboardService {
 
-  public Map<String, Object> showProcess(int offset);
+  Map<String, Object> showProcess(int offset);
 
-  public List<Map<String, Object>> getChartData(
-      WkfModel wkfModel, String type, String taskByProcessType);
+  List<Map<String, Object>> getChartData(WkfModel wkfModel, String type, String taskByProcessType);
 }

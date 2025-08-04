@@ -22,5 +22,5 @@ import java.io.File;
 
 public interface DmnExportService {
 
-  public File exportDmnTable(WkfDmnModel wkfDmnModel);
+  File exportDmnTable(WkfDmnModel wkfDmnModel);
 }

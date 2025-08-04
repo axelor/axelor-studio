@@ -25,12 +25,12 @@ import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 
 public interface MetaAttrsService {
 
-  public List<MetaAttrs> createMetaAttrs(
+  List<MetaAttrs> createMetaAttrs(
       String taskName,
       ModelElementInstance modelElementInstance,
       WkfTaskConfig config,
       String wkfModelId);
 
   @Transactional
-  public void saveMetaAttrs(List<MetaAttrs> metaAttrsList, Long wkfModelId);
+  void saveMetaAttrs(List<MetaAttrs> metaAttrsList, Long wkfModelId);
 }

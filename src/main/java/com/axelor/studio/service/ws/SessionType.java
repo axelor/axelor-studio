@@ -8,5 +8,5 @@ public interface SessionType {
 
   void extractSessionData(Response response, WsAuthenticator wsAuthenticator);
 
-  public void injectSessionData(Invocation.Builder request);
+  void injectSessionData(Invocation.Builder request);
 }

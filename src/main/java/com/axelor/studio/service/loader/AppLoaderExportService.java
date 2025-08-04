@@ -31,20 +31,20 @@ import java.util.Map;
 
 public interface AppLoaderExportService {
 
-  public void exportApps(AppLoader appLoader);
+  void exportApps(AppLoader appLoader);
 
-  public void writeXmlConfig(File configFile, XMLConfig xmlConfig) throws IOException;
+  void writeXmlConfig(File configFile, XMLConfig xmlConfig) throws IOException;
 
-  public Map<String, InputStream> getExportTemplateResources();
+  Map<String, InputStream> getExportTemplateResources();
 
-  public void fixTargetName(Map<String, Object> jsonFieldMap);
+  void fixTargetName(Map<String, Object> jsonFieldMap);
 
-  public File createExportZip(File exportDir) throws IOException, FileNotFoundException;
+  File createExportZip(File exportDir) throws IOException, FileNotFoundException;
 
-  public void addRelationaJsonFieldBind(
+  void addRelationaJsonFieldBind(
       MetaJsonField jsonField, Map<String, Object> fieldAttrs, XMLBind xmlBind);
 
-  public FileWriter createHeader(String dasherizeModel, File dataFile) throws IOException;
+  FileWriter createHeader(String dasherizeModel, File dataFile) throws IOException;
 
-  public Object extractJsonFieldValue(FullContext record, Map<String, Object> fieldAttrs);
+  Object extractJsonFieldValue(FullContext record, Map<String, Object> fieldAttrs);
 }

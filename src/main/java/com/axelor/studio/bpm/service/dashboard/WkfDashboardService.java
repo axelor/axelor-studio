@@ -31,7 +31,7 @@ public interface WkfDashboardService {
    * @param jsonModel
    * @return
    */
-  public List<Long> getStatusPerMonthRecord(
+  List<Long> getStatusPerMonthRecord(
       String tableName, String status, String month, String jsonModel);
 
   /**
@@ -43,8 +43,7 @@ public interface WkfDashboardService {
    * @param jsonModel
    * @return
    */
-  public List<Long> getStatusPerDayRecord(
-      String tableName, String status, String day, String jsonModel);
+  List<Long> getStatusPerDayRecord(String tableName, String status, String day, String jsonModel);
 
   /**
    * Get the record of meta model or meta json model for time spent on the particular status.
@@ -56,6 +55,6 @@ public interface WkfDashboardService {
    * @param jsonModel
    * @return
    */
-  public List<Long> getTimespentPerStatusRecord(
+  List<Long> getTimespentPerStatusRecord(
       String tableName, String status, LocalDate fromDate, LocalDate toDate, String jsonModel);
 }

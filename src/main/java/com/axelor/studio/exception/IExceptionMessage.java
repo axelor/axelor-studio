@@ -24,38 +24,34 @@ package com.axelor.studio.exception;
 public interface IExceptionMessage {
 
   /** Check if studio app code is not conflicting with existing app. */
-  static final String STUDIO_APP_1 = /*$$(*/
-      "Please provide unique code. The code '%s' is already used" /*)*/;
+  String STUDIO_APP_1 = /*$$(*/ "Please provide unique code. The code '%s' is already used" /*)*/;
 
   /** Check if chart name doesn't contains any space. */
-  static final String STUDIO_CHART_1 = /*$$(*/ "The name must not contain spaces" /*)*/;
+  String STUDIO_CHART_1 = /*$$(*/ "The name must not contain spaces" /*)*/;
 
-  static final String CANNOT_ALTER_NODES = /*$$(*/
-      "Can't alter nodes for real existing selection field" /*)*/;
+  String CANNOT_ALTER_NODES = /*$$(*/ "Can't alter nodes for real existing selection field" /*)*/;
 
-  public static final String DEMO_DATA_SUCCESS = /*$$(*/ "Demo data loaded successfully" /*)*/;
+  String DEMO_DATA_SUCCESS = /*$$(*/ "Demo data loaded successfully" /*)*/;
 
-  public static final String NO_CONFIG_REQUIRED = /*$$(*/ "No configuration required" /*)*/;
+  String NO_CONFIG_REQUIRED = /*$$(*/ "No configuration required" /*)*/;
 
-  public static final String BULK_INSTALL_SUCCESS = /*$$(*/ "Apps installed successfully" /*)*/;
+  String BULK_INSTALL_SUCCESS = /*$$(*/ "Apps installed successfully" /*)*/;
 
-  public static final String REFRESH_APP_SUCCESS = /*$$(*/ "Apps refreshed successfully" /*)*/;
+  String REFRESH_APP_SUCCESS = /*$$(*/ "Apps refreshed successfully" /*)*/;
 
-  public static final String REFRESH_APP_ERROR = /*$$(*/ "Error in refreshing app" /*)*/;
+  String REFRESH_APP_ERROR = /*$$(*/ "Error in refreshing app" /*)*/;
 
-  public static final String ROLE_IMPORT_SUCCESS = /*$$(*/ "Roles imported successfully" /*)*/;
+  String ROLE_IMPORT_SUCCESS = /*$$(*/ "Roles imported successfully" /*)*/;
 
-  public static final String ACCESS_CONFIG_IMPORTED = /*$$(*/
-      "Access config imported successfully" /*)*/;
+  String ACCESS_CONFIG_IMPORTED = /*$$(*/ "Access config imported successfully" /*)*/;
 
-  public static final String NO_LANGUAGE_SELECTED = /*$$(*/
+  String NO_LANGUAGE_SELECTED = /*$$(*/
       "No application language set. Please set 'application.locale' property." /*)*/;
 
-  public static final String FILE_UPLOAD_DIR_ERROR = /*$$(*/
-      "File upload path not configured" /*)*/;
+  String FILE_UPLOAD_DIR_ERROR = /*$$(*/ "File upload path not configured" /*)*/;
 
-  public static final String APP_IN_USE = /*$$(*/
+  String APP_IN_USE = /*$$(*/
       "This app is used by %s. Please deactivate them before continue." /*)*/;
 
-  public static final String DATA_EXPORT_DIR_ERROR = /*$$(*/ "Export path not configured" /*)*/;
+  String DATA_EXPORT_DIR_ERROR = /*$$(*/ "Export path not configured" /*)*/;
 }

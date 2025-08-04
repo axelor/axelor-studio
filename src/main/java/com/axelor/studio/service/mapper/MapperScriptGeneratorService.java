@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 public interface MapperScriptGeneratorService {
 
   @CallMethod
-  public String generate(String mapperJson);
+  String generate(String mapperJson);
 
-  public MapperRecord getMapperRecord(String mapperJson);
+  MapperRecord getMapperRecord(String mapperJson);
 
-  public void registerDeserializer(SimpleModule mapper);
+  void registerDeserializer(SimpleModule mapper);
 }

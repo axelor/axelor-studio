@@ -26,10 +26,10 @@ import java.util.Map;
 public interface WkfDisplayService {
 
   @CallMethod
-  public String getInstanceUrl(WkfInstance wkfInstance);
+  String getInstanceUrl(WkfInstance wkfInstance);
 
   @CallMethod
-  public String getWkfNodeCountUrl(WkfModel wkfModel);
+  String getWkfNodeCountUrl(WkfModel wkfModel);
 
-  public List<Map<String, Object>> getWkfStatus(Class<?> klass, Long id);
+  List<Map<String, Object>> getWkfStatus(Class<?> klass, Long id);
 }

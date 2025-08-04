@@ -30,53 +30,51 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface WkfInstanceService {
 
-  public String evalInstance(Model model, String signal, Integer source)
-      throws ClassNotFoundException;
+  String evalInstance(Model model, String signal, Integer source) throws ClassNotFoundException;
 
-  public String evalInstance(Model model, String signal) throws ClassNotFoundException;
+  String evalInstance(Model model, String signal) throws ClassNotFoundException;
 
   void evalInstancesFromWkfModel(WkfModel wkfModel);
 
   void evalInstance(WkfInstance wkfInstance) throws ClassNotFoundException;
 
-  public WkfInstance createWkfInstance(String processInstanceId, WkfProcess wkfProcess);
+  WkfInstance createWkfInstance(String processInstanceId, WkfProcess wkfProcess);
 
-  public boolean isActiveProcessInstance(String processInstanceId, RuntimeService runTimeService);
+  boolean isActiveProcessInstance(String processInstanceId, RuntimeService runTimeService);
 
-  public void deleteProcessInstance(String processInstanceId);
-
-  @CallMethod
-  public boolean isActiveTask(String processInstanceId, String taskId);
+  void deleteProcessInstance(String processInstanceId);
 
   @CallMethod
-  public boolean isActiveModelTask(Model model, String taskId);
+  boolean isActiveTask(String processInstanceId, String taskId);
 
   @CallMethod
-  public List<String> findProcessInstanceByNode(
+  boolean isActiveModelTask(Model model, String taskId);
+
+  @CallMethod
+  List<String> findProcessInstanceByNode(
       String nodeKey, String processId, String type, boolean permanent);
 
-  public void onNodeActivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
+  void onNodeActivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
 
-  public void onNodeDeactivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
+  void onNodeDeactivation(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
 
-  public void terminateAll();
+  void terminateAll();
 
-  public String getInstanceXml(String instanceId);
+  String getInstanceXml(String instanceId);
 
-  public boolean isActivatedTask(String processInstanceId, String taskId);
+  boolean isActivatedTask(String processInstanceId, String taskId);
 
-  public boolean isActivatedModelTask(Model model, String taskId);
+  boolean isActivatedModelTask(Model model, String taskId);
 
-  public void restart(String processInstanceId, String processName, String activityId);
+  void restart(String processInstanceId, String processName, String activityId);
 
-  public void cancelNode(String processInstanceId, String activityId);
+  void cancelNode(String processInstanceId, String activityId);
 
-  public void updateProcessInstance(
-      WkfProcess process, String processInstanceId, int migrationStatus);
+  void updateProcessInstance(WkfProcess process, String processInstanceId, int migrationStatus);
 
-  public List<WkfInstanceVariable> getWkfInstanceVariables(WkfInstance instance);
+  List<WkfInstanceVariable> getWkfInstanceVariables(WkfInstance instance);
 
-  public String getInstanceLogs(
+  String getInstanceLogs(
       WkfInstance instance, String filter, String startString, String endString, Integer minutes);
 
   void setInstanceStateStopped(String processInstanceId);

@@ -5,9 +5,9 @@ import com.axelor.studio.bpm.pojo.MergeSplitResult;
 import java.util.List;
 
 public interface WkfModelMergerSplitterService {
-  public String merge(List<MergeSplitContributor> contributors);
+  String merge(List<MergeSplitContributor> contributors);
 
-  public List<String> split(MergeSplitContributor contributor);
+  List<String> split(MergeSplitContributor contributor);
 
   List<Long> save(
       List<MergeSplitResult> results, List<MergeSplitContributor> contributors, boolean deploy);

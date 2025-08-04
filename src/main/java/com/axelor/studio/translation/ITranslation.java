@@ -19,96 +19,90 @@ package com.axelor.studio.translation;
 
 public interface ITranslation {
 
-  public static final String EDITOR_CUSTOM_MODEL = /*$$(*/ "Custom model"; /*)*/
-  public static final String EDITOR_CUSTOM_FIELD = /*$$(*/ "Custom field"; /*)*/
-  public static final String EDITOR_STRING = /*$$(*/ "String"; /*)*/
-  public static final String EDITOR_INTEGER = /*$$(*/ "Integer"; /*)*/
-  public static final String EDITOR_PANEL = /*$$(*/ "Panel"; /*)*/
-  public static final String EDITOR_BUTTON = /*$$(*/ "Button"; /*)*/
-  public static final String EDITOR_DECIMAL = /*$$(*/ "Decimal"; /*)*/
-  public static final String EDITOR_TIME = /*$$(*/ "Time"; /*)*/
-  public static final String EDITOR_DATE = /*$$(*/ "Date"; /*)*/
-  public static final String EDITOR_DATETIME = /*$$(*/ "Datetime"; /*)*/
-  public static final String EDITOR_SEPARATOR = /*$$(*/ "Separator"; /*)*/
-  public static final String EDITOR_BOOLEAN = /*$$(*/ "Boolean"; /*)*/
-  public static final String EDITOR_M2O = /*$$(*/ "Many to one"; /*)*/
-  public static final String EDITOR_M2M = /*$$(*/ "Many to many"; /*)*/
-  public static final String EDITOR_JM2M = /*$$(*/ "Json many to many"; /*)*/
-  public static final String EDITOR_JM2O = /*$$(*/ "Json many to one"; /*)*/
-  public static final String EDITOR_JO2M = /*$$(*/ "Json one to many"; /*)*/
-  public static final String EDITOR_O2M = /*$$(*/ "One to many"; /*)*/
-  public static final String EDITOR_ONNEW = /*$$(*/ "On new"; /*)*/
-  public static final String EDITOR_ONSAVE = /*$$(*/ "On save"; /*)*/
-  public static final String EDITOR_DEFAULT = /*$$(*/ "Default value"; /*)*/
-  public static final String EDITOR_SELECTION = /*$$(*/ "Selection"; /*)*/
-  public static final String EDITOR_WIDGET = /*$$(*/ "Widget"; /*)*/
-  public static final String EDITOR_HELP = /*$$(*/ "Help"; /*)*/
-  public static final String EDITOR_REQUIRED = /*$$(*/ "Required"; /*)*/
-  public static final String EDITOR_MIN_SIZE = /*$$(*/ "Min size"; /*)*/
-  public static final String EDITOR_MAX_SIZE = /*$$(*/ "Max size"; /*)*/
-  public static final String EDITOR_REGEX = /*$$(*/ "Regex"; /*)*/
-  public static final String EDITOR_ONCHANGE = /*$$(*/ "On change"; /*)*/
-  public static final String EDITOR_COLSPAN = /*$$(*/ "Colspan"; /*)*/
-  public static final String EDITOR_NAMEFIELD = /*$$(*/ "Name field"; /*)*/
-  public static final String EDITOR_ONCLICK = /*$$(*/ "On click"; /*)*/
-  public static final String EDITOR_HIDDEN_GRID = /*$$(*/ "Hidden in grid"; /*)*/
-  public static final String EDITOR_SHOW_IF = /*$$(*/ "Show if"; /*)*/
-  public static final String EDITOR_REQUIRED_IF = /*$$(*/ "Required if"; /*)*/
-  public static final String EDITOR_TYPE = /*$$(*/ "Type"; /*)*/
-  public static final String EDITOR_META_MODEL = /*$$(*/ "Meta model"; /*)*/
-  public static final String EDITOR_DOMAIN = /*$$(*/ "Domain"; /*)*/
-  public static final String EDITOR_TARGET_JSON = /*$$(*/ "Target json model"; /*)*/
-  public static final String EDITOR_SELECT_OPT = /*$$(*/ "Select option"; /*)*/
-  public static final String EDITOR_PROP = /*$$(*/ "Properties"; /*)*/
-  public static final String EDITOR_APP_NAME = /*$$(*/ "App name"; /*)*/
-  public static final String EDITOR_SHOW_TITLE = /*$$(*/ "Show title"; /*)*/
-  public static final String EDITOR_NAME_COLUMN = /*$$(*/ "Name column"; /*)*/
-  public static final String EDITOR_CAN_COLLAPSE = /*$$(*/ "Can collapse"; /*)*/
-  public static final String EDITOR_COLLAPSE_IF = /*$$(*/ "Collapse if"; /*)*/
-  public static final String EDITOR_FIELD_OPTIONS = /*$$(*/ "Field options"; /*)*/
-  public static final String EDITOR_UI_OPTIONS = /*$$(*/ "Ui options"; /*)*/
-  public static final String EDITOR_IS_JSON_RELATIONAL_FIELD = /*$$(*/
-      "Is json relational field"; /*)*/
-  public static final String EDITOR_COMMON = /*$$(*/ "Common"; /*)*/
-  public static final String EDITOR_PANELS = /*$$(*/ "Panels"; /*)*/
-  public static final String EDITOR_TABS = /*$$(*/ "Tabs"; /*)*/
-  public static final String EDITOR_SELECTION_TEXT = /*$$(*/ "Selection text"; /*)*/
-  public static final String EDITOR_RELATIONAL_FIELDS = /*$$(*/ "Relational fields"; /*)*/
-  public static final String EDITOR_PROMPT = /*$$(*/ "Prompt"; /*)*/
-  public static final String EDITOR_VALID_IF = /*$$(*/ "Valid if"; /*)*/
-  public static final String EDITOR_NAME_UNIQUE = /*$$(*/ "Name (unique)"; /*)*/
-  public static final String EDITOR_UPDATE_SELECTION = /*$$(*/ "Update selection"; /*)*/
-  public static final String EDITOR_MULTILINE = /*$$(*/ "Multiline"; /*)*/
-  public static final String EDITOR_SIDEBAR = /*$$(*/ "Sidebar"; /*)*/
-  public static final String EDITOR_ITEMSPAN = /*$$(*/ "Itemspan"; /*)*/
+  String EDITOR_CUSTOM_MODEL = /*$$(*/ "Custom model"; /*)*/
+  String EDITOR_CUSTOM_FIELD = /*$$(*/ "Custom field"; /*)*/
+  String EDITOR_STRING = /*$$(*/ "String"; /*)*/
+  String EDITOR_INTEGER = /*$$(*/ "Integer"; /*)*/
+  String EDITOR_PANEL = /*$$(*/ "Panel"; /*)*/
+  String EDITOR_BUTTON = /*$$(*/ "Button"; /*)*/
+  String EDITOR_DECIMAL = /*$$(*/ "Decimal"; /*)*/
+  String EDITOR_TIME = /*$$(*/ "Time"; /*)*/
+  String EDITOR_DATE = /*$$(*/ "Date"; /*)*/
+  String EDITOR_DATETIME = /*$$(*/ "Datetime"; /*)*/
+  String EDITOR_SEPARATOR = /*$$(*/ "Separator"; /*)*/
+  String EDITOR_BOOLEAN = /*$$(*/ "Boolean"; /*)*/
+  String EDITOR_M2O = /*$$(*/ "Many to one"; /*)*/
+  String EDITOR_M2M = /*$$(*/ "Many to many"; /*)*/
+  String EDITOR_JM2M = /*$$(*/ "Json many to many"; /*)*/
+  String EDITOR_JM2O = /*$$(*/ "Json many to one"; /*)*/
+  String EDITOR_JO2M = /*$$(*/ "Json one to many"; /*)*/
+  String EDITOR_O2M = /*$$(*/ "One to many"; /*)*/
+  String EDITOR_ONNEW = /*$$(*/ "On new"; /*)*/
+  String EDITOR_ONSAVE = /*$$(*/ "On save"; /*)*/
+  String EDITOR_DEFAULT = /*$$(*/ "Default value"; /*)*/
+  String EDITOR_SELECTION = /*$$(*/ "Selection"; /*)*/
+  String EDITOR_WIDGET = /*$$(*/ "Widget"; /*)*/
+  String EDITOR_HELP = /*$$(*/ "Help"; /*)*/
+  String EDITOR_REQUIRED = /*$$(*/ "Required"; /*)*/
+  String EDITOR_MIN_SIZE = /*$$(*/ "Min size"; /*)*/
+  String EDITOR_MAX_SIZE = /*$$(*/ "Max size"; /*)*/
+  String EDITOR_REGEX = /*$$(*/ "Regex"; /*)*/
+  String EDITOR_ONCHANGE = /*$$(*/ "On change"; /*)*/
+  String EDITOR_COLSPAN = /*$$(*/ "Colspan"; /*)*/
+  String EDITOR_NAMEFIELD = /*$$(*/ "Name field"; /*)*/
+  String EDITOR_ONCLICK = /*$$(*/ "On click"; /*)*/
+  String EDITOR_HIDDEN_GRID = /*$$(*/ "Hidden in grid"; /*)*/
+  String EDITOR_SHOW_IF = /*$$(*/ "Show if"; /*)*/
+  String EDITOR_REQUIRED_IF = /*$$(*/ "Required if"; /*)*/
+  String EDITOR_TYPE = /*$$(*/ "Type"; /*)*/
+  String EDITOR_META_MODEL = /*$$(*/ "Meta model"; /*)*/
+  String EDITOR_DOMAIN = /*$$(*/ "Domain"; /*)*/
+  String EDITOR_TARGET_JSON = /*$$(*/ "Target json model"; /*)*/
+  String EDITOR_SELECT_OPT = /*$$(*/ "Select option"; /*)*/
+  String EDITOR_PROP = /*$$(*/ "Properties"; /*)*/
+  String EDITOR_APP_NAME = /*$$(*/ "App name"; /*)*/
+  String EDITOR_SHOW_TITLE = /*$$(*/ "Show title"; /*)*/
+  String EDITOR_NAME_COLUMN = /*$$(*/ "Name column"; /*)*/
+  String EDITOR_CAN_COLLAPSE = /*$$(*/ "Can collapse"; /*)*/
+  String EDITOR_COLLAPSE_IF = /*$$(*/ "Collapse if"; /*)*/
+  String EDITOR_FIELD_OPTIONS = /*$$(*/ "Field options"; /*)*/
+  String EDITOR_UI_OPTIONS = /*$$(*/ "Ui options"; /*)*/
+  String EDITOR_IS_JSON_RELATIONAL_FIELD = /*$$(*/ "Is json relational field"; /*)*/
+  String EDITOR_COMMON = /*$$(*/ "Common"; /*)*/
+  String EDITOR_PANELS = /*$$(*/ "Panels"; /*)*/
+  String EDITOR_TABS = /*$$(*/ "Tabs"; /*)*/
+  String EDITOR_SELECTION_TEXT = /*$$(*/ "Selection text"; /*)*/
+  String EDITOR_RELATIONAL_FIELDS = /*$$(*/ "Relational fields"; /*)*/
+  String EDITOR_PROMPT = /*$$(*/ "Prompt"; /*)*/
+  String EDITOR_VALID_IF = /*$$(*/ "Valid if"; /*)*/
+  String EDITOR_NAME_UNIQUE = /*$$(*/ "Name (unique)"; /*)*/
+  String EDITOR_UPDATE_SELECTION = /*$$(*/ "Update selection"; /*)*/
+  String EDITOR_MULTILINE = /*$$(*/ "Multiline"; /*)*/
+  String EDITOR_SIDEBAR = /*$$(*/ "Sidebar"; /*)*/
+  String EDITOR_ITEMSPAN = /*$$(*/ "Itemspan"; /*)*/
 
-  public static final String BPM_APP_NAME = /*$$(*/ "value:BPM"; /*)*/
-  public static final String PRODUCT_APP_NAME = /*$$(*/ "value:Product App"; /*)*/
+  String BPM_APP_NAME = /*$$(*/ "value:BPM"; /*)*/
+  String PRODUCT_APP_NAME = /*$$(*/ "value:Product App"; /*)*/
 
-  public static final String EDITOR_CSS = /*$$(*/ "Css"; /*)*/
-  public static final String EDITOR_WIDGET_ATTRIBUTES = /*$$(*/ "Widget attributes"; /*)*/
-  public static final String EDITOR_NO_OPTIONS = /*$$(*/ "No options"; /*)*/
-  public static final String EDITOR_DATE_TIME = /*$$(*/ "Date time"; /*)*/
-  public static final String EDITOR_TARGET_MODEL_REQUIRED = /*$$(*/ "Target model required"; /*)*/
-  public static final String EDITOR_TARGET_JSON_MODEL_REQUIRED = /*$$(*/
-      "Target json model required"; /*)*/
-  public static final String EDITOR_ONE_TO_ONE = /*$$(*/ "One to one"; /*)*/
-  public static final String EDITOR_FIRST_LETTER_MESSAGE = /*$$(*/
+  String EDITOR_CSS = /*$$(*/ "Css"; /*)*/
+  String EDITOR_WIDGET_ATTRIBUTES = /*$$(*/ "Widget attributes"; /*)*/
+  String EDITOR_NO_OPTIONS = /*$$(*/ "No options"; /*)*/
+  String EDITOR_DATE_TIME = /*$$(*/ "Date time"; /*)*/
+  String EDITOR_TARGET_MODEL_REQUIRED = /*$$(*/ "Target model required"; /*)*/
+  String EDITOR_TARGET_JSON_MODEL_REQUIRED = /*$$(*/ "Target json model required"; /*)*/
+  String EDITOR_ONE_TO_ONE = /*$$(*/ "One to one"; /*)*/
+  String EDITOR_FIRST_LETTER_MESSAGE = /*$$(*/
       "First Letter of the name should always be alphabet"; /*)*/
-  public static final String REQUIRED = /*$$(*/ "required"; /*)*/
-  public static final String EDITOR_ENTER_NAME_TITLE_ALERT = /*$$(*/
-      "Please enter form name and title"; /*)*/
-  public static final String EDITOR_FIELD_NAME_ALERT = /*$$(*/
-      "Field name should be unique. Check"; /*)*/
-  public static final String EDITOR_MODEL_NAME_ALERT = /*$$(*/ "Model name should be unique"; /*)*/
-  public static final String EDITOR_SIDE_PANEL_ALERT = /*$$(*/
-      "Main panel is required to have side panels"; /*)*/
+  String REQUIRED = /*$$(*/ "required"; /*)*/
+  String EDITOR_ENTER_NAME_TITLE_ALERT = /*$$(*/ "Please enter form name and title"; /*)*/
+  String EDITOR_FIELD_NAME_ALERT = /*$$(*/ "Field name should be unique. Check"; /*)*/
+  String EDITOR_MODEL_NAME_ALERT = /*$$(*/ "Model name should be unique"; /*)*/
+  String EDITOR_SIDE_PANEL_ALERT = /*$$(*/ "Main panel is required to have side panels"; /*)*/
 
   /** BPM */
-  public static final String INVALID_WKF_MODEL_XML = /*$$(*/ "The data file is not an XML."; /*)*/
+  String INVALID_WKF_MODEL_XML = /*$$(*/ "The data file is not an XML."; /*)*/
 
-  public static final String INVALID_BAML_XML = /*$$(*/
-      "Invalid BAML xml. Please contact admin for further info"; /*)*/
+  String INVALID_BAML_XML = /*$$(*/ "Invalid BAML xml. Please contact admin for further info"; /*)*/
 
-  public static final String MENU_NOT_FOUND = /*$$(*/ "Menu not found" /*)*/;
+  String MENU_NOT_FOUND = /*$$(*/ "Menu not found" /*)*/;
 }

@@ -25,14 +25,14 @@ import java.util.Map;
 
 public interface BpmManagerDashboardTaskService {
 
-  public void getTaskByProcess(
+  void getTaskByProcess(
       Map<String, Object> _map,
       WkfProcess process,
       String taskByProcessType,
       List<Map<String, Object>> dataMapList);
 
-  public Map<String, Object> getTaskByProcessRecords(
+  Map<String, Object> getTaskByProcessRecords(
       WkfModel wkfModel, String processName, String model, String typeSelect);
 
-  public List<Map<String, Object>> getTaskCompletionByDays(LocalDate fromDate, LocalDate toDate);
+  List<Map<String, Object>> getTaskCompletionByDays(LocalDate fromDate, LocalDate toDate);
 }

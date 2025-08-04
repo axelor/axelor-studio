@@ -22,9 +22,9 @@ import jakarta.ws.rs.core.Response;
 
 public interface WsAuthenticatorService {
 
-  public String generatAuthUrl(WsAuthenticator wsAuthenticator);
+  String generatAuthUrl(WsAuthenticator wsAuthenticator);
 
-  public void authenticate(WsAuthenticator wsAuthenticator);
+  void authenticate(WsAuthenticator wsAuthenticator);
 
-  public Response refereshToken(WsAuthenticator wsAuthenticator);
+  Response refereshToken(WsAuthenticator wsAuthenticator);
 }

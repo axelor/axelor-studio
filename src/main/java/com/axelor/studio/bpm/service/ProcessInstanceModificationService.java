@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public interface ProcessInstanceModificationService {
-  public void execute(WkfProcessUpdate wkfProcessUpdate);
+  void execute(WkfProcessUpdate wkfProcessUpdate);
 
-  public void generateScript(WkfProcessUpdate wkfProcessUpdate, Path path) throws IOException;
+  void generateScript(WkfProcessUpdate wkfProcessUpdate, Path path) throws IOException;
 
-  public Path export(WkfProcessUpdate wkfProcessUpdate);
+  Path export(WkfProcessUpdate wkfProcessUpdate);
 }

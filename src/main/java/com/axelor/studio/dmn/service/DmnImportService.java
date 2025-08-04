@@ -22,5 +22,5 @@ import com.axelor.studio.db.WkfDmnModel;
 
 public interface DmnImportService {
 
-  public void importDmnTable(MetaFile dataFile, WkfDmnModel dmnModel);
+  void importDmnTable(MetaFile dataFile, WkfDmnModel dmnModel);
 }

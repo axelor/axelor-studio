@@ -22,5 +22,5 @@ import java.io.IOException;
 
 public interface AccessTemplateService {
 
-  public MetaFile generateTemplate() throws IOException;
+  MetaFile generateTemplate() throws IOException;
 }

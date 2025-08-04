@@ -24,21 +24,21 @@ import java.util.Map;
 
 public interface WkfModelService {
 
-  public WkfModel createNewVersion(WkfModel wkfModel);
+  WkfModel createNewVersion(WkfModel wkfModel);
 
-  public WkfModel start(WkfModel sourceModel, WkfModel targetModel);
+  WkfModel start(WkfModel sourceModel, WkfModel targetModel);
 
-  public WkfModel terminate(WkfModel wkfModel);
+  WkfModel terminate(WkfModel wkfModel);
 
-  public WkfModel backToDraft(WkfModel wkfModel);
+  WkfModel backToDraft(WkfModel wkfModel);
 
-  public List<Long> findVersions(WkfModel wkfModel);
+  List<Long> findVersions(WkfModel wkfModel);
 
-  public String importWkfModels(
+  String importWkfModels(
       MetaFile metaFile, boolean translate, String sourceLanguage, String targetLanguage)
       throws Exception;
 
-  public List<Map<String, Object>> getProcessPerStatus(WkfModel wkfModel);
+  List<Map<String, Object>> getProcessPerStatus(WkfModel wkfModel);
 
-  public List<Map<String, Object>> getProcessPerUser(WkfModel wkfModel);
+  List<Map<String, Object>> getProcessPerUser(WkfModel wkfModel);
 }

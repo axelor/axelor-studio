@@ -16,15 +16,15 @@ import java.util.Map;
 
 public interface WkfDashboardCommonService {
 
-  static final String TASK_TODAY = "taskToday";
-  static final String TASK_NEXT = "taskNext";
-  static final String LATE_TASK = "lateTask";
-  static final String ASSIGNED_ME = "assignedToMe";
-  static final String ASSIGNED_OTHER = "assignedToOther";
-  static final String TASK_BY_PROCESS = "taskByProcess";
-  static final String NON_LATE_TASK = "nonLateTask";
-  static final String NUM_LATE_TASK = "Number of late tasks";
-  static final String NUM_VALIDATE_TASK = "Number of tasks validated";
+  String TASK_TODAY = "taskToday";
+  String TASK_NEXT = "taskNext";
+  String LATE_TASK = "lateTask";
+  String ASSIGNED_ME = "assignedToMe";
+  String ASSIGNED_OTHER = "assignedToOther";
+  String TASK_BY_PROCESS = "taskByProcess";
+  String NON_LATE_TASK = "nonLateTask";
+  String NUM_LATE_TASK = "Number of late tasks";
+  String NUM_VALIDATE_TASK = "Number of tasks validated";
 
   List<WkfProcess> findProcesses(WkfModel wkfModel, String processName);
 

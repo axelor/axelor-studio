@@ -22,14 +22,14 @@ import com.axelor.studio.db.WkfDmnModel;
 
 public interface DmnService {
 
-  public void executeDmn(String decisionDefinitionId, Model model);
+  void executeDmn(String decisionDefinitionId, Model model);
 
-  public String createOutputToFieldScript(
+  String createOutputToFieldScript(
       String decisionDefinitionId,
       String modelName,
       String searchOperator,
       String ifMultiple,
       String resultVar);
 
-  public void renameDiagramIds(WkfDmnModel wkfDmnModel);
+  void renameDiagramIds(WkfDmnModel wkfDmnModel);
 }

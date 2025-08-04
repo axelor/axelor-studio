@@ -23,5 +23,5 @@ import com.google.inject.persist.Transactional;
 public interface DmnDeploymentService {
 
   @Transactional
-  public void deploy(WkfDmnModel wkfDmnModel);
+  void deploy(WkfDmnModel wkfDmnModel);
 }

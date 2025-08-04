@@ -27,16 +27,16 @@ import java.util.List;
 
 public interface ExportService {
 
-  public String getImage(MetaFile metaFile);
+  String getImage(MetaFile metaFile);
 
-  public String exportStudioActionLines(List<StudioActionLine> lines, int count);
+  String exportStudioActionLines(List<StudioActionLine> lines, int count);
 
-  public String exportWsKeyValueLines(List<WsKeyValue> wsKeyValues, int count, String type);
+  String exportWsKeyValueLines(List<WsKeyValue> wsKeyValues, int count, String type);
 
-  public String exportWsKeyValueHeadersLines(
+  String exportWsKeyValueHeadersLines(
       List<WsKeyValueSelectionHeader> wsKeyValues, int count, String type);
 
-  public String exportRequests(List<WsRequestList> wsRequests, int count, String type);
+  String exportRequests(List<WsRequestList> wsRequests, int count, String type);
 
-  public String exportConnectors(List<WsConnector> wsConnectors, int count, String type);
+  String exportConnectors(List<WsConnector> wsConnectors, int count, String type);
 }

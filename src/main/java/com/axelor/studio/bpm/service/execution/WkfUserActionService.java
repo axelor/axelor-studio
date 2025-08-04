@@ -28,21 +28,21 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 public interface WkfUserActionService {
 
   @Transactional
-  public void createUserAction(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
+  void createUserAction(WkfTaskConfig wkfTaskConfig, DelegateExecution execution);
 
-  public String processTitle(String title, FullContext wkfContext);
+  String processTitle(String title, FullContext wkfContext);
 
   @Transactional
-  public void updateUserAction(
+  void updateUserAction(
       WkfTaskConfig wkfTaskConfig,
       ProcessInstance processInstance,
       ProcessEngine processEngine,
       String taskId);
 
-  public void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId);
+  void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId);
 
-  public FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
+  FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
       throws ClassNotFoundException;
 
-  public User getUser(String userPath, FullContext wkfContext);
+  User getUser(String userPath, FullContext wkfContext);
 }

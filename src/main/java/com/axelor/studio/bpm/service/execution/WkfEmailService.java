@@ -24,8 +24,8 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface WkfEmailService {
 
-  public void sendEmail(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
+  void sendEmail(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
       throws ClassNotFoundException, MessagingException;
 
-  public String createUrl(FullContext wkfContext, String formName);
+  String createUrl(FullContext wkfContext, String formName);
 }

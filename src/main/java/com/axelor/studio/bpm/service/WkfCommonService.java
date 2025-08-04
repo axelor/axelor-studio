@@ -24,18 +24,17 @@ import org.camunda.bpm.model.xml.instance.ModelElementInstance;
 
 public interface WkfCommonService {
 
-  public WkfProcessConfig findCurrentProcessConfig(Model model);
+  WkfProcessConfig findCurrentProcessConfig(Model model);
 
-  public WkfProcessConfig findOldProcessConfig(Model model);
+  WkfProcessConfig findOldProcessConfig(Model model);
 
-  public Object evalExpression(Map<String, Object> varMap, String expr);
+  Object evalExpression(Map<String, Object> varMap, String expr);
 
-  public Map<String, Object> createVariables(Map<String, Object> modelMap);
+  Map<String, Object> createVariables(Map<String, Object> modelMap);
 
-  public String getVarName(Object model);
+  String getVarName(Object model);
 
-  public Object findRelatedRecord(Model model, String path);
+  Object findRelatedRecord(Model model, String path);
 
-  public Model addProperties(
-      Map<String, String> propertyMap, Model model, ModelElementInstance element);
+  Model addProperties(Map<String, String> propertyMap, Model model, ModelElementInstance element);
 }
