@@ -19,7 +19,7 @@ package com.axelor.studio.baml.xml;
 
 import jakarta.xml.bind.annotation.XmlEnum;
 
-@XmlEnum(String.class)
+@XmlEnum()
 public enum ReturnType {
   SINGLE,
   MULTIPLE,
