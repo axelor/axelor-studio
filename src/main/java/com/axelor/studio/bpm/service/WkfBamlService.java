@@ -47,7 +47,7 @@ public class WkfBamlService implements JavaDelegate {
         bpmnModelElementInstance.getAttributeValueNs(
             BpmnParse.CAMUNDA_BPMN_EXTENSIONS_NS.getNamespaceUri(), "baml");
 
-    if (baml != null && Boolean.parseBoolean(baml)) {
+    if (Boolean.parseBoolean(baml)) {
       String model =
           bpmnModelElementInstance.getAttributeValueNs(
               BpmnParse.CAMUNDA_BPMN_EXTENSIONS_NS.getNamespaceUri(), "bamlModel");
