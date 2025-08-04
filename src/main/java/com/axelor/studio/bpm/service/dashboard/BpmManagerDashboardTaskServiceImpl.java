@@ -177,7 +177,7 @@ public class BpmManagerDashboardTaskServiceImpl implements BpmManagerDashboardTa
     List<WkfTaskConfig> taskConfigs =
         wkfTaskConfigRepo.all().filter("self.type = 'userTask'").fetch();
 
-    for (LocalDate date = fromDate; date.compareTo(toDate) <= 0; date = date.plusDays(1)) {
+    for (LocalDate date = fromDate; !date.isAfter(toDate); date = date.plusDays(1)) {
       int lateTaskCnt = 0;
       int validatedTaskCnt = 0;
       Map<String, Object> lateTaskMap = new HashMap<>();
