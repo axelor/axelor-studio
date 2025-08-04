@@ -305,7 +305,6 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
           objMenu.put(model.getFullName(), appMenu);
         }
       } catch (ClassNotFoundException e) {
-        continue;
       }
     }
   }
