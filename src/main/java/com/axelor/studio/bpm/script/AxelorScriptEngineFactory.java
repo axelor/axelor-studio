@@ -18,9 +18,7 @@
 package com.axelor.studio.bpm.script;
 
 import groovy.lang.GroovySystem;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
@@ -147,17 +145,8 @@ public class AxelorScriptEngineFactory implements ScriptEngineFactory {
   protected static final List<String> MIME_TYPES;
 
   static {
-    List<String> n = new ArrayList<>(2);
-    n.add(SHORT_NAME);
-    n.add(LANGUAGE_NAME);
-    NAMES = Collections.unmodifiableList(n);
-
-    n = new ArrayList<>(1);
-    n.add("axelor");
-    EXTENSIONS = Collections.unmodifiableList(n);
-
-    n = new ArrayList<>(1);
-    n.add("application/x-groovy");
-    MIME_TYPES = Collections.unmodifiableList(n);
+    NAMES = List.of(SHORT_NAME, LANGUAGE_NAME);
+    EXTENSIONS = List.of("axelor");
+    MIME_TYPES = List.of("application/x-groovy");
   }
 }
