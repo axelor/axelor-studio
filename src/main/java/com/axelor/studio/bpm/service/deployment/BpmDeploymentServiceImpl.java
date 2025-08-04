@@ -317,7 +317,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
                 .forEach(
                     newDefinition -> {
                       log.debug(
-                          "Migrating from old defintion: {}, to new definition: {}",
+                          "Migrating from old definition: {}, to new definition: {}",
                           oldDefinition.getKey(),
                           newDefinition.getKey());
 
