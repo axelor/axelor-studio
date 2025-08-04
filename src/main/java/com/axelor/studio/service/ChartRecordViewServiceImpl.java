@@ -58,6 +58,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -243,7 +244,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
           params.put(paramKey, value);
         }
       }
-      return Arrays.asList(filter);
+      return Collections.singletonList(filter);
     }
 
     List<Filter> dateFilters = getFiltersForDateType(studioChart, params, filter, isForGroup);
@@ -277,7 +278,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
             ZonedDateTime.parse(paramValue)
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:00")));
       }
-      return Arrays.asList(filter);
+      return Collections.singletonList(filter);
     }
 
     long startId = isForGroup ? 10000L : 10001L;
