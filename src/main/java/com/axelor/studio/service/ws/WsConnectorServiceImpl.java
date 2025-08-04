@@ -52,8 +52,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -461,9 +461,9 @@ public class WsConnectorServiceImpl implements WsConnectorService {
               text == null
                   ? null
                   : Entity.entity(
-                      new URL(text).openStream(),
+                      new URI(text).toURL().openStream(),
                       jakarta.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
           log.error(e.getMessage(), e);
         }
         break;
