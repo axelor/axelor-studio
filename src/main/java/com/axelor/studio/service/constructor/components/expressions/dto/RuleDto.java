@@ -31,7 +31,8 @@ public class RuleDto {
   private List<TransformationDto> transformations = new ArrayList<>();
   private List<TransformationDto> valueTransformations = new ArrayList<>();
   private List<TransformationDto> valueTransformations2 = new ArrayList<>();
-  private static String DEFAULT_TARGET_NAME = "name";
+
+  private static final String DEFAULT_TARGET_NAME = "name";
 
   @JsonProperty(value = "field")
   public void unpackField(Map<String, Object> fieldMap) {

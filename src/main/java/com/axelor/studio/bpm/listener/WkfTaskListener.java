@@ -16,7 +16,8 @@ public class WkfTaskListener implements TaskListener {
 
   protected WkfTaskConfigRepository taskConfigRepo;
   protected TeamTaskRepository teamTaskRepository;
-  private static String EVENT_NAME_DELETE = "delete";
+
+  private static final String EVENT_NAME_DELETE = "delete";
 
   @Inject
   public WkfTaskListener(
