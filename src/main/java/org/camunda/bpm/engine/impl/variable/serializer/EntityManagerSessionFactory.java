@@ -38,7 +38,7 @@ public class EntityManagerSessionFactory implements SessionFactory {
     ensureNotNull("entityManagerFactory", entityManagerFactory);
     if (!(entityManagerFactory instanceof EntityManagerFactory)) {
       throw new ProcessEngineException(
-          "EntityManagerFactory must implement 'javax.persistence.EntityManagerFactory'");
+          "EntityManagerFactory must implement 'jakarta.persistence.EntityManagerFactory'");
     }
 
     this.entityManagerFactory = (EntityManagerFactory) entityManagerFactory;

@@ -1,11 +1,11 @@
 package com.axelor.studio.ls;
 
+import jakarta.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Spliterator;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import lombok.Getter;
 import lombok.Setter;
 

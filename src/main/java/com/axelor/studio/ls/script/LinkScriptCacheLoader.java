@@ -2,7 +2,7 @@ package com.axelor.studio.ls.script;
 
 import com.google.common.cache.CacheLoader;
 import groovy.lang.GroovyClassLoader;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class LinkScriptCacheLoader extends CacheLoader<String, Class<?>> {
   private final GroovyClassLoader GCL;
