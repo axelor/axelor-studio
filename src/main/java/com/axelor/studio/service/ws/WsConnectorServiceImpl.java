@@ -392,15 +392,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
       ObjectMapper mapper = new ObjectMapper();
       try {
         JsonNode jsonNode = mapper.readTree(tokenResponse);
-        jsonNode
-            .fields()
-            .forEachRemaining(
-                it ->
-                    ctx.put(
-                        it.getKey(),
-                        (it.getValue().isArray()
-                            ? it.getValue().get(0).asText()
-                            : it.getValue().asText())));
+        jsonNode.properties().forEach(it -> ctx.put(it.getKey(), mapValue(it.getValue())));
       } catch (Exception e) {
         ExceptionHelper.error(e);
         throw new IllegalStateException(e);
@@ -408,6 +400,10 @@ public class WsConnectorServiceImpl implements WsConnectorService {
     }
 
     return ctx;
+  }
+
+  private String mapValue(JsonNode node) {
+    return node.isArray() ? node.get(0).asText() : node.asText();
   }
 
   @Override

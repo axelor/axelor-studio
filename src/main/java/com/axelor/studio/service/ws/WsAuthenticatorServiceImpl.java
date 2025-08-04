@@ -138,15 +138,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
     try {
       JsonNode jsonNode = mapper.readTree(wsAuthenticator.getAuthResponse());
-      jsonNode
-          .fields()
-          .forEachRemaining(
-              it ->
-                  ctx.put(
-                      it.getKey(),
-                      (it.getValue().isArray()
-                          ? it.getValue().get(0).asText()
-                          : it.getValue().asText())));
+      jsonNode.properties().forEach(it -> ctx.put(it.getKey(), mapValue(it.getValue())));
     } catch (IOException e) {
       ExceptionHelper.error(e);
     }
@@ -182,15 +174,7 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
 
     try {
       JsonNode jsonNode = mapper.readTree(tokenResponse);
-      jsonNode
-          .fields()
-          .forEachRemaining(
-              it ->
-                  ctx.put(
-                      it.getKey(),
-                      (it.getValue().isArray()
-                          ? it.getValue().get(0).asText()
-                          : it.getValue().asText())));
+      jsonNode.properties().forEach(it -> ctx.put(it.getKey(), mapValue(it.getValue())));
     } catch (IOException e) {
       ExceptionHelper.error(e);
     }
@@ -213,5 +197,9 @@ public class WsAuthenticatorServiceImpl implements WsAuthenticatorService {
     }
 
     return response;
+  }
+
+  private String mapValue(JsonNode node) {
+    return node.isArray() ? node.get(0).asText() : node.asText();
   }
 }
