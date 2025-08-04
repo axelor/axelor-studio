@@ -239,8 +239,7 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
       NodeList allNodes = doc.getElementsByTagName("*");
       for (int i = 0; i < allNodes.getLength(); i++) {
         Node node = allNodes.item(i);
-        if (node instanceof Element) {
-          Element element = (Element) node;
+        if (node instanceof Element element) {
           String yValue = element.getAttribute(Y_ATTR);
           if (yValue != null && !yValue.isEmpty()) {
             try {

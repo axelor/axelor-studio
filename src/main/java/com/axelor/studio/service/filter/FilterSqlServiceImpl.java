@@ -153,8 +153,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
     String type = null;
     String selection = null;
 
-    if (target instanceof MetaField) {
-      MetaField metaField = (MetaField) target;
+    if (target instanceof MetaField metaField) {
       field = source + "." + getColumn(metaField);
       type = metaField.getTypeName();
       try {
@@ -314,8 +313,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
   public String getTargetType(Object target) {
 
     String targetType = null;
-    if (target instanceof MetaField) {
-      MetaField metaField = (MetaField) target;
+    if (target instanceof MetaField metaField) {
       String relationship = metaField.getRelationship();
       if (relationship != null) {
         targetType = relationship;

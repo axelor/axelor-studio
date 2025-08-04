@@ -269,12 +269,9 @@ public class DmnServiceImpl implements DmnService {
   protected Object getParameter(Object value) {
 
     Object params = null;
-    if (value instanceof String) {
-      String param = (String) value;
-      if (param.startsWith("in(")) {
-        param = param.replace("in(", "").replace(")", "");
-        params = Arrays.asList(param.split(","));
-      }
+    if (value instanceof String param && param.startsWith("in(")) {
+      param = param.replace("in(", "").replace(")", "");
+      params = Arrays.asList(param.split(","));
     }
 
     if (params == null) {

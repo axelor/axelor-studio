@@ -37,11 +37,10 @@ public class LinkScriptController {
   }
 
   public Optional<LinkedHashMap<String, Object>> parseBindings(Object bindings) {
-    if (!(bindings instanceof Collection)) {
+    if (!(bindings instanceof Collection<?> list)) {
       return Optional.empty();
     }
     var gsh = Beans.get(LinkScriptGroovyEvaluator.class).newHelper(null);
-    var list = (Collection<?>) bindings;
     return Optional.of(
         list.stream()
             .filter(binding -> binding instanceof Map)

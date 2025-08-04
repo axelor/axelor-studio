@@ -44,8 +44,7 @@ public class ViewProcessorImpl implements ViewProcessor {
     if (!appStudioService.getAppStudio().getEnableStudioButton()) {
       return;
     }
-    if (abstractView instanceof FormView) {
-      FormView formView = (FormView) abstractView;
+    if (abstractView instanceof FormView formView) {
       formView.setToolbar(addOpenStudioButton(formView.getToolbar()));
     }
   }

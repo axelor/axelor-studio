@@ -244,8 +244,7 @@ public class WkfContextHelper {
       throws JsonProcessingException {
     ObjectMapper mapper = createObjectMapper();
     Object object = getVariable(execution.getProcessInstanceId(), varName);
-    if (object instanceof Map<?, ?>) {
-      Map<?, ?> map = (Map<?, ?>) object;
+    if (object instanceof Map<?, ?> map) {
       if (!map.isEmpty()) {
         Map.Entry<?, ?> entry = map.entrySet().iterator().next();
         if (entry.getValue() instanceof List<?>) {

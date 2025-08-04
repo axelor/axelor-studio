@@ -391,8 +391,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     Object object = wkfService.findRelatedRecord(model, wkfProcessConfig.getProcessPath());
 
-    if (object instanceof FullContext) {
-      FullContext relatedModel = (FullContext) object;
+    if (object instanceof FullContext relatedModel) {
       log.debug(
           "Related instance found with processInstanceId: {}",
           relatedModel.get("processInstanceId"));
