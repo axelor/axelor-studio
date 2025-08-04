@@ -320,15 +320,11 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
     }
 
     String pkgName = model.getPackageName();
-    if (objMenu.entrySet().stream()
+    return objMenu.entrySet().stream()
         .filter(
             entry -> pkgName.equals(entry.getKey().substring(0, entry.getKey().lastIndexOf("."))))
         .findFirst()
         .map(entry -> objMenu.put(model.getFullName(), entry.getValue()))
-        .isPresent()) {
-      return true;
-    }
-
-    return false;
+        .isPresent();
   }
 }
