@@ -33,7 +33,7 @@ build:
   cache:
     - *base_cache
   script:
-    - ./gradlew clean assemble -PaxelorMavenUsername=${NEXUS_READER_USERNAME} -PaxelorMavenPassword=${NEXUS_READER_PASSWORD}
+    - ./gradlew clean assemble
 
 # Check code formatting
 spotless:
@@ -45,7 +45,7 @@ spotless:
     - *base_cache_pull
   allow_failure: true
   script:
-    - ./gradlew spotlessCheck -PaxelorMavenUsername=${NEXUS_READER_USERNAME} -PaxelorMavenPassword=${NEXUS_READER_PASSWORD}
+    - ./gradlew spotlessCheck
 
 # Run unit tests
 unit test:
@@ -57,7 +57,7 @@ unit test:
     - *base_cache
   allow_failure: true
   script:
-    - ./gradlew test -PaxelorMavenUsername=${NEXUS_READER_USERNAME} -PaxelorMavenPassword=${NEXUS_READER_PASSWORD}
+    - ./gradlew test
     - cat build/reports/jacoco/test/html/index.html | grep -o 'Total[^%]*%'
   artifacts:
     when: always
@@ -74,7 +74,7 @@ unit test:
   cache:
     - *base_cache_pull
   script:
-    - ./gradlew clean publish -PaxelorMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaxelorMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew clean publish -PaddonsMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaddonsMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration
