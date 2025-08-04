@@ -123,9 +123,8 @@ public class StudioAppServiceImpl implements StudioAppService {
     app.setIsInAppView(studioApp.getIsInAppView());
     app.setImage(studioApp.getImage());
     app.setDescription(studioApp.getDescription());
-    Set<App> depends = new HashSet<>();
     if (studioApp.getDependsOnSet() != null) {
-      depends.addAll(studioApp.getDependsOnSet());
+      Set<App> depends = new HashSet<>(studioApp.getDependsOnSet());
       app.setDependsOnSet(depends);
     }
     app.setSequence(studioApp.getSequence());

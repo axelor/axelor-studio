@@ -104,25 +104,25 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
         definitions.getAttributeValueNs(definitions.getNamespace(), "metaJsonModels");
 
     if (metaModels != null) {
-      Set<MetaModel> metaModelSet = new HashSet<>();
 
       List<String> models = Arrays.asList(metaModels.split(","));
-      metaModelSet.addAll(
-          models.stream()
-              .map(modelName -> metaModelRepo.findByName(modelName))
-              .filter(Objects::nonNull)
-              .collect(Collectors.toSet()));
+      Set<MetaModel> metaModelSet =
+          new HashSet<>(
+              models.stream()
+                  .map(modelName -> metaModelRepo.findByName(modelName))
+                  .filter(Objects::nonNull)
+                  .collect(Collectors.toSet()));
       wkfDmnModel.setMetaModelSet(metaModelSet);
 
     } else if (jsonModels != null) {
-      Set<MetaJsonModel> jsonModelSet = new HashSet<>();
 
       List<String> models = Arrays.asList(jsonModels.split(","));
-      jsonModelSet.addAll(
-          models.stream()
-              .map(modelName -> metaJsonModelRepo.findByName(modelName))
-              .filter(Objects::nonNull)
-              .collect(Collectors.toSet()));
+      Set<MetaJsonModel> jsonModelSet =
+          new HashSet<>(
+              models.stream()
+                  .map(modelName -> metaJsonModelRepo.findByName(modelName))
+                  .filter(Objects::nonNull)
+                  .collect(Collectors.toSet()));
       wkfDmnModel.setJsonModelSet(jsonModelSet);
 
     } else {

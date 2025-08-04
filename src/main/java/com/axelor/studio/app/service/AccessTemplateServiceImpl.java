@@ -215,8 +215,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
 
     XSSFWorkbook workBook = new XSSFWorkbook();
 
-    List<String> keys = new ArrayList<>();
-    keys.addAll(objMenu.keySet());
+    List<String> keys = new ArrayList<>(objMenu.keySet());
     Collections.sort(keys);
 
     Set<String> menuProcessed = new HashSet<>();
@@ -234,8 +233,7 @@ public class AccessTemplateServiceImpl implements AccessTemplateService {
           }
         });
 
-    List<String> menusRemaining = new ArrayList<>();
-    menusRemaining.addAll(appMenus);
+    List<String> menusRemaining = new ArrayList<>(appMenus);
     menusRemaining.forEach(menu -> writeMenuSheet(workBook, menu, menuApp.get(menu)));
 
     return createMetaFile(workBook);

@@ -254,14 +254,12 @@ public class StudioMetaServiceImpl implements StudioMetaService {
     menu.setArchived(studioMenu.getArchived());
 
     if (studioMenu.getGroups() != null) {
-      Set<Group> groups = new HashSet<>();
-      groups.addAll(studioMenu.getGroups());
+      Set<Group> groups = new HashSet<>(studioMenu.getGroups());
       menu.setGroups(groups);
     }
 
     if (studioMenu.getRoles() != null) {
-      Set<Role> roles = new HashSet<>();
-      roles.addAll(studioMenu.getRoles());
+      Set<Role> roles = new HashSet<>(studioMenu.getRoles());
       menu.setRoles(roles);
     }
 

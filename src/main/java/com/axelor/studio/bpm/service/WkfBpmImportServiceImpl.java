@@ -277,8 +277,8 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
 
   protected File extract(String module, String dirName) throws IOException {
     String dirNamePattern = dirName.replaceAll("[/\\\\]", "(/|\\\\\\\\)");
-    List<URL> files = new ArrayList<>();
-    files.addAll(MetaScanner.findAll(module, dirNamePattern, "(.+?)\\.(bpmn|dmn)"));
+    List<URL> files =
+        new ArrayList<>(MetaScanner.findAll(module, dirNamePattern, "(.+?)\\.(bpmn|dmn)"));
     if (files.isEmpty()) {
       return null;
     }
