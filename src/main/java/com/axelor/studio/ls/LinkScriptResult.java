@@ -46,14 +46,5 @@ public class LinkScriptResult implements Iterable<LinkScriptResult.Step> {
     return stringJoiner.toString();
   }
 
-  @Getter
-  public static class Step {
-    private final String name;
-    private final Object result;
-
-    public Step(String name, Object result) {
-      this.name = name;
-      this.result = result;
-    }
-  }
+  public record Step(String name, Object result) {}
 }
