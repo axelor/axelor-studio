@@ -279,8 +279,8 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
       return Arrays.asList(filter);
     }
 
-    long startId = isForGroup ? 10000l : 10001l;
-    long endId = isForGroup ? 50000l : 50001l;
+    long startId = isForGroup ? 10000L : 10001L;
+    long endId = isForGroup ? 50000L : 50001L;
 
     List<Filter> startEndFilter = getYearMonthFilters(filter, startId, endId);
 
@@ -346,7 +346,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     Filter filter =
         isForGroup
             ? createFilter(
-                0l,
+                0L,
                 isJson,
                 studioChart.getIsJsonGroupOn(),
                 studioChart.getGroupOnJson(),

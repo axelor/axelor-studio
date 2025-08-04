@@ -185,7 +185,7 @@ public class WkfModelController {
         versionIds = Beans.get(WkfModelService.class).findVersions(wkfModel);
       }
 
-      versionIds.add(0l);
+      versionIds.add(0L);
 
       response.setView(
           ActionView.define(I18n.get("Previous Versions"))
