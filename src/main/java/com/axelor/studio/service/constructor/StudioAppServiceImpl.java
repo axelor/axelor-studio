@@ -472,11 +472,13 @@ public class StudioAppServiceImpl implements StudioAppService {
         String dasherizeModel = Inflector.getInstance().dasherize(modelName);
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
         stringBuilder.append(
             String.format(
-                "<%ss xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                    + "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n",
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <%ss xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+                """,
                 dasherizeModel));
 
         records.forEach(

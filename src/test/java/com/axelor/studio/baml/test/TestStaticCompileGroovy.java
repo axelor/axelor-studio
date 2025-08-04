@@ -27,16 +27,20 @@ class TestStaticCompileGroovy {
   @Test
   void test() {
     String script =
-        "import com.axelor.auth.db.User\n"
-            + "import groovy.transform.CompileStatic\n"
-            + "@CompileStatic\n"
-            + "void execute(){\n"
-            + "User user = new User()\n"
-            + "user.code = 'abc'\n"
-            + "def x = user\n"
-            + "println(x.code)\n"
-            + "}\n"
-            + "execute()";
+        """
+        import com.axelor.auth.db.User
+        import groovy.transform.CompileStatic
+
+        @CompileStatic
+        void execute(){
+          User user = new User()
+          user.code = 'abc'
+          def x = user
+          println(x.code)
+        }
+
+        execute()
+        """;
     Context ctx = new Context(User.class);
     GroovyScriptHelper helper = new GroovyScriptHelper(ctx);
     helper.eval(script);
