@@ -87,7 +87,8 @@ dependencies {
   implementation 'ch.qos.logback:logback-core:1.5.18'
   implementation 'ch.qos.logback:logback-classic:1.5.18'
   implementation 'org.yaml:snakeyaml:2.4'
-  implementation 'jakarta.websocket:jakarta.websocket-api:2.2.0'
+  implementation 'jakarta.websocket:jakarta.websocket-api:2.1.1'
+  implementation 'jakarta.websocket:jakarta.websocket-client-api:2.1.1'
   compileOnly 'org.projectlombok:lombok:1.18.38'
   annotationProcessor 'org.projectlombok:lombok:1.18.38'
 
