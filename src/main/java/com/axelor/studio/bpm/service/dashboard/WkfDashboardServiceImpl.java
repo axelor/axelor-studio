@@ -56,7 +56,7 @@ public class WkfDashboardServiceImpl implements WkfDashboardService {
 
     Query query = createCommonRecordQuery(tableName, condition, status);
 
-    query.setParameter("day", day.toString());
+    query.setParameter("day", day);
 
     return query.getResultList();
   }
