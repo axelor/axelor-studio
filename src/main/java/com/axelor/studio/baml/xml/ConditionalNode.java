@@ -37,16 +37,6 @@ public class ConditionalNode extends ProcessActionNode {
 
   @Override
   public String toCode(boolean dynamic) {
-
-    if (expression == null) {
-      return "";
-    }
-
-    StringBuilder codeBuilder = new StringBuilder();
-    codeBuilder.append("\nif(" + expression + ") {");
-    codeBuilder.append(super.toCode(dynamic));
-    codeBuilder.append("\n}");
-
-    return codeBuilder.toString();
+    return expression == null ? "" : "\nif(" + expression + ") {" + super.toCode(dynamic) + "\n}";
   }
 }
