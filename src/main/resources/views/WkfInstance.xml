@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views https://axelor.com/xml/ns/object-views/object-views_8.0.xsd">
 
-  <grid name="wkf-instance-grid" title="Process Instance"
+  <grid name="wkf-instance-grid" title="Process Instances"
     model="com.axelor.studio.db.WkfInstance" canNew="false" canEdit="false">
     <menubar>
       <menu title="Timer-Blocked instances" icon="fa-clock-o">
@@ -21,7 +21,7 @@
     <field name="statusSelect"/>
   </grid>
 
-  <form name="wkf-instance-form" title="Process Instance"
+  <form name="wkf-instance-form" title="Process instance"
     model="com.axelor.studio.db.WkfInstance" width="large"
     onLoad="action-wkf-attrs-refresh-instance-state" canNew="false">
     <panel name="mainPanel" colSpan="12" itemSpan="3">
