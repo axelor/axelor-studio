@@ -20,7 +20,6 @@ package com.axelor.studio.service.loader;
 import com.axelor.common.FileUtils;
 import com.axelor.common.ResourceUtils;
 import com.axelor.data.xml.XMLImporter;
-import com.axelor.db.Model;
 import com.axelor.file.temp.TempFiles;
 import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.AppLoader;
@@ -148,7 +147,7 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
                 },
                 model -> {
                   log.append("Import model: ");
-                  log.append(((Model) model));
+                  log.append(model);
                   log.append("\n");
                 },
                 (model, e) -> pw.println("Error importing: " + model)));

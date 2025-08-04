@@ -741,7 +741,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
                       .serializationDataFormat(SerializationDataFormats.JSON)
                       .create();
 
-              Long id = ((Model) model).getId();
+              Long id = model.getId();
 
               String varName = wkfService.getVarName(model);
               varMap.put(varName, var);
