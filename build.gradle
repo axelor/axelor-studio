@@ -16,7 +16,7 @@ buildscript {
   buildscript.repositories repos
   dependencies {
     classpath "com.axelor:axelor-gradle:${aopVersion}"
-    classpath 'com.adarshr:gradle-test-logger-plugin:2.+'
+    classpath 'com.adarshr:gradle-test-logger-plugin:4.0.0'
   }
 }
 
