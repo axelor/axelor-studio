@@ -316,18 +316,14 @@ public class WkfExecutionListener implements ExecutionListener {
   }
 
   protected boolean blockingNode(String type) {
-
-    boolean blockinNode = false;
-    switch (type) {
-      case (BpmnModelConstants.BPMN_ELEMENT_USER_TASK):
-      case (BpmnModelConstants.BPMN_ELEMENT_CATCH_EVENT):
-      case (BpmnModelConstants.BPMN_ELEMENT_CALL_ACTIVITY):
-      case (BpmnModelConstants.BPMN_ELEMENT_END_EVENT):
-        blockinNode = true;
-        break;
-    }
-
-    return blockinNode;
+    return switch (type) {
+      case BpmnModelConstants.BPMN_ELEMENT_USER_TASK,
+              BpmnModelConstants.BPMN_ELEMENT_CATCH_EVENT,
+              BpmnModelConstants.BPMN_ELEMENT_CALL_ACTIVITY,
+              BpmnModelConstants.BPMN_ELEMENT_END_EVENT ->
+          true;
+      default -> false;
+    };
   }
 
   protected boolean userActionOrEmailNode(String type) {

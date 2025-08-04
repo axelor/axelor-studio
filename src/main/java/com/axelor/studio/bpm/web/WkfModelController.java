@@ -306,16 +306,11 @@ public class WkfModelController {
     }
     WkfModel wkfModel = Beans.get(WkfModelRepository.class).find(Long.valueOf(id.toString()));
 
-    switch (type) {
-      case PROCESS_PER_STATUS:
-        return Beans.get(WkfModelService.class).getProcessPerStatus(wkfModel);
-
-      case PROCESS_PER_USER:
-        return Beans.get(WkfModelService.class).getProcessPerUser(wkfModel);
-
-      default:
-        return Collections.emptyList();
-    }
+    return switch (type) {
+      case PROCESS_PER_STATUS -> Beans.get(WkfModelService.class).getProcessPerStatus(wkfModel);
+      case PROCESS_PER_USER -> Beans.get(WkfModelService.class).getProcessPerUser(wkfModel);
+      default -> Collections.emptyList();
+    };
   }
 
   protected void openRecordView(

@@ -5,15 +5,11 @@ public class MediaTypeFactory {
     if (mediaType == null) {
       return null;
     }
-    switch (mediaType) {
-      case "xml":
-        return new XmlMediaType();
-      case "json":
-        return new JsonMediaType();
-      case "plain":
-        return new TextMediaType();
-      default:
-        return null;
-    }
+    return switch (mediaType) {
+      case "xml" -> new XmlMediaType();
+      case "json" -> new JsonMediaType();
+      case "plain" -> new TextMediaType();
+      default -> null;
+    };
   }
 }

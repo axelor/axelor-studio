@@ -253,19 +253,13 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
       }
     }
 
-    switch (operator) {
-      case "=":
-        return field + " == " + value;
-      case "empty":
-        return field + ".empty";
-      case "notEmpty":
-        return "!" + field + ".empty";
-      case "isTrue":
-        return field;
-      case "isFalse":
-        return "!" + field;
-      default:
-        return field + " " + operator + " " + value;
-    }
+    return switch (operator) {
+      case "=" -> field + " == " + value;
+      case "empty" -> field + ".empty";
+      case "notEmpty" -> "!" + field + ".empty";
+      case "isTrue" -> field;
+      case "isFalse" -> "!" + field;
+      default -> field + " " + operator + " " + value;
+    };
   }
 }

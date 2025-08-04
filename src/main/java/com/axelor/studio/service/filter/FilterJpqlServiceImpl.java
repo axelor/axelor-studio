@@ -94,15 +94,11 @@ public class FilterJpqlServiceImpl implements FilterJpqlService {
   @Override
   public String getJsonJpql(MetaJsonField jsonField) {
 
-    switch (jsonField.getType()) {
-      case "integer":
-        return "json_extract_integer";
-      case "decimal":
-        return "json_extract_decimal";
-      case "boolean":
-        return "json_extract_boolean";
-      default:
-        return "json_extract";
-    }
+    return switch (jsonField.getType()) {
+      case "integer" -> "json_extract_integer";
+      case "decimal" -> "json_extract_decimal";
+      case "boolean" -> "json_extract_boolean";
+      default -> "json_extract";
+    };
   }
 }

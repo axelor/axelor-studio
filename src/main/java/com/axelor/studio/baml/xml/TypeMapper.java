@@ -26,27 +26,16 @@ public class TypeMapper {
 
   public static Class<?> getType(String simpleType) {
 
-    switch (simpleType) {
-      case "integer":
-        return Integer.class;
-      case "boolean":
-        return Boolean.class;
-      case "string":
-        return String.class;
-      case "long":
-        return Long.class;
-      case "decimal":
-        return BigDecimal.class;
-      case "date":
-        return LocalDate.class;
-      case "datetime":
-        return LocalDateTime.class;
-      case "zdatetime":
-        return ZonedDateTime.class;
-      default:
-        break;
-    }
-
-    return null;
+    return switch (simpleType) {
+      case "integer" -> Integer.class;
+      case "boolean" -> Boolean.class;
+      case "string" -> String.class;
+      case "long" -> Long.class;
+      case "decimal" -> BigDecimal.class;
+      case "date" -> LocalDate.class;
+      case "datetime" -> LocalDateTime.class;
+      case "zdatetime" -> ZonedDateTime.class;
+      default -> null;
+    };
   }
 }

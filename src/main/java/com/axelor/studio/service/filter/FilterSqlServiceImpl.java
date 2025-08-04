@@ -92,20 +92,14 @@ public class FilterSqlServiceImpl implements FilterSqlService {
   @Override
   public String getSqlType(String type) {
 
-    switch (type) {
-      case "string":
-        return "varchar";
-      case "String":
-        return "varchar";
-      case "LocalDate":
-        return "date";
-      case "LocalDateTime":
-        return "timestamp";
-      case "datetime":
-        return "timestamp";
-    }
-
-    return type;
+    return switch (type) {
+      case "string" -> "varchar";
+      case "String" -> "varchar";
+      case "LocalDate" -> "date";
+      case "LocalDateTime" -> "timestamp";
+      case "datetime" -> "timestamp";
+      default -> type;
+    };
   }
 
   @Override
@@ -143,14 +137,13 @@ public class FilterSqlServiceImpl implements FilterSqlService {
 
   @Override
   public String checkDateTime(String[] fields) {
-    switch (fields[1]) {
-      case "LocalDateTime":
-        return "(cast(to_char("
-            + fields[0]
-            + ",'yyyy-MM-dd hh24:mi') as timestamp with time zone)) at time zone 'utc'";
-    }
-
-    return fields[0];
+    return switch (fields[1]) {
+      case "LocalDateTime" ->
+          "(cast(to_char("
+              + fields[0]
+              + ",'yyyy-MM-dd hh24:mi') as timestamp with time zone)) at time zone 'utc'";
+      default -> fields[0];
+    };
   }
 
   @Override

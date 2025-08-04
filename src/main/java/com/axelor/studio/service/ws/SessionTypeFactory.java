@@ -5,15 +5,11 @@ public class SessionTypeFactory {
     if (sessionType == null) {
       return null;
     }
-    switch (sessionType) {
-      case "cookie":
-        return new SessionTypeCookie();
-      case "token":
-        return new SessionTypeToken();
-      case "Standard":
-        return new SessionTypeBasic();
-      default:
-        return null;
-    }
+    return switch (sessionType) {
+      case "cookie" -> new SessionTypeCookie();
+      case "token" -> new SessionTypeToken();
+      case "Standard" -> new SessionTypeBasic();
+      default -> null;
+    };
   }
 }

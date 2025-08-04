@@ -333,15 +333,11 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
   }
 
   protected String checkMetaAttrsName(String name) {
-    switch (name) {
-      case "readonlyIf":
-        return "readonly";
-      case "requiredIf":
-        return "required";
-      case "hideIf":
-        return "hidden";
-      default:
-        return name;
-    }
+    return switch (name) {
+      case "readonlyIf" -> "readonly";
+      case "requiredIf" -> "required";
+      case "hideIf" -> "hidden";
+      default -> name;
+    };
   }
 }

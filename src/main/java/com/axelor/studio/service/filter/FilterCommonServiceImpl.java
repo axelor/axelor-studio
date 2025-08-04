@@ -107,28 +107,18 @@ public class FilterCommonServiceImpl implements FilterCommonService {
   @Override
   public String getFieldType(String type) {
 
-    switch (type) {
-      case "String":
-        return "string";
-      case "Integer":
-        return "integer";
-      case "Boolean":
-        return "boolean";
-      case "BigDecimal":
-        return "decimal";
-      case "Long":
-        return "long";
-      case "byte[]":
-        return "binary";
-      case "LocalDate":
-        return "date";
-      case "ZonedDateTime":
-        return "datetime";
-      case "LocalDateTime":
-        return "datetime";
-      default:
-        return "string";
-    }
+    return switch (type) {
+      case "String" -> "string";
+      case "Integer" -> "integer";
+      case "Boolean" -> "boolean";
+      case "BigDecimal" -> "decimal";
+      case "Long" -> "long";
+      case "byte[]" -> "binary";
+      case "LocalDate" -> "date";
+      case "ZonedDateTime" -> "datetime";
+      case "LocalDateTime" -> "datetime";
+      default -> "string";
+    };
   }
 
   @Override
@@ -141,35 +131,28 @@ public class FilterCommonServiceImpl implements FilterCommonService {
       values = value.split(",");
     }
 
-    switch (operator) {
-      case "like":
-        return getLikeCondition(conditionField, value, true);
-      case "notLike":
-        return getLikeCondition(conditionField, value, false);
-      case "in":
-        return conditionField + " IN" + " (" + value + ") ";
-      case "notIn":
-        return conditionField + " NOT IN" + " (" + value + ") ";
-      case "isNull":
-        return conditionField + " IS NULL ";
-      case "notNull":
-        return conditionField + " IS NOT NULL ";
-      case "between":
+    return switch (operator) {
+      case "like" -> getLikeCondition(conditionField, value, true);
+      case "notLike" -> getLikeCondition(conditionField, value, false);
+      case "in" -> conditionField + " IN" + " (" + value + ") ";
+      case "notIn" -> conditionField + " NOT IN" + " (" + value + ") ";
+      case "isNull" -> conditionField + " IS NULL ";
+      case "notNull" -> conditionField + " IS NOT NULL ";
+      case "between" -> {
         if (values.length > 1) {
-          return conditionField + " BETWEEN  " + values[0] + " AND " + values[1];
+          yield conditionField + " BETWEEN  " + values[0] + " AND " + values[1];
         }
-        return conditionField + " BETWEEN  " + values[0] + " AND " + values[0];
-      case "notBetween":
+        yield conditionField + " BETWEEN  " + values[0] + " AND " + values[0];
+      }
+      case "notBetween" -> {
         if (values.length > 1) {
-          return conditionField + " NOT BETWEEN  " + values[0] + " AND " + values[1];
+          yield conditionField + " NOT BETWEEN  " + values[0] + " AND " + values[1];
         }
-        return conditionField + " NOT BETWEEN  " + values[0] + " AND " + values[0];
-      case "isTrue":
-        return conditionField + " IS TRUE ";
-      case "isFalse":
-        return conditionField + " IS FALSE ";
-      default:
-        return conditionField + " " + operator + " " + value;
-    }
+        yield conditionField + " NOT BETWEEN  " + values[0] + " AND " + values[0];
+      }
+      case "isTrue" -> conditionField + " IS TRUE ";
+      case "isFalse" -> conditionField + " IS FALSE ";
+      default -> conditionField + " " + operator + " " + value;
+    };
   }
 }

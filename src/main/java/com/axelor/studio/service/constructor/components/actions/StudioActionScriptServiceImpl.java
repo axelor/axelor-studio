@@ -327,38 +327,23 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
       StudioActionLine line, String target, boolean json, Map<String, Object> lineMap) {
 
     line = studioActionLineRepo.find(line.getId());
-    String subCode = null;
 
     String type =
         json
             ? line.getMetaJsonField().getType()
             : inflector.dasherize(line.getMetaField().getRelationship());
     lineMap.put("type", type);
-    switch (type) {
-      case MANY_TO_ONE:
-        subCode = addM2OBinding(line, true, true, json);
-        break;
-      case MANY_TO_MANY:
-        subCode = addM2MBinding(line, json);
-        break;
-      case ONE_TO_MANY:
-        subCode = addO2MBinding(line, target, json);
-        break;
-      case ONE_TO_ONE:
-        subCode = addM2OBinding(line, true, true, json);
-        break;
-      case JSON_MANY_TO_ONE:
-        subCode = addJsonM2OBinding(line, true, true, json);
-        break;
-      case JSON_MANY_TO_MANY:
-        subCode = addJsonM2MBinding(line);
-        break;
-      case JSON_ONE_TO_MANY:
-        subCode = addJsonO2MBinding(line);
-        break;
-      default:
-        throw new IllegalArgumentException("Unknown type");
-    }
+
+    String subCode =
+        switch (type) {
+          case MANY_TO_ONE, ONE_TO_ONE -> addM2OBinding(line, true, true, json);
+          case MANY_TO_MANY -> addM2MBinding(line, json);
+          case ONE_TO_MANY -> addO2MBinding(line, target, json);
+          case JSON_MANY_TO_ONE -> addJsonM2OBinding(line, true, true, json);
+          case JSON_MANY_TO_MANY -> addJsonM2MBinding(line);
+          case JSON_ONE_TO_MANY -> addJsonO2MBinding(line);
+          default -> throw new IllegalArgumentException("Unknown type");
+        };
 
     return subCode + "($," + line.getValue() + ", _$)";
   }

@@ -324,16 +324,11 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
   }
 
   protected String getUnit(String unitType) {
-    switch (unitType) {
-      case "hours":
-        return "(60 * 60)";
-
-      case "days":
-        return "((60 * 60) * 24)";
-
-      default:
-        return "60";
-    }
+    return switch (unitType) {
+      case "hours" -> "(60 * 60)";
+      case "days" -> "((60 * 60) * 24)";
+      default -> "60";
+    };
   }
 
   protected void computeAvgTimePerUser(
