@@ -17,6 +17,7 @@
  */
 package com.axelor.studio.service.filter;
 
+import com.axelor.common.ObjectUtils;
 import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.meta.db.MetaModel;
@@ -66,27 +67,23 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
   public String getGroovyFilters(
       List<Filter> conditions, String parentField, boolean isButton, boolean isField) {
 
-    String condition = null;
-
-    if (conditions == null) {
+    if (ObjectUtils.isEmpty(conditions)) {
       return null;
     }
+
+    StringBuilder condition = new StringBuilder();
 
     for (Filter filter : conditions) {
       String activeFilter = createGroovyFilter(filter, parentField, isButton, isField);
       log.debug("Active filter: {}", filter);
 
-      if (condition == null) {
-        condition = "(" + activeFilter;
+      if (condition.isEmpty()) {
+        condition.append("(").append(activeFilter);
       } else if (filter.getLogicOp() > 0) {
-        condition += ") || (" + activeFilter;
+        condition.append(") || (").append(activeFilter);
       } else {
-        condition += " && " + activeFilter;
+        condition.append(" && ").append(activeFilter);
       }
-    }
-
-    if (condition == null) {
-      return null;
     }
 
     return condition + ")";
@@ -103,17 +100,15 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
   public String createGroovyFilter(
       Filter filter, String parentField, boolean isButton, boolean isField) {
 
-    String fieldType = null;
     boolean isJson =
         (filter.getIsJson() || filter.getMetaField() == null)
             && filter.getIsJson()
             && filter.getMetaJsonField() != null;
 
-    if (!isJson) {
-      fieldType = this.getMetaFieldType(filter.getMetaField(), filter.getTargetField(), true);
-    } else {
-      fieldType = this.getJsonFieldType(filter.getMetaJsonField(), filter.getTargetField());
-    }
+    String fieldType =
+        !isJson
+            ? this.getMetaFieldType(filter.getMetaField(), filter.getTargetField(), true)
+            : this.getJsonFieldType(filter.getMetaJsonField(), filter.getTargetField());
 
     String targetField = filter.getTargetField();
     targetField = !isButton ? targetField.replace(".", "?.") : targetField;
@@ -128,7 +123,7 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
         if (!isModelFieldSame && isButton) {
           targetField =
               "$record." + "$" + filter.getMetaJsonField().getModelField() + "." + targetField;
-        } else if ((!isModelFieldSame || isModelFieldSame) && isField) {
+        } else if (isField) {
           targetField = "$" + filter.getMetaJsonField().getModelField() + "." + targetField;
         }
       } else if (!isJson && isButton) {
@@ -228,27 +223,22 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
   public String getConditionExpr(
       String operator, String field, String fieldType, String value, boolean isButton) {
 
-    switch (operator) {
-      case "isNull":
-        return field + " == null";
-      case "notNull":
-        return field + " != null";
+    if (operator.equals("isNull")) {
+      return field + " == null";
+    } else if (operator.equals("notNull")) {
+      return field + " != null";
     }
 
     if (isButton) {
       switch (fieldType) {
-        case "date":
-        case "datetime":
-        case "LocalDate":
-        case "LocalDateTime":
+        case "date", "datetime", "LocalDate", "LocalDateTime":
           value = "$moment(" + value + ")";
           field = "$moment(" + field + ")";
 
-          switch (operator) {
-            case "=":
-              return field + ".isSame(" + value + ", 'days')";
-            case "!=":
-              return "!" + field + ".isSame(" + value + ", 'days')";
+          if (operator.equals("=")) {
+            return field + ".isSame(" + value + ", 'days')";
+          } else if (operator.equals("!=")) {
+            return "!" + field + ".isSame(" + value + ", 'days')";
           }
       }
     }
