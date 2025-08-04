@@ -20,8 +20,8 @@ package com.axelor.studio.bpm.service.init;
 import com.axelor.db.JPA;
 import org.camunda.bpm.engine.impl.interceptor.Session;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
-import org.camunda.bpm.engine.impl.variable.serializer.jpa.EntityManagerSession;
-import org.camunda.bpm.engine.impl.variable.serializer.jpa.EntityManagerSessionImpl;
+import org.camunda.bpm.engine.impl.variable.serializer.EntityManagerSession;
+import org.camunda.bpm.engine.impl.variable.serializer.EntityManagerSessionImpl;
 
 public class WkfEntityManagerSessionFactory implements SessionFactory {
 

@@ -21,15 +21,15 @@ import com.axelor.db.JPA;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.script.AxelorScriptEngineFactory;
-import com.axelor.studio.bpm.script.ContextFunctionMapper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
+import org.camunda.bpm.engine.impl.variable.serializer.EntityManagerSession;
+import org.camunda.bpm.engine.impl.variable.serializer.JPAVariableSerializer;
 import org.camunda.bpm.engine.impl.variable.serializer.JavaObjectSerializer;
 import org.camunda.bpm.engine.impl.variable.serializer.TypedValueSerializer;
-import org.camunda.bpm.engine.impl.variable.serializer.jpa.EntityManagerSession;
-import org.camunda.bpm.engine.impl.variable.serializer.jpa.JPAVariableSerializer;
 import org.camunda.bpm.engine.variable.type.ValueType;
 import org.camunda.spin.plugin.impl.SpinProcessEnginePlugin;
 
@@ -42,7 +42,9 @@ public class WkfProcessEngineConfigurationImpl extends StandaloneProcessEngineCo
     super.invokePreInit();
   }
 
-  @Override
+  // TODO finish configuration after camunda upgrade or delete if not used
+  // see
+  // https://github.com/camunda/camunda-bpm-platform/commit/876ae80cd30bd3a104ba901ce7a2206cfa23f6c4#diff-d281ef56daa4a10d7da2bb5410b537957ee38de097bcc0de14367c764d070c2bL122
   protected void initJpa() {
     sessionFactories.put(
         EntityManagerSession.class,
@@ -85,6 +87,7 @@ public class WkfProcessEngineConfigurationImpl extends StandaloneProcessEngineCo
   @Override
   protected void initExpressionManager() {
     super.initExpressionManager();
-    expressionManager.addFunctionMapper(new ContextFunctionMapper());
+    Arrays.stream(WkfContextHelper.class.getDeclaredMethods())
+        .forEach(m -> expressionManager.addFunction(m.getName(), m));
   }
 }

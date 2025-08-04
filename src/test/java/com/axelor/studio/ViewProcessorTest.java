@@ -15,13 +15,12 @@ import com.axelor.studio.service.app.AppStudioService;
 import com.axelor.utils.junit.BaseTest;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import io.smallrye.common.constraint.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-public class ViewProcessorTest extends BaseTest {
+class ViewProcessorTest extends BaseTest {
 
   private final UserRepository userRepository;
   private final LoaderHelper loaderHelper;
@@ -62,7 +61,7 @@ public class ViewProcessorTest extends BaseTest {
       viewProcessor.process(formView);
     }
 
-    Assert.assertTrue(formView.getToolbar() == null || formView.getToolbar().isEmpty());
+    Assertions.assertTrue(formView.getToolbar() == null || formView.getToolbar().isEmpty());
   }
 
   @Test
@@ -81,8 +80,8 @@ public class ViewProcessorTest extends BaseTest {
     }
 
     var toolbar = formView.getToolbar();
-    Assert.assertNotNull(toolbar);
-    Assert.assertFalse(toolbar.isEmpty());
+    Assertions.assertNotNull(toolbar);
+    Assertions.assertFalse(toolbar.isEmpty());
 
     Button studioButton = toolbar.get(0);
     Assertions.assertEquals("openStudioBtn", studioButton.getName());
@@ -101,8 +100,8 @@ public class ViewProcessorTest extends BaseTest {
     }
 
     var toolbar = formView.getToolbar();
-    Assert.assertNotNull(toolbar);
-    Assert.assertFalse(toolbar.isEmpty());
+    Assertions.assertNotNull(toolbar);
+    Assertions.assertFalse(toolbar.isEmpty());
 
     Button studioButton = toolbar.get(0);
     Assertions.assertEquals("openStudioBtn", studioButton.getName());

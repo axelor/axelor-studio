@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
-import org.camunda.bpm.engine.impl.variable.serializer.jpa.JPAVariableSerializer;
+import org.camunda.bpm.engine.impl.variable.serializer.JPAVariableSerializer;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.Variables.SerializationDataFormats;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
