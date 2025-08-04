@@ -6,7 +6,7 @@
   <grid name="wkf-instance-grid" title="Process Instances"
     model="com.axelor.studio.db.WkfInstance" canNew="false" canEdit="false">
     <menubar>
-      <menu title="Timer-Blocked instances" icon="fa-clock-o">
+      <menu title="Timer-Blocked instances" icon="clock">
         <item title="Show timer-blocked instances"
           action="action-method-show-timer-blocked-instances"/>
         <item title="Resume timer-blocked instances"
