@@ -725,5 +725,4 @@ public final class BpmExceptionMessage {
       "Process instance not found : %s" /*)*/;
   public static final String MIGRATION_IS_ALREADY_ONGOING = /*$$(*/
       "Migration is already ongoing."; /*)*/
-  ;
 }
