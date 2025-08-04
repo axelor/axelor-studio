@@ -116,21 +116,15 @@ public class AxelorScriptEngineFactory implements ScriptEngineFactory {
 
   @Override
   public Object getParameter(String key) {
-    if (ScriptEngine.NAME.equals(key)) {
-      return SHORT_NAME;
-    } else if (ScriptEngine.ENGINE.equals(key)) {
-      return getEngineName();
-    } else if (ScriptEngine.ENGINE_VERSION.equals(key)) {
-      return VERSION;
-    } else if (ScriptEngine.LANGUAGE.equals(key)) {
-      return LANGUAGE_NAME;
-    } else if (ScriptEngine.LANGUAGE_VERSION.equals(key)) {
-      return GroovySystem.getVersion();
-    } else if ("THREADING".equals(key)) {
-      return "MULTITHREADED";
-    } else {
-      throw new IllegalArgumentException("Invalid key");
-    }
+    return switch (key) {
+      case ScriptEngine.NAME -> SHORT_NAME;
+      case ScriptEngine.ENGINE -> getEngineName();
+      case ScriptEngine.ENGINE_VERSION -> VERSION;
+      case ScriptEngine.LANGUAGE -> LANGUAGE_NAME;
+      case ScriptEngine.LANGUAGE_VERSION -> GroovySystem.getVersion();
+      case "THREADING" -> "MULTITHREADED";
+      case null, default -> throw new IllegalArgumentException("Invalid key");
+    };
   }
 
   @Override
