@@ -65,7 +65,7 @@ public class FilterCommonServiceImpl implements FilterCommonService {
     }
 
     if (value.contains(",")) {
-      for (String val : Arrays.asList(value.split(","))) {
+      for (String val : value.split(",")) {
         if (likeCondition == null) {
           likeCondition = conditionField + " " + likeOpr + " " + val;
         } else {
