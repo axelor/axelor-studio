@@ -71,11 +71,7 @@ public class StudioMenuRepo extends StudioMenuRepository {
 
     studioMenu.setStudioAction(null);
     if (studioAction != null) {
-      try {
-        Beans.get(StudioActionRepository.class).remove(studioAction);
-      } catch (RuntimeException e) {
-        throw e;
-      }
+      Beans.get(StudioActionRepository.class).remove(studioAction);
     }
 
     MetaStore.clear();
