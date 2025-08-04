@@ -69,7 +69,7 @@ unit test:
   coverage: /Total.*?([0-9]{1,3})%/
 
 .publish_template: &publish_configuration
-  image: axelor/app-builder:7.4
+  image: axelor/app-builder:8.0-beta
   stage: plan
   cache:
     - *base_cache_pull
