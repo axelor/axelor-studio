@@ -40,7 +40,7 @@ class TestBamlParser {
 
     Criteria criteria = Criteria.parse(rawCriteria, MetaJsonRecord.class, false);
     criteria.createQuery(MetaJsonRecord.class).toString();
-    System.err.println(criteria.toString());
+    System.err.println(criteria);
     System.err.println(criteria.createQuery(MetaJsonRecord.class).toString());
   }
 }

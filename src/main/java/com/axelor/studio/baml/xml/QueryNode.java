@@ -65,7 +65,7 @@ public class QueryNode extends BaseTaskNode {
       target = "def " + target;
     }
 
-    return "\n" + target + " = " + codeBuilder.toString();
+    return "\n" + target + " = " + codeBuilder;
   }
 
   protected void addQuery(StringBuilder codeBuilder, String model) {
@@ -87,7 +87,7 @@ public class QueryNode extends BaseTaskNode {
 
     if (!Strings.isNullOrEmpty(filter)) {
       codeBuilder.append(".filter(" + filter + ")");
-      codeBuilder.append(params.toString());
+      codeBuilder.append(params);
     }
 
     if (returnType.equals(ReturnType.SINGLE)) {

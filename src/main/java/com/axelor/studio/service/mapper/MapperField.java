@@ -118,7 +118,7 @@ public class MapperField {
     stb.append(value.toScript(this));
 
     if (!StringUtils.isBlank(condition)) {
-      return "if (" + condition + ") {\n\t" + stb.toString() + "\n}";
+      return "if (" + condition + ") {\n\t" + stb + "\n}";
     }
 
     return stb.toString();
