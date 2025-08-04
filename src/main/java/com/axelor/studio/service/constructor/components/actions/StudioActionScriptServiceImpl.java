@@ -236,10 +236,12 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
         value = "new BigDecimal(" + value + ")";
       }
 
-      if (Boolean.TRUE.equals(line.getIsTargetJson() && jsonField != null)
+      if (line.getIsTargetJson()
+          && jsonField != null
           && (jsonField.getTargetJsonModel() != null || jsonField.getTargetModel() != null)) {
         value = addRelationalBinding(line, target, true, lineMap);
-      } else if (Boolean.TRUE.equals(!line.getIsTargetJson() && metaField != null)
+      } else if (!line.getIsTargetJson()
+          && metaField != null
           && metaField.getRelationship() != null) {
         value = addRelationalBinding(line, target, false, lineMap);
       }
