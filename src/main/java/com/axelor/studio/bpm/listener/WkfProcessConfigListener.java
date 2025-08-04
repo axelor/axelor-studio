@@ -34,7 +34,7 @@ public class WkfProcessConfigListener {
     String tenantId = BpmTools.getCurentTenant();
 
     if (!WkfCache.WKF_MODEL_CACHE.containsKey(tenantId)) {
-      WkfCache.WKF_MODEL_CACHE.put(tenantId, new HashMap<Long, String>());
+      WkfCache.WKF_MODEL_CACHE.put(tenantId, new HashMap<>());
     }
 
     String modelName = config.getModel();

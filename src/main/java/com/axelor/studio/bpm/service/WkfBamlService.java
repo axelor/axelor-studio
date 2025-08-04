@@ -67,7 +67,7 @@ public class WkfBamlService implements JavaDelegate {
 
     if (record != null) {
       String varName = Beans.get(WkfCommonService.class).getVarName(record);
-      Map<String, Object> modelMap = new HashMap<String, Object>();
+      Map<String, Object> modelMap = new HashMap<>();
       modelMap.put(varName, record);
       execution
           .getProcessInstance()
@@ -79,7 +79,7 @@ public class WkfBamlService implements JavaDelegate {
 
     Map<String, Object> variables = execution.getVariables();
 
-    Map<String, Object> context = new HashMap<String, Object>();
+    Map<String, Object> context = new HashMap<>();
 
     variables.forEach(
         (key, value) -> {

@@ -343,7 +343,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
 
     jsonModel = Beans.get(MetaJsonModelRepository.class).find(jsonModel.getId());
 
-    List<MetaJsonField> jsonFieldList = new ArrayList<MetaJsonField>(jsonModel.getFields());
+    List<MetaJsonField> jsonFieldList = new ArrayList<>(jsonModel.getFields());
 
     if (metaJsonFieldList.equals(jsonFieldList)) {
       return;

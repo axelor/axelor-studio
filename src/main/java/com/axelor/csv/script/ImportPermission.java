@@ -61,7 +61,7 @@ public class ImportPermission {
                   group -> {
                     Set<Permission> permissions = group.getPermissions();
                     if (permissions == null) {
-                      permissions = new HashSet<Permission>();
+                      permissions = new HashSet<>();
                     }
                     permissions.add(permissionRepo.find(permission.getId()));
                     group.setPermissions(permissions);

@@ -105,7 +105,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
       WkfTaskConfig config,
       String wkfModelId) {
 
-    List<MetaAttrs> metaAttrsList = new ArrayList<MetaAttrs>();
+    List<MetaAttrs> metaAttrsList = new ArrayList<>();
 
     Collection<CamundaProperty> properties =
         modelElementInstance.getChildElementsByType(CamundaProperty.class);
@@ -251,7 +251,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
 
   protected Set<Role> findRoles(String roles) {
 
-    Set<Role> roleSet = new HashSet<Role>();
+    Set<Role> roleSet = new HashSet<>();
 
     if (roles != null) {
       roleSet.addAll(
@@ -275,7 +275,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
   @Transactional(rollbackOn = Exception.class)
   public void saveMetaAttrs(List<MetaAttrs> metaAttrsList, Long wkfModelId) {
 
-    List<Long> metaAttrsIds = new ArrayList<Long>();
+    List<Long> metaAttrsIds = new ArrayList<>();
     metaAttrsIds.add(0L);
 
     metaAttrsList.forEach(

@@ -64,7 +64,7 @@ public class WkfProcessEngineConfigurationImpl extends StandaloneProcessEngineCo
     }
     variableSerializers.addSerializer(new JavaObjectSerializer());
     @SuppressWarnings("rawtypes")
-    List<TypedValueSerializer> customPreVariableTypes = new ArrayList<TypedValueSerializer>();
+    List<TypedValueSerializer> customPreVariableTypes = new ArrayList<>();
     customPreVariableTypes.add(new JPAVariableSerializer());
     customPreVariableTypes.add(new JavaObjectSerializer());
     setCustomPreVariableSerializers(customPreVariableTypes);

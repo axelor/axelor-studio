@@ -39,7 +39,7 @@ public class JPAEntityMappings {
   private JPAEntityScanner enitityScanner;
 
   public JPAEntityMappings() {
-    classMetaDatamap = new HashMap<String, EntityMetaData>();
+    classMetaDatamap = new HashMap<>();
     enitityScanner = new JPAEntityScanner();
   }
 

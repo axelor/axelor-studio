@@ -40,7 +40,7 @@ public class MapperRecord {
 
   protected StringBuilder scriptBuilder = new StringBuilder();
 
-  protected List<MapperField> fields = new ArrayList<MapperField>();
+  protected List<MapperField> fields = new ArrayList<>();
 
   public String getTargetModel() {
     return targetModel;

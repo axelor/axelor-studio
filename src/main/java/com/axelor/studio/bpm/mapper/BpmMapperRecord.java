@@ -30,7 +30,7 @@ public class BpmMapperRecord extends MapperRecord {
   protected boolean createVariable = false;
 
   @JsonProperty("fields")
-  protected List<BpmMapperField> bpmMapperFields = new ArrayList<BpmMapperField>();
+  protected List<BpmMapperField> bpmMapperFields = new ArrayList<>();
 
   public String getProcessId() {
     return processId;

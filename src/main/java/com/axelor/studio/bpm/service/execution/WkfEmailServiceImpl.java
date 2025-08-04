@@ -132,7 +132,7 @@ public class WkfEmailServiceImpl implements WkfEmailService {
 
       String content = String.format(EMAIL_CONTENT, user.getName(), activeNode, url, url);
 
-      List<EmailAddress> toEmailAddressList = new ArrayList<EmailAddress>();
+      List<EmailAddress> toEmailAddressList = new ArrayList<>();
       EmailAddress emailAddress = emailAddressRepo.findByAddress(user.getEmail());
       if (emailAddress == null) {
         emailAddress = new EmailAddress(user.getEmail());

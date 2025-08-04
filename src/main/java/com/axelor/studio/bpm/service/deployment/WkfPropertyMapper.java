@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class WkfPropertyMapper {
 
-  public static final Map<String, String> FIELD_MAP = new HashMap<String, String>();
+  public static final Map<String, String> FIELD_MAP = new HashMap<>();
 
   static {
     FIELD_MAP.put("createTask", "createUserAction");
@@ -59,8 +59,7 @@ public class WkfPropertyMapper {
     FIELD_MAP.put("durationType", "durationType");
   }
 
-  protected static final Map<String, String> PROCESS_DISPLAY_PROPERTIES =
-      new HashMap<String, String>();
+  protected static final Map<String, String> PROCESS_DISPLAY_PROPERTIES = new HashMap<>();
 
   static {
     PROCESS_DISPLAY_PROPERTIES.put("displayStatus", "displayStatus");
@@ -68,8 +67,7 @@ public class WkfPropertyMapper {
     PROCESS_DISPLAY_PROPERTIES.put("onlyOnClientChange", "onlyOnClientChange");
   }
 
-  protected static final Map<String, String> PROCESS_CONFIG_PROPERTIES =
-      new HashMap<String, String>();
+  protected static final Map<String, String> PROCESS_CONFIG_PROPERTIES = new HashMap<>();
 
   static {
     PROCESS_CONFIG_PROPERTIES.put("title", "title");
@@ -82,7 +80,7 @@ public class WkfPropertyMapper {
     PROCESS_CONFIG_PROPERTIES.put("isDirectCreation", "isDirectCreation");
   }
 
-  protected static final Map<String, String> MENU_PROPERTIES = new HashMap<String, String>();
+  protected static final Map<String, String> MENU_PROPERTIES = new HashMap<>();
 
   static {
     MENU_PROPERTIES.put("menuName", "menuName");

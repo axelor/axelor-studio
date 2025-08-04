@@ -32,15 +32,14 @@ import org.apache.commons.collections.map.MultiValueMap;
 
 public class WkfCache {
 
-  public static Map<String, Map<Long, String>> WKF_MODEL_CACHE =
-      new ConcurrentHashMap<String, Map<Long, String>>();
-  public static Map<String, MultiMap> WKF_BUTTON_CACHE = new ConcurrentHashMap<String, MultiMap>();
+  public static Map<String, Map<Long, String>> WKF_MODEL_CACHE = new ConcurrentHashMap<>();
+  public static Map<String, MultiMap> WKF_BUTTON_CACHE = new ConcurrentHashMap<>();
 
   public static void initWkfModelCache() {
 
     List<WkfProcessConfig> wkfProcessConfigs = JPA.all(WkfProcessConfig.class).fetch();
 
-    Map<Long, String> modelMap = new HashMap<Long, String>();
+    Map<Long, String> modelMap = new HashMap<>();
     modelMap.put(0L, "");
     wkfProcessConfigs.forEach(
         config -> {

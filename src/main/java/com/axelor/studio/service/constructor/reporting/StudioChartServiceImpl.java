@@ -112,7 +112,7 @@ public class StudioChartServiceImpl implements StudioChartService {
 
     searchFields = new ArrayList<>();
     //		onNewFields = new ArrayList<RecordField>();
-    joins = new ArrayList<String>();
+    joins = new ArrayList<>();
     categType = "text";
 
     Map<String, Object> queryMap = prepareQuery(studioChart);

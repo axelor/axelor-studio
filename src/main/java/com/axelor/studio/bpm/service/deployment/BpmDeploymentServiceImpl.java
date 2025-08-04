@@ -226,7 +226,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       boolean force) {
     Deployment deployment = deploymentBuilder.deploy();
 
-    Map<String, String> processMap = new HashMap<String, String>();
+    Map<String, String> processMap = new HashMap<>();
 
     ProcessDefinitionQuery query =
         engine
@@ -239,7 +239,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
     List<ProcessDefinition> definitions = query.list();
 
-    Map<String, WkfProcess> migrationProcessMap = new HashMap<String, WkfProcess>();
+    Map<String, WkfProcess> migrationProcessMap = new HashMap<>();
 
     log.debug("Definitions deployed: {}", definitions.size());
     definitions.forEach(
@@ -562,7 +562,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   protected Map<String, WkfProcessConfig> createConfigMap(WkfProcess process) {
 
-    Map<String, WkfProcessConfig> configMap = new HashMap<String, WkfProcessConfig>();
+    Map<String, WkfProcessConfig> configMap = new HashMap<>();
 
     if (process.getWkfProcessConfigList() != null) {
       process

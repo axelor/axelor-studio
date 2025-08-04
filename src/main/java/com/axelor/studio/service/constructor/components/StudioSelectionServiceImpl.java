@@ -160,7 +160,7 @@ public class StudioSelectionServiceImpl implements StudioSelectionService {
 
     MetaSelect metaSelect = xmlId != null ? findMetaSelectById(xmlId) : findMetaSelectByName(name);
 
-    Map<String, MetaSelectItem> itemMap = new HashMap<String, MetaSelectItem>();
+    Map<String, MetaSelectItem> itemMap = new HashMap<>();
 
     if (metaSelect == null) {
       metaSelect = new MetaSelect(name);

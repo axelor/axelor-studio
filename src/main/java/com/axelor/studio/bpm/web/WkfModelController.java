@@ -536,8 +536,7 @@ public class WkfModelController {
       String contributorsJson = (String) request.getData().get("contributor");
       ObjectMapper objectMapper = new ObjectMapper();
       List<MergeSplitContributor> contributors =
-          objectMapper.readValue(
-              contributorsJson, new TypeReference<List<MergeSplitContributor>>() {});
+          objectMapper.readValue(contributorsJson, new TypeReference<>() {});
       String result = Beans.get(WkfModelMergerSplitterService.class).merge(contributors);
       response.setValue("result", result);
     } catch (Exception e) {
@@ -553,10 +552,9 @@ public class WkfModelController {
       Boolean deploy = (Boolean) request.getData().get("deploy");
       ObjectMapper objectMapper = new ObjectMapper();
       List<MergeSplitContributor> contributors =
-          objectMapper.readValue(
-              contributorJson, new TypeReference<List<MergeSplitContributor>>() {});
+          objectMapper.readValue(contributorJson, new TypeReference<>() {});
       List<MergeSplitResult> results =
-          objectMapper.readValue(resultsString, new TypeReference<List<MergeSplitResult>>() {});
+          objectMapper.readValue(resultsString, new TypeReference<>() {});
       List<Long> createdWkfModels =
           Beans.get(WkfModelMergerSplitterService.class).save(results, contributors, deploy);
       response.setValue("createdWkfModels", createdWkfModels);

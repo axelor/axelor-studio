@@ -81,7 +81,7 @@ public class StudioDashboardServiceImpl implements StudioDashboardService {
     String boardName = studioDashboard.getName();
     dashboard.setTitle(studioDashboard.getTitle());
     dashboard.setName(studioDashboard.getName());
-    List<AbstractWidget> dashlets = new ArrayList<AbstractWidget>();
+    List<AbstractWidget> dashlets = new ArrayList<>();
 
     studioDashboard.clearGeneratedActions();
     studioDashboard

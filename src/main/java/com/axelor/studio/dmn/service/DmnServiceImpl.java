@@ -98,7 +98,7 @@ public class DmnServiceImpl implements DmnService {
 
     FullContext context = new FullContext(model);
     String varName = wkfCommonService.getVarName(EntityHelper.getEntity(model));
-    Map<String, Object> modelMap = new HashMap<String, Object>();
+    Map<String, Object> modelMap = new HashMap<>();
     modelMap.put(varName, context);
     DmnDecisionTableResult dmnDecisionTableResult =
         processEngine
@@ -316,7 +316,7 @@ public class DmnServiceImpl implements DmnService {
 
   protected List<String> extractFields(String decisionDefinitionId) {
 
-    List<String> fields = new ArrayList<String>();
+    List<String> fields = new ArrayList<>();
 
     ProcessEngine processEngine = processEngineService.getEngine();
 

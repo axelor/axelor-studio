@@ -333,7 +333,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     ProcessInstantiationBuilder builder =
         runTimeService.createProcessInstanceById(wkfProcess.getProcessId());
 
-    Map<String, Object> modelMap = new HashMap<String, Object>();
+    Map<String, Object> modelMap = new HashMap<>();
     modelMap.put(wkfService.getVarName(model), new FullContext(model));
     modelMap.put("modelId", model.getId());
     builder.setVariables(wkfService.createVariables(modelMap));
@@ -714,7 +714,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
   protected Map<String, Object> createVariables(String processInstanceId) {
 
-    Map<String, Object> varMap = new HashMap<String, Object>();
+    Map<String, Object> varMap = new HashMap<>();
 
     WkfInstance wkfInstance = wkfInstanceRepository.findByInstanceId(processInstanceId);
 

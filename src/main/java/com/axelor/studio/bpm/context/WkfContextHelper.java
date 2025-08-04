@@ -182,7 +182,7 @@ public class WkfContextHelper {
 
   public static List<Long> getIdList(List<FullContext> lines) {
 
-    List<Long> values = new ArrayList<Long>();
+    List<Long> values = new ArrayList<>();
 
     lines.forEach(fullContext -> values.add((Long) fullContext.get("id")));
 

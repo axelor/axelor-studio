@@ -133,7 +133,7 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
 
   protected void setDecisionTables(WkfDmnModel wkfDmnModel, DmnModelInstance dmnModelInstance) {
 
-    Map<String, DmnTable> dmnTableMap = new HashMap<String, DmnTable>();
+    Map<String, DmnTable> dmnTableMap = new HashMap<>();
 
     if (wkfDmnModel.getDmnTableList() != null) {
       dmnTableMap =
@@ -163,7 +163,7 @@ public class DmnDeploymentServiceImpl implements DmnDeploymentService {
 
   protected void setDmnField(DecisionTable decisionTable, DmnTable dmnTable) {
 
-    Map<String, DmnField> outputFieldMap = new HashMap<String, DmnField>();
+    Map<String, DmnField> outputFieldMap = new HashMap<>();
     if (dmnTable.getOutputDmnFieldList() != null) {
       outputFieldMap =
           dmnTable.getOutputDmnFieldList().stream()

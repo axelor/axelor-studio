@@ -180,7 +180,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   @Override
   public Map<String, InputStream> getExportTemplateResources() {
 
-    Map<String, InputStream> templateMap = new HashMap<String, InputStream>();
+    Map<String, InputStream> templateMap = new HashMap<>();
 
     Arrays.asList(EXPORT_TEMPLATES)
         .forEach(
@@ -258,7 +258,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
     xmlBind.setBindings(getMetaFieldBinding(modelMapper, dataLoader, relationalInput));
 
-    List<XMLBind> rootBindings = new ArrayList<XMLBind>();
+    List<XMLBind> rootBindings = new ArrayList<>();
     rootBindings.add(xmlBind);
     xmlInput.setBindings(rootBindings);
 
@@ -303,7 +303,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
     xmlBindJson.setBindings(geJsonFieldBinding(jsonFieldMap, dataLoader, relationalInput));
 
-    List<XMLBind> rootBindings = new ArrayList<XMLBind>();
+    List<XMLBind> rootBindings = new ArrayList<>();
     rootBindings.add(xmlBindJson);
     xmlInput.setBindings(rootBindings);
 
@@ -616,7 +616,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   protected List<XMLBind> getMetaFieldBinding(
       Mapper modelMapper, AppDataLoader dataLoader, boolean relationalInput) {
 
-    List<XMLBind> fieldBindings = new ArrayList<XMLBind>();
+    List<XMLBind> fieldBindings = new ArrayList<>();
 
     for (MetaField field : dataLoader.getMetaFieldSet()) {
 

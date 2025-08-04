@@ -87,9 +87,9 @@ public class WkfNodeServiceImpl implements WkfNodeService {
       wkfModel.getWkfTaskConfigList().forEach(config -> configMap.put(config.getName(), config));
     }
 
-    List<MetaAttrs> metaAttrsList = new ArrayList<MetaAttrs>();
+    List<MetaAttrs> metaAttrsList = new ArrayList<>();
 
-    Collection<FlowNode> activities = new ArrayList<FlowNode>();
+    Collection<FlowNode> activities = new ArrayList<>();
     activities.addAll(bpmInstance.getModelElementsByType(Activity.class));
     activities.addAll(bpmInstance.getModelElementsByType(CatchEvent.class));
     activities.addAll(bpmInstance.getModelElementsByType(EndEvent.class));

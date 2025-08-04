@@ -239,7 +239,7 @@ public class WkfMenuServiceImpl implements WkfMenuService {
       grid = taskMenu.getGridView();
     }
 
-    Map<String, String> viewMap = new HashMap<String, String>();
+    Map<String, String> viewMap = new HashMap<>();
     viewMap.put("form", form);
     viewMap.put("grid", grid);
 

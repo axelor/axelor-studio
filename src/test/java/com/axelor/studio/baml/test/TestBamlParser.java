@@ -27,9 +27,9 @@ class TestBamlParser {
 
   @Test
   void testJsonQuery() {
-    Map<String, Object> rawCriteria = new HashMap<String, Object>();
+    Map<String, Object> rawCriteria = new HashMap<>();
 
-    Map<String, Object> _domainContext = new HashMap<String, Object>();
+    Map<String, Object> _domainContext = new HashMap<>();
     _domainContext.put("jsonModel", "File");
 
     rawCriteria.put("fieldName", "attrs.integer1");
