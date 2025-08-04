@@ -34,7 +34,9 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.metamodel.MappingMetamodel;
 import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,10 +69,12 @@ public class FilterSqlServiceImpl implements FilterSqlService {
   public String getColumn(String model, String field) {
 
     SessionImpl sessionImpl = (SessionImpl) JPA.em().getDelegate();
-    @SuppressWarnings("deprecation")
-    AbstractEntityPersister aep =
-        ((AbstractEntityPersister)
-            sessionImpl.getSession().getSessionFactory().getClassMetadata(model));
+
+    SessionFactoryImplementor sessionFactory = sessionImpl.getSession().getSessionFactory();
+    MappingMetamodel mappingMetamodel =
+        (MappingMetamodel) sessionFactory.getMappingMetamodel().getEntityDescriptor(model);
+    AbstractEntityPersister aep = (AbstractEntityPersister) mappingMetamodel;
+
     String[] columns = aep.getPropertyColumnNames(field);
     if (columns != null && columns.length > 0) {
       return columns[0];
