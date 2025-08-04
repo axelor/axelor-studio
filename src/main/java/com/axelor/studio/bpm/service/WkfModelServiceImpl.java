@@ -108,7 +108,7 @@ public class WkfModelServiceImpl implements WkfModelService {
       String newVersionTag =
           Strings.isNullOrEmpty(wkfModel.getVersionTag())
               ? "1"
-              : String.valueOf(Long.valueOf(wkfModel.getVersionTag()) + 1);
+              : String.valueOf(Long.parseLong(wkfModel.getVersionTag()) + 1);
       newVersion.setCode(wkfModel.getCode());
       newVersion.setVersionTag(newVersionTag);
     }
