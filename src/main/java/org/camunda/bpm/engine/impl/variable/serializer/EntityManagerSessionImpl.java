@@ -25,7 +25,6 @@ import org.camunda.bpm.engine.impl.cfg.TransactionContext;
 import org.camunda.bpm.engine.impl.cfg.TransactionListener;
 import org.camunda.bpm.engine.impl.cfg.TransactionState;
 import org.camunda.bpm.engine.impl.context.Context;
-import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 
 /**
  * @author Frederik Heremans
@@ -98,20 +97,16 @@ public class EntityManagerSessionImpl implements EntityManagerSession {
       if (handleTransactions) {
         // Add transaction listeners, if transactions should be handled
         TransactionListener jpaTransactionCommitListener =
-            new TransactionListener() {
-              public void execute(CommandContext commandContext) {
-                if (isTransactionActive()) {
-                  entityManager.getTransaction().commit();
-                }
+            commandContext -> {
+              if (isTransactionActive()) {
+                entityManager.getTransaction().commit();
               }
             };
 
         TransactionListener jpaTransactionRollbackListener =
-            new TransactionListener() {
-              public void execute(CommandContext commandContext) {
-                if (isTransactionActive()) {
-                  entityManager.getTransaction().rollback();
-                }
+            commandContext -> {
+              if (isTransactionActive()) {
+                entityManager.getTransaction().rollback();
               }
             };
 
