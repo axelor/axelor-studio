@@ -62,8 +62,7 @@ public class ValueMapperController {
 
       Object result = Beans.get(ValueMapperService.class).execute(mapper, model);
 
-      if (result != null
-          && result instanceof FullContext fullContext
+      if (result instanceof FullContext fullContext
           && mapper.getScript().startsWith("def rec = __ctx__.create(")) {
         Object object = fullContext.getTarget();
         String title = object.getClass().getSimpleName();

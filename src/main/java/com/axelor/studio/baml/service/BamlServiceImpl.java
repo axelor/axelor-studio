@@ -157,7 +157,7 @@ public class BamlServiceImpl implements BamlService {
     GroovyScriptHelper helper = new GroovyScriptHelper(bindings);
     Object object = helper.eval(bamlModel.getResultScript());
 
-    if (object != null && object instanceof Model) {
+    if (object instanceof Model) {
       return JpaRepository.of(EntityHelper.getEntityClass((Model) object)).save((Model) object);
     }
 
@@ -177,7 +177,7 @@ public class BamlServiceImpl implements BamlService {
     GroovyScriptHelper helper = new GroovyScriptHelper(bindings);
     Object object = helper.eval(bamlModel.getResultScript());
 
-    if (object != null && object instanceof Model) {
+    if (object instanceof Model) {
       return JpaRepository.of(EntityHelper.getEntityClass((Model) object)).save((Model) object);
     }
 
