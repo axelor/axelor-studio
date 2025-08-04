@@ -6,10 +6,10 @@ buildscript {
       content { excludeGroupByRegex 'com\\.axelor.*' }
     }
     maven {
-      url 'https://plugins.gradle.org/m2/'
+      url = 'https://plugins.gradle.org/m2/'
       content { excludeGroupByRegex 'com\\.axelor.*' }
     }
-    maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
+    maven { url = 'https://repository.axelor.com/nexus/repository/maven-public/' }
   }
   ext.aopVersion = aopVersion
   repositories repos
@@ -37,7 +37,7 @@ try {
 }
 
 testlogger {
-  theme 'mocha'
+  theme = 'mocha'
 }
 
 java {
@@ -47,7 +47,7 @@ java {
 }
 
 group = 'com.axelor.addons'
-description 'Axelor Studio Module'
+description = 'Axelor Studio Module'
 
 axelor {
   title 'Axelor Studio'

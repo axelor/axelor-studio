@@ -10,7 +10,7 @@ buildscript {
 apply plugin: com.diffplug.gradle.spotless.SpotlessPlugin
 
 spotless {
-  enforceCheck false
+  enforceCheck = false
 
   format 'misc', {
     target fileTree(projectDir) {
