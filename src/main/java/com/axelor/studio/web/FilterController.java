@@ -38,7 +38,7 @@ public class FilterController {
       MetaField metaField = filter.getMetaField();
       MetaJsonField metaJson = filter.getMetaJsonField();
 
-      Boolean isJson = filter.getIsJson() != null ? filter.getIsJson() : false;
+      boolean isJson = filter.getIsJson() != null && filter.getIsJson();
 
       if (!isJson && metaField != null) {
         String type =
