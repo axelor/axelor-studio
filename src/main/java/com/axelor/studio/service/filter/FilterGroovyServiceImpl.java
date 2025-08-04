@@ -105,9 +105,9 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
 
     String fieldType = null;
     boolean isJson =
-        (!filter.getIsJson() && filter.getMetaField() != null)
-            ? false
-            : (filter.getIsJson() && filter.getMetaJsonField() != null) ? true : false;
+        (filter.getIsJson() || filter.getMetaField() == null)
+            && filter.getIsJson()
+            && filter.getMetaJsonField() != null;
 
     if (!isJson) {
       fieldType = this.getMetaFieldType(filter.getMetaField(), filter.getTargetField(), true);
