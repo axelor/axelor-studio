@@ -144,8 +144,8 @@ jacoco {
 
 tasks.withType(JavaCompile).configureEach {
   // Only depend on frontCopy if it exists
-  if (project.tasks.findByName('frontCopy') != null) {
-    mustRunAfter project.tasks.findByName('frontCopy')
+  if (project.tasks.named('frontCopy') != null) {
+    mustRunAfter project.tasks.named('frontCopy')
   }
 }
 
