@@ -205,8 +205,7 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
       nodes.forEach(
           node -> {
             String sourceNodeId = (String) node.get("nodeId");
-            Map<String, Object> targetNodeMap =
-                (Map) Optional.ofNullable(node.get("selected")).orElse(null);
+            Map<String, Object> targetNodeMap = (Map) node.get("selected");
             String targetNodeId =
                 Optional.ofNullable(targetNodeMap).map(m -> (String) m.get("nodeId")).orElse(null);
             nodeMap.put(sourceNodeId, targetNodeId);
