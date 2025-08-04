@@ -98,7 +98,7 @@ public class BpmManagerDashboardTaskServiceImpl implements BpmManagerDashboardTa
     if (CollectionUtils.isEmpty(processList)) {
       return dataMap;
     }
-    WkfProcess process = processList.get(0);
+    WkfProcess process = processList.getFirst();
 
     WkfProcessConfig processConfig =
         process.getWkfProcessConfigList().stream()

@@ -44,7 +44,8 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
 
   @Override
   public Object eval(String script, ScriptContext ctx) {
-    Bindings bindings = AxelorBindingsHelper.getBindings(ctx.getBindings(ctx.getScopes().get(0)));
+    Bindings bindings =
+        AxelorBindingsHelper.getBindings(ctx.getBindings(ctx.getScopes().getFirst()));
     Object object;
     try {
       object = new GroovyScriptHelper(bindings).eval(script);

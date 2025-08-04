@@ -124,7 +124,7 @@ public class StudioChartServiceImpl implements StudioChartService {
 
     ObjectViews chartView = XMLViews.fromXML(xml);
 
-    MetaView metaView = metaService.generateMetaView(chartView.getViews().get(0));
+    MetaView metaView = metaService.generateMetaView(chartView.getViews().getFirst());
 
     if (metaView != null) {
       studioChart.setMetaViewGenerated(metaView);

@@ -81,7 +81,7 @@ public class BamlServiceImpl implements BamlService {
 
     if (processActionNodes != null) {
 
-      ProcessActionNode processActionNode = processActionNodes.get(0);
+      ProcessActionNode processActionNode = processActionNodes.getFirst();
 
       generateCode(codeBuilder, processActionNode);
     }

@@ -62,7 +62,7 @@ public class WkfDashboardController {
             ActionView.define(I18n.get("Workflow dashboard"))
                 .add("dashboard", "dasbhoard-wkf-model")
                 .context("_wkfId", wkfModel.getId())
-                .context("_process", wkfModel.getWkfProcessList().get(0).getName())
+                .context("_process", wkfModel.getWkfProcessList().getFirst().getName())
                 .map());
       } else {
         response.setView(

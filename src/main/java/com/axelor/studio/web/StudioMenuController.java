@@ -131,7 +131,7 @@ public class StudioMenuController {
 
       MetaAction metaAction = studioMenu.getMetaMenu().getAction();
       ObjectViews objectViews = XMLViews.fromXML(metaAction.getXml());
-      ActionView actionView = (ActionView) objectViews.getActions().get(0);
+      ActionView actionView = (ActionView) objectViews.getActions().getFirst();
 
       ActionViewBuilder actionViewBuilder = ActionView.define(I18n.get(actionView.getTitle()));
       actionViewBuilder.model(actionView.getModel());

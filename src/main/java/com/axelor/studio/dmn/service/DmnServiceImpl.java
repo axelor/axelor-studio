@@ -110,7 +110,7 @@ public class DmnServiceImpl implements DmnService {
         dmnTableRepo.all().filter("self.decisionId = ?1", decisionDefinitionId).fetchOne();
 
     if (dmnTable != null && !CollectionUtils.isEmpty(result)) {
-      Map<String, Object> res = result.get(0);
+      Map<String, Object> res = result.getFirst();
       dmnTable.getOutputDmnFieldList().stream()
           .filter(dmnField -> dmnField.getField() != null)
           .forEach(

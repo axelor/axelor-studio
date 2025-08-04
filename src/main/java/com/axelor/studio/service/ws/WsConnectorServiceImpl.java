@@ -425,8 +425,8 @@ public class WsConnectorServiceImpl implements WsConnectorService {
 
     Entity<?> entity = null;
     Object obj = null;
-    String key = payLoadList.get(0).getWsKey();
-    String value = payLoadList.get(0).getWsValue();
+    String key = payLoadList.getFirst().getWsKey();
+    String value = payLoadList.getFirst().getWsValue();
     String text = null;
     if (key.equals("eval")) {
       obj = ctx.get(value);
@@ -527,9 +527,9 @@ public class WsConnectorServiceImpl implements WsConnectorService {
       return Entity.xml("");
     }
 
-    var rootName = wsKeyValues.get(0).getWsKey();
+    var rootName = wsKeyValues.getFirst().getWsKey();
 
-    var payload = createPayload(templates, ctx, wsKeyValues.get(0));
+    var payload = createPayload(templates, ctx, wsKeyValues.getFirst());
 
     try {
       XmlMapper xmlMapper = new XmlMapper();

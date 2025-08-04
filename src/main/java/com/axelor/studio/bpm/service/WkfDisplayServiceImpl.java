@@ -343,7 +343,7 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
         activeNodes =
             historyService
                 .createHistoricActivityInstanceQuery()
-                .activityId(terminatedNodeIds.get(0))
+                .activityId(terminatedNodeIds.getFirst())
                 .processInstanceId(wkfInstance.getInstanceId())
                 .list();
       }

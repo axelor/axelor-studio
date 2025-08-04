@@ -539,7 +539,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       return;
     }
 
-    ModelElementInstance processConfigElement = processConfigElements.get(0);
+    ModelElementInstance processConfigElement = processConfigElements.getFirst();
 
     Map<String, WkfProcessConfig> configMap = createConfigMap(process);
 
@@ -724,7 +724,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       AtomicBoolean isMigrationError) {
     sortedDefinitions.sort(Comparator.comparing(ProcessDefinition::getVersion));
 
-    ProcessDefinition latestDefinition = sortedDefinitions.get(sortedDefinitions.size() - 1);
+    ProcessDefinition latestDefinition = sortedDefinitions.getLast();
 
     for (int i = 0; i < sortedDefinitions.size() - 1; i++) {
       ProcessDefinition fromVersion = sortedDefinitions.get(i);

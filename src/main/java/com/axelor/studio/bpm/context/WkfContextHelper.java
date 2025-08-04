@@ -211,7 +211,7 @@ public class WkfContextHelper {
   private static Object createListVariable(Collection<?> collection) {
     if (isListOfFullContext(collection)) {
       List<FullContext> contexts = (List<FullContext>) collection;
-      String key = contexts.get(0).getContextClass().getName();
+      String key = contexts.getFirst().getContextClass().getName();
 
       List<String> serializedModels =
           contexts.stream()

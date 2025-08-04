@@ -239,10 +239,10 @@ public class WkfCommonServiceImpl implements WkfCommonService {
       if (params.size() >= 2) {
         List<Object> queryParams =
             params.stream().map(it -> evalExpression(wkfModel, it)).collect(Collectors.toList());
-        String queryModel = (String) queryParams.get(0);
-        queryParams.remove(0);
-        String query = (String) queryParams.get(0);
-        queryParams.remove(0);
+        String queryModel = (String) queryParams.getFirst();
+        queryParams.removeFirst();
+        String query = (String) queryParams.getFirst();
+        queryParams.removeFirst();
         log.debug("Find model: {}, query: {}, params: {}", queryModel, query, queryParams);
         object = WkfContextHelper.filterOne(queryModel, query, queryParams.toArray());
       }

@@ -125,7 +125,7 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
   }
 
   protected String mergeXml(List<String> modelsXmlList) throws IllegalStateException {
-    String mergedDiag = regenerateIds(modelsXmlList.get(0));
+    String mergedDiag = regenerateIds(modelsXmlList.getFirst());
     mergedDiag = initialize(mergedDiag);
 
     String finalMergedDiagXml = mergedDiag;
@@ -640,7 +640,7 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
                         .collect(Collectors.toList());
 
                 if (!wkfProcessConfigs.isEmpty()) {
-                  MetaModel metaModel = wkfProcessConfigs.get(0).getMetaModel();
+                  MetaModel metaModel = wkfProcessConfigs.getFirst().getMetaModel();
                   try {
                     Model model =
                         Query.of(Class.forName(metaModel.getFullName()).asSubclass(Model.class))
@@ -742,6 +742,6 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
       return null;
     }
 
-    return "bpm-merge-split/?type=split&&id=" + ids.get(0);
+    return "bpm-merge-split/?type=split&&id=" + ids.getFirst();
   }
 }

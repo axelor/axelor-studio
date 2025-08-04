@@ -97,7 +97,7 @@ public class StudioMenuServiceImpl implements StudioMenuService {
       ObjectViews objectViews = XMLViews.fromXML(metaAction.getXml());
       List<Action> actions = objectViews.getActions();
       if (actions != null && !actions.isEmpty()) {
-        ActionView action = (ActionView) actions.get(0);
+        ActionView action = (ActionView) actions.getFirst();
         if (action.getModel() != null
             && action.getModel().contentEquals(MetaJsonRecord.class.getName())) {
           return Optional.empty();

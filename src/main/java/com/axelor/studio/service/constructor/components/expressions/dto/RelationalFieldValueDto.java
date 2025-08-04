@@ -28,7 +28,7 @@ public class RelationalFieldValueDto implements FieldValueDto {
       String valuesStr = "[";
       for (String value : values) {
         valuesStr += String.format("'%s'", value);
-        if (!value.equals(values.get(values.size() - 1))) {
+        if (!value.equals(values.getLast())) {
           valuesStr += ",";
         }
       }

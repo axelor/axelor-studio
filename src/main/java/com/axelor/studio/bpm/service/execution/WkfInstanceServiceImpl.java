@@ -249,7 +249,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       return;
     }
 
-    String classFullName = wkfProcessConfigs.get(0).getMetaModel().getFullName();
+    String classFullName = wkfProcessConfigs.getFirst().getMetaModel().getFullName();
     Class<? extends Model> klass = Class.forName(classFullName).asSubclass(Model.class);
     Model model =
         Query.of(klass)
@@ -280,7 +280,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     try {
       int offset = 0;
 
-      MetaModel metaModel = wkfProcessConfigs.get(0).getMetaModel();
+      MetaModel metaModel = wkfProcessConfigs.getFirst().getMetaModel();
       Class<? extends Model> klass = Class.forName(metaModel.getFullName()).asSubclass(Model.class);
 
       List<? extends Model> models =
@@ -902,7 +902,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     WkfInstanceMigrationHistory migrationHistory =
         CollectionUtils.isEmpty(instance.getWkfInstanceMigrationHistory())
             ? null
-            : instance.getWkfInstanceMigrationHistory().get(0);
+            : instance.getWkfInstanceMigrationHistory().getFirst();
 
     if (migrationHistory != null && currentModel.equals(previousModel)) {
       migrationHistory.setMigrationHistoryUpdatedOn(LocalDateTime.now());

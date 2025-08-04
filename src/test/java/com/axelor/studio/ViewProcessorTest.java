@@ -83,7 +83,7 @@ class ViewProcessorTest extends BaseTest {
     Assertions.assertNotNull(toolbar);
     Assertions.assertFalse(toolbar.isEmpty());
 
-    Button studioButton = toolbar.get(0);
+    Button studioButton = toolbar.getFirst();
     Assertions.assertEquals("openStudioBtn", studioButton.getName());
     Assertions.assertEquals("action-studio-method-open-studio-builder", studioButton.getOnClick());
   }
@@ -103,7 +103,7 @@ class ViewProcessorTest extends BaseTest {
     Assertions.assertNotNull(toolbar);
     Assertions.assertFalse(toolbar.isEmpty());
 
-    Button studioButton = toolbar.get(0);
+    Button studioButton = toolbar.getFirst();
     Assertions.assertEquals("openStudioBtn", studioButton.getName());
     Assertions.assertEquals("action-studio-method-open-studio-builder", studioButton.getOnClick());
   }
