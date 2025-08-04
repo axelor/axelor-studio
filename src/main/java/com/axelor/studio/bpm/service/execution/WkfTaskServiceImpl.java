@@ -188,7 +188,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
       engine.getRuntimeService().setVariables(execution.getId(), ctxVariables);
     }
     AppBpm appBpm = appBpmService.getAppBpm();
-    Integer taskExecutionRecursivityTimeLimit =
+    int taskExecutionRecursivityTimeLimit =
         Optional.ofNullable(appBpm.getTaskExecutionRecursivityDurationLimit())
             .orElse(DEFAULT_RECURSIVE_TASK_EXECUTION_DURATION_LIMIT);
     boolean hasExceededMaxTime =
@@ -196,7 +196,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
             && ChronoUnit.SECONDS.between(recursiveTaskExecutionTime, LocalTime.now())
                 >= taskExecutionRecursivityTimeLimit;
 
-    Integer taskExecutionRecursivityDepthLimit =
+    int taskExecutionRecursivityDepthLimit =
         Optional.ofNullable(appBpm.getTaskExecutionRecursivityDepthLimit())
             .orElse(DEFAULT_RECURSIVE_TASK_EXECUTION_DEPTH_LIMIT);
     boolean hasExceededMaxDepth =

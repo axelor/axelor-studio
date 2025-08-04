@@ -183,7 +183,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
               .filter("self.name = ?1 and self.type = ?2", name, viewType)
               .order("-priority")
               .fetchOne();
-      Integer priority = 20;
+      int priority = 20;
       if (metaView != null) {
         priority = metaView.getPriority() + 1;
       }
