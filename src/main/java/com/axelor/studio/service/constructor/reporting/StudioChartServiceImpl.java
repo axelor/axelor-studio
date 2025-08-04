@@ -230,23 +230,15 @@ public class StudioChartServiceImpl implements StudioChartService {
 
   @Override
   public String getSumField(boolean isJson, MetaField metaField, MetaJsonField jsonField) {
-
-    String sumField = null;
-
-    if (isJson) {
-      String sqlType = filterSqlService.getSqlType(jsonField.getType());
-      sumField =
-          "cast(self."
-              + filterSqlService.getColumn(jsonField.getModel(), jsonField.getModelField())
-              + "->>'"
-              + jsonField.getName()
-              + "' as "
-              + sqlType
-              + ")";
-    } else {
-      sumField = "self." + filterSqlService.getColumn(metaField);
-    }
-    return sumField;
+    return isJson
+        ? "cast(self."
+            + filterSqlService.getColumn(jsonField.getModel(), jsonField.getModelField())
+            + "->>'"
+            + jsonField.getName()
+            + "' as "
+            + filterSqlService.getSqlType(jsonField.getType())
+            + ")"
+        : "self." + filterSqlService.getColumn(metaField);
   }
 
   @Override
@@ -261,8 +253,8 @@ public class StudioChartServiceImpl implements StudioChartService {
       return null;
     }
 
-    String typeName = null;
-    String group = null;
+    String typeName;
+    String group;
     Object object = null;
     StringBuilder parent = new StringBuilder("self");
     if (isJson) {
@@ -325,20 +317,17 @@ public class StudioChartServiceImpl implements StudioChartService {
               HashMap<String, Object> searchFieldMap = new HashMap<>();
               String fieldStr = "param" + filter.getId();
 
-              Object object = null;
               StringBuilder parent = new StringBuilder("self");
-              if (filter.getIsJson()) {
-                object =
-                    filterSqlService.parseJsonField(
-                        filter.getMetaJsonField(), filter.getTargetField(), null, parent);
-              } else {
-                object =
-                    filterSqlService.parseMetaField(
-                        filter.getMetaField(), filter.getTargetField(), null, parent, true);
-              }
 
-              if (object instanceof MetaField) {
-                searchFieldMap = getMetaSearchField(fieldStr, (MetaField) object, searchFieldMap);
+              Object object =
+                  filter.getIsJson()
+                      ? filterSqlService.parseJsonField(
+                          filter.getMetaJsonField(), filter.getTargetField(), null, parent)
+                      : filterSqlService.parseMetaField(
+                          filter.getMetaField(), filter.getTargetField(), null, parent, true);
+
+              if (object instanceof MetaField metaField) {
+                searchFieldMap = getMetaSearchField(fieldStr, metaField, searchFieldMap);
               } else {
                 searchFieldMap =
                     getJsonSearchField(fieldStr, (MetaJsonField) object, searchFieldMap);
@@ -457,10 +446,10 @@ public class StudioChartServiceImpl implements StudioChartService {
 
     Object targetField = null;
     try {
-      if (object instanceof MetaJsonField) {
-        targetField = filterSqlService.parseJsonField((MetaJsonField) object, target, null, null);
-      } else if (object instanceof MetaField) {
-        targetField = filterSqlService.parseMetaField((MetaField) object, target, null, null, true);
+      if (object instanceof MetaJsonField metaJsonField) {
+        targetField = filterSqlService.parseJsonField(metaJsonField, target, null, null);
+      } else if (object instanceof MetaField metaField) {
+        targetField = filterSqlService.parseMetaField(metaField, target, null, null, true);
       }
     } catch (Exception e) {
     }
