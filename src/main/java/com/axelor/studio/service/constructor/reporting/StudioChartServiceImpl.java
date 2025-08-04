@@ -65,8 +65,7 @@ public class StudioChartServiceImpl implements StudioChartService {
   protected static final String Tab2 = "\n \t\t";
   protected static final String Tab3 = "\n \t\t\t";
   protected static final List<String> dateTypes =
-      Arrays.asList(
-          new String[] {"DATE", "DATETIME", "LOCALDATE", "LOCALDATETIME", "ZONNEDDATETIME"});
+      Arrays.asList("DATE", "DATETIME", "LOCALDATE", "LOCALDATETIME", "ZONNEDDATETIME");
   protected static final List<String> CLICK_HANDLER_SUPPORTED_CHARTS =
       Arrays.asList("bar", "hbar", "scatter", "pie", "donut");
 

@@ -30,8 +30,7 @@ import lombok.Setter;
 public class MapperValue {
 
   public static final List<String> MANY_TO_ONE_TYPE =
-      Arrays.asList(
-          new String[] {"MANY_TO_ONE", "many-to-one", "json-many-to-one", "json-one-to-one"});
+      Arrays.asList("MANY_TO_ONE", "many-to-one", "json-many-to-one", "json-one-to-one");
 
   protected MapperSelected selected = null;
 

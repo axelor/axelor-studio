@@ -95,7 +95,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final List<String> JSON_EXTRACT_TYPES =
-      Arrays.asList(new String[] {"integer", "decimal", "boolean", "text"});
+      Arrays.asList("integer", "decimal", "boolean", "text");
 
   protected MetaFiles metaFiles;
 
