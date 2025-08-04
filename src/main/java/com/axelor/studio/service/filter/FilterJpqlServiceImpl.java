@@ -45,10 +45,10 @@ public class FilterJpqlServiceImpl implements FilterJpqlService {
   @Override
   public String getJpqlFilters(List<Filter> filterList) {
 
-    String filters = null;
+    StringBuilder filters = null;
 
     if (filterList == null) {
-      return filters;
+      return filters.toString();
     }
 
     for (Filter filter : filterList) {
@@ -80,15 +80,15 @@ public class FilterJpqlServiceImpl implements FilterJpqlService {
           filterCommonService.getCondition(fieldName, filter.getOperator(), fieldValue);
 
       if (filters == null) {
-        filters = condition;
+        filters = new StringBuilder(condition);
       } else {
         String opt = filter.getLogicOp() != null && filter.getLogicOp() == 0 ? " AND " : " OR ";
-        filters = filters + opt + condition;
+        filters.append(opt).append(condition);
       }
     }
 
-    log.debug("JPQL filter: {}", filters);
-    return filters;
+    log.debug("JPQL filter: {}", filters.toString());
+    return filters.toString();
   }
 
   @Override

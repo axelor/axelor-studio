@@ -63,22 +63,22 @@ public class AxelorScriptEngineFactory implements ScriptEngineFactory {
 
   @Override
   public String getMethodCallSyntax(String obj, String m, String... args) {
-    String ret = obj + "." + m + "(";
+    StringBuilder ret = new StringBuilder(obj + "." + m + "(");
     int len = args.length;
     if (len == 0) {
-      ret += ")";
-      return ret;
+      ret.append(")");
+      return ret.toString();
     }
 
     for (int i = 0; i < len; i++) {
-      ret += args[i];
+      ret.append(args[i]);
       if (i != len - 1) {
-        ret += ",";
+        ret.append(",");
       } else {
-        ret += ")";
+        ret.append(")");
       }
     }
-    return ret;
+    return ret.toString();
   }
 
   @Override

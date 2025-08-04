@@ -162,66 +162,127 @@ public class WkfMenuServiceImpl implements WkfMenuService {
       return null;
     }
 
-    String xml =
-        "<action-view name=\""
-            + name
-            + "\" model=\""
-            + model
-            + "\" title=\""
-            + metaMenu.getTitle()
-            + "\">\n"
-            + "\t<view type=\"grid\" name=\""
-            + viewMap.get("grid")
-            + "\" />\n"
-            + "\t<view type=\"form\" name=\""
-            + viewMap.get("form")
-            + "\" />\n"
-            + "\t<domain>"
-            + query
-            + "</domain>\n"
-            + "\t<context name=\"processInstanceIds\" expr=\"call:"
-            + WkfInstanceService.class.getName()
-            + ":findProcessInstanceByNode('"
-            + wkfTaskConfig.getName()
-            + "','"
-            + wkfTaskConfig.getProcessId()
-            + "','"
-            + wkfTaskConfig.getType()
-            + "',"
-            + permanent
-            + ")\" />\n"
-            + (userMenu && !Strings.isNullOrEmpty(wkfTaskConfig.getUserPath())
-                ? "\t<context name=\"currentUserId\" expr=\"eval:__user__.id\" />\n"
-                : "")
-            + (userMenu && !Strings.isNullOrEmpty(wkfTaskConfig.getTeamPath())
-                ? "\t<context name=\"teamIds\" expr=\"call:com.axelor.studio.bpm.service.deployment.WkfMenuService:getTeamIds(__user__)\" />\n"
-                : "")
-            + ("script".equals(wkfTaskConfig.getUserFieldType())
-                ? "\t<context name=\"userPath\" expr=\"eval:"
-                    + wkfTaskConfig.getUserPath()
-                    + "?.id\" />\n"
-                : "")
-            + (isJson
-                ? "\t<context name=\"jsonModel\" expr=\""
-                    + wkfTaskConfig.getJsonModelName()
-                    + "\" />\n"
-                : "");
+    metaAction.setXml(
+        buildActionViewXml(
+            name,
+            model,
+            metaMenu,
+            viewMap,
+            query,
+            wkfTaskConfig,
+            userMenu,
+            permanent,
+            isJson,
+            taskMenu));
 
+    return metaActionRepository.save(metaAction);
+  }
+
+  protected String buildActionViewXml(
+      String name,
+      String model,
+      MetaMenu metaMenu,
+      Map<String, String> viewMap,
+      String domain,
+      WkfTaskConfig wkfTaskConfig,
+      boolean userMenu,
+      boolean permanent,
+      boolean isJson,
+      WkfTaskMenu taskMenu) {
+
+    String context = computeContext(permanent, wkfTaskConfig, userMenu, isJson, taskMenu);
+
+    // Base view structure
+    return String.format(
+        """
+        <action-view name="%s" model="%s" title="%s">
+            <view type="grid" name="%s" />
+            <view type="form" name="%s" />
+            <domain>%s</domain>
+            %s
+        </action-view>
+        """,
+        name,
+        model,
+        metaMenu.getTitle(),
+        viewMap.get("grid"),
+        viewMap.get("form"),
+        domain,
+        context);
+  }
+
+  protected String computeContext(
+      boolean permanent,
+      WkfTaskConfig wkfTaskConfig,
+      boolean userMenu,
+      boolean isJson,
+      WkfTaskMenu taskMenu) {
+
+    String processInstanceIdsExpr =
+        "call:%s:findProcessInstanceByNode('%s','%s','%s',%s)"
+            .formatted(
+                WkfInstanceService.class.getName(),
+                wkfTaskConfig.getName(),
+                wkfTaskConfig.getProcessId(),
+                wkfTaskConfig.getType(),
+                permanent);
+
+    StringBuilder xml =
+        new StringBuilder(
+            """
+          <context name="processInstanceIds" expr="%s" />
+        """
+                .formatted(processInstanceIdsExpr));
+
+    // Add user context if needed
+    if (userMenu && !Strings.isNullOrEmpty(wkfTaskConfig.getUserPath())) {
+      xml.append(
+          """
+            <context name="currentUserId" expr="eval:__user__.id" />
+          """);
+    }
+
+    // Add team context if needed
+    if (userMenu && !Strings.isNullOrEmpty(wkfTaskConfig.getTeamPath())) {
+      xml.append(
+          """
+            <context name="teamIds" expr="call:com.axelor.studio.bpm.service.deployment.WkfMenuService:getTeamIds(__user__)" />
+          """);
+    }
+
+    // Add script context if needed
+    if ("script".equals(wkfTaskConfig.getUserFieldType())) {
+      xml.append(
+          """
+            <context name="userPath" expr="eval:%s?.id" />
+          """
+              .formatted(wkfTaskConfig.getUserPath()));
+    }
+
+    // Add JSON model context if needed
+    if (isJson) {
+      xml.append(
+          """
+            <context name="jsonModel" expr="%s" />
+          """
+              .formatted(wkfTaskConfig.getJsonModelName()));
+    }
+
+    // Add additional contexts
     if (CollectionUtils.isNotEmpty(taskMenu.getWkfTaskMenuContextList())) {
+      String additionalContext =
+          """
+            <context name="%s" expr="%s" />
+          """;
       for (WkfTaskMenuContext context : taskMenu.getWkfTaskMenuContextList()) {
-        String key = context.getKey();
-        String value = context.getValue();
-        if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
-          continue;
+        if (!StringUtils.isBlank(context.getKey()) && !StringUtils.isBlank(context.getValue())) {
+          String formatted = additionalContext.formatted(context.getKey(), context.getValue());
+          xml.append(formatted);
         }
-        xml += "\t<context name=\"" + key + "\" expr=\"" + value + "\" />\n";
       }
     }
 
-    xml += "</action-view>";
-    metaAction.setXml(xml);
-
-    return metaActionRepository.save(metaAction);
+    return xml.toString();
   }
 
   @Override

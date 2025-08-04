@@ -56,7 +56,7 @@ public class FilterCommonServiceImpl implements FilterCommonService {
   @Override
   public String getLikeCondition(String conditionField, String value, boolean isLike) {
 
-    String likeCondition = null;
+    StringBuilder likeCondition = null;
 
     String likeOpr = "LIKE";
     if (!isLike) {
@@ -66,16 +66,22 @@ public class FilterCommonServiceImpl implements FilterCommonService {
     if (value.contains(",")) {
       for (String val : value.split(",")) {
         if (likeCondition == null) {
-          likeCondition = conditionField + " " + likeOpr + " " + val;
+          likeCondition = new StringBuilder(conditionField + " " + likeOpr + " " + val);
         } else {
-          likeCondition += " OR " + conditionField + " " + likeOpr + " " + val;
+          likeCondition
+              .append(" OR ")
+              .append(conditionField)
+              .append(" ")
+              .append(likeOpr)
+              .append(" ")
+              .append(val);
         }
       }
     } else {
-      likeCondition = conditionField + " " + likeOpr + " " + value;
+      likeCondition = new StringBuilder(conditionField + " " + likeOpr + " " + value);
     }
 
-    return likeCondition;
+    return likeCondition.toString();
   }
 
   /**

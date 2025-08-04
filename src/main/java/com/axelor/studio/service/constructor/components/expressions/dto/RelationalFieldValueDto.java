@@ -24,15 +24,15 @@ public class RelationalFieldValueDto implements FieldValueDto {
       List<String> values =
           ((List<Map<String, Object>>) valueMap)
               .stream().map(it -> it.get(targetName).toString()).toList();
-      String valuesStr = "[";
+      StringBuilder valuesStr = new StringBuilder("[");
       for (String value : values) {
-        valuesStr += String.format("'%s'", value);
+        valuesStr.append(String.format("'%s'", value));
         if (!value.equals(values.getLast())) {
-          valuesStr += ",";
+          valuesStr.append(",");
         }
       }
-      valuesStr += "]";
-      return valuesStr;
+      valuesStr.append("]");
+      return valuesStr.toString();
     }
     return null;
   }

@@ -103,10 +103,10 @@ public class FilterSqlServiceImpl implements FilterSqlService {
   @Override
   public String getSqlFilters(List<Filter> filterList, List<String> joins, boolean checkJson) {
 
-    String filters = null;
+    StringBuilder filters = null;
 
     if (filterList == null) {
-      return filters;
+      return filters.toString();
     }
 
     for (Filter filter : filterList) {
@@ -123,14 +123,14 @@ public class FilterSqlServiceImpl implements FilterSqlService {
       String condition = filterCommonService.getCondition(field, filter.getOperator(), value);
 
       if (filters == null) {
-        filters = condition;
+        filters = new StringBuilder(condition);
       } else {
         String opt = filter.getLogicOp() == 0 ? " AND " : " OR ";
-        filters = filters + opt + condition;
+        filters.append(opt).append(condition);
       }
     }
 
-    return filters;
+    return filters.toString();
   }
 
   @Override
