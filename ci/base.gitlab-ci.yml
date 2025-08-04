@@ -74,7 +74,7 @@ unit test:
   cache:
     - *base_cache_pull
   script:
-    - ./gradlew clean publish -PaxelorMavenUsername=${NEXUS_DEPLOYMENT_USERNAME} -PaxelorMavenPassword=${NEXUS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
+    - ./gradlew clean publish -PaxelorMavenUsername=${NEXUS_ADDONS_DEPLOYMENT_USER} -PaxelorMavenPassword=${NEXUS_ADDONS_DEPLOYMENT_PASSWORD} -P${PUBLISH_TYPE}
 
 publish snapshot:
   <<: *publish_configuration
