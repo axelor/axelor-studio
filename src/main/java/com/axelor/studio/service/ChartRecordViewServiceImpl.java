@@ -255,7 +255,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
   }
 
   protected List<Filter> getFiltersForDateType(
-      StudioChart studioChart, Map<String, Object> params, Filter filter, Boolean isForGroup) {
+      StudioChart studioChart, Map<String, Object> params, Filter filter, boolean isForGroup) {
     String paramKey = PARAM_GROUP;
     String dateType = studioChart.getGroupDateType();
     String targetType = studioChart.getGroupOnTargetType();
@@ -312,7 +312,7 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
   protected Filter createFilter(
       Long id,
       Boolean isTargetJson,
-      Boolean isJson,
+      boolean isJson,
       MetaJsonField jsonField,
       MetaField metaField,
       String targetField,
@@ -341,8 +341,8 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     return filter;
   }
 
-  protected Filter createFilter(StudioChart studioChart, boolean isNull, Boolean isForGroup) {
-    Boolean isJson = studioChart.getIsJson();
+  protected Filter createFilter(StudioChart studioChart, boolean isNull, boolean isForGroup) {
+    boolean isJson = studioChart.getIsJson();
     Filter filter =
         isForGroup
             ? createFilter(
@@ -369,12 +369,12 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
   }
 
   protected Object getSelectionFieldValue(
-      StudioChart studioChart, Object titleParam, Boolean isForGroup) {
+      StudioChart studioChart, Object titleParam, boolean isForGroup) {
     Object value = null;
     String selection = null;
     Class<?> targetType = String.class;
 
-    Boolean isJson =
+    boolean isJson =
         studioChart.getIsJson()
             || (isForGroup ? studioChart.getIsJsonGroupOn() : studioChart.getIsJsonAggregateOn());
     MetaField target = studioChart.getGroupOn();
