@@ -93,11 +93,9 @@ public class FilterSqlServiceImpl implements FilterSqlService {
   public String getSqlType(String type) {
 
     return switch (type) {
-      case "string" -> "varchar";
-      case "String" -> "varchar";
+      case "string", "String" -> "varchar";
       case "LocalDate" -> "date";
-      case "LocalDateTime" -> "timestamp";
-      case "datetime" -> "timestamp";
+      case "LocalDateTime", "datetime" -> "timestamp";
       default -> type;
     };
   }

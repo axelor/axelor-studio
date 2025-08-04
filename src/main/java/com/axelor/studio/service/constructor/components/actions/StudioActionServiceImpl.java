@@ -73,13 +73,9 @@ public class StudioActionServiceImpl implements StudioActionService {
 
     MetaAction metaAction = null;
     switch (studioAction.getTypeSelect()) {
-      case StudioActionRepository.TYPE_SELECT_CREATE:
-        metaAction = studioActionScriptService.build(studioAction);
-        break;
-      case StudioActionRepository.TYPE_SELECT_UPDATE:
-        metaAction = studioActionScriptService.build(studioAction);
-        break;
-      case StudioActionRepository.TYPE_SELECT_SCRIPT:
+      case StudioActionRepository.TYPE_SELECT_CREATE,
+          StudioActionRepository.TYPE_SELECT_SCRIPT,
+          StudioActionRepository.TYPE_SELECT_UPDATE:
         metaAction = studioActionScriptService.build(studioAction);
         break;
       case StudioActionRepository.TYPE_SELECT_VIEW:

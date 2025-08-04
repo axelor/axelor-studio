@@ -114,8 +114,7 @@ public class FilterCommonServiceImpl implements FilterCommonService {
       case "Long" -> "long";
       case "byte[]" -> "binary";
       case "LocalDate" -> "date";
-      case "ZonedDateTime" -> "datetime";
-      case "LocalDateTime" -> "datetime";
+      case "ZonedDateTime", "LocalDateTime" -> "datetime";
       default -> "string";
     };
   }

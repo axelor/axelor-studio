@@ -149,15 +149,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
         case "roles":
           roles = value;
           break;
-        case "modelName":
-          break;
-        case "modelType":
-          break;
-        case "modelLabel":
-          break;
-        case "itemType":
-          break;
-        case "itemLabel":
+        case "modelName", "itemLabel", "itemType", "modelLabel", "modelType":
           break;
         case "permanent":
           permanent = value;
