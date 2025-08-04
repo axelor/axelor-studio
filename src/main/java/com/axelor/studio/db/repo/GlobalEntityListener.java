@@ -45,7 +45,7 @@ public class GlobalEntityListener {
                           }
                         })
                     .withTransaction(false)
-                    .tenantId(BpmTools.getCurentTenant())
+                    .tenantId(BpmTools.getCurrentTenant())
                     .run());
     try {
       future.get();

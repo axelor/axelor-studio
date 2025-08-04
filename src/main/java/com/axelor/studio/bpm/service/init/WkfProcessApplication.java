@@ -41,6 +41,6 @@ public class WkfProcessApplication extends EmbeddedProcessApplication {
 
   @Override
   public String getName() {
-    return BpmTools.getCurentTenant();
+    return BpmTools.getCurrentTenant();
   }
 }

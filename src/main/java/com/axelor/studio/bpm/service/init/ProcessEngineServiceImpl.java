@@ -56,7 +56,7 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
       AppSettingsStudioService appSettingsStudioService) {
     this.wkfLoggerInitService = wkfLoggerInitService;
     this.appSettingsStudioService = appSettingsStudioService;
-    addEngine(BpmTools.getCurentTenant());
+    addEngine(BpmTools.getCurrentTenant());
     WkfCache.initWkfModelCache();
     WkfCache.initWkfButttonCache();
   }
@@ -120,7 +120,7 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
   @Override
   public ProcessEngine getEngine() {
 
-    String tenantId = BpmTools.getCurentTenant();
+    String tenantId = BpmTools.getCurrentTenant();
 
     if (!engineMap.containsKey(tenantId)) {
       addEngine(tenantId);

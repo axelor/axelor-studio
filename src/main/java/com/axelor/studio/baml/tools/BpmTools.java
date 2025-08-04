@@ -19,16 +19,16 @@ package com.axelor.studio.baml.tools;
 
 import com.axelor.db.tenants.TenantConfig;
 import com.axelor.db.tenants.TenantResolver;
+import java.util.Optional;
 
-public class BpmTools {
+public abstract class BpmTools {
 
-  public static String getCurentTenant() {
-    String tenantId = TenantResolver.currentTenantIdentifier();
+  private BpmTools() {
+    throw new IllegalAccessError("Utility class");
+  }
 
-    if (tenantId == null) {
-      tenantId = TenantConfig.DEFAULT_TENANT_ID;
-    }
-
-    return tenantId;
+  public static String getCurrentTenant() {
+    return Optional.ofNullable(TenantResolver.currentTenantIdentifier())
+        .orElse(TenantConfig.DEFAULT_TENANT_ID);
   }
 }

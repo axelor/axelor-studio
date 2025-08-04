@@ -49,7 +49,7 @@ public class WkfCache {
           }
           modelMap.put(config.getId(), model);
         });
-    WKF_MODEL_CACHE.put(BpmTools.getCurentTenant(), modelMap);
+    WKF_MODEL_CACHE.put(BpmTools.getCurrentTenant(), modelMap);
   }
 
   public static void initWkfButttonCache() {
@@ -66,6 +66,6 @@ public class WkfCache {
                 Arrays.asList(button.split(","))
                     .forEach(btnName -> multiMap.put(configId, btnName)));
 
-    WKF_BUTTON_CACHE.put(BpmTools.getCurentTenant(), multiMap);
+    WKF_BUTTON_CACHE.put(BpmTools.getCurrentTenant(), multiMap);
   }
 }

@@ -76,7 +76,7 @@ public class WkfRequestListener {
       Set<? extends Model> updated, Set<? extends Model> deleted, int source)
       throws ClassNotFoundException {
 
-    String tenantId = BpmTools.getCurentTenant();
+    String tenantId = BpmTools.getCurrentTenant();
     if (!WkfCache.WKF_MODEL_CACHE.containsKey(tenantId)) {
       WkfCache.initWkfModelCache();
     }
@@ -122,7 +122,7 @@ public class WkfRequestListener {
       return;
     }
 
-    String tenantId = BpmTools.getCurentTenant();
+    String tenantId = BpmTools.getCurrentTenant();
 
     if (!WkfCache.WKF_MODEL_CACHE.containsKey(tenantId)) {
       WkfCache.initWkfModelCache();

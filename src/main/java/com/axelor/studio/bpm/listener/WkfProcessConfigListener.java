@@ -31,7 +31,7 @@ public class WkfProcessConfigListener {
   @PostUpdate
   public void onSave(WkfProcessConfig config) {
 
-    String tenantId = BpmTools.getCurentTenant();
+    String tenantId = BpmTools.getCurrentTenant();
 
     if (!WkfCache.WKF_MODEL_CACHE.containsKey(tenantId)) {
       WkfCache.WKF_MODEL_CACHE.put(tenantId, new HashMap<>());
@@ -48,7 +48,7 @@ public class WkfProcessConfigListener {
   @PostRemove
   public void onRemove(WkfProcessConfig config) {
 
-    String tenantId = BpmTools.getCurentTenant();
+    String tenantId = BpmTools.getCurrentTenant();
 
     if (WkfCache.WKF_MODEL_CACHE.containsKey(tenantId)) {
       WkfCache.WKF_MODEL_CACHE.get(tenantId).remove(config.getId());

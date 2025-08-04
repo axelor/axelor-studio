@@ -32,7 +32,7 @@ public class WkfTaskConfigListener {
   @PostUpdate
   public void onSave(WkfTaskConfig config) {
     if (config.getButton() != null) {
-      String tenantId = BpmTools.getCurentTenant();
+      String tenantId = BpmTools.getCurrentTenant();
       if (!WkfCache.WKF_BUTTON_CACHE.containsKey(tenantId)) {
         WkfCache.WKF_BUTTON_CACHE.put(tenantId, new MultiValueMap());
       }
@@ -45,7 +45,7 @@ public class WkfTaskConfigListener {
   @PostRemove
   public void onRemove(WkfTaskConfig config) {
 
-    String tenantId = BpmTools.getCurentTenant();
+    String tenantId = BpmTools.getCurrentTenant();
     if (WkfCache.WKF_BUTTON_CACHE.containsKey(tenantId)) {
       WkfCache.WKF_BUTTON_CACHE.get(tenantId).remove(config.getId());
     }

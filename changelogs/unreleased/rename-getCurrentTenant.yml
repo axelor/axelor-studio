@@ -1,0 +1,3 @@
+---
+title: Rename `getCurentTenant` method into `getCurrentTenant` in `BpmTools`.
+type: change
