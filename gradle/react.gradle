@@ -100,7 +100,7 @@ def frontCopy = tasks.register('frontCopy', Copy) {
 
     dependsOn frontBuild
 
-    destinationDir = file(rootProject.buildDir)
+    destinationDir = file(rootProject.layout.buildDirectory)
 
     componentPaths.each { paths ->
         into("${paths.to}") {
