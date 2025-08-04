@@ -515,10 +515,10 @@ public class DmnServiceImpl implements DmnService {
       return;
     }
 
-    String diagramXml = wkfDmnModel.getDiagramXml().replaceAll("\n", "#NEWLINE#");
+    String diagramXml = wkfDmnModel.getDiagramXml().replace("\n", "#NEWLINE#");
     diagramXml = renameDefinationId(diagramXml);
     diagramXml = renameDesicionIds(diagramXml);
-    wkfDmnModel.setDiagramXml(diagramXml.replaceAll("#NEWLINE#", "\n"));
+    wkfDmnModel.setDiagramXml(diagramXml.replace("#NEWLINE#", "\n"));
   }
 
   protected String renameDefinationId(String diagramXml) {

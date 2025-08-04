@@ -160,8 +160,8 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
     if (matcher.find()) {
       diagName = matcher.group(1);
     }
-    code = code.replaceAll("\u0000", "");
-    bpmDiag = bpmDiag.replaceAll("\u0000", "");
+    code = code.replace("\u0000", "");
+    bpmDiag = bpmDiag.replace("\u0000", "");
     WkfModel wkfModel = wkfModelRepository.findByCode(code);
     if (wkfModel == null) {
       wkfModel = new WkfModel();
@@ -238,7 +238,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
       dmnModel = new WkfDmnModel();
       dmnModel.setName(dmnName);
     }
-    dmnModel.setDiagramXml(dmnDiag.replaceAll("\u0000", ""));
+    dmnModel.setDiagramXml(dmnDiag.replace("\u0000", ""));
 
     // Create dmn meta file :
 
