@@ -110,7 +110,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
       List<Map<String, Object>> dataMapList,
       User user) {
 
-    Object obj[] =
+    Object[] obj =
         this.computeAssignedTaskConfig(
             process, modelName, isMetaModel, user, true, WkfDashboardCommonService.ASSIGNED_ME);
 
@@ -138,7 +138,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
       List<Map<String, Object>> dataMapList,
       User user) {
 
-    Object obj[] =
+    Object[] obj =
         this.computeAssignedTaskConfig(
             process, modelName, isMetaModel, user, false, WkfDashboardCommonService.ASSIGNED_OTHER);
 
@@ -169,7 +169,7 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
     List<WkfTaskConfig> taskConfigs =
         wkfDashboardCommonService.findTaskConfigs(process, modelName, isMetaModel, user, withTask);
 
-    Object obj[] =
+    Object[] obj =
         wkfDashboardCommonService.computeTaskConfig(
             taskConfigs, modelName, isMetaModel, user, false, assignedType);
 
