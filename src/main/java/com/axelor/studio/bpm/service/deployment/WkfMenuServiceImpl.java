@@ -41,13 +41,12 @@ import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -425,8 +424,6 @@ public class WkfMenuServiceImpl implements WkfMenuService {
   @Override
   @CallMethod
   public List<Long> getTeamIds(User user) {
-    List<Long> teamIds = new ArrayList<>();
-
     Set<Role> userRoles = user.getRoles();
     Group userGroup = user.getGroup();
 
@@ -445,10 +442,9 @@ public class WkfMenuServiceImpl implements WkfMenuService {
             .fetch();
 
     if (CollectionUtils.isEmpty(teams)) {
-      return teamIds;
+      return Collections.emptyList();
     }
 
-    teamIds = teams.stream().map(Team::getId).collect(Collectors.toList());
-    return teamIds;
+    return teams.stream().map(Team::getId).toList();
   }
 }
