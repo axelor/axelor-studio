@@ -189,7 +189,7 @@ public class MapperValue {
     String value = getSelectedScript();
 
     if (value != null) {
-      stb.append("__ctx__.filterOne" + value + "");
+      stb.append("__ctx__.filterOne" + value);
       stb.append("?.getTarget()");
 
     } else {
