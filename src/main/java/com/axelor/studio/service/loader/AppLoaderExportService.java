@@ -23,7 +23,6 @@ import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.utils.helpers.context.FullContext;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +38,7 @@ public interface AppLoaderExportService {
 
   void fixTargetName(Map<String, Object> jsonFieldMap);
 
-  File createExportZip(File exportDir) throws IOException, FileNotFoundException;
+  File createExportZip(File exportDir) throws IOException;
 
   void addRelationaJsonFieldBind(
       MetaJsonField jsonField, Map<String, Object> fieldAttrs, XMLBind xmlBind);

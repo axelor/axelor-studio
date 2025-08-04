@@ -24,7 +24,6 @@ import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportServiceImpl;
 import com.google.inject.Inject;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +44,7 @@ public class AppLoaderImportBpmServiceImpl extends AppLoaderImportServiceImpl {
       new String[] {"wkf-model.xml", "wkf-dmn-model.xml", "baml-model.xml"};
 
   @Override
-  public List<File> getAppImportConfigFiles(File dataDir)
-      throws FileNotFoundException, IOException {
+  public List<File> getAppImportConfigFiles(File dataDir) throws IOException {
 
     List<File> configFiles = super.getAppImportConfigFiles(dataDir);
 

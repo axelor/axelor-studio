@@ -18,7 +18,6 @@
 package com.axelor.studio.service.mapper;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -40,8 +39,7 @@ public class MapperDeserializer extends StdDeserializer {
 
   @SuppressWarnings("unchecked")
   @Override
-  public Object deserialize(JsonParser parser, DeserializationContext context)
-      throws IOException, JsonProcessingException {
+  public Object deserialize(JsonParser parser, DeserializationContext context) throws IOException {
 
     ObjectCodec codec = parser.getCodec();
 

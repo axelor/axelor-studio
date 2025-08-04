@@ -50,7 +50,6 @@ import com.google.inject.persist.Transactional;
 import com.thoughtworks.xstream.XStream;
 import groovy.xml.XmlUtil;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -194,7 +193,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   }
 
   protected File addImportConfigFile(AppLoader appLoader, File parentDir)
-      throws IOException, FileNotFoundException, ClassNotFoundException {
+      throws IOException, ClassNotFoundException {
 
     File configFile = new File(parentDir, "data-config.xml");
 
@@ -540,7 +539,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   }
 
   @Override
-  public File createExportZip(File exportDir) throws IOException, FileNotFoundException {
+  public File createExportZip(File exportDir) throws IOException {
 
     File zipFile = TempFiles.createTempFile("app-", ".zip").toFile();
 
