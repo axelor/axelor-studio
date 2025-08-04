@@ -309,7 +309,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .createProcessDefinitionQuery()
             .deploymentId(oldDeploymentId)
             .list();
-    log.debug("Old definition size " + oldDefinitions.size());
+    log.debug("Old definition size {}", oldDefinitions.size());
     oldDefinitions.forEach(
         oldDefinition ->
             definitions.stream()
