@@ -50,7 +50,7 @@ public class MapperField {
     StringBuilder stb = new StringBuilder();
 
     String field = parent + "." + name;
-    stb.append(field + " = ");
+    stb.append(field).append(" = ");
     if ("self".equals(value.getFrom())) {
       stb.append(Inflector.getInstance().camelize(targetModel, true));
       stb.append(".");

@@ -84,13 +84,13 @@ public class WkfDashboardServiceImpl implements WkfDashboardService {
 
     StringBuilder queryBuilder = new StringBuilder();
 
-    queryBuilder.append("SELECT record.id FROM " + tableName + " record ");
+    queryBuilder.append("SELECT record.id FROM ").append(tableName).append(" record ");
     queryBuilder.append(
         "LEFT JOIN act_hi_actinst activity ON record.process_instance_id = activity.proc_inst_id_ ");
     queryBuilder.append("WHERE (activity.act_name_ = :status OR activity.act_id_ = :status)");
 
     if (!StringUtils.isEmpty(condition)) {
-      queryBuilder.append(" AND " + condition);
+      queryBuilder.append(" AND ").append(condition);
     }
 
     Query query = JPA.em().createNativeQuery(queryBuilder.toString());

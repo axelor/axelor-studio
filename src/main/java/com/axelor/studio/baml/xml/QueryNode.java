@@ -74,14 +74,14 @@ public class QueryNode extends BaseTaskNode {
         filter = "(" + filter + ") AND ";
       }
       filter += "self.jsonModel = :jsonModel";
-      params.append(".bind('jsonModel', '" + model + "')");
+      params.append(".bind('jsonModel', '").append(model).append("')");
       model = MetaJsonRecord.class.getName();
     }
 
-    codeBuilder.append("com.axelor.db.Query.of(" + model + ")");
+    codeBuilder.append("com.axelor.db.Query.of(").append(model).append(")");
 
     if (!Strings.isNullOrEmpty(filter)) {
-      codeBuilder.append(".filter(" + filter + ")");
+      codeBuilder.append(".filter(").append(filter).append(")");
       codeBuilder.append(params);
     }
 
@@ -97,9 +97,19 @@ public class QueryNode extends BaseTaskNode {
     String filter = getExpression();
 
     if (returnType.equals(ReturnType.SINGLE)) {
-      codeBuilder.append("WkfContextHelper.filterOne('" + model + "'," + filter + ")\n");
+      codeBuilder
+          .append("WkfContextHelper.filterOne('")
+          .append(model)
+          .append("',")
+          .append(filter)
+          .append(")\n");
     } else {
-      codeBuilder.append("WkfContextHelper.filter('" + model + "'," + filter + ")\n");
+      codeBuilder
+          .append("WkfContextHelper.filter('")
+          .append(model)
+          .append("',")
+          .append(filter)
+          .append(")\n");
     }
   }
 }

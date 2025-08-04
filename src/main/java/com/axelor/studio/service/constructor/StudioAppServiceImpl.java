@@ -188,7 +188,8 @@ public class StudioAppServiceImpl implements StudioAppService {
                   logStringBuilder.append(model);
                   logStringBuilder.append("\n");
                 },
-                (model, e) -> logStringBuilder.append("Error importing: " + model + "\n")));
+                (model, e) ->
+                    logStringBuilder.append("Error importing: ").append(model).append("\n")));
         xmlImporter.run();
       }
 

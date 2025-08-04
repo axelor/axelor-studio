@@ -598,15 +598,15 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
       if (field.getRelationship() != null) {
         Property property = modelMapper.getProperty(field.getName());
-        fields.append(
-            "self."
-                + field.getName()
-                + "."
-                + property.getTargetName()
-                + " =  :_"
-                + field.getName());
+        fields
+            .append("self.")
+            .append(field.getName())
+            .append(".")
+            .append(property.getTargetName())
+            .append(" =  :_")
+            .append(field.getName());
       } else {
-        fields.append("self." + field.getName() + " =  :_" + field.getName());
+        fields.append("self.").append(field.getName()).append(" =  :_").append(field.getName());
       }
     }
 
@@ -685,14 +685,23 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
         if (targetName.equals("id")) {
           jsonFunction = "json_extract_integer";
         }
-        fields.append(
-            jsonFunction + "(self.attrs," + "'" + targetName + "') = :_" + field.getName());
+        fields
+            .append(jsonFunction)
+            .append("(self.attrs,")
+            .append("'")
+            .append(targetName)
+            .append("') = :_")
+            .append(field.getName());
       } else {
         if (JSON_EXTRACT_TYPES.contains(field.getType())) {
           jsonFunction = "json_extract_" + field.getType();
         }
-        fields.append(
-            jsonFunction + "(self.attrs,'" + field.getName() + "') = :_" + field.getName());
+        fields
+            .append(jsonFunction)
+            .append("(self.attrs,'")
+            .append(field.getName())
+            .append("') = :_")
+            .append(field.getName());
       }
     }
 

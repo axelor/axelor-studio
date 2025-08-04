@@ -37,7 +37,7 @@ public class LoopNode extends ProcessActionNode {
     StringBuilder codeBuilder = new StringBuilder();
 
     if (target != null && expression != null) {
-      codeBuilder.append("\nfor (" + target + " in " + expression + "){\n");
+      codeBuilder.append("\nfor (").append(target).append(" in ").append(expression).append("){\n");
       codeBuilder.append(super.toCode(dynamic));
       codeBuilder.append("\n}");
     }

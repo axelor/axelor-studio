@@ -120,26 +120,31 @@ public class BamlServiceImpl implements BamlService {
       parameter = parameterType + " " + varName;
     }
 
-    codeBuilder.append("import " + Adapter.class.getName() + "\n");
-    codeBuilder.append("import " + Beans.class.getName() + "\n");
+    codeBuilder.append("import ").append(Adapter.class.getName()).append("\n");
+    codeBuilder.append("import ").append(Beans.class.getName()).append("\n");
 
     if (processActionNode.getStaticCompile()) {
       codeBuilder.append("@groovy.transform.CompileStatic\n");
     } else {
       codeBuilder.append("import com.axelor.studio.bpm.context.*\n");
     }
-    codeBuilder.append("\n" + returnType + " _execute(" + parameter + "){\n");
+    codeBuilder
+        .append("\n")
+        .append(returnType)
+        .append(" _execute(")
+        .append(parameter)
+        .append("){\n");
     if (!processActionNode.getStaticCompile() && !Strings.isNullOrEmpty(varName)) {
-      codeBuilder.append(
-          varName.substring(0, varName.length() - 1)
-              + " = WkfContextHelper.create("
-              + varName
-              + ")\n");
+      codeBuilder
+          .append(varName.substring(0, varName.length() - 1))
+          .append(" = WkfContextHelper.create(")
+          .append(varName)
+          .append(")\n");
       varName = varName.substring(0, varName.length() - 1);
     }
     codeBuilder.append(processActionNode.toCode(!processActionNode.getStaticCompile()));
-    codeBuilder.append("\nreturn " + returnVar);
-    codeBuilder.append("\n}\nreturn _execute(" + varName + ")\n");
+    codeBuilder.append("\nreturn ").append(returnVar);
+    codeBuilder.append("\n}\nreturn _execute(").append(varName).append(")\n");
   }
 
   @Override

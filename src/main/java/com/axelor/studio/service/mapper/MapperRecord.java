@@ -75,16 +75,21 @@ public class MapperRecord {
   public StringBuilder addTarget() {
 
     if (newRecord) {
-      scriptBuilder.append("def " + targetVariable + " = __ctx__.create('" + targetModel + "')\n");
+      scriptBuilder
+          .append("def ")
+          .append(targetVariable)
+          .append(" = __ctx__.create('")
+          .append(targetModel)
+          .append("')\n");
     } else if (savedRecord) {
-      scriptBuilder.append(
-          "def "
-              + targetVariable
-              + " = __ctx__.find('"
-              + targetModel
-              + "',"
-              + StringHelper.toFirstLower(targetModel)
-              + "Id)\n");
+      scriptBuilder
+          .append("def ")
+          .append(targetVariable)
+          .append(" = __ctx__.find('")
+          .append(targetModel)
+          .append("',")
+          .append(StringHelper.toFirstLower(targetModel))
+          .append("Id)\n");
     } else {
       targetVariable = StringHelper.toFirstLower(targetModel);
     }
@@ -96,7 +101,7 @@ public class MapperRecord {
 
     if (fields != null) {
       fields.forEach(
-          field -> scriptBuilder.append(field.toScript(targetVariable, targetModel) + "\n"));
+          field -> scriptBuilder.append(field.toScript(targetVariable, targetModel)).append("\n"));
     }
   }
 
@@ -108,7 +113,7 @@ public class MapperRecord {
     }
 
     if (newRecord || savedRecord || save) {
-      scriptBuilder.append("return " + saveStr);
+      scriptBuilder.append("return ").append(saveStr);
     }
   }
 }

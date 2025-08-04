@@ -51,9 +51,9 @@ public class MapperNode extends BaseNode {
 
     if (script.substring(script.lastIndexOf("\n") + 1).startsWith("return")) {
       String target = StringHelper.toFirstLower(targetField);
-      codeBuilder.append("def " + target + " = {\n" + script + "\n}()\n");
+      codeBuilder.append("def ").append(target).append(" = {\n").append(script).append("\n}()\n");
     } else {
-      codeBuilder.append("\n" + script + "\n");
+      codeBuilder.append("\n").append(script).append("\n");
     }
 
     return codeBuilder.toString();

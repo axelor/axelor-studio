@@ -392,7 +392,7 @@ public class DmnServiceImpl implements DmnService {
             property.getTarget().getSimpleName(),
             property.getTargetName());
       } else {
-        scriptBuilder.append(targetField + " = " + resultField);
+        scriptBuilder.append(targetField).append(" = ").append(resultField);
       }
       scriptBuilder.append("\n");
     }
@@ -419,9 +419,16 @@ public class DmnServiceImpl implements DmnService {
             + multiple
             + " ? _query.fetchOne() : null)"
             + " : _query.fetchOne()";
-    scriptBuilder.append("_query = " + query);
+    scriptBuilder.append("_query = ").append(query);
     scriptBuilder.append("\n");
-    scriptBuilder.append("if(" + resultField + " != null) {" + varName + " = " + field + "}");
+    scriptBuilder
+        .append("if(")
+        .append(resultField)
+        .append(" != null) {")
+        .append(varName)
+        .append(" = ")
+        .append(field)
+        .append("}");
   }
 
   protected String mapToMetaCustomModelFields(
@@ -503,7 +510,7 @@ public class DmnServiceImpl implements DmnService {
             targetName);
         break;
       default:
-        scriptBuilder.append(targetField + " = " + resultField);
+        scriptBuilder.append(targetField).append(" = ").append(resultField);
         break;
     }
   }

@@ -70,8 +70,11 @@ public class BpmMapperValue extends MapperValue {
     }
 
     if (MANY_TO_ONE_TYPE.contains(parentField.getType()) && valueStr != null) {
-      stb.append(
-          "__ctx__.find('" + parentField.getTarget() + "'," + valueStr + "?.id)?.getTarget()");
+      stb.append("__ctx__.find('")
+          .append(parentField.getTarget())
+          .append("',")
+          .append(valueStr)
+          .append("?.id)?.getTarget()");
     } else {
       stb.append(valueStr);
     }
@@ -86,19 +89,22 @@ public class BpmMapperValue extends MapperValue {
       BpmMapperSearchField searchField = parentField.getSearchField();
       if (searchField != null) {
         String query = "'self." + searchField.getName() + " = ?1'";
-        stb.append(
-            "__ctx__.filterOne('"
-                + parentField.getTarget()
-                + "',"
-                + query
-                + ","
-                + value
-                + ")?.getTarget()");
+        stb.append("__ctx__.filterOne('")
+            .append(parentField.getTarget())
+            .append("',")
+            .append(query)
+            .append(",")
+            .append(value)
+            .append(")?.getTarget()");
       } else {
         if (value != null && !value.endsWith(".id")) {
           value += "?.id";
         }
-        stb.append("__ctx__.find('" + parentField.getTarget() + "'," + value + ")?.getTarget()");
+        stb.append("__ctx__.find('")
+            .append(parentField.getTarget())
+            .append("',")
+            .append(value)
+            .append(")?.getTarget()");
       }
     } else {
       stb.append(value);
