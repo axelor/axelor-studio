@@ -223,7 +223,7 @@ public class WkfContextHelper {
                       throw new IllegalArgumentException(e);
                     }
                   })
-              .collect(Collectors.toList());
+              .toList();
       Map<String, List<String>> map = Collections.singletonMap(key, serializedModels);
       return createVariablesObjectValue(map);
     } else {

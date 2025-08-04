@@ -48,7 +48,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -288,14 +287,14 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
           getMetaJsonRecords(
               config, processInstanceIds, modelName, user, null, assignedType, LocalDate.now());
 
-      recordIds.addAll(jsonModelrecords.stream().map(Model::getId).collect(Collectors.toList()));
+      recordIds.addAll(jsonModelrecords.stream().map(Model::getId).toList());
 
     } else {
       List<Model> metaModelRecords =
           getMetaModelRecords(
               config, processInstanceIds, modelName, user, null, assignedType, LocalDate.now());
 
-      recordIds.addAll(metaModelRecords.stream().map(Model::getId).collect(Collectors.toList()));
+      recordIds.addAll(metaModelRecords.stream().map(Model::getId).toList());
     }
 
     return recordIds;
@@ -489,7 +488,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
               TASK_TODAY,
               assignedType,
               LocalDate.now());
-      taskTodayIds.addAll(taskTodayList.stream().map(Model::getId).collect(Collectors.toList()));
+      taskTodayIds.addAll(taskTodayList.stream().map(Model::getId).toList());
 
       List<MetaJsonRecord> taskNextList =
           getMetaJsonRecords(
@@ -500,7 +499,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
               TASK_NEXT,
               assignedType,
               LocalDate.now());
-      taskNextIds.addAll(taskNextList.stream().map(Model::getId).collect(Collectors.toList()));
+      taskNextIds.addAll(taskNextList.stream().map(Model::getId).toList());
 
       List<MetaJsonRecord> lateTaskList =
           getMetaJsonRecords(
@@ -511,7 +510,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
               LATE_TASK,
               assignedType,
               LocalDate.now());
-      lateTaskIds.addAll(lateTaskList.stream().map(Model::getId).collect(Collectors.toList()));
+      lateTaskIds.addAll(lateTaskList.stream().map(Model::getId).toList());
 
       taskCntMap.put("otherTaskCnt", taskTodayList.size() + taskNextList.size());
       taskCntMap.put("lateTaskCnt", lateTaskList.size());
@@ -526,7 +525,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
               TASK_TODAY,
               assignedType,
               LocalDate.now());
-      taskTodayIds.addAll(taskTodayList.stream().map(Model::getId).collect(Collectors.toList()));
+      taskTodayIds.addAll(taskTodayList.stream().map(Model::getId).toList());
 
       List<Model> taskNextList =
           getMetaModelRecords(
@@ -537,7 +536,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
               TASK_NEXT,
               assignedType,
               LocalDate.now());
-      taskNextIds.addAll(taskNextList.stream().map(Model::getId).collect(Collectors.toList()));
+      taskNextIds.addAll(taskNextList.stream().map(Model::getId).toList());
 
       List<Model> lateTaskList =
           getMetaModelRecords(
@@ -548,7 +547,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
               LATE_TASK,
               assignedType,
               LocalDate.now());
-      lateTaskIds.addAll(lateTaskList.stream().map(Model::getId).collect(Collectors.toList()));
+      lateTaskIds.addAll(lateTaskList.stream().map(Model::getId).toList());
 
       taskCntMap.put("otherTaskCnt", taskTodayList.size() + taskNextList.size());
       taskCntMap.put("lateTaskCnt", lateTaskList.size());

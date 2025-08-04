@@ -60,7 +60,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -334,7 +333,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
             Stream.concat(
                     wsRequest.getPayLoadWsKeyValueList().stream(),
                     wsRequest.getParameterWsKeyValueList().stream())
-                .collect(Collectors.toList())) {
+                .toList()) {
           String value = wsKeyValue.getWsValue();
           if (value != null) {
             if (value.startsWith("_encode:")) {

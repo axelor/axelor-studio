@@ -102,11 +102,7 @@ public class WkfActionService implements JavaDelegate {
 
     var actionList = List.of(actions);
 
-    actionList =
-        actionList.stream()
-            .map(this::extractActions)
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
+    actionList = actionList.stream().map(this::extractActions).flatMap(List::stream).toList();
 
     for (String actionName : actionList) {
       Action action = MetaStore.getAction(actionName);

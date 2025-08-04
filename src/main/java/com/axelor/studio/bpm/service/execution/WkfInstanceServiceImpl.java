@@ -271,7 +271,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     List<WkfProcessConfig> wkfProcessConfigs =
         process.getWkfProcessConfigList().stream()
             .filter(WkfProcessConfig::getIsStartModel)
-            .collect(Collectors.toList());
+            .toList();
     if (wkfProcessConfigs.isEmpty()) {
       return;
     }

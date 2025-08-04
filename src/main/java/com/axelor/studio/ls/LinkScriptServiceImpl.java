@@ -11,7 +11,6 @@ import com.google.inject.Singleton;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +79,7 @@ public class LinkScriptServiceImpl implements LinkScriptService {
     for (LinkScriptArc arc :
         linkScript.getDependencyArcs().stream()
             .sorted(Comparator.comparing(LinkScriptArc::getSequence))
-            .collect(Collectors.toList())) {
+            .toList()) {
       if (!groovyEvaluator.test(gsh, arc.getConditionScript())) {
         continue;
       }
@@ -99,7 +98,7 @@ public class LinkScriptServiceImpl implements LinkScriptService {
     for (LinkScriptArc arc :
         linkScript.getOutputArcs().stream()
             .sorted(Comparator.comparing(LinkScriptArc::getSequence))
-            .collect(Collectors.toList())) {
+            .toList()) {
       if (!groovyEvaluator.test(gsh, arc.getConditionScript())) {
         continue;
       }

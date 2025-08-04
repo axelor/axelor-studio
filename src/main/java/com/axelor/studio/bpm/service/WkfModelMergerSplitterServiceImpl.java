@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -637,7 +636,7 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
                 List<WkfProcessConfig> wkfProcessConfigs =
                     process.getWkfProcessConfigList().stream()
                         .filter(WkfProcessConfig::getIsStartModel)
-                        .collect(Collectors.toList());
+                        .toList();
 
                 if (!wkfProcessConfigs.isEmpty()) {
                   MetaModel metaModel = wkfProcessConfigs.getFirst().getMetaModel();
@@ -678,7 +677,7 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
       List<Node> nodeList =
           IntStream.range(0, participantsList.getLength())
               .mapToObj(participantsList::item)
-              .collect(Collectors.toList());
+              .toList();
 
       List<String> processRefstoRemove = new ArrayList<>();
       for (int i = 0; i < participantsList.getLength(); i++) {

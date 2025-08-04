@@ -99,9 +99,7 @@ public class DmnImportServiceImpl implements DmnImportService {
 
       for (int i = 2; i < totalLines; i++) {
         String[] row = reader.read(sheet, i, headerRow.length);
-        if (row == null
-            || row.length == 0
-            || Arrays.asList(row).stream().noneMatch(Objects::nonNull)) {
+        if (row == null || row.length == 0 || Arrays.stream(row).noneMatch(Objects::nonNull)) {
           continue;
         }
         Rule rule = dmnModelInstance.newInstance(Rule.class);

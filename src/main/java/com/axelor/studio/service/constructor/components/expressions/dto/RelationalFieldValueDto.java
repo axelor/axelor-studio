@@ -2,7 +2,6 @@ package com.axelor.studio.service.constructor.components.expressions.dto;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,7 @@ public class RelationalFieldValueDto implements FieldValueDto {
     if (valueMap != null && valueMap instanceof List) {
       List<String> values =
           ((List<Map<String, Object>>) valueMap)
-              .stream().map(it -> it.get(targetName).toString()).collect(Collectors.toList());
+              .stream().map(it -> it.get(targetName).toString()).toList();
       String valuesStr = "[";
       for (String value : values) {
         valuesStr += String.format("'%s'", value);
