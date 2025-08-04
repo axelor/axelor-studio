@@ -56,10 +56,9 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
       executorService.submit(
           () ->
               new TenantAware(
-                      () -> {
-                        Beans.get(BpmErrorMessageService.class)
-                            .sendBpmErrorMessage(execution, e.getMessage(), null, null);
-                      })
+                      () ->
+                          Beans.get(BpmErrorMessageService.class)
+                              .sendBpmErrorMessage(execution, e.getMessage(), null, null))
                   .withTransaction(false)
                   .tenantId(BpmTools.getCurentTenant())
                   .run());

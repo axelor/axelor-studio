@@ -102,19 +102,18 @@ public class WkfDashboardController {
                     CollectionUtils.isNotEmpty(wkfProcess.getWkfProcessConfigList())
                         && wkfProcess.getName().equals(process))
             .forEach(
-                it -> {
-                  it.getWkfProcessConfigList()
-                      .forEach(
-                          processConfig -> {
-                            if (processConfig.getMetaModel() != null) {
-                              metaModelIds.add(processConfig.getMetaModel().getId());
-                            }
+                it ->
+                    it.getWkfProcessConfigList()
+                        .forEach(
+                            processConfig -> {
+                              if (processConfig.getMetaModel() != null) {
+                                metaModelIds.add(processConfig.getMetaModel().getId());
+                              }
 
-                            if (processConfig.getMetaJsonModel() != null) {
-                              jsonModelIds.add(processConfig.getMetaJsonModel().getId());
-                            }
-                          });
-                });
+                              if (processConfig.getMetaJsonModel() != null) {
+                                jsonModelIds.add(processConfig.getMetaJsonModel().getId());
+                              }
+                            }));
       }
 
       response.setAttr(

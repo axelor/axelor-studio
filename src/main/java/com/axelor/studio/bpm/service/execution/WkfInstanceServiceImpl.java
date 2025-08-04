@@ -216,14 +216,13 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         executorService.submit(
             () ->
                 new TenantAware(
-                        () -> {
-                          bpmErrorMessageService.sendBpmErrorMessage(
-                              null,
-                              e.getMessage(),
-                              EntityHelper.getEntity(
-                                  wkfProcessConfig.getWkfProcess().getWkfModel()),
-                              finalProcessInstanceId);
-                        })
+                        () ->
+                            bpmErrorMessageService.sendBpmErrorMessage(
+                                null,
+                                e.getMessage(),
+                                EntityHelper.getEntity(
+                                    wkfProcessConfig.getWkfProcess().getWkfModel()),
+                                finalProcessInstanceId))
                     .withTransaction(false)
                     .tenantId(BpmTools.getCurentTenant())
                     .run());

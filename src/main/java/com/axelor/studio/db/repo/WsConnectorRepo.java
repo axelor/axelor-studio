@@ -38,10 +38,7 @@ public class WsConnectorRepo extends WsConnectorRepository {
     }
 
     final StudioApp studioApp = connector.getStudioApp();
-    requests.forEach(
-        req -> {
-          req.setStudioApp(studioApp);
-        });
+    requests.forEach(req -> req.setStudioApp(studioApp));
 
     return connector;
   }
