@@ -45,7 +45,7 @@ public class BpmMapperValue extends MapperValue {
         break;
     }
 
-    if (stb.length() == 0) {
+    if (stb.isEmpty()) {
       return super.toScript(parentField);
     }
 

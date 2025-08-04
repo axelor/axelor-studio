@@ -193,7 +193,7 @@ public class StudioAppServiceImpl implements StudioAppService {
         xmlImporter.run();
       }
 
-      if (logStringBuilder.length() > 0) {
+      if (!logStringBuilder.isEmpty()) {
         File logFile = TempFiles.createTempFile("import-", "log").toFile();
         org.apache.commons.io.FileUtils.writeStringToFile(
             logFile, logStringBuilder.toString(), StandardCharsets.UTF_8);

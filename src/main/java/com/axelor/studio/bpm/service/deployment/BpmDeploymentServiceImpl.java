@@ -535,7 +535,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             "processConfiguration", BpmnParser.CAMUNDA_BPMN_EXTENSIONS_NS);
     List<ModelElementInstance> processConfigElements =
         extensionElements.getElementsQuery().filterByType(processConfigType).list();
-    if (processConfigElements == null || processConfigElements.size() == 0) {
+    if (processConfigElements == null || processConfigElements.isEmpty()) {
       return;
     }
 

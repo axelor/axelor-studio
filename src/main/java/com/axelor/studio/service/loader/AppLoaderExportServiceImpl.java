@@ -464,7 +464,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
         Collection<Object> records = (Collection<Object>) value;
         StringBuilder stringBuilder = new StringBuilder();
         for (Object rec : records) {
-          if (stringBuilder.length() > 0) {
+          if (!stringBuilder.isEmpty()) {
             stringBuilder.append(";");
           }
           Object target = ((FullContext) rec).get(getTargetName(fieldAttrs));
@@ -516,7 +516,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
           if (recVal != null) {
             recVal = recVal.toString().replace(";", ",");
           }
-          if (valBuilder.length() > 0) {
+          if (!valBuilder.isEmpty()) {
             valBuilder.append(";");
           }
           valBuilder.append(recVal);
@@ -593,7 +593,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
     for (MetaField field : appDataLoader.getSearchMetaFieldSet()) {
 
-      if (fields.length() != 0) {
+      if (!fields.isEmpty()) {
         fields.append(" AND ");
       }
 
@@ -674,7 +674,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
 
     for (MetaJsonField field : appDataLoader.getSearchJsonFieldSet()) {
 
-      if (fields.length() != 0) {
+      if (!fields.isEmpty()) {
         fields.append(" AND ");
       }
       Map<String, Object> fieldAttrs = (Map<String, Object>) jsonFieldMap.get(field.getName());

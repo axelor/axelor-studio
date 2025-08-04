@@ -285,7 +285,7 @@ public class WkfNodeServiceImpl implements WkfNodeService {
 
     Collection<ModelElementInstance> menuContexts = menu.getChildElementsByType(menuContextType);
 
-    if (menuContexts != null && menuContexts.size() > 0) {
+    if (menuContexts != null && !menuContexts.isEmpty()) {
       taskMenu.clearWkfTaskMenuContextList();
       for (ModelElementInstance context : menuContexts) {
         WkfTaskMenuContext menuContext = updateMenuContext(context, contextMap);
