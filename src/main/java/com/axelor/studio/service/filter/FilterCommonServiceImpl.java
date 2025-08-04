@@ -18,7 +18,6 @@
 package com.axelor.studio.service.filter;
 
 import com.axelor.meta.db.MetaField;
-import java.util.Arrays;
 
 public class FilterCommonServiceImpl implements FilterCommonService {
 
