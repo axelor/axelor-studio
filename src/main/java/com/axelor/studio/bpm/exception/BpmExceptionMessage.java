@@ -705,7 +705,7 @@ public final class BpmExceptionMessage {
           "Current changes will be lost. Do you really want to proceed?" /*)*/;
   public static final String BPM_YAML_INVALID_FILE = /*$$(*/ "Invalid File" /*)*/;
   public static final String BPM_YAML_UNSUPPORTED_OPERATION = /*$$(*/
-      "Unsupported operation : %s" /*)*/;
+      "Unsupported operation: %s" /*)*/;
   public static final String BPM_YAML_NOT_FOUND_FILE = /*$$(*/ "File not found" /*)*/;
   public static final String BPM_LOG_INVALID_DATES = /*$$(*/
       "Invalid date: start date is after end date" /*)*/;
@@ -722,7 +722,7 @@ public final class BpmExceptionMessage {
   public static final String BPM_VARIABLE_UNSUPPORTED_TYPE = /*$$(*/
       "Unsupported variable type or empty map" /*)*/;
   public static final String BPM_WKF_INSTANCE_NOT_FOUND = /*$$(*/
-      "Process instance not found : %s" /*)*/;
+      "Process instance not found: %s" /*)*/;
   public static final String MIGRATION_IS_ALREADY_ONGOING = /*$$(*/
       "Migration is already ongoing."; /*)*/
 }

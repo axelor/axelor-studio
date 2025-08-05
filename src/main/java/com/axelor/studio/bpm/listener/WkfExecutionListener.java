@@ -128,7 +128,7 @@ public class WkfExecutionListener implements ExecutionListener {
                   BpmnModelConstants.CAMUNDA_ATTRIBUTE_RESULT_VARIABLE);
       if (execution.getVariable(varName) == null) {
         throw new IllegalStateException(
-            String.format(I18n.get("No result from DMN : %s"), execution.getCurrentActivityName()));
+            String.format(I18n.get("No result from DMN: %s"), execution.getCurrentActivityName()));
       }
     }
   }
