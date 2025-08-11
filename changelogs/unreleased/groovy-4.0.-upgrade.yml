@@ -1,0 +1,4 @@
+title: Upgrade Groovy to 4.0.28
+type: change
+description: |
+  `org.codehaus.groovy:groovy-all:3.0.19` dependency has been replaced by `org.apache.groovy:groovy-all:4.0.28`.
