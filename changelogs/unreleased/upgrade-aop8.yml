@@ -1,0 +1,8 @@
+title: Upgrade to AOP 8.0
+type: change
+description: |
+  - Upgrade to AOP 8.0 
+  - Upgrade to gradle 8.14.3
+  - Upgrade to java 21
+  - Upgrade to tomcat 10
+  - Move package `javax.*` to `jakarta.*`
