@@ -36,16 +36,10 @@
     </extend>
 
     <extend target="/">
-      <attribute name="onNew"
-        value="action-studio-meta-action-record-onnew,action-studio-meta-action-attrs-onnew-onload"/>
-      <attribute name="onLoad" value="action-studio-meta-action-attrs-onnew-onload"/>
+      <attribute name="onNew" value="action-studio-meta-action-record-onnew"/>
     </extend>
 
   </form>
-
-  <action-attrs name="action-studio-meta-action-attrs-onnew-onload">
-    <attribute name="hidden" for="actionStudioAppPanel" expr="eval: !_fromStudio"/>
-  </action-attrs>
 
   <action-record name="action-studio-meta-action-record-onnew"
     model="com.axelor.meta.db.MetaAction">
