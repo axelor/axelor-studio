@@ -61,7 +61,8 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
         "ws-request-list.xml",
         "ws-authenticator.xml",
         "ws-connector.xml",
-        "meta-view.xml"
+        "meta-view.xml",
+        "meta-action.xml"
       };
 
   protected AppLoaderRepository appLoaderRepository;
