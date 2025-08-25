@@ -60,8 +60,8 @@
         </editor>
       </field>
       <panel name="permissionsPanel" colSpan="12" title="Permissions">
-        <field name="groups" colSpan="12" widget="TagSelect"/>
-        <field name="roles" colSpan="12" widget="TagSelect"/>
+        <field name="groups" colSpan="12" widget="Tags"/>
+        <field name="roles" colSpan="12" widget="Tags"/>
       </panel>
       <panel name="detailPanel" colSpan="12" title="Extra" canCollapse="true">
         <field name="conditionToCheck"/>

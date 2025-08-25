@@ -18,9 +18,9 @@
           requiredIf="isJson == null || !isJson"/>
         <field name="isJson" onChange="action-app-data-loader-attrs-is-json-change"
           colSpan="2"/>
-        <field name="searchMetaFieldSet" readonlyIf="!metaModel" widget="TagSelect"
+        <field name="searchMetaFieldSet" readonlyIf="!metaModel" widget="Tags"
           domain="self.metaModel = :metaModel" canNew="false" requiredIf="isJson == null || !isJson"/>
-        <field name="metaFieldSet" readonlyIf="!metaModel" widget="TagSelect" colSpan="12"
+        <field name="metaFieldSet" readonlyIf="!metaModel" widget="Tags" colSpan="12"
           domain="self.metaModel = :metaModel" canNew="false" requiredIf="isJson == null || !isJson"/>
         <field name="filterQuery" readonlyIf="!metaModel" widget="String" colSpan="12"/>
       </panel>
@@ -30,11 +30,11 @@
           requiredIf="isJson != null &amp;&amp; isJson"/>
         <field name="isJson" onChange="action-app-data-loader-attrs-is-json-change"
           colSpan="2"/>
-        <field name="searchJsonFieldSet" readonlyIf="!jsonModel" widget="TagSelect"
+        <field name="searchJsonFieldSet" readonlyIf="!jsonModel" widget="Tags"
           domain="self.jsonModel = :jsonModel and self.type not in ('panel','separator','button','label','spacer')"
           canNew="false" requiredIf="isJson != null &amp;&amp; isJson"/>
         <field name="jsonFieldSet" readonlyIf="!jsonModel"
-          requiredIf="isJson != null &amp;&amp; isJson" widget="TagSelect" colSpan="12"
+          requiredIf="isJson != null &amp;&amp; isJson" widget="Tags" colSpan="12"
           domain="self.jsonModel = :jsonModel and self.type not in ('panel','separator','button','label')"
           canNew="false"/>
         <field name="filterQuery" readonlyIf="!jsonModel" widget="String" colSpan="12"/>

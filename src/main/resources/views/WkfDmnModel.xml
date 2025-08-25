@@ -26,8 +26,8 @@
       <field name="description" colSpan="12"/>
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
         if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
-      <field name="metaModelSet" widget="TagSelect"/>
-      <field name="jsonModelSet" widget="TagSelect"/>
+      <field name="metaModelSet" widget="Tags"/>
+      <field name="jsonModelSet" widget="Tags"/>
       <field name="dmnTableList" colSpan="12" canNew="false">
         <editor>
           <field name="name"/>
