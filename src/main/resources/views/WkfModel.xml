@@ -416,8 +416,7 @@
       method="unblockInstanceFromModel"/>
   </action-method>
 
-  <action-export name="action-wkf-model-export-wkf-models" output="${date}${time}"
-    download="true">
+  <action-export name="action-wkf-model-export-wkf-models">
     <export
       name="${__repo__(WkfModel).find(_ids.get(0))?.name}${__repo__(WkfModel).find(_ids.get(0))?.versionTag ? '-'.concat(__repo__(WkfModel).find(_ids.get(0))?.versionTag) : ''}.xml"
       template="data-export/export-wkf-models.tmpl" engine="groovy"

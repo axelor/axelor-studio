@@ -214,8 +214,7 @@
     <attribute name="value" for="isExportData" expr="eval: true"/>
   </action-attrs>
 
-  <action-export id="bpm-action-export-studio-apps" name="action-export-studio-apps"
-    output="${date}${time}" download="true">
+  <action-export id="bpm-action-export-studio-apps" name="action-export-studio-apps">
     <export
       name="BPM-${__datetime__.format(java.time.format.DateTimeFormatter.ofPattern('ddMMyyyyHHmmSS'))}.xml"
       template="data-export/export-app-bpm.tmpl" engine="groovy"/>

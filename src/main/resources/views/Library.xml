@@ -16,8 +16,7 @@
     </panel-related>
   </form>
 
-  <action-export name="action-export-studio-transformations-libraries"
-    output="${date}${time}" download="true">
+  <action-export name="action-export-studio-transformations-libraries">
     <export name="transformations-libraries.xml"
       template="data-export/transformations-libraries.tmpl" engine="groovy"/>
   </action-export>
