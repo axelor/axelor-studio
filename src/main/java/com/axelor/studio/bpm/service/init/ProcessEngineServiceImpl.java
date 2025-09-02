@@ -79,7 +79,7 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
     }
 
     ProcessEngineConfigurationImpl configImpl = Beans.get(WkfProcessEngineConfigurationImpl.class);
-
+    configImpl.setHistoryTimeToLive(appSettingsStudioService.getCamundaHistoryTimeToLive());
     ProcessEngine engine =
         configImpl
             .setJdbcDriver(tenantConfig.getJdbcDriver())

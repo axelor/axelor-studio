@@ -37,4 +37,6 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   String getCamundaEngineScriptLogLevel();
 
   String getCamundaEngineContextLogLevel();
+
+  String getCamundaHistoryTimeToLive();
 }

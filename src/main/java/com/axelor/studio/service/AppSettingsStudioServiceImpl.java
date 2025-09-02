@@ -90,6 +90,11 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
     return getLoggerLogLevel("org.camunda.bpm.engine.context");
   }
 
+  @Override
+  public String getCamundaHistoryTimeToLive() {
+    return appSettings.get("studio.bpm.history.time.to.live", "P6M");
+  }
+
   private String getLoggerLogLevel(String loggerPrefix) {
     String[] logLevels = {
       "logging.level." + loggerPrefix,
