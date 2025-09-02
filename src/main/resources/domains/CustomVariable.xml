@@ -11,9 +11,9 @@
     <string name="expression" title="Expression"/>
     <integer name="status" title="status" selection="studio.app.bpm.custom.variable.status"/>
     <extra-code><![CDATA[
-		public static final int STATUS_VALID = 1;
-		public static final int STATUS_INVALID= 2;
-	]]></extra-code>
+    public static final int STATUS_VALID = 1;
+    public static final int STATUS_INVALID= 2;
+  ]]></extra-code>
   </entity>
 
 </domain-models>

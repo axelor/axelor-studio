@@ -147,81 +147,81 @@
 
   <custom name="wkf-model-process-per-status-custom" title="">
     <dataset type="rpc">
-			<![CDATA[
-				com.axelor.studio.bpm.web.WkfModelController:getProcessPerStatus
-			]]>
+      <![CDATA[
+        com.axelor.studio.bpm.web.WkfModelController:getProcessPerStatus
+      ]]>
     </dataset>
     <template>
-			<![CDATA[
-	 			<>
- 				<div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
- 					{data?.map((process, i) => (
- 					<Table key={i}>
- 					<TableHead>
- 					<TableRow>
- 						<th>{process?.title}</th>
- 					</TableRow>
- 					</TableHead>
- 					<TableBody>
- 						{process?.itemList?.map((item, i) => (
- 						<TableRow key={i}>
- 							{item.type === "model" && (
- 							<TableCell style={{ paddingLeft: 20 }}>
- 								<a style={{ fontWeight: "bold" }} href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-model-per-view", item)}}>
- 									{_t(`value:${item.title}`) === `value:${item.title}` ? item.title : _t(`value: ${item.title}`)}
- 									({item.modelRecordCount})
- 								</a>
- 								<div style={{padding: "8px 8px 8px 25px", display: "flex", border: "1px solid #ddd", borderLeft: "none", borderRight: "none", marginTop: 8,}}>
- 									<div style={{ flex: 1 }}>
- 										{item?.statuses?.map((status, i) => (
- 											<p key={i} style={{ display: "list-item" }}>
- 											<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-status-per-view", status)}}>
- 												{_t(`value:${status.title}`) === `value:${status.title}` ? status.title : _t(`value:${status.title}`)}
- 												({status.statusCount})
- 											</a>
- 											</p>
- 										))}
- 									</div>
- 									<div style={{ flex: 1 }}>
- 										<p style={{ display: "list-item" }}>
- 											<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-task-today", item.tasks)}}>
- 												<span x-translate>Tasks to do today</span> ({item?.tasks?.taskTodayIds?.length})
- 											</a>
- 										</p>
- 									<p style={{ display: "list-item" }}>
- 										<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-task-next", item.tasks)}}>
- 											<span x-translate>Tasks to do for the next 7 days</span> ({item?.tasks?.taskNextIds?.length})
- 										</a>
- 									</p>
- 									<p style={{ display: "list-item" }}>
- 										<a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-late-task",item.tasks)}}>
- 											<span x-translate>Late tasks</span> ({item?.tasks?.lateTaskIds?.length})
- 										</a>
- 									</p>
-							 	</div>
- 							</div>
- 						</TableCell>
- 						)}
- 					</TableRow>
- 					))}
- 				</TableBody>
- 			</Table>
- 			))}
- 			</div>
-			</>
-	 	]]>
+      <![CDATA[
+         <>
+         <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+           {data?.map((process, i) => (
+           <Table key={i}>
+           <TableHead>
+           <TableRow>
+             <th>{process?.title}</th>
+           </TableRow>
+           </TableHead>
+           <TableBody>
+             {process?.itemList?.map((item, i) => (
+             <TableRow key={i}>
+               {item.type === "model" && (
+               <TableCell style={{ paddingLeft: 20 }}>
+                 <a style={{ fontWeight: "bold" }} href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-model-per-view", item)}}>
+                   {_t(`value:${item.title}`) === `value:${item.title}` ? item.title : _t(`value: ${item.title}`)}
+                   ({item.modelRecordCount})
+                 </a>
+                 <div style={{padding: "8px 8px 8px 25px", display: "flex", border: "1px solid #ddd", borderLeft: "none", borderRight: "none", marginTop: 8,}}>
+                   <div style={{ flex: 1 }}>
+                     {item?.statuses?.map((status, i) => (
+                       <p key={i} style={{ display: "list-item" }}>
+                       <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-status-per-view", status)}}>
+                         {_t(`value:${status.title}`) === `value:${status.title}` ? status.title : _t(`value:${status.title}`)}
+                         ({status.statusCount})
+                       </a>
+                       </p>
+                     ))}
+                   </div>
+                   <div style={{ flex: 1 }}>
+                     <p style={{ display: "list-item" }}>
+                       <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-task-today", item.tasks)}}>
+                         <span x-translate>Tasks to do today</span> ({item?.tasks?.taskTodayIds?.length})
+                       </a>
+                     </p>
+                   <p style={{ display: "list-item" }}>
+                     <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-task-next", item.tasks)}}>
+                       <span x-translate>Tasks to do for the next 7 days</span> ({item?.tasks?.taskNextIds?.length})
+                     </a>
+                   </p>
+                   <p style={{ display: "list-item" }}>
+                     <a href="" onClick={(e) => {e.preventDefault(); $execute("action-wkf-model-method-open-late-task",item.tasks)}}>
+                       <span x-translate>Late tasks</span> ({item?.tasks?.lateTaskIds?.length})
+                     </a>
+                   </p>
+                 </div>
+               </div>
+             </TableCell>
+             )}
+           </TableRow>
+           ))}
+         </TableBody>
+       </Table>
+       ))}
+       </div>
+      </>
+     ]]>
     </template>
   </custom>
 
   <custom name="wkf-model-process-per-user-custom" title="">
     <dataset type="rpc">
-			<![CDATA[
-				com.axelor.studio.bpm.web.WkfModelController:getProcessPerUser
-			]]>
+      <![CDATA[
+        com.axelor.studio.bpm.web.WkfModelController:getProcessPerUser
+      ]]>
     </dataset>
     <template>
-			<![CDATA[
-	 			<>
+      <![CDATA[
+         <>
   <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
     {data?.map((process, i) => (
       <Table key={i}>
@@ -301,7 +301,7 @@
     ))}
   </div>
 </>
-	 		]]>
+       ]]>
     </template>
   </custom>
 

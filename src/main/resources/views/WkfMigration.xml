@@ -47,9 +47,9 @@
   <custom name="wkf-migration-mapping-custom" title="Node mapping">
     <dataset type="rpc"><![CDATA[ com.axelor.studio.bpm.web.WkfMigrationController:getNodeMap ]]></dataset>
     <template>
-  		<![CDATA[
-			<>
-  	<div style={{ display: 'flex', flexDirection: 'column' }}>
+      <![CDATA[
+      <>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
     {data?.values?.map((value) => (
       <div key={value.processId}>
         <h4 style={{padding: "10px"}}>{value.processId}</h4>
@@ -85,8 +85,8 @@
       </Button>
     )}
   </div>
-			</>
-  		]]>
+      </>
+      ]]>
     </template>
   </custom>
 

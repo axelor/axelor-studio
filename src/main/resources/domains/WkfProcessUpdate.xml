@@ -11,10 +11,10 @@
       selection="studio-wkf-process-update-status-select"/>
     <string name="script" title="Script" large="true"/>
     <extra-code><![CDATA[
-		public static final int STATUS_DRAFT = 1;
-		public static final int STATUS_APPLIED= 2;
-		public static final int STATUS_ERROR = 3;
-	]]></extra-code>
+    public static final int STATUS_DRAFT = 1;
+    public static final int STATUS_APPLIED= 2;
+    public static final int STATUS_ERROR = 3;
+  ]]></extra-code>
   </entity>
 
 </domain-models>

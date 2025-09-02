@@ -88,7 +88,7 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
             .setJdbcPassword(tenantConfig.getJdbcPassword())
             .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE)
             .setHistory(ProcessEngineConfiguration.HISTORY_AUDIT)
-                .setJdbcMaxIdleConnections(appSettingsStudioService.processEngineMaxIdleConnections())
+            .setJdbcMaxIdleConnections(appSettingsStudioService.processEngineMaxIdleConnections())
             .setJdbcMaxActiveConnections(
                 appSettingsStudioService.processEngineMaxActiveConnections())
             .setJobExecutorActivate(!multiTenant)

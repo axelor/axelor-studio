@@ -51,48 +51,48 @@
       <label name="$noData" title="No data to display" showIf="$totalRecord == 0"/>
       <field name="$models" colSpan="12" showTitle="false" readonly="true">
         <viewer><![CDATA[
-  				<div>
-	  				<table ng-repeat="model in record.$modelList" class="table" style="border-bottom:1px solid #bbb;">
-		 				<thead>
-		 					<tr>
-		 						<th style="font-size:14px;">{{model.title}}{{model.versionTag != null ? ' - '+model.versionTag : ''}}</th>
-		 					</tr>
-		 				</thead>
-		 				<tbody>
-		 					<tr ng-repeat="process in model.processList">
-	 							<td style="padding-left: 20px;">
-	 								<div style="font-weight:bolder;padding-bottom:8px;border-bottom:1px solid #ddd;margin-bottom:8px;">
-	 									<span>{{process.title}}</span>
-	 								</div>
-									<div ng-repeat="item in process.itemList">
-										<div ng-if="item.type == 'model'" style="padding-left: 20px;">
-											<p><a style="font-weight:bold;" href="" ui-action-context="item" ui-action-click="action-wkf-model-method-model-per-view">{{_t('value:' + item.title) == 'value:'+item.title ? item.title : _t('value:' + item.title)}} ({{item.modelRecordCount}})</a></p>
-											<div ng-if="model.isSuperAdmin || model.isAdmin || model.isManager || model.isUser" style="padding:8px 8px 8px 8px;display: flex;border-top: 1px solid #ddd;">
-												<div>
-													<p>Assigned to me</p>
-													<p ng-if="item.userStatuses.length == 0" style="margin-left:9px;font-style:italic;" x-translate>No status</p>
-				 									<p ng-if="item.userStatuses.length > 0" style="display:list-item;margin-left:25px" ng-repeat="userStatus in item.userStatuses">
-				 										<a href="" ui-action-context="userStatus" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + userStatus.title) == 'value:'+userStatus.title ? userStatus.title : _t('value:' + userStatus.title)}} ({{userStatus.statusCount}})</a>
-				 									</p>
-			 									</div>
-				 							</div>
-				 							<div ng-if="model.isSuperAdmin || model.isAdmin || model.isManager" style="padding:8px 8px 8px 8px;display: flex;border-top: 1px solid #ddd;">
-				 								<div>
-			 										<p>Assigned to others</p>
-			 										<p ng-if="item.statuses.length == 0" style="margin-left:9px;font-style:italic;" x-translate>No status</p>
-			 										<p ng-if="item.statuses.length > 0" style="display:list-item;margin-left:25px;" ng-repeat="status in item.statuses">
-			 											<a href="" ui-action-context="status" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + status.title) == 'value:'+status.title ? status.title : _t('value:' + status.title)}} ({{status.statusCount}})</a>
-			 										</p>
-			 									</div>
-			 								</div>
-										</div>
-									</div>
-	 							</td>
-	 						</tr>
-		 				</tbody>
-		 			</table>
-	 			</div>
-  			]]></viewer>
+          <div>
+            <table ng-repeat="model in record.$modelList" class="table" style="border-bottom:1px solid #bbb;">
+             <thead>
+               <tr>
+                 <th style="font-size:14px;">{{model.title}}{{model.versionTag != null ? ' - '+model.versionTag : ''}}</th>
+               </tr>
+             </thead>
+             <tbody>
+               <tr ng-repeat="process in model.processList">
+                 <td style="padding-left: 20px;">
+                   <div style="font-weight:bolder;padding-bottom:8px;border-bottom:1px solid #ddd;margin-bottom:8px;">
+                     <span>{{process.title}}</span>
+                   </div>
+                  <div ng-repeat="item in process.itemList">
+                    <div ng-if="item.type == 'model'" style="padding-left: 20px;">
+                      <p><a style="font-weight:bold;" href="" ui-action-context="item" ui-action-click="action-wkf-model-method-model-per-view">{{_t('value:' + item.title) == 'value:'+item.title ? item.title : _t('value:' + item.title)}} ({{item.modelRecordCount}})</a></p>
+                      <div ng-if="model.isSuperAdmin || model.isAdmin || model.isManager || model.isUser" style="padding:8px 8px 8px 8px;display: flex;border-top: 1px solid #ddd;">
+                        <div>
+                          <p>Assigned to me</p>
+                          <p ng-if="item.userStatuses.length == 0" style="margin-left:9px;font-style:italic;" x-translate>No status</p>
+                           <p ng-if="item.userStatuses.length > 0" style="display:list-item;margin-left:25px" ng-repeat="userStatus in item.userStatuses">
+                             <a href="" ui-action-context="userStatus" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + userStatus.title) == 'value:'+userStatus.title ? userStatus.title : _t('value:' + userStatus.title)}} ({{userStatus.statusCount}})</a>
+                           </p>
+                         </div>
+                       </div>
+                       <div ng-if="model.isSuperAdmin || model.isAdmin || model.isManager" style="padding:8px 8px 8px 8px;display: flex;border-top: 1px solid #ddd;">
+                         <div>
+                           <p>Assigned to others</p>
+                           <p ng-if="item.statuses.length == 0" style="margin-left:9px;font-style:italic;" x-translate>No status</p>
+                           <p ng-if="item.statuses.length > 0" style="display:list-item;margin-left:25px;" ng-repeat="status in item.statuses">
+                             <a href="" ui-action-context="status" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + status.title) == 'value:'+status.title ? status.title : _t('value:' + status.title)}} ({{status.statusCount}})</a>
+                           </p>
+                         </div>
+                       </div>
+                    </div>
+                  </div>
+                 </td>
+               </tr>
+             </tbody>
+           </table>
+         </div>
+        ]]></viewer>
       </field>
       <button name="previousBtn" title="&lt;&lt; Previous"
         onClick="action-wkf-bpm-manager-dashboard-method-pre-manager-data" colSpan="2"

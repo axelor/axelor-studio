@@ -5,4 +5,3 @@
   <app-loader name="BPM-2: Multi instance signal (Billing Subscription)"
     importFilePath="apps/demo-data/en/BPM-2/"/>
 </app-loaders>
-

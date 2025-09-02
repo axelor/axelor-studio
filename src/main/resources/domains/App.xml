@@ -39,15 +39,15 @@
 
     <extra-code><![CDATA[
 
-	   	// TYPE SELECT
-		public static final String TYPE_STANDARD = "standard";
-		public static final String TYPE_ADDONS = "addons";
-		public static final String TYPE_ENTERPRISE = "enterprise";
-		public static final String TYPE_CUSTOM = "custom";
-		public static final String TYPE_OTHERS = "others";
-		public static final String TYPE_CUSTOMER ="customer";
+       // TYPE SELECT
+    public static final String TYPE_STANDARD = "standard";
+    public static final String TYPE_ADDONS = "addons";
+    public static final String TYPE_ENTERPRISE = "enterprise";
+    public static final String TYPE_CUSTOM = "custom";
+    public static final String TYPE_OTHERS = "others";
+    public static final String TYPE_CUSTOMER ="customer";
 
-	]]></extra-code>
+  ]]></extra-code>
   </entity>
 
 </domain-models>

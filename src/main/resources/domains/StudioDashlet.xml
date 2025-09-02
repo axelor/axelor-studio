@@ -7,7 +7,7 @@
 
   <entity name="StudioDashlet" cacheable="true">
     <![CDATA[
-    	It represents a custom dashlet. It contains fields required to generate a Axelor Open Platform supported dashlet xml.
+      It represents a custom dashlet. It contains fields required to generate a Axelor Open Platform supported dashlet xml.
     ]]>
     <string name="name" title="Name" required="true"/>
     <many-to-one name="metaView" ref="com.axelor.meta.db.MetaView" title="View"/>

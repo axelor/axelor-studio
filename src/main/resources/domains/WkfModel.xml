@@ -44,9 +44,9 @@
     <boolean name="isMigrationOnGoing"/>
     <unique-constraint columns="code,versionTag"/>
     <extra-code><![CDATA[
-		public static final int STATUS_NEW = 1;
-		public static final int STATUS_ON_GOING = 2;
-		public static final int STATUS_TERMINATED = 3;
+    public static final int STATUS_NEW = 1;
+    public static final int STATUS_ON_GOING = 2;
+    public static final int STATUS_TERMINATED = 3;
         ]]></extra-code>
 
   </entity>
