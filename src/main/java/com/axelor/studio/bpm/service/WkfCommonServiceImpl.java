@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
-import org.camunda.bpm.engine.impl.variable.serializer.JPAVariableSerializer;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.Variables.SerializationDataFormats;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
@@ -166,10 +165,12 @@ public class WkfCommonServiceImpl implements WkfCommonService {
           ObjectValue variable;
           Long id = null;
           if (value instanceof Model) {
+            FullContext ctx = new FullContext((Model) value);
             variable =
-                Variables.objectValue(value, true)
-                    .serializationDataFormat(JPAVariableSerializer.NAME)
+                Variables.objectValue(ctx, true)
+                    .serializationDataFormat(SerializationDataFormats.JSON)
                     .create();
+
             id = ((Model) value).getId();
           } else {
             variable =
