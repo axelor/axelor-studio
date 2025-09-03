@@ -98,8 +98,8 @@ public class WkfCommonServiceImpl implements WkfCommonService {
             .filter(
                 "(self.metaModel.fullName = ?1 OR self.metaJsonModel.name = ?1) "
                     + "AND self.wkfProcess.wkfModel.statusSelect = ?2 "
-                    + "AND self.wkfProcess.wkfModel.isActive is ?3 "
-                    + "AND (self.isStartModel is true OR (SELECT COUNT(id) from self.wkfProcess.wkfModel.wkfProcessList.wkfProcessConfigList wkp WHERE wkp.isStartModel IS TRUE) > 0)",
+                    + "AND self.wkfProcess.wkfModel.isActive = ?3 "
+                    + "AND (self.isStartModel is true OR (SELECT COUNT(wkp.id) from self.wkfProcess.wkfModel.wkfProcessList.wkfProcessConfigList wkp WHERE wkp.isStartModel IS TRUE) > 0)",
                 getModelName(model),
                 status,
                 isActive)
