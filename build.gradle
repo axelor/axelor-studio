@@ -72,6 +72,7 @@ dependencies {
 
   implementation 'org.camunda.bpm:camunda-engine:7.23.0'
   implementation 'org.camunda.bpm:camunda-engine-plugin-spin:7.23.0'
+  implementation 'org.camunda.spin:camunda-spin-dataformat-json-jackson:7.23.0'
 
   implementation 'org.apache.groovy:groovy-all:4.0.28'
   implementation 'org.eclipse.birt.runtime.3_7_1:Tidy:1'
