@@ -8,6 +8,7 @@ import com.axelor.studio.bpm.service.ProcessInstanceModificationService;
 import com.axelor.studio.db.WkfProcessUpdate;
 import com.axelor.studio.db.repo.WkfProcessUpdateRepository;
 import com.axelor.utils.helpers.ExceptionHelper;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -47,7 +48,8 @@ public class ProcessInstanceModificationController {
     try {
       WkfProcessUpdate wkfProcessUpdate = request.getContext().asType(WkfProcessUpdate.class);
       Path path = Beans.get(ProcessInstanceModificationService.class).export(wkfProcessUpdate);
-      response.setExportFile(path.toString());
+      response.setExportFile(path);
+      Files.deleteIfExists(path);
     } catch (Exception e) {
       ExceptionHelper.error(response, e);
     }

@@ -1,7 +1,6 @@
 package com.axelor.studio.bpm.service;
 
-import com.axelor.app.AppSettings;
-import com.axelor.common.FileUtils;
+import com.axelor.file.temp.TempFiles;
 import com.axelor.i18n.I18n;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
@@ -14,11 +13,9 @@ import com.axelor.studio.db.repo.WkfProcessUpdateRepository;
 import com.axelor.studio.helper.MigrationHelper;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
@@ -29,9 +26,6 @@ import org.yaml.snakeyaml.Yaml;
 public class ProcessInstanceModificationServiceImpl implements ProcessInstanceModificationService {
   protected final WkfProcessUpdateRepository wkfProcessUpdateRepository;
 
-  protected static final String DEFAULT_EXPORT_PATH = "{java.io.tmpdir}/axelor/data-export";
-  protected static final String EXPORT_PATH =
-      AppSettings.get().getPath("data.export.dir", DEFAULT_EXPORT_PATH);
   protected static final String MIGRATION = "__migration__";
   protected static final String START_BEFORE_ACTIVITY = "startBefore\\(.+\\)";
   protected static final String START_BEFORE_ACTIVITY_SET_VARIABLE =
@@ -119,15 +113,9 @@ public class ProcessInstanceModificationServiceImpl implements ProcessInstanceMo
   @Override
   public Path export(WkfProcessUpdate wkfProcessUpdate) {
     try {
-      Path tempFile = Files.createTempFile("exported_modification", ".yaml");
+      Path tempFile = TempFiles.createTempFile("exported_modification", ".yaml");
       Files.write(tempFile, wkfProcessUpdate.getScript().getBytes(), StandardOpenOption.WRITE);
-      File exportFile = FileUtils.getFile(EXPORT_PATH, tempFile.getFileName().toString());
-      Path exportPath = Paths.get(EXPORT_PATH);
-      if (Files.notExists(exportPath)) {
-        Files.createDirectories(exportPath);
-      }
-      Files.move(tempFile, exportFile.toPath());
-      return exportPath.relativize(exportFile.toPath());
+      return tempFile;
     } catch (Exception e) {
       throw new IllegalStateException(e.getMessage());
     }
