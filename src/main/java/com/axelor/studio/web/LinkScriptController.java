@@ -43,7 +43,7 @@ public class LinkScriptController {
     var gsh = Beans.get(LinkScriptGroovyEvaluator.class).newHelper(null);
     return Optional.of(
         list.stream()
-            .filter(binding -> binding instanceof Map)
+            .filter(Map.class::isInstance)
             .map(binding -> (Map<?, ?>) binding)
             .filter(
                 it ->
