@@ -24,7 +24,7 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -287,7 +287,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
     files.forEach(
         url -> {
           String name = url.getFile();
-          name = Paths.get(name.replaceAll("file:.+!/", "")).toString();
+          name = Path.of(name.replaceAll("file:.+!/", "")).toString();
           try {
             copy(url.openStream(), tmp, name);
           } catch (IOException e) {

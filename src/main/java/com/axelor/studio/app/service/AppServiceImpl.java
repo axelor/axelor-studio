@@ -53,7 +53,6 @@ import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -81,11 +80,11 @@ public class AppServiceImpl implements AppService {
 
   protected static final String DIR_APPS = "apps";
 
-  protected static final String DIR_APPS_DEMO = Paths.get("apps", "demo-data").toString();
+  protected static final String DIR_APPS_DEMO = Path.of("apps", "demo-data").toString();
 
-  protected static final String DIR_APPS_INIT = Paths.get("apps", "init-data").toString();
+  protected static final String DIR_APPS_INIT = Path.of("apps", "init-data").toString();
 
-  protected static final String DIR_APPS_ROLES = Paths.get("apps", "roles").toString();
+  protected static final String DIR_APPS_ROLES = Path.of("apps", "roles").toString();
 
   protected static final String CONFIG_PATTERN = "-config.xml";
 
@@ -281,9 +280,9 @@ public class AppServiceImpl implements AppService {
         files.addAll(MetaScanner.findAll(module, dirNamePattern, code + "*"));
       }
     } else {
-      files.addAll(fetchUrls(module, Paths.get(dirName, IMG_DIR).toString()));
-      files.addAll(fetchUrls(module, Paths.get(dirName, EXT_DIR).toString()));
-      files.addAll(fetchUrls(module, Paths.get(dirName, lang).toString()));
+      files.addAll(fetchUrls(module, Path.of(dirName, IMG_DIR).toString()));
+      files.addAll(fetchUrls(module, Path.of(dirName, EXT_DIR).toString()));
+      files.addAll(fetchUrls(module, Path.of(dirName, lang).toString()));
     }
 
     final File tmp = Files.createTempDirectory(null).toFile();
@@ -291,9 +290,9 @@ public class AppServiceImpl implements AppService {
     files.forEach(
         url -> {
           String name = url.getFile();
-          name = Paths.get(name.replaceAll("file:.+!/", "")).toString();
+          name = Path.of(name.replaceAll("file:.+!/", "")).toString();
           if (!StringUtils.isEmpty(lang)) {
-            name = name.replace(Paths.get(dirName, lang).toString(), dirName);
+            name = name.replace(Path.of(dirName, lang).toString(), dirName);
           }
           try {
             copy(url.openStream(), tmp, name);
@@ -581,9 +580,9 @@ public class AppServiceImpl implements AppService {
       App app, Mapper mapper, Property property, String image, File dataFile) {
 
     final MetaFile metaFile = find(image);
-    final Path path = Paths.get(dataFile.getParent());
+    final Path path = Path.of(dataFile.getParent());
     try {
-      final File imageFile = path.resolve(Paths.get("img", image)).toFile();
+      final File imageFile = path.resolve(Path.of("img", image)).toFile();
       if (imageFile.exists()) {
         mapper.set(app, property.getName(), metaFiles.upload(imageFile, metaFile));
       }
