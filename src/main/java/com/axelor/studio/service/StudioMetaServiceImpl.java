@@ -44,17 +44,11 @@ import com.axelor.meta.loader.XMLViews;
 import com.axelor.meta.schema.views.AbstractView;
 import com.axelor.studio.db.StudioMenu;
 import com.axelor.studio.db.repo.StudioMenuRepository;
-import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import jakarta.persistence.NoResultException;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -298,7 +292,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
   @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeMetaMenu(MetaMenu metaMenu) {
-    Preconditions.checkNotNull(metaMenu, "metaMenu cannot be null.");
+      Objects.requireNonNull(metaMenu, "metaMenu cannot be null.");
 
     List<MetaMenu> subMenus = metaMenuRepo.all().filter("self.parent = ?1", metaMenu).fetch();
     subMenus.forEach(subMenu -> subMenu.setParent(null));
