@@ -580,7 +580,7 @@ public class WkfModelMergerSplitterServiceImpl implements WkfModelMergerSplitter
     WkfModel existingWkfModel = wkfModelRepository.findByCode(result.getCode());
     if (existingWkfModel != null) {
       throw new IllegalArgumentException(
-          String.format(I18n.get(BpmExceptionMessage.BPM_WKF_MODEL_UNIQUE_CODE), result.getCode()));
+          I18n.get(BpmExceptionMessage.BPM_WKF_MODEL_UNIQUE_CODE).formatted(result.getCode()));
     }
     try {
       String diagram = result.getDiagram();

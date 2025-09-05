@@ -364,7 +364,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
     }
 
     throw new IllegalStateException(
-        String.format("No sub field found field: %s model: %s ", targetName, model.getFullName()));
+        "No sub field found field: %s model: %s ".formatted(targetName, model.getFullName()));
   }
 
   @Override
@@ -404,8 +404,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
         return parseJsonField(subJson, target, joins, parent);
       }
       throw new IllegalStateException(
-          String.format(
-              "No sub field found model: %s field %s ",
+          "No sub field found model: %s field %s ".formatted(
               field.getTargetJsonModel().getName(), targetName));
     } else {
       MetaField subMeta = findMetaField(targetName, field.getTargetModel());
@@ -416,8 +415,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
         return parseMetaField(subMeta, target, joins, parent, true);
       }
       throw new IllegalStateException(
-          String.format(
-              "No sub field found model: %s field %s ", field.getTargetModel(), targetName));
+          "No sub field found model: %s field %s ".formatted(field.getTargetModel(), targetName));
     }
   }
 

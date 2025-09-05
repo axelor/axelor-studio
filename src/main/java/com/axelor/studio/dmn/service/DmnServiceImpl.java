@@ -411,8 +411,7 @@ public class DmnServiceImpl implements DmnService {
 
     String param = searchOperator.equals("LIKE") ? "CONCAT('%',?1, '%')" : "?1";
     String query =
-        String.format(
-            "__repo__(%s).all().filter(\"self.%s %s %s\",%s)",
+        "__repo__(%s).all().filter(\"self.%s %s %s\",%s)".formatted(
             targetModel, targetName, searchOperator, param, resultField);
     String field =
         "_query.count() > 1 ? ("
@@ -554,12 +553,12 @@ public class DmnServiceImpl implements DmnService {
       while (matcher.find()) {
         String randomStr = RandomStringUtils.randomAlphanumeric(7);
         String oldStr =
-            String.format("%s%s%s", matcher.group(1), matcher.group(2), matcher.group(3));
-        String newStr = String.format("%s%s%s", matcher.group(1), randomStr, matcher.group(3));
+            "%s%s%s".formatted(matcher.group(1), matcher.group(2), matcher.group(3));
+        String newStr = "%s%s%s".formatted(matcher.group(1), randomStr, matcher.group(3));
         diagramXml =
             diagramXml
                 .replaceAll(oldStr, newStr)
-                .replaceAll(String.format(id, matcher.group(2)), String.format(id, randomStr));
+                .replaceAll(id.formatted(matcher.group(2)), id.formatted(randomStr));
       }
     } catch (Exception e) {
       ExceptionHelper.error(e);

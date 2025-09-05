@@ -29,7 +29,7 @@ public class TransformationsLibrariesController {
       if ("target".equals(parameter.getName())) {
         actionResponse.setValue("name", null);
         actionResponse.setAlert(
-            String.format(I18n.get("Parameter %s has already been defined!"), parameter.getName()));
+            I18n.get("Parameter %s has already been defined!").formatted(parameter.getName()));
       }
       Transformation transformation = context.getParent().asType(Transformation.class);
       List<Parameter> parameters = transformation.getParameters();
@@ -45,8 +45,7 @@ public class TransformationsLibrariesController {
               it -> {
                 actionResponse.setValue("name", null);
                 actionResponse.setAlert(
-                    String.format(
-                        I18n.get("Parameter %s has Already been defined!"), parameter.getName()));
+                    I18n.get("Parameter %s has Already been defined!").formatted(parameter.getName()));
               });
     } catch (Exception e) {
       ExceptionHelper.error(actionResponse, e);
@@ -62,8 +61,7 @@ public class TransformationsLibrariesController {
       if (transformation.getId() == null
           && !transformationService.validateUniqueNameInLibrary(transformation)) {
         actionResponse.setAlert(
-            String.format(
-                I18n.get("Transformation %s has Already been defined in the library %s !"),
+            I18n.get("Transformation %s has Already been defined in the library %s !").formatted(
                 transformation.getName(),
                 transformation.getLibrary().getName()));
         return;
@@ -73,9 +71,8 @@ public class TransformationsLibrariesController {
         actionResponse.setError(
             I18n.get("The groovy template is not valid")
                 + ": "
-                + String.format(
-                    I18n.get("\nIt should contain the multiple arguments placeholder (%)!"),
-                    MULTI_ARGS));
+                + I18n.get("\nIt should contain the multiple arguments placeholder (%)!").formatted(
+                MULTI_ARGS));
         return;
       }
       placeholders.removeAll(Collections.singleton(MULTI_ARGS));

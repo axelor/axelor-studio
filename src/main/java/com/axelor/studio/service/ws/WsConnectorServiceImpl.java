@@ -198,8 +198,7 @@ public class WsConnectorServiceImpl implements WsConnectorService {
 
           if (wsResponse == null || wsResponse.getStatus() == 401) {
             throw new IllegalArgumentException(
-                String.format(
-                    I18n.get("Error in authorization of connector: %s"), wsConnector.getName()));
+                I18n.get("Error in authorization of connector: %s").formatted(wsConnector.getName()));
           }
         }
 

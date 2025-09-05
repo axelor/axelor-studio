@@ -260,7 +260,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             templates.fromText(wkfTaskConfig.getDescription()).make(contextVariables).render());
       } else {
         teamTask.setDescription(
-            String.format(DESCRIPTION, execution.getCurrentActivityName(), url, url));
+            DESCRIPTION.formatted(execution.getCurrentActivityName(), url, url));
       }
       teamTaskRepository.save(teamTask);
     } catch (ClassNotFoundException e) {
@@ -295,7 +295,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             .all()
             .filter(
                 "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
-                String.format("%s : %s", wkfTaskConfig.getProcessId(), oldProcessId),
+                "%s : %s".formatted(wkfTaskConfig.getProcessId(), oldProcessId),
                 title)
             .fetchOne();
     teamTask.setStatus("canceled");
@@ -321,8 +321,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             .all()
             .filter(
                 "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
-                String.format(
-                    "%s : %s",
+                "%s : %s".formatted(
                     processInstance.getProcessDefinitionId(),
                     processInstance.getProcessInstanceId()),
                 title)

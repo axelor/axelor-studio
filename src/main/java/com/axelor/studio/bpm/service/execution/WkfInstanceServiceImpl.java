@@ -1028,7 +1028,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected void validate(LocalDateTime infDate, LocalDateTime supDate) {
     if (infDate.isAfter(supDate)) {
       throw new IllegalArgumentException(
-          String.format(I18n.get(BpmExceptionMessage.BPM_LOG_INVALID_DATES)));
+          I18n.get(BpmExceptionMessage.BPM_LOG_INVALID_DATES).formatted());
     }
   }
 

@@ -119,7 +119,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
           if (isSameCode(tempDiag, code)) {
             if (bpmdiag != null) {
               throw new IllegalArgumentException(
-                  String.format(StudioExceptionMessage.STUDIO_MULTIPLE_BPM_FILES, code));
+                  StudioExceptionMessage.STUDIO_MULTIPLE_BPM_FILES.formatted(code));
             }
             bpmdiag = tempDiag;
           }
@@ -132,7 +132,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
     }
     if (bpmdiag == null) {
       throw new IllegalArgumentException(
-          String.format(StudioExceptionMessage.STUDIO_NO_BPM_FILE, code));
+          StudioExceptionMessage.STUDIO_NO_BPM_FILE.formatted(code));
     }
     return bpmdiag;
   }

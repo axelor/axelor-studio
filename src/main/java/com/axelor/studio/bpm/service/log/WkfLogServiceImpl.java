@@ -66,8 +66,7 @@ public class WkfLogServiceImpl implements WkfLogService {
 
     if (wkfInstance == null) {
       throw new IllegalArgumentException(
-          String.format(
-              I18n.get(BpmExceptionMessage.BPM_WKF_INSTANCE_NOT_FOUND), processInstanceId));
+          I18n.get(BpmExceptionMessage.BPM_WKF_INSTANCE_NOT_FOUND).formatted(processInstanceId));
     }
 
     try {

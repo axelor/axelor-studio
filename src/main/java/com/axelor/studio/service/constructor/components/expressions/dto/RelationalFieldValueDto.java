@@ -26,7 +26,7 @@ public class RelationalFieldValueDto implements FieldValueDto {
               .stream().map(it -> it.get(targetName).toString()).toList();
       StringBuilder valuesStr = new StringBuilder("[");
       for (String value : values) {
-        valuesStr.append(String.format("'%s'", value));
+        valuesStr.append("'%s'".formatted(value));
         if (!value.equals(values.getLast())) {
           valuesStr.append(",");
         }

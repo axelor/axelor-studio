@@ -599,7 +599,7 @@ public class AppServiceImpl implements AppService {
     if (!children.isEmpty()) {
       List<String> childrenNames = getNames(children);
       throw new IllegalStateException(
-          String.format(StudioExceptionMessage.APP_IN_USE, childrenNames));
+          StudioExceptionMessage.APP_IN_USE.formatted(childrenNames));
     }
 
     app.setActive(false);

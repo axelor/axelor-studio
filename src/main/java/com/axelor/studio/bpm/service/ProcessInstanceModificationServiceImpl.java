@@ -137,7 +137,7 @@ public class ProcessInstanceModificationServiceImpl implements ProcessInstanceMo
 
     if (Arrays.stream(patterns).noneMatch(input::matches)) {
       throw new IllegalArgumentException(
-          String.format(I18n.get(BpmExceptionMessage.BPM_YAML_UNSUPPORTED_OPERATION), input));
+          I18n.get(BpmExceptionMessage.BPM_YAML_UNSUPPORTED_OPERATION).formatted(input));
     }
   }
 }

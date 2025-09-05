@@ -161,7 +161,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
             metaAttrs.setView(view);
             if (MetaJsonRecord.class.getName().equals(model)
                 && !Pattern.matches("^.+\\\\..+$", item)) {
-              metaAttrs.setField(String.format("attrs.%s", item));
+              metaAttrs.setField("attrs.%s".formatted(item));
             } else {
               metaAttrs.setField(item);
             }
@@ -169,17 +169,16 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
             if (permanent != null && permanent.equals("true")) {
               if (!StringUtils.isEmpty(relatedField)) {
                 metaAttrs.setCondition(
-                    String.format(
-                        META_ATTRS_RELATED_FIELD_CONDITION_PERMANENT, relatedField, taskName));
+                    META_ATTRS_RELATED_FIELD_CONDITION_PERMANENT.formatted(relatedField, taskName));
               } else {
-                metaAttrs.setCondition(String.format(META_ATTRS_CONDITION_PERMANENT, taskName));
+                metaAttrs.setCondition(META_ATTRS_CONDITION_PERMANENT.formatted(taskName));
               }
             } else {
               if (!StringUtils.isEmpty(relatedField)) {
                 metaAttrs.setCondition(
-                    String.format(META_ATTRS_RELATED_FIELD_CONDITION, relatedField, taskName));
+                    META_ATTRS_RELATED_FIELD_CONDITION.formatted(relatedField, taskName));
               } else {
-                metaAttrs.setCondition(String.format(META_ATTRS_CONDITION, taskName));
+                metaAttrs.setCondition(META_ATTRS_CONDITION.formatted(taskName));
               }
             }
             if (Arrays.asList("false", "true").contains(value)) {
@@ -187,7 +186,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
             } else {
               if (CONDITION_ATTRIBUTES.contains(name)) {
                 metaAttrs.setCondition(
-                    String.format("(%s)&&(%s)", value, metaAttrs.getCondition()));
+                    "(%s)&&(%s)".formatted(value, metaAttrs.getCondition()));
                 metaAttrs.setValue("true");
               } else {
                 metaAttrs.setValue(value);

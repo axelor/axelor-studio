@@ -257,7 +257,7 @@ public class WkfContextHelper {
       return object;
     }
     throw new IllegalArgumentException(
-        String.format(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE)));
+        I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE).formatted());
   }
 
   private static ObjectMapper createObjectMapper() {

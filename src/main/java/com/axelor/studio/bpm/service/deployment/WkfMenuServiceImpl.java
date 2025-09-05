@@ -192,15 +192,14 @@ public class WkfMenuServiceImpl implements WkfMenuService {
     String context = computeContext(permanent, wkfTaskConfig, userMenu, isJson, taskMenu);
 
     // Base view structure
-    return String.format(
-        """
+    return """
         <action-view name="%s" model="%s" title="%s">
             <view type="grid" name="%s" />
             <view type="form" name="%s" />
             <domain>%s</domain>
             %s
         </action-view>
-        """,
+        """.formatted(
         name,
         model,
         metaMenu.getTitle(),

@@ -142,7 +142,7 @@ public class StudioAppServiceImpl implements StudioAppService {
 
     if (app != null && app != studioApp.getGeneratedApp()) {
       throw new IllegalStateException(
-          String.format(I18n.get(StudioExceptionMessage.STUDIO_APP_1), studioApp.getCode()));
+          I18n.get(StudioExceptionMessage.STUDIO_APP_1).formatted(studioApp.getCode()));
     }
   }
 
@@ -391,9 +391,9 @@ public class StudioAppServiceImpl implements StudioAppService {
 
     XMLInput xmlInput = new XMLInput();
     String modelName = jsonModel.getName();
-    xmlInput.setFileName(String.format("%s.xml", modelName));
+    xmlInput.setFileName("%s.xml".formatted(modelName));
     String dasherizeModel = Inflector.getInstance().dasherize(modelName);
-    xmlInput.setRoot(String.format("%ss", dasherizeModel));
+    xmlInput.setRoot("%ss".formatted(dasherizeModel));
 
     XMLBindJson xmlBindJson = new XMLBindJson();
     xmlBindJson.setNode(dasherizeModel);
@@ -473,12 +473,11 @@ public class StudioAppServiceImpl implements StudioAppService {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(
-            String.format(
-                """
+            """
                 <?xml version="1.0" encoding="utf-8"?>
                 <%ss xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-                """,
+                """.formatted(
                 dasherizeModel));
 
         records.forEach(
@@ -487,7 +486,7 @@ public class StudioAppServiceImpl implements StudioAppService {
                   JpaSecurity.CAN_READ, MetaJsonRecord.class, (Long) it.get("id"))) {
                 return;
               }
-              stringBuilder.append(String.format("<%s>%n", dasherizeModel));
+              stringBuilder.append("<%s>%n".formatted(dasherizeModel));
 
               jsonModel
                   .getFields()
@@ -497,15 +496,14 @@ public class StudioAppServiceImpl implements StudioAppService {
                         Map<String, Object> fieldAttrs =
                             (Map<String, Object>) jsonFieldMap.get(field);
                         stringBuilder.append(
-                            String.format(
-                                "\t<%s>%s</%s>%n",
+                            "\t<%s>%s</%s>%n".formatted(
                                 field,
                                 appLoaderExportService.extractJsonFieldValue(it, fieldAttrs),
                                 field));
                       });
-              stringBuilder.append(String.format("</%s>%n%n", dasherizeModel));
+              stringBuilder.append("</%s>%n%n".formatted(dasherizeModel));
             });
-        stringBuilder.append(String.format("</%ss>%n", dasherizeModel));
+        stringBuilder.append("</%ss>%n".formatted(dasherizeModel));
         File dataFile = new File(parentDir, modelName + ".xml");
         org.apache.commons.io.FileUtils.writeStringToFile(
             dataFile, stringBuilder.toString(), StandardCharsets.UTF_8);

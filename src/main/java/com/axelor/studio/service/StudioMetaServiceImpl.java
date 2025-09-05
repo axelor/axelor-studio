@@ -316,7 +316,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
   @Override
   public Integer getPriority(String object, String name) {
     String query =
-        String.format("SELECT MAX(obj.priority) FROM %s obj WHERE obj.name = :name", object);
+        "SELECT MAX(obj.priority) FROM %s obj WHERE obj.name = :name".formatted(object);
 
     try {
       Optional<Integer> priorityOpt =
