@@ -121,8 +121,8 @@ public class WkfNodeServiceImpl implements WkfNodeService {
     ModelElementInstance modelElementInstance = activity.getParentElement();
 
     while (modelElementInstance != null) {
-      if (modelElementInstance instanceof Process) {
-        return (Process) modelElementInstance;
+      if (modelElementInstance instanceof Process process) {
+        return process;
       }
       modelElementInstance = modelElementInstance.getParentElement();
     }

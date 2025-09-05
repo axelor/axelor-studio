@@ -64,8 +64,8 @@ public class ValueMapperService {
   protected String getModelVariable(Model model) {
 
     String modelName = null;
-    if (model instanceof MetaJsonRecord) {
-      modelName = ((MetaJsonRecord) model).getJsonModel();
+    if (model instanceof MetaJsonRecord metaJsonRecord) {
+      modelName = metaJsonRecord.getJsonModel();
     } else {
       modelName = model.getClass().getSimpleName();
     }

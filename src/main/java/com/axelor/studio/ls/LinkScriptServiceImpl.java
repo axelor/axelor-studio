@@ -53,8 +53,8 @@ public class LinkScriptServiceImpl implements LinkScriptService {
 
   protected void valueContext(
       LinkedHashMap<String, Object> context, String name, Object evalResult) {
-    if (StringUtils.isBlank(name) && evalResult instanceof Map) {
-      ((Map<?, ?>) evalResult)
+    if (StringUtils.isBlank(name) && evalResult instanceof Map<?, ?> map) {
+      map
           .entrySet().stream()
               .filter(e -> e.getKey() instanceof String)
               .forEach(e -> context.put((String) e.getKey(), e.getValue()));
@@ -108,8 +108,8 @@ public class LinkScriptServiceImpl implements LinkScriptService {
               result,
               arc.getToLinkScript(),
               inject(context, arc.getName(), initialResult));
-      if (outputResult instanceof Map) {
-        finalResult = ((Map<?, ?>) outputResult).get(arc.getName());
+      if (outputResult instanceof Map<?, ?> map) {
+        finalResult = map.get(arc.getName());
       } else {
         finalResult = outputResult;
       }

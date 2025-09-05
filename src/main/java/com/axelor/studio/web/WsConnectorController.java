@@ -73,8 +73,8 @@ public class WsConnectorController {
                 var key = entry.getKey();
                 var value = entry.getValue();
                 result.append(key).append(":\n");
-                if (value instanceof byte[]) {
-                  result.append(new String((byte[]) value)).append("\n\n");
+                if (value instanceof byte[] bytes) {
+                  result.append(new String(bytes)).append("\n\n");
                 } else {
                   result.append(value).append("\n\n");
                 }

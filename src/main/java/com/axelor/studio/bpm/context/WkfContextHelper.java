@@ -191,10 +191,10 @@ public class WkfContextHelper {
 
   public static Object createObject(Object object) throws JsonProcessingException {
     if (object != null) {
-      if (object instanceof FullContext) {
-        return createSingleVariable((FullContext) object);
-      } else if (object instanceof Collection<?>) {
-        return createListVariable((Collection<?>) object);
+      if (object instanceof FullContext context) {
+        return createSingleVariable(context);
+      } else if (object instanceof Collection<?> collection) {
+        return createListVariable(collection);
       }
     }
     throw new IllegalArgumentException(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE));
@@ -301,10 +301,10 @@ public class WkfContextHelper {
 
   private static Long extractId(Map<String, Object> modelData) {
     Object idValue = modelData.get("id");
-    if (idValue instanceof Integer) {
-      return ((Integer) idValue).longValue();
-    } else if (idValue instanceof Long) {
-      return (Long) idValue;
+    if (idValue instanceof Integer integerValue) {
+      return integerValue.longValue();
+    } else if (idValue instanceof Long longValue) {
+      return longValue;
     }
     return null;
   }

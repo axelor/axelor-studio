@@ -277,8 +277,8 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
       }
 
       String klassName = klass.getSimpleName();
-      if (model instanceof MetaJsonRecord) {
-        klassName = ((MetaJsonRecord) model).getJsonModel();
+      if (model instanceof MetaJsonRecord metaJsonRecord) {
+        klassName = metaJsonRecord.getJsonModel();
       }
 
       boolean valid = isValidDisplayModel(klassName, wkfInstance);

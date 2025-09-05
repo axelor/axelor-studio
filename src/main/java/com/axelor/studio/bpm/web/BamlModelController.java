@@ -78,8 +78,8 @@ public class BamlModelController {
       String gridView = dasherizeModel + "-grid";
 
       String jsonModel = null;
-      if (object instanceof MetaJsonRecord) {
-        jsonModel = ((MetaJsonRecord) object).getJsonModel();
+      if (object instanceof MetaJsonRecord record) {
+        jsonModel = record.getJsonModel();
         title = Beans.get(MetaJsonModelRepository.class).findByName(jsonModel).getTitle();
         if (Strings.isNullOrEmpty(title)) {
           title = jsonModel;

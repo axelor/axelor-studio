@@ -90,8 +90,8 @@ public class WkfRequestListener {
     updated = new HashSet<>(updated);
     for (Model model : updated) {
       String modelName = EntityHelper.getEntityClass(model).getName();
-      if (model instanceof MetaJsonRecord) {
-        modelName = ((MetaJsonRecord) model).getJsonModel();
+      if (model instanceof MetaJsonRecord metaJsonRecord) {
+        modelName = metaJsonRecord.getJsonModel();
       }
 
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {
@@ -151,8 +151,8 @@ public class WkfRequestListener {
         log.trace("Eval wkf from button model: {}, id: {}", model.getName(), id);
         String helpText = wkfInstanceService.evalInstance(JPA.find(model, id), signal);
 
-        if (res instanceof ActionResponse && helpText != null) {
-          ((ActionResponse) res).setAlert(helpText);
+        if (res instanceof ActionResponse response && helpText != null) {
+          response.setAlert(helpText);
         }
       }
     }
@@ -164,8 +164,7 @@ public class WkfRequestListener {
 
     Object obj = event.getResponse().getItem(0);
 
-    if (obj instanceof Map) {
-      Map values = (Map) obj;
+    if (obj instanceof Map values) {
       if (values != null && values.get("id") != null) {
 
         List<Map<String, Object>> wkfStatus =
@@ -184,8 +183,8 @@ public class WkfRequestListener {
 
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();
-      if (model instanceof MetaJsonRecord) {
-        modelName = ((MetaJsonRecord) model).getJsonModel();
+      if (model instanceof MetaJsonRecord metaJsonRecord) {
+        modelName = metaJsonRecord.getJsonModel();
       }
 
       if (WkfCache.WKF_MODEL_CACHE.get(tenantId).containsValue(modelName)) {

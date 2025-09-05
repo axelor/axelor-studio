@@ -432,10 +432,10 @@ public class StudioActionScriptServiceImpl implements StudioActionScriptService 
     }
 
     if (targetObject != null) {
-      if (targetObject instanceof MetaJsonField) {
-        sourceModel = ((MetaJsonField) targetObject).getTargetModel();
-      } else if (targetObject instanceof MetaField) {
-        sourceModel = ((MetaField) targetObject).getTypeName();
+      if (targetObject instanceof MetaJsonField metaJsonField) {
+        sourceModel = metaJsonField.getTargetModel();
+      } else if (targetObject instanceof MetaField metaField) {
+        sourceModel = metaField.getTypeName();
       }
     }
 

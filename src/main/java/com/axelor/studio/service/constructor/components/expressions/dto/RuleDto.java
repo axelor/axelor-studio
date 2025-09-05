@@ -38,16 +38,16 @@ public class RuleDto {
   public void unpackField(Map<String, Object> fieldMap) {
     if (fieldMap != null) {
       field = new ObjectMapper().convertValue(fieldMap, FieldDto.class);
-      if (this.fieldValue != null && fieldValue instanceof RelationalFieldValueDto) {
+      if (this.fieldValue != null && fieldValue instanceof RelationalFieldValueDto dto) {
         if (field.getTargetName() == null) {
           field.setTargetName(DEFAULT_TARGET_NAME);
         }
-        ((RelationalFieldValueDto) fieldValue).setTargetName(field.getTargetName());
-        Object valueMap = ((RelationalFieldValueDto) fieldValue).getValueMap();
+        dto.setTargetName(field.getTargetName());
+        Object valueMap = dto.getValueMap();
         if (valueMap != null) {
-          if (valueMap instanceof Map) {
+          if (valueMap instanceof Map map) {
             fieldType =
-                ((Map) valueMap)
+                map
                     .get(field.getTargetName())
                     .getClass()
                     .getSimpleName()
@@ -68,8 +68,8 @@ public class RuleDto {
           }
         }
       }
-      if (this.fieldValue2 != null && fieldValue2 instanceof RelationalFieldValueDto) {
-        ((RelationalFieldValueDto) fieldValue2).setTargetName(field.getTargetName());
+      if (this.fieldValue2 != null && fieldValue2 instanceof RelationalFieldValueDto dto) {
+        dto.setTargetName(field.getTargetName());
       }
     }
   }

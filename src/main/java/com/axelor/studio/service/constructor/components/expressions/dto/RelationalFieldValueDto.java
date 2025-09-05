@@ -17,8 +17,8 @@ public class RelationalFieldValueDto implements FieldValueDto {
 
   @Override
   public String getFieldValue() {
-    if (valueMap != null && valueMap instanceof Map && ((Map) valueMap).containsKey(targetName)) {
-      return ((Map) valueMap).get(targetName).toString();
+    if (valueMap != null && valueMap instanceof Map map && map.containsKey(targetName)) {
+      return map.get(targetName).toString();
     }
     if (valueMap != null && valueMap instanceof List) {
       List<String> values =

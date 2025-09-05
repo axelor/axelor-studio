@@ -84,8 +84,8 @@ public class WkfBamlService implements JavaDelegate {
     variables.forEach(
         (key, value) -> {
           Object variable = value;
-          if (variable instanceof FullContext) {
-            context.put(key, ((FullContext) variable).getTarget());
+          if (variable instanceof FullContext fullContext) {
+            context.put(key, fullContext.getTarget());
           } else {
             context.put(key, variable);
           }

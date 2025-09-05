@@ -754,8 +754,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected void checkSubProcess(Model model) {
 
     String chldModel =
-        model instanceof MetaJsonRecord
-            ? ((MetaJsonRecord) model).getJsonModel()
+        model instanceof MetaJsonRecord metaJsonRecord
+            ? metaJsonRecord.getJsonModel()
             : model.getClass().getSimpleName();
 
     List<WkfTaskConfig> taskConfigs =
@@ -778,8 +778,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       }
 
       Object parentModel = modelCtx.get(taskConfig.getCallLink());
-      if (parentModel instanceof FullContext) {
-        Model parent = (Model) ((FullContext) parentModel).getTarget();
+      if (parentModel instanceof FullContext context) {
+        Model parent = (Model) context.getTarget();
         if (!Strings.isNullOrEmpty(parent.getProcessInstanceId())) {
           addChildProcessInstanceId(parent.getProcessInstanceId(), modelCtx, ctxMap);
           break;

@@ -66,8 +66,8 @@ public class ValueMapperController {
           && mapper.getScript().startsWith("def rec = __ctx__.create(")) {
         Object object = fullContext.getTarget();
         String title = object.getClass().getSimpleName();
-        if (object instanceof MetaJsonRecord) {
-          title = ((MetaJsonRecord) object).getJsonModel();
+        if (object instanceof MetaJsonRecord metaJsonRecord) {
+          title = metaJsonRecord.getJsonModel();
         }
         response.setView(
             ActionView.define(I18n.get(title))

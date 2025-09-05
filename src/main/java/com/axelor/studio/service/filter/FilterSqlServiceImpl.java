@@ -317,8 +317,8 @@ public class FilterSqlServiceImpl implements FilterSqlService {
       } else {
         targetType = metaField.getTypeName();
       }
-    } else if (target instanceof MetaJsonField) {
-      targetType = ((MetaJsonField) target).getType();
+    } else if (target instanceof MetaJsonField targetMetaJsonField) {
+      targetType = targetMetaJsonField.getType();
       log.debug("Target json type:", targetType);
       targetType = Inflector.getInstance().camelize(targetType);
     }

@@ -134,8 +134,8 @@ public class WkfCommonServiceImpl implements WkfCommonService {
     }
 
     GroovyScriptHelper helper;
-    if (varMap instanceof Context) {
-      helper = new GroovyScriptHelper((Context) varMap);
+    if (varMap instanceof Context context) {
+      helper = new GroovyScriptHelper(context);
     } else {
       SimpleBindings simpleBindings = new SimpleBindings();
       simpleBindings.putAll(varMap);
@@ -164,22 +164,22 @@ public class WkfCommonServiceImpl implements WkfCommonService {
 
           ObjectValue variable;
           Long id = null;
-          if (value instanceof Model) {
-            FullContext ctx = new FullContext((Model) value);
+          if (value instanceof Model model) {
+            FullContext ctx = new FullContext(model);
             variable =
                 Variables.objectValue(ctx, true)
                     .serializationDataFormat(SerializationDataFormats.JSON)
                     .create();
 
-            id = ((Model) value).getId();
+            id = model.getId();
           } else {
             variable =
                 Variables.objectValue(value, true)
                     .serializationDataFormat(SerializationDataFormats.JSON)
                     .create();
 
-            if (value instanceof FullContext) {
-              id = (Long) ((FullContext) value).get("id");
+            if (value instanceof FullContext context) {
+              id = (Long) context.get("id");
             }
           }
           varMap.put(key, variable);
@@ -197,15 +197,15 @@ public class WkfCommonServiceImpl implements WkfCommonService {
   public String getVarName(Object model) {
 
     String name = null;
-    if (model instanceof Context) {
-      name = (String) ((Context) model).get("jsonModel");
+    if (model instanceof Context context) {
+      name = (String) context.get("jsonModel");
       if (name == null) {
-        name = ((Context) model).getContextClass().getSimpleName();
+        name = context.getContextClass().getSimpleName();
       }
-    } else if (model instanceof MetaJsonRecord) {
-      name = ((MetaJsonRecord) model).getJsonModel();
-    } else if (model instanceof String) {
-      name = (String) model;
+    } else if (model instanceof MetaJsonRecord metaJsonRecord) {
+      name = metaJsonRecord.getJsonModel();
+    } else if (model instanceof String string) {
+      name = string;
       if (name.contains(".")) {
         name = name.substring(name.lastIndexOf(".") + 1);
       }
@@ -222,8 +222,8 @@ public class WkfCommonServiceImpl implements WkfCommonService {
 
   protected String getModelName(Model model) {
 
-    if (model instanceof MetaJsonRecord) {
-      return ((MetaJsonRecord) model).getJsonModel();
+    if (model instanceof MetaJsonRecord metaJsonRecord) {
+      return metaJsonRecord.getJsonModel();
     }
 
     return model.getClass().getName();

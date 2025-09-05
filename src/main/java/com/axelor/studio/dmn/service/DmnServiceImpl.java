@@ -136,11 +136,11 @@ public class DmnServiceImpl implements DmnService {
     String subField = field.substring(field.indexOf(".") + 1);
 
     log.debug("Process relational field: {}, value: {}", field, value);
-    if (model instanceof MetaJsonRecord) {
+    if (model instanceof MetaJsonRecord record) {
       context.put(
           fieldName,
           processMetaModelJson(
-              fieldName, subField, value, ((MetaJsonRecord) model).getJsonModel()));
+              fieldName, subField, value, record.getJsonModel()));
     } else {
       context.put(
           fieldName,

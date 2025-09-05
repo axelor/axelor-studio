@@ -457,8 +457,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
     Object value = record.get(fieldAttrs.get("jsonPath"));
 
     if (value != null) {
-      if (value instanceof FullContext) {
-        value = ((FullContext) value).get(getTargetName(fieldAttrs));
+      if (value instanceof FullContext context) {
+        value = context.get(getTargetName(fieldAttrs));
       } else if (value instanceof Collection) {
         Collection<Object> records = (Collection<Object>) value;
         StringBuilder stringBuilder = new StringBuilder();
@@ -476,8 +476,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       }
     }
 
-    if (value instanceof String) {
-      value = XmlUtil.escapeXml((String) value);
+    if (value instanceof String string) {
+      value = XmlUtil.escapeXml(string);
     }
 
     if (value == null) {
@@ -527,8 +527,8 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
       }
     }
 
-    if (value instanceof String) {
-      value = XmlUtil.escapeXml((String) value);
+    if (value instanceof String stringValue) {
+      value = XmlUtil.escapeXml(stringValue);
     }
 
     if (value == null) {

@@ -171,8 +171,8 @@ public class WkfEmailServiceImpl implements WkfEmailService {
     Model model = (Model) EntityHelper.getEntity(wkfContext.getTarget());
 
     if (formName == null) {
-      if (model instanceof MetaJsonRecord) {
-        formName = "custom-model-" + ((MetaJsonRecord) model).getJsonModel() + "-form";
+      if (model instanceof MetaJsonRecord metaJsonRecord) {
+        formName = "custom-model-" + metaJsonRecord.getJsonModel() + "-form";
       } else {
         formName = inflector.dasherize(model.getClass().getSimpleName());
       }
