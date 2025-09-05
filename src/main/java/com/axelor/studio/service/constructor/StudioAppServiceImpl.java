@@ -477,8 +477,8 @@ public class StudioAppServiceImpl implements StudioAppService {
                 <?xml version="1.0" encoding="utf-8"?>
                 <%ss xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-                """.formatted(
-                dasherizeModel));
+                """
+                .formatted(dasherizeModel));
 
         records.forEach(
             it -> {
@@ -496,10 +496,11 @@ public class StudioAppServiceImpl implements StudioAppService {
                         Map<String, Object> fieldAttrs =
                             (Map<String, Object>) jsonFieldMap.get(field);
                         stringBuilder.append(
-                            "\t<%s>%s</%s>%n".formatted(
-                                field,
-                                appLoaderExportService.extractJsonFieldValue(it, fieldAttrs),
-                                field));
+                            "\t<%s>%s</%s>%n"
+                                .formatted(
+                                    field,
+                                    appLoaderExportService.extractJsonFieldValue(it, fieldAttrs),
+                                    field));
                       });
               stringBuilder.append("</%s>%n%n".formatted(dasherizeModel));
             });

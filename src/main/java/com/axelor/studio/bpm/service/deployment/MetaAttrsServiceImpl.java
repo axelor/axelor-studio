@@ -185,8 +185,7 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
               metaAttrs.setValue(value);
             } else {
               if (CONDITION_ATTRIBUTES.contains(name)) {
-                metaAttrs.setCondition(
-                    "(%s)&&(%s)".formatted(value, metaAttrs.getCondition()));
+                metaAttrs.setCondition("(%s)&&(%s)".formatted(value, metaAttrs.getCondition()));
                 metaAttrs.setValue("true");
               } else {
                 metaAttrs.setValue(value);

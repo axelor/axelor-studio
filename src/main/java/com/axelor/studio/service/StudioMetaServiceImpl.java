@@ -292,7 +292,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
   @Override
   @Transactional(rollbackOn = Exception.class)
   public void removeMetaMenu(MetaMenu metaMenu) {
-      Objects.requireNonNull(metaMenu, "metaMenu cannot be null.");
+    Objects.requireNonNull(metaMenu, "metaMenu cannot be null.");
 
     List<MetaMenu> subMenus = metaMenuRepo.all().filter("self.parent = ?1", metaMenu).fetch();
     subMenus.forEach(subMenu -> subMenu.setParent(null));
@@ -309,8 +309,7 @@ public class StudioMetaServiceImpl implements StudioMetaService {
 
   @Override
   public Integer getPriority(String object, String name) {
-    String query =
-        "SELECT MAX(obj.priority) FROM %s obj WHERE obj.name = :name".formatted(object);
+    String query = "SELECT MAX(obj.priority) FROM %s obj WHERE obj.name = :name".formatted(object);
 
     try {
       Optional<Integer> priorityOpt =

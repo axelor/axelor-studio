@@ -45,7 +45,8 @@ public class TransformationsLibrariesController {
               it -> {
                 actionResponse.setValue("name", null);
                 actionResponse.setAlert(
-                    I18n.get("Parameter %s has Already been defined!").formatted(parameter.getName()));
+                    I18n.get("Parameter %s has Already been defined!")
+                        .formatted(parameter.getName()));
               });
     } catch (Exception e) {
       ExceptionHelper.error(actionResponse, e);
@@ -61,9 +62,8 @@ public class TransformationsLibrariesController {
       if (transformation.getId() == null
           && !transformationService.validateUniqueNameInLibrary(transformation)) {
         actionResponse.setAlert(
-            I18n.get("Transformation %s has Already been defined in the library %s !").formatted(
-                transformation.getName(),
-                transformation.getLibrary().getName()));
+            I18n.get("Transformation %s has Already been defined in the library %s !")
+                .formatted(transformation.getName(), transformation.getLibrary().getName()));
         return;
       }
       List<String> placeholders = transformationService.getPlaceholders(groovyTemplate);
@@ -71,8 +71,8 @@ public class TransformationsLibrariesController {
         actionResponse.setError(
             I18n.get("The groovy template is not valid")
                 + ": "
-                + I18n.get("\nIt should contain the multiple arguments placeholder (%)!").formatted(
-                MULTI_ARGS));
+                + I18n.get("\nIt should contain the multiple arguments placeholder (%)!")
+                    .formatted(MULTI_ARGS));
         return;
       }
       placeholders.removeAll(Collections.singleton(MULTI_ARGS));

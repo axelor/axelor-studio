@@ -126,18 +126,22 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
       log.trace("Active node ids: {}", activeIds);
 
       String url =
-          engineService.getWkfViewerUrl().formatted(
-              "instanceId=" + wkfInstance.getInstanceId(),
-              Joiner.on(",").join(activeIds),
-              activityCount,
-              null);
+          engineService
+              .getWkfViewerUrl()
+              .formatted(
+                  "instanceId=" + wkfInstance.getInstanceId(),
+                  Joiner.on(",").join(activeIds),
+                  activityCount,
+                  null);
       if (wkfInstance.getInstanceError()) {
         url =
-            engineService.getWkfViewerUrl().formatted(
-                "instanceId=" + wkfInstance.getInstanceId(),
-                Joiner.on(",").join(activeIds),
-                activityCount,
-                wkfInstance.getNode());
+            engineService
+                .getWkfViewerUrl()
+                .formatted(
+                    "instanceId=" + wkfInstance.getInstanceId(),
+                    Joiner.on(",").join(activeIds),
+                    activityCount,
+                    wkfInstance.getNode());
       }
       log.debug("Url created: {}", url);
 
@@ -236,7 +240,9 @@ public class WkfDisplayServiceImpl implements WkfDisplayService {
               .collect(Collectors.joining(","));
 
       String url =
-          engineService.getWkfViewerUrl().formatted("id=" + wkfModel.getId(), null, activityCount, null);
+          engineService
+              .getWkfViewerUrl()
+              .formatted("id=" + wkfModel.getId(), null, activityCount, null);
 
       log.trace("Url created: {}", url);
 

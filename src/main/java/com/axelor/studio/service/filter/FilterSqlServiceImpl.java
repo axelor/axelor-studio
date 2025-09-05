@@ -404,8 +404,8 @@ public class FilterSqlServiceImpl implements FilterSqlService {
         return parseJsonField(subJson, target, joins, parent);
       }
       throw new IllegalStateException(
-          "No sub field found model: %s field %s ".formatted(
-              field.getTargetJsonModel().getName(), targetName));
+          "No sub field found model: %s field %s "
+              .formatted(field.getTargetJsonModel().getName(), targetName));
     } else {
       MetaField subMeta = findMetaField(targetName, field.getTargetModel());
       if (subMeta != null) {

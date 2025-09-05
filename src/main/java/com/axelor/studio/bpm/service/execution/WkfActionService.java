@@ -115,8 +115,7 @@ public class WkfActionService implements JavaDelegate {
   protected List<String> extractActions(String actionName) {
     var action = MetaStore.getAction(actionName);
     if (action instanceof ActionGroup actionGroup) {
-      return actionGroup
-          .getActions().stream().map(Element::getName).collect(Collectors.toList());
+      return actionGroup.getActions().stream().map(Element::getName).collect(Collectors.toList());
     } else {
       return Collections.singletonList(actionName);
     }

@@ -138,9 +138,7 @@ public class DmnServiceImpl implements DmnService {
     log.debug("Process relational field: {}, value: {}", field, value);
     if (model instanceof MetaJsonRecord record) {
       context.put(
-          fieldName,
-          processMetaModelJson(
-              fieldName, subField, value, record.getJsonModel()));
+          fieldName, processMetaModelJson(fieldName, subField, value, record.getJsonModel()));
     } else {
       context.put(
           fieldName,
@@ -411,8 +409,8 @@ public class DmnServiceImpl implements DmnService {
 
     String param = searchOperator.equals("LIKE") ? "CONCAT('%',?1, '%')" : "?1";
     String query =
-        "__repo__(%s).all().filter(\"self.%s %s %s\",%s)".formatted(
-            targetModel, targetName, searchOperator, param, resultField);
+        "__repo__(%s).all().filter(\"self.%s %s %s\",%s)"
+            .formatted(targetModel, targetName, searchOperator, param, resultField);
     String field =
         "_query.count() > 1 ? ("
             + multiple
@@ -552,8 +550,7 @@ public class DmnServiceImpl implements DmnService {
       Matcher matcher = pattern.matcher(diagramXml);
       while (matcher.find()) {
         String randomStr = RandomStringUtils.randomAlphanumeric(7);
-        String oldStr =
-            "%s%s%s".formatted(matcher.group(1), matcher.group(2), matcher.group(3));
+        String oldStr = "%s%s%s".formatted(matcher.group(1), matcher.group(2), matcher.group(3));
         String newStr = "%s%s%s".formatted(matcher.group(1), randomStr, matcher.group(3));
         diagramXml =
             diagramXml

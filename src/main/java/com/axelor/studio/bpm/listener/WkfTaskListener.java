@@ -51,7 +51,8 @@ public class WkfTaskListener implements TaskListener {
               .all()
               .filter(
                   "self.relatedProcessInstance.name = ?1 and self.name =  ?2 and status = ?3",
-                  "%s : %s".formatted(wkfTaskConfig.getProcessId(), delegateTask.getProcessInstanceId()),
+                  "%s : %s"
+                      .formatted(wkfTaskConfig.getProcessId(), delegateTask.getProcessInstanceId()),
                   title,
                   "new")
               .fetchOne();

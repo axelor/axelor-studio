@@ -199,14 +199,15 @@ public class WkfMenuServiceImpl implements WkfMenuService {
             <domain>%s</domain>
             %s
         </action-view>
-        """.formatted(
-        name,
-        model,
-        metaMenu.getTitle(),
-        viewMap.get("grid"),
-        viewMap.get("form"),
-        domain,
-        context);
+        """
+        .formatted(
+            name,
+            model,
+            metaMenu.getTitle(),
+            viewMap.get("grid"),
+            viewMap.get("form"),
+            domain,
+            context);
   }
 
   protected String computeContext(

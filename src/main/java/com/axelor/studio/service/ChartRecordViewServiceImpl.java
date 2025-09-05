@@ -212,8 +212,8 @@ public class ChartRecordViewServiceImpl implements ChartRecordViewService {
     final String tableName = getTableName(studioChart);
     String sqlFilters = Beans.get(FilterSqlService.class).getSqlFilters(filterList, joins, true);
     if (sqlFilters != null) {
-      return "select self.id from %s self %s where %s".formatted(
-          tableName, String.join("\n", joins), sqlFilters);
+      return "select self.id from %s self %s where %s"
+          .formatted(tableName, String.join("\n", joins), sqlFilters);
     }
     return "select self.id from %s self %s".formatted(tableName, String.join("\n", joins));
   }

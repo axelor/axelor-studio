@@ -321,9 +321,10 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             .all()
             .filter(
                 "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
-                "%s : %s".formatted(
-                    processInstance.getProcessDefinitionId(),
-                    processInstance.getProcessInstanceId()),
+                "%s : %s"
+                    .formatted(
+                        processInstance.getProcessDefinitionId(),
+                        processInstance.getProcessInstanceId()),
                 title)
             .fetchOne();
     if (teamTask == null) {

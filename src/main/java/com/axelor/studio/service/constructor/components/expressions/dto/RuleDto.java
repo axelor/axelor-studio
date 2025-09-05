@@ -46,12 +46,7 @@ public class RuleDto {
         Object valueMap = dto.getValueMap();
         if (valueMap != null) {
           if (valueMap instanceof Map map) {
-            fieldType =
-                map
-                    .get(field.getTargetName())
-                    .getClass()
-                    .getSimpleName()
-                    .toUpperCase();
+            fieldType = map.get(field.getTargetName()).getClass().getSimpleName().toUpperCase();
           }
           if (valueMap instanceof List) {
             fieldType =

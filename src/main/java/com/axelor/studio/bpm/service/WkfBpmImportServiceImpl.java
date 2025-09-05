@@ -131,8 +131,7 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
       }
     }
     if (bpmdiag == null) {
-      throw new IllegalArgumentException(
-          StudioExceptionMessage.STUDIO_NO_BPM_FILE.formatted(code));
+      throw new IllegalArgumentException(StudioExceptionMessage.STUDIO_NO_BPM_FILE.formatted(code));
     }
     return bpmdiag;
   }

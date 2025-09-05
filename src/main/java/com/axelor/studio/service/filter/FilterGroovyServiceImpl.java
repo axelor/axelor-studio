@@ -158,8 +158,8 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
               .fetchOne();
       if (subJson == null) {
         throw new IllegalStateException(
-            "No sub field found model: %s field %s ".formatted(
-                jsonField.getTargetJsonModel().getName(), targetName));
+            "No sub field found model: %s field %s "
+                .formatted(jsonField.getTargetJsonModel().getName(), targetName));
       }
       return getJsonFieldType(subJson, targetField);
 
@@ -167,7 +167,8 @@ public class FilterGroovyServiceImpl implements FilterGroovyService {
       MetaField subMeta = filterSqlService.findMetaField(targetName, jsonField.getTargetModel());
       if (subMeta == null) {
         throw new IllegalStateException(
-            "No sub field found model: %s field %s ".formatted(jsonField.getTargetModel(), targetName));
+            "No sub field found model: %s field %s "
+                .formatted(jsonField.getTargetModel(), targetName));
       }
       return getMetaFieldType(subMeta, targetField, true);
     }
