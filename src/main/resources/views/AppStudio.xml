@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <object-views xmlns="http://axelor.com/xml/ns/object-views"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://axelor.com/xml/ns/object-views https://axelor.com/xml/ns/object-views/object-views_7.3.xsd">
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views https://axelor.com/xml/ns/object-views/object-views_7.4.xsd">
 
   <form name="app-studio-config-form" title="App Studio" model="com.axelor.studio.db.AppStudio"
     width="large" canDelete="false" canNew="false" canCopy="false">
 
     <panel name="mainPanel">
-      <field name="enableStudioApp" widget="Boolean-switch"/>
-      <field name="enableTrackWebServiceCall"/>
-      <field name="enableStudioButton" widget="booleanSwitch"
+      <field name="enableStudioApp" widget="BooleanSwitch"/>
+      <field name="enableTrackWebServiceCall" widget="BooleanSwitch"/>
+      <field name="enableStudioButton" widget="BooleanSwitch"
         help="Displays the Studio button in forms for authorized users"/>
     </panel>
 
@@ -17,7 +17,6 @@
       <mail-messages limit="4"/>
       <mail-followers/>
     </panel-mail>
-
   </form>
 
 </object-views>

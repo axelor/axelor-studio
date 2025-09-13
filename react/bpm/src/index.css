@@ -30,3 +30,9 @@ body {
 .decorationsOverviewRuler {
   background-color: var(--bs-body-bg);
 }
+
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

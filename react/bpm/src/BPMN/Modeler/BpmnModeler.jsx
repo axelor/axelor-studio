@@ -47,12 +47,15 @@ import {
   convertSVGtoBase64,
   lightenColor,
   updateBusinessObject,
+  getProblemViewData,
 } from "../../utils";
 import {
   FILL_COLORS,
   USER_TASKS_TYPES,
   STROKE_COLORS,
   CONDITIONAL_SOURCES,
+  ICON_TYPE,
+  PALETTE_WIDTHS,
 } from "./constants";
 import { ALL_ATTRIBUTES } from "./properties/parts/CustomImplementation/constants";
 import { useStore } from "../../store.jsx";
@@ -60,8 +63,11 @@ import { useKeyPress } from "../../custom-hooks/useKeyPress";
 import Ids from "ids";
 import Alert from "../../components/Alert";
 import { Collaboration } from "../../components/Collaboration";
-import { Box, CommandBar } from "@axelor/ui";
-
+import { Box, Button, CommandBar } from "@axelor/ui";
+import lintModule from "bpmn-js-bpmnlint";
+import bpmnlintConfig from "../../../bundled-config";
+import XmlEditor from "./XmlEditor";
+import "bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css";
 import "bpmn-js/dist/assets/diagram-js.css";
 import "bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css";
 import "@bpmn-io/properties-panel/dist/assets/properties-panel.css";
@@ -77,6 +83,10 @@ import { getExtensionElements } from "../../utils/ExtensionElementsUtil.js";
 import useDialog from "../../hooks/useDialog.jsx";
 import Loader from "../../components/Loader";
 import { wsProgress } from "../../services/Progress";
+import IssuePanel from "./IssuePanel.jsx";
+import { IconButton } from "generic-builder/src/components/index.jsx";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import Icons from "../../components/icons/Icons.jsx";
 
 const resizeStyle = {
   display: "flex",
@@ -84,8 +94,16 @@ const resizeStyle = {
   justifyContent: "center",
   borderLeft: "1px solid var(--bs-secondary-bg)",
 };
+const issuePanelStyle = {
+  border: "1px solid var(--bs-secondary-border-subtle, rgb(207, 201, 201))",
+  position: "relative",
+  background: "var(--bs-body-bg, #fff)",
+  zIndex: 50,
+};
+
 const DRAWER_WIDTH = 380;
 const CAMUNDA_EXECUTION_LISTENER_ELEMENT = "camunda:ExecutionListener";
+const TOOL_PANEL_MAX_HEIGHT = 300;
 
 const TimerEvents = React.lazy(() => import("./TimerEvent"));
 
@@ -148,9 +166,20 @@ function BpmnModelerComponent() {
   const { info } = state || {};
   const [drawerOpen, setDrawerOpen] = useState(true);
   const openDialog = useDialog();
+  const [isXmlEditorOpen, setXmlEditorOpen] = useState(false);
 
 
   const diagramXmlRef = React.useRef(null);
+  const [issuePanelHeight, setIssuePanelHeight] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [issues, setIssues] = useState({
+    erros: [],
+    warnings: [],
+  });
+
+  const toggleXmlEditor = () => {
+    setXmlEditorOpen(!isXmlEditorOpen);
+  };
 
   const getQueryParamValue = (key = "") => {
     const params = new URL(document.location).searchParams;
@@ -1402,6 +1431,13 @@ function BpmnModelerComponent() {
       },
       onClick: addDiagramProperties,
     },
+    {
+      key: "xmlEditor",
+      iconOnly: true,
+      description: translate("Toggle XML Editor"),
+      iconProps: { icon: "code" },
+      onClick: toggleXmlEditor,
+    },
   ];
 
   const rightToolbar = [
@@ -1757,6 +1793,44 @@ function BpmnModelerComponent() {
     setDrawerOpen(width === "0px" ? false : true);
   };
 
+  const handleToolPanelToggle = (e) => {
+    e.preventDefault();
+    if (!bpmnModeler) return;
+    const linting = bpmnModeler.get("linting");
+    if (isOpen && issuePanelHeight >= 50) {
+      linting._setActive(false);
+      setIssuePanelHeight(0);
+      updateElementpaletteHeight(0);
+    } else {
+      linting._setActive(true);
+      setIssuePanelHeight(TOOL_PANEL_MAX_HEIGHT);
+      updateElementpaletteHeight(TOOL_PANEL_MAX_HEIGHT);
+    }
+
+    setIsOpen((isOpen) => !isOpen);
+  };
+
+  const handleToolPanelClose = () => {
+    if (!bpmnModeler) return;
+    const linting = bpmnModeler.get("linting");
+    linting._setActive(false);
+    setIssuePanelHeight(0);
+    setIsOpen(false);
+    updateElementpaletteHeight(0);
+  };
+
+  const updateElementpaletteHeight = (height) => {
+    const palette = document.querySelector(
+      "#bpmnview > .bjs-container > .djs-container > .djs-palette"
+    );
+    if (!palette) return;
+    const width =
+      height > PALETTE_WIDTHS.THRESHOLD
+        ? PALETTE_WIDTHS.EXPANDED
+        : PALETTE_WIDTHS.COLLAPSED;
+    palette.style.width = `${width}px`;
+  };
+
   const initialWidth = useRef(window.innerWidth);
   const availableWidth = useRef(window.innerWidth);
 
@@ -1797,7 +1871,11 @@ function BpmnModelerComponent() {
       };
       if (!bpmnModeler) return;
       const eventBus = bpmnModeler.get("eventBus");
-      eventBus.on("elements.changed", checkDirty);
+      eventBus.on("elements.changed", (e) => {
+        const linting = bpmnModeler.get("linting");
+        linting._setActive(true);
+        checkDirty();
+      });
       return () => {
         eventBus.off("elements.changed", checkDirty);
       };
@@ -1811,7 +1889,12 @@ function BpmnModelerComponent() {
       propertiesPanel: {
         parent: "#js-properties-panel",
       },
+      linting: {
+        bpmnlint: bpmnlintConfig,
+        active: true,
+      },
       additionalModules: [
+        lintModule,
         BpmnPropertiesPanelModule,
         BpmnPropertiesProviderModule,
         propertiesCustomProviderModule,
@@ -1849,6 +1932,7 @@ function BpmnModelerComponent() {
 
   useEffect(() => {
     if (!bpmnModeler) return;
+
     bpmnModeler.on("commandStack.connection.create.postExecuted", (event) => {
       const element = event?.context?.target;
       setColors(event && event.context && event.context.connection);
@@ -1909,6 +1993,11 @@ function BpmnModelerComponent() {
         element: rootElement,
       });
     });
+
+    bpmnModeler.on("linting.completed", function (event) {
+      const issuesData = getProblemViewData(event?.issues);
+      setIssues(issuesData);
+    });
   }, [updateTabs, addCallActivityExtensionElement]);
 
   useEffect(() => {
@@ -1957,6 +2046,30 @@ function BpmnModelerComponent() {
 
   useKeyPress(["s"], onSave);
 
+
+  useEffect(() => {
+    if (!bpmnModeler || !selectedElement) return;
+    const canvas = bpmnModeler.get("canvas");
+    const container = canvas.getContainer();
+    const contextPad = bpmnModeler.get("contextPad");
+
+    const handleMouseEnter = () => {
+      contextPad.open(selectedElement);
+    };
+
+    const handleMouseLeave = () => {
+      contextPad.close(selectedElement);
+    };
+
+    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [bpmnModeler, selectedElement]);
+  
   return (
     <React.Fragment>
       <Box id="container">
@@ -1965,62 +2078,80 @@ function BpmnModelerComponent() {
         </React.Suspense>
         <Box id="bpmncontainer" pos="relative" color="body">
           <div id="propview"></div>
-          <div id="bpmnview">
-            <Box
-              d="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              flexWrap="wrap"
-              rounded
-              border
-              gap="4"
-              style={{
-                padding: "6px 20px 8px 20px",
-                backgroundColor: "var(--bs-tertiary-bg)",
-              }}
-            >
-              <CommandBar items={leftToolbar} className={styles.commandBar} />
-              <Box flex="1">
-                <Select
-                  className={styles.select}
-                  disableClearable={true}
-                  update={(value, label, oldValue) => {
-                    /**Removing wkf model to avoid flickering of updated value await */
-                    setWkf("");
-                    updateWkfModel(value, oldValue);
-                  }}
-                  name="wkf"
-                  value={wkf}
-                  optionLabel="name"
-                  optionLabelSecondary="description"
-                  isLabel={false}
-                  fetchMethod={(criteria) => getModels(criteria)}
-                  disableUnderline={false}
-                  isOptionEllipsis={true}
-                  placeholder={translate("BPM model")}
-                />
-              </Box>
-              <Collaboration />
-              <CommandBar items={rightToolbar} className={styles.commandBar} />
-              <input
-                id="inputFile"
-                type="file"
-                name="file"
-                onChange={uploadFile}
-                style={{ display: "none" }}
+          <Box
+            d="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            flexWrap="wrap"
+            rounded
+            border
+            gap="4"
+            style={{
+              padding: "6px 20px 8px 20px",
+              backgroundColor: "var(--bs-tertiary-bg)",
+            }}
+          >
+            <CommandBar items={leftToolbar} className={styles.commandBar} />
+            <Box flex="1">
+              <Select
+                className={styles.select}
+                disableClearable={true}
+                update={(value, label, oldValue) => {
+                  /**Removing wkf model to avoid flickering of updated value await */
+                  setWkf("");
+                  updateWkfModel(value, oldValue);
+                }}
+                name="wkf"
+                value={wkf}
+                optionLabel="name"
+                optionLabelSecondary="description"
+                isLabel={false}
+                fetchMethod={(criteria) => getModels(criteria)}
+                disableUnderline={false}
+                isOptionEllipsis={true}
+                placeholder={translate("BPM model")}
               />
             </Box>
+            <Collaboration />
+            <CommandBar items={rightToolbar} className={styles.commandBar} />
+            <input
+              id="inputFile"
+              type="file"
+              name="file"
+              onChange={uploadFile}
+              style={{ display: "none" }}
+            />
+          </Box>
+          <div
+            style={{
+              height: "100%",
+              display: isXmlEditorOpen ? "none" : "block",
+            }}
+          >
+            <div id="bpmnview"></div>
           </div>
-          <CommandBar items={bottomToolbar} className={styles.bottomBar} />
+          {isXmlEditorOpen && (
+            <XmlEditor
+              bpmnModeler={bpmnModeler}
+              onClose={() => setXmlEditorOpen(false)}
+            />
+          )}
+
+          {/* Stop resizing, hide bottom command panel, and disable resizing when isXmlEditorOpen is true */}
+          {!isXmlEditorOpen && (
+            <CommandBar items={bottomToolbar} className={styles.bottomBar} />
+          )}
         </Box>
         <Box position="sticky" top={0} right={0} h={100}>
           <Resizable
             style={resizeStyle}
             size={{ width, height }}
             onResizeStop={(e, direction, ref, d) => {
-              setWidth((width) => width + d.width);
-              setHeight((height) => height + d.height);
-              setCSSWidth(`${width + d.width}px`);
+              if (!isXmlEditorOpen) {
+                setWidth((width) => width + d.width);
+                setHeight((height) => height + d.height);
+                setCSSWidth(`${width + d.width}px`);
+              }
             }}
             maxWidth={Math.max(window.innerWidth - 230, DRAWER_WIDTH)}
             minWidth={
@@ -2030,7 +2161,7 @@ function BpmnModelerComponent() {
             }
             minHeight={height}
             enable={{
-              left: true,
+              left: !isXmlEditorOpen,
             }}
           >
             <Box className={styles.drawerPaper} maxH={100}>
@@ -2072,8 +2203,10 @@ function BpmnModelerComponent() {
               roundedTop
               fontSize={6}
               onClick={() => {
-                setWidth((width) => (width === 0 ? DRAWER_WIDTH : 0));
-                setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
+                if (!isXmlEditorOpen) {
+                  setWidth((width) => (width === 0 ? DRAWER_WIDTH : 0));
+                  setCSSWidth(`${width === 0 ? DRAWER_WIDTH : 0}px`);
+                }
               }}
             >
               {translate("Properties")}
@@ -2118,7 +2251,42 @@ function BpmnModelerComponent() {
           </div>
 
       )}
-      <Logo />
+      <Resizable
+        size={{ width: "100%", height: issuePanelHeight }}
+        maxHeight={TOOL_PANEL_MAX_HEIGHT}
+        minHeight={0}
+        enable={{
+          top: true,
+        }}
+        style={issuePanelStyle}
+        onResizeStop={(e, direction, ref, d) => {
+          const height = issuePanelHeight + d.height;
+          setIssuePanelHeight(height);
+          updateElementpaletteHeight(height);
+        }}
+      >
+        <IssuePanel issues={issues} bpmnModeler={bpmnModeler} t={translate} />
+        <IconButton
+          className={styles.closePanelBtn}
+          onClick={handleToolPanelClose}
+        >
+          <MaterialIcon icon="close" fontSize={16} />
+        </IconButton>
+      </Resizable>
+      <Box className={styles.footer}>
+        <Button className={styles.issueViewBtn} onClick={handleToolPanelToggle}>
+          <Box className="flexCenter" gap={10}>
+            <Icons type={ICON_TYPE.ERROR} disabled={!issues.errors?.length} />
+            <Box> {issues.errors?.length || 0}</Box>
+            <Icons
+              type={ICON_TYPE.WARNING}
+              disabled={!issues.warnings?.length}
+            />
+            <Box>{issues.warnings?.length || 0}</Box>
+          </Box>
+        </Button>
+        <Logo />
+      </Box>
     </React.Fragment>
   );
 }

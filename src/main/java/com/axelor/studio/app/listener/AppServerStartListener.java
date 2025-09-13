@@ -29,7 +29,6 @@ import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
 import com.google.inject.servlet.RequestScoper;
 import com.google.inject.servlet.ServletScopes;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +60,7 @@ public class AppServerStartListener {
       appService.initApps();
       linkScriptBindingsService.loadBindings();
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 
@@ -76,16 +75,15 @@ public class AppServerStartListener {
         return;
       }
 
-      List<App> appList = new ArrayList<>();
-
+      List<App> appList;
       if (apps.equalsIgnoreCase("all")) {
         appList = appRepository.all().filter("self.active IS NULL OR self.active = false").fetch();
       } else {
-        appList.addAll(
-            Arrays.asList(apps.split(",")).stream()
+        appList =
+            Arrays.stream(apps.split(","))
                 .map(code -> appRepository.findByCode(code.trim()))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
       }
 
       if (appList.isEmpty()) {
@@ -96,7 +94,7 @@ public class AppServerStartListener {
           appList, appSettingsService.importDemoData(), appSettingsService.applicationLocale());
 
     } catch (Exception e) {
-      ExceptionHelper.trace(e);
+      ExceptionHelper.error(e);
     }
   }
 }

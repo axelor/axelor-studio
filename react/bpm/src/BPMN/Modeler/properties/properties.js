@@ -136,6 +136,44 @@ function createGeneralTabGroups(
   executableProps(generalGroup, element, translate, bpmnModeler);
   colorProps(generalGroup, element, translate, bpmnModeler);
 
+  let translationGroup = {
+    id: "translations",
+    label: translate("Translations"),
+    entries: [],
+    component: TranslationProps,
+  };
+  let commentsGroup = {
+    id: "comments",
+    label: translate("Comments"),
+    entries: [],
+    component: Comments,
+  };
+
+  let groups = [];
+  groups.push(generalGroup);
+  groups.push(commentsGroup);
+  groups.push(translationGroup);
+  return groups;
+}
+
+function createConfigurationTabGroups(
+  element,
+  canvas,
+  bpmnFactory,
+  elementRegistry,
+  translate,
+  bpmnModeler,
+  setDummyProperty
+) {
+  // refer to target element for external labels
+  element = element && (element.labelTarget || element);
+
+  let generalGroup = {
+    id: "general",
+    label: translate("General"),
+    entries: [],
+  };
+
   let startOnListenerProps = {
     id: "process-is-start-on-listener",
     label: translate("Trigger only on client change"),
@@ -220,13 +258,6 @@ function createGeneralTabGroups(
     className: "businessRuleTask",
   };
 
-  let translationGroup = {
-    id: "translations",
-    label: translate("Translations"),
-    entries: [],
-    component: TranslationProps,
-  };
-
   let jobConfigurationGroup = {
     id: "jobConfiguration",
     label: translate("Job configuration"),
@@ -259,7 +290,6 @@ function createGeneralTabGroups(
     groups.push(startEventInitiator);
     groups.push(eventProps);
     groups.push(modelProps);
-    groups.push(translationGroup);
     groups.push(multiInstanceGroup);
     return groups;
   }
@@ -267,7 +297,6 @@ function createGeneralTabGroups(
     groups.push(serviceTaskDelegateProps);
     groups.push(modelProps);
     groups.push(multiInstanceGroup);
-    groups.push(translationGroup);
     return groups;
   }
 
@@ -284,8 +313,6 @@ function createGeneralTabGroups(
   groups.push(modelProps);
   groups.push(businessRuleTaskGroup);
   groups.push(multiInstanceGroup);
-  groups.push(translationGroup);
-
   return groups;
 }
 
@@ -355,13 +382,25 @@ function createConfigurationGroups(
   elementRegistry,
   translate
 ) {
+  let startOnListenerProps = {
+    id: "process-is-start-on-listener",
+    label: translate("Trigger only on client change"),
+    entries: [],
+    component: StartOnListenerProps,
+  };
+  let modelProps = {
+    id: "modelProps",
+    label: translate("Details"),
+    entries: [],
+    component: ModelProps,
+  };
   let configurationGroup = {
     id: "configuration",
     label: translate("Process configs"),
     entries: [],
     component: ProcessConfiguration,
   };
-  return [configurationGroup];
+  return [startOnListenerProps, configurationGroup, modelProps];
 }
 
 function createCommentGroups(element, bpmnFactory, elementRegistry, translate) {
@@ -414,6 +453,20 @@ export default function getTabs(
     id: "general",
     label: translate("General"),
     groups: createGeneralTabGroups(
+      element,
+      canvas,
+      bpmnFactory,
+      elementRegistry,
+      translate,
+      bpmnModeler,
+      setDummyProperty
+    ),
+  };
+
+  let nodeConfigurationTab = {
+    id: "node-configuration",
+    label: translate("Configuration"),
+    groups: createConfigurationTabGroups(
       element,
       canvas,
       bpmnFactory,
@@ -479,26 +532,16 @@ export default function getTabs(
     ),
   };
 
-  let commentsTab = {
-    id: "comments",
-    label: translate("Comments"),
-    groups: createCommentGroups(
-      element,
-      bpmnFactory,
-      elementRegistry,
-      translate
-    ),
-  };
 
   let tabs = [
     definitionTab,
     generalTab,
+    nodeConfigurationTab,
     viewAttributesTab,
     variablesTab,
     menuActionTab,
     configurationTab,
     listenersTab,
-    commentsTab,
   ];
   return tabs;
 }

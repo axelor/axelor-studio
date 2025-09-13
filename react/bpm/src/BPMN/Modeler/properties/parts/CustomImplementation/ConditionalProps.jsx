@@ -16,8 +16,8 @@ import {
 import Tooltip from "../../../../../components/Tooltip";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./conditional-props.module.css";
-import Title from "../../../Title";
 import useDialog from "../../../../../hooks/useDialog";
+import CollapsePanel from "../componants/CollapsePanel";
 
 let CONDITIONAL_SOURCES = [
   "bpmn:Activity",
@@ -231,8 +231,7 @@ export default function ConditionalProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         <div className={styles.expressionBuilder}>
           <Textbox
             element={element}
@@ -329,7 +328,7 @@ export default function ConditionalProps({
             />
           )}
         </div>
-      </div>
+      </CollapsePanel>
     )
   );
 }

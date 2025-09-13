@@ -61,3 +61,9 @@
 .textField {
   min-width: 150px;
 }
+
+.required {
+  color: red;
+  margin-left: 10px;
+  font-size: 20px;
+}

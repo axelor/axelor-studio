@@ -1,3 +1,125 @@
+## 3.5.0 (2025-06-16)
+
+#### Feature
+
+* Add LinkScript feature
+
+  <details>
+  
+  LinkScript is a library of chainable, multi-output, extendable, Groovy functions that can be created and assembled to run complex business logic in Axelor applications.
+  
+  The following property can be added to the webapp to be able to quickly call a LinkScript in any AOP's Groovy evaluated expression:
+  context.ls = com.axelor.studio.ls.service.LinkScriptService
+  
+  </details>
+
+* Update bpmn.js library to version 18.2.0
+
+  <details>
+  
+  This change updates several important libraries in the bpm module:
+  
+  - Upgrade of bpmn.js from version 17.11.1 to 18.2.0
+  - Update of bpmn-js-properties-panel from 5.26.0 to 5.31.1
+  - Other updates to associated libraries (@axelor/ui, dmn-js, etc.)
+  
+  This update brings the latest features and bug fixes from the bpmn-js ecosystem,
+  improving business process modeling and visualization capabilities.
+  
+  </details>
+
+* Add option to display node type in properties
+
+  <details>
+  
+  This change improve BPM Studio UI by displaying the node icon at the top of the properties panel.
+  
+  </details>
+
+* Add option to enable/disable Studio button in forms
+
+  <details>
+  
+  This change adds a configuration option to control the visibility of the Studio button in form views.
+  
+  The implementation:
+  - Adds a new boolean field `enableStudioButton` to the AppStudio configuration
+  - Sets the default value to true to maintain existing behavior
+  
+  </details>
+
+#### Deprecate
+
+* Replace `com.axelor.studio.app.service.AppVersionService` by `com.axelor.meta.loader.AppVersionService`. Same for its implementation `AppVersionServiceImpl`.
+
+  <details>
+  
+  Such change is necessary to access some technical classes with package visibility.
+  
+  The deprecated service and its implementation will be removed in a future version.
+  
+  </details>
+
+#### Fix
+
+* Fix the computation and update of app versions at application startup
+
+  <details>
+  
+  The update of the app version now relies on the version in `Module` instead of `MetaModule`.
+  The latter was updated when the views were restored, which required then another application startup to update the app versions too.
+  
+  </details>
+
+* Fix inconsistency in MetaModel availability for Expression Builder across interfaces
+
+  <details>
+  
+  This change addresses inconsistent behavior in the Expression Builder component when accessing MetaModels across different interfaces.
+  
+  The implementation now:
+  - Refactors how models are fetched with a unified approach using `getModels` function
+  - Adds proper filtering of models with `getModelFilter`
+  - Includes an information tooltip to better guide users when selecting MetaModels not configured in process parameters
+  
+  These improvements ensure consistent behavior of the Expression Builder across all interfaces where it's being used, including BPMN components.
+  
+  </details>
+
+* Fix creation of view attributes for each new version
+* Fix BPM view attribute not correctly interpreted
+
+  <details>
+  
+  This fix addresses the MetaAttrsService implementation, by changing the condition definition to include the value if its not static and if the attribute is a conditional attribute
+  
+  </details>
+
+* New config for the non config app does not work
+
+  <details>
+  
+  When adding a new configuration to an existing app without any previous configurations, the new configuration does not work.
+  
+  The code currently checks for the existence of a MetaModel. However, the MetaModel is not populated until a view reload is performed for the new model.
+  
+  </details>
+
+* Fix incorrect data type comparison in BPM Studio script generation
+
+  <details>
+  
+  - Script generation correctly handles String type fields.
+  - Quotes are added around numeric values when compared to String fields.
+  
+  </details>
+
+* Add lock on bpm migration
+* Freeze the screen of the user during migration
+* fix includeIf condition is not managed in studio builder
+* Invalid Groovy comparison syntax for Date and DateTime fields in user task
+* Fix UI consistency of `AppStudio` config form
+
 ## 3.4.4 (2025-05-14)
 
 #### Fix

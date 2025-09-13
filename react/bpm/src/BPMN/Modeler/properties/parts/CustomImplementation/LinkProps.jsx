@@ -3,7 +3,7 @@ import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 
 import TextField from "../../../../../components/properties/components/TextField";
 import { translate } from "../../../../../utils";
-import Title from "../../../Title";
+import CollapsePanel from "../componants/CollapsePanel";
 
 var linkEvents = ["bpmn:IntermediateThrowEvent", "bpmn:IntermediateCatchEvent"];
 
@@ -49,8 +49,7 @@ export default function LinkProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         <TextField
           element={element}
           entry={{
@@ -73,7 +72,7 @@ export default function LinkProps({
           }}
           canRemove={true}
         />
-      </div>
+      </CollapsePanel>
     )
   );
 }

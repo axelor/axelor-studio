@@ -9,9 +9,8 @@ import {
   getEscalationEventDefinition,
   getMessageEventDefinition,
   getSignalEventDefinition,
-  getTimerEventDefinition
+  getTimerEventDefinition,
 } from "../../../../../utils/EventDefinitionUtil";
-import Title from "../../../Title";
 import Compensation from "./CompensateEventDefinition";
 import Condition from "./ConditionalEventDefinition";
 import Error from "./ErrorEventDefinition";
@@ -19,7 +18,7 @@ import Escalation from "./EscalationEventDefinition";
 import Message from "./MessageEventDefinition";
 import Signal from "./SignalEventDefinition";
 import Timer from "./TimerEventDefinition";
-
+import CollapsePanel from "../componants/CollapsePanel";
 
 const events = [
   "bpmn:StartEvent",
@@ -161,10 +160,8 @@ export default function EventProps({
     // Message and Signal Event Definition
     events.forEach((event) => {
       if (is(element, event)) {
-        let messageEventDefinition =
-          getMessageEventDefinition(element),
-          signalEventDefinition =
-            getSignalEventDefinition(element);
+        let messageEventDefinition = getMessageEventDefinition(element),
+          signalEventDefinition = getSignalEventDefinition(element);
 
         if (messageEventDefinition) {
           renderType = {
@@ -201,8 +198,7 @@ export default function EventProps({
 
     errorEvents.forEach((event) => {
       if (is(element, event)) {
-        let errorEventDefinition =
-          getErrorEventDefinition(element);
+        let errorEventDefinition = getErrorEventDefinition(element);
 
         if (errorEventDefinition) {
           renderType = {
@@ -219,8 +215,7 @@ export default function EventProps({
           is(element, "bpmn:StartEvent") || is(element, "bpmn:BoundaryEvent");
 
         // get business object
-        let escalationEventDefinition =
-          getEscalationEventDefinition(element);
+        let escalationEventDefinition = getEscalationEventDefinition(element);
 
         if (escalationEventDefinition) {
           renderType = {
@@ -235,8 +230,7 @@ export default function EventProps({
     timerEvents.forEach((event) => {
       if (is(element, event)) {
         // get business object
-        let timerEventDefinition =
-          getTimerEventDefinition(element);
+        let timerEventDefinition = getTimerEventDefinition(element);
 
         if (timerEventDefinition) {
           renderType = {
@@ -250,8 +244,7 @@ export default function EventProps({
     compensationEvents.forEach((event) => {
       if (is(element, event)) {
         // get business object
-        let compensateEventDefinition =
-          getCompensateEventDefinition(element);
+        let compensateEventDefinition = getCompensateEventDefinition(element);
 
         if (compensateEventDefinition) {
           renderType = {
@@ -264,8 +257,7 @@ export default function EventProps({
 
     if (isAny(element, conditionalEvents)) {
       // get business object
-      let conditionalEventDefinition =
-        getConditionalEventDefinition(element);
+      let conditionalEventDefinition = getConditionalEventDefinition(element);
 
       if (conditionalEventDefinition) {
         renderType = {
@@ -284,10 +276,9 @@ export default function EventProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         <div>{renderComponent()}</div>
-      </div>
+      </CollapsePanel>
     )
   );
 }

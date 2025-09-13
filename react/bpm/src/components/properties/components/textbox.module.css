@@ -58,3 +58,10 @@
   align-items: center;
   flex-shrink: 0;
 }
+
+
+.required {
+  color: red;
+  margin-left: 10px;
+  font-size: 20px;
+}

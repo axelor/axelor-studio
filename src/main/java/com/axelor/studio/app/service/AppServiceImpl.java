@@ -33,8 +33,8 @@ import com.axelor.meta.MetaScanner;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaModule;
 import com.axelor.meta.db.repo.MetaFileRepository;
-import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.db.repo.MetaModuleRepository;
+import com.axelor.meta.loader.AppVersionService;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.exception.StudioExceptionMessage;
@@ -57,6 +57,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +68,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -104,7 +106,6 @@ public class AppServiceImpl implements AppService {
   protected final AppRepository appRepo;
   protected final MetaFiles metaFiles;
   protected final AppVersionService appVersionService;
-  protected final MetaModelRepository metaModelRepo;
   protected final AppSettingsStudioService appSettingsService;
   protected final MetaModuleRepository metaModuleRepo;
   protected final MetaFileRepository metaFileRepo;
@@ -114,14 +115,12 @@ public class AppServiceImpl implements AppService {
       AppRepository appRepo,
       MetaFiles metaFiles,
       AppVersionService appVersionService,
-      MetaModelRepository metaModelRepo,
       AppSettingsStudioService appSettingsService,
       MetaModuleRepository metaModuleRepo,
       MetaFileRepository metaFileRepo) {
     this.appRepo = appRepo;
     this.metaFiles = metaFiles;
     this.appVersionService = appVersionService;
-    this.metaModelRepo = metaModelRepo;
     this.appSettingsService = appSettingsService;
     this.metaModuleRepo = metaModuleRepo;
     this.metaFileRepo = metaFileRepo;
@@ -151,7 +150,7 @@ public class AppServiceImpl implements AppService {
     return saveApp(app);
   }
 
-  @Transactional(rollbackOn = Exception.class)
+  @Transactional
   public App saveApp(App app) {
     return appRepo.save(app);
   }
@@ -201,14 +200,8 @@ public class AppServiceImpl implements AppService {
   }
 
   protected String getLanguage(App app) {
-
-    String lang = app.getLanguageSelect();
-
-    if (app.getLanguageSelect() == null) {
-      lang = appSettingsService.applicationLocale();
-    }
-
-    return lang;
+    return Optional.ofNullable(app.getLanguageSelect())
+        .orElse(appSettingsService.applicationLocale());
   }
 
   protected void importParentData(App app) throws IOException {
@@ -305,7 +298,7 @@ public class AppServiceImpl implements AppService {
           try {
             copy(url.openStream(), tmp, name);
           } catch (IOException e) {
-            ExceptionHelper.trace(e);
+            ExceptionHelper.error(e);
           }
         });
 
@@ -342,25 +335,16 @@ public class AppServiceImpl implements AppService {
 
   @Override
   public Model getApp(String code) {
-
     App app = appRepo.findByCode(code);
-    if (app != null) {
-      return (Model) Mapper.toMap(app).get("app" + Inflector.getInstance().camelize(code));
+    if (app == null) {
+      return null;
     }
-
-    return null;
+    return (Model) Mapper.toMap(app).get("app" + Inflector.getInstance().camelize(code));
   }
 
   @Override
   public boolean isApp(String code) {
-
-    App app = appRepo.findByCode(code);
-
-    if (app == null) {
-      return false;
-    }
-
-    return app.getActive();
+    return Optional.ofNullable(appRepo.findByCode(code)).map(App::getActive).orElse(false);
   }
 
   protected List<App> getDepends(App app, Boolean active) {
@@ -374,28 +358,21 @@ public class AppServiceImpl implements AppService {
 
     app.getDependsOnSet().stream()
         .filter(depend -> depend.getActive().equals(active))
-        .forEach(depend -> apps.add(depend));
+        .forEach(apps::add);
 
     return sortApps(apps);
   }
 
   protected List<String> getNames(List<App> apps) {
-
-    List<String> names = new ArrayList<>();
-
-    apps.forEach(app -> names.add(app.getName()));
-
-    return names;
+    return apps.stream().map(App::getName).collect(Collectors.toList());
   }
 
   protected List<App> getChildren(App app) {
 
     String code = app.getCode();
 
-    String query = "self.dependsOnSet.code = ?1";
-
-    query = "(" + query + ") AND self.active = " + true;
-    List<App> apps = appRepo.all().filter(query, code).fetch();
+    List<App> apps =
+        appRepo.all().filter("self.dependsOnSet.code = ?1 AND self.active = true", code).fetch();
 
     log.debug("Parent app: {}, Total children: {}", app.getName(), apps.size());
 
@@ -439,17 +416,11 @@ public class AppServiceImpl implements AppService {
 
     List<App> appsList = new ArrayList<>(apps);
 
-    appsList.sort(this::compare);
+    appsList.sort(Comparator.comparing(App::getInstallOrder));
 
     log.debug("Apps sorted: {}", getNames(appsList));
 
     return appsList;
-  }
-
-  protected int compare(App app1, App app2) {
-    Integer order1 = app1.getInstallOrder();
-    Integer order2 = app2.getInstallOrder();
-    return order1.compareTo(order2);
   }
 
   @Override
@@ -481,15 +452,14 @@ public class AppServiceImpl implements AppService {
         setAppDependsOn(appDependsOnMap);
 
       } catch (Exception e) {
-        ExceptionHelper.trace(e);
+        ExceptionHelper.error(e);
       } finally {
         clean(tmp);
       }
     }
   }
 
-  protected void importApp(File dataFile, Map<App, Object> appDependsOnMap)
-      throws IOException, ClassNotFoundException {
+  protected void importApp(File dataFile, Map<App, Object> appDependsOnMap) throws IOException {
 
     log.debug("Running import/update app with data path: {}", dataFile.getAbsolutePath());
 
@@ -511,14 +481,18 @@ public class AppServiceImpl implements AppService {
       if (property == null) {
         continue;
       }
-      if (property.getName().equals(APP_IMAGE) && entry.getValue() != null) {
-        String image = entry.getValue().toString();
+
+      String name = property.getName();
+      Object value = entry.getValue();
+
+      if (name.equals(APP_IMAGE) && value != null) {
+        String image = value.toString();
         importAppImage(app, mapper, property, image, dataFile);
-      } else if (property.getName().equals(APP_MODULES) && entry.getValue() != null) {
-        String modules = entry.getValue().toString().replace(" ", ",");
-        mapper.set(app, property.getName(), modules);
+      } else if (name.equals(APP_MODULES) && value != null) {
+        String modules = value.toString().replace(" ", ",");
+        mapper.set(app, name, modules);
       } else {
-        mapper.set(app, property.getName(), entry.getValue() != null ? entry.getValue() : null);
+        mapper.set(app, name, value);
       }
     }
 
@@ -542,12 +516,12 @@ public class AppServiceImpl implements AppService {
   }
 
   @SuppressWarnings("unchecked")
-  @Transactional(rollbackOn = {Exception.class})
-  public void importAppConfig(App app) throws ClassNotFoundException {
+  @Transactional
+  protected void importAppConfig(App app) {
 
     String code = app.getCode();
     String modelName = "App" + Inflector.getInstance().camelize(code);
-    Class<Model> klass = null;
+    Class<Model> klass;
     try {
       klass = (Class<Model>) Class.forName("com.axelor.studio.db." + modelName);
     } catch (ClassNotFoundException e) {
@@ -577,12 +551,10 @@ public class AppServiceImpl implements AppService {
   }
 
   @SuppressWarnings("unchecked")
-  protected void setAppDependsOn(Map<App, Object> appDepednsOnMap) {
-
-    appDepednsOnMap.forEach(
-        (key, value) -> {
+  protected void setAppDependsOn(Map<App, Object> appDependsOnMap) {
+    appDependsOnMap.forEach(
+        (app, value) -> {
           Set<App> dependsOnSet = new HashSet<>();
-          App app = key;
           List<String> dependsOnList = (List<String>) value;
 
           dependsOnList.stream()
@@ -636,14 +608,14 @@ public class AppServiceImpl implements AppService {
   }
 
   @Override
-  public void bulkInstall(Collection<App> apps, Boolean importDemo, String language)
+  public void bulkInstall(Collection<App> apps, boolean importDemo, String language)
       throws IOException {
 
     apps = sortApps(apps);
 
     for (App app : apps) {
       app = installApp(app, language);
-      if (importDemo != null && importDemo) {
+      if (importDemo) {
         importDataDemo(app);
       }
     }

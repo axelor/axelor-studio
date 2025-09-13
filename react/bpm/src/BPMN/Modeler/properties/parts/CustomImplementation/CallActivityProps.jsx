@@ -3,11 +3,7 @@ import { getBusinessObject, is } from "bpmn-js/lib/util/ModelUtil";
 import classnames from "classnames";
 import React, { useEffect, useState } from "react";
 
-import {
-  Box,
-  Divider,
-  InputLabel,
-} from "@axelor/ui";
+import { Box, Divider, InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import Ids from "ids";
 import Alert from "../../../../../components/Alert";
@@ -32,9 +28,9 @@ import {
   getMetaModels,
 } from "../../../../../services/api";
 import { getBool, getLowerCase, translate } from "../../../../../utils";
-import Title from "../../../Title";
 import styles from "./callactivity.module.css";
 import { openWebApp } from "./utils";
+import CollapsePanel from "../componants/CollapsePanel";
 
 function nextId() {
   let ids = new Ids([32, 32, 1]);
@@ -92,6 +88,13 @@ export default function CallActivityProps({
     setOpenCondition(false);
   };
 
+  function updateModelingProperty(key, value) {
+    const modeling = bpmnModeler.get("modeling");
+    modeling.updateProperties(element, {
+      [key]: value,
+    });
+  }
+
   const getter = () => {
     const value = getProperty("conditionValue");
     const combinator = getProperty("conditionCombinator");
@@ -126,6 +129,7 @@ export default function CallActivityProps({
     if (wkfModel) {
       if (element && element.businessObject) {
         element.businessObject.calledElement = wkfModel.processId;
+        updateModelingProperty("calledElement", wkfModel.processId);
       }
     }
     handleClose();
@@ -243,6 +247,7 @@ export default function CallActivityProps({
           setWkfModel(data);
           if (element) {
             element.businessObject.calledElement = data.code;
+            updateModelingProperty("calledElement", data.code);
           }
         }
       } else {
@@ -254,6 +259,7 @@ export default function CallActivityProps({
         });
         if (element && element.businessObject) {
           element.businessObject.calledElement = wkfProcess.name;
+          updateModelingProperty("calledElement", wkfProcess.name);
         }
       }
     },
@@ -381,8 +387,7 @@ export default function CallActivityProps({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         <SelectBox
           element={element}
           entry={{
@@ -419,6 +424,7 @@ export default function CallActivityProps({
               id: "calledElement",
               label: translate("Called element"),
               modelProperty: "calledElement",
+              required: true,
               get: function () {
                 const bo = getBusinessObject(element);
                 return { calledElement: bo && bo.calledElement };
@@ -428,6 +434,7 @@ export default function CallActivityProps({
                   setWkfModel(undefined);
                 }
                 element.businessObject.calledElement = values.calledElement;
+                updateModelingProperty("calledElement", values.calledElement);
                 element.businessObject.calledElementBinding = "latest";
                 element.businessObject.caseRef = undefined;
                 setDummyProperty({
@@ -496,6 +503,7 @@ export default function CallActivityProps({
               id: "caseRef",
               label: translate("Case ref"),
               modelProperty: "caseRef",
+              required: true,
               get: function () {
                 const bo = getBusinessObject(element);
                 return { caseRef: bo && bo.caseRef };
@@ -798,7 +806,7 @@ export default function CallActivityProps({
                   });
                 }}
                 optionLabel={`wkfModel.name`}
-                optionLabelSecondary={'name'}
+                optionLabelSecondary={"name"}
               />
             </div>
           }
@@ -812,7 +820,7 @@ export default function CallActivityProps({
             messageType={openSnackbar.messageType}
           />
         )}
-      </div>
+      </CollapsePanel>
     )
   );
 }

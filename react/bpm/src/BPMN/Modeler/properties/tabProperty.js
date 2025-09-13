@@ -1,15 +1,17 @@
-const commonTabs = ["general", "menu-action-tab", "listeners", "comments"];
-const defaultTabs = ["general", "menu-action-tab", "comments"];
-const commonTabsWithoutMenuAction = ["general", "listeners", "comments"];
-const defaultTabsWithoutMenuAction = ["general", "comments"];
+const commonTabs = ["general","node-configuration", "menu-action-tab", "listeners", "comments"];
+const defaultTabs = ["general", "node-configuration","menu-action-tab", "comments"];
+const commonTabsWithoutMenuAction = ["general","node-configuration", "listeners", "comments"];
+const defaultTabsWithoutMenuAction = ["general","node-configuration", "comments"];
 const variableTabsWithoutMenuAction = [
   "general",
+  "node-configuration",
   "variables",
   "listeners",
   "comments",
 ];
 const withViewAttributes = [
   "general",
+  "node-configuration",
   "listeners",
   "view-attributes",
   "menu-action-tab",
@@ -17,6 +19,7 @@ const withViewAttributes = [
 ];
 const variableTabsWithViewAttributes = [
   "general",
+  "node-configuration",
   "variables",
   "view-attributes",
   "menu-action-tab",

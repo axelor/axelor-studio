@@ -4,7 +4,7 @@ import com.axelor.message.service.AppSettingsMessageService;
 
 public interface AppSettingsStudioService extends AppSettingsMessageService {
 
-  public String appsToInstall();
+  String appsToInstall();
 
   boolean importDemoData();
 
@@ -20,7 +20,7 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
 
   String getLoggers();
 
-  public boolean isAddBpmLog();
+  boolean isAddBpmLog();
 
   int serializationDepth();
 

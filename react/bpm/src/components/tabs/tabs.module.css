@@ -1,0 +1,12 @@
+.toolTabs {
+    border-bottom: 1px solid var(--bs-secondary-border-subtle, rgb(207, 201, 201));
+    height: 30px;
+    background-color: var(--bs-secondary-bg, rgb(200, 194, 194));
+}
+
+
+
+.toolTabs div[data-tab-id]>div>div {
+    font-weight: 500;
+    text-transform: none !important;
+}

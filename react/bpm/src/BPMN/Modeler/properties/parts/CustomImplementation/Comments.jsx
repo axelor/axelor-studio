@@ -11,9 +11,11 @@ import {
   updateComment,
 } from "../../../extra";
 import { translate } from "../../../../../utils";
-import { Button, Box, Input } from "@axelor/ui";
+import { Button, Box, Input, Badge, Collapse } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import styles from "./comments.module.css";
+import Title from "../../../Title";
+import CollapsePanel from "../componants/CollapsePanel";
 
 const avatarColor = {};
 
@@ -117,7 +119,12 @@ export default function Comments({ element, updateCommentsCount }) {
   }, [element]);
 
   return (
-    <div className={styles.root}>
+    <CollapsePanel
+      open={false}
+      label={translate("Comments")}
+      badgeCount={Object.keys(comments || {})?.length}
+      hideBadgeOnOpen={true}
+    >
       {comments && Object.keys(comments).length === 0 && (
         <Box color="body" d="flex" alignItems="center">
           <div style={{ marginRight: 20 }}>
@@ -281,6 +288,6 @@ export default function Comments({ element, updateCommentsCount }) {
           </div>
         </div>
       </div>
-    </div>
+    </CollapsePanel>
   );
 }

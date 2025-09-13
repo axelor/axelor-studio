@@ -9,32 +9,8 @@
 }
 
 .drawerContainer {
-  padding: 10px;
   height: 100%;
   width: 100%;
-}
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; /* ensure it sits above other content */
-}
-
-.loaderContainer {
-  text-align: center;
-  color: white; /* or any color that suits your loader */
-}
-
-
-.select {
-  min-width: 150px;
-  margin-top: 0;
 }
 
 .overlay {
@@ -43,16 +19,19 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* semi-transparent background */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* ensure it sits above other content */
+  z-index: 9999;
+  /* ensure it sits above other content */
 }
 
 .loaderContainer {
   text-align: center;
-  color: white; /* or any color that suits your loader */
+  color: white;
+  /* or any color that suits your loader */
 }
 
 
@@ -68,12 +47,38 @@
   right: 10px;
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bs-border-radius-sm);
-  background-color: var(--bs-tertiary-bg);
+  background-color: var(--bs-tertiary-bg, #fff);
   color: var(--bs-body-color);
 }
-.bottomBar button{
+
+.bottomBar button {
   padding: 4.5px;
 }
-.bottomBar  button span{
+
+.bottomBar button span {
   font-size: 21px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  background-color: var(--bs-tertiary-bg, #fff) !important;
+  z-index: 100;
+}
+
+.issueViewBtn {
+  border: none;
+  font-weight: 500;
+  color: var(--bs-body-color, #a29d9d) !important;
+}
+
+.issueViewBtn:hover {
+  background-color: var(--bs-secondary-bg-subtle, gray);
+  color: var(--bs-body-color, #fff);
+}
+
+.closePanelBtn {
+  position: absolute !important;
+  top: -2px;
+  right: 0px;
 }

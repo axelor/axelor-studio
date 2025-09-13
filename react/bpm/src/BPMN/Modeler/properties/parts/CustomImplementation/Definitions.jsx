@@ -258,6 +258,7 @@ export default function Definition({
           label: translate("Code"),
           modelProperty: "code",
           shouldValidate: true,
+          required: true,
           get: function () {
             return { code: getProperty("code") };
           },
@@ -281,6 +282,7 @@ export default function Definition({
           label: translate("Name"),
           modelProperty: "diagramName",
           shouldValidate: true,
+          required: true,
           get: function () {
             return { diagramName: getProperty("diagramName") };
           },
@@ -383,7 +385,7 @@ export default function Definition({
               {translate("Previous versions")}
             </InputLabel>
             <Box color="body" d={"flex"} alignItems={"center"}>
-              <IconButton conClick={getVersionList} aria-label="Refresh">
+              <IconButton onClick={getVersionList} aria-label="Refresh">
                 <Tooltip
                   title={translate("Refresh")}
                   children={<MaterialIcon icon="refresh" fontSize={16} />}

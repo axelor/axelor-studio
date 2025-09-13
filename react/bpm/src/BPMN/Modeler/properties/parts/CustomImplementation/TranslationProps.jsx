@@ -22,12 +22,12 @@ import {
   TableRow,
   TableBody,
 } from "@axelor/ui";
-import Title from "../../../Title";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import { useStore } from "../../../../../store";
 import { useAlert } from "../../../../../context/alert-context";
 import { getNameProperty } from "../../../extra";
 import styles from "./translation-props.module.css";
+import CollapsePanel from "../componants/CollapsePanel";
 
 const getValue = (element) => {
   if (!element) return;
@@ -181,7 +181,7 @@ export default function TranslationProps({
 
     if (
       (element && element.id) !== (rootElement && rootElement.id) &&
-      getValue(storeElement)
+      getValue(element)
     ) {
       if (isSubscribed) {
         setVisible(true);
@@ -192,12 +192,11 @@ export default function TranslationProps({
       setVisible(false);
     }
     return () => (isSubscribed = false);
-  }, [element, bpmnModeler, getValue(storeElement)]);
+  }, [element, bpmnModeler, getValue(element)]);
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label} badgeCount={translations?.length} hideBadgeOnOpen={true}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <Checkbox
             element={element}
@@ -323,7 +322,7 @@ export default function TranslationProps({
             </Table>
           </Box>
         )}
-      </div>
+      </CollapsePanel>
     )
   );
 }

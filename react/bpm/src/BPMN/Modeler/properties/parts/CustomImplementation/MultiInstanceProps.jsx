@@ -10,14 +10,12 @@ import {
 import { getMetaFields, getModels } from "../../../../../services/api";
 import { translate } from "../../../../../utils";
 
-import {
-  InputLabel
-} from "@axelor/ui";
+import { InputLabel } from "@axelor/ui";
 import { MaterialIcon } from "@axelor/ui/icons/material-icon";
 import AlertDialog from "../../../../../components/AlertDialog";
 import useDialog from "../../../../../hooks/useDialog";
-import Title from "../../../Title";
 import styles from "./multi-instance.module.css";
+import CollapsePanel from "../componants/CollapsePanel";
 
 function getProperty(element, propertyName) {
   let loopCharacteristics = getLoopCharacteristics(element);
@@ -239,8 +237,7 @@ export default function MultiInstanceLoopCharacteristics({
 
   return (
     isVisible && (
-      <div>
-        <Title divider={index > 0} label={label} />
+      <CollapsePanel label={label}>
         {!collection && !loopCardinality && (
           <InputLabel color="body" className={styles.typography}>
             <MaterialIcon icon="report" fontSize={16} className={styles.icon} />
@@ -378,7 +375,7 @@ export default function MultiInstanceLoopCharacteristics({
             </div>
           }
         />
-        
+
         <TextField
           element={element}
           entry={{
@@ -423,7 +420,7 @@ export default function MultiInstanceLoopCharacteristics({
           }}
           canRemove={true}
         />
-      </div>
+      </CollapsePanel>
     )
   );
 }

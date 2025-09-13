@@ -536,6 +536,7 @@ export default function ViewAttributePanel({
                                   className={styles.label}
                                 >
                                   {translate("Model")}
+                                  <span className={styles.required}>*</span>
                                 </InputLabel>
                                 <Select
                                   fetchMethod={() =>

@@ -7,7 +7,7 @@ import {
   SelectBox,
 } from "../../../../../components/properties/components";
 import { translate, getBool } from "../../../../../utils";
-import Title from "../../../Title";
+import CollapsePanel from "../componants/CollapsePanel";
 
 export default function BusinessRuleTaskProps({
   element,
@@ -124,11 +124,7 @@ export default function BusinessRuleTaskProps({
           }}
         />
         {assignOutputToFields && (
-          <React.Fragment>
-            <Title
-              divider={index > 0}
-              label={translate("Relational field search")}
-            />
+          <CollapsePanel label={translate("Relational field search")}>
             <SelectBox
               element={element}
               entry={{
@@ -171,7 +167,7 @@ export default function BusinessRuleTaskProps({
                 },
               }}
             />
-          </React.Fragment>
+          </CollapsePanel>
         )}
       </div>
     )

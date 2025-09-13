@@ -2,21 +2,21 @@ buildscript {
     repositories {
         gradlePluginPortal()
         ivy {
-            name = "Node.js"
-            setUrl("https://nodejs.org/dist/")
+            name = 'Node.js'
+            setUrl('https://nodejs.org/dist/')
             patternLayout {
-                artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]")
+                artifact('v[revision]/[artifact](-v[revision]-[classifier]).[ext]')
             }
             metadataSources {
                 artifact()
             }
             content {
-                includeModule("org.nodejs", "node")
+                includeModule('org.nodejs', 'node')
             }
         }
     }
     dependencies {
-        classpath "com.github.node-gradle:gradle-node-plugin:7.0.2"
+        classpath 'com.github.node-gradle:gradle-node-plugin:7.0.2'
     }
 }
 
@@ -29,8 +29,8 @@ node {
 }
 
 def reactDirs = []
-file("react").traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
-    if (new File(it, "package.json").exists()) {
+file('react').traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
+    if (new File(it, 'package.json').exists()) {
         reactDirs.add(it)
     }
 }
@@ -58,7 +58,7 @@ reactDirs.each { dir ->
 
         dependsOn "${dirName}Install"
         mustRunAfter "${dirName}Install"
-        args = ["build"]
+        args = ['build']
     })
 
     tasks.register("${dirName}Install", PnpmTask) {
@@ -70,7 +70,7 @@ reactDirs.each { dir ->
 
         workingDir = file(dir)
 
-        args = ["install"]
+        args = ['install']
     }
 
     cleanTasks.add(tasks.register("${dirName}Clean", Delete) {
@@ -107,7 +107,7 @@ def frontCopy = tasks.register('frontCopy', Copy) {
 }
 
 try {
-    tasks.named("jar").configure {
+    tasks.named('jar').configure {
         dependsOn frontBuild
         componentPaths.each { paths ->
             into("${paths.to}") {
@@ -120,9 +120,17 @@ try {
 }
 
 try {
-    rootProject.tasks.named("war").configure {
+    rootProject.tasks.named('war').configure {
         dependsOn frontCopy
     }
 } catch (UnknownTaskException ignored) {
     // Do nothing if no war tasks
+}
+
+try {
+    rootProject.tasks.named('processResources').configure {
+        dependsOn frontCopy
+    }
+} catch (UnknownTaskException ignored) {
+    // Do nothing if no processResources task
 }
