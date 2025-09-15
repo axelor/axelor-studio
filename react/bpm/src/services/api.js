@@ -415,49 +415,7 @@ export async function getMetaModels(_data = {}) {
   });
   if (res && res.status === -1) return [];
   const { data = [] } = res || {};
-
-  const models = data.map((m) => {
-    return m.fullName;
-  });
-
-  const views =
-    models.length > 0 &&
-    (await getViews(
-      undefined,
-      [
-        {
-          fieldName: "model",
-          value: models,
-          operator: "IN",
-        },
-        {
-          operator: "or",
-          criteria: [
-            {
-              fieldName: "extension",
-              operator: "IS NULL",
-            },
-            {
-              fieldName: "extension",
-              operator: "=",
-              value: false,
-            },
-          ],
-        },
-      ],
-      undefined,
-      false
-    ));
-
-  let result = [];
-  data.forEach((d) => {
-    views.forEach((v) => {
-      if (v.model === d.fullName) {
-        result.push({ ...d, title: v.title });
-      }
-    });
-  });
-  return _.uniqBy(result, "id");
+  return _.uniqBy(data, "id");
 }
 
 export async function getCustomModels(criteria = {}) {

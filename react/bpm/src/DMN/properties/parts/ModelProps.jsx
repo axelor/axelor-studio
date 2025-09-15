@@ -150,9 +150,8 @@ export default function ModelProps({ element, label }) {
           type="multiple"
           placeholder={translate("Models")}
           optionLabel="name"
-          optionLabelSecondary="title"
           customOptionLabel={(option) => {
-            let optionName = `${option["name"]} (${option["title"]}) ${
+            let optionName = `${option["name"]}${
               !option.fullName ? `(${translate("Custom Model")})` : ""
             }`;
             return translate(optionName);
@@ -165,7 +164,7 @@ export default function ModelProps({ element, label }) {
           }}
           customOnChange={(value) => {
             const optionLabels = value
-              ?.map((v) => v["name"] || v["title"])
+              ?.map((v) => v["name"] )
               .join(",");
             handleSelectionChange(value, optionLabels);
             return;
