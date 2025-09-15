@@ -536,7 +536,6 @@ export default function ModelProps(props) {
                   placeholder={translate("Custom model")}
                   isLabel={false}
                   optionLabel="name"
-                  optionLabelSecondary="title"
                 />
               ) : (
                 <Select
@@ -555,7 +554,6 @@ export default function ModelProps(props) {
                   disabled={isModelsDisable}
                   placeholder={translate("Model")}
                   optionLabel="name"
-                  optionLabelSecondary="title"
                 />
               )}
               {isDefaultFormVisible && (
@@ -588,7 +586,6 @@ export default function ModelProps(props) {
                       label={translate("Default form")}
                       isLabel={false}
                       optionLabel="name"
-                      optionLabelSecondary="title"
                     />
                   </div>
                 </React.Fragment>
@@ -638,7 +635,6 @@ export default function ModelProps(props) {
                       value={models || []}
                       multiple={true}
                       optionLabel="name"
-                      optionLabelSecondary="title"
                       handleRemove={(option) => {
                         const value = models?.filter(
                           (r) => r.name !== option.name
