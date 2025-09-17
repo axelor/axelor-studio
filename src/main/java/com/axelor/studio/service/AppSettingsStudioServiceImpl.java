@@ -92,7 +92,7 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
 
   @Override
   public String getCamundaHistoryTimeToLive() {
-    return appSettings.get("studio.bpm.history.time.to.live", "P6M");
+    return appSettings.get("studio.bpm.history.time.to.live", "P180D");
   }
 
   private String getLoggerLogLevel(String loggerPrefix) {
