@@ -52,6 +52,13 @@ studio.bpm.max.idle.connections = 10
 
 #Maximum number of active database connections (default 50)
 studio.bpm.max.active.connections = 50
+
+# Defines the history time to live (TTL) for BPM process instances. Default: P180D (180 days)
+# The value can be:
+#   - A plain number of days (180)
+#   - An ISO-8601 period in days (P180D)
+studio.bpm.history.time.to.live = P180D
+
 ```
 
 ## BPM Groovy Script Variables
