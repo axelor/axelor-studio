@@ -146,18 +146,19 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       teamTask.setRelatedProcessInstance(
           wkfInstanceRepository.findByInstanceId(execution.getProcessInstanceId()));
       teamTask.setStatus("new");
-      if (!StringUtils.isEmpty(wkfTaskConfig.getRoleName())) {
+      String rolePath = wkfTaskConfig.getRoleFieldPath();
+      String roleValue = wkfTaskConfig.getRoleName();
+      if (!StringUtils.isEmpty(roleValue) || rolePath != null) {
         switch (wkfTaskConfig.getRoleType().toLowerCase()) {
           case "value":
-            teamTask.setRole(roleRepo.findByName(wkfTaskConfig.getRoleName()));
+            teamTask.setRole(roleRepo.findByName(roleValue));
             break;
           case "field":
-            teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(), wkfContext));
+            teamTask.setRole(getRole(rolePath, wkfContext));
             break;
           case "script":
             FullContext roleContext =
-                (FullContext)
-                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getRoleFieldPath());
+                (FullContext) wkfService.evalExpression(contextVariables, rolePath);
             if (roleContext != null) {
               Role role = (Role) roleContext.getTarget();
               if (role != null) {
