@@ -1113,8 +1113,18 @@ function BpmnModelerComponent() {
   };
 
   const deploy = async (wkfMigrationMap, isMigrateOld, newWkf = wkf) => {
-    allowProgressBarDisplay && wsProgress.init();
+    const wkfModel = await fetchWkf(wkf.id);
+    if(wkfModel.isMigrationOnGoing){
+      handleSnackbarClick(
+          "danger",
+          translate("Migration is already ongoing.")
+        );
+        return;
+    }
+    allowProgressBarDisplay && wsProgress.init(wkf.id);
+    await waitForConnection();
     try {
+      setProgress(0);
       const { context, res } =
         (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
       if (newWkf?.newVersionOnDeploy && newWkf?.statusSelect === 2) {
@@ -1135,6 +1145,28 @@ function BpmnModelerComponent() {
       console.error(err);
     }
   };
+
+  function waitForConnection(timeout = 5000) {
+    return new Promise((resolve, reject) => {
+      if (wsProgress.isConnected()) {
+        resolve();
+        return;
+      }
+
+      const timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error('WebSocket connection timeout'));
+      }, timeout);
+
+      const cleanup = wsProgress.subscribeToConnection((connected) => {
+        if (connected) {
+          clearTimeout(timeoutId);
+          cleanup();
+          resolve();
+        }
+      });
+    });
+  }
 
   const updateCommentsCount = (isIncrement = false) => {
     if (isIncrement) {
@@ -1928,21 +1960,60 @@ function BpmnModelerComponent() {
   }, []);
 
   useEffect(() => {
-    const handleProgress = (newProgress) => setProgress(newProgress);
+    // Progress handler
+    const handleProgress = (newProgress) => {
+      setProgress(newProgress);
+    };
+
+    const handleError = (errorMessage) => {
+      setError(errorMessage);
+    };
+
+    const handleCompletion = (completed) => {
+      if (completed) {
+        setIsDeploying(false);
+        setProgress(100);
+        console.log('Deployment completed successfully!');
+        setTimeout(() => {}, 1000);
+      }
+    };
+
     async function fetchApp() {
-      const app = await getApp({
-        data: {
-          _domain: `self.code = 'bpm'`,
-        },
-      });
-      if (!app) return;
-      const appConfig = await getAppBPMConfig(app.appBpm && app.appBpm.id);
-      setAllowProgressBarDisplay(appConfig && appConfig.useProgressDeploymentBar);
-      if(appConfig.useProgressDeploymentBar) wsProgress.subscribe(handleProgress);
+      try {
+        const app = await getApp({
+          data: { _domain: `self.code = 'bpm'` },
+        });
+
+        if (!app) return;
+
+        const appConfig = await getAppBPMConfig(app.appBpm?.id);
+        const useProgressBar = appConfig?.useProgressDeploymentBar;
+
+        setAllowProgressBarDisplay(useProgressBar);
+
+        if (useProgressBar) {
+          const unsubscribeProgress = wsProgress.subscribe(handleProgress);
+          const unsubscribeError = wsProgress.subscribeToErrors(handleError);
+          const unsubscribeCompletion = wsProgress.subscribeToCompletion(handleCompletion);
+          const unsubscribeConnection = wsProgress.subscribeToConnection(handleConnection);
+
+          return () => {
+            unsubscribeProgress();
+            unsubscribeError();
+            unsubscribeCompletion();
+            unsubscribeConnection();
+          };
+        }
+      } catch (err) {
+        console.error('Failed to fetch app configuration:', err);
+      }
     }
-    fetchApp();
+
+    const cleanupPromise = fetchApp();
+
     return () => {
-      wsProgress.unsubscribe(handleProgress);
+      cleanupPromise?.then((cleanup) => cleanup?.());
+      wsProgress.disconnect();
     };
   }, []);
 
