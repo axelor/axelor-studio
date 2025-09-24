@@ -48,6 +48,7 @@ function QueryBuilder({
           defaultModel={defaultModel}
           fetchModels={fetchModels}
           setOpen={setOpen}
+          isCreateObject={isCreateObject}
           setOpenScriptDialog={setOpenScriptDialog}
           dialogActionButton={
             <Button
