@@ -805,9 +805,8 @@ export default function MenuActionPanel({
                           <TableCell className={styles.tableCell}>
                             {selectedTaskOption.taskNameType === "Script" && (
                               <Tooltip title="Script" aria-label="enable">
-                                <i
-                                  className="fa fa-code"
-                                  style={{ fontSize: 18 }}
+                                <div
+                                  style={{ cursor: "pointer" }}
                                   onClick={() => {
                                     setFieldTypes("taskName");
                                     setActionDummy((prev) => ({
@@ -817,7 +816,9 @@ export default function MenuActionPanel({
 
                                     setOpenScriptDialog(true);
                                   }}
-                                ></i>
+                                >
+                                  <MaterialIcon icon="code" fontSize={20} />
+                                </div>
                               </Tooltip>
                             )}
                           </TableCell>
@@ -935,9 +936,8 @@ export default function MenuActionPanel({
                           <TableCell className={styles.tableCell}>
                             {selectedTaskOption.priorityType === "Script" && (
                               <Tooltip title="Script" aria-label="enable">
-                                <i
-                                  className="fa fa-code"
-                                  style={{ fontSize: 18 }}
+                                <div
+                                  style={{ cursor: "pointer" }}
                                   onClick={() => {
                                     setFieldTypes("taskPriority");
                                     setActionDummy((prev) => ({
@@ -946,7 +946,9 @@ export default function MenuActionPanel({
                                     }));
                                     setOpenScriptDialog(true);
                                   }}
-                                ></i>
+                                >
+                                  <MaterialIcon icon="code" fontSize={20} />
+                                </div>
                               </Tooltip>
                             )}
                           </TableCell>
@@ -1034,9 +1036,8 @@ export default function MenuActionPanel({
                             {selectedTaskOption.descriptionType ===
                               "Script" && (
                               <Tooltip title="Script" aria-label="enable">
-                                <i
-                                  className="fa fa-code"
-                                  style={{ fontSize: 18, marginLeft: 1 }}
+                                <div
+                                  style={{ cursor: "pointer" }}
                                   onClick={() => {
                                     setFieldTypes("description");
                                     setProperty(
@@ -1049,14 +1050,15 @@ export default function MenuActionPanel({
                                     }));
                                     setOpenScriptDialog(true);
                                   }}
-                                ></i>
+                                >
+                                  <MaterialIcon icon="code" fontSize={20} />
+                                </div>
                               </Tooltip>
                             )}
                             {selectedTaskOption.descriptionType === "Value" && (
                               <Tooltip title="Script" aria-label="enable">
-                                <i
-                                  className="fa fa-edit"
-                                  style={{ fontSize: 18, marginLeft: 1 }}
+                                <div
+                                  style={{ cursor: "pointer" }}
                                   onClick={() => {
                                     setFieldTypes("description");
                                     setActionDummy((prev) => ({
@@ -1065,7 +1067,9 @@ export default function MenuActionPanel({
                                     }));
                                     setOpenValueTextBox(true);
                                   }}
-                                ></i>
+                                >
+                                  <MaterialIcon icon="edit" fontSize={20} />
+                                </div>
                               </Tooltip>
                             )}
                           </TableCell>
