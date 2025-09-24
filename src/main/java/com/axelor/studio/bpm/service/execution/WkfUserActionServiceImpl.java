@@ -51,7 +51,6 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.variable.value.ObjectValue;
 
 public class WkfUserActionServiceImpl implements WkfUserActionService {
 
@@ -156,14 +155,9 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setRole(getRole(wkfTaskConfig.getRoleFieldPath(), wkfContext));
             break;
           case "script":
-            wkfTaskConfig.setRoleFieldPath(
-                wkfTaskConfig.getRoleFieldPath().replace("Object", "Variable"));
             FullContext roleContext =
                 (FullContext)
-                    ((ObjectValue)
-                            wkfService.evalExpression(
-                                contextVariables, wkfTaskConfig.getRoleFieldPath()))
-                        .getValue();
+                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getRoleFieldPath());
             if (roleContext != null) {
               Role role = (Role) roleContext.getTarget();
               if (role != null) {
@@ -198,13 +192,9 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setAssignedTo(getUser(userPath, wkfContext));
             break;
           case "script":
-            wkfTaskConfig.setUserPath(wkfTaskConfig.getUserPath().replace("Object", "Variable"));
             FullContext userCtx =
                 (FullContext)
-                    ((ObjectValue)
-                            wkfService.evalExpression(
-                                contextVariables, wkfTaskConfig.getUserPath()))
-                        .getValue();
+                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getUserPath());
             if (userCtx != null) {
               User user = (User) userCtx.getTarget();
               if (user != null) {
@@ -221,13 +211,9 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
             teamTask.setTeam(getTeam(teamPath, wkfContext));
             break;
           case "script":
-            wkfTaskConfig.setTeamPath(wkfTaskConfig.getTeamPath().replace("Object", "Variable"));
             FullContext teamCtx =
                 (FullContext)
-                    ((ObjectValue)
-                            wkfService.evalExpression(
-                                contextVariables, wkfTaskConfig.getTeamPath()))
-                        .getValue();
+                    wkfService.evalExpression(contextVariables, wkfTaskConfig.getTeamPath());
             if (teamCtx != null) {
               Team team = (Team) teamCtx.getTarget();
               if (team != null) {
