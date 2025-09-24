@@ -48,62 +48,93 @@
     onNew="action-wkf-bpm-manager-dashboard-method-on-new" width="large" canSave="false"
     canNew="false">
     <panel name="wkfModelPanel">
-      <label name="$noData" title="No data to display" showIf="$totalRecord == 0"/>
+      <label name="$noData" title="No data to display" showIf="_xTotalRecord == 0"/>
       <field name="$models" colSpan="12" showTitle="false" readonly="true">
         <viewer><![CDATA[
-          <div>
-            <table ng-repeat="model in record.$modelList" class="table" style="border-bottom:1px solid #bbb;">
-             <thead>
-               <tr>
-                 <th style="font-size:14px;">{{model.title}}{{model.versionTag != null ? ' - '+model.versionTag : ''}}</th>
-               </tr>
-             </thead>
-             <tbody>
-               <tr ng-repeat="process in model.processList">
-                 <td style="padding-left: 20px;">
-                   <div style="font-weight:bolder;padding-bottom:8px;border-bottom:1px solid #ddd;margin-bottom:8px;">
-                     <span>{{process.title}}</span>
-                   </div>
-                  <div ng-repeat="item in process.itemList">
-                    <div ng-if="item.type == 'model'" style="padding-left: 20px;">
-                      <p><a style="font-weight:bold;" href="" ui-action-context="item" ui-action-click="action-wkf-model-method-model-per-view">{{_t('value:' + item.title) == 'value:'+item.title ? item.title : _t('value:' + item.title)}} ({{item.modelRecordCount}})</a></p>
-                      <div ng-if="model.isSuperAdmin || model.isAdmin || model.isManager || model.isUser" style="padding:8px 8px 8px 8px;display: flex;border-top: 1px solid #ddd;">
-                        <div>
-                          <p>Assigned to me</p>
-                          <p ng-if="item.userStatuses.length == 0" style="margin-left:9px;font-style:italic;" x-translate>No status</p>
-                           <p ng-if="item.userStatuses.length > 0" style="display:list-item;margin-left:25px" ng-repeat="userStatus in item.userStatuses">
-                             <a href="" ui-action-context="userStatus" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + userStatus.title) == 'value:'+userStatus.title ? userStatus.title : _t('value:' + userStatus.title)}} ({{userStatus.statusCount}})</a>
-                           </p>
-                         </div>
-                       </div>
-                       <div ng-if="model.isSuperAdmin || model.isAdmin || model.isManager" style="padding:8px 8px 8px 8px;display: flex;border-top: 1px solid #ddd;">
-                         <div>
-                           <p>Assigned to others</p>
-                           <p ng-if="item.statuses.length == 0" style="margin-left:9px;font-style:italic;" x-translate>No status</p>
-                           <p ng-if="item.statuses.length > 0" style="display:list-item;margin-left:25px;" ng-repeat="status in item.statuses">
-                             <a href="" ui-action-context="status" ui-action-click="action-wkf-model-method-status-per-view">{{_t('value:' + status.title) == 'value:'+status.title ? status.title : _t('value:' + status.title)}} ({{status.statusCount}})</a>
-                           </p>
-                         </div>
-                       </div>
-                    </div>
-                  </div>
-                 </td>
-               </tr>
-             </tbody>
-           </table>
-         </div>
+          <>
+            {_xModelList?.map((model, modelIndex) => (
+              <Table key={modelIndex} style={{borderBottom: "1px solid #bbb"}}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell variant="head" style={{fontSize: "14px"}}>
+                      {model.title}{model.versionTag != null ? ' - '+model.versionTag : ''}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {model?.processList?.map((process, processIndex) => (
+                    <TableRow key={processIndex}>
+                      <TableCell style={{paddingLeft: "20px"}}>
+                        <div style={{fontWeight: "bolder", paddingBottom: "8px", borderBottom: "1px solid #ddd", marginBottom:"8px"}}>
+                          <span>{process.title}</span>
+                        </div>
+
+                        {process?.itemList?.map((item, itemIndex) => (
+                          item.type == 'model' && (
+                            <div style={{paddingLeft: "20px"}} key={itemIndex}>
+                              <p>
+                                <Button style={{ fontWeight: "bold"}} ui-action-context="item" onClick={$action('action-wkf-model-method-model-per-view')}>
+                                  {_t('value:' + item.title) == 'value:'+item.title ? item.title : _t('value:' + item.title)} ({item.modelRecordCount})
+                                </Button>
+                              </p>
+                              {(model.isSuperAdmin || model.isAdmin || model.isManager || model.isUser) && (
+                                <div style={{ padding: "8px", display: "flex", borderTop: "1px solid #ddd"}}>
+                                  <div>
+                                    <p>Assigned to me</p>
+                                    {item.userStatuses.length == 0 && <p style={{marginLeft: "9px", fontStyle: "italic"}}>{_t('No status')}</p>}
+
+                                    {item.userStatuses.length > 0 && (
+                                      <p style={{display:"list-item", marginLeft:"25px"}}>
+                                        {item.userStatuses?.map((status, statusIndex) => (
+                                          <Button key={statusIndex} ui-action-context="status" onClick={$action('action-wkf-model-method-status-per-view')}>
+                                            {_t('value:' + status.title) == 'value:'+status.title ? status.title : _t('value:' + status.title)} ({status.statusCount})
+                                          </Button>
+                                        ))}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              {(model.isSuperAdmin || model.isAdmin || model.isManager) && (
+                                <div style={{ padding: "8px", display: "flex", borderTop: "1px solid #ddd"}}>
+                                  <div>
+                                    <p>Assigned to others</p>
+                                    {item.userStatuses.length == 0 && <p style={{marginLeft: "9px", fontStyle: "italic"}}>{_t('No status')}</p>}
+
+                                    {item.userStatuses.length > 0 && (
+                                      <p style={{display:"list-item", marginLeft:"25px"}}>
+                                        {item.userStatuses?.map((status, statusIndex) => (
+                                          <Button key={statusIndex} ui-action-context="status" onClick={$action('action-wkf-model-method-status-per-view')}>
+                                            {_t('value:' + status.title) == 'value:'+status.title ? status.title : _t('value:' + status.title)} ({status.statusCount})
+                                          </Button>
+                                        ))}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )
+                        ))}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ))}
+          </>
         ]]></viewer>
       </field>
       <button name="previousBtn" title="&lt;&lt; Previous"
         onClick="action-wkf-bpm-manager-dashboard-method-pre-manager-data" colSpan="2"
-        hideIf="$offset == 0"/>
+        hideIf="_xOffset == 0"/>
       <spacer colSpan="8"/>
       <button name="nextBtn" title="Next &gt;&gt;"
         onClick="action-wkf-bpm-manager-dashboard-method-nxt-manager-data" colSpan="2"
-        hideIf="$offset + $limit &gt;= $totalRecord"/>
-      <field name="$limit" type="integer" hidden="true"/>
-      <field name="$offset" type="integer" hidden="true"/>
-      <field name="$totalRecord" type="long" hidden="true"/>
+        hideIf="_xOffset + _xLimit &gt;= _xTotalRecord"/>
+      <field name="_xLimit" type="integer" hidden="true" x-dirty="false"/>
+      <field name="_xOffset" type="integer" hidden="true" x-dirty="false"/>
+      <field name="_xTotalRecord" type="long" hidden="true" x-dirty="false"/>
     </panel>
   </form>
 

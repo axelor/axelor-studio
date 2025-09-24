@@ -70,11 +70,10 @@ public class BpmManagerDashboardController {
   }
 
   protected int getOffset(ActionRequest request, boolean isNext) {
-    if (isNext) {
-      return (int) request.getContext().get("offset") + BpmManagerDashboardServiceImpl.FETCH_LIMIT;
-    } else {
-      return (int) request.getContext().get("offset") - BpmManagerDashboardServiceImpl.FETCH_LIMIT;
-    }
+    int offset = (int) request.getContext().get("_xOffset");
+    return isNext
+        ? offset + BpmManagerDashboardServiceImpl.FETCH_LIMIT
+        : offset - BpmManagerDashboardServiceImpl.FETCH_LIMIT;
   }
 
   public void getAssignedToMeTask(ActionRequest request, ActionResponse response) {

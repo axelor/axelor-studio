@@ -29,19 +29,22 @@
         <field name="$tagFields" showTitle="false" readonly="true" colSpan="12">
           <viewer depends="typeSelect,appVersion,isExperimental">
             <![CDATA[
-              <h4 class="text-right">
-                <span class="label" style="background-color: #ffb000; margin: 5px 0 !important; line-height: initial;" ng-show="record.isExperimental"><i class="fa fa-flask"/> <span x-translate>Experimental</span></span>
+              <>
+                <Box as="h5" d="flex" justifyContent="flex-end">
+                   {isExperimental && <Box as="span" style={{backgroundColor: "#ffb000", marginLeft: "5px", lineHeight: "initial", borderRadius: "3px"}}><Icon icon="flask"/><Badge><span>{_t('Experimental')}</span></Badge></Box>}
 
-                <span class="label" style="background-color: #2AA0D5; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
-                <span class="label" style="background-color: #F69609; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'addons'" x-translate>Addons</span>
-                <span class="label" style="background-color: #7539C6; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
-                <span class="label" style="background-color: #94846B; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
-                <span class="label" style="background-color: #6F908C; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
-                <span class="label" style="background-color: #ff3400; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'pro'" x-translate>Pro</span>
-                <span class="label" style="background-color: #009688; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.typeSelect == 'customer'" x-translate>Customer</span>
+                   {typeSelect == 'standard' && <Box as="span" style={{backgroundColor: "#2AA0D5", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge ><span>{_t('Standard')}</span></Badge></Box>}
+                   {typeSelect == 'addons' && <Box as="span" style={{backgroundColor: "#F69609", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Addons')}</span></Badge></Box>}
+                   {typeSelect == 'custom' && <Box as="span" style={{backgroundColor: "#7539C6", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Custom')}</span></Badge></Box>}
+                   {typeSelect == 'enterprise' && <Box as="span" style={{backgroundColor: "#94846B", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Enterprise')}</span></Badge></Box>}
+                   {typeSelect == 'others' && <Box as="span" style={{backgroundColor: "#6F908C", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Others')}</span></Badge></Box>}
+                   {typeSelect == 'pro' && <Box as="span" style={{backgroundColor: "#ff3400", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Pro')}</span></Badge></Box>}
+                   {typeSelect == 'customer' && <Box as="span" style={{backgroundColor: "#009688", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Customer')}</span></Badge></Box>}
 
-                <span class="label" style="background-color: slategrey; margin: 5px 0 !important; display: inline-table; line-height: initial;" ng-show="record.appVersion">{{record.appVersion}}</span>
-              </h4>
+                   {appVersion && <Box as="span" style={{backgroundColor: "slategrey", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{appVersion}</span></Badge></Box>}
+                </Box>
+              </>
+
             ]]>
           </viewer>
         </field>
@@ -113,38 +116,39 @@
     <field name="appVersion"/>
     <template>
       <![CDATA[
-        <div class="app-cards__container">
-          <div class="app-cards__image">
-            <img ng-src="{{$image('image', 'content')}}" />
-          </div>
-          <div class="app-cards__name" style="overflow:hidden" >
-          <div style="display:flex;flex-wrap:nowrap;">
-            <div style="font-weight: 600;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;flex:1;">
-              {{$fmt('name')}}
-            </div>
-            <div ng-show="record.appVersion" class="app-cards__version" style="font-size: 14px;margin-top:-1px;min-width:36px;margin-left:5px">
-              <span class="label" style="background-color: slategrey;">{{record.appVersion}}</span>
-            </div>
-          </div>
-            <div style="font-size: 14px">
-              <span style="color: #2AA0D5; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'standard'" x-translate>Standard</span>
-              <span style="color: #F69609; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'addons'" x-translate>Addons</span>
-              <span style="color: #7539C6; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'custom'" x-translate>Custom</span>
-              <span style="color: #94846B; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'enterprise'" x-translate>Enterprise</span>
-              <span style="color: #6F908C; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'others'" x-translate>Others</span>
-              <span style="color: #ff3400; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'pro'" x-translate>Pro</span>
-              <span style="color: #009688; font-size: 13px; font-weight: bolder;" ng-show="record.typeSelect == 'customer'" x-translate>Customer</span>
-              </br>
-              <span style="color: #ffb000; font-size: 13px; font-weight: bolder;" ng-show="record.isExperimental"><i class="fa fa-flask"/> <span x-translate>Experimental</span></span>
-            </div>
-          </div>
+        <>
+          <Box>
+            <Image src={$image('image', 'content')}></Image>
+          </Box>
 
-          <div class="app-cards__buttons">
-            <a class="btn btn-small btn-info pull-right" href="" ng-show="!active" ui-action-click="action-app-alert-install,action-app-method-install-app" x-translate>Install</a>
-            <a class="btn btn-small btn-success pull-right" href="" ng-show="active" ui-action-click="com.axelor.studio.app.web.AppController:configure" x-translate>Configure</a>
-            <a class="btn btn-small btn-danger pull-right" href="" ng-show="active" ui-action-click="action-app-alert-un-install,action-app-method-uninstall-app" x-translate>Uninstall</a>
-          </div>
-        </div>
+          <Box d="flex" justifyContent="space-between" style={{overflow: "hidden"}}>
+            <Box d="flex" flexWrap="nowrap">
+              <Box style={{fontWeight: "600", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex:"1"}}>
+                {$fmt('name')}
+              </Box>
+            </Box>
+
+            {appVersion && <Box as="span" style={{backgroundColor: "slategrey", borderRadius: "3px", fontSize: "16px"}}><Badge><span>{appVersion}</span></Badge></Box>}
+          </Box>
+
+          <Box>
+            {typeSelect == 'standard' && <Box as="span" style={{color: "#2AA0D5", fontSize: "13px", fontWeight: "bolder"}}><span>{_t('Standard')}</span></Box>}
+            {typeSelect == 'addons' && <Box as="span" style={{color: "#F69609", fontSize: "13px", fontWeight: "bolder"}}><span>{_t('Addons')}</span></Box>}
+            {typeSelect == 'custom' && <Box as="span" style={{color: "#7539C6", fontSize: "13px", fontWeight: "bolder"}}><span>{_t('Custom')}</span></Box>}
+            {typeSelect == 'enterprise' && <Box as="span" style={{color: "#94846B", fontSize: "13px", fontWeight: "bolder"}}><span>{_t('Enterprise')}</span></Box>}
+            {typeSelect == 'others' && <Box as="span" style={{color: "#6F908C", fontSize: "13px", fontWeight: "bolder"}}><span>{_t('Others')}</span></Box>}
+            {typeSelect == 'pro' && <Box as="span" style={{color: "#ff3400", fontSize: "13px", fontWeight: "bolder"}}><span>{_t('Pro')}</span></Box>}
+            {typeSelect == 'customer' && <Box as="span" style={{color: "#009688", fontSize: "13px", fontWeight: "bolder"}}><span>{_t('Customer')}</span></Box>}
+            <br />
+            {isExperimental && <Box as="span" style={{color: "#ffb000"}}><Icon fontSize="0.8rem" icon="flask-fill"/><span>{_t('Experimental')}</span></Box>}
+          </Box>
+
+          <Box d="flex" justifyContent="flex-end">
+            {!active && <Button style={{marginLeft: "2px", color: "white"}} size="sm" variant="info" onClick={$action('action-app-alert-install,action-app-method-install-app')}>{_t('Install')}</Button> }
+            {active && <Button style={{marginLeft: "2px", color: "white"}} size="sm" variant="success" onClick={$action('com.axelor.studio.app.web.AppController:configure')}>{_t('Configure')}</Button> }
+            {active && <Button style={{marginLeft: "2px", color: "white"}} size="sm" variant="danger" onClick={$action('action-app-alert-un-install,action-app-method-uninstall-app')}>{_t('Uninstall')}</Button> }
+          </Box>
+        </>
       ]]>
     </template>
   </cards>
