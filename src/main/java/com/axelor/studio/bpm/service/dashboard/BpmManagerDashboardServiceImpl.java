@@ -77,10 +77,10 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
                       processList, process, user, isSuperAdmin, isAdmin, isManager, isUser));
         });
 
-    dataMap.put("$modelList", modelList);
-    dataMap.put("$offset", offset);
-    dataMap.put("$limit", FETCH_LIMIT);
-    dataMap.put("$totalRecord", totalRecord);
+    dataMap.put("_xModelList", modelList);
+    dataMap.put("_xOffset", offset);
+    dataMap.put("_xLimit", FETCH_LIMIT);
+    dataMap.put("_xTotalRecord", totalRecord);
     return dataMap;
   }
 

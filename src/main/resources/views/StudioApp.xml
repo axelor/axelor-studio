@@ -74,22 +74,24 @@
     <field name="generatedApp.active"/>
     <field name="sequence"/>
     <template><![CDATA[
-      <div class="app-cards__container">
-        <div class="app-cards__image">
-          <img ng-src="{{$image('image', 'content')}}" />
-        </div>
-        <div class="app-cards__name">
-         <strong x-translate>{{$fmt('name')}}</strong>
-        </div>
-        <div class="app-cards__buttons">
-          <a class="btn btn-small btn-info pull-right" href="" ng-show="false"></a>
-        <a class="btn btn-small btn-info pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-install-app" x-translate>Install</a>
-        <a class="btn btn-small btn-success pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-view-studio-app-export" x-translate>Export</a>
-        <a class="btn btn-small btn-success pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-delete-app" x-translate>Delete</a>
-        <a class="btn btn-small btn-danger pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-method-studio-app-uninstall-app" x-translate>Uninstall</a>
-        </div>
-      </div>
-    ]]>
+			<>
+			  <Box>
+			    <Box>
+			      <Image src={$image('image', 'content')}></Image>
+			    </Box>
+			    <Box style={{margin: "5px 0px"}}>
+			      <strong>{$fmt('name')}</strong>
+			    </Box>
+
+			    <Box d="flex"  flexDirection="row-reverse">
+			      {!generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="info" onClick={$action('action-studio-method-studio-app-install-app')}>{_t('Install')}</Button>}
+			      {generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="success" onClick={$action('action-studio-view-studio-app-export')}>{_t('Export')}</Button>}
+			      {!generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="success" onClick={$action('action-studio-method-studio-app-delete-app')}>{_t('Delete')}</Button>}
+			      {generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="danger" onClick={$action('action-studio-method-studio-app-uninstall-app')}>{_t('Uninstall')}</Button>}
+			    </Box>
+			  </Box>
+			</>
+		]]>
     </template>
   </cards>
 
