@@ -980,8 +980,7 @@ export function FieldAction({
           {currentType.value === "script" && (
             <Box className={styles.iconGroup}>
               <Tooltip title="Script" aria-label="enable">
-                <i
-                  className="fa fa-code"
+                <div
                   style={{ fontSize: 18, marginLeft: 5 }}
                   onClick={() => {
                     if (readOnly && getProperty(toPathValue(title))) {
@@ -994,7 +993,9 @@ export function FieldAction({
                       setOpenScript(true);
                     }
                   }}
-                ></i>
+                >
+                  <MaterialIcon icon="code" />
+                </div>
               </Tooltip>
               {!(title === "deadlineField") && (
                 <MaterialIcon
