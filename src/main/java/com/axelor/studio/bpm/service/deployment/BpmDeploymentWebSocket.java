@@ -23,6 +23,8 @@ import com.axelor.web.socket.MessageEncoder;
 import com.axelor.web.socket.MessageType;
 import com.axelor.web.socket.inject.WebSocketConfigurator;
 import com.axelor.web.socket.inject.WebSocketSecurity;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +54,7 @@ public class BpmDeploymentWebSocket {
 
   @OnOpen
   public void onOpen(Session session, EndpointConfig config) {
-    sessionMap.put(session.getId(), session);
+    sessionMap.put(getCustomIdFromSession(session), session);
     sendCurrentProgress(session);
   }
 
@@ -79,6 +81,25 @@ public class BpmDeploymentWebSocket {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  private String getCustomIdFromSession(Session session) {
+    // Extract custom ID from query parameters
+    String queryString = session.getQueryString();
+    if (queryString != null) {
+      String[] params = queryString.split("&");
+      for (String param : params) {
+        String[] keyValue = param.split("=");
+        if (keyValue.length == 2 && "customId".equals(keyValue[0])) {
+          try {
+            return URLDecoder.decode(keyValue[1], "UTF-8");
+          } catch (UnsupportedEncodingException e) {
+            log.warn("Failed to decode custom ID: {}", keyValue[1]);
+          }
+        }
+      }
+    }
+    return null;
   }
 
   public static void updateProgress(String sessionId, Integer percentage) {
