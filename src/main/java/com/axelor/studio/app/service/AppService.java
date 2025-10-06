@@ -17,9 +17,10 @@
  */
 package com.axelor.studio.app.service;
 
+import com.axelor.app.AppSettings;
+import com.axelor.app.AvailableAppSettings;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
-import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.App;
 import com.axelor.studio.exception.StudioExceptionMessage;
 import java.io.File;
@@ -49,12 +50,12 @@ public interface AppService {
   String getDataExportDir();
 
   static String getFileUploadDir() {
-    String appSettingsPath = MetaFiles.getPath("tmp").getParent().toString();
-    if (appSettingsPath.isEmpty()) {
+    String dataUploadDirPath = AppSettings.get().get(AvailableAppSettings.DATA_UPLOAD_DIR);
+    if (dataUploadDirPath.isEmpty()) {
       throw new IllegalStateException(I18n.get(StudioExceptionMessage.FILE_UPLOAD_DIR_ERROR));
     }
-    return !appSettingsPath.endsWith(File.separator)
-        ? appSettingsPath + File.separator
-        : appSettingsPath;
+    return !dataUploadDirPath.endsWith(File.separator)
+        ? dataUploadDirPath + File.separator
+        : dataUploadDirPath;
   }
 }
