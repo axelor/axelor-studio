@@ -18,9 +18,12 @@
 package com.axelor.studio.bpm.listener;
 
 import com.axelor.db.JPA;
+import com.axelor.db.tenants.TenantAware;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
+import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.execution.WkfTaskService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
@@ -29,6 +32,7 @@ import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
+import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import jakarta.persistence.FlushModeType;
@@ -38,16 +42,26 @@ import jakarta.persistence.criteria.Root;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
+import org.camunda.bpm.engine.impl.cfg.TransactionState;
+import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.runtime.MessageCorrelationBuilder;
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.model.bpmn.impl.BpmnModelConstants;
+import org.camunda.bpm.model.bpmn.instance.BoundaryEvent;
 import org.camunda.bpm.model.bpmn.instance.FlowElement;
+import org.camunda.bpm.model.bpmn.instance.IntermediateCatchEvent;
 import org.camunda.bpm.model.bpmn.instance.MessageEventDefinition;
+import org.camunda.bpm.model.bpmn.instance.TimerEventDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +75,7 @@ public class WkfExecutionListener implements ExecutionListener {
   protected WkfTaskConfigRepository wkfTaskConfigRepo;
   protected WkfLogService wkfLogService;
   protected AppSettingsStudioService appSettingsStudioService;
+  protected WkfTaskService wkfTaskService;
 
   @Inject
   public WkfExecutionListener(
@@ -69,7 +84,8 @@ public class WkfExecutionListener implements ExecutionListener {
       WkfProcessRepository wkfProcessRepo,
       WkfTaskConfigRepository wkfTaskConfigRepo,
       WkfLogService wkfLogService,
-      AppSettingsStudioService appSettingsStudioService) {
+      AppSettingsStudioService appSettingsStudioService,
+      WkfTaskService wkfTaskService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
@@ -77,6 +93,7 @@ public class WkfExecutionListener implements ExecutionListener {
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
     this.wkfLogService = wkfLogService;
     this.appSettingsStudioService = appSettingsStudioService;
+    this.wkfTaskService = wkfTaskService;
   }
 
   @Override
@@ -200,7 +217,7 @@ public class WkfExecutionListener implements ExecutionListener {
     JPA.em().createQuery(update).setFlushMode(FlushModeType.COMMIT).executeUpdate();
   }
 
-  protected void processNodeEnd(DelegateExecution execution) {
+  protected void processNodeEnd(DelegateExecution execution) throws ClassNotFoundException {
 
     FlowElement flowElement = execution.getBpmnModelElementInstance();
     if (flowElement == null) {
@@ -218,6 +235,60 @@ public class WkfExecutionListener implements ExecutionListener {
     }
     if (type.equals(BpmnModelConstants.BPMN_ELEMENT_END_EVENT)) {
       removeInstanceVariables(execution);
+    }
+    if (flowElement instanceof IntermediateCatchEvent || flowElement instanceof BoundaryEvent) {
+      boolean hasTimer = false;
+      if (flowElement instanceof IntermediateCatchEvent catchEvent) {
+        hasTimer =
+            catchEvent.getEventDefinitions().stream()
+                .anyMatch(def -> def instanceof TimerEventDefinition);
+      } else {
+        BoundaryEvent boundaryEvent = (BoundaryEvent) flowElement;
+        hasTimer =
+            boundaryEvent.getEventDefinitions().stream()
+                .anyMatch(def -> def instanceof TimerEventDefinition);
+      }
+
+      if (!hasTimer) return;
+
+      WkfInstance instance =
+          wkfInstanceRepo
+              .all()
+              .filter("self.instanceId = ?", execution.getProcessInstanceId())
+              .fetchOne();
+
+      CommandContext commandContext = Context.getCommandContext();
+      commandContext
+          .getTransactionContext()
+          .addTransactionListener(
+              TransactionState.COMMITTED, ctx -> reevaluateAfterTimer(instance));
+    }
+  }
+
+  private void reevaluateAfterTimer(WkfInstance instance) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    try {
+      Future<?> future =
+          executor.submit(
+              () ->
+                  new TenantAware(
+                          () -> {
+                            try {
+                              wkfInstanceService.evalInstance(instance);
+                            } catch (Exception e) {
+                              throw new IllegalStateException(e);
+                            }
+                          })
+                      .withTransaction(false)
+                      .tenantId(BpmTools.getCurrentTenant())
+                      .run());
+      future.get();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    } catch (ExecutionException e) {
+      ExceptionHelper.error(e);
+    } finally {
+      executor.shutdown();
     }
   }
 
