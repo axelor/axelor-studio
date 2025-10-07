@@ -17,45 +17,43 @@
  */
 package com.axelor.studio.bpm.context;
 
-import com.axelor.db.JPA;
+import com.axelor.db.EntityHelper;
 import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
+import com.axelor.db.Query;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
-import com.axelor.studio.helper.DepthFilter;
-import com.axelor.studio.helper.ModelTools;
-import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.helpers.context.FullContextHelper;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.introspect.Annotated;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.inject.persist.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.Variables.SerializationDataFormats;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WkfContextHelper {
 
-  protected static final int DEFAULT_SERIALIZATION_DEPTH =
-      Math.min(Beans.get(AppSettingsStudioService.class).serializationDepth(), 10);
+  protected static final String ENTITY_REFERENCE = "ENTITY_REFERENCE";
+  protected static final String ENTITY_LIST_REFERENCE = "ENTITY_LIST_REFERENCE";
+  protected static final Logger log = LoggerFactory.getLogger(WkfContextHelper.class);
+  private static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
 
   public static FullContext create(String modelName, Map<String, Object> values) {
     return FullContextHelper.create(modelName, values);
@@ -174,76 +172,185 @@ public class WkfContextHelper {
     return values;
   }
 
-  public static Object createObject(Object object) throws JsonProcessingException {
-    if (object != null) {
+  private static boolean isListOfFullContext(Collection<?> collection) {
+    return !collection.isEmpty() && collection.iterator().next() instanceof FullContext;
+  }
+
+  public static Object createObject(Object object) {
+    if (object == null) {
+      throw new IllegalArgumentException(I18n.get(BpmExceptionMessage.BPM_VARIABLE_NULL_VALUE));
+    } else {
       if (object instanceof FullContext) {
-        return createSingleVariable((FullContext) object);
+        return createObjectReference((FullContext) object);
       } else if (object instanceof Collection<?>) {
-        return createListVariable((Collection<?>) object);
+        return createListReference((Collection<?>) object);
       }
     }
     throw new IllegalArgumentException(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE));
   }
 
-  private static Object createSingleVariable(FullContext context) throws JsonProcessingException {
+  private static Object createObjectReference(FullContext context) {
     Model model = (Model) context.getTarget();
-    String serializedModel = serializeModel(model);
-    Map<String, String> map =
-        Collections.singletonMap(context.getContextClass().getName(), serializedModel);
-    return createVariablesObjectValue(map);
+
+    Map<String, Object> reference = new HashMap<>();
+    reference.put("id", model.getId());
+    reference.put("className", EntityHelper.getEntityClass(model).getName());
+    reference.put("version", model.getVersion());
+    reference.put("type", ENTITY_REFERENCE);
+
+    return createVariablesObjectValue(reference);
   }
 
-  private static Object createListVariable(Collection<?> collection) {
+  private static Object createListReference(Collection<?> collection) {
     if (isListOfFullContext(collection)) {
       List<FullContext> contexts = (List<FullContext>) collection;
-      String key = contexts.get(0).getContextClass().getName();
 
-      List<String> serializedModels =
+      List<Map<String, Object>> references =
           contexts.stream()
               .map(
                   context -> {
-                    try {
-                      return serializeModel((Model) context.getTarget());
-                    } catch (JsonProcessingException e) {
-                      throw new IllegalArgumentException(e);
-                    }
+                    Model model = (Model) context.getTarget();
+                    Map<String, Object> ref = new HashMap<>();
+                    ref.put("id", model.getId());
+                    ref.put("className", EntityHelper.getEntityClass(model).getName());
+                    ref.put("version", model.getVersion());
+                    return ref;
                   })
               .collect(Collectors.toList());
-      Map<String, List<String>> map = Collections.singletonMap(key, serializedModels);
-      return createVariablesObjectValue(map);
-    } else {
-      List<String> serializedModels = new ArrayList<>();
-      return createVariablesObjectValue(serializedModels);
+
+      Map<String, Object> listReference = new HashMap<>();
+      listReference.put("items", references);
+      listReference.put("type", ENTITY_LIST_REFERENCE);
+
+      return createVariablesObjectValue(listReference);
+    }
+    return createVariablesObjectValue(Collections.emptyList());
+  }
+
+  public static Object getObject(String varName, DelegateExecution execution) {
+
+    Object variable = getVariable(execution.getProcessInstanceId(), varName);
+
+    if (variable == null) {
+      return null;
+    }
+
+    if (variable instanceof Map<?, ?>) {
+      Map<String, Object> data = (Map<String, Object>) variable;
+      String type = (String) data.get("type");
+
+      if (ENTITY_REFERENCE.equals(type)) {
+        return getEntityFromReference(data);
+      } else if (ENTITY_LIST_REFERENCE.equals(type)) {
+        return getEntityListFromReference(data);
+      }
+
+      if (!data.containsKey("type") && !data.isEmpty()) {
+        return migrateDeprecatedVariable(varName, data, execution);
+      }
+    }
+
+    log.debug("No legacy format found for variable {}", varName);
+    return null;
+  }
+
+  public static Object migrateDeprecatedVariable(
+      String varName, Map<String, Object> data, DelegateExecution execution) {
+
+    Map.Entry<String, Object> entry = data.entrySet().iterator().next();
+    String className = entry.getKey();
+    Object valueObj = entry.getValue();
+
+    try {
+      if (valueObj instanceof String) {
+        return migrateDeprecatedStringValue(varName, className, (String) valueObj, execution);
+      } else if (valueObj instanceof List<?>) {
+        return migrateDeprecatedListValue(varName, className, (List<?>) valueObj, execution);
+      } else {
+        log.warn(
+            "Legacy variable value for class {} is of unsupported type: {}",
+            className,
+            valueObj.getClass());
+        return null;
+      }
+    } catch (Exception e) {
+      log.error("Failed to migrate legacy variable {}: {}", varName, e.getMessage(), e);
+      return null;
     }
   }
 
-  private static boolean isListOfFullContext(Collection<?> collection) {
-    return !collection.isEmpty() && collection.iterator().next() instanceof FullContext;
-  }
-
-  private static String serializeModel(Model model) throws JsonProcessingException {
-    return serializeMap(model, DEFAULT_SERIALIZATION_DEPTH);
-  }
-
-  public static Object getObject(String varName, DelegateExecution execution)
+  private static Object migrateDeprecatedStringValue(
+      String varName, String className, String value, DelegateExecution execution)
       throws JsonProcessingException {
-    ObjectMapper mapper = createObjectMapper();
-    Object object = getVariable(execution.getProcessInstanceId(), varName);
-    if (object instanceof Map<?, ?>) {
-      Map<?, ?> map = (Map<?, ?>) object;
-      if (!map.isEmpty()) {
-        Map.Entry<?, ?> entry = map.entrySet().iterator().next();
-        if (entry.getValue() instanceof List<?>) {
-          return deserializeList((List<String>) entry.getValue(), (String) entry.getKey(), mapper);
-        } else {
-          return deserializeModel((String) entry.getValue(), (String) entry.getKey(), mapper);
-        }
+
+    String trimmedValue = value.trim();
+
+    if (trimmedValue.startsWith("{")) {
+      Map<String, Object> deserializedMap = OBJECT_MAPPER.readValue(trimmedValue, Map.class);
+      Map<String, Object> entityReference =
+          createEntityReferenceFromDeprecatedData(className, deserializedMap);
+
+      execution.setVariable(varName, createVariablesObjectValue(entityReference));
+      return getEntityFromReference(entityReference);
+
+    } else {
+      log.debug(
+          "Legacy variable value for class {} is not valid JSON: {}", className, trimmedValue);
+      return null;
+    }
+  }
+
+  private static Object migrateDeprecatedListValue(
+      String varName, String className, List<?> list, DelegateExecution execution) {
+
+    List<Map<String, Object>> references =
+        list.stream()
+            .filter(Objects::nonNull)
+            .map(item -> convertListItemToReference(item, className, OBJECT_MAPPER))
+            .collect(Collectors.toList());
+
+    Map<String, Object> listReference = new HashMap<>();
+    listReference.put("items", references);
+    listReference.put("type", ENTITY_LIST_REFERENCE);
+
+    execution.setVariable(varName, createVariablesObjectValue(listReference));
+    return getEntityListFromReference(listReference);
+  }
+
+  private static Map<String, Object> convertListItemToReference(
+      Object item, String className, ObjectMapper mapper) {
+    try {
+      Map<String, Object> values;
+
+      if (item instanceof String) {
+        values = mapper.readValue((String) item, Map.class);
+      } else {
+        throw new IllegalArgumentException("Unexpected list element type: " + item.getClass());
       }
-    } else if (object instanceof List<?>) {
-      return object;
+
+      return createEntityReferenceFromDeprecatedData(className, values);
+
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to parse legacy list element: " + e.getMessage(), e);
+    }
+  }
+
+  private static Map<String, Object> createEntityReferenceFromDeprecatedData(
+      String className, Map<String, Object> values) {
+    Map<String, Object> entityReference = new HashMap<>();
+    entityReference.put("type", ENTITY_REFERENCE);
+    entityReference.put("className", className);
+    entityReference.put("id", convertToLong(values.get("id")));
+    entityReference.put("version", convertToLong(values.get("version")));
+    return entityReference;
+  }
+
+  private static Long convertToLong(Object value) {
+    if (value instanceof Number) {
+      return ((Number) value).longValue();
     }
     throw new IllegalArgumentException(
-        String.format(I18n.get(BpmExceptionMessage.BPM_VARIABLE_UNSUPPORTED_TYPE)));
+        "Expected number but got: " + (value != null ? value.getClass() : "null"));
   }
 
   private static ObjectMapper createObjectMapper() {
@@ -252,76 +359,31 @@ public class WkfContextHelper {
     return mapper;
   }
 
-  private static Object deserializeList(
-      List<String> serializedModels, String className, ObjectMapper mapper)
-      throws JsonProcessingException {
-    List<Object> deserializedModels = new ArrayList<>();
-    for (String serializedModel : serializedModels) {
-      deserializedModels.add(
-          new FullContext(mapper.readValue(serializedModel, ModelTools.findModelClass(className))));
+  private static FullContext getEntityFromReference(Map<String, Object> reference) {
+    Long id = (Long) reference.get("id");
+    String className = (String) reference.get("className");
+
+    try {
+      Class<? extends Model> klass = Class.forName(className).asSubclass(Model.class);
+      Model entity = Query.of(klass).filter("self.id = :entityId").bind("entityId", id).fetchOne();
+
+      if (entity != null) {
+        return new FullContext(entity);
+      }
+    } catch (Exception e) {
+      log.debug("Error retrieving entity {} with ID {}: {}", className, id, e.getMessage());
     }
-    return deserializedModels;
-  }
 
-  private static Object deserializeModel(
-      String serializedModel, String className, ObjectMapper mapper)
-      throws JsonProcessingException {
-
-    Map<String, Object> modelData = mapper.readValue(serializedModel, Map.class);
-
-    Class<?> targetClass = ModelTools.findModelClass(className);
-
-    Long entityId = extractId(modelData);
-    Model existingEntity =
-        (entityId != null) ? (Model) findEntityById(entityId, targetClass) : null;
-
-    if (existingEntity != null) {
-      mapper.setDefaultMergeable(true);
-      mapper.updateValue(existingEntity, modelData);
-      return new FullContext(existingEntity);
-    } else {
-      Model newEntity = (Model) mapper.convertValue(modelData, targetClass);
-      return new FullContext(newEntity);
-    }
-  }
-
-  private static Long extractId(Map<String, Object> modelData) {
-    Object idValue = modelData.get("id");
-    if (idValue instanceof Integer) {
-      return ((Integer) idValue).longValue();
-    } else if (idValue instanceof Long) {
-      return (Long) idValue;
-    }
     return null;
   }
 
-  private static Object findEntityById(Long id, Class<?> modelClass) {
-    if (id == null) {
-      return null;
-    }
-    return JPA.em().find(modelClass, id);
-  }
+  private static List<FullContext> getEntityListFromReference(Map<String, Object> listReference) {
+    List<Map<String, Object>> items = (List<Map<String, Object>>) listReference.get("items");
 
-  protected static String serializeMap(Model model, int depthMax) throws JsonProcessingException {
-    String filterName = "depth_filter";
-    ObjectMapper objectMapper = createObjectMapper();
-    objectMapper.disable(SerializationFeature.FAIL_ON_SELF_REFERENCES);
-    objectMapper.enable(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM);
-    objectMapper.enable(JsonGenerator.Feature.IGNORE_UNKNOWN);
-    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-    objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-    objectMapper.setAnnotationIntrospector(
-        new JacksonAnnotationIntrospector() {
-          @Override
-          public Object findFilterId(Annotated a) {
-            return filterName;
-          }
-        });
-
-    ObjectWriter writer =
-        objectMapper.writer(
-            new SimpleFilterProvider().addFilter(filterName, new DepthFilter(depthMax)));
-    return writer.writeValueAsString(model);
+    return items.stream()
+        .map(WkfContextHelper::getEntityFromReference)
+        .filter(java.util.Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   private static Object createVariablesObjectValue(Object value) {
