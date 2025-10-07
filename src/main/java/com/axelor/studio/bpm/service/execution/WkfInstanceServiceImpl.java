@@ -24,12 +24,17 @@ import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.db.Query;
+import com.axelor.db.mapper.Mapper;
+import com.axelor.db.mapper.Property;
+import com.axelor.db.mapper.PropertyType;
 import com.axelor.db.tenants.TenantAware;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
+import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.MetaModel;
+import com.axelor.meta.schema.views.Selection;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
@@ -60,13 +65,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
@@ -892,9 +896,294 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     variables.forEach(
         (name, value) -> {
           WkfInstanceVariable instanceVariable = new WkfInstanceVariable(name);
-          instanceVariable.setValue(String.valueOf(value));
+          if (isEntityReference(value)) {
+            String displayValue = createEntityDisplayValue(value);
+            instanceVariable.setValue(displayValue);
+          } else {
+            instanceVariable.setValue(String.valueOf(value));
+          }
+
           wkfInstanceVariables.add(instanceVariable);
         });
+  }
+
+  /** Check if a variable is an entity reference */
+  private boolean isEntityReference(Object value) {
+    if (value instanceof Map<?, ?>) {
+      Map<String, Object> map = (Map<String, Object>) value;
+      String type = (String) map.get("type");
+      return "ENTITY_REFERENCE".equals(type) || "ENTITY_LIST_REFERENCE".equals(type);
+    }
+    return false;
+  }
+
+  /** Create a display representation for entity references */
+  private String createEntityDisplayValue(Object value) {
+    try {
+      Map<String, Object> data = (Map<String, Object>) value;
+      String type = (String) data.get("type");
+
+      if ("ENTITY_REFERENCE".equals(type)) {
+        return createSingleEntityDisplay(data);
+      } else if ("ENTITY_LIST_REFERENCE".equals(type)) {
+        return createEntityListDisplay(data);
+      }
+    } catch (Exception e) {
+      log.debug("Error creating display for entity variable: {}", e.getMessage());
+      return "Entity display error";
+    }
+
+    return String.valueOf(value);
+  }
+
+  private String createSingleEntityDisplay(Map<String, Object> reference) {
+    Long id = (Long) reference.get("id");
+    String className = (String) reference.get("className");
+
+    try {
+      Class<? extends Model> klass = Class.forName(className).asSubclass(Model.class);
+      Model entity = Query.of(klass).filter("self.id = :entityId").bind("entityId", id).fetchOne();
+
+      if (entity != null) {
+        Map<String, Object> displayData = extractEntityDisplayData(entity);
+        return formatEntityForDisplay(displayData);
+      } else {
+        return String.format("[%s] ID: %d (Entity not found)", getSimpleClassName(className), id);
+      }
+    } catch (Exception e) {
+      log.debug("Error retrieving entity {} with ID {}: {}", className, id, e.getMessage());
+      return String.format("[%s] ID: %d (Loading error)", getSimpleClassName(className), id);
+    }
+  }
+
+  private String createEntityListDisplay(Map<String, Object> listReference) {
+    List<Map<String, Object>> items = (List<Map<String, Object>>) listReference.get("items");
+
+    if (items == null || items.isEmpty()) {
+      return I18n.get("entities: []");
+    }
+
+    StringBuilder display = new StringBuilder();
+    display.append(String.format(I18n.get("Entities: %d items"), items.size()));
+    display.append("\n");
+
+    int maxDisplay = Math.min(items.size(), 5); // Limit display to 5 elements
+
+    for (int i = 0; i < maxDisplay; i++) {
+      Map<String, Object> item = items.get(i);
+      Long id = (Long) item.get("id");
+      String className = (String) item.get("className");
+
+      // For lists, display only ID and type
+      display.append(String.format("  - id: %d\n", id));
+      display.append(String.format("    type: %s\n", className));
+
+      // Try to retrieve the name if possible
+      try {
+        Class<? extends Model> klass = Class.forName(className).asSubclass(Model.class);
+        Model entity =
+            Query.of(klass).filter("self.id = :entityId").bind("entityId", id).fetchOne();
+
+        if (entity != null) {
+          Map<String, Object> entityData = new HashMap<>();
+          entityData.put("id", entity.getId());
+          entityData.put("className", EntityHelper.getEntityClass(entity).getSimpleName());
+
+          // Extract only the name for lists
+          Mapper mapper = Mapper.of(EntityHelper.getEntityClass(entity));
+          for (Property property : mapper.getProperties()) {
+            if (isNameField(property.getName())) {
+              Object val = property.get(entity);
+              if (val != null) {
+                entityData.put(property.getName(), val);
+                break;
+              }
+            }
+          }
+
+          String name = getDisplayName(entityData);
+          if (name != null) {
+            display.append(String.format("    name: \"%s\"\n", name));
+          }
+        }
+      } catch (Exception e) {
+        log.debug("Error retrieving name for entity {} ID {}", className, id);
+      }
+    }
+
+    if (items.size() > maxDisplay) {
+      display.append(String.format(I18n.get("... and %d more items"), items.size() - maxDisplay));
+      display.append("\n");
+    }
+
+    return display.toString().trim();
+  }
+
+  private Map<String, Object> extractEntityDisplayData(Model entity) {
+    Map<String, Object> displayData = new HashMap<>();
+
+    displayData.put("id", entity.getId());
+    displayData.put("className", EntityHelper.getEntityClass(entity).getSimpleName());
+    displayData.put("version", entity.getVersion());
+
+    try {
+      Mapper mapper = Mapper.of(EntityHelper.getEntityClass(entity));
+
+      for (Property property : mapper.getProperties()) {
+        Object val = property.get(entity);
+        if (val == null) {
+          continue;
+        }
+
+        if (property.isCollection()) {
+          Collection<? extends Model> collection = (Collection<? extends Model>) val;
+          if (collection.isEmpty()) {
+            continue;
+          }
+          String collectionDisplay =
+              collection.stream()
+                  .limit(3)
+                  .map(it -> "ID:" + it.getId())
+                  .collect(java.util.stream.Collectors.joining(", "));
+          if (collection.size() > 3) {
+            collectionDisplay += " (+" + (collection.size() - 3) + " more)";
+          }
+          val = collectionDisplay;
+        } else if (property.isReference()) {
+          val = Mapper.of(property.getTarget()).get(val, property.getTargetName());
+          if (val == null) {
+            continue;
+          }
+        } else if (!Strings.isNullOrEmpty(property.getSelection())) {
+          Selection.Option option =
+              MetaStore.getSelectionItem(property.getSelection(), val.toString());
+          if (option == null) {
+            continue;
+          }
+          val = option.getTitle();
+        } else if (property.getType().equals(PropertyType.DECIMAL)) {
+          val = new BigDecimal(val.toString()).setScale(2, RoundingMode.HALF_UP);
+        }
+
+        String fieldName = property.getName();
+        if (!isDisplayableFieldName(fieldName)) {
+          continue;
+        }
+
+        String title = property.getTitle();
+        if (title == null) {
+          title = property.getName();
+        }
+
+        displayData.put(title, val.toString());
+      }
+    } catch (Exception e) {
+      log.debug(
+          "Error extracting fields for {}: {}",
+          EntityHelper.getEntityClass(entity).getSimpleName(),
+          e.getMessage());
+    }
+
+    return displayData;
+  }
+
+  private String formatEntityForDisplay(Map<String, Object> displayData) {
+    StringBuilder display = new StringBuilder();
+
+    String className = (String) displayData.get("className");
+    Object id = displayData.get("id");
+
+    display.append(String.format("%s:\n", className));
+    display.append(String.format("  id: %s\n", id));
+
+    // Add name if available
+    String name = getDisplayName(displayData);
+    if (name != null) {
+      display.append(String.format("  name: \"%s\"\n", name));
+    }
+
+    // Display all other extracted fields
+    displayData.entrySet().stream()
+        .filter(entry -> !isSystemField(entry.getKey()))
+        .filter(entry -> !isNameField(entry.getKey()))
+        .limit(10) // Increase limit for structured format
+        .forEach(
+            entry -> {
+              String key = entry.getKey();
+              String value = entry.getValue().toString();
+
+              // Format according to value type
+              if (value.contains("ID:") && value.contains(",")) {
+                display.append(String.format("  %s:\n", key));
+                String[] ids = value.split(", ");
+                for (String idRef : ids) {
+                  if (idRef.trim().startsWith("ID:")) {
+                    display.append(String.format("    - %s\n", idRef.trim()));
+                  } else {
+                    display.append(String.format("    - %s\n", idRef.trim()));
+                  }
+                }
+              } else if (isNumericValue(value)) {
+                display.append(String.format("  %s: %s\n", key, value));
+              } else {
+                display.append(String.format("  %s: \"%s\"\n", key, value));
+              }
+            });
+
+    return display.toString().trim();
+  }
+
+  private boolean isSystemField(String fieldName) {
+    return Set.of("id", "className", "version", "class").contains(fieldName);
+  }
+
+  private boolean isNameField(String fieldName) {
+    return Set.of("name", "title", "fullName", "label", "description").contains(fieldName);
+  }
+
+  private boolean isNumericValue(String value) {
+    try {
+      Double.parseDouble(value);
+      return true;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
+  private String getDisplayName(Map<String, Object> displayData) {
+    List<String> nameFields = List.of("name", "title", "fullName", "label", "description");
+
+    for (String field : nameFields) {
+      Object value = displayData.get(field);
+      if (value != null && !value.toString().trim().isEmpty()) {
+        return value.toString();
+      }
+    }
+
+    return null;
+  }
+
+  private boolean isDisplayableFieldName(String fieldName) {
+    Set<String> excludedFields =
+        Set.of(
+            "password",
+            "secretKey",
+            "token",
+            "hash",
+            "salt",
+            "class",
+            "createdBy",
+            "updatedBy",
+            "createdOn",
+            "updatedOn",
+            "archived",
+            "processInstanceId");
+
+    return !excludedFields.contains(fieldName);
+  }
+
+  private String getSimpleClassName(String fullClassName) {
+    return fullClassName.substring(fullClassName.lastIndexOf('.') + 1);
   }
 
   protected WkfInstanceMigrationHistory createMigrationHistory(
