@@ -4,12 +4,12 @@ function getURL(customId = null) {
     .toString()
     .replace(/\/\//g, "/")
     .replace(/^http/, "ws");
-  
+
   if (customId) {
     const separator = url.includes('?') ? '&' : '?';
     url += `${separator}customId=${encodeURIComponent(customId)}`;
   }
-  
+
   return url;
 }
 
@@ -28,7 +28,7 @@ class SocketProgress {
   init(customId = null) {
 
     this.customId = customId;
-    
+
     if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
       this.ws = new WebSocket(getURL(customId));
       this.ws.addEventListener("open", this.handleOpen.bind(this));
@@ -46,7 +46,7 @@ class SocketProgress {
 
   handleOpen(event) {
     console.log("WebSocket connection established with custom ID:", this.customId);
-    
+
     // Send initial message with custom ID for verification
     // userId: this.getCurrentUserId(), ( if needed )
 
@@ -55,7 +55,7 @@ class SocketProgress {
       customId: this.customId,
       timestamp: Date.now()
     });
-    
+
     // Notify connection listeners
     this.connectionListeners.forEach(listener => listener(true));
   }
@@ -64,35 +64,35 @@ class SocketProgress {
     try {
       const message = JSON.parse(event.data || "{}");
       const data = message?.data || {};
-      
+
       // Store session ID when first received
       if (data.sessionId && !this.sessionId) {
         this.sessionId = data.sessionId;
       }
-      
+
       // Handle progress updates
       if (data.percentage !== undefined && data.percentage !== this.progress) {
         this.progress = data.percentage;
         this.notifyProgressListeners();
       }
-      
+
       // Handle completion
       if (data.completed) {
         this.progress = 100;
         this.notifyProgressListeners();
         this.notifyCompletionListeners(true);
       }
-      
+
       // Handle errors
       if (data.error) {
         this.notifyErrorListeners(data.error);
       }
-      
+
       // Handle registration confirmation
       if (data.registered) {
         console.log("Client registered successfully with custom ID:", data.customId);
       }
-      
+
     } catch (error) {
       console.error("Error parsing WebSocket message:", error);
       this.notifyErrorListeners("Failed to parse WebSocket message");
