@@ -1,0 +1,4 @@
+title: The BPM is not reevaluated correctly after a timer
+type: fix
+description: |
+  * Prevented tokens from remaining blocked when a User Task condition evaluates to `true` after timer expiration.
