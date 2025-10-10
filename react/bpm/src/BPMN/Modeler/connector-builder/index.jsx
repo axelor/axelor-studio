@@ -74,7 +74,7 @@ export default function ConnectorBuilder({
           );
         }
       });
-    let expr = `def _res = __beans__.get(Class.forName('com.axelor.studio.service.ws.WsConnectorService')).callConnector(__ctx__.filterOne('WsConnector','self.name = ?1', '${
+    let expr = `def _res = __bean__(com.axelor.studio.service.ws.WsConnectorService).callConnector(__ctx__.filterOne('WsConnector','self.name = ?1', '${
       connector && connector.name
     }').getTarget(), null, [${str && str.length > 0 ? str.toString() : ":"}])`;
     if (request && request.index) {

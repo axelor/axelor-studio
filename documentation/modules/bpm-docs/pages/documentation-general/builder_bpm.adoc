@@ -145,4 +145,3 @@ The `Axelor` script is an extended format of the `groovy` language, it supports 
         - Always fetch the variable value using __ctx__.getObject("variablename", execution) to ensure proper deserialization and usability.
         - Any modifications to the variable's value should be accompanied by updating the variable using __ctx__.createObject(value), using the same variable name.
 
-* **\\__beans__:** It represents **com.axelor.inject.Beans**, which is used to inject and use services.

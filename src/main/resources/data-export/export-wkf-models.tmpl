@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <bpm>
-<%	allWkfModels = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.WkfModelRepository' as Class).all()
+<%	allWkfModels = __repo__(WkfModel).all()
 	
 	if(__ids__ != null) {
 		allWkfModels = allWkfModels.filter('self.id in ?1',__ids__)

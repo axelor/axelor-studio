@@ -39,7 +39,7 @@ utils.api.enable = true
 
 # Custom context values
 # ~~~~~
-context.app = com.axelor.studio.app.service.AppService
+context.app = com.axelor.studio.app.service.ScriptAppService
 
 # Enable BPMN logging
 studio.bpm.logging = true
@@ -69,8 +69,6 @@ Some variables can be used with groovy script expressions in BPM. This includes:
 * `__date__` - current date as `LocalDate`
 * `__datetime__` - current datetime as `LocalDateTime`
 * `__time__` - current time as `LocalTime`
-* `__config__` - application configuration as `axelor-config.properties`
-* `__beans__` - beans class as `Beans.class`
 * `__ctx__` - workflow context helper as `WkfContextHelper`
 * `__transform__` - workflow transformation helper for web service connector as `WkfTransformationHelper`
 * `__repo__` - repository of given model class

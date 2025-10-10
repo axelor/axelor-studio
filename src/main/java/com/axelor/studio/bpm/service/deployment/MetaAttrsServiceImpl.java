@@ -55,22 +55,22 @@ public class MetaAttrsServiceImpl implements MetaAttrsService {
           "hidden", "hideIf", "showIf", "readonly", "readonlyIf", "required", "requiredIf");
 
   public static final String META_ATTRS_CONDITION =
-      "com.axelor.inject.Beans.get("
+      "__bean__("
           + WkfInstanceService.class.getName()
           + ").isActiveTask(processInstanceId, '%s')";
 
   public static final String META_ATTRS_CONDITION_PERMANENT =
-      "com.axelor.inject.Beans.get("
+      "__bean__("
           + WkfInstanceService.class.getName()
           + ").isActivatedTask(processInstanceId, '%s')";
 
   public static final String META_ATTRS_RELATED_FIELD_CONDITION =
-      "com.axelor.inject.Beans.get("
+      "__bean__("
           + WkfInstanceService.class.getName()
           + ").isActiveModelTask(%s, '%s')";
 
   public static final String META_ATTRS_RELATED_FIELD_CONDITION_PERMANENT =
-      "com.axelor.inject.Beans.get("
+      "__bean__("
           + WkfInstanceService.class.getName()
           + ").isActivatedModelTask(%s, '%s')";
 

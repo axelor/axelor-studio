@@ -97,7 +97,7 @@
     <attribute name="value" for="$imageUrl"
       expr="call:com.axelor.studio.bpm.service.WkfDisplayService:getInstanceUrl(__self__)"/>
     <attribute for="logPanel" name="hidden"
-      expr="eval: !com.axelor.inject.Beans.get(com.axelor.studio.service.AppSettingsStudioService).isAddBpmLog()"/>
+      expr="eval: !__bean__(com.axelor.studio.service.ScriptAppSettingsStudioService).isAddBpmLog()"/>
   </action-attrs>
 
   <action-view name="wkf-instance-view-from-record" title="BPM Instance"

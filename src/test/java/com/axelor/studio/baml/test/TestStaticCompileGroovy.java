@@ -29,9 +29,7 @@ class TestStaticCompileGroovy {
     String script =
         """
         import com.axelor.auth.db.User
-        import groovy.transform.CompileStatic
 
-        @CompileStatic
         void execute(){
           User user = new User()
           user.code = 'abc'

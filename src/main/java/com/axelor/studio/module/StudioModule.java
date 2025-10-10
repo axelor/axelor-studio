@@ -26,10 +26,7 @@ import com.axelor.meta.loader.AppVersionService;
 import com.axelor.meta.loader.AppVersionServiceImpl;
 import com.axelor.meta.service.ViewProcessor;
 import com.axelor.studio.app.listener.AppServerStartListener;
-import com.axelor.studio.app.service.AccessTemplateService;
-import com.axelor.studio.app.service.AccessTemplateServiceImpl;
-import com.axelor.studio.app.service.AppService;
-import com.axelor.studio.app.service.AppServiceImpl;
+import com.axelor.studio.app.service.*;
 import com.axelor.studio.baml.service.BamlService;
 import com.axelor.studio.baml.service.BamlServiceImpl;
 import com.axelor.studio.bpm.listener.ServerStartListener;
@@ -137,6 +134,8 @@ import com.axelor.studio.service.ExportService;
 import com.axelor.studio.service.ExportServiceImpl;
 import com.axelor.studio.service.JsonFieldService;
 import com.axelor.studio.service.JsonFieldServiceImpl;
+import com.axelor.studio.service.ScriptAppSettingsStudioService;
+import com.axelor.studio.service.ScriptAppSettingsStudioServiceImpl;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.StudioMetaServiceImpl;
 import com.axelor.studio.service.ViewProcessorImpl;
@@ -291,5 +290,7 @@ public class StudioModule extends AxelorModule {
 
     bind(new TypeLiteral<LinkScriptEvaluator<LinkScriptGroovyScriptHelper>>() {})
         .to(LinkScriptGroovyEvaluator.class);
+    bind(ScriptAppService.class).to(ScriptAppServiceImpl.class);
+    bind(ScriptAppSettingsStudioService.class).to(ScriptAppSettingsStudioServiceImpl.class);
   }
 }

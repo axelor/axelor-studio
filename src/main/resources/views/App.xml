@@ -23,7 +23,7 @@
         <field name="name" readonly="true" colSpan="12"/>
         <field name="languageSelect" selection-in="['en','fr']" colSpan="5"/>
         <field name="demoDataLoaded" readonly="true"
-          if="com.axelor.app.AppSettings.get().get('application.mode') != 'prod'" colSpan="4"/>
+          if="__bean__(com.axelor.studio.service.ScriptAppSettingsStudioService).getApplicationMode() != 'prod'" colSpan="4"/>
       </panel>
       <panel name="tagsPanel" colSpan="4">
         <field name="$tagFields" showTitle="false" readonly="true" colSpan="12">
@@ -64,7 +64,7 @@
       <button name="configureBtn" title="Configure" showIf="active"
         onClick="com.axelor.studio.app.web.AppController:configure"/>
       <button name="importDataDemoBtn"
-        if="com.axelor.app.AppSettings.get().get('application.mode') != 'prod'"
+        if="__bean__(com.axelor.studio.service.ScriptAppSettingsStudioService).getApplicationMode() != 'prod'"
         showIf="active &amp;&amp; !demoDataLoaded"
         onClick="action-app-alert-demo-import,save,action-method-app-import-data-demo"
         title="Import demo data"/>
@@ -91,7 +91,7 @@
       <field name="languageSelect" type="string" selection="select.language" title="Language"
         colSpan="4" selection-in="['en','fr']"/>
       <field type="boolean" name="importDemoData" title="Import demo data" colSpan="3"
-        if="com.axelor.app.AppSettings.get().get('application.mode') != 'prod'"/>
+        if="__bean__(com.axelor.studio.service.ScriptAppSettingsStudioService).getApplicationMode() != 'prod'"/>
       <button name="installBtn" title="Install" colSpan="4"
         onClick="action-app-method-bulk-install" hidden="true"/>
     </panel>

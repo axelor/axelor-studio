@@ -41,7 +41,7 @@ Ou une query en cochant la case image:query-icon.png[receive icon]  qui permet d
 
 image::script_stock_move.png[event process,align="left"]
 ----
-__beans__.get(com.axelor.apps.stock.service.StockMoveServiceImpl.class).realize(__ctx__.find('StockMove',stockMove?.id)?.getTarget())
+__bean__.get(com.axelor.apps.stock.service.StockMoveServiceImpl.class).realize(__ctx__.find('StockMove',stockMove?.id)?.getTarget())
 ----
 
 == Business Rule Task

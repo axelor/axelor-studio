@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <%	
 		
-	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.StudioDashletRepository' as Class).all()
+	query = __repo__(StudioDashlet).all()
 		
 	if(__ids__ != null) {
 				
