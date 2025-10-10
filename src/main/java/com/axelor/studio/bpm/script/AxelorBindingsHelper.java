@@ -18,7 +18,6 @@
  */
 package com.axelor.studio.bpm.script;
 
-import com.axelor.app.AppSettings;
 import com.axelor.auth.AuthUtils;
 import com.axelor.inject.Beans;
 import com.axelor.script.GroovyScriptHelper;
@@ -40,7 +39,6 @@ public class AxelorBindingsHelper {
 
   public static Bindings getBindings(Bindings bindings) {
     bindings.put("__ctx__", WkfContextHelper.class);
-    bindings.put("__beans__", Beans.class);
     bindings.put(
         "__studiouser__",
         new FullContext(
@@ -49,7 +47,6 @@ public class AxelorBindingsHelper {
     bindings.put("__time__", LocalTime.now());
     bindings.put("__datetime__", LocalDateTime.now());
     bindings.put("__transform__", WkfTransformationHelper.class);
-    bindings.put("__config__", AppSettings.get());
     bindings.put("__log__", BpmLoggingHelper.get());
     bindings.put("__migration__", MigrationHelper.class);
     bindings.put("__process__", WkfProcessHelper.class);

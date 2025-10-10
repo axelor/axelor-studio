@@ -1,0 +1,9 @@
+title: Integrate scripting policy security check
+type: security
+description: |
+  configure scripting policy to control Java class access from Groovy/JavaScript scripts.
+  - Replaced direct `AppSettingsStudioService` access with secure `ScriptAppSettingsStudioService` wrapper
+  - Replaced direct `AppService` access with secure `ScriptAppService` wrapper
+  - Removed `__beans__` binding from BPM scripts - use `__bean__(Class)` instead
+  - Removed `__config__` binding in BPM scripts that exposed `AppSettings.get()` directly
+  

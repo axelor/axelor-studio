@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <%	
-	query = com.axelor.inject.Beans.get('com.axelor.studio.db.repo.StudioSelectionRepository' as Class).all()
+	query = __repo__(StudioSelection).all()
 
 	if(__ids__ != null) {
 		query = query.filter('self.studioApp.id in ?1 OR self.studioApp is null',__ids__)

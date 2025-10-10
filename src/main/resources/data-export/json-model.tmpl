@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<%	query = com.axelor.inject.Beans.get('com.axelor.meta.db.repo.MetaJsonModelRepository' as Class).all()
+<%	query = __repo__(MetaJsonModel).all()
 	
 	if(__ids__ != null) {
 		query = query.filter('self.studioApp.id in ?1',__ids__)
