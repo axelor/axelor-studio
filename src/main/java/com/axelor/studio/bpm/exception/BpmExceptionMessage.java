@@ -727,5 +727,10 @@ public final class BpmExceptionMessage {
       "Process instance not found : %s" /*)*/;
   public static final String MIGRATION_IS_ALREADY_ONGOING = /*$$(*/
       "Migration is already ongoing."; /*)*/
-  ;
+  public static final String NO_WFK_INSTANCE_FOUND = /*$$(*/
+      "No WkfInstance found for processInstanceId: %s" /*)*/;
+  public static final String NO_PROCESS_CONFIGURATION_FOUND = /*$$(*/
+      "No process configuration found for process instance: %s" /*)*/;
+  public static final String MODEL_NOT_FOUND = /*$$(*/
+      "Model not found for processInstanceId: %s (class: %s)" /*)*/;
 }
