@@ -197,6 +197,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       return;
     }
 
+    updateMigratedInstancesTasksStatus(engine);
+
     String isRemove =
         Optional.ofNullable(migrationMap.get("removeOldVersionMenu"))
             .map(Objects::toString)
@@ -360,6 +362,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     long nbInstances = query.count();
     int migratedInstances = 0;
     int UnmigratedInstances = 0;
+    List<String> migratedInstancesIds = new ArrayList<>();
     if (nbInstances < 1) {
       log.debug("Process instances to migrate: {}", nbInstances);
       return isMigrationError;
@@ -385,17 +388,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     int iterationNumber = 1;
     for (String processInstanceId : processInstanceIds) {
       try {
-        // get active tasks before migration
-        ArrayList<Task> activeTasks = (ArrayList<Task>) getActiveTasks(engine, processInstanceId);
         engine
             .getRuntimeService()
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-        updateTasksStatus(activeTasks, processInstanceId);
         wkfInstanceService.updateProcessInstance(
             targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
         migratedInstances++;
+        migratedInstancesIds.add(processInstanceId);
       } catch (Exception e) {
         isMigrationError.set(true);
         wkfInstanceService.updateProcessInstance(
@@ -409,6 +410,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
     migrationMap.put("successfulMigrations", migratedInstances);
     migrationMap.put("failedMigrations", UnmigratedInstances);
+    migrationMap.put("migratedInstances", migratedInstancesIds);
 
     return isMigrationError;
   }
@@ -417,19 +419,60 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     return (int) ((part / whole) * 100);
   }
 
+  @Transactional
   protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId) {
-    for (Task task : activeTasks) {
-      WkfTaskConfig wkfTaskConfig =
-          taskConfigRepo
-              .all()
-              .autoFlush(false)
-              .filter(
-                  "self.name = ? and self.processId = ?",
-                  task.getTaskDefinitionKey(),
-                  task.getProcessDefinitionId())
-              .fetchOne();
-      wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
+
+    if (activeTasks == null || activeTasks.isEmpty()) {
+      log.debug("No active tasks to update for process instance: {}", processInstanceId);
+      return;
     }
+
+    log.info(
+        "Updating {} TeamTask(s) after migration for process instance: {}",
+        activeTasks.size(),
+        processInstanceId);
+
+    ProcessEngine processEngine = processEngineService.getEngine();
+    int successCount = 0;
+    int errorCount = 0;
+
+    for (Task task : activeTasks) {
+      try {
+        WkfTaskConfig wkfTaskConfig =
+            taskConfigRepo
+                .all()
+                .autoFlush(false)
+                .filter(
+                    "self.name = ? AND self.processId = ?",
+                    task.getTaskDefinitionKey(),
+                    task.getProcessDefinitionId())
+                .fetchOne();
+
+        if (wkfTaskConfig == null) {
+          log.warn(
+              "WkfTaskConfig not found for task '{}' with processId '{}'",
+              task.getTaskDefinitionKey(),
+              task.getProcessDefinitionId());
+          continue;
+        }
+
+        wkfUserActionService.migrateTeamTaskOnProcessMigration(
+            task, wkfTaskConfig, processInstanceId, processEngine);
+
+        successCount++;
+
+      } catch (Exception e) {
+        errorCount++;
+        log.error(
+            "Error migrating TeamTask for task '{}' in process '{}': {}",
+            task.getTaskDefinitionKey(),
+            processInstanceId,
+            e.getMessage(),
+            e);
+      }
+    }
+
+    log.info("TeamTask migration completed: {} success, {} errors", successCount, errorCount);
   }
 
   protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
@@ -793,6 +836,28 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     if (isMigrationError.get()) {
       throw new IllegalStateException(I18n.get(BpmExceptionMessage.MIGRATION_ERR));
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private void updateMigratedInstancesTasksStatus(ProcessEngine engine) {
+    List<String> migratedInstances = (List<String>) migrationMap.get("migratedInstances");
+
+    if (migratedInstances == null || migratedInstances.isEmpty()) {
+      return;
+    }
+    for (String instanceId : migratedInstances) {
+      try {
+        List<Task> activeTasks = getActiveTasks(engine, instanceId);
+        if (activeTasks == null || activeTasks.isEmpty()) {
+          continue;
+        }
+
+        updateTasksStatus(activeTasks, instanceId);
+        log.debug("Successfully updated active tasks for instance: {}", instanceId);
+      } catch (Exception e) {
+        log.error("Error while updating active task status for instance: {}", instanceId, e);
+      }
     }
   }
 }
