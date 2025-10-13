@@ -7,7 +7,8 @@
 
   <entity name="TeamTask">
     <many-to-one name="role" title="Role" ref="com.axelor.auth.db.Role"/>
-    <many-to-one name="relatedProcessInstance" ref="com.axelor.studio.db.WkfInstance"/>
+    <many-to-one name="relatedProcessInstance" ref="com.axelor.studio.db.WkfInstance" readonly="true"/>
+    <many-to-one name="wkfTaskConfig" ref="com.axelor.studio.db.WkfTaskConfig" readonly="true"/>
   </entity>
 
 </domain-models>

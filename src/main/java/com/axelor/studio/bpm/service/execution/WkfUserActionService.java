@@ -24,6 +24,7 @@ import com.google.inject.persist.Transactional;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
 
 public interface WkfUserActionService {
 
@@ -39,10 +40,16 @@ public interface WkfUserActionService {
       ProcessEngine processEngine,
       String taskId);
 
-  void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId);
-
   FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
       throws ClassNotFoundException;
 
   User getUser(String userPath, FullContext wkfContext);
+
+  /**
+   * Migre un TeamTask lors d'une migration de version de processus BPM. Annule l'ancien TeamTask et
+   * crée un nouveau avec la nouvelle configuration.
+   */
+  void migrateTeamTaskOnProcessMigration(
+      Task task, WkfTaskConfig wkfTaskConfig, String processInstanceId, ProcessEngine processEngine)
+      throws ClassNotFoundException;
 }
