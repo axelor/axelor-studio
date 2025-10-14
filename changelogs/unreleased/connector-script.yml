@@ -1,0 +1,4 @@
+title: Change connector script from create Object to create Variable
+type: fix
+description: |
+    Use createVariable instead of creatObject for webservices call in BPM scripts.
