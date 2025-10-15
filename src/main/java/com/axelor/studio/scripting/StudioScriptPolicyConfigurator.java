@@ -16,7 +16,9 @@ import com.axelor.studio.helper.MigrationHelper;
 import com.axelor.studio.ls.LinkScriptService;
 import com.axelor.studio.service.ExportService;
 import com.axelor.studio.service.ScriptAppSettingsStudioService;
+import com.axelor.studio.service.constructor.components.expressions.GroovyScriptBuilderService;
 import com.axelor.studio.service.ws.WsConnectorService;
+import org.apache.commons.text.StringEscapeUtils;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 
 import java.util.Arrays;
@@ -48,6 +50,8 @@ public class StudioScriptPolicyConfigurator implements ScriptPolicyConfigurator 
             WsConnectorService.class,
             BpmLoggingHelper.class,
             Logger.class,
-            ExecutionEntity.class));
+            ExecutionEntity.class,
+            GroovyScriptBuilderService.class,
+            StringEscapeUtils.class));
   }
 }
