@@ -29,6 +29,8 @@ import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.app.service.AppService;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.script.AxelorBindingsHelper;
+import com.axelor.studio.db.WkfInstance;
+import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessConfigRepository;
@@ -286,5 +288,51 @@ public class WkfCommonServiceImpl implements WkfCommonService {
         });
 
     return model;
+  }
+
+  @Override
+  public Map<String, Object> getContext(WkfInstance instance, Model model)
+      throws ClassNotFoundException {
+
+    WkfProcess wkfProcess = instance.getWkfProcess();
+
+    Map<String, Object> modelMap = new HashMap<>();
+
+    for (WkfProcessConfig processConfig : wkfProcess.getWkfProcessConfigList()) {
+
+      String klassName;
+      if (processConfig.getMetaJsonModel() != null) {
+        klassName = MetaJsonRecord.class.getName();
+      } else {
+        klassName = processConfig.getMetaModel().getFullName();
+      }
+      @SuppressWarnings("unchecked")
+      final Class<? extends Model> klass = (Class<? extends Model>) Class.forName(klassName);
+      String query = "self.processInstanceId = ?";
+      if (processConfig.getMetaJsonModel() != null) {
+        query += " AND self.jsonModel = '" + processConfig.getMetaJsonModel().getName() + "'";
+      }
+
+      if (model == null) {
+        model =
+            JpaRepository.of(klass)
+                .all()
+                .filter(query, instance.getInstanceId())
+                .order("-id")
+                .autoFlush(false)
+                .fetchOne();
+      }
+      if (model != null) {
+        model = EntityHelper.getEntity(model);
+        String name = getVarName(model);
+        modelMap.put(name, new FullContext(model));
+      } else {
+        log.debug("Model not found with processInstanceId: {}", instance.getInstanceId());
+      }
+    }
+
+    log.debug("Variable map used: {}", modelMap);
+
+    return modelMap;
   }
 }
