@@ -1,38 +1,38 @@
 buildscript {
-    repositories {
-        gradlePluginPortal()
-        ivy {
-            name = 'Node.js'
-            setUrl('https://nodejs.org/dist/')
-            patternLayout {
-                artifact('v[revision]/[artifact](-v[revision]-[classifier]).[ext]')
-            }
-            metadataSources {
-                artifact()
-            }
-            content {
-                includeModule('org.nodejs', 'node')
-            }
-        }
+  repositories {
+    gradlePluginPortal()
+    ivy {
+      name = 'Node.js'
+      setUrl('https://nodejs.org/dist/')
+      patternLayout {
+        artifact('v[revision]/[artifact](-v[revision]-[classifier]).[ext]')
+      }
+      metadataSources {
+        artifact()
+      }
+      content {
+        includeModule('org.nodejs', 'node')
+      }
     }
-    dependencies {
-        classpath 'com.github.node-gradle:gradle-node-plugin:7.1.0'
-    }
+  }
+  dependencies {
+    classpath 'com.github.node-gradle:gradle-node-plugin:7.1.0'
+  }
 }
 
 apply plugin: com.github.gradle.node.NodePlugin
 
 node {
-    version = '22.20.0'
-    pnpmVersion = '10.18.3'
-    download = true
+  version = '22.20.0'
+  pnpmVersion = '10.18.3'
+  download = true
 }
 
 def reactDirs = []
 file('react').traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
-    if (new File(it, 'package.json').exists()) {
-        reactDirs.add(it)
-    }
+  if (new File(it, 'package.json').exists()) {
+    reactDirs.add(it)
+  }
 }
 
 def buildTasks = []
@@ -40,100 +40,100 @@ def cleanTasks = []
 def componentPaths = []
 
 reactDirs.each { dir ->
-    def dirName = dir.name
+  def dirName = dir.name
 
-    buildTasks.add(tasks.register("${dirName}Build", PnpmTask) {
-        group = 'axelor'
-        description = "Build ${dirName}"
-        environment = [
-            CI: 'false'
-        ]
+  buildTasks.add(tasks.register("${dirName}Build", PnpmTask) {
+    group = 'axelor'
+    description = "Build ${dirName}"
+    environment = [
+      CI: 'false'
+    ]
 
-        workingDir = file(dir)
+    workingDir = file(dir)
 
-        outputs.dir("$projectDir/react/${dirName}/build")
-        inputs.files("$projectDir/react/${dirName}/package.json", "$projectDir/react/${dirName}/pnpm-lock.yaml")
-        inputs.dir("$projectDir/react/${dirName}/src")
-        inputs.dir("$projectDir/react/${dirName}/public")
+    outputs.dir("$projectDir/react/${dirName}/build")
+    inputs.files("$projectDir/react/${dirName}/package.json", "$projectDir/react/${dirName}/pnpm-lock.yaml")
+    inputs.dir("$projectDir/react/${dirName}/src")
+    inputs.dir("$projectDir/react/${dirName}/public")
 
-        dependsOn "${dirName}Install"
-        mustRunAfter "${dirName}Install"
-        args = ['build']
-    })
+    dependsOn "${dirName}Install"
+    mustRunAfter "${dirName}Install"
+    args = ['build']
+  })
 
-    tasks.register("${dirName}Install", PnpmTask) {
-        group = 'axelor'
-        description = "Install ${dirName} dependencies"
-        environment = [
-            CI: 'false'
-        ]
+  tasks.register("${dirName}Install", PnpmTask) {
+    group = 'axelor'
+    description = "Install ${dirName} dependencies"
+    environment = [
+      CI: 'false'
+    ]
 
-        workingDir = file(dir)
+    workingDir = file(dir)
 
-        args = ['install']
-    }
+    args = ['install']
+  }
 
-    cleanTasks.add(tasks.register("${dirName}Clean", Delete) {
-        group = 'axelor'
-        description = "Clean ${dirName} build ressources"
+  cleanTasks.add(tasks.register("${dirName}Clean", Delete) {
+    group = 'axelor'
+    description = "Clean ${dirName} build ressources"
 
-        delete "$projectDir/react/${dirName}/build", "$projectDir/react/${dirName}/node_modules"
-    })
+    delete "$projectDir/react/${dirName}/build", "$projectDir/react/${dirName}/node_modules"
+  })
 
-    componentPaths.add([from: "$projectDir/react/${dirName}/build", to: "webapp/${dirName}"])
+  componentPaths.add([from: "$projectDir/react/${dirName}/build", to: "webapp/${dirName}"])
 }
 
 def frontBuild = tasks.register('frontBuild') {
-    group = 'axelor'
-    description = 'Build all React projects'
-    dependsOn buildTasks
+  group = 'axelor'
+  description = 'Build all React projects'
+  dependsOn buildTasks
 }
 
 tasks.register('frontClean') {
-    group = 'axelor'
-    description = 'Clean all React projects'
-    dependsOn cleanTasks
+  group = 'axelor'
+  description = 'Clean all React projects'
+  dependsOn cleanTasks
 }
 
 def frontCopy = tasks.register('frontCopy', Copy) {
-    description = 'Copy all React projects into webapp'
+  description = 'Copy all React projects into webapp'
 
+  dependsOn frontBuild
+
+  destinationDir = file(rootProject.layout.buildDirectory)
+
+  componentPaths.each { paths ->
+    into("${paths.to}") {
+      from "${paths.from}"
+    }
+  }
+}
+
+try {
+  tasks.named('jar').configure {
     dependsOn frontBuild
-
-    destinationDir = file(rootProject.layout.buildDirectory)
-
     componentPaths.each { paths ->
-        into("${paths.to}") {
-            from "${paths.from}"
-        }
+      into("${paths.to}") {
+        from "${paths.from}"
+      }
     }
+  }
+} catch (UnknownTaskException ignored) {
+  // Do nothing if no jar task
 }
 
 try {
-    tasks.named('jar').configure {
-        dependsOn frontBuild
-        componentPaths.each { paths ->
-            into("${paths.to}") {
-                from "${paths.from}"
-            }
-        }
-    }
+  rootProject.tasks.named('war').configure {
+    dependsOn frontCopy
+  }
 } catch (UnknownTaskException ignored) {
-    // Do nothing if no jar task
+  // Do nothing if no war tasks
 }
 
 try {
-    rootProject.tasks.named('war').configure {
-        dependsOn frontCopy
-    }
+  rootProject.tasks.named('processResources').configure {
+    dependsOn frontCopy
+  }
 } catch (UnknownTaskException ignored) {
-    // Do nothing if no war tasks
-}
-
-try {
-    rootProject.tasks.named('processResources').configure {
-        dependsOn frontCopy
-    }
-} catch (UnknownTaskException ignored) {
-    // Do nothing if no processResources task
+  // Do nothing if no processResources task
 }

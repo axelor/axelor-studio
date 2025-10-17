@@ -1,3 +1,7 @@
+/*
+ * SPDX-FileCopyrightText: Axelor <https://axelor.com>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package com.axelor.studio.helper;
 
 import com.fasterxml.jackson.core.JsonGenerator;

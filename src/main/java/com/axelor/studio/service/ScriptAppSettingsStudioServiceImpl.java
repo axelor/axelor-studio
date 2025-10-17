@@ -13,8 +13,7 @@ public class ScriptAppSettingsStudioServiceImpl implements ScriptAppSettingsStud
   protected final AppSettingsStudioService appSettingsStudioService;
   protected final AppSettings settings = AppSettings.get();
 
-
-    @Inject
+  @Inject
   public ScriptAppSettingsStudioServiceImpl(AppSettingsStudioService appSettingsStudioService) {
     this.appSettingsStudioService = appSettingsStudioService;
   }
@@ -25,5 +24,7 @@ public class ScriptAppSettingsStudioServiceImpl implements ScriptAppSettingsStud
   }
 
   @Override
-  public String getApplicationMode() {return settings.get(AvailableAppSettings.APPLICATION_MODE,"dev");}
+  public String getApplicationMode() {
+    return settings.get(AvailableAppSettings.APPLICATION_MODE, "dev");
+  }
 }
