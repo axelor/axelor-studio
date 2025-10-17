@@ -1,38 +1,20 @@
 /*
- * Axelor Business Solutions
- *
- * Copyright (C) 2022 Axelor (<http://axelor.com>).
- *
- * This program is free software: you can redistribute it and/or  modify
- * it under the terms of the GNU Affero General Public License, version 3,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: Axelor <https://axelor.com>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.auth.AuthUtils;
-import com.axelor.db.EntityHelper;
-import com.axelor.db.JpaRepository;
 import com.axelor.db.Model;
 import com.axelor.i18n.I18n;
-import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.app.AppBpmService;
 import com.axelor.studio.db.AppBpm;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
-import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
-import com.axelor.utils.helpers.context.FullContext;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import java.lang.invoke.MethodHandles;
@@ -104,7 +86,7 @@ public class WkfTaskServiceImpl implements WkfTaskService {
     boolean taskExecuted = false;
     String helpText = null;
 
-    Map<String, Object> context = getContext(instance, model);
+    Map<String, Object> context = wkfService.getContext(instance, model);
     // TODO: Check if its required both variables from context and from processInstance, if
     Map<String, Object> processVariables =
         engine.getRuntimeService().getVariables(processInstance.getId());
@@ -237,50 +219,5 @@ public class WkfTaskServiceImpl implements WkfTaskService {
         .active()
         .processInstanceId(processInstanceId)
         .list();
-  }
-
-  protected Map<String, Object> getContext(WkfInstance instance, Model model)
-      throws ClassNotFoundException {
-
-    WkfProcess wkfProcess = instance.getWkfProcess();
-
-    Map<String, Object> modelMap = new HashMap<>();
-
-    for (WkfProcessConfig processConfig : wkfProcess.getWkfProcessConfigList()) {
-
-      String klassName;
-      if (processConfig.getMetaJsonModel() != null) {
-        klassName = MetaJsonRecord.class.getName();
-      } else {
-        klassName = processConfig.getMetaModel().getFullName();
-      }
-      @SuppressWarnings("unchecked")
-      final Class<? extends Model> klass = (Class<? extends Model>) Class.forName(klassName);
-      String query = "self.processInstanceId = ?";
-      if (processConfig.getMetaJsonModel() != null) {
-        query += " AND self.jsonModel = '" + processConfig.getMetaJsonModel().getName() + "'";
-      }
-
-      if (model == null) {
-        model =
-            JpaRepository.of(klass)
-                .all()
-                .filter(query, instance.getInstanceId())
-                .order("-id")
-                .autoFlush(false)
-                .fetchOne();
-      }
-      if (model != null) {
-        model = EntityHelper.getEntity(model);
-        String name = wkfService.getVarName(model);
-        modelMap.put(name, new FullContext(model));
-      } else {
-        log.debug("Model not found with processInstanceId: {}", instance.getInstanceId());
-      }
-    }
-
-    log.debug("Variable map used: {}", modelMap);
-
-    return modelMap;
   }
 }

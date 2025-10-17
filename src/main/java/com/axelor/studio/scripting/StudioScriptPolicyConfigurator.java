@@ -18,11 +18,10 @@ import com.axelor.studio.service.ExportService;
 import com.axelor.studio.service.ScriptAppSettingsStudioService;
 import com.axelor.studio.service.constructor.components.expressions.GroovyScriptBuilderService;
 import com.axelor.studio.service.ws.WsConnectorService;
-import org.apache.commons.text.StringEscapeUtils;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.text.StringEscapeUtils;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 
 public class StudioScriptPolicyConfigurator implements ScriptPolicyConfigurator {
   @Override

@@ -7,5 +7,6 @@ package com.axelor.studio.service;
 public interface ScriptAppSettingsStudioService {
 
   boolean isAddBpmLog();
+
   String getApplicationMode();
 }

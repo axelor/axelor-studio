@@ -97,7 +97,14 @@ changelog {
   version = baseVersion
   output.set(file('CHANGELOG.md'))
   inputPath.set(file('changelogs/unreleased'))
-  types.set(['Feature', 'Change', 'Deprecate', 'Remove', 'Fix', 'Security'])
+  types.set([
+    'Feature',
+    'Change',
+    'Deprecate',
+    'Remove',
+    'Fix',
+    'Security'
+  ])
   header.set("${version.get()} (${new Date().format('yyyy-MM-dd')})")
 }
 
@@ -130,8 +137,8 @@ publishing {
 }
 
 /*
-* Jacoco
-*/
+ * Jacoco
+ */
 
 apply plugin: 'jacoco'
 

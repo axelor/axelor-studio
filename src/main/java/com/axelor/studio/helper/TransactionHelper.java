@@ -1,10 +1,14 @@
+/*
+ * SPDX-FileCopyrightText: Axelor <https://axelor.com>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
 package com.axelor.studio.helper;
 
 import com.axelor.db.JPA;
-import java.lang.invoke.MethodHandles;
-import java.util.concurrent.Callable;
 import jakarta.transaction.Status;
 import jakarta.transaction.Synchronization;
+import java.lang.invoke.MethodHandles;
+import java.util.concurrent.Callable;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.resource.transaction.spi.SynchronizationRegistry;
@@ -80,8 +84,6 @@ public class TransactionHelper {
         } catch (Exception e) {
           log.error("Error executing the post-commit action", e);
         }
-      } else {
-        log.debug("Transaction not committed (status: {}), post-commit action ignored", status);
       }
     }
   }

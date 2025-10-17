@@ -74,24 +74,24 @@
     <field name="generatedApp.active"/>
     <field name="sequence"/>
     <template><![CDATA[
-			<>
-			  <Box>
-			    <Box>
-			      <Image src={$image('image', 'content')}></Image>
-			    </Box>
-			    <Box style={{margin: "5px 0px"}}>
-			      <strong>{$fmt('name')}</strong>
-			    </Box>
+      <>
+        <Box>
+          <Box>
+            <Image src={$image('image', 'content')}></Image>
+          </Box>
+          <Box style={{margin: "5px 0px"}}>
+            <strong>{$fmt('name')}</strong>
+          </Box>
 
-			    <Box d="flex"  flexDirection="row-reverse">
-			      {!generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="info" onClick={$action('action-studio-method-studio-app-install-app')}>{_t('Install')}</Button>}
-			      {generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="success" onClick={$action('action-studio-view-studio-app-export')}>{_t('Export')}</Button>}
-			      {!generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="success" onClick={$action('action-studio-method-studio-app-delete-app')}>{_t('Delete')}</Button>}
-			      {generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="danger" onClick={$action('action-studio-method-studio-app-uninstall-app')}>{_t('Uninstall')}</Button>}
-			    </Box>
-			  </Box>
-			</>
-		]]>
+          <Box d="flex"  flexDirection="row-reverse">
+            {!generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="info" onClick={$action('action-studio-method-studio-app-install-app')}>{_t('Install')}</Button>}
+            {generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="success" onClick={$action('action-studio-view-studio-app-export')}>{_t('Export')}</Button>}
+            {!generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="success" onClick={$action('action-studio-method-studio-app-delete-app')}>{_t('Delete')}</Button>}
+            {generatedApp.active && <Button size="sm" style={{marginLeft: "2px", color: "white"}} variant="danger" onClick={$action('action-studio-method-studio-app-uninstall-app')}>{_t('Uninstall')}</Button>}
+          </Box>
+        </Box>
+      </>
+    ]]>
     </template>
   </cards>
 

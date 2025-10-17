@@ -1,19 +1,6 @@
 /*
- * Axelor Business Solutions
- *
- * Copyright (C) 2022 Axelor (<http://axelor.com>).
- *
- * This program is free software: you can redistribute it and/or  modify
- * it under the terms of the GNU Affero General Public License, version 3,
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: Axelor <https://axelor.com>
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 package com.axelor.studio.bpm.listener;
 
@@ -22,8 +9,8 @@ import com.axelor.db.tenants.TenantAware;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
 import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
-import com.axelor.studio.bpm.service.execution.WkfTaskService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
@@ -75,7 +62,7 @@ public class WkfExecutionListener implements ExecutionListener {
   protected WkfTaskConfigRepository wkfTaskConfigRepo;
   protected WkfLogService wkfLogService;
   protected AppSettingsStudioService appSettingsStudioService;
-  protected WkfTaskService wkfTaskService;
+  protected WkfCommonService wkfCommonService;
 
   @Inject
   public WkfExecutionListener(
@@ -85,7 +72,7 @@ public class WkfExecutionListener implements ExecutionListener {
       WkfTaskConfigRepository wkfTaskConfigRepo,
       WkfLogService wkfLogService,
       AppSettingsStudioService appSettingsStudioService,
-      WkfTaskService wkfTaskService) {
+      WkfCommonService wkfCommonService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
@@ -93,7 +80,7 @@ public class WkfExecutionListener implements ExecutionListener {
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
     this.wkfLogService = wkfLogService;
     this.appSettingsStudioService = appSettingsStudioService;
-    this.wkfTaskService = wkfTaskService;
+    this.wkfCommonService = wkfCommonService;
   }
 
   @Override
@@ -256,6 +243,9 @@ public class WkfExecutionListener implements ExecutionListener {
               .all()
               .filter("self.instanceId = ?", execution.getProcessInstanceId())
               .fetchOne();
+
+      Map<String, Object> context = wkfCommonService.getContext(instance, null);
+      execution.setVariables(wkfCommonService.createVariables(context));
 
       CommandContext commandContext = Context.getCommandContext();
       commandContext
