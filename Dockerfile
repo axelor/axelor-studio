@@ -1,4 +1,4 @@
-FROM axelor/app-builder:8.0-beta AS builder
+FROM axelor/app-builder:8.0 AS builder
 
 ARG JAVA_OPTS="-Xmx4g"
 ARG APP_SOURCE="/app/axelor-public-webapp"
