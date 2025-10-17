@@ -277,7 +277,11 @@ public class AppServiceImpl implements AppService {
     files.forEach(
         url -> {
           String name = url.getFile();
-          name = Path.of(name.replaceAll("file:.+!/", "")).toString();
+          name =
+              Path.of(
+                      name.replaceAll(
+                          name.matches("file:.+!/.*") ? "file:.+!/" : ".*/bin/main/", ""))
+                  .toString();
           if (!StringUtils.isEmpty(lang)) {
             name = name.replace(Path.of(dirName, lang).toString(), dirName);
           }

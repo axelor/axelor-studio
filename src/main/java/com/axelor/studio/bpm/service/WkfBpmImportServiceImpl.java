@@ -290,7 +290,11 @@ public class WkfBpmImportServiceImpl implements WkfBpmImportService {
     files.forEach(
         url -> {
           String name = url.getFile();
-          name = Path.of(name.replaceAll("file:.+!/", "")).toString();
+          name =
+              Path.of(
+                      name.replaceAll(
+                          name.matches("file:.+!/.*") ? "file:.+!/" : ".*/bin/main/", ""))
+                  .toString();
           try {
             copy(url.openStream(), tmp, name);
           } catch (IOException e) {
