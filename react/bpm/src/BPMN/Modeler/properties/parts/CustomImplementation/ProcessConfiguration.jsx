@@ -447,7 +447,6 @@ export default function ProcessConfiguration({
                                 }}
                                 name="metaModel"
                                 optionLabel="name"
-                                optionLabelSecondary="title"
                                 value={processConfig.metaModel || ""}
                                 isLabel={false}
                               />
@@ -469,7 +468,6 @@ export default function ProcessConfiguration({
                                 value={processConfig.metaJsonModel || ""}
                                 isLabel={false}
                                 optionLabel="name"
-                                optionLabelSecondary="title"
                               />
                             )}
                           </Box>
