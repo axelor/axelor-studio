@@ -127,6 +127,7 @@ export const WKF_FIELDS = [
   "importOrigin",
   "code",
   "diagramXml",
+  "isMigrationOnGoing",
   "description",
   "isActive",
   "wkfTaskConfigList",
@@ -146,7 +147,7 @@ export const WKF_FIELDS = [
   "name",
   "wkfStatusColor",
   "studioApp",
-  "newVersionOnDeploy",
+  "newVersionOnDeploy"
 ];
 
 export const RELATED_FIELDS = ["name", "processId", "wkfProcessConfigList"];
