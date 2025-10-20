@@ -23,7 +23,8 @@
         <field name="name" readonly="true" colSpan="12"/>
         <field name="languageSelect" selection-in="['en','fr']" colSpan="5"/>
         <field name="demoDataLoaded" readonly="true"
-          if="__bean__(com.axelor.studio.service.ScriptAppSettingsStudioService).getApplicationMode() != 'prod'" colSpan="4"/>
+          if="__bean__(com.axelor.studio.service.ScriptAppSettingsStudioService).getApplicationMode() != 'prod'"
+          colSpan="4"/>
       </panel>
       <panel name="tagsPanel" colSpan="4">
         <field name="$tagFields" showTitle="false" readonly="true" colSpan="12">
