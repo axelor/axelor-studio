@@ -22,8 +22,8 @@ import com.axelor.db.tenants.TenantAware;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
 import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
-import com.axelor.studio.bpm.service.execution.WkfTaskService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
@@ -75,7 +75,7 @@ public class WkfExecutionListener implements ExecutionListener {
   protected WkfTaskConfigRepository wkfTaskConfigRepo;
   protected WkfLogService wkfLogService;
   protected AppSettingsStudioService appSettingsStudioService;
-  protected WkfTaskService wkfTaskService;
+  protected WkfCommonService wkfCommonService;
 
   @Inject
   public WkfExecutionListener(
@@ -85,7 +85,7 @@ public class WkfExecutionListener implements ExecutionListener {
       WkfTaskConfigRepository wkfTaskConfigRepo,
       WkfLogService wkfLogService,
       AppSettingsStudioService appSettingsStudioService,
-      WkfTaskService wkfTaskService) {
+      WkfCommonService wkfCommonService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
@@ -93,7 +93,7 @@ public class WkfExecutionListener implements ExecutionListener {
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
     this.wkfLogService = wkfLogService;
     this.appSettingsStudioService = appSettingsStudioService;
-    this.wkfTaskService = wkfTaskService;
+    this.wkfCommonService = wkfCommonService;
   }
 
   @Override
@@ -254,6 +254,9 @@ public class WkfExecutionListener implements ExecutionListener {
               .all()
               .filter("self.instanceId = ?", execution.getProcessInstanceId())
               .fetchOne();
+
+      Map<String, Object> context = wkfCommonService.getContext(instance, null);
+      execution.setVariables(wkfCommonService.createVariables(context));
 
       CommandContext commandContext = Context.getCommandContext();
       commandContext
