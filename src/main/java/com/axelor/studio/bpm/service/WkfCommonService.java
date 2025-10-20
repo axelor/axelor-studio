@@ -18,6 +18,7 @@
 package com.axelor.studio.bpm.service;
 
 import com.axelor.db.Model;
+import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcessConfig;
 import java.util.Map;
 import org.camunda.bpm.model.xml.instance.ModelElementInstance;
@@ -38,4 +39,6 @@ public interface WkfCommonService {
 
   public Model addProperties(
       Map<String, String> propertyMap, Model model, ModelElementInstance element);
+
+  Map<String, Object> getContext(WkfInstance instance, Model model) throws ClassNotFoundException;
 }
