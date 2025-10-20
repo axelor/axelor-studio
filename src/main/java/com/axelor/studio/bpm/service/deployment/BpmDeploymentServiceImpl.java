@@ -369,8 +369,22 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     Boolean isWebSocketSupported =
         Beans.get(AppBpmService.class).getAppBpm().getUseProgressDeploymentBar();
     String sessionId = null;
-    if (isWebSocketSupported)
-      sessionId = BpmDeploymentWebSocket.sessionMap.keySet().stream().findFirst().orElse(null);
+    if (isWebSocketSupported) {
+      WkfProcess firstProcess = migrationProcessMap.values().stream().findFirst().orElse(null);
+
+      if (firstProcess != null && firstProcess.getWkfModel() != null) {
+        Long modelId = firstProcess.getWkfModel().getId();
+
+        sessionId =
+            BpmDeploymentWebSocket.sessionMap.keySet().stream()
+                .filter(key -> key.equals(String.valueOf(modelId))) // assuming keys are Strings
+                .findFirst()
+                .orElse(null);
+      } else {
+        sessionId = null;
+      }
+    }
+
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
     int iterationNumber = 1;
     for (String processInstanceId : processInstanceIds) {
