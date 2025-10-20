@@ -1,4 +1,4 @@
-title: Upgrade `logback` to 1.5.18
+title: Upgrade `logback` to 1.5.19
 type: change
 description: |
   * Upgrade `logback-core`
