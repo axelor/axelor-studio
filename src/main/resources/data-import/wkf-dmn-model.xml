@@ -10,8 +10,14 @@
       <bind node="name" to="name"/>
       <bind node="description" to="description"/>
       <bind node="diagramXml" to="diagramXml"/>
-      <bind node="metaModel" to="metaModel" search="self.name = :metaModel" create="false"/>
-      <bind node="jsonModel" to="jsonModel" search="self.name = :jsonModel" create="false"/>
+      <bind node="metaModels/metaModel" to="metaModelSet" search="self.name in :name"
+        create="false">
+        <bind node="@name" to="name"/>
+      </bind>
+      <bind node="jsonModels/jsonModel" to="jsonModelSet" search="self.name in :name"
+        create="false">
+        <bind node="@name" to="name"/>
+      </bind>
       <bind node="studioApp" to="studioApp" search="self.code = :studioApp" create="false"/>
     </bind>
 

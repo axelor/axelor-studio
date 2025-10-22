@@ -8,14 +8,24 @@
 	}
 	
 	wkfDmnModels = ""
-	query.fetch().each({
-		wkfDmnModel -> wkfDmnModels += """\n\t\t<wkf-dmn-model>
+	query.fetch().each({ wkfDmnModel ->
+		metaModels = ""
+		wkfDmnModel.metaModelSet?.each({ metaModel -> 
+			metaModels += "\n\t\t\t\t<metaModel name=\"${metaModel.name}\"/>"
+		})
+		
+		jsonModels = ""
+		wkfDmnModel.jsonModelSet?.each({ jsonModel -> 
+			jsonModels += "\n\t\t\t\t<jsonModel name=\"${jsonModel.name}\"/>"
+		})
+		
+		wkfDmnModels += """\n\t\t<wkf-dmn-model>
 							\n\t\t\t<name>${wkfDmnModel.name}</name>
 							\n\t\t\t<description>${wkfDmnModel.description}</description>
+							\n\t\t\t<metaModels>$metaModels\n\t\t\t</metaModels>
+                            \n\t\t\t<jsonModels>$jsonModels\n\t\t\t</jsonModels>
+                            \n\t\t\t<studioApp>${wkfDmnModel.studioApp?.code}</studioApp>
 							\n\t\t\t<diagramXml><![CDATA[""" + wkfDmnModel.diagramXml + """]]></diagramXml>
-							\n\t\t\t<metaModel>${wkfDmnModel.metaModel?.name}</metaModel>
-							\n\t\t\t<jsonModel>${wkfDmnModel.jsonModel?.name}</jsonModel>
-							\n\t\t\t<studioApp>${wkfDmnModel.studioApp?.code}</studioApp>
 							\n\t\t</wkf-dmn-model>"""
 	})
 	
