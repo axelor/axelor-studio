@@ -36,7 +36,7 @@ export async function getCustomModel(options) {
 }
 
 export function fetchCustomFields(modelField, model) {
-  const _domain = `self.jsonModel = null and self.modelField='${modelField.name}' and self.model='${model?.fullName}'`
+  const _domain = `self.targetJsonModel IS NULL and self.modelField='${modelField.name}' and self.model='${model?.fullName}'`
   return metaJsonFieldService.search({
     data: { _domain },
     sortBy: ["sequence"],
