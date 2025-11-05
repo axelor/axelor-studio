@@ -18,7 +18,7 @@
 package com.axelor.studio.bpm.service.init;
 
 import com.axelor.inject.Beans;
-import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.bpm.listener.WkfExecutionListener;
 import com.axelor.studio.bpm.listener.WkfTaskListener;
 import org.camunda.bpm.application.ProcessApplication;

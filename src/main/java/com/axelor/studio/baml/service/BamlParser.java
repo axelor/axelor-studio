@@ -29,8 +29,25 @@ import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+/**
+ * BAML Parser for processing XML configurations.
+ *
+ * @deprecated BAML functionality is deprecated and will be removed in future versions.
+ *             Consider migrating to alternative workflow solutions like BPM or Studio Actions.
+ *             This class is scheduled for removal in version 4.0.
+ * @since 3.x
+ */
+@Deprecated(since = "3.6", forRemoval = true)
 public class BamlParser {
 
+  /**
+   * Parses BAML XML input stream into ProcessActionRootNode.
+   *
+   * @param xml Input stream containing BAML XML
+   * @return ProcessActionRootNode or null if parsing fails
+   * @deprecated Use BPM workflow definitions instead
+   */
+  @Deprecated(since = "3.6", forRemoval = true)
   public static ProcessActionRootNode parse(InputStream xml) {
 
     try {
@@ -50,6 +67,13 @@ public class BamlParser {
     return null;
   }
 
+  /**
+   * Creates empty BAML XML structure.
+   *
+   * @return Empty BAML XML as String or null if creation fails
+   * @deprecated Use BPM workflow templates instead
+   */
+  @Deprecated(since = "3.6", forRemoval = true)
   public static String createEmptyBamlXml() {
 
     try {
