@@ -21,6 +21,14 @@ import com.axelor.db.Model;
 import com.axelor.studio.db.BamlModel;
 import java.util.Map;
 
+/**
+ * BAML Service for processing XML configurations.
+ *
+ * @deprecated BAML functionality is deprecated and will be removed in future versions.
+ *             Consider migrating to alternative workflow solutions like BPM or Studio Actions.
+ *             This class is scheduled for removal in version 4.0.
+ * @since 3.x
+ */
 public interface BamlService {
 
   public String generateGroovyCode(String xml);

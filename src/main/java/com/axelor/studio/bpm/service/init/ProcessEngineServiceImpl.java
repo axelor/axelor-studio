@@ -22,7 +22,7 @@ import com.axelor.db.tenants.TenantConfigProvider;
 import com.axelor.db.tenants.TenantConnectionProvider;
 import com.axelor.db.tenants.TenantModule;
 import com.axelor.inject.Beans;
-import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.bpm.service.log.WkfLoggerInitService;
 import com.axelor.studio.service.AppSettingsStudioService;

@@ -15,20 +15,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.studio.baml.tools;
+package com.axelor.studio.bpm.utils;
 
 import com.axelor.db.tenants.TenantConfig;
 import com.axelor.db.tenants.TenantResolver;
 
 public class BpmTools {
 
-  public static final String getCurentTenant() {
-    String tenantId = TenantResolver.currentTenantIdentifier();
+    public static final String getCurentTenant() {
+        String tenantId = TenantResolver.currentTenantIdentifier();
 
-    if (tenantId == null) {
-      tenantId = TenantConfig.DEFAULT_TENANT_ID;
+        if (tenantId == null) {
+            tenantId = TenantConfig.DEFAULT_TENANT_ID;
+        }
+
+        return tenantId;
     }
-
-    return tenantId;
-  }
 }

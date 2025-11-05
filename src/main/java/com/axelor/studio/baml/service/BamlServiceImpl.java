@@ -56,6 +56,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
+/**
+ * @deprecated This class is deprecated and will be removed in version 4.0.
+ *             <p>
+ *             BAML (Business Action Modeling Language) functionality has been discontinued.
+ *             Please migrate to modern workflow mechanisms such as:
+ *             <ul>
+ *               <li>BPM (Business Process Management)</li>
+ *               <li>Studio Actions or Groovy Action Scripts</li>
+ *             </ul>
+ *             </p>
+ */
+@Deprecated(since = "3.6", forRemoval = true)
 public class BamlServiceImpl implements BamlService {
 
   protected WkfCommonService wkfCommonService;
@@ -66,6 +79,7 @@ public class BamlServiceImpl implements BamlService {
   }
 
   @Override
+  @Deprecated(since = "3.6", forRemoval = true)
   public String generateGroovyCode(String xml) {
 
     ProcessActionRootNode rootNode = null;
@@ -144,6 +158,7 @@ public class BamlServiceImpl implements BamlService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
+  @Deprecated(since = "3.6", forRemoval = true)
   public Model execute(BamlModel bamlModel, Model entity) {
 
     Bindings bindings = new SimpleBindings();
@@ -166,6 +181,7 @@ public class BamlServiceImpl implements BamlService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
+  @Deprecated(since = "3.6", forRemoval = true)
   public Model execute(BamlModel bamlModel, Map<String, Object> context) {
 
     Bindings bindings = new SimpleBindings();
@@ -185,6 +201,7 @@ public class BamlServiceImpl implements BamlService {
   }
 
   @Override
+  @Deprecated(since = "3.6", forRemoval = true)
   public String extractBamlXml(String xml) {
 
     if (xml == null) {
