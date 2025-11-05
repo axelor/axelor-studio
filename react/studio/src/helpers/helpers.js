@@ -122,7 +122,7 @@ export const fetchMetaViewService = async (
   const views = await fetchViews(selectedViewOption)
 
   if (views) {
-    const attrsList = await getAttrsData(model, view)
+    const attrsList = await getAttrsData(model, { name: view })
     const schema = getSchemaData(views, fields, attrsList)
     const originalViewData = {
       operator: "and",
