@@ -60,8 +60,6 @@ public class TransactionHelper {
         } catch (Exception e) {
           log.error("Error executing the post-commit action", e);
         }
-      } else {
-        log.debug("Transaction not committed (status: {}), post-commit action ignored", status);
       }
     }
   }
