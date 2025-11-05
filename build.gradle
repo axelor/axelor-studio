@@ -71,26 +71,26 @@ dependencies {
   implementation 'org.camunda.bpm:camunda-engine-plugin-spin:7.23.0'
   implementation 'org.camunda.spin:camunda-spin-dataformat-json-jackson:7.23.0'
 
-  implementation 'org.apache.groovy:groovy-all:4.0.28'
+  implementation 'org.apache.groovy:groovy-all:4.0.29'
   implementation 'org.eclipse.birt.runtime.3_7_1:Tidy:1'
   implementation 'org.apache.commons:commons-exec:1.5.0'
   implementation 'org.apache.commons:commons-text:1.14.0'
   implementation 'org.apache.commons:commons-lang3:3.19.0'
-  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.19.2'
+  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.20.0'
   implementation 'org.json:json:20250517'
   implementation 'org.reflections:reflections:0.10.2'
 
-  implementation 'ch.qos.logback:logback-core:1.5.19'
-  implementation 'ch.qos.logback:logback-classic:1.5.19'
-  implementation 'org.yaml:snakeyaml:2.4'
-  implementation 'jakarta.websocket:jakarta.websocket-api:2.1.1'
-  implementation 'jakarta.websocket:jakarta.websocket-client-api:2.1.1'
-  compileOnly 'org.projectlombok:lombok:1.18.38'
-  annotationProcessor 'org.projectlombok:lombok:1.18.38'
+  implementation 'ch.qos.logback:logback-core:1.5.20'
+  implementation 'ch.qos.logback:logback-classic:1.5.20'
+  implementation 'org.yaml:snakeyaml:2.5'
+  implementation 'jakarta.websocket:jakarta.websocket-api:2.2.0'
+  implementation 'jakarta.websocket:jakarta.websocket-client-api:2.2.0'
+  compileOnly 'org.projectlombok:lombok:1.18.42'
+  annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
-  testCompileOnly 'org.projectlombok:lombok:1.18.38'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
-  testImplementation 'org.mockito:mockito-core:5.18.0'
+  testCompileOnly 'org.projectlombok:lombok:1.18.42'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
+  testImplementation 'org.mockito:mockito-core:5.20.0'
 }
 
 changelog {
