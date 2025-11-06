@@ -565,7 +565,6 @@ export default function CallActivityProps({
             placeholder={translate("Call model")}
             isLabel={false}
             optionLabel="name"
-            optionLabelSecondary="title"
           />
         ) : (
           <Select
@@ -584,7 +583,6 @@ export default function CallActivityProps({
             isLabel={false}
             placeholder={translate("Call model")}
             optionLabel="name"
-            optionLabelSecondary="title"
           />
         )}
         <React.Fragment>
