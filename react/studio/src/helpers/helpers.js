@@ -121,66 +121,66 @@ export const fetchMetaViewService = async (
 
 	const views = await fetchViews(selectedViewOption)
 
-	if (views) {
-		const attrsList = await getAttrsData(model, view)
-		const schema = getSchemaData(views, fields, attrsList)
-		const originalViewData = {
-			operator: "and",
-			criteria: [
-				{
-					operator: "or",
-					criteria: [
-						{ fieldName: "computed", operator: "=", value: false },
-						{ fieldName: "computed", operator: "isNull" },
-					],
-				},
-				{
-					operator: "or",
-					criteria: [
-						{ fieldName: "extension", operator: "=", value: false },
-						{ fieldName: "extension", operator: "isNull" },
-					],
-				},
-				{ fieldName: "name", operator: "=", value: `${view}` },
-			],
-		}
-		metaViewService.search({ data: originalViewData }).then((res) => {
-			const { data = [] } = res
-			if (data[0]) {
-				update((draft) => {
-					draft.originalXML = JSON.parse(
-						convert.xml2json(data[0].xml, {
-							compact: false,
-							fullTagEmptyElement: false,
-						})
-					)
-				})
-			}
-		})
-		// fetch studio extension view
-		const _viewSearch = {
-			_domain: `self.xmlId = 'studio-${view}' and self.extension = true`,
-		}
-		metaViewService
-			.search({ data: _viewSearch })
-			.then((res) => {
-				const { data: resData = [] } = res
-				const record = resData[0]
-				if (record) {
-					update((draft) => {
-						draft.extensionView = record
-						draft.extensionXML = JSON.parse(
-							convert.xml2json(record.xml, {
-								compact: false,
-								fullTagEmptyElement: false,
-							})
-						)
-					})
-				}
-			})
-			.catch((err) => {
-				throw err
-			})
+  if (views) {
+    const attrsList = await getAttrsData(model, { name: view })
+    const schema = getSchemaData(views, fields, attrsList)
+    const originalViewData = {
+      operator: "and",
+      criteria: [
+        {
+          operator: "or",
+          criteria: [
+            { fieldName: "computed", operator: "=", value: false },
+            { fieldName: "computed", operator: "isNull" },
+          ],
+        },
+        {
+          operator: "or",
+          criteria: [
+            { fieldName: "extension", operator: "=", value: false },
+            { fieldName: "extension", operator: "isNull" },
+          ],
+        },
+        { fieldName: "name", operator: "=", value: `${view}` },
+      ],
+    }
+    metaViewService.search({ data: originalViewData }).then((res) => {
+      const { data = [] } = res
+      if (data[0]) {
+        update((draft) => {
+          draft.originalXML = JSON.parse(
+            convert.xml2json(data[0].xml, {
+              compact: false,
+              fullTagEmptyElement: false,
+            })
+          )
+        })
+      }
+    })
+    // fetch studio extension view
+    const _viewSearch = {
+      _domain: `self.xmlId = 'studio-${view}' and self.extension = true`,
+    }
+    metaViewService
+      .search({ data: _viewSearch })
+      .then((res) => {
+        const { data: resData = [] } = res
+        const record = resData[0]
+        if (record) {
+          update((draft) => {
+            draft.extensionView = record
+            draft.extensionXML = JSON.parse(
+              convert.xml2json(record.xml, {
+                compact: false,
+                fullTagEmptyElement: false,
+              })
+            )
+          })
+        }
+      })
+      .catch((err) => {
+        throw err
+      })
 
 		update((draft) => {
 			draft.attrsList = attrsList
