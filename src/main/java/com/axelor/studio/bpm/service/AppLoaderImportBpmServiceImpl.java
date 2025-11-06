@@ -28,7 +28,7 @@ public class AppLoaderImportBpmServiceImpl extends AppLoaderImportServiceImpl {
   }
 
   protected static final String[] IMPORT_FILES =
-      new String[] {"wkf-model.xml", "wkf-dmn-model.xml", "baml-model.xml"};
+      new String[] {"wkf-model.xml", "wkf-dmn-model.xml"};
 
   @Override
   public List<File> getAppImportConfigFiles(File dataDir) throws IOException {

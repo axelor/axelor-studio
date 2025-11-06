@@ -556,17 +556,6 @@ export async function loadTheme(theme) {
   return { options, theme };
 }
 
-export async function getBamlModels(criteria = []) {
-  const res = await Service.search("com.axelor.studio.db.BamlModel", {
-    data: {
-      criteria,
-      limit: 40,
-    },
-  });
-  const { data = [] } = res || {};
-  return data;
-}
-
 export async function getDMNModels(criteria = []) {
   const res = await Service.search("com.axelor.studio.db.DmnTable", {
     data: {

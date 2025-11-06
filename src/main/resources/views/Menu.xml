@@ -275,15 +275,6 @@
     <view type="form" name="wkf-dmn-model-form"/>
   </action-view>
 
-  <menuitem title="BAMLs" name="menu-baml-model" parent="bpm-app-bpm-components"
-    action="baml.model.all" order="53" if="__config__.app?.isApp('bpm')"/>
-
-  <action-view name="baml.model.all" title="BAMLs"
-    model="com.axelor.studio.db.BamlModel">
-    <view type="grid" name="baml-model-grid"/>
-    <view type="form" name="baml-model-form"/>
-  </action-view>
-
   <menuitem title="Process instance modification" name="menu-process-modification"
     parent="bpm-app-technical-monitoring" action="menu.process.modification.all" order="55"
     if="__config__.app?.isApp('bpm')"/>

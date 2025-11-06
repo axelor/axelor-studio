@@ -22,7 +22,7 @@ import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.MetaModel;
 import com.axelor.meta.schema.views.Selection;
-import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;

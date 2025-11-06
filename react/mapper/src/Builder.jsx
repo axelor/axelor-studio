@@ -172,7 +172,6 @@ function Builder({
   getProcessElement,
   isDMNAllow,
   getDMNValues,
-  isBAML,
 }) {
   const [loading, setLoading] = React.useState(false);
   const [builderRecord, setBuilderRecord] = React.useState({});
@@ -466,13 +465,13 @@ function Builder({
         try {
           setLoading(true);
           const result =
-            isBPMN || isBAML
+            isBPMN
               ? true
               : await fetchRecord(params.model, params.id);
           if (result) {
             !isBPMN && setBuilderRecord(result);
             const jsonData =
-              isBPMN || isBAML
+              isBPMN
                 ? getJSON(params, 'resultMetaField')
                 : getJSON(result, params.resultMetaField);
             if (jsonData) {
@@ -624,7 +623,7 @@ function Builder({
         <Box className={styles.topView}>
           <Box style={{ marginBottom: 10 }}>
             <Box d="flex" flexWrap="wrap" alignItems="center">
-              {!isBPMN && !isBAML && (
+              {!isBPMN && (
                 <IconButton
                   classes={{ colorPrimary: styles.saveIcon }}
                   color="primary"

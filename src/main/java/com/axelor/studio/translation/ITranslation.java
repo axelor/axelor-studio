@@ -89,7 +89,5 @@ public interface ITranslation {
   /** BPM */
   String INVALID_WKF_MODEL_XML = /*$$(*/ "The data file is not an XML."; /*)*/
 
-  String INVALID_BAML_XML = /*$$(*/ "Invalid BAML xml. Please contact admin for further info"; /*)*/
-
-  String MENU_NOT_FOUND = /*$$(*/ "Menu not found" /*)*/;
+  public static final String MENU_NOT_FOUND = /*$$(*/ "Menu not found" /*)*/;
 }

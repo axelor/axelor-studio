@@ -341,9 +341,6 @@ public final class BpmExceptionMessage {
   public static final String BPM_STUDIO_VERSIONTAG = /*$$(*/ "versionTag" /*)*/;
   public static final String BPM_STUDIO_EXTERNAL = /*$$(*/ "External" /*)*/;
   public static final String BPM_STUDIO_DMN = /*$$(*/ "DMN" /*)*/;
-  public static final String BPM_STUDIO_BAML = /*$$(*/ "BAML" /*)*/;
-  public static final String BPM_STUDIO_BAML_MODEL = /*$$(*/ "BAML model" /*)*/;
-  public static final String BPM_STUDIO_BAML_EDITOR = /*$$(*/ "BAML editor" /*)*/;
   public static final String BPM_STUDIO_IMPLEMENTATION = /*$$(*/ "Implementation" /*)*/;
   public static final String BPM_STUDIO_DECISION_REF = /*$$(*/ "Decision ref" /*)*/;
   public static final String BPM_STUDIO_DMN_EDITOR = /*$$(*/ "DMN editor" /*)*/;
@@ -502,85 +499,6 @@ public final class BpmExceptionMessage {
       BPM_STUDIO_SPECIFY_MORE_THAN_ONE_USER_AS_A_COMMA_SEPARATED_LIST = /*$$(*/
           "Specify more than one user as a comma separated list." /*)*/;
   public static final String BPM_STUDIO_CONFIGURATION = /*$$(*/ "Configuration" /*)*/;
-
-  // Baml studio
-  public static final String BAML_STUDIO_FIELD_NAME = /*$$(*/ "Field name" /*)*/;
-  public static final String BAML_STUDIO_ADD_SUB_FIELD = /*$$(*/ "Add sub field" /*)*/;
-  public static final String BAML_STUDIO_REMOVE_SUB_FIELD = /*$$(*/ "Remove sub field" /*)*/;
-  public static final String BAML_STUDIO_REQUIRED = /*$$(*/ "Required" /*)*/;
-  public static final String BAML_STUDIO_APPEND = /*$$(*/ "Append" /*)*/;
-  public static final String BAML_STUDIO_CONNECT_USING_TRANSITION = /*$$(*/
-      "Connect using transition" /*)*/;
-  public static final String BAML_STUDIO_APPEND_MAPPER = /*$$(*/ "Append mapper" /*)*/;
-  public static final String BAML_STUDIO_APPEND_QUERY = /*$$(*/ "Append query" /*)*/;
-  public static final String BAML_STUDIO_CREATE_CONDITION = /*$$(*/ "Create condition" /*)*/;
-  public static final String BAML_STUDIO_CREATE_LOOP = /*$$(*/ "Create loop" /*)*/;
-  public static final String BAML_STUDIO_REMOVE = /*$$(*/ "Remove" /*)*/;
-  public static final String BAML_STUDIO_CREATE = /*$$(*/ "Create" /*)*/;
-  public static final String BAML_STUDIO_VALUE = /*$$(*/ "Value" /*)*/;
-  public static final String BAML_STUDIO_OPERATOR = /*$$(*/ "Operator" /*)*/;
-  public static final String BAML_STUDIO_SELF = /*$$(*/ "Self" /*)*/;
-  public static final String BAML_STUDIO_CONTEXT = /*$$(*/ "Context" /*)*/;
-  public static final String BAML_STUDIO_NONE = /*$$(*/ "None" /*)*/;
-  public static final String BAML_STUDIO_MODEL = /*$$(*/ "Model" /*)*/;
-  public static final String BAML_STUDIO_META_MODEL_ELSE = /*$$(*/ "Meta model else" /*)*/;
-  public static final String BAML_STUDIO_META_MODEL = /*$$(*/ "Meta model" /*)*/;
-  public static final String BAML_STUDIO_ADD_GROUP = /*$$(*/ "Add group" /*)*/;
-  public static final String BAML_STUDIO_REMOVE_GROUP = /*$$(*/ "Remove group" /*)*/;
-  public static final String BAML_STUDIO_ADD_RULE = /*$$(*/ "Add rule" /*)*/;
-  public static final String BAML_STUDIO_ADD_ALL_VALUES = /*$$(*/ "Add all values" /*)*/;
-  public static final String
-      BAML_STUDIO_CURRENT_CHANGES_WILL_BE_LOST_DO_YOU_REALLY_WANT_TO_PROCEED = /*$$(*/
-          "Current changes will be lost. Do you really want to proceed?" /*)*/;
-  public static final String BAML_STUDIO_QUESTION = /*$$(*/ "Question" /*)*/;
-  public static final String BAML_STUDIO_ERROR = /*$$(*/ "Error" /*)*/;
-  public static final String BAML_STUDIO_GENERATE_WITH_SAVED_RECORD = /*$$(*/
-      "Generate with saved record" /*)*/;
-  public static final String BAML_STUDIO_ADD_EXPRESSION = /*$$(*/ "Add expression" /*)*/;
-  public static final String BAML_STUDIO_OK = /*$$(*/ "OK" /*)*/;
-  public static final String BAML_STUDIO_CANCEL = /*$$(*/ "Cancel" /*)*/;
-  public static final String BAML_STUDIO_SELECT_FIELDS = /*$$(*/ "Select fields" /*)*/;
-  public static final String BAML_STUDIO_SEARCH_FIELDS = /*$$(*/ "Search fields" /*)*/;
-  public static final String BAML_STUDIO_NO_FIELDS_AVAILABLE = /*$$(*/ "No fields available" /*)*/;
-  public static final String BAML_STUDIO_ADD_FIELDS = /*$$(*/ "Add Fields" /*)*/;
-  public static final String BAML_STUDIO_MODEL_FIELD = /*$$(*/ "Model field" /*)*/;
-  public static final String BAML_STUDIO_EXPRESSION = /*$$(*/ "Expression" /*)*/;
-  public static final String
-      BAML_STUDIO_QUERY_CANT_BE_MANAGED_USING_BUILDER_ONCE_CHANGED_MANUALLY = /*$$(*/
-          "Query can't be managed using builder once changed manually." /*)*/;
-  public static final String BAML_STUDIO_WARNING = /*$$(*/ "Warning" /*)*/;
-  public static final String BAML_STUDIO_IS_JSON = /*$$(*/ "Is json" /*)*/;
-  public static final String BAML_STUDIO_QUERY = /*$$(*/ "Query" /*)*/;
-  public static final String BAML_STUDIO_ADD_QUERY = /*$$(*/ "Add query" /*)*/;
-  public static final String BAML_STUDIO_LAST_FIELD_SELECTED_MUST_BE_OF_O2M_OR_M2M_TYPE = /*$$(*/
-      "Last field selected must be of O2M or M2M type" /*)*/;
-  public static final String BAML_STUDIO_TARGET = /*$$(*/ "Target" /*)*/;
-  public static final String BAML_STUDIO_SCRIPT = /*$$(*/ "Script" /*)*/;
-  public static final String
-      BAML_STUDIO_SCRIPT_CANT_BE_MANAGED_USING_BUILDER_ONCE_CHANGED_MANUALLY = /*$$(*/
-          "Script can't be managed using builder once changed manually." /*)*/;
-  public static final String BAML_STUDIO_SOURCE_FIELD = /*$$(*/ "Source field" /*)*/;
-  public static final String BAML_STUDIO_TARGET_FIELD = /*$$(*/ "Target field" /*)*/;
-  public static final String BAML_STUDIO_SAVE = /*$$(*/ "Save" /*)*/;
-  public static final String BAML_STUDIO_DOWNLOAD_SVG = /*$$(*/ "Download SVG" /*)*/;
-  public static final String BAML_STUDIO_DOWNLOAD = /*$$(*/ "Download" /*)*/;
-  public static final String BAML_STUDIO_UPLOAD = /*$$(*/ "Upload" /*)*/;
-  public static final String BAML_STUDIO_GENERATE_CODE = /*$$(*/ "Generate code" /*)*/;
-  public static final String BAML_STUDIO_PROPERTIES_PANEL = /*$$(*/ "Properties panel" /*)*/;
-  public static final String BAML_STUDIO_PROPERTIES = /*$$(*/ "Properties" /*)*/;
-  public static final String BAML_STUDIO_NAME = /*$$(*/ "Name" /*)*/;
-  public static final String BAML_STUDIO_VAR = /*$$(*/ "Var" /*)*/;
-  public static final String BAML_STUDIO_RETURN_TYPE = /*$$(*/ "Return type" /*)*/;
-  public static final String BAML_STUDIO_VARIABLE = /*$$(*/ "Variable" /*)*/;
-  public static final String BAML_STUDIO_FUNCTION_NAME = /*$$(*/ "Function name" /*)*/;
-  public static final String BAML_STUDIO_OPERATION_SUCCESSFUL = /*$$(*/
-      "Operation successful" /*)*/;
-  public static final String BAML_STUDIO_VALUE_FROM = /*$$(*/ "Value from" /*)*/;
-  public static final String BAML_STUDIO_REMOVE_FIELD = /*$$(*/ "Remove field" /*)*/;
-  public static final String BAML_STUDIO_TARGET_MODEL = /*$$(*/ "Target model" /*)*/;
-  public static final String BAML_STUDIO_SOURCE_MODEL = /*$$(*/ "Source model" /*)*/;
-  public static final String BAML_STUDIO_NEW_RECORD = /*$$(*/ "New record" /*)*/;
-  public static final String BAML_STUDIO_ENABLE = /*$$(*/ "Enable" /*)*/;
 
   // DMN Studio
   public static final String STUDIO_DMN_INPUT_EXPRESSION = /*$$(*/ "Input Expression" /*)*/;

@@ -8,7 +8,7 @@ import com.axelor.db.Model;
 import com.axelor.db.Query;
 import com.axelor.db.tenants.TenantAware;
 import com.axelor.inject.Beans;
-import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.studio.helper.TransactionHelper;

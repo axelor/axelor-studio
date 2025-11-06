@@ -14,8 +14,6 @@ import com.axelor.meta.loader.AppVersionServiceImpl;
 import com.axelor.meta.service.ViewProcessor;
 import com.axelor.studio.app.listener.AppServerStartListener;
 import com.axelor.studio.app.service.*;
-import com.axelor.studio.baml.service.BamlService;
-import com.axelor.studio.baml.service.BamlServiceImpl;
 import com.axelor.studio.bpm.listener.ServerStartListener;
 import com.axelor.studio.bpm.listener.WkfModelImportListener;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
@@ -228,7 +226,6 @@ public class StudioModule extends AxelorModule {
     bind(WkfUserActionService.class).to(WkfUserActionServiceImpl.class);
     bind(DmnDeploymentService.class).to(DmnDeploymentServiceImpl.class);
     bind(DmnService.class).to(DmnServiceImpl.class);
-    bind(BamlService.class).to(BamlServiceImpl.class);
     bind(DmnExportService.class).to(DmnExportServiceImpl.class);
     bind(DmnImportService.class).to(DmnImportServiceImpl.class);
 

@@ -2,7 +2,7 @@
  * SPDX-FileCopyrightText: Axelor <https://axelor.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
-package com.axelor.studio.baml.tools;
+package com.axelor.studio.bpm.utils;
 
 import com.axelor.db.tenants.TenantConfig;
 import com.axelor.db.tenants.TenantResolver;

@@ -44,12 +44,6 @@
   margin: 3px 0;
 }
 
-.baml {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .dialogContent{
   width: 100%;
 }

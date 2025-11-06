@@ -34,7 +34,7 @@ public class AppLoaderExportBpmServiceImpl extends AppLoaderExportServiceImpl {
   }
 
   protected static final String[] EXPORT_TEMPLATES =
-      new String[] {"baml-model", "wkf-model", "wkf-dmn-model"};
+      new String[] {"wkf-model", "wkf-dmn-model"};
 
   @Override
   public Map<String, InputStream> getExportTemplateResources() {
