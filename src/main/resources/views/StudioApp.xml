@@ -39,6 +39,8 @@
       <panel-dashlet action="action-studio-view-studio-app-menu"
         title="StudioMenu.menus"/>
       <panel-dashlet action="action-studio-view-studio-app-action" title="Actions"/>
+      <panel-dashlet action="action-studio-view-studio-app-meta-action"
+        title="Meta Actions"/>
       <panel name="chartPanel" title="Charts">
         <panel-dashlet action="action-studio-view-studio-app-dashboard"
           title="Dashboards" colSpan="12"/>
@@ -167,6 +169,14 @@
     <view type="grid" name="studio-action-grid"/>
     <view type="form" name="studio-action-form"/>
     <domain>self.studioApp.id = :studioAppId AND self.menuAction = false</domain>
+    <context name="studioAppId" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-meta-action" title="Meta Actions"
+    model="com.axelor.meta.db.MetaAction">
+    <view type="grid" name="meta-action-grid"/>
+    <view type="form" name="meta-action-form"/>
+    <domain>self.studioApp.id = :studioAppId</domain>
     <context name="studioAppId" expr="eval: id"/>
   </action-view>
 

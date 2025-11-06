@@ -636,6 +636,7 @@
 "Message Intermediate Throw Event","Événement intermédiaire d'envoi de message",,
 "Message Start Event","Événement de démarrage de type message",,
 "Message name","Nom du message",,
+"Meta Actions",,,
 "Meta model",,,
 "Meta model else","Autre méta-modèle",,
 "Meta module","Meta module",,
@@ -1704,3 +1705,4 @@
 "youtube",,,
 "zoom-in",,,
 "zoom-out",,,
+"{{$fmt('name')}}",,,

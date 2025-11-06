@@ -636,6 +636,7 @@
 "Message Intermediate Throw Event",,,
 "Message Start Event",,,
 "Message name",,,
+"Meta Actions",,,
 "Meta model",,,
 "Meta model else",,,
 "Meta module",,,
@@ -1704,3 +1705,4 @@
 "youtube",,,
 "zoom-in",,,
 "zoom-out",,,
+"{{$fmt('name')}}",,,
