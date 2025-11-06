@@ -690,7 +690,6 @@ export default function ScriptProps({
                 placeholder={translate("Custom model")}
                 isLabel={false}
                 optionLabel="name"
-                optionLabelSecondary="title"
               />
             ) : (
               <Select
@@ -702,7 +701,6 @@ export default function ScriptProps({
                 }}
                 name="metaModel"
                 optionLabel="name"
-                optionLabelSecondary="title"
                 value={metaModel}
                 isLabel={false}
                 placeholder={translate("Model")}
@@ -774,7 +772,6 @@ export default function ScriptProps({
                       value={models || []}
                       multiple={true}
                       optionLabel="name"
-                      optionLabelSecondary="title"
                       handleRemove={(option) => {
                         const value = models?.filter(
                           (r) => r.name !== option.name
