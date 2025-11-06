@@ -1093,8 +1093,7 @@ export default function Editor({
   fetchModels,
   isAllowButtons = false,
   isBPMN = false,
-  isMapper,
-  isBamlQuery = false,
+  isMapper
 }) {
   const [isBPM, setBPM] = useState(false);
   const { id, rules = [] } = editor;

@@ -8,18 +8,17 @@ import Builder from './Builder';
 import './App.css';
 
 function AppContent({
-  isBPMN,
-  open,
-  handleClose,
-  isDialog,
-  onSave,
-  param,
-  getProcesses,
-  getProcessElement,
-  isDMNAllow,
-  getDMNValues,
-  isBAML
-}) {
+                      isBPMN,
+                      open,
+                      handleClose,
+                      isDialog,
+                      onSave,
+                      param,
+                      getProcesses,
+                      getProcessElement,
+                      isDMNAllow,
+                      getDMNValues
+                    }) {
   const [values, setValues] = React.useState(null);
 
   React.useEffect(() => {
@@ -59,25 +58,23 @@ function AppContent({
         getProcessElement={getProcessElement}
         isDMNAllow={isDMNAllow}
         getDMNValues={getDMNValues}
-        isBAML={isBAML}
       />
     </div>
   );
 }
 
 export default function App({
-  isBPMN,
-  open,
-  handleClose,
-  isDialog,
-  onSave,
-  param,
-  getProcesses,
-  getProcessElement,
-  isDMNAllow,
-  getDMNValues,
-  isBAML=false
-}) {
+                              isBPMN,
+                              open,
+                              handleClose,
+                              isDialog,
+                              onSave,
+                              param,
+                              getProcesses,
+                              getProcessElement,
+                              isDMNAllow,
+                              getDMNValues
+                            }) {
   const data = useAppTheme();
   const { theme, options } = data;
 
@@ -95,7 +92,6 @@ export default function App({
           getProcessElement={getProcessElement}
           isDMNAllow={isDMNAllow}
           getDMNValues={getDMNValues}
-          isBAML={isBAML}
         />
       </DndProvider>
     </ThemeProvider>

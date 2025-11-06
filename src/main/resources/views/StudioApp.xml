@@ -47,7 +47,6 @@
       </panel>
       <panel-dashlet action="bpm-action-view-studio-app-bpm" title="BPM"/>
       <panel-dashlet action="bpm-action-view-studio-app-dmn" title="DMN"/>
-      <panel-dashlet action="bpm-action-view-studio-app-baml" title="BAML"/>
       <panel-dashlet action="bpm-action-view-studio-app-ws-connector"
         title="WS Connector"/>
       <panel-dashlet action="bpm-action-view-studio-app-ws-request" title="WS Request"/>
@@ -234,14 +233,6 @@
     model="com.axelor.studio.db.WkfDmnModel">
     <view type="grid" name="wkf-dmn-model-grid"/>
     <view type="form" name="wkf-dmn-model-form"/>
-    <domain>self.studioApp.id = :studioAppId</domain>
-    <context name="studioAppId" expr="eval: id"/>
-  </action-view>
-
-  <action-view name="bpm-action-view-studio-app-baml" title="BAML"
-    model="com.axelor.studio.db.BamlModel">
-    <view type="grid" name="baml-model-grid"/>
-    <view type="form" name="baml-model-form"/>
     <domain>self.studioApp.id = :studioAppId</domain>
     <context name="studioAppId" expr="eval: id"/>
   </action-view>

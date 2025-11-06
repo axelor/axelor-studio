@@ -51,10 +51,6 @@ axelor {
   description 'Axelor Studio Module'
 }
 
-test {
-  exclude 'com/axelor/apps/baml/test/**'
-}
-
 dependencies {
   if (findProject(':modules:axelor-message') != null) {
     api project(':modules:axelor-message')

@@ -2163,7 +2163,7 @@ function WebServiceEditor() {
     };
   }
   const openDiagramImage = useCallback(
-    async (bamlXml) => {
+    async (webServiceXml) => {
       let canvas;
       let element;
       const id = new URLSearchParams(window.location.search).get("id");
@@ -2177,7 +2177,7 @@ function WebServiceEditor() {
           if (element.type === "bpmn:Collaboration") {
             setElement(element.children[0]);
           } else {
-            bpmnModeler.importXML(bamlXml, (err) => {
+            bpmnModeler.importXML(webServiceXml, (err) => {
               if (err) {
                 return console.error("could not import BPMN 2.0 diagram", err);
               }
@@ -2198,7 +2198,7 @@ function WebServiceEditor() {
           if (element.type === "bpmn:Process-action") {
             setElement(element);
           } else {
-            bpmnModelerConnector.importXML(bamlXml, (err) => {
+            bpmnModelerConnector.importXML(webServiceXml, (err) => {
               if (err) {
                 return console.error("could not import BPMN 2.0 diagram", err);
               }
@@ -2216,7 +2216,7 @@ function WebServiceEditor() {
           if (element.type === "bpmn:Process-action") {
             setElement(element);
           } else {
-            bpmnModelerAuth.importXML(bamlXml, (err) => {
+            bpmnModelerAuth.importXML(webServiceXml, (err) => {
               if (err) {
                 return console.error("could not import BPMN 2.0 diagram", err);
               }

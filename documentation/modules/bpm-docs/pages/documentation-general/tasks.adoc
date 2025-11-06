@@ -54,10 +54,6 @@ image::businiss_rule_task.png[event process,align="left"]
 
 Représentée par image:service-task-icon.png[service icon], il permet d’appeler des services extérieurs.
 
-Il est possible d’appeler un modèle BAML en cochant la case image:baml-icon.png[baml icon], on peut alors choisir un
-
-modèle via une liste déroulante image:baml-model-icon.png[baml icon] et modifiable via un clic sur l’icône image:modify-icon.png[receive icon]
-
 Le studio implémente plusieurs services externes sélectionnables via la liste déroulante
 
 image::implemenation_service_task.png[event process,align="left"]

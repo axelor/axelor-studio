@@ -36,7 +36,6 @@
 *** xref:/documentation-general/generation_task.adoc[Généralité sur les task]
 *** xref:/documentation-general/gateway.adoc[Gateway]
 *** xref:/documentation-general/creation_modele_dmn.adoc[Création des modèles DMN]
-*** xref:/documentation-general/create_model_baml.adoc[Création des modèles BAML]
 *** xref:/documentation-general/merge-split.adoc[Fusionner et diviser des modèles BPMN]
 *** xref:/documentation-general/instance-de-processus/[Instances de processus]
 **** xref:/documentation-general/instance-de-processus/display-logs.adoc[Affichage des logs]

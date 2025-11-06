@@ -15,7 +15,7 @@ import com.axelor.events.internal.BeforeTransactionComplete;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
-import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;

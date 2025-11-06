@@ -4,7 +4,7 @@
  */
 package com.axelor.studio.bpm.listener;
 
-import com.axelor.studio.baml.tools.BpmTools;
+import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.db.WkfTaskConfig;
 import jakarta.persistence.PostPersist;
