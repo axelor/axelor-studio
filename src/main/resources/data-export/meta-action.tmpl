@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<%	
+	query = __repo__(MetaActionRepository).all()
+
+	
+	if(__ids__ != null) {
+		query = query.filter('self.studioApp.id in ?1',__ids__)
+	}
+	
+	metaActions = ""
+	query.fetch().each({
+		metaAction -> metaActions += """\n\t\t<meta-action>
+							\n\t\t\t<name>${metaAction.name}</name>
+							\n\t\t\t<type>${metaAction.type}</type>
+							\n\t\t\t<model>${metaAction.model}</model>
+							\n\t\t\t<module>${metaAction.module}</module>
+							\n\t\t\t<xml>${metaAction.xml}</xml>
+							\n\t\t\t<xmlId>${metaAction.xmlId}</xmlId>
+							\n\t\t\t<studioApp>${metaAction.studioApp?.code}</studioApp>
+							\n\t\t</meta-action>"""
+	})
+	
+	if (!metaActions.isEmpty()) {
+		metaActions = """<meta-actions>\n""" +  metaActions + """\n</meta-actions>"""
+	}
+	
+	out << """$metaActions"""
+%>

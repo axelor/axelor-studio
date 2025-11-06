@@ -75,6 +75,7 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
         "ws-request",
         "ws-authenticator",
         "meta-view",
+        "meta-action",
         "ws-request-list"
       };
 
