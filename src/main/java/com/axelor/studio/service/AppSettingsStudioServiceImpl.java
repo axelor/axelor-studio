@@ -35,11 +35,6 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   }
 
   @Override
-  public String dataExportDir() {
-    return appSettings.get("data.export.dir");
-  }
-
-  @Override
   public String baseUrl() {
     return AppSettings.get().getBaseURL();
   }
