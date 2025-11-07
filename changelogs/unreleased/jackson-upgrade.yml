@@ -1,0 +1,5 @@
+---
+title: Upgrade Jackson to 2.20.1
+type: security
+description: |
+  Upgrade Jackson from version 2.15.3 to 2.20.1.
