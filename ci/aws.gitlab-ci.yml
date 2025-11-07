@@ -1,0 +1,59 @@
+include:
+  - project: infrastructure/devops/terraform-modules
+    file:
+      - /templates/ECS-App/Deploy.yml
+    ref: stable
+
+variables:
+  DEPLOY_IMAGE_VERSION: stable
+  CI_GOOGLE_CHAT_THREAD: "${CI_COMMIT_SHORT_SHA}"
+
+# override script to package module inside the external webapp and deploy from MR
+Build Docker Image:
+  script:
+    - |
+      if [ ${DOCKER_IMAGE_EXISTS} -eq 0 ]; then
+        git clone --depth 1 --branch 7.3-stable https://gitlab-ci-token:${CI_JOB_TOKEN}@git.axelor.com/aop/addons/axelor-public/create-public-webapp.git app
+        tar acvf app.tar app/axelor-public-webapp/
+        rm -rf app/axelor-public-webapp
+        echo "Building Docker image..."
+        docker buildx build \
+          --cache-to type=inline \
+          --cache-from type=registry,ref="${DOCKER_IMAGE_TAG}" \
+          --build-arg NEXUS_READER_USERNAME=${NEXUS_READER_USERNAME} \
+          --build-arg NEXUS_READER_PASSWORD=${NEXUS_READER_PASSWORD} \
+          --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+          --tag "${DOCKER_IMAGE_TAG}" \
+          --push \
+          .
+      else
+        echo "Image already exists. Skipping build."
+      fi
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        RELEASE_TYPE: "integrationRelease"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      variables:
+        RELEASE_TYPE: "reviewRelease"
+      when: always
+
+# override script to deploy from MR
+.aws-prepare-deployment:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "merge_request_event"
+      variables:
+        AWS_RESTORE_DATABASE: "yes"
+        GITLAB_TOFU_STATE_NAME: int
+        TTL: "3 days"
+      when: manual
+
+# override script to enable destroy from MR
+AWS Opentofu Destroy:
+  rules:
+    # Allow Destroy for Int (which is main) or MR
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "merge_request_event"
+      variables:
+        GITLAB_TOFU_STATE_NAME: int
+      when: manual
