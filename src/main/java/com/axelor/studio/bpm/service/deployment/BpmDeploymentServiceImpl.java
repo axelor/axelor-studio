@@ -91,6 +91,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  private static final int INSTANCE_BATCH_SIZE = 100;
+  private static final int TASK_BATCH_SIZE = 100;
+
   protected WkfProcessRepository wkfProcessRepository;
   protected MetaJsonModelRepository metaJsonModelRepository;
   protected MetaAttrsService metaAttrsService;
@@ -104,6 +107,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfTaskMenuRepository taskMenuRepo;
   protected WkfTaskConfigRepository taskConfigRepo;
   protected WkfUserActionService wkfUserActionService;
+  protected WkfInstanceRepository wkfInstanceRepository;
   protected WkfModel sourceModel;
   protected WkfModel targetModel;
 
@@ -121,9 +125,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfModelRepository wkfModelRepository,
       WkfInstanceService wkfInstanceService,
       WkfTaskMenuRepository taskMenuRepo,
-      WkfUserActionService WkfUserActionService,
+      WkfUserActionService wkfUserActionService,
       WkfTaskConfigRepository taskConfigRepo,
-      ProcessEngineService processEngineService) {
+      ProcessEngineService processEngineService,
+      WkfInstanceRepository wkfInstanceRepository) {
 
     this.wkfProcessRepository = wkfProcessRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;
@@ -137,7 +142,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.processEngineService = processEngineService;
     this.taskMenuRepo = taskMenuRepo;
     this.taskConfigRepo = taskConfigRepo;
-    this.wkfUserActionService = WkfUserActionService;
+    this.wkfUserActionService = wkfUserActionService;
+    this.wkfInstanceRepository = wkfInstanceRepository;
   }
 
   @Override
@@ -359,7 +365,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     long nbInstances = query.count();
     int migratedInstances = 0;
-    int UnmigratedInstances = 0;
+    int unmigratedInstances = 0;
     if (nbInstances < 1) {
       log.debug("Process instances to migrate: {}", nbInstances);
       return isMigrationError;
@@ -397,6 +403,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
     int iterationNumber = 1;
+    List<String> pendingSaves = new ArrayList<>();
+    List<Long> pendingTaskIds = new ArrayList<>();
     for (String processInstanceId : processInstanceIds) {
       try {
         // get active tasks before migration
@@ -406,23 +414,43 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-        updateTasksStatus(activeTasks, processInstanceId);
-        wkfInstanceService.updateProcessInstance(
-            targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+        updateTasksStatus(activeTasks, processInstanceId, pendingTaskIds);
+
+        pendingSaves.add(processInstanceId);
         migratedInstances++;
+
+        if (pendingSaves.size() >= INSTANCE_BATCH_SIZE) {
+          wkfInstanceService.batchUpdateProcessInstances(
+              targetProcess, pendingSaves, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+          pendingSaves.clear();
+        }
+        if (pendingTaskIds.size() >= TASK_BATCH_SIZE) {
+          wkfUserActionService.cancelTasks(pendingTaskIds);
+          pendingTaskIds.clear();
+        }
+
       } catch (Exception e) {
         isMigrationError.set(true);
         wkfInstanceService.updateProcessInstance(
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
-        UnmigratedInstances++;
+        unmigratedInstances++;
       }
       if (isWebSocketSupported)
         BpmDeploymentWebSocket.updateProgress(
             sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
       iterationNumber++;
     }
+
+    if (!pendingSaves.isEmpty()) {
+      wkfInstanceService.batchUpdateProcessInstances(
+          targetProcess, pendingSaves, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+    }
+    if (!pendingTaskIds.isEmpty()) {
+      wkfUserActionService.cancelTasks(pendingTaskIds);
+    }
+
     migrationMap.put("successfulMigrations", migratedInstances);
-    migrationMap.put("failedMigrations", UnmigratedInstances);
+    migrationMap.put("failedMigrations", unmigratedInstances);
 
     return isMigrationError;
   }
@@ -431,7 +459,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     return (int) ((part / whole) * 100);
   }
 
-  protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId) {
+  protected void updateTasksStatus(
+      List<Task> activeTasks, String processInstanceId, List<Long> pendingTaskIds) {
     for (Task task : activeTasks) {
       WkfTaskConfig wkfTaskConfig =
           taskConfigRepo
@@ -442,7 +471,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
                   task.getTaskDefinitionKey(),
                   task.getProcessDefinitionId())
               .fetchOne();
-      wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
+      Long taskId = wkfUserActionService.migrateUserAction(wkfTaskConfig, processInstanceId);
+      if (taskId != null) {
+        pendingTaskIds.add(taskId);
+      }
     }
   }
 
@@ -683,7 +715,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   private List<WkfInstance> getAllSourceModelInstances(WkfModel sourceModel) {
-    return Beans.get(WkfInstanceRepository.class)
+    return wkfInstanceRepository
         .all()
         .filter(" self.wkfProcess.wkfModel.id = ?", sourceModel.getId())
         .fetch();
