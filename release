@@ -99,7 +99,13 @@ shift $((OPTIND - 1))
 
 cd "$(dirname "$0")"
 
-tag=$(cat version.txt)
+tag=$(grep "^moduleVersion" gradle.properties | cut -d'=' -f2 | tr -d ' ')
+
+# Validate that version was found
+if [ -z "$tag" ]; then
+  echo "Error: Could not find moduleVersion in gradle.properties"
+  exit 1
+fi
 
 echo "You are going to release version $tag."
 read -r -p "Are you sure? [y/N] " response

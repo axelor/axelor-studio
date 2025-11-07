@@ -10,15 +10,14 @@ ARG NEXUS_READER_PASSWORD
 
 COPY . /${MODULE_NAME}
 WORKDIR /
-RUN if [ ! -f ${MODULE_NAME}/app.zip ]; then echo "app.zip webapp archive not found. Exiting."; exit 1; fi
-RUN mv ${MODULE_NAME}/app.zip .
-RUN unzip app.zip
+RUN if [ ! -f ${MODULE_NAME}/app.tar ]; then echo "app.tar webapp archive not found. Exiting."; exit 1; fi
+RUN mv ${MODULE_NAME}/app.tar .
+RUN tar xf app.tar
 RUN mv ${MODULE_NAME} ${APP_SOURCE}/modules
 WORKDIR ${APP_SOURCE}
 
 RUN chmod +x gradlew && \
     ./gradlew --no-daemon build -xtest -xcheck -PaxelorMavenUsername=${NEXUS_READER_USERNAME} -PaxelorMavenPassword=${NEXUS_READER_PASSWORD}
-
 RUN mkdir -p ${APP_SOURCE}/webapps/ROOT && \
     unzip -q -o ${APP_SOURCE}/build/libs/*.war -d ${APP_SOURCE}/webapps/ROOT/
 
@@ -28,6 +27,8 @@ FROM eclipse-temurin:11-jre-alpine
 
 ARG BUILD_DATE
 ARG TOMCAT_VERSION=9.0.85
+ARG MODULE_NAME="axelor-studio"
+ARG PROJECT_VENDOR="Axelor"
 
 ARG APP_LANGUAGE
 ARG APP_DEMO_DATA
@@ -45,7 +46,7 @@ ENV ENABLE_QUARTZ=${ENABLE_QUARTZ}
 
 # System Upgrade for security reasons + install tools needed by the entrypoint
 RUN apk upgrade && \
-    apk add --no-cache curl coreutils postgresql-client
+    apk add --no-cache coreutils curl postgresql-client
 
 # Install Tomcat
 RUN export TOMCAT_MINOR_VERSION=$(echo ${TOMCAT_VERSION} | cut -d"." -f 1) && \
