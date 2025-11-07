@@ -45,6 +45,8 @@ import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.axelor.studio.db.repo.WkfTaskMenuRepository;
+import com.axelor.team.db.TeamTask;
+import com.axelor.team.db.repo.TeamTaskRepository;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -62,6 +64,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.migration.MigrationPlan;
@@ -91,6 +94,15 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  private static final int INSTANCE_BATCH_SIZE = 50;
+  private static final int TASK_BATCH_SIZE = 100;
+
+  private static final int INSTANCE_MIGRATION_MAX_PERCENTAGE = 30;
+  private static final int TASK_CANCELLATION_START_PERCENTAGE = 30;
+  private static final int TASK_CANCELLATION_MAX_PERCENTAGE = 60;
+  private static final int TASK_CREATION_START_PERCENTAGE = 60;
+  private static final int COMPLETE_PERCENTAGE = 100;
+
   protected WkfProcessRepository wkfProcessRepository;
   protected MetaJsonModelRepository metaJsonModelRepository;
   protected MetaAttrsService metaAttrsService;
@@ -104,6 +116,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfTaskMenuRepository taskMenuRepo;
   protected WkfTaskConfigRepository taskConfigRepo;
   protected WkfUserActionService wkfUserActionService;
+  protected WkfInstanceRepository wkfInstanceRepository;
+
   protected WkfModel sourceModel;
   protected WkfModel targetModel;
 
@@ -123,7 +137,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfTaskMenuRepository taskMenuRepo,
       WkfUserActionService WkfUserActionService,
       WkfTaskConfigRepository taskConfigRepo,
-      ProcessEngineService processEngineService) {
+      ProcessEngineService processEngineService,
+      WkfInstanceRepository wkfInstanceRepository) {
 
     this.wkfProcessRepository = wkfProcessRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;
@@ -138,6 +153,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.taskMenuRepo = taskMenuRepo;
     this.taskConfigRepo = taskConfigRepo;
     this.wkfUserActionService = WkfUserActionService;
+    this.wkfInstanceRepository = wkfInstanceRepository;
   }
 
   @Override
@@ -197,7 +213,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       return;
     }
 
-    updateMigratedInstancesTasksStatus(engine);
+    migrateInstanceTasks(engine);
 
     String isRemove =
         Optional.ofNullable(migrationMap.get("removeOldVersionMenu"))
@@ -212,8 +228,11 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   @Transactional(rollbackOn = Exception.class)
   @Override
   public void setIsMigrationOnGoing(WkfModel wkfModel, boolean isMigrationOnGoing) {
-    wkfModel.setIsMigrationOnGoing(isMigrationOnGoing);
-    wkfModelRepository.save(wkfModel);
+    wkfModel = wkfModelRepository.find(wkfModel.getId());
+    if (wkfModel != null) {
+      wkfModel.setIsMigrationOnGoing(isMigrationOnGoing);
+      wkfModelRepository.save(wkfModel);
+    }
   }
 
   @Transactional(rollbackOn = Exception.class)
@@ -400,6 +419,8 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
     int iterationNumber = 1;
+    List<String> pendingSaves = new ArrayList<>();
+
     for (String processInstanceId : processInstanceIds) {
       try {
         engine
@@ -407,20 +428,35 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-        wkfInstanceService.updateProcessInstance(
-            targetProcess, processInstanceId, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+
+        pendingSaves.add(processInstanceId);
         migratedInstances++;
         migratedInstancesIds.add(processInstanceId);
+
+        if (pendingSaves.size() >= INSTANCE_BATCH_SIZE) {
+          wkfInstanceService.batchUpdateProcessInstances(
+              targetProcess, pendingSaves, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
+          pendingSaves.clear();
+        }
+
       } catch (Exception e) {
         isMigrationError.set(true);
         wkfInstanceService.updateProcessInstance(
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
         UnmigratedInstances++;
       }
-      if (isWebSocketSupported)
+
+      if (isWebSocketSupported) {
         BpmDeploymentWebSocket.updateProgress(
-            sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
+            sessionId,
+            calculateInstanceMigrationPercentage(iterationNumber, processInstanceIds.size()));
+      }
       iterationNumber++;
+    }
+
+    if (!pendingSaves.isEmpty()) {
+      wkfInstanceService.batchUpdateProcessInstances(
+          targetProcess, pendingSaves, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
     }
     migrationMap.put("successfulMigrations", migratedInstances);
     migrationMap.put("failedMigrations", UnmigratedInstances);
@@ -429,26 +465,34 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     return isMigrationError;
   }
 
-  public int calculatePercentage(double part, double whole) {
-    return (int) ((part / whole) * 100);
+  @Transactional(rollbackOn = Exception.class)
+  protected void saveTasks(List<TeamTask> newTasks) {
+    TeamTaskRepository teamTaskRepository = Beans.get(TeamTaskRepository.class);
+    for (TeamTask teamTask : newTasks) {
+      teamTaskRepository.save(teamTask);
+    }
   }
 
-  @Transactional
-  protected void updateTasksStatus(List<Task> activeTasks, String processInstanceId) {
+  @Transactional(rollbackOn = Exception.class)
+  protected void cancelTasksBatch(List<Pair<String, String>> taskBatch) {
+    wkfUserActionService.updateTasksBatchStatus(taskBatch, "canceled");
+  }
+
+  protected int createMigratedTasks(
+      List<Task> activeTasks,
+      String processInstanceId,
+      String sessionId,
+      int totalTasks,
+      int processedTasks,
+      boolean isWebSocketSupported) {
 
     if (activeTasks == null || activeTasks.isEmpty()) {
       log.debug("No active tasks to update for process instance: {}", processInstanceId);
-      return;
+      return processedTasks;
     }
 
-    log.info(
-        "Updating {} TeamTask(s) after migration for process instance: {}",
-        activeTasks.size(),
-        processInstanceId);
-
     ProcessEngine processEngine = processEngineService.getEngine();
-    int successCount = 0;
-    int errorCount = 0;
+    List<TeamTask> newTasks = new ArrayList<>();
 
     for (Task task : activeTasks) {
       try {
@@ -463,20 +507,28 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
                 .fetchOne();
 
         if (wkfTaskConfig == null) {
-          log.warn(
-              "WkfTaskConfig not found for task '{}' with processId '{}'",
-              task.getTaskDefinitionKey(),
-              task.getProcessDefinitionId());
           continue;
         }
 
-        wkfUserActionService.migrateTeamTaskOnProcessMigration(
-            task, wkfTaskConfig, processInstanceId, processEngine);
+        Optional.ofNullable(
+                wkfUserActionService.createTeamTaskFromMigration(
+                    task, wkfTaskConfig, processInstanceId, processEngine))
+            .ifPresent(newTasks::add);
 
-        successCount++;
+        processedTasks++;
+
+        if (isWebSocketSupported && sessionId != null && totalTasks > 0) {
+          int percentage = calculateTaskCreationPercentage(processedTasks, totalTasks);
+          BpmDeploymentWebSocket.updateProgress(sessionId, percentage);
+        }
+
+        if (newTasks.size() >= TASK_BATCH_SIZE) {
+          saveTasks(newTasks);
+          newTasks.clear();
+        }
 
       } catch (Exception e) {
-        errorCount++;
+        processedTasks++;
         log.error(
             "Error migrating TeamTask for task '{}' in process '{}': {}",
             task.getTaskDefinitionKey(),
@@ -486,7 +538,12 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       }
     }
 
-    log.info("TeamTask migration completed: {} success, {} errors", successCount, errorCount);
+    if (!newTasks.isEmpty()) {
+      saveTasks(newTasks);
+      newTasks.clear();
+    }
+
+    return processedTasks;
   }
 
   protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
@@ -726,7 +783,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   private List<WkfInstance> getAllSourceModelInstances(WkfModel sourceModel) {
-    return Beans.get(WkfInstanceRepository.class)
+    return wkfInstanceRepository
         .all()
         .filter(" self.wkfProcess.wkfModel.id = ?", sourceModel.getId())
         .fetch();
@@ -854,12 +911,51 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   }
 
   @SuppressWarnings("unchecked")
-  private void updateMigratedInstancesTasksStatus(ProcessEngine engine) {
+  private void migrateInstanceTasks(ProcessEngine engine) {
     List<String> migratedInstances = (List<String>) migrationMap.get("migratedInstances");
 
+    Boolean isWebSocketSupported =
+        Beans.get(AppBpmService.class).getAppBpm().getUseProgressDeploymentBar();
+    final String sessionId;
+    if (isWebSocketSupported && targetModel != null) {
+      Long modelId = targetModel.getId();
+      sessionId =
+          BpmDeploymentWebSocket.sessionMap.keySet().stream()
+              .filter(key -> key.equals(String.valueOf(modelId)))
+              .findFirst()
+              .orElse(null);
+    } else {
+      sessionId = null;
+    }
+
+    if (isWebSocketSupported && sessionId != null) {
+      BpmDeploymentWebSocket.updateProgress(sessionId, TASK_CANCELLATION_START_PERCENTAGE);
+    }
+
     if (migratedInstances == null || migratedInstances.isEmpty()) {
+      if (isWebSocketSupported && sessionId != null) {
+        BpmDeploymentWebSocket.updateProgress(sessionId, COMPLETE_PERCENTAGE);
+      }
       return;
     }
+
+    int totalTasks = 0;
+    for (String instanceId : migratedInstances) {
+      List<Task> activeTasks = getActiveTasks(engine, instanceId);
+      if (activeTasks != null) {
+        totalTasks += activeTasks.size();
+      }
+    }
+    if (totalTasks == 0) {
+      if (isWebSocketSupported && sessionId != null) {
+        BpmDeploymentWebSocket.updateProgress(sessionId, COMPLETE_PERCENTAGE);
+      }
+      return;
+    }
+
+    int processedTasks = 0;
+    List<Pair<String, String>> tasksToCancel = new ArrayList<>();
+
     for (String instanceId : migratedInstances) {
       try {
         List<Task> activeTasks = getActiveTasks(engine, instanceId);
@@ -867,11 +963,70 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
           continue;
         }
 
-        updateTasksStatus(activeTasks, instanceId);
-        log.debug("Successfully updated active tasks for instance: {}", instanceId);
+        for (Task task : activeTasks) {
+          tasksToCancel.add(Pair.of(instanceId, task.getTaskDefinitionKey()));
+          processedTasks++;
+
+          if (isWebSocketSupported && sessionId != null && totalTasks > 0) {
+            int percentage = calculateTaskCancellationPercentage(processedTasks, totalTasks);
+            BpmDeploymentWebSocket.updateProgress(sessionId, percentage);
+          }
+
+          if (tasksToCancel.size() >= TASK_BATCH_SIZE) {
+            cancelTasksBatch(tasksToCancel);
+            tasksToCancel.clear();
+          }
+        }
+
       } catch (Exception e) {
-        log.error("Error while updating active task status for instance: {}", instanceId, e);
+        log.error("Error while preparing cancel list for instance: {}", instanceId, e);
       }
     }
+
+    if (!tasksToCancel.isEmpty()) {
+      cancelTasksBatch(tasksToCancel);
+      tasksToCancel.clear();
+    }
+
+    if (isWebSocketSupported && sessionId != null) {
+      BpmDeploymentWebSocket.updateProgress(sessionId, TASK_CREATION_START_PERCENTAGE);
+    }
+
+    int createdTasks = 0;
+    for (String instanceId : migratedInstances) {
+      try {
+        List<Task> activeTasks = getActiveTasks(engine, instanceId);
+        if (activeTasks == null || activeTasks.isEmpty()) {
+          continue;
+        }
+
+        createdTasks =
+            createMigratedTasks(
+                activeTasks, instanceId, sessionId, totalTasks, createdTasks, isWebSocketSupported);
+      } catch (Exception e) {
+        log.error("Error while creating migrated tasks for instance: {}", instanceId, e);
+      }
+    }
+
+    if (isWebSocketSupported && sessionId != null) {
+      BpmDeploymentWebSocket.updateProgress(sessionId, COMPLETE_PERCENTAGE);
+    }
+  }
+
+  /** Calculate percentage for instance migration (0-30%) */
+  private int calculateInstanceMigrationPercentage(double part, double whole) {
+    return (int) ((part / whole) * INSTANCE_MIGRATION_MAX_PERCENTAGE);
+  }
+
+  /** Calculate percentage for task cancellation (30-60%) */
+  private int calculateTaskCancellationPercentage(double part, double whole) {
+    int range = TASK_CANCELLATION_MAX_PERCENTAGE - TASK_CANCELLATION_START_PERCENTAGE;
+    return TASK_CANCELLATION_START_PERCENTAGE + (int) ((part / whole) * range);
+  }
+
+  /** Calculate percentage for task creation (60-100%) */
+  private int calculateTaskCreationPercentage(double part, double whole) {
+    int range = COMPLETE_PERCENTAGE - TASK_CREATION_START_PERCENTAGE;
+    return TASK_CREATION_START_PERCENTAGE + (int) ((part / whole) * range);
   }
 }
