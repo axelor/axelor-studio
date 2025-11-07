@@ -80,4 +80,7 @@ public interface WkfInstanceService {
       WkfInstance instance, String filter, String startString, String endString, Integer minutes);
 
   void setInstanceStateStopped(String processInstanceId);
+
+  void batchUpdateProcessInstances(
+      WkfProcess targetProcess, List<String> processInstanceIds, int migrationStatus);
 }

@@ -22,6 +22,7 @@ import com.axelor.auth.db.Role;
 import com.axelor.auth.db.User;
 import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.auth.db.repo.UserRepository;
+import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.db.Query;
 import com.axelor.meta.db.MetaJsonRecord;
@@ -44,10 +45,15 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.FlushModeType;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -271,24 +277,25 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId) {
+  public Long migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId) {
     if (wkfTaskConfig == null) {
-      return;
+      return null;
     }
     String title = wkfTaskConfig.getTaskEmailTitle();
     if (title == null) {
-      return;
+      return null;
     }
     TeamTask teamTask =
         teamTaskRepository
             .all()
             .filter(
-                "self.relatedProcessInstance.name = ?1 and self.name =  ?2",
+                "self.relatedProcessInstance.name = ?1 and self.name =  ?2 and self.status != ?3",
                 String.format("%s : %s", wkfTaskConfig.getProcessId(), oldProcessId),
-                title)
+                title,
+                "canceled")
             .fetchOne();
-    teamTask.setStatus("canceled");
-    teamTaskRepository.save(teamTask);
+
+    return (teamTask != null) ? teamTask.getId() : null;
   }
 
   @Override
@@ -453,5 +460,19 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     }
 
     return userPath;
+  }
+
+  @Override
+  @Transactional(rollbackOn = Exception.class)
+  public void cancelTasks(List<Long> taskIds) {
+    if (taskIds == null || taskIds.isEmpty()) {
+      return;
+    }
+    CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
+    CriteriaUpdate<TeamTask> update = cb.createCriteriaUpdate(TeamTask.class);
+    Root<TeamTask> root = update.from(TeamTask.class);
+    update.set(root.get("status"), "canceled");
+    update.where(root.get("id").in(taskIds));
+    JPA.em().createQuery(update).setFlushMode(FlushModeType.COMMIT).executeUpdate();
   }
 }
