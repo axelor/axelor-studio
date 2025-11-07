@@ -1,4 +1,3 @@
-
 # Stages (ie phases) that can be used by jobs
 stages:
   - init
@@ -7,15 +6,19 @@ stages:
   - plan
   - deploy
   - cleanup
+
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_TAG
     - if: $CI_COMMIT_REF_PROTECTED == "true"
+
 include:
   - local: ci/base.gitlab-ci.yml
   - local: ci/aws.gitlab-ci.yml
     rules:
       - if: $CI_PIPELINE_SOURCE == "schedule"
         when: never
+      # on this project, we deploy only on integration environment, so only from the default branch or MR
       - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      - if: $CI_PIPELINE_SOURCE == "merge_request_event"
