@@ -14,8 +14,6 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
 
   String applicationLocale();
 
-  String dataExportDir();
-
   String baseUrl();
 
   String surveyPublicUser();

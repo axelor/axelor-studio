@@ -34,8 +34,6 @@ public interface AppService {
 
   void importRoles() throws IOException;
 
-  String getDataExportDir();
-
   static String getFileUploadDir() {
     String dataUploadDirPath = AppSettings.get().get(AvailableAppSettings.DATA_UPLOAD_DIR);
     if (dataUploadDirPath.isEmpty()) {

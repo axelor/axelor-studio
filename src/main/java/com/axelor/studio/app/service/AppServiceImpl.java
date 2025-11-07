@@ -650,15 +650,4 @@ public class AppServiceImpl implements AppService {
       importRoles(app);
     }
   }
-
-  @Override
-  public String getDataExportDir() {
-    String dataExportDirPath = appSettingsService.dataExportDir();
-    if (dataExportDirPath == null || dataExportDirPath.isEmpty()) {
-      throw new IllegalStateException(I18n.get(StudioExceptionMessage.DATA_EXPORT_DIR_ERROR));
-    }
-    return !dataExportDirPath.endsWith(File.separator)
-        ? dataExportDirPath + File.separator
-        : dataExportDirPath;
-  }
 }
