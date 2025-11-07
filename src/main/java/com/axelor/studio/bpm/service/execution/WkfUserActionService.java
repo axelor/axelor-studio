@@ -25,6 +25,8 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
+import java.util.List;
+
 public interface WkfUserActionService {
 
   @Transactional
@@ -39,10 +41,12 @@ public interface WkfUserActionService {
       ProcessEngine processEngine,
       String taskId);
 
-  public void migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId);
+  public Long migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId);
 
   public FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
       throws ClassNotFoundException;
 
   public User getUser(String userPath, FullContext wkfContext);
+
+ void cancelTasks(List<Long> taskIds);
 }

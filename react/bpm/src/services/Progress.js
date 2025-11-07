@@ -26,8 +26,13 @@ class SocketProgress {
   }
 
   init(customId = null) {
+      if (this.customId !== customId && this.ws && this.ws.readyState === WebSocket.OPEN) {
+          this.ws.close();
+          this.ws = null;
+      }
 
-    this.customId = customId;
+
+      this.customId = customId;
 
     if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
       this.ws = new WebSocket(getURL(customId));
