@@ -6,8 +6,11 @@ package com.axelor.studio.bpm.service.execution;
 
 import com.axelor.auth.db.User;
 import com.axelor.studio.db.WkfTaskConfig;
+import com.axelor.team.db.TeamTask;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.persist.Transactional;
+import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -33,10 +36,13 @@ public interface WkfUserActionService {
   User getUser(String userPath, FullContext wkfContext);
 
   /**
-   * Migre un TeamTask lors d'une migration de version de processus BPM. Annule l'ancien TeamTask et
-   * crée un nouveau avec la nouvelle configuration.
+   * Creates a new TeamTask during BPM process migration based on Camunda Task. Builds a completely
+   * new TeamTask using the updated configuration.
    */
-  void migrateTeamTaskOnProcessMigration(
+  TeamTask createTeamTaskFromMigration(
       Task task, WkfTaskConfig wkfTaskConfig, String processInstanceId, ProcessEngine processEngine)
       throws ClassNotFoundException;
+
+  /** Cancel a batch of existing tasks */
+  void updateTasksBatchStatus(List<Pair<String, String>> taskBatch, String status);
 }
