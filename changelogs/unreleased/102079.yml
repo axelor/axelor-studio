@@ -6,4 +6,8 @@ description: |
   - Replaced direct `AppService` access with secure `ScriptAppService` wrapper
   - Removed `__beans__` binding from BPM scripts - use `__bean__(Class)` instead
   - Removed `__config__` binding in BPM scripts that exposed `AppSettings.get()` directly
+
+  **IMPORTANT**: Its important to update the property to app.context use the secure wrapper:
+  - Change from: `context.app = com.axelor.studio.app.service.AppService`
+  - to: `context.app = com.axelor.studio.app.service.ScriptAppService`
   
