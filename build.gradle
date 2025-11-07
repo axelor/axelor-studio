@@ -1,34 +1,23 @@
 import com.axelor.gradle.support.ChangelogSupport
 
-buildscript {
-  ext.repos = {
-    mavenCentral() {
-      content { excludeGroupByRegex "com\\.axelor.*" }
-    }
-    maven {
-      url 'https://plugins.gradle.org/m2/'
-      content { excludeGroupByRegex "com\\.axelor.*" }
-    }
-    maven { url 'https://repository.axelor.com/nexus/repository/maven-public/' }
-  }
-  ext.aopVersion = '7.2.5'
-  repositories repos
-  buildscript.repositories repos
-  dependencies {
-    classpath "com.axelor:axelor-gradle:${aopVersion}"
-    classpath "com.adarshr:gradle-test-logger-plugin:2.+"
-  }
+plugins {
+  id 'com.axelor.app'
+  id 'com.adarshr.test-logger' version '2.+'
 }
 
-repositories repos
-buildscript.repositories repos
-
-apply plugin: "com.axelor.app"
-apply plugin: 'com.adarshr.test-logger'
 apply plugin: ChangelogSupport
-
-apply from: "version.gradle"
 apply from: "gradle/react.gradle"
+
+repositories {
+  mavenCentral() {
+    content {
+      excludeGroup 'com.axelor'
+    }
+  }
+  maven {
+    url 'https://repository.axelor.com/nexus/repository/maven-public/'
+  }
+}
 
 try {
   tasks.named("spotlessCheck")
@@ -40,15 +29,25 @@ testlogger {
   theme 'mocha'
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+// Version management
+version = moduleVersion
+if (!project.hasProperty("finalRelease")) {
+  version += "-SNAPSHOT"
+}
 
-group = "com.axelor.addons"
-description "Axelor Studio Module"
+// Module metadata
+group = moduleGroup
+description = moduleDescription
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(javaVersion.toInteger())
+  }
+}
 
 axelor {
-  title "Axelor Studio"
-  description "Axelor Studio Module"
+  title = moduleTitle
+  description = moduleDescription
 }
 
 test {
@@ -59,40 +58,41 @@ dependencies {
   if (findProject(":modules:axelor-message") != null) {
     api project(":modules:axelor-message")
   } else {
-    implementation "com.axelor.addons:axelor-message:3.2.2"
+    implementation "com.axelor.addons:axelor-message:${axelorMessageVersion}"
   }
   if (findProject(":modules:axelor-utils") != null) {
     api project(":modules:axelor-utils")
   } else {
-    implementation "com.axelor.addons:axelor-utils:3.2.2"
+    implementation "com.axelor.addons:axelor-utils:${axelorUtilsVersion}"
   }
 
-  implementation "org.camunda.bpm:camunda-engine:7.17.0"
-  implementation "org.camunda.bpm:camunda-engine-plugin-spin:7.17.0"
-  implementation "org.camunda.spin:camunda-spin-dataformat-json-jackson:1.17.0"
+  implementation "org.camunda.bpm:camunda-engine:${camundaVersion}"
+  implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
+  implementation "org.camunda.spin:camunda-spin-dataformat-json-jackson:${camundaSpinVersion}"
 
-  implementation "org.codehaus.groovy:groovy-all:3.0.19"
-  implementation "org.eclipse.birt.runtime.3_7_1:Tidy:1"
-  implementation "org.apache.commons:commons-exec:1.3"
-  implementation "org.apache.commons:commons-text:1.11.0"
-  implementation 'org.jboss.resteasy:resteasy-jaxb-provider:6.2.5.Final'
-  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.3'
-  implementation 'org.json:json:20231013'
+  implementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
+  implementation "org.eclipse.birt.runtime.3_7_1:Tidy:${birtTidyVersion}"
+  implementation "org.apache.commons:commons-exec:${commonsExecVersion}"
+  implementation "org.apache.commons:commons-text:${commonsTextVersion}"
+  implementation "org.jboss.resteasy:resteasy-jaxb-provider:${resteasyVersion}"
+  implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${jacksonVersion}"
+  implementation "org.json:json:${jsonVersion}"
+  implementation "org.reflections:reflections:${reflectionsVersion}"
 
-  implementation "ch.qos.logback:logback-core:1.4.11"
-  implementation "ch.qos.logback:logback-classic:1.4.11"
-  implementation "org.yaml:snakeyaml:1.28"
-  implementation 'javax.websocket:javax.websocket-api:1.1'
-  compileOnly 'org.projectlombok:lombok:1.18.30'
-  annotationProcessor 'org.projectlombok:lombok:1.18.30'
+  implementation "ch.qos.logback:logback-core:${logbackVersion}"
+  implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+  implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
+  implementation "javax.websocket:javax.websocket-api:${websocketApiVersion}"
+  compileOnly "org.projectlombok:lombok:${lombokVersion}"
+  annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-  testCompileOnly 'org.projectlombok:lombok:1.18.30'
-  testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-  testImplementation 'org.mockito:mockito-inline:5.2.0'
+  testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+  testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+  testImplementation "org.mockito:mockito-inline:${mockitoVersion}"
 }
 
 changelog {
-  version = baseVersion
+  version = moduleVersion
   output.set(file("CHANGELOG.md"))
   inputPath.set(file("changelogs/unreleased"))
   types.set(["Feature", "Change", "Deprecate", "Remove", "Fix", "Security"])
@@ -134,12 +134,26 @@ publishing {
 apply plugin: 'jacoco'
 
 jacoco {
-  toolVersion = '0.8.11'
+  toolVersion = jacocoVersion
+}
+
+tasks.withType(JavaCompile) {
+  // Only depend on frontCopy if it exists
+  if (project.tasks.findByName('frontCopy') != null) {
+    mustRunAfter project.tasks.findByName('frontCopy')
+  }
+}
+
+tasks.named('spotlessJava') {
+  mustRunAfter tasks.named('pnpmSetup')
+}
+tasks.named('spotlessMarkdown') {
+  mustRunAfter tasks.named('pnpmSetup')
 }
 
 jacocoTestReport {
   reports {
-    xml.enabled true
+    xml.required = true
   }
 }
 
