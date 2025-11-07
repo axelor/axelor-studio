@@ -7,7 +7,7 @@ if(rule.rules!=null && !rule.rules.isEmpty()){
 rules.each{ childRule ->
 %>${groovyScriptService.buildRule(childRule,metaModelVarName)}${rules.last()!=childRule?combinator:''}<%}%><%}%><%
 if(rule.allField!=null && !rule.allField.isEmpty()){
-if(!['notIn','in'].contains(rule.operator)){%>${['notLike','notBetween'].contains(rule.operator)?'!':''}${(['between','notBetween'].contains(rule.operator))?'(':''}<%if(rule.transformations.isEmpty()){%>${metaModelVarName}?.${groovyScriptService.buildFieldName(rule.allField)}<%}
+if(!['notIn','in'].contains(rule.operator)){%>${['notLike','notBetween'].contains(rule.operator)?'!':''}${(['between','notBetween'].contains(rule.operator))?'(':''}<%if(rule.transformations.isEmpty()){%>${rule.fieldType!=null && rule.fieldType.toUpperCase()=='BUTTON'?groovyScriptService.buildFieldName(rule.allField):metaModelVarName+'?.'+groovyScriptService.buildFieldName(rule.allField)}<%}
 else{%>${groovyScriptService.buildTransformation(rule.transformations,metaModelVarName+'?.'+groovyScriptService.buildFieldName(rule.allField))}<%}}
 if(rule.operator!=null){
     def transformedValue = rule?.fieldValue?.getFieldValue()
