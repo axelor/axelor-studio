@@ -22,10 +22,10 @@ import com.axelor.auth.db.Role;
 import com.axelor.auth.db.User;
 import com.axelor.auth.db.repo.RoleRepository;
 import com.axelor.auth.db.repo.UserRepository;
+import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.db.Query;
 import com.axelor.i18n.I18n;
-import com.axelor.inject.Beans;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.bpm.context.WkfContextHelper;
@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
@@ -177,7 +178,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       return null;
     }
 
-    // === Title ===
     switch (wkfTaskConfig.getTaskNameType().toLowerCase()) {
       case "value":
         title = processTitle(title, wkfContext);
@@ -192,7 +192,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     teamTask.setRelatedProcessInstance(wkfInstanceRepository.findByInstanceId(processInstanceId));
     teamTask.setStatus("new");
 
-    // === Role ===
     String rolePath = wkfTaskConfig.getRoleFieldPath();
     String roleValue = wkfTaskConfig.getRoleName();
     if (!StringUtils.isEmpty(roleValue) || rolePath != null) {
@@ -214,7 +213,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       }
     }
 
-    // === Deadline ===
     if (wkfTaskConfig.getDeadlineFieldPath() != null) {
       switch (wkfTaskConfig.getDeadlineFieldType().toLowerCase()) {
         case "field":
@@ -234,7 +232,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       teamTask.setTaskDate(LocalDate.now());
     }
 
-    // === User ===
     String userPath = getUserPath(wkfTaskConfig, processDefinitionId);
     if (userPath != null) {
       switch (wkfTaskConfig.getUserFieldType().toLowerCase()) {
@@ -253,7 +250,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       }
     }
 
-    // === Team ===
     String teamPath = wkfTaskConfig.getTeamPath();
     if (teamPath != null) {
       switch (wkfTaskConfig.getTeamFieldType().toLowerCase()) {
@@ -272,7 +268,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       }
     }
 
-    // === Priority ===
     if (wkfTaskConfig.getTaskPriority() != null) {
       switch (wkfTaskConfig.getTaskPriorityType().toLowerCase()) {
         case "value":
@@ -285,12 +280,10 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       }
     }
 
-    // === Duration ===
     if (wkfTaskConfig.getDuration() != null) {
       teamTask.setTaskDuration(Integer.parseInt(wkfTaskConfig.getDuration()));
     }
 
-    // === Description ===
     String url = wkfEmailService.createUrl(wkfContext, wkfTaskConfig.getDefaultForm());
     String descriptionType = wkfTaskConfig.getDescriptionType();
     if (descriptionType != null) {
@@ -320,34 +313,6 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
       }
     }
     return null;
-  }
-
-  @Transactional(rollbackOn = Exception.class)
-  public void cancelExistingTask(WkfTaskConfig wkfTaskConfig, String oldProcessId) {
-    if (wkfTaskConfig == null) {
-      return;
-    }
-
-    List<TeamTask> teamTasks =
-        teamTaskRepository
-            .all()
-            .filter(
-                "self.relatedProcessInstance.instanceId = ?1 "
-                    + "AND self.wkfTaskConfig.name = ?2 "
-                    + "AND self.status != ?3",
-                oldProcessId,
-                wkfTaskConfig.getName(),
-                "canceled")
-            .fetch();
-
-    if (teamTasks == null || teamTasks.isEmpty()) {
-      return;
-    }
-
-    for (TeamTask teamTask : teamTasks) {
-      teamTask.setStatus("canceled");
-      teamTaskRepository.save(teamTask);
-    }
   }
 
   @Override
@@ -510,46 +475,26 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   }
 
   @Override
-  @Transactional(rollbackOn = Exception.class)
-  public void migrateTeamTaskOnProcessMigration(
+  public TeamTask createTeamTaskFromMigration(
       Task task, WkfTaskConfig wkfTaskConfig, String processInstanceId, ProcessEngine processEngine)
       throws ClassNotFoundException {
 
     if (wkfTaskConfig == null) {
-      return;
+      return null;
     }
-
-    log.debug(
-        "Migrating TeamTask for task '{}' (config id={}) in process instance '{}'",
-        wkfTaskConfig.getName(),
-        wkfTaskConfig.getId(),
-        processInstanceId);
 
     Map<String, Object> contextVariables =
         buildMigrationContextVariables(wkfTaskConfig, processInstanceId, processEngine);
 
-    cancelExistingTask(wkfTaskConfig, processInstanceId);
-
     FullContext wkfContext = extractWkfContextFromVariables(wkfTaskConfig, contextVariables);
 
-    TeamTask newTeamTask =
-        buildTeamTask(
-            wkfContext,
-            wkfTaskConfig,
-            contextVariables,
-            processInstanceId,
-            task.getProcessDefinitionId(),
-            task.getName());
-
-    if (newTeamTask != null) {
-      teamTaskRepository.save(newTeamTask);
-      log.info(
-          "Successfully migrated TeamTask for task '{}' (new TeamTask id={})",
-          wkfTaskConfig.getName(),
-          newTeamTask.getId());
-    } else {
-      log.warn("buildTeamTask returned null for task '{}'", wkfTaskConfig.getName());
-    }
+    return buildTeamTask(
+        wkfContext,
+        wkfTaskConfig,
+        contextVariables,
+        processInstanceId,
+        task.getProcessDefinitionId(),
+        task.getName());
   }
 
   protected Map<String, Object> buildMigrationContextVariables(
@@ -598,10 +543,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   private FullContext createFullContext(String processInstanceId) throws ClassNotFoundException {
 
     WkfInstance instance =
-        Beans.get(WkfInstanceRepository.class)
-            .all()
-            .filter("self.instanceId = ?", processInstanceId)
-            .fetchOne();
+        wkfInstanceRepository.all().filter("self.instanceId = ?", processInstanceId).fetchOne();
 
     if (instance == null) {
       throw new IllegalArgumentException(
@@ -643,5 +585,47 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     }
 
     return WkfContextHelper.create(model);
+  }
+
+  @Override
+  @Transactional(rollbackOn = Exception.class)
+  public void updateTasksBatchStatus(List<Pair<String, String>> taskBatch, String status) {
+
+    if (taskBatch == null || taskBatch.isEmpty()) {
+      return;
+    }
+
+    StringBuilder sql = new StringBuilder();
+    sql.append("UPDATE team_task t ");
+    sql.append("SET status = :status ");
+    sql.append("FROM (VALUES ");
+
+    for (int i = 0; i < taskBatch.size(); i++) {
+      sql.append("(:proc").append(i).append(", :task").append(i).append(")");
+      if (i < taskBatch.size() - 1) {
+        sql.append(", ");
+      }
+    }
+
+    sql.append(") AS pairs(process_id, task_name) ");
+    sql.append("WHERE t.status != :status ");
+    sql.append("AND t.related_process_instance IN (");
+    sql.append("SELECT id FROM studio_wkf_instance rpi WHERE rpi.instance_id = pairs.process_id");
+    sql.append(") ");
+    sql.append("AND t.wkf_task_config IN (");
+    sql.append("SELECT id FROM studio_wkf_task_config wtc WHERE wtc.name = pairs.task_name");
+    sql.append(")");
+
+    javax.persistence.Query query = JPA.em().createNativeQuery(sql.toString());
+    query.setParameter("status", status);
+
+    for (int i = 0; i < taskBatch.size(); i++) {
+      query.setParameter("proc" + i, taskBatch.get(i).getLeft());
+      query.setParameter("task" + i, taskBatch.get(i).getRight());
+    }
+
+    query.executeUpdate();
+
+    JPA.em().clear();
   }
 }

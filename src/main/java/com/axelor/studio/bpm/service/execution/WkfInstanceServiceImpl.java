@@ -1382,4 +1382,26 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     wkfInstance.setStatusSelect(WkfInstanceRepository.STATUS_STOPPED);
     wkfInstanceRepository.save(wkfInstance);
   }
+
+  @Transactional(rollbackOn = Exception.class)
+  public void batchUpdateProcessInstances(
+      WkfProcess targetProcess, List<String> processInstanceIds, int migrationStatus) {
+
+    if (processInstanceIds == null || processInstanceIds.isEmpty()) {
+      return;
+    }
+
+    List<WkfInstance> instances =
+        wkfInstanceRepository.all().filter("self.instanceId IN (?1)", processInstanceIds).fetch();
+
+    for (WkfInstance instance : instances) {
+      if (targetProcess != null) {
+        instance.addWkfInstanceMigrationHistory(
+            createMigrationHistory(instance, targetProcess.getWkfModel()));
+        instance.setWkfProcess(targetProcess);
+        instance.setName(targetProcess.getProcessId() + " : " + instance.getInstanceId());
+      }
+      instance.setMigrationStatusSelect(migrationStatus);
+    }
+  }
 }
