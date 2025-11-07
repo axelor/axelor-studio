@@ -1,0 +1,5 @@
+title: Optimize Docker image for better security and smaller size
+type: change
+description: |
+  * Updated application source path to /app/axelor-public-webapp
+
