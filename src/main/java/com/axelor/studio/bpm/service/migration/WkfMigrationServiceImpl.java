@@ -208,6 +208,7 @@ public class WkfMigrationServiceImpl implements WkfMigrationService {
     migrationMap.put("instanceId", contextMap.get("instanceId"));
 
     bpmDeploymentService.deploy(sourceModel, targetModel, migrationMap, upgradeToLatest);
+    migration = wkfMigrationRepo.find(migration.getId());
     migration.setTotalInstancesToMigrate((Integer) migrationMap.get("totalInstancesToMigrate"));
     migration.setSuccessfulMigrations((Integer) migrationMap.get("successfulMigrations"));
     migration.setFailedMigrations((Integer) migrationMap.get("failedMigrations"));
