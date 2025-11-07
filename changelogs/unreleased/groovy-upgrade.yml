@@ -1,0 +1,5 @@
+---
+title: Upgrade Groovy to 3.0.25
+type: security
+description: |
+  Upgrade Groovy from version 3.0.19 to 3.0.25.
