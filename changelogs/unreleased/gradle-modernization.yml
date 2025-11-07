@@ -1,0 +1,15 @@
+---
+title: Modernize Gradle build configuration
+type: change
+description: |
+  * Migrated to modern Gradle plugins DSL syntax (plugins {} instead of buildscript {})
+  * Centralized all dependency versions in gradle.properties for better maintainability
+  * Replaced version.txt and version.gradle with gradle.properties moduleVersion property
+  * Added Java toolchain configuration for consistent Java version management
+  * Updated to Axelor app-builder 7.4
+  * Simplified repository configuration and removed redundant repository definitions
+
+  Breaking Changes:
+  * The version.txt and version.gradle files have been removed. Version is now managed via moduleVersion property in gradle.properties
+  * The release script now reads version from gradle.properties instead of version.txt
+  * Build configuration now uses Java toolchain - ensure JAVA_HOME or toolchain configuration is properly set

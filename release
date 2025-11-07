@@ -22,7 +22,7 @@
 #   - Working directory must be clean (no unstaged/uncommitted changes)
 #   - Tag version must not already exist locally or remotely
 #   - Tag must follow semantic versioning format (https://semver.org/)
-#   - version.txt file must exist containing the release version
+#   - gradle.properties file must exist with moduleVersion property
 #   - Git repository with 'origin' remote configured
 #
 # WORKFLOW:
@@ -34,7 +34,7 @@
 #   6. Provides link to view the created release
 #
 # FILES USED:
-#   - version.txt: Contains the version number to be released
+#   - gradle.properties: Contains the moduleVersion property to be released
 #   - CHANGELOG.md: Updated automatically using Gradle task
 #   - gradlew: Used to generate changelog
 #
@@ -99,7 +99,13 @@ shift $((OPTIND - 1))
 
 cd "$(dirname "$0")"
 
-tag=$(cat version.txt)
+tag=$(grep "^moduleVersion" gradle.properties | cut -d'=' -f2 | tr -d ' ')
+
+# Validate that version was found
+if [ -z "$tag" ]; then
+  echo "Error: Could not find moduleVersion in gradle.properties"
+  exit 1
+fi
 
 echo "You are going to release version $tag."
 read -r -p "Are you sure? [y/N] " response
