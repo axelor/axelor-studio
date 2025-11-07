@@ -89,7 +89,7 @@ dependencies {
 
   testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
   testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-  testImplementation "org.mockito:mockito-inline:${mockitoVersion}"
+  testImplementation "org.mockito:mockito-core:${mockitoVersion}"
 }
 
 changelog {
