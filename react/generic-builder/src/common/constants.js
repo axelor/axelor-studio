@@ -263,7 +263,6 @@ const BUILT_IN_VARIABLES = [
 
 const BUTTON_TYPE_OPERATOR = [
   { name: true, title: 'True' },
-  { name: false, title: 'False' },
 ];
 
 export {
