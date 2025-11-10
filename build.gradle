@@ -9,11 +9,7 @@ apply plugin: ChangelogSupport
 apply from: 'gradle/react.gradle'
 
 repositories {
-  mavenCentral() {
-    content {
-      excludeGroup 'com.axelor'
-    }
-  }
+  mavenCentral()
   maven {
     url = 'https://repository.axelor.com/nexus/repository/maven-public/'
   }
