@@ -1150,15 +1150,27 @@ function BpmnModelerComponent() {
         );
         return;
     }
-    allowProgressBarDisplay && wsProgress.init(wkf.id);
-    await waitForConnection();
+
+    // Only initialize WebSocket if NOT creating a new version
+    // (will be initialized with new version ID after creation)
+    const willCreateNewVersion = newWkf?.newVersionOnDeploy && newWkf?.statusSelect === 2;
+    if (allowProgressBarDisplay && !willCreateNewVersion) {
+      wsProgress.init(wkf.id);
+      await waitForConnection();
+    }
+
     try {
       setProgress(0);
       const { context, res } =
         (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
-      if (newWkf?.newVersionOnDeploy && newWkf?.statusSelect === 2) {
+      if (willCreateNewVersion) {
         let newVersionWkf = await addNewVersion(newWkf);
         if (newVersionWkf && newVersionWkf.statusSelect === 1) {
+          // Initialize WebSocket with new model ID after creating new version
+          if (allowProgressBarDisplay) {
+            wsProgress.init(newVersionWkf.id);
+            await waitForConnection();
+          }
           startAction(newVersionWkf, wkfMigrationMap, true, isMigrateOld);
         }
       } else {
