@@ -210,6 +210,11 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       removePreviousVersionMenus(targetModel.getPreviousVersion());
     }
     setIsMigrationOnGoing(targetModel, false);
+    // Throw migration error after all migrations have been processed
+    Boolean isMigrationError = (Boolean) migrationMap.get("isMigrationError");
+    if (isMigrationError != null && isMigrationError) {
+      throw new IllegalStateException(I18n.get(BpmExceptionMessage.MIGRATION_ERR));
+    }
   }
 
   @Transactional(rollbackOn = Exception.class)
@@ -345,9 +350,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
                           migrationProcessMap,
                           isMigrationError);
                     }));
-    if (isMigrationError.get()) {
-      throw new IllegalStateException(I18n.get(BpmExceptionMessage.MIGRATION_ERR));
-    }
+    migrationMap.put("isMigrationError", isMigrationError.get());
   }
 
   private AtomicBoolean computeMigrationInstances(
@@ -448,7 +451,6 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     migrationMap.put("successfulMigrations", migratedInstances);
     migrationMap.put("failedMigrations", UnmigratedInstances);
     migrationMap.put("migratedInstances", migratedInstancesIds);
-
     return isMigrationError;
   }
 
