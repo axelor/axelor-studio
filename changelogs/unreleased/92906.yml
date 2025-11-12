@@ -1,5 +1,0 @@
-title: Fixed OutOfScopeException in WkfModelImportListener during application startup
-type: fix
-description: |
-  Fixed dependency injection issue where @RequestScope annotated services 
-  were being injected into startup observer, causing OutOfScopeException.

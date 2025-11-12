@@ -1,3 +1,205 @@
+## 3.5.1 (2025-11-12)
+
+#### Change
+
+* Refactor GitLab CI/CD configuration for better maintainability
+
+  <details>
+  
+  * Modularized CI/CD configuration into separate files (ci/base.gitlab-ci.yml and ci/aws.gitlab-ci.yml)
+  * Removed dependency on external CI template from infrastructure/devops/aop-addons-ci
+  * Updated to axelor/app-builder:7.4 base image
+  * Improved Gradle cache configuration with more granular paths
+  * Added explicit job dependencies for better pipeline visualization
+  * Enabled merge request pipeline deployments for review environments
+  
+  Migration:
+  * No action required - CI configuration is fully backward compatible
+  * Custom CI extensions should now reference local CI files instead of external templates
+  
+  </details>
+
+* Modernize Gradle build configuration
+
+  <details>
+  
+  * Migrated to modern Gradle plugins DSL syntax (plugins {} instead of buildscript {})
+  * Centralized all dependency versions in gradle.properties for better maintainability
+  * Replaced version.txt and version.gradle with gradle.properties moduleVersion property
+  * Added Java toolchain configuration for consistent Java version management
+  * Updated to Axelor app-builder 7.4
+  * Simplified repository configuration and removed redundant repository definitions
+  
+  Breaking Changes:
+  * The version.txt and version.gradle files have been removed. Version is now managed via moduleVersion property in gradle.properties
+  * The release script now reads version from gradle.properties instead of version.txt
+  * Build configuration now uses Java toolchain - ensure JAVA_HOME or toolchain configuration is properly set
+  
+  </details>
+
+* Improve process instances/tasks migration performances
+* Upgrade Axelor Utils to 3.5.0
+
+  <details>
+  
+  Upgrade Axelor Utils from version 3.4.0 to 3.5.0.
+  
+  </details>
+
+* Upgrade Axelor Gradle plugin to 7.4.5
+
+  <details>
+  
+  Upgrade Axelor Gradle plugin from version 7.4.0 to 7.4.5.
+  
+  </details>
+
+* Upgrade Mockito to 5.20.0 and switch to mockito-core
+
+  <details>
+  
+  Upgrade Mockito from version 5.2.0 to 5.20.0 and replace mockito-inline with mockito-core.
+  
+  </details>
+
+* Optimize Docker image for better security and smaller size
+
+  <details>
+  
+  * Switched runtime base image from tomcat:9.0-jre11-temurin to eclipse-temurin:11-jre-alpine for reduced image size
+  * Updated builder image to axelor/app-builder:7.4
+  * Manual Tomcat 9.0.85 installation for better version control
+  * Enhanced security with automatic Alpine system upgrades
+  * Improved runtime configuration with configurable environment variables
+  * Standardized entrypoint location (/usr/local/bin instead of /bin)
+  * Updated application source path to /app/axelor-public-webapp
+  
+  Migration:
+  * If overriding Docker entrypoint, update path from /bin/docker-entrypoint.sh to /usr/local/bin/docker-entrypoint.sh
+  * Base image is now Alpine-based - shell scripts should use sh-compatible syntax
+  
+  </details>
+
+#### Fix
+
+* Updating a title for a view element, the new value is not saved
+* Fix email sending for timer-triggered tasks
+* Ensure attached DMN files are exported
+* Fix overlap issue between progress bars
+
+  <details>
+  
+  when using migrate two instances , the progress bar overlap the number of progress between
+  
+  </details>
+
+* Fix issues related context createObject() and getObject()
+* On-going migration were not detected properly
+* Fix button field handling in Expression Builder
+
+  <details>
+  
+  - Removed unnecessary False value selection widget for button fields
+  
+  </details>
+
+* Generate correct expressions for button fields
+* Fixed OutOfScopeException in WkfModelImportListener during application startup
+
+  <details>
+  
+  Fixed dependency injection issue where @RequestScope annotated services 
+  were being injected into startup observer, causing OutOfScopeException.
+  
+  </details>
+
+* Fix issues related to BPM listener mode causing detached entity errors
+
+  <details>
+  
+  * Fixed `PersistentObjectException: detached entity passed to persist` when setting or updating relational fields in BPM scripts.
+  * Fixed issues when updating the current record using ctx.
+  
+  </details>
+
+* Fix issues with User Task field/menu-action configurations
+
+  <details>
+  
+  * Removed unnecessary variable creation in User Task field/menu-action configuration scripts.
+  * Fixed UI issue when editing `"value"` fields in User Task Menu/Action.
+  * Fixed missing application of Script & Field for role field when creating TeamTask from User Task Menu/Action.
+  
+  </details>
+
+* unable to evaluate expressions after timer because context is lost
+* The BPM is not reevaluated correctly after a timer
+
+  <details>
+  
+  * Prevented tokens from remaining blocked when a User Task condition evaluates to `true` after timer expiration.
+  
+  </details>
+
+#### Security
+
+* Upgrade Apache Commons Exec to 1.5.0
+
+  <details>
+  
+  Upgrade Apache Commons Exec from version 1.3 to 1.5.0.
+  
+  </details>
+
+* Upgrade Apache Commons Lang3 to 3.19.0
+
+  <details>
+  
+  Upgrade Apache Commons Lang3 from version 3.17.0 to 3.19.0.
+  
+  </details>
+
+* Upgrade Logback to 1.5.20
+
+  <details>
+  
+  Upgrade Logback from version 1.4.14 to 1.5.20.
+  
+  </details>
+
+* Upgrade Jackson to 2.20.1
+
+  <details>
+  
+  Upgrade Jackson from version 2.15.3 to 2.20.1.
+  
+  </details>
+
+* Upgrade Groovy to 3.0.25
+
+  <details>
+  
+  Upgrade Groovy from version 3.0.19 to 3.0.25.
+  
+  </details>
+
+* Upgrade Apache Commons Text to 1.14.0
+
+  <details>
+  
+  Upgrade Apache Commons Text from version 1.11.0 to 1.14.0.
+  
+  </details>
+
+* Upgrade SnakeYAML to 2.5
+
+  <details>
+  
+  Upgrade SnakeYAML from version 2.3 to 2.5.
+  
+  </details>
+
+
 ## 3.5.0 (2025-06-16)
 
 #### Feature
