@@ -1,3 +1,114 @@
+## 3.3.16 (2025-11-12)
+
+#### Change
+
+* Refactor GitLab CI/CD configuration for better maintainability
+
+  <details>
+  
+  * Modularized CI/CD configuration into separate files (ci/base.gitlab-ci.yml and ci/aws.gitlab-ci.yml)
+  * Removed dependency on external CI template from infrastructure/devops/aop-addons-ci
+  * Updated to axelor/app-builder:7.2 base image
+  * Improved Gradle cache configuration with more granular paths
+  * Added explicit job dependencies for better pipeline visualization
+  * Enabled merge request pipeline deployments for review environments
+  
+  Migration:
+  * No action required - CI configuration is fully backward compatible
+  * Custom CI extensions should now reference local CI files instead of external templates
+  
+  </details>
+
+* Modernize Gradle build configuration
+
+  <details>
+  
+  * Migrated to modern Gradle plugins DSL syntax (plugins {} instead of buildscript {})
+  * Centralized all dependency versions in gradle.properties for better maintainability
+  * Replaced version.txt and version.gradle with gradle.properties moduleVersion property
+  * Added Java toolchain configuration for consistent Java version management
+  * Updated to Axelor app-builder 7.2 and AOP 7.2.5
+  * Simplified repository configuration and removed redundant repository definitions
+  
+  Breaking Changes:
+  * The version.txt and version.gradle files have been removed. Version is now managed via moduleVersion property in gradle.properties
+  * The release script now reads version from gradle.properties instead of version.txt
+  * Build configuration now uses Java toolchain - ensure JAVA_HOME or toolchain configuration is properly set
+  
+  </details>
+
+* update xsd version to match AOP version
+* Optimize Docker image for better security and smaller size
+
+  <details>
+  
+  * Switched runtime base image from tomcat:9.0-jre11-temurin to eclipse-temurin:11-jre-alpine for reduced image size
+  * Updated builder image to axelor/app-builder:7.2
+  * Manual Tomcat 9.0.85 installation for better version control
+  * Enhanced security with automatic Alpine system upgrades
+  * Improved runtime configuration with configurable environment variables
+  * Standardized entrypoint location (/usr/local/bin instead of /bin)
+  * Updated application source path to /app/axelor-public-webapp
+  
+  Migration:
+  * If overriding Docker entrypoint, update path from /bin/docker-entrypoint.sh to /usr/local/bin/docker-entrypoint.sh
+  * Base image is now Alpine-based - shell scripts should use sh-compatible syntax
+  
+  </details>
+
+#### Fix
+
+* Updating a title for a view element, the new value is not saved
+* Fix email sending for timer-triggered tasks
+* Ensure attached DMN files are exported
+* Fix issues related context createObject() and getObject()
+* On-going migration were not detected properly
+* Fixed OutOfScopeException in WkfModelImportListener during application startup
+
+  <details>
+  
+  Fixed dependency injection issue where @RequestScope annotated services 
+  were being injected into startup observer, causing OutOfScopeException.
+  
+  </details>
+
+* Change connector script from create Object to create Variable
+
+  <details>
+  
+  Use createVariable instead of creatObject for webservices call in BPM scripts.
+  
+  </details>
+
+* Fix issues related to BPM listener mode causing detached entity errors
+
+  <details>
+  
+  * Fixed `PersistentObjectException: detached entity passed to persist` when setting or updating relational fields in BPM scripts.
+  * Fixed issues when updating the current record using ctx.
+  
+  </details>
+
+* Fix issues with User Task field/menu-action configurations
+
+  <details>
+  
+  * Removed unnecessary variable creation in User Task field/menu-action configuration scripts.
+  * Fixed UI issue when editing `"value"` fields in User Task Menu/Action.
+  * Fixed missing application of Script & Field for role field when creating TeamTask from User Task Menu/Action.
+  
+  </details>
+
+* unable to evaluate expressions after timer because context is lost
+* The BPM is not reevaluated correctly after a timer
+
+  <details>
+  
+  * Prevented tokens from remaining blocked when a User Task condition evaluates to `true` after timer expiration.
+  
+  </details>
+
+
 ## 3.3.15 (2025-06-16)
 
 #### Fix
