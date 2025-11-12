@@ -1,5 +1,0 @@
-title: Fix issues related to BPM listener mode causing detached entity errors
-type: fix
-description: |
-  * Fixed `PersistentObjectException: detached entity passed to persist` when setting or updating relational fields in BPM scripts.
-  * Fixed issues when updating the current record using ctx.

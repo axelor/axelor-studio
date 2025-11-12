@@ -1,5 +1,0 @@
----
-title: Upgrade Mockito to 5.20.0 and switch to mockito-core
-type: change
-description: |
-  Upgrade Mockito from version 5.2.0 to 5.20.0 and replace mockito-inline with mockito-core.

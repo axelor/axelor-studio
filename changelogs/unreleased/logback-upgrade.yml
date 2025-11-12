@@ -1,5 +1,0 @@
----
-title: Upgrade Logback to 1.5.20
-type: security
-description: |
-  Upgrade Logback from version 1.4.14 to 1.5.20.

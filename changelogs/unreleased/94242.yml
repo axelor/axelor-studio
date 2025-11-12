@@ -1,5 +1,0 @@
-title: Fix overlap issue between progress bars
-type: fix
-description : |
-  when using migrate two instances , the progress bar overlap the number of progress between
-
