@@ -449,7 +449,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
         UnmigratedInstances++;
       }
 
-      if (isWebSocketSupported) {
+      if (isWebSocketSupported && sessionId != null) {
         BpmDeploymentWebSocket.updateProgress(
             sessionId,
             calculateInstanceMigrationPercentage(iterationNumber, processInstanceIds.size()));
