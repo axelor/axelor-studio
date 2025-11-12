@@ -435,7 +435,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
         unmigratedInstances++;
       }
-      if (isWebSocketSupported)
+      if (isWebSocketSupported && sessionId != null)
         BpmDeploymentWebSocket.updateProgress(
             sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
       iterationNumber++;

@@ -21,11 +21,10 @@ import com.axelor.auth.db.User;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.persist.Transactional;
+import java.util.List;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-
-import java.util.List;
 
 public interface WkfUserActionService {
 
@@ -48,5 +47,5 @@ public interface WkfUserActionService {
 
   public User getUser(String userPath, FullContext wkfContext);
 
- void cancelTasks(List<Long> taskIds);
+  void cancelTasks(List<Long> taskIds);
 }
