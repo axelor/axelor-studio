@@ -1,5 +1,0 @@
-title: Remove deprecated dataExportDir() method
-type: feature
-description: |
-  Removed `AppSettingsStudioService#dataExportDir()` and `AppService#getDataExportDir()`
-  methods as the `data.export.dir` property has been removed in AOP 8.0.

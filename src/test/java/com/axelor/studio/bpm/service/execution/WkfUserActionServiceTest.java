@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -31,12 +30,10 @@ import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.junit.BaseTest;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
@@ -288,96 +285,94 @@ public class WkfUserActionServiceTest extends BaseTest {
     assertDoesNotThrow(() -> wkfUserActionService.updateTasksBatchStatus(null, "canceled"));
   }
 
-    @Test
-    void shouldReturnNullWhenNoModelNameProvided() throws ClassNotFoundException {
-        // Arrange
-        WkfTaskConfig wkfTaskConfig = new WkfTaskConfig();
-        wkfTaskConfig.setModelName(null);
-        wkfTaskConfig.setJsonModelName(null);
+  @Test
+  void shouldReturnNullWhenNoModelNameProvided() throws ClassNotFoundException {
+    // Arrange
+    WkfTaskConfig wkfTaskConfig = new WkfTaskConfig();
+    wkfTaskConfig.setModelName(null);
+    wkfTaskConfig.setJsonModelName(null);
 
-        DelegateExecution execution = mock(DelegateExecution.class);
+    DelegateExecution execution = mock(DelegateExecution.class);
 
-        // Act
-        FullContext result = wkfUserActionService.getModelCtx(wkfTaskConfig, execution);
+    // Act
+    FullContext result = wkfUserActionService.getModelCtx(wkfTaskConfig, execution);
 
-        // Assert
-        assertNull(result);
+    // Assert
+    assertNull(result);
+  }
+
+  @Test
+  void testGetModelCtxIsCalledWithCorrectParameters() throws Exception {
+    // Arrange
+    WkfTaskConfig wkfTaskConfig = mock(WkfTaskConfig.class);
+    when(wkfTaskConfig.getTaskEmailTitle()).thenReturn("Test Task");
+    when(wkfTaskConfig.getModelName()).thenReturn("SomeModel");
+
+    DelegateExecution execution = mock(DelegateExecution.class);
+    when(execution.getProcessInstanceId()).thenReturn("proc123");
+    when(execution.getProcessDefinitionId()).thenReturn("def456");
+    when(execution.getCurrentActivityName()).thenReturn("TestActivity");
+
+    ProcessEngine mockEngine = mock(ProcessEngine.class);
+    RuntimeService mockRuntime = mock(RuntimeService.class);
+    when(execution.getProcessEngine()).thenReturn(mockEngine);
+    when(mockEngine.getRuntimeService()).thenReturn(mockRuntime);
+
+    Map<String, Object> processVars = new HashMap<>();
+    when(mockRuntime.getVariables("proc123")).thenReturn(processVars);
+
+    WkfUserActionServiceImpl spyService = Mockito.spy(wkfUserActionService);
+
+    FullContext mockContext = mock(FullContext.class);
+    doReturn(mockContext).when(spyService).getModelCtx(wkfTaskConfig, execution);
+    doReturn(null).when(spyService).buildTeamTask(any(), any(), any(), any(), any(), any());
+
+    try (MockedStatic<ExceptionHelper> mocked = mockStatic(ExceptionHelper.class)) {
+      // Act
+      spyService.createUserAction(wkfTaskConfig, execution);
+
+      // Assert
+      verify(spyService, times(1)).getModelCtx(wkfTaskConfig, execution);
     }
+  }
 
-    @Test
-    void testGetModelCtxIsCalledWithCorrectParameters() throws Exception {
-        // Arrange
-        WkfTaskConfig wkfTaskConfig = mock(WkfTaskConfig.class);
-        when(wkfTaskConfig.getTaskEmailTitle()).thenReturn("Test Task");
-        when(wkfTaskConfig.getModelName()).thenReturn("SomeModel");
+  @Test
+  void testGetModelCtxShouldFetchRecordByModelName() throws Exception {
+    // Arrange
+    WkfTaskConfig wkfTaskConfig = mock(WkfTaskConfig.class);
+    when(wkfTaskConfig.getModelName()).thenReturn("TeamTask");
+    when(wkfTaskConfig.getJsonModelName()).thenReturn(null);
 
-        DelegateExecution execution = mock(DelegateExecution.class);
-        when(execution.getProcessInstanceId()).thenReturn("proc123");
-        when(execution.getProcessDefinitionId()).thenReturn("def456");
-        when(execution.getCurrentActivityName()).thenReturn("TestActivity");
+    TeamTask teamTask = teamTaskRepository.all().fetchOne();
+    DelegateExecution execution = mock(DelegateExecution.class);
+    when(execution.getVariable("modelId")).thenReturn(teamTask.getId());
 
-        ProcessEngine mockEngine = mock(ProcessEngine.class);
-        RuntimeService mockRuntime = mock(RuntimeService.class);
-        when(execution.getProcessEngine()).thenReturn(mockEngine);
-        when(mockEngine.getRuntimeService()).thenReturn(mockRuntime);
+    // Act
+    FullContext result = wkfUserActionService.getModelCtx(wkfTaskConfig, execution);
 
-        Map<String, Object> processVars = new HashMap<>();
-        when(mockRuntime.getVariables("proc123")).thenReturn(processVars);
+    // Assert
+    assertNotNull(result, "FullContext should not be null");
+    assertEquals(teamTask.getId(), result.get("id"), "ID should match");
+    assertEquals(teamTask.getName(), result.get("name"), "Name should match");
+  }
 
-        WkfUserActionServiceImpl spyService = Mockito.spy(wkfUserActionService);
+  @Test
+  void testGetModelCtxShouldFetchRecordByJsonModelName() throws Exception {
+    // Arrange
+    WkfTaskConfig wkfTaskConfig = mock(WkfTaskConfig.class);
+    MetaJsonRecord metaJsonRecord = metaJsonRecordRepository.all().fetchOne();
 
-        FullContext mockContext = mock(FullContext.class);
-        doReturn(mockContext).when(spyService).getModelCtx(wkfTaskConfig, execution);
-        doReturn(null).when(spyService).buildTeamTask(any(), any(), any(), any(), any(), any());
+    when(wkfTaskConfig.getModelName()).thenReturn(null);
+    when(wkfTaskConfig.getJsonModelName()).thenReturn(metaJsonRecord.getJsonModel());
 
-        try (MockedStatic<ExceptionHelper> mocked = mockStatic(ExceptionHelper.class)) {
-            // Act
-            spyService.createUserAction(wkfTaskConfig, execution);
+    DelegateExecution execution = mock(DelegateExecution.class);
+    when(execution.getVariable("modelId")).thenReturn(metaJsonRecord.getId());
 
-            // Assert
-            verify(spyService, times(1)).getModelCtx(wkfTaskConfig, execution);
-        }
-    }
+    // Act
+    FullContext result = wkfUserActionService.getModelCtx(wkfTaskConfig, execution);
 
-    @Test
-    void testGetModelCtxShouldFetchRecordByModelName() throws Exception {
-        // Arrange
-        WkfTaskConfig wkfTaskConfig = mock(WkfTaskConfig.class);
-        when(wkfTaskConfig.getModelName()).thenReturn("TeamTask");
-        when(wkfTaskConfig.getJsonModelName()).thenReturn(null);
-
-        TeamTask teamTask = teamTaskRepository.all().fetchOne();
-        DelegateExecution execution = mock(DelegateExecution.class);
-        when(execution.getVariable("modelId")).thenReturn(teamTask.getId());
-
-        // Act
-        FullContext result = wkfUserActionService.getModelCtx(wkfTaskConfig, execution);
-
-        // Assert
-        assertNotNull(result, "FullContext should not be null");
-        assertEquals(teamTask.getId(), result.get("id"), "ID should match");
-        assertEquals(teamTask.getName(), result.get("name"), "Name should match");
-    }
-
-    @Test
-    void testGetModelCtxShouldFetchRecordByJsonModelName() throws Exception {
-        // Arrange
-        WkfTaskConfig wkfTaskConfig = mock(WkfTaskConfig.class);
-        MetaJsonRecord metaJsonRecord = metaJsonRecordRepository.all().fetchOne();
-
-        when(wkfTaskConfig.getModelName()).thenReturn(null);
-        when(wkfTaskConfig.getJsonModelName()).thenReturn(metaJsonRecord.getJsonModel());
-
-        DelegateExecution execution = mock(DelegateExecution.class);
-        when(execution.getVariable("modelId")).thenReturn(metaJsonRecord.getId());
-
-        // Act
-        FullContext result = wkfUserActionService.getModelCtx(wkfTaskConfig, execution);
-
-        // Assert
-        assertNotNull(result, "FullContext should not be null");
-        assertEquals(metaJsonRecord.getId(), result.get("id"), "ID should match");
-    }
-
-
+    // Assert
+    assertNotNull(result, "FullContext should not be null");
+    assertEquals(metaJsonRecord.getId(), result.get("id"), "ID should match");
+  }
 }

@@ -33,8 +33,7 @@ public class AppLoaderExportBpmServiceImpl extends AppLoaderExportServiceImpl {
         metaJsonModelRepository);
   }
 
-  protected static final String[] EXPORT_TEMPLATES =
-      new String[] {"wkf-model", "wkf-dmn-model"};
+  protected static final String[] EXPORT_TEMPLATES = new String[] {"wkf-model", "wkf-dmn-model"};
 
   @Override
   public Map<String, InputStream> getExportTemplateResources() {

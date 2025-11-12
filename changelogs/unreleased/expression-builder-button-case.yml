@@ -1,4 +1,0 @@
-title: Fix button field handling in Expression Builder
-type: fix
-description: |
-  - Removed unnecessary False value selection widget for button fields

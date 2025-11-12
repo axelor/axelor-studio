@@ -357,7 +357,7 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
   @SuppressWarnings("unchecked")
   @Override
   public FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
-          throws ClassNotFoundException {
+      throws ClassNotFoundException {
 
     String modelName = null;
     Class<? extends Model> modelClass = null;
@@ -365,17 +365,20 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     if (wkfTaskConfig.getModelName() != null) {
       modelName = wkfTaskConfig.getModelName();
       modelClass =
-              (Class<? extends Model>) Class.forName(metaModelRepository.findByName(modelName).getFullName());
-      record = Query.of(modelClass)
+          (Class<? extends Model>)
+              Class.forName(metaModelRepository.findByName(modelName).getFullName());
+      record =
+          Query.of(modelClass)
               .filter("self.id = :idModel")
-              .bind("idModel",execution.getVariable("modelId"))
+              .bind("idModel", execution.getVariable("modelId"))
               .fetchOne();
     } else if (wkfTaskConfig.getJsonModelName() != null) {
       modelName = wkfTaskConfig.getJsonModelName();
-      record = Query.of(MetaJsonRecord.class)
+      record =
+          Query.of(MetaJsonRecord.class)
               .filter("self.jsonModel = :jsonModel and id = :idModel")
               .bind("jsonModel", modelName)
-              .bind("idModel",execution.getVariable("modelId"))
+              .bind("idModel", execution.getVariable("modelId"))
               .fetchOne();
     } else {
       return null;

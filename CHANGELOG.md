@@ -1,3 +1,225 @@
+## 4.0.0 (2025-11-12)
+
+#### Feature
+
+* Upgrade node and pnpm
+
+  <details>
+  
+  - Upgraded Node from 22.18.0 to 22.20.0
+  - Upgraded pnpm from 10.14.0 to 10.18.3
+  
+  </details>
+
+* upgrade Spotless Gradle plugin to 8.0.0
+* Users are now able to attach `MetaAction`  to custom apps
+* Remove deprecated dataExportDir() method
+
+  <details>
+  
+  Removed `AppSettingsStudioService#dataExportDir()` and `AppService#getDataExportDir()`
+  methods as the `data.export.dir` property has been removed in AOP 8.0.
+  
+  </details>
+
+#### Change
+
+* Upgrade apache `commons-exec` to 1.5.0
+* Upgrade `lombok` to 1.18.42
+* Upgrade `jackson-dataformat-xml` to 2.20.0
+* Upgrade apache `resteasy-jaxb-provider` to 6.2.12.Final
+
+  <details>
+  
+  Exclude `jandex` dependecy which was brought transitively.
+  
+  </details>
+
+* Use newly introduced widget `Tags` instead of `TagSelect`
+* Add `jakarta.websocket-client-api` dependency with version 2.2.0
+* Remove BAML from AOP Addons
+* Modernize Gradle build configuration
+
+  <details>
+  
+  * Migrated to modern Gradle plugins DSL syntax (plugins {} instead of buildscript {})
+  * Centralized all dependency versions in gradle.properties for better maintainability
+  * Replaced version.txt and version.gradle with gradle.properties moduleVersion property
+    * Simplified repository configuration and removed redundant repository definitions
+  Breaking Changes:
+  * The version.txt and version.gradle files have been removed. Version is now managed via moduleVersion property in gradle.properties
+  * The release script now reads version from gradle.properties instead of version.txt
+  
+  </details>
+
+* Improve process instances/tasks migration performances
+* Rename `getCurentTenant` method into `getCurrentTenant` in `BpmTools`.
+* Use React template instead of legacy angular
+* Upgrade apache `commons-lang3` to 3.19.0
+* Upgrade to AOP 8.0
+
+  <details>
+  
+  - Upgrade to AOP 8.0 
+  - Upgrade to gradle 8.14.3
+  - Upgrade to java 21
+  - Upgrade to tomcat 10
+  - Move package `javax.*` to `jakarta.*`
+  
+  </details>
+
+* Upgrade `json` lib to version 20250517
+* Upgrade apache `commons-text` to 1.14.0
+* Upgrade `node` version to 22.18.0 in Gradle plugin
+* Upgrade `logback` to 1.5.20
+
+  <details>
+  
+  * Upgrade `logback-core`
+  * Upgrade `logback-classic`
+  
+  </details>
+
+* Upgrade `axelor-utils` to 4.0.0
+* Upgrade `jakarta.websocket-api` to 2.2.0
+* Upgrade Groovy to 4.0.29
+
+  <details>
+  
+  `org.codehaus.groovy:groovy-all:3.0.19` dependency has been replaced by `org.apache.groovy:groovy-all:4.0.29`.
+  
+  </details>
+
+* Upgrade `pnpm` version to 10.14.0 in Gradle plugin
+* Upgrade apache `snakeyaml` to 2.5
+* Optimize Docker image for better security and smaller size
+
+  <details>
+  
+  * Updated application source path to /app/axelor-public-webapp
+  
+  </details>
+
+* Upgrade `camunda` dependencies to 7.23.0
+
+  <details>
+  
+  * `camunda-engine` and `camunda-engine-plugin-spin` were upgraded from 7.17.0 to 7.23.0.
+  * `camunda-spin-dataformat-json-jackson` dependency is upgraded from 1.17.0 to 7.23.0.
+  * Remove telemetry (feature deprecated since 7.22.0)
+  * Add history time-to-live configuration via `studio.bpm.history.time.to.live` - default is set to 6 months (7.20.0 requirement)
+  * Remove JPAVariableSerializer (discontinued in 7.20.0 and unused in our code)
+  
+  See https://docs.camunda.org/manual/latest/update/minor/ for more details.
+  
+  </details>
+
+* Upgrade `axelor-message` to 4.0.0
+
+#### Remove
+
+* Remove resteasy dependency
+* Delete deprecated service ` com.axelor.studio.db.App.AppVersionService`. Use ` com.axelor.meta.loader.AppVersionService` instead.
+
+#### Fix
+
+* Confusing display when a model has multiple views
+
+  <details>
+  
+  Remove title and only display model name to avoid confusion and translations issues
+  
+  </details>
+
+* Fix email sending for timer-triggered tasks
+* Ensure attached DMN files are exported
+* Fix overlap issue between progress bars
+
+  <details>
+  
+  when using migrate two instances , the progress bar overlap the number of progress between
+  
+  </details>
+
+* Fix issues related context createObject() and getObject()
+* AOP Tasks are not synchronized correctly after migrating related instances
+* On-going migration were not detected properly
+* Fix button field handling in Expression Builder
+
+  <details>
+  
+  - Removed unnecessary False value selection widget for button fields
+  
+  </details>
+
+* Generate correct expressions for button fields
+* Fixed OutOfScopeException in WkfModelImportListener during application startup
+
+  <details>
+  
+  Fixed dependency injection issue where @RequestScope annotated services 
+  were being injected into startup observer, causing OutOfScopeException.
+  
+  </details>
+
+* Fix issues related to BPM listener mode causing detached entity errors
+
+  <details>
+  
+  * Fixed `PersistentObjectException: detached entity passed to persist` when setting or updating relational fields in BPM scripts.
+  * Fixed issues when updating the current record using ctx.
+  
+  </details>
+
+* Fix app import when running embedded Tomcat
+* Fix issues with User Task field/menu-action configurations
+
+  <details>
+  
+  * Removed unnecessary variable creation in User Task field/menu-action configuration scripts.
+  * Fixed UI issue when editing `"value"` fields in User Task Menu/Action.
+  * Fixed missing application of Script & Field for role field when creating TeamTask from User Task Menu/Action.
+  
+  </details>
+
+* Fix policy issues in groovy script builder
+* Fixed invalid temporary directory path in AppService#getFileUploadDir
+
+  <details>
+  
+  Updated AppService#getFileUploadDir to use application settings 
+  instead of hardcoded "tmp" path.
+  
+  </details>
+
+* unable to evaluate expressions after timer because context is lost
+* The BPM is not reevaluated correctly after a timer
+
+  <details>
+  
+  * Prevented tokens from remaining blocked when a User Task condition evaluates to `true` after timer expiration.
+  
+  </details>
+
+#### Security
+
+* Integrate scripting policy security check
+
+  <details>
+  
+  configure scripting policy to control Java class access from Groovy/JavaScript scripts.
+  - Replaced direct `AppSettingsStudioService` access with secure `ScriptAppSettingsStudioService` wrapper
+  - Replaced direct `AppService` access with secure `ScriptAppService` wrapper
+  - Removed `__beans__` binding from BPM scripts - use `__bean__(Class)` instead
+  - Removed `__config__` binding in BPM scripts that exposed `AppSettings.get()` directly
+  
+  **IMPORTANT**: Its important to update the property to app.context use the secure wrapper:
+  - Change from: `context.app = com.axelor.studio.app.service.AppService`
+  - to: `context.app = com.axelor.studio.app.service.ScriptAppService`
+  
+  </details>
+
+
 ## 3.5.0 (2025-06-16)
 
 #### Feature

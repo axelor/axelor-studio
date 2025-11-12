@@ -1,4 +1,0 @@
-title: Confusing display when a model has multiple views
-type: fix
-description: |
-    Remove title and only display model name to avoid confusion and translations issues

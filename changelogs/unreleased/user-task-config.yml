@@ -1,6 +1,0 @@
-title: Fix issues with User Task field/menu-action configurations
-type: fix
-description: |
-  * Removed unnecessary variable creation in User Task field/menu-action configuration scripts.
-  * Fixed UI issue when editing `"value"` fields in User Task Menu/Action.
-  * Fixed missing application of Script & Field for role field when creating TeamTask from User Task Menu/Action.

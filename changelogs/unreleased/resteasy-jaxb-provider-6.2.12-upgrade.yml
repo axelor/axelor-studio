@@ -1,4 +1,0 @@
-title: Upgrade apache `resteasy-jaxb-provider` to 6.2.12.Final
-type: change
-description:
-  Exclude `jandex` dependecy which was brought transitively.

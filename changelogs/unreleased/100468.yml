@@ -1,5 +1,0 @@
-title: Fixed invalid temporary directory path in AppService#getFileUploadDir
-type: fix
-description: |
-  Updated AppService#getFileUploadDir to use application settings 
-  instead of hardcoded "tmp" path.
