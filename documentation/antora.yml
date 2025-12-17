@@ -1,6 +1,6 @@
 name: studio
 title: Studio Documentation
-version: "3.2"
+version: "3.6"
 start_page: ROOT:index.adoc
 nav:
   - modules/ROOT/nav.adoc
