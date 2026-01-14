@@ -7,6 +7,7 @@ import com.axelor.inject.Beans;
 import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.helper.TransactionHelper;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.servlet.RequestScoper;
@@ -34,6 +35,11 @@ public class GlobalEntityListener {
   @PostPersist
   @PostUpdate
   protected void onPostPersistOrUpdate(Model model) {
+    // Skip if BPM process engine is not initialized (BPM app not active)
+    if (!Beans.get(ProcessEngineService.class).isInitialized()) {
+      return;
+    }
+
     Long id = model.getId();
     String className = model.getClass().getName();
 
