@@ -18,13 +18,39 @@
 package com.axelor.studio.bpm.listener;
 
 import com.axelor.event.Observes;
+import com.axelor.events.ShutdownEvent;
 import com.axelor.events.StartupEvent;
 import com.axelor.inject.Beans;
-import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
+import com.axelor.studio.app.service.AppService;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import java.lang.invoke.MethodHandles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerStartListener {
 
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String APP_CODE_BPM = "bpm";
+
   public void onStartUp(@Observes StartupEvent event) {
-    Beans.get(ProcessEngineServiceImpl.class);
+    if (!Beans.get(AppService.class).isApp(APP_CODE_BPM)) {
+      log.info("BPM app is not installed or not active, skipping process engine initialization");
+      return;
+    }
+    log.info("Initializing BPM process engine...");
+    Beans.get(ProcessEngineService.class).initialize();
+  }
+
+  public void onShutDown(@Observes ShutdownEvent event) {
+    ProcessEngineService processEngineService = Beans.get(ProcessEngineService.class);
+    if (!processEngineService.isInitialized()) {
+      return;
+    }
+    log.info("Application shutdown detected, stopping BPM process engine...");
+    try {
+      processEngineService.shutdown();
+    } catch (Exception e) {
+      log.error("Error shutting down BPM process engine", e);
+    }
   }
 }
