@@ -1,3 +1,30 @@
+## 3.5.2 (2026-01-14)
+
+#### Fix
+
+* Fix BPM process engine thread and memory leaks when BPM app is not active
+
+  <details>
+  
+  Fixed thread and memory leaks caused by the BPM Camunda process engine initializing
+  even when the BPM application was not installed or active.
+  
+  Changes:
+  - Process engine now only initializes when BPM app is active (checked via isApp("bpm"))
+  - Added proper shutdown of process engine on application stop via ShutdownEvent observer
+  - Fixed ExecutorService leak in WkfInstanceServiceImpl by adding shutdown() in finally block
+  - Added isInitialized() checks in GlobalEntityListener and WkfRequestListener to skip
+    BPM processing when engine is not active
+  - Added support for BPM app activation/deactivation at runtime without requiring restart
+  
+  This fix prevents:
+  - Thread count growing from 60 to 80+ over time
+  - Memory growing from 3.5GB to 4GB+
+  - Tomcat warning "failed to stop thread JobExecutor" on shutdown
+  
+  </details>
+
+
 ## 3.5.1 (2025-11-12)
 
 #### Change
