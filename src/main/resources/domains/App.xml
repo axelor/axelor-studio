@@ -48,6 +48,8 @@
 		public static final String TYPE_CUSTOMER ="customer";
 
 	]]></extra-code>
+
+    <entity-listener class="com.axelor.studio.bpm.listener.AppEntityListener"/>
   </entity>
 
 </domain-models>

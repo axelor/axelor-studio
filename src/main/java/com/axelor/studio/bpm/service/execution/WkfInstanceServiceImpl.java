@@ -217,20 +217,24 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
         final String finalProcessInstanceId = model.getProcessInstanceId();
         var executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(
-            () ->
-                new TenantAware(
-                        () -> {
-                          bpmErrorMessageService.sendBpmErrorMessage(
-                              null,
-                              e.getMessage(),
-                              EntityHelper.getEntity(
-                                  wkfProcessConfig.getWkfProcess().getWkfModel()),
-                              finalProcessInstanceId);
-                        })
-                    .withTransaction(false)
-                    .tenantId(BpmTools.getCurentTenant())
-                    .run());
+        try {
+          executorService.submit(
+              () ->
+                  new TenantAware(
+                          () -> {
+                            bpmErrorMessageService.sendBpmErrorMessage(
+                                null,
+                                e.getMessage(),
+                                EntityHelper.getEntity(
+                                    wkfProcessConfig.getWkfProcess().getWkfModel()),
+                                finalProcessInstanceId);
+                          })
+                      .withTransaction(false)
+                      .tenantId(BpmTools.getCurentTenant())
+                      .run());
+        } finally {
+          executorService.shutdown();
+        }
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
