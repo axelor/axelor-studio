@@ -6,7 +6,7 @@ package com.axelor.studio.service;
 
 import com.axelor.app.AppSettings;
 import com.axelor.app.AvailableAppSettings;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ScriptAppSettingsStudioServiceImpl implements ScriptAppSettingsStudioService {
 

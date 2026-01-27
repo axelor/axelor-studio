@@ -18,7 +18,7 @@ import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfModelRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.axelor.utils.helpers.context.FullContext;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -8,7 +8,7 @@ import com.axelor.meta.db.MetaView;
 import com.axelor.meta.db.repo.MetaViewRepository;
 import com.axelor.studio.db.StudioDashboard;
 import com.axelor.studio.service.constructor.reporting.StudioDashboardService;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 
 public class StudioDashboardRepo extends StudioDashboardRepository {
 

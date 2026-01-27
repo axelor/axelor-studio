@@ -13,7 +13,7 @@ import com.axelor.meta.schema.views.Button;
 import com.axelor.meta.schema.views.FormView;
 import com.axelor.meta.service.ViewProcessor;
 import com.axelor.studio.service.app.AppStudioService;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

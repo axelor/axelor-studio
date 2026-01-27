@@ -25,7 +25,7 @@ import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.StringHelper;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.HashMap;

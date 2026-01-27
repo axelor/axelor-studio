@@ -8,7 +8,7 @@ import com.axelor.db.JPA;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

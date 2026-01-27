@@ -19,7 +19,7 @@ import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceVariable;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.junit.BaseTest;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

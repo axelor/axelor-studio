@@ -27,8 +27,8 @@ import com.axelor.studio.service.constructor.components.actions.StudioActionServ
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.WrappingHelper;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import jakarta.inject.Inject;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.lang.reflect.Field;

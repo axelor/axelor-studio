@@ -16,7 +16,7 @@ import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;

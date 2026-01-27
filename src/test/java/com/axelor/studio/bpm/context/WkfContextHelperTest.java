@@ -21,7 +21,7 @@ import com.axelor.meta.loader.LoaderHelper;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.junit.BaseTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

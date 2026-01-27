@@ -5,7 +5,7 @@
 package com.axelor.studio.app.service;
 
 import com.axelor.db.Model;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ScriptAppServiceImpl implements ScriptAppService {
   protected final AppService appService;

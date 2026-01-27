@@ -8,8 +8,8 @@ import com.axelor.meta.CallMethod;
 import com.axelor.meta.db.MetaJsonField;
 import com.axelor.studio.service.constructor.components.StudioSelectionService;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 
 public class JsonFieldServiceImpl implements JsonFieldService {

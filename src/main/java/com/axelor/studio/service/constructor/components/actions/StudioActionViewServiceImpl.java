@@ -12,7 +12,7 @@ import com.axelor.studio.db.StudioActionView;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.constructor.GroovyTemplateService;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

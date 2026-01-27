@@ -12,7 +12,7 @@ import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.service.JsonFieldService;
 import com.axelor.studio.service.StudioMetaService;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 
 public class MetaJsonFieldRepo extends MetaJsonFieldRepository {
 

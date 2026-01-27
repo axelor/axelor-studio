@@ -18,7 +18,7 @@ import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.db.Filter;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import org.hibernate.engine.spi.SessionFactoryImplementor;

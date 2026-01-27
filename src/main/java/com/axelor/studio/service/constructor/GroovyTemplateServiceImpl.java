@@ -7,7 +7,7 @@ package com.axelor.studio.service.constructor;
 import com.axelor.text.GroovyTemplates;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.io.Resources;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;

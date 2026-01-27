@@ -28,7 +28,7 @@ import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;

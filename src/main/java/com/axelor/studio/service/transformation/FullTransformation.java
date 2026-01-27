@@ -6,9 +6,9 @@ package com.axelor.studio.service.transformation;
 
 import com.axelor.studio.db.Transformation;
 import com.axelor.studio.db.repo.TransformationRepository;
-import com.google.inject.Inject;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
+import jakarta.inject.Inject;
 import java.util.List;
 
 public class FullTransformation {

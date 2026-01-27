@@ -10,7 +10,7 @@ import com.axelor.studio.helper.TransactionHelper;
 import com.axelor.studio.ls.LinkScriptBindingsService;
 import com.axelor.studio.ls.LinkScriptResult;
 import com.axelor.studio.ls.script.LinkScriptGroovyScriptHelper;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.regex.Matcher;

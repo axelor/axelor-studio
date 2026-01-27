@@ -40,7 +40,7 @@ import com.axelor.studio.db.repo.WsConnectorRepository;
 import com.axelor.studio.db.repo.WsRequestListRepository;
 import com.axelor.studio.db.repo.WsRequestRepository;
 import com.axelor.utils.helpers.ExceptionHelper;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;

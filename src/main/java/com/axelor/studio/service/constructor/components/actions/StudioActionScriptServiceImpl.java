@@ -27,7 +27,7 @@ import com.axelor.studio.service.filter.FilterSqlService;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.math.BigDecimal;
 import java.util.ArrayList;

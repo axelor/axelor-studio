@@ -6,7 +6,7 @@ package com.axelor.studio.service.connect;
 
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 
 public class ConnectServiceImpl implements ConnectService {
 

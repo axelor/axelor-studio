@@ -19,7 +19,7 @@ import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.google.common.base.Joiner;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;

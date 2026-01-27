@@ -11,7 +11,7 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.db.repo.MetaJsonRecordRepository;
 import com.axelor.studio.db.repo.AppLoaderRepository;
 import com.axelor.studio.service.loader.AppLoaderExportServiceImpl;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;

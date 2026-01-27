@@ -15,7 +15,7 @@ import com.axelor.studio.db.StudioDashboard;
 import com.axelor.studio.db.StudioDashlet;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.constructor.GroovyTemplateService;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;

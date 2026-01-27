@@ -9,7 +9,7 @@ import com.axelor.auth.db.User;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

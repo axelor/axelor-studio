@@ -22,7 +22,7 @@ import com.axelor.rpc.ActionResponse;
 import com.axelor.studio.db.StudioAction;
 import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.constructor.GroovyTemplateService;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.mail.MessagingException;
 import java.util.HashMap;
 import java.util.Map;

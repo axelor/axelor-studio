@@ -15,7 +15,7 @@ import com.axelor.meta.db.repo.MetaMenuRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.repo.AppRepository;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

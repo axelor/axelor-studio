@@ -27,7 +27,7 @@ import com.axelor.studio.service.constructor.GroovyTemplateService;
 import com.axelor.studio.service.filter.FilterCommonService;
 import com.axelor.studio.service.filter.FilterSqlService;
 import com.google.common.base.Joiner;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.xml.bind.JAXBException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;

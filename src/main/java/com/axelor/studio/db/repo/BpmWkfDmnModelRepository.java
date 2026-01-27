@@ -6,7 +6,7 @@ package com.axelor.studio.db.repo;
 
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.studio.dmn.service.DmnService;
-import com.google.inject.Inject;
+import jakarta.inject.Inject;
 
 public class BpmWkfDmnModelRepository extends WkfDmnModelRepository {
 
