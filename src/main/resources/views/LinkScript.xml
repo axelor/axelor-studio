@@ -27,9 +27,7 @@
     <panel-tabs>
       <panel name="bodyPanel" title="Body" itemSpan="12">
         <help>
-          <![CDATA[
-          If you don't add a return on the last line of the body, then all variables of the current context plus all variables you've defined in the body will be implicitly returned.<br>Either implicitly or explicitly declared, the returned value will be injected in the context in a variable named following the name defined in the arc.
-        ]]>
+          <![CDATA[<>If you don't add a return on the last line of the body, then all variables of the current context plus all variables you've defined in the body will be implicitly returned.<br>Either implicitly or explicitly declared, the returned value will be injected in the context in a variable named following the name defined in the arc.</>]]>
         </help>
         <field name="body" showTitle="false" widget="code-editor" x-code-syntax="java"
           height="500"/>
@@ -64,9 +62,7 @@
     onNew="action-link-script-method-set-bindings">
     <panel>
       <help colSpan="12">
-        <![CDATA[
-          Expressions are evaluated as groovy expressions <b>if</b> it starts with <b>'eval:'</b>. Otherwise, it's considered as a string.
-        ]]>
+        <![CDATA[<>Expressions are evaluated as groovy expressions <b>if</b> it starts with <b>'eval:'</b>. Otherwise, it's considered as a string.</>]]>
       </help>
       <field name="bindings" showTitle="false" x-dirty="false" colSpan="12"
         type="many-to-many" target="com.axelor.studio.db.LinkScriptBinding" canSelect="false">
