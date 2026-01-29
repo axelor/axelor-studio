@@ -22,7 +22,7 @@ try {
 }
 
 testlogger {
-  theme 'mocha'
+  theme = 'mocha'
 }
 
 // Version management
