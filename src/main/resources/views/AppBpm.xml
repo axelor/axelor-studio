@@ -12,7 +12,7 @@
     </panel>
     <panel name="taskEvaluationPanel" title="Task evaluation">
       <field name="allowBpmLoadingFromSources" widget="boolean-switch"/>
-      <help colSpan="12">A suspicion of infinite loop occurs when both of these limits are exceeded.</help>
+      <help colSpan="12"><![CDATA[<>A suspicion of infinite loop occurs when both of these limits are exceeded.</>]]></help>
       <field name="taskExecutionRecursivityDurationLimit"/>
       <field name="taskExecutionRecursivityDepthLimit"/>
     </panel>
