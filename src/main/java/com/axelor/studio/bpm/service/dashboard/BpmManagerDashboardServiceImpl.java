@@ -52,7 +52,6 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
         wkfModel -> {
           boolean isSuperAdmin = user.getCode().equals("admin");
           boolean isAdmin = wkfDashboardCommonService.isAdmin(wkfModel, user);
-          boolean isManager = wkfDashboardCommonService.isManager(wkfModel, user);
           boolean isUser = wkfDashboardCommonService.isUser(wkfModel, user);
 
           List<WkfProcess> processes = wkfDashboardCommonService.findProcesses(wkfModel, null);
@@ -60,8 +59,7 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
 
           processes.forEach(
               process ->
-                  prepareProcessList(
-                      processList, process, user, isSuperAdmin, isAdmin, isManager, isUser));
+                  prepareProcessList(processList, process, user, isSuperAdmin, isAdmin, isUser));
         });
 
     dataMap.put("_xModelList", modelList);
@@ -89,7 +87,6 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
       User user,
       boolean isSuperAdmin,
       boolean isAdmin,
-      boolean isManager,
       boolean isUser) {
     List<Map<String, Object>> configList = new ArrayList<>();
 
@@ -107,7 +104,6 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
                 user,
                 isSuperAdmin,
                 isAdmin,
-                isManager,
                 isUser));
     processList.add(new ItemsHashMap(process, configList));
   }
@@ -142,7 +138,6 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
       User user,
       boolean isSuperAdmin,
       boolean isAdmin,
-      boolean isManager,
       boolean isUser) {
 
     boolean isMetaModel = processConfig.getMetaModel() != null;
@@ -167,7 +162,7 @@ public class BpmManagerDashboardServiceImpl implements BpmManagerDashboardServic
 
     List<Long> recordIdsModel = new ArrayList<>();
 
-    if (isSuperAdmin || isAdmin || isManager) {
+    if (isSuperAdmin || isAdmin) {
       recordIdsModel.addAll(recordIdsPerModel);
       recordIdsModel.addAll(recordIdsUserPerModel);
     } else if (isUser) {

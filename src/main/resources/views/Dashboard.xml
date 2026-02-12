@@ -77,7 +77,7 @@
                                   {_t('value:' + item.title) == 'value:'+item.title ? item.title : _t('value:' + item.title)} ({item.modelRecordCount})
                                 </Button>
                               </p>
-                              {(model.isSuperAdmin || model.isAdmin || model.isManager || model.isUser) && (
+                              {(model.isSuperAdmin || model.isAdmin || model.isUser) && (
                                 <div style={{ padding: "8px", display: "flex", borderTop: "1px solid #ddd"}}>
                                   <div>
                                     <p>Assigned to me</p>
@@ -95,7 +95,7 @@
                                   </div>
                                 </div>
                               )}
-                              {(model.isSuperAdmin || model.isAdmin || model.isManager) && (
+                              {(model.isSuperAdmin || model.isAdmin) && (
                                 <div style={{ padding: "8px", display: "flex", borderTop: "1px solid #ddd"}}>
                                   <div>
                                     <p>Assigned to others</p>

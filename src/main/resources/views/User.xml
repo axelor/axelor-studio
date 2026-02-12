@@ -7,8 +7,13 @@
     id="studio-auth-user-form" extension="true">
     <extend target="panel[@title='Overview']/field[@name='group']">
       <insert position="after">
-        <field name="isBpmAdministrator"/>
+        <field name="isBpmAdministrator" onChange="action-method-manage-bpm-admin-permission"/>
       </insert>
     </extend>
   </form>
+
+  <action-method name="action-method-manage-bpm-admin-permission">
+    <call class="com.axelor.studio.web.UserBpmController" method="manageBpmAdminPermission"/>
+  </action-method>
+
 </object-views>

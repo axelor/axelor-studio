@@ -76,10 +76,9 @@ public class BpmManagerDashboardUserServiceImpl implements BpmManagerDashboardUs
 
           boolean isSuperAdmin = user.getCode().equals("admin");
           boolean isAdmin = wkfDashboardCommonService.isAdmin(wkfModel, user);
-          boolean isManager = wkfDashboardCommonService.isManager(wkfModel, user);
           boolean isUser = wkfDashboardCommonService.isUser(wkfModel, user);
 
-          if (!isSuperAdmin && !isAdmin && !isManager && !isUser) {
+          if (!isSuperAdmin && !isAdmin && !isUser) {
             return;
           }
 

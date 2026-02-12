@@ -6,6 +6,8 @@ package com.axelor.studio.bpm.service.execution;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import com.axelor.auth.AuthUtils;
+import com.axelor.auth.db.User;
 import com.axelor.common.ObjectUtils;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
@@ -26,6 +28,7 @@ import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
+import com.axelor.studio.bpm.service.authorization.BpmAuthorizationService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
@@ -97,6 +100,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected BpmErrorMessageService bpmErrorMessageService;
   protected WkfLogService wkfLogService;
   protected AppSettingsStudioService appSettingsStudioService;
+  protected BpmAuthorizationService bpmAuthorizationService;
 
   public static final int EXECUTION_SOURCE_LISTENER = 0;
   public static final int EXECUTION_SOURCE_OBSERVER = 1;
@@ -112,7 +116,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfUserActionService wkfUserActionService,
       BpmErrorMessageService bpmErrorMessageService,
       WkfLogService wkfLogService,
-      AppSettingsStudioService appSettingsStudioService) {
+      AppSettingsStudioService appSettingsStudioService,
+      BpmAuthorizationService bpmAuthorizationService) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -123,6 +128,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.bpmErrorMessageService = bpmErrorMessageService;
     this.wkfLogService = wkfLogService;
     this.appSettingsStudioService = appSettingsStudioService;
+    this.bpmAuthorizationService = bpmAuthorizationService;
   }
 
   @Override
@@ -150,6 +156,20 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   @Override
   @Transactional(rollbackOn = Exception.class)
   public String evalInstance(Model model, String signal) throws ClassNotFoundException {
+
+    User currentUser = AuthUtils.getUser();
+    if (currentUser != null) {
+      WkfModel wkfModel = bpmAuthorizationService.resolveWkfModelForRecord(model);
+      if (wkfModel != null
+          && !bpmAuthorizationService.canUserTriggerProcess(currentUser, wkfModel)) {
+        log.debug(
+            "User {} not authorized to trigger process on {} (id={})",
+            currentUser.getCode(),
+            EntityHelper.getEntityClass(model).getName(),
+            model.getId());
+        return null;
+      }
+    }
 
     model = EntityHelper.getEntity(model);
 

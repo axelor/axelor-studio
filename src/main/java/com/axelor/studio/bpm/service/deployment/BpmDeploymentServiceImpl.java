@@ -17,8 +17,11 @@ import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.app.AppBpmService;
+import com.axelor.studio.bpm.service.authorization.BpmAuthorizationService;
+import com.axelor.studio.bpm.service.authorization.BpmPermissionService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.execution.WkfUserActionService;
+import com.axelor.studio.bpm.service.identity.WkfIdentityService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
 import com.axelor.studio.db.WkfInstance;
@@ -104,6 +107,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   protected WkfTaskConfigRepository taskConfigRepo;
   protected WkfUserActionService wkfUserActionService;
   protected WkfInstanceRepository wkfInstanceRepository;
+  protected WkfIdentityService identityService;
+  protected BpmPermissionService bpmPermissionService;
+  protected BpmAuthorizationService bpmAuthorizationService;
 
   protected WkfModel sourceModel;
   protected WkfModel targetModel;
@@ -125,7 +131,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       WkfUserActionService WkfUserActionService,
       WkfTaskConfigRepository taskConfigRepo,
       ProcessEngineService processEngineService,
-      WkfInstanceRepository wkfInstanceRepository) {
+      WkfInstanceRepository wkfInstanceRepository,
+      WkfIdentityService identityService,
+      BpmPermissionService bpmPermissionService,
+      BpmAuthorizationService bpmAuthorizationService) {
 
     this.wkfProcessRepository = wkfProcessRepository;
     this.metaJsonModelRepository = metaJsonModelRepository;
@@ -141,6 +150,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     this.taskConfigRepo = taskConfigRepo;
     this.wkfUserActionService = WkfUserActionService;
     this.wkfInstanceRepository = wkfInstanceRepository;
+    this.identityService = identityService;
+    this.bpmPermissionService = bpmPermissionService;
+    this.bpmAuthorizationService = bpmAuthorizationService;
   }
 
   @Override
@@ -193,7 +205,12 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     saveWkfModel(targetModel);
 
+    bpmPermissionService.syncPermissions(targetModel);
+    bpmAuthorizationService.invalidateCache(targetModel);
+
     metaAttrsService.saveMetaAttrs(metaAttrsList, targetModel.getId());
+
+    syncIdentities(targetModel);
 
     if (migrationMap == null) {
       setIsMigrationOnGoing(targetModel, false);
@@ -230,6 +247,22 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
   @Transactional(rollbackOn = Exception.class)
   protected WkfModel saveWkfModel(WkfModel wkfModel) {
     return wkfModelRepository.save(wkfModel);
+  }
+
+  /**
+   * Synchronizes identities to Camunda after deployment.
+   *
+   * @param model the workflow model
+   */
+  protected void syncIdentities(WkfModel model) {
+    try {
+      log.info("Synchronizing identities for model: {}", model.getCode());
+      identityService.syncModelIdentities(model);
+    } catch (IllegalStateException e) {
+      log.error("Identity synchronization failed: {}", e.getMessage(), e);
+      model.setSyncStatus(WkfModelRepository.SYNC_STATUS_ERROR);
+      model.setSyncLog("Synchronization failed: " + e.getMessage());
+    }
   }
 
   protected Map<String, String> deployProcess(
