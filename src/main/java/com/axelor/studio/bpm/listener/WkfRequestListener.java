@@ -4,6 +4,8 @@
  */
 package com.axelor.studio.bpm.listener;
 
+import com.axelor.auth.AuthUtils;
+import com.axelor.auth.db.User;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
@@ -17,6 +19,7 @@ import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
 import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.bpm.service.WkfDisplayService;
+import com.axelor.studio.bpm.service.authorization.BpmAuthorizationService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.studio.bpm.utils.BpmTools;
@@ -41,16 +44,19 @@ public class WkfRequestListener {
   protected WkfInstanceRepository wkfInstanceRepo;
   protected WkfInstanceService wkfInstanceService;
   protected WkfDisplayService wkfDisplayService;
+  protected BpmAuthorizationService bpmAuthorizationService;
 
   @Inject
   public WkfRequestListener(
       WkfInstanceRepository wkfInstanceRepo,
       WkfInstanceService wkfInstanceService,
-      WkfDisplayService wkfDisplayService) {
+      WkfDisplayService wkfDisplayService,
+      BpmAuthorizationService bpmAuthorizationService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
     this.wkfDisplayService = wkfDisplayService;
+    this.bpmAuthorizationService = bpmAuthorizationService;
   }
 
   public void onBeforeTransactionComplete(@Observes BeforeTransactionComplete event)
@@ -153,10 +159,21 @@ public class WkfRequestListener {
 
     if (obj instanceof Map values) {
       if (values != null && values.get("id") != null) {
+        Class<?> beanClass = event.getRequest().getBeanClass();
+        Long recordId = Long.parseLong(values.get("id").toString());
 
-        List<Map<String, Object>> wkfStatus =
-            wkfDisplayService.getWkfStatus(
-                event.getRequest().getBeanClass(), Long.parseLong(values.get("id").toString()));
+        List<Map<String, Object>> wkfStatus = wkfDisplayService.getWkfStatus(beanClass, recordId);
+
+        if (!wkfStatus.isEmpty()) {
+          User currentUser = AuthUtils.getUser();
+          if (currentUser != null) {
+            Model record = (Model) JPA.em().find(beanClass, recordId);
+            if (record != null) {
+              wkfStatus = bpmAuthorizationService.filterWkfStatus(currentUser, record, wkfStatus);
+            }
+          }
+        }
+
         if (wkfStatus.isEmpty()) {
           wkfStatus = null;
         }

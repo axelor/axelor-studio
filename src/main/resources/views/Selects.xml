@@ -83,4 +83,10 @@
     <option value="2">Stopped</option>
   </selection>
 
+  <selection name="wkf.sync.status.select">
+    <option value="0">Pending</option>
+    <option value="1">Success</option>
+    <option value="2">Error</option>
+  </selection>
+
 </object-views>

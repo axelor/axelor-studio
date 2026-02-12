@@ -34,6 +34,10 @@ import com.axelor.studio.bpm.service.WkfModelService;
 import com.axelor.studio.bpm.service.WkfModelServiceImpl;
 import com.axelor.studio.bpm.service.app.AppBpmService;
 import com.axelor.studio.bpm.service.app.AppBpmServiceImpl;
+import com.axelor.studio.bpm.service.authorization.BpmAuthorizationService;
+import com.axelor.studio.bpm.service.authorization.BpmAuthorizationServiceImpl;
+import com.axelor.studio.bpm.service.authorization.BpmPermissionService;
+import com.axelor.studio.bpm.service.authorization.BpmPermissionServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardService;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardTaskService;
@@ -61,6 +65,9 @@ import com.axelor.studio.bpm.service.execution.WkfTaskService;
 import com.axelor.studio.bpm.service.execution.WkfTaskServiceImpl;
 import com.axelor.studio.bpm.service.execution.WkfUserActionService;
 import com.axelor.studio.bpm.service.execution.WkfUserActionServiceImpl;
+import com.axelor.studio.bpm.service.identity.WkfIdentityService;
+import com.axelor.studio.bpm.service.identity.WkfIdentityServiceImpl;
+import com.axelor.studio.bpm.service.identity.WkfIdentitySyncMapper;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.init.ProcessEngineServiceImpl;
 import com.axelor.studio.bpm.service.init.WkfProcessApplication;
@@ -241,6 +248,14 @@ public class StudioModule extends AxelorModule {
 
     bind(BpmErrorMessageService.class).to(BpmErrorMessageServiceImpl.class);
     bind(WkfMigrationService.class).to(WkfMigrationServiceImpl.class);
+
+    // BPM Authorization
+    bind(BpmPermissionService.class).to(BpmPermissionServiceImpl.class);
+    bind(BpmAuthorizationService.class).to(BpmAuthorizationServiceImpl.class);
+
+    // Camunda Identity Sync
+    bind(WkfIdentityService.class).to(WkfIdentityServiceImpl.class);
+    bind(WkfIdentitySyncMapper.class);
 
     bind(StudioMetaService.class).to(StudioMetaServiceImpl.class);
     bind(JsonFieldService.class).to(JsonFieldServiceImpl.class);

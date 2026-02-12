@@ -19,6 +19,8 @@ import com.axelor.meta.db.repo.MetaJsonRecordRepository;
 import com.axelor.meta.db.repo.MetaModelRepository;
 import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.meta.schema.actions.ActionView.ActionViewBuilder;
+import com.axelor.studio.bpm.service.authorization.AuthorizationResult;
+import com.axelor.studio.bpm.service.authorization.BpmAuthorizationService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
@@ -46,6 +48,7 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
   protected MetaJsonRecordRepository metaJsonRecordRepo;
   protected MetaModelRepository metaModelRepo;
   protected MetaJsonModelRepository metaJsonModelRepo;
+  protected BpmAuthorizationService bpmAuthorizationService;
 
   @Inject
   public WkfDashboardCommonServiceImpl(
@@ -54,13 +57,15 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
       WkfInstanceService wkfInstanceService,
       MetaJsonRecordRepository metaJsonRecordRepo,
       MetaModelRepository metaModelRepo,
-      MetaJsonModelRepository metaJsonModelRepo) {
+      MetaJsonModelRepository metaJsonModelRepo,
+      BpmAuthorizationService bpmAuthorizationService) {
     this.wkfProcessRepo = wkfProcessRepo;
     this.wkfTaskConfigRepo = wkfTaskConfigRepo;
     this.wkfInstanceService = wkfInstanceService;
     this.metaJsonRecordRepo = metaJsonRecordRepo;
     this.metaModelRepo = metaModelRepo;
     this.metaJsonModelRepo = metaJsonModelRepo;
+    this.bpmAuthorizationService = bpmAuthorizationService;
   }
 
   @Override
@@ -85,27 +90,14 @@ public class WkfDashboardCommonServiceImpl implements WkfDashboardCommonService 
 
   @Override
   public boolean isAdmin(WkfModel wkfModel, User user) {
-    boolean isAdminUser = wkfModel.getAdminUserSet().contains(user);
-    boolean isAdminRole = wkfModel.getAdminRoleSet().stream().anyMatch(user.getRoles()::contains);
-
-    return isAdminUser || isAdminRole;
-  }
-
-  @Override
-  public boolean isManager(WkfModel wkfModel, User user) {
-    boolean isManagerUser = wkfModel.getManagerUserSet().contains(user);
-    boolean isManagerRole =
-        wkfModel.getManagerRoleSet().stream().anyMatch(user.getRoles()::contains);
-
-    return isManagerUser || isManagerRole;
+    AuthorizationResult result = bpmAuthorizationService.computeAuthorization(user, wkfModel);
+    return result.isAdmin();
   }
 
   @Override
   public boolean isUser(WkfModel wkfModel, User user) {
-    boolean isUser = wkfModel.getUserSet().contains(user);
-    boolean isUserRole = wkfModel.getRoleSet().stream().anyMatch(user.getRoles()::contains);
-
-    return isUser || isUserRole;
+    AuthorizationResult result = bpmAuthorizationService.computeAuthorization(user, wkfModel);
+    return result.isUser();
   }
 
   @Override

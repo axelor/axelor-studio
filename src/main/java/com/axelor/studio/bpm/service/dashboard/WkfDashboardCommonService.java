@@ -86,8 +86,6 @@ public interface WkfDashboardCommonService {
 
   boolean isAdmin(WkfModel wkfModel, User user);
 
-  boolean isManager(WkfModel wkfModel, User user);
-
   boolean isUser(WkfModel wkfModel, User user);
 
   ActionViewBuilder computeActionView(String status, String modelName, boolean isMetaModel);

@@ -32,6 +32,8 @@ import com.axelor.studio.bpm.service.app.AppBpmService;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
+import com.axelor.studio.bpm.service.identity.WkfIdentityService;
+import com.axelor.studio.bpm.service.identity.WkfIdentitySyncReport;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
 import com.axelor.studio.db.WkfInstance;
@@ -418,12 +420,7 @@ public class WkfModelController {
 
       response.setAttr("actionPanelBtn", "hidden", true);
       response.setAttr("adminPanel", "hidden", true);
-      response.setAttr("managerPanel", "hidden", true);
-
-      if (wkfDashboardCommonService.isManager(wkfModel, user)) {
-        return;
-      }
-
+      response.setAttr("syncPanel", "hidden", true);
       response.setAttr("allProcessPanel", "hidden", true);
 
       if (wkfDashboardCommonService.isUser(wkfModel, user)) {
@@ -602,6 +599,33 @@ public class WkfModelController {
       Context context = request.getContext();
       WkfProcess wkfProcess = context.asType(WkfProcess.class);
       Beans.get(BpmDeploymentService.class).forceMigrate(wkfProcess);
+    } catch (Exception e) {
+      ExceptionHelper.error(response, e);
+    }
+  }
+
+  public void resyncIdentities(ActionRequest request, ActionResponse response) {
+    try {
+      WkfModel model = request.getContext().asType(WkfModel.class);
+      WkfIdentitySyncReport report =
+          Beans.get(WkfIdentityService.class).resyncModelIdentities(model.getId());
+
+      if (report.isSuccess()) {
+        response.setInfo(
+            String.format(
+                I18n.get("Synchronization successful: %d users synced, %d memberships created"),
+                report.getUsersCreated() + report.getUsersUpdated(),
+                report.getMembershipsCreated()));
+      } else {
+        response.setAlert(
+            String.format(
+                I18n.get(
+                    "Synchronization completed with errors: %d user errors, %d membership errors"),
+                report.getUsersErrors(),
+                report.getMembershipsErrors()));
+      }
+      response.setReload(true);
+
     } catch (Exception e) {
       ExceptionHelper.error(response, e);
     }

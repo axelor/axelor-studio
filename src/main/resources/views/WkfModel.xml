@@ -55,20 +55,38 @@
           name="wkfModelProcessPerUserPanel" height="400" colSpan="12"/>
       </panel>
       <panel name="permissionPanel" title="Permissions">
-        <panel name="adminPanel" title="Admins" groups="admins" colSpan="12" itemSpan="6">
+        <panel name="adminPanel" title="Admins" colSpan="12" itemSpan="6">
           <field name="sendAdminsNotification" colSpan="12"/>
-          <field name="adminUserSet"/>
-          <field name="adminRoleSet"/>
-        </panel>
-        <panel name="managerPanel" title="Managers" colSpan="12" itemSpan="6">
-          <field name="sendManagerNotification" colSpan="12"/>
-          <field name="managerUserSet"/>
-          <field name="managerRoleSet"/>
+          <field name="adminUserSet" widget="Tags" canNew="false"/>
+          <field name="adminRoleSet" widget="Tags" canNew="false"/>
         </panel>
         <panel name="userPanel" title="Users" colSpan="12" itemSpan="6">
           <field name="sendUserNotification" colSpan="12"/>
-          <field name="userSet"/>
-          <field name="roleSet"/>
+          <field name="userSet" widget="Tags" canNew="false"/>
+          <field name="roleSet" widget="Tags" canNew="false"/>
+        </panel>
+        <panel name="syncPanel" hidden="false" colSpan="12">
+          <panel name="syncInfoPanel" title="Camunda Identity Sync" colSpan="12"
+            showIf="id != null">
+            <label name="mappingExplanation"
+              title="This workflow automatically syncs users to Camunda groups based on:"
+              colSpan="12"/>
+            <label name="adminMapping"
+              title="• Admin Users + Admin Roles → admin group (full access)" colSpan="12"/>
+            <label name="userMapping"
+              title="• Users + User Roles → user group (standard access)" colSpan="12"/>
+            <spacer colSpan="12"/>
+            <button name="resyncIdentitiesBtn" title="Synchronize Identities to Camunda"
+              onClick="action-wkf-model-method-resync-identities" icon="refresh" colSpan="4"
+              showIf="statusSelect == 2"/>
+          </panel>
+          <panel name="syncReportPanel" title="Synchronization Report" colSpan="12"
+            showIf="id != null &amp;&amp; lastSyncDate != null">
+            <field name="syncStatus" colSpan="4" readonly="true" css="label-bold"/>
+            <field name="lastSyncDate" colSpan="8" readonly="true"/>
+            <field name="syncLog" colSpan="12" widget="text" readonly="true" height="200"
+              showTitle="false"/>
+          </panel>
         </panel>
       </panel>
     </panel-tabs>
@@ -463,6 +481,10 @@
 
   <action-method name="action-wkf-model-method-generate-script">
     <call class="com.axelor.studio.web.GroovyExpressionBuilderController" method="buildScript"/>
+  </action-method>
+
+  <action-method name="action-wkf-model-method-resync-identities">
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="resyncIdentities"/>
   </action-method>
 
 </object-views>

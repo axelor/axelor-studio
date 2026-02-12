@@ -1,0 +1,6 @@
+title: Add Camunda identity sync and hybrid BPM authorization management
+type: feature
+description: |
+  - Add Camunda identity synchronization with model-specific groups, automatic
+  cleanup of obsolete memberships, and removal of the manager authorization level.
+  - Introduce hybrid AOP and custom authorization for WkfModel access control.

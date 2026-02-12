@@ -106,10 +106,6 @@ public class BpmErrorMessageServiceImpl implements BpmErrorMessageService {
       addUsers(relatedUserSet, model.getAdminUserSet(), model.getAdminRoleSet());
     }
 
-    if (model != null && model.getSendManagerNotification()) {
-      addUsers(relatedUserSet, model.getManagerUserSet(), model.getManagerRoleSet());
-    }
-
     if (model != null && model.getSendUserNotification()) {
       addUsers(relatedUserSet, model.getUserSet(), model.getRoleSet());
     }
