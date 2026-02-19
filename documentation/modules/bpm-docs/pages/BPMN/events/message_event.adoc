@@ -1,0 +1,66 @@
+= Message Event
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction to BPMN Message Events
+
+In the Business Process Model and Notation (BPMN) standard, a message represents a form of communication between two participants in a process. This communication is modeled as a message event within BPMN diagrams, which can either be a catching or throwing (sending) event. Messages are fundamental in depicting the flow of information across different parts of a process or between different processes.
+
+== Differences Between Catching and Sending Messages
+
+- *Catching Message Event:* Represents a point in the process where it waits to receive a message. Symbolized by a single thin outline.
+- *Sending Message Event:* Indicates where a message is sent from the process to an external participant. Depicted with a double outline.
+
+== Modeling Messages in BPMN
+
+BPMN models messages with specific icons to differentiate between catching and sending events, ensuring clear communication and coordination between different parts of a process or across multiple processes.
+
+== Restrictions Provided by the BPMN Standard
+
+1. *Correlation:* Ensures messages are delivered to and received by the correct process instances.
+2. *Instantiation:* A start message event can initiate a new process instance with a defined message.
+3. *Unidirectional:* Messages are unidirectional, meaning they can only be sent from one process instance and received by another.
+
+== Configurations for Message Events
+
+Symbolized by the following pictograms:
+
+- image:bpmn/events/message-events/all-message-events.png[message icon]
+
+We can distinguish between the following message events:
+
+1. *Catch Message Start Event*: A start event can only receive a message
+    * image:bpmn/events/message-events/start-message-event.png[Catching start message event]
+2. *Intermediate Message Event*: An intermediate event can send or receive a message
+    * image:bpmn/events/message-events/intermediate-throw-message-event.png[Intermediate throwing message event]
+    * image:bpmn/events/message-events/intermediate-catch-message-event.png[Intermediate catching message event]
+3. *End Message Event*: An end event can only send a message
+    * image:bpmn/events/message-events/end-throw-message-event.png[End message throwing event]
+
+=== Creating a message
+
+To create a message, you must first define the message in the general tab of the properties panel:
+
+image::bpmn/events/message-events/message-generation-step-1.png[message creation]
+
+(1) - Automatically generate a message by clicking on the *+* icon.
+
+(2) - Allow you to search model from other BPM models.
+    image:bpmn/events/message-events/message-from-other-models.png[Message from other models]
+
+(3) - Display the newly created message or search for existing messages in the BPM model.
+
+////
+For an intermediate event (image:message-icon-3.png[message icon], image:message-icon-4.png[message icon]), it is necessary to specify the name of the process in which it is **received** by adding the suffix **$+{Process_X}+** to the message name.
+
+image::message_event_doc.png[event process,align="left"]
+
+Here the message signal is received in the Pizza_main process.
+
+Symbolized by image:message-icon-3.png[message icon], image:message-icon-5.png[message icon] It triggers a message send.
+
+It is necessary to set up the delivered or pending message in the general tab of the properties panel.
+
+image::message_id.png[event process,align="left"]
+////

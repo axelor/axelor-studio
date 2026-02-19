@@ -1,0 +1,166 @@
+= Task Evaluation
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The task evaluation service is the core logic that determines which Camunda tasks should be completed based on the current model state, button signals, and expressions configured on the BPMN nodes. It is invoked by the xref:general-documentation/engine/auto_evaluation.adoc[auto-evaluation] system whenever a model is saved or a button is clicked.
+
+== Evaluation Flow
+
+The `WkfTaskServiceImpl.runTasks()` method implements the complete evaluation algorithm:
+
+=== Step 1: Retrieve Active Tasks
+
+All active Camunda tasks for the process instance are retrieved from the Camunda task service.
+
+=== Step 2: Build Context Map
+
+A context map is built from all `WkfProcessConfig` models bound to the process. Each model linked to the process is loaded as a `FullContext` and added to the map, providing access to all field values during expression evaluation.
+
+=== Step 3: Evaluate Each Task
+
+For each active task:
+
+. **Find task configuration**: The `WkfTaskConfig` is located by the task definition key and model ID
+. **Check button validity**: If a button signal was provided, it must match one of the buttons in the `WkfTaskConfig.button` comma-separated list
+. **Evaluate expression**: If an expression is configured on the task, it is evaluated against the merged variable map (process variables + context variables + task variables)
+. **Handle button-expression mismatch**: If the button matches but the expression evaluates to false, the `helpText` from the task configuration is returned as an alert message to the user
+. **Complete task**: If all conditions are met:
+   * The current user is set as the task assignee
+   * The Camunda task is completed with the button signal and context variables
+   * The associated TeamTask (user action) is updated
+
+=== Step 4: Set Context Variables
+
+After task completion, the context variables are set on the Camunda execution to persist the updated model state.
+
+=== Step 5: Recursive Evaluation
+
+If any task was completed and the process is still active, `runTasks()` is called recursively to evaluate subsequent tasks. This enables "chain reactions" -- completing one task may enable the next task's conditions, which in turn enables yet another task, and so on.
+
+=== Step 6: Infinite Loop Prevention
+
+Before each recursive call, the infinite loop prevention mechanism is checked. See <<infinite-loop-prevention>> for details.
+
+== Button Matching
+
+Button matching is the mechanism that links form buttons to BPM transitions. When a user clicks a button on a form:
+
+. The button name is passed as the `signal` parameter
+. For each active task, the signal is compared against the `WkfTaskConfig.button` field
+. The `button` field contains a comma-separated list of button names (e.g., `"confirm,validate"`)
+. If the signal matches any button in the list, the task is eligible for completion (subject to expression evaluation)
+
+If no signal is provided (e.g., on a regular save), the button check is skipped and only expression evaluation determines task eligibility.
+
+== Expression Evaluation
+
+When a `WkfTaskConfig` has an `expression` configured:
+
+. The expression is evaluated using `WkfCommonService.evalExpression()`
+. The variable map used for evaluation merges three sources:
+   * **Process variables** -- Variables stored in the Camunda runtime
+   * **Model context** -- Current field values of all models bound to the process
+   * **Task variables** -- Variables specific to the current task
+
+The expression can be written in JUEL or Groovy syntax, depending on how it was configured in the BPM modeler (see xref:general-documentation/builders/builders_expression_builder.adoc[Expression Builder]).
+
+== HelpText Alerts
+
+The `helpText` mechanism provides user feedback when a button-triggered transition cannot proceed:
+
+. A user clicks a button that is configured as a BPM trigger
+. The button matches a task's button list
+. But the task's expression evaluates to false (conditions not met)
+. The `helpText` from the task configuration is returned as an alert message
+. The alert is displayed to the user, explaining why the transition could not proceed
+
+This allows process designers to provide meaningful feedback instead of silently failing when conditions are not met.
+
+[[infinite-loop-prevention]]
+== Infinite Loop Prevention
+
+Since task evaluation is recursive (completing one task can trigger re-evaluation), there is a risk of infinite loops when tasks create circular dependencies. The system uses a dual-threshold mechanism to detect and prevent this.
+
+=== Dual-Threshold Mechanism
+
+Two limits are checked simultaneously:
+
+[cols="1,1,2", options="header"]
+|===
+| Limit | Default | Description
+
+| *Max duration*
+| 10 seconds
+| Maximum time allowed for a single evaluation chain (`taskExecutionRecursivityDurationLimit`)
+
+| *Max depth*
+| 100
+| Maximum number of recursive task evaluations in a chain (`taskExecutionRecursivityDepthLimit`)
+|===
+
+[WARNING]
+====
+An infinite loop is suspected only when **both** limits are exceeded simultaneously. The engine does not stop when only one limit is reached.
+====
+
+This dual-threshold approach avoids false positives:
+
+* A **long-running but shallow** chain (high duration, low depth) is allowed to continue -- it may be processing a complex task
+* A **deep but fast** chain (low duration, high depth) is allowed to continue -- it may be evaluating many lightweight tasks
+* Only when the chain is **both long-running AND deeply nested** does the engine suspect an infinite loop
+
+=== Configuring the Limits
+
+The limits are configured in the xref:general-documentation/app-management/app_bpm_configuration.adoc[App BPM Configuration]:
+
+* Setting a **negative value** for either limit disables that specific constraint
+* Setting both to `-1` completely disables infinite loop prevention
+
+WARNING: Disabling both limits removes all protection against infinite loops. Only do this in development or testing environments.
+
+=== Error Handling
+
+When an infinite loop is detected, an `IllegalStateException` with the message `INFINITE_EXECUTION` is thrown. This stops the evaluation chain and reports the error to the user.
+
+== Technical Details
+
+=== Key WkfTaskConfig Fields
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Type | Role in Evaluation
+
+| `button`
+| String
+| Comma-separated button names that trigger this task transition
+
+| `expression`
+| String (large)
+| JUEL/Groovy expression that must evaluate to true
+
+| `helpText`
+| String
+| Alert message shown when button matches but expression fails
+
+| `processId`
+| String
+| Process definition ID for matching tasks to configs
+|===
+
+=== Backend Services
+
+* `WkfTaskServiceImpl.runTasks()` -- Core recursive evaluation algorithm
+* `WkfCommonService.evalExpression()` -- Expression evaluation with merged variables
+* `WkfCommonService.createVariables()` -- Creates Camunda-compatible variable map from model context
+* `WkfUserActionService.updateUserAction()` -- Updates TeamTask when a task is completed
+
+== Related Pages
+
+* xref:general-documentation/engine/auto_evaluation.adoc[Auto-Evaluation] -- How evaluation is triggered by framework events
+* xref:general-documentation/engine/execution_engine.adoc[Execution Engine] -- Runtime lifecycle of BPMN processes
+* xref:general-documentation/app-management/app_bpm_configuration.adoc[App BPM Configuration] -- Configure infinite loop prevention limits
+* xref:annexes/configurable_values_prevent_infinite_loop.adoc[Infinite Loop Prevention (Annex)] -- Additional reference on configurable values
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

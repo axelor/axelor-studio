@@ -1,10 +1,54 @@
 = Axelor BPM Documentation
 :toc:
 :toc-title:
+:page-pagination:
 
-Le module BPM vous permet de modéliser et d’exécuter vos processus métier, en vous appuyant sur les normes `BPMN 2.0`.
-Un processus ne sera effectif qu’une fois déployé. Il existe plusieurs façons de lancer une instance depuis un processus.
+== Overview
 
-Cette documentation se découpe en trois parties. La première `Introduction de BPM Studio` consiste en une prise en main rapide de BMP Studio, on y présente les différents menus, la création d’un nouveau modèle et la zone de travail.
-La deuxième partie `Découverte par l’exemple` est un tutoriel qui aborde plusieurs notions du BPM à travers des exercices.
-La dernière partie `Documentation Générale` se consacre, comme son nom l’indique, à une documentation générale qui vient compléter les notions abordées dans le tutoriel (partie 2).
+The BPM module enables you to design, deploy, and manage business processes based on the *BPMN 2.0* standard. It provides a fully integrated modeling environment within the Axelor application, allowing both technical and functional users to automate workflows.
+
+A process is only effective once it has been *deployed*. There are several ways to launch an instance from a deployed process.
+
+== Key Features
+
+* **xref:introduction/index.adoc[BPM Studio]**: A visual BPMN modeler for designing process diagrams with a drag-and-drop palette, properties panel, and toolbar.
+* **xref:BPMN/tasks/user_task.adoc[BPMN Elements]**: Full support for BPMN 2.0 elements including events, tasks, gateways, and subprocesses.
+* **xref:DMN/creation_modele_dmn.adoc[DMN Editor]**: Create and manage Decision Model and Notation (DMN) decision tables for business rules.
+* **xref:general-documentation/builders/builders_introduction.adoc[Builders]**: Graphical tools (Expression Builder, Query Builder, Mapper, Web Service Script) for generating Groovy scripts without manual coding.
+* **xref:general-documentation/utilities/merge_split.adoc[Merge & Split]**: Combine or divide BPMN models across participants.
+* **xref:general-documentation/process-instance/display-logs.adoc[Process Instance Monitoring]**: Track running instances, visualize variables, detect errors, and modify instances at runtime.
+* **xref:annexes/TokenSimulation.adoc[Token Simulation]**: Simulate process execution in design mode for educational and testing purposes.
+
+== Menu Structure
+
+The BPM features are accessible from the *Application Builder* menu:
+
+[cols="1,2"]
+|===
+| Menu Entry | Description
+
+| *BPM Studio*
+| Opens the main BPMN modeler
+
+| *BPM components > BPM Dashboard*
+| Displays process statistics and monitoring dashboards
+
+| *BPM components > DMNs*
+| Lists and manages DMN decision models
+
+| *BPM components > Technical monitoring > BPM Models*
+| Technical view of all BPM models
+
+| *BPM components > Technical monitoring > Process Instances*
+| Lists all running and completed process instances
+
+| *BPM components > Technical monitoring > BPM Migration*
+| Manages version migration between BPM models
+
+| *BPM components > Technical monitoring > Process instance modification*
+| Manual modification of running process instances via YAML scripts
+|===
+
+== Configuration
+
+The BPM module is configured through *Administration > Application management > App BPM*. See xref:annexes/configurable_values_prevent_infinite_loop.adoc[configurable values for infinite loop detection] for details on task evaluation limits.

@@ -1,0 +1,6 @@
+= App Loaders
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::partial$app-loaders-content.adoc[]

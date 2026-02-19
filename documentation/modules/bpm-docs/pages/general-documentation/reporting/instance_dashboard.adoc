@@ -1,0 +1,79 @@
+= Process Instance Dashboard
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+Each individual process instance has its own dashboard with two dashlets that provide detailed execution metrics. These dashlets show how much time was spent on each activity node and when each node was activated during the process lifecycle.
+
+== Access
+
+The instance dashboard is accessed from the process instance form:
+
+. Navigate to *Application Builder > BPM components > Technical monitoring > Process Instances*
+. Open a process instance
+. Click the btn:[Dashboard] button in the instance form
+
+== Dashboard Dashlets
+
+The instance dashboard (`dasbhoard-wkf-instance`) displays two dashlets:
+
+=== Time Spent per Node
+
+Displays the time spent on each activity node within this specific process instance, measured in hours. This chart helps identify where delays occurred during the process execution.
+
+- *Chart type*: Bar
+- *Data source*: `chart.wkf.instance.timespent.per.node`
+- *Height*: 350px
+
+Each bar represents one activity node, with the bar height indicating how many hours the instance spent at that node. Nodes with disproportionately high values may indicate bottlenecks, missing approvals, or activities that require optimization.
+
+=== Node Activation Time
+
+Displays a chronological table showing when each activity node was activated and who completed it. This provides a detailed timeline of the process execution.
+
+- *View type*: Custom (table)
+- *Data source*: `custom.wkf.instance.node.activation.time`
+- *Height*: 350px
+- *Template*: `report-table`
+
+The table columns are:
+
+[cols="1,3", options="header"]
+|===
+| Column | Description
+
+| *Node*
+| The name of the activity node that was activated
+
+| *Date/Time*
+| The timestamp when the node was activated
+
+| *Completed by*
+| The user who completed the activity at this node
+|===
+
+[TIP]
+====
+Use the node activation time table alongside the time spent chart to get a complete picture of the process execution. The table shows the sequence of events while the chart highlights where the most time was consumed.
+====
+
+== Technical Details
+
+=== Data Source
+
+Both dashlets query the Camunda process engine's history table `act_hi_actinst` (historical activity instances), filtered by the specific process instance ID. The timespent chart computes duration using `EXTRACT(EPOCH)` to convert timestamps to hours.
+
+=== Dashboard Definition
+
+The dashboard is defined as `dasbhoard-wkf-instance` (title: "Wkf instance dashboard") with two dashlet panels, each with a fixed height of 350 pixels.
+
+NOTE: The dashlets require the Camunda engine to be running and the instance to have historical activity data. For newly started instances with no completed activities, the dashlets may show limited or no data.
+
+== Related Pages
+
+* xref:general-documentation/reporting/model_dashboard.adoc[Model Dashboard] -- Per-model workflow charts
+* xref:general-documentation/dashboard.adoc[BPM Dashboard] -- The main BPM monitoring dashboard
+* xref:general-documentation/process-instance/process_variables_visualization.adoc[Process Instances] -- View and manage process instances
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

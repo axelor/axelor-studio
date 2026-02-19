@@ -1,0 +1,139 @@
+= WS Builder
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+The WS Builder is a visual editor for designing and testing web service workflows. It provides a diagram-based interface where you can create and connect WS Requests, Connectors, and Authenticators visually.
+
+== Access [[Access]]
+
+Navigate to *App > WS Studio* to open the WS Builder.
+
+The editor opens as a React application in a dedicated view.
+
+== Editor Layout [[Layout]]
+
+image::web-services/ws-builder-layout.png[WS Builder interface]
+
+The WS Builder interface is divided into the following areas:
+
+* *Toolbar* (1): Left sidebar with action buttons (Save, Delete, Add, Test, Menu)
+* *Canvas* (2): Central diagram area where WS components are arranged as visual nodes
+* *Properties Panel* (3): Right-side drawer showing the configuration of the selected node
+
+== Toolbar Actions [[Toolbar]]
+
+The left sidebar provides the following actions:
+
+[cols="1,1,3", options="header"]
+|===
+| Button | Icon | Description
+
+| *Save*
+| Save
+| Saves the current state of the selected component.
+
+| *Delete*
+| Delete
+| Deletes the currently selected component.
+
+| *Add*
+| Add Box
+| Creates a new component (request, authenticator, or connector) and adds it to the canvas.
+
+| *Test*
+| Play
+| Opens the test dialog to execute a connector and view results.
+
+| *Menu*
+| Menu
+| Provides additional navigation options.
+|===
+
+== Node Types [[Node-Types]]
+
+The canvas supports three types of visual nodes:
+
+=== Request Nodes
+
+Represent xref:general-documentation/web-services/ws-requests.adoc[WS Requests]. When selected, the properties panel shows the request configuration with tabs for URL, headers, payload, and conditions.
+
+=== Authenticator Nodes
+
+Represent xref:general-documentation/web-services/ws-authenticators.adoc[WS Authenticators]. When selected, the properties panel shows authentication configuration with auth type, credentials, and request references.
+
+=== Connector Nodes
+
+Represent xref:general-documentation/web-services/ws-connectors.adoc[WS Connectors]. When selected, the properties panel shows connector configuration with base URL, request list, context, and default authenticator.
+
+== Properties Panel [[Properties-Panel]]
+
+The properties panel on the right side changes based on the selected node type. It uses specialized sub-tools for configuring different aspects of a component.
+
+=== Request Builder
+
+// TODO: capture via /doc-screenshot -- WS Builder request builder dialog showing model-based parameter editor (FAILED: requires saved request data with parameters populated in the canvas to trigger the builder sub-tool)
+
+Configure request parameters with a model-based editor. Select fields from data models to build request parameters visually.
+
+=== Payload Builder
+
+// TODO: capture via /doc-screenshot -- WS Builder payload builder dialog with key-value pair editor and nested structure support (FAILED: requires saved request data with payload entries populated in the canvas to trigger the builder sub-tool)
+
+Build request payloads using a visual key-value pair editor. Supports:
+
+* Nested structures (hierarchical key-value pairs)
+* Model-based field selection
+* Field editor for complex value expressions
+
+=== Header Builder
+
+Configure HTTP headers with predefined selections for common header names and MIME types.
+
+=== Expression Builder
+
+image::web-services/ws-builder-expression-builder.png[Expression builder]
+
+Build Groovy expressions with an interactive editor that provides:
+
+* Auto-complete for field references
+* Date/time pickers
+* Number inputs
+* Select dropdowns
+
+Used for `callIf`, `repeatIf`, and other expression fields.
+
+=== Context Builder
+
+image::web-services/ws-builder-context-builder.png[Context builder]
+
+Define context mappings for connectors. Map model fields to context variables using a visual model-to-field selector with filter conditions.
+
+=== Transformation Builder
+
+// TODO: capture via /doc-screenshot -- WS Builder transformation builder with library selection, operation selection, and parameter configuration (FAILED: requires saved request data with transformation configuration to trigger the builder sub-tool)
+
+Select and configure xref:general-documentation/web-services/transformations.adoc[Transformations] for data processing:
+
+. Select a *Library* from the available transformation libraries
+. Select an *Operation* (transformation) from the library
+. Configure parameter values for the transformation
+
+== Testing Connectors [[Testing]]
+
+The WS Builder provides a built-in testing feature:
+
+. Click the *Test* button (play icon) in the toolbar
+. Select the connector to test
+. Select the authenticator to use
+. Click btn:[Execute]
+. The result is displayed in a JSON viewer
+
+This allows you to test web service integrations directly from the visual editor without switching to the standard form views.
+
+TIP: Use the testing feature during development to validate each step of your connector workflow.
+
+// APP-VERIFY: The complete visual interaction flow and canvas behavior (drag-and-drop, node arrangement)
+// APP-VERIFY: The exact layout and user experience of each sub-tool (request, payload, header, expression, context, transformation builders)

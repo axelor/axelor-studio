@@ -1,0 +1,85 @@
+= Workflow Model Dashboard
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+Each deployed BPM model has its own dedicated dashboard that displays process execution statistics through three charts. These charts query the Camunda process engine's history tables to provide real-time metrics on task statuses and time spent in each activity.
+
+== Access
+
+The model dashboard is accessed from the BPM model form:
+
+. Open a deployed BPM model from *Application Builder > BPM components > BPM models*
+. Click the btn:[Dashboard] button in the model form
+
+If the model contains **multiple processes**, a selection wizard appears allowing you to choose which process to display. If the model has a single process, the dashboard opens directly.
+
+== Dashboard Charts
+
+The model dashboard (`dasbhoard-wkf-model`) displays three charts:
+
+=== Status per Month
+
+Displays the distribution of activity statuses aggregated by month.
+
+- *Chart type*: Bar
+- *Data source*: `chart.wkf.model.status.per.month`
+- *Default date range*: Last 6 months
+- *Search fields*: From date, To date
+
+This chart shows how many activities were started, completed, or are still pending for each month, helping identify trends and seasonal patterns in process execution.
+
+=== Status per Day
+
+Displays the distribution of activity statuses aggregated by day, providing a more granular view than the monthly chart.
+
+- *Chart type*: Bar
+- *Data source*: `chart.wkf.model.status.per.day`
+- *Default date range*: Last month
+- *Search fields*: From date, To date
+
+=== Time Spent per Status (Hours)
+
+Displays the total time spent in each activity status, measured in hours. This chart is essential for identifying which activities are bottlenecks.
+
+- *Chart type*: Bar
+- *Data source*: `chart.wkf.model.time.spent.per.status`
+- *Default date range*: Last year
+- *Search fields*: From date, To date
+
+[TIP]
+====
+Use the "Time spent per status" chart to identify activities where users spend disproportionate time. High time values may indicate unclear instructions, complex approval processes, or design issues that can be optimized.
+====
+
+== Chart Click-Through
+
+All three charts support click-through interaction. Clicking on a chart element opens a model selector wizard (`action-chart-wkf-view-open-wizard`) that allows you to navigate to the underlying process data.
+
+== Technical Details
+
+=== Data Source
+
+All charts query the Camunda process engine's history table `act_hi_actinst` (historical activity instances), joined with the `studio_wkf_instance` table. The queries filter activities by the following types:
+
+* `userTask` -- User-assigned tasks
+* Catch events -- Intermediate catch events
+* Timer events -- Timer-based events
+
+NOTE: The charts require the Camunda engine to be running and historical data to be present. If the model has just been deployed with no instances, the charts will be empty.
+
+=== Dashboard Definition
+
+The dashboard is defined as `dasbhoard-wkf-model` with three dashlet panels, each with a fixed height of 350 pixels.
+
+=== Backend Services
+
+* `WkfDashboardController` -- Handles chart data requests and click-through navigation to underlying records
+
+== Related Pages
+
+* xref:general-documentation/reporting/instance_dashboard.adoc[Instance Dashboard] -- Per-instance execution charts
+* xref:general-documentation/dashboard.adoc[BPM Dashboard] -- The main BPM monitoring dashboard
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

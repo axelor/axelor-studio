@@ -1,0 +1,107 @@
+= App BPM Configuration
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Overview
+
+The App BPM Configuration provides settings that control the behavior of the BPM execution engine, particularly the infinite loop prevention mechanism during task evaluation.
+
+== Accessing the Configuration
+
+The configuration is accessed through the App Management system:
+
+. Go to *Administration > Apps management*
+. Find the **BPM** application card or row
+. Click btn:[Configure] (available only when the BPM app is installed)
+
+image::app-management/app-bpm-config-form.png[App BPM Configuration form]
+
+NOTE: The configuration form cannot be deleted, duplicated, or created manually -- only one configuration record exists per application instance.
+
+== Configuration Settings
+
+=== Task Evaluation Panel
+
+The configuration form provides two settings that control infinite loop prevention during BPM task evaluation:
+
+[cols="1,1,1,2", options="header"]
+|===
+| Field | Type | Default | Description
+
+| *Max duration (in seconds)*
+| Integer
+| `10`
+| Maximum time allowed for a single task evaluation chain. When exceeded (in combination with the depth limit), the engine suspects an infinite loop and stops execution.
+
+| *Max depth of recursive task execution*
+| Integer
+| `100`
+| Maximum number of recursive task evaluations allowed in a single chain. When exceeded (in combination with the duration limit), the engine suspects an infinite loop and stops execution.
+|===
+
+[WARNING]
+====
+A suspicion of infinite loop occurs when **both** of these limits are exceeded simultaneously. The engine does not stop execution when only one limit is reached -- both conditions must be met.
+====
+
+=== Understanding the Dual-Threshold Mechanism
+
+The infinite loop prevention uses a dual-threshold approach to avoid false positives:
+
+* A **long-running but shallow** evaluation chain (high duration, low depth) is allowed to continue -- it may simply be processing a complex task
+* A **deep but fast** evaluation chain (low duration, high depth) is allowed to continue -- it may be evaluating many lightweight tasks
+* Only when evaluation is **both long-running AND deeply nested** does the engine suspect an infinite loop
+
+This design ensures that legitimate complex process chains are not interrupted while still catching actual infinite loops.
+
+=== Disabling Limits
+
+Setting a **negative value** for either limit disables that specific constraint:
+
+[cols="1,2", options="header"]
+|===
+| Configuration | Effect
+
+| Duration limit = `-1`
+| No time limit is applied. Only the depth limit is checked.
+
+| Depth limit = `-1`
+| No depth limit is applied. Only the duration limit is checked.
+
+| Both = `-1`
+| Infinite loop prevention is completely disabled.
+|===
+
+WARNING: Disabling both limits removes all protection against infinite loops. Only do this in development or testing environments where you can manually stop runaway processes.
+
+== Technical Details
+
+The configuration is stored in the `AppBpm` entity (`com.axelor.studio.db.AppBpm`), which has a one-to-one relationship with the base `App` entity:
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `app`
+| OneToOne: App
+| Link to the base App record
+
+| `taskExecutionRecursivityDurationLimit`
+| Integer (default: 10)
+| Duration threshold in seconds
+
+| `taskExecutionRecursivityDepthLimit`
+| Integer (default: 100)
+| Depth threshold in recursive calls
+|===
+
+These values are read by the task evaluation engine (`WkfTaskServiceImpl`) during BPM process execution.
+
+See also: xref:general-documentation/engine/task_evaluation.adoc[Task Evaluation] for details on how these limits are enforced during process execution.
+
+== Related Pages
+
+* xref:general-documentation/engine/task_evaluation.adoc[Task Evaluation] -- How infinite loop prevention works during task evaluation
+* xref:annexes/configurable_values_prevent_infinite_loop.adoc[Infinite Loop Prevention (Annex)] -- Additional reference on configurable values
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

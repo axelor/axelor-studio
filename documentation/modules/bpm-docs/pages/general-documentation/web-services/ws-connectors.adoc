@@ -1,0 +1,114 @@
+= WS Connectors
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+A WS Connector orchestrates multiple xref:general-documentation/web-services/ws-requests.adoc[WS Requests] into a sequential workflow. It provides a base URL, a default authenticator, and a shared context that all requests can read from and write to.
+
+== Access [[Access]]
+
+Navigate to *App > WS Component > Connector* to access the connector list.
+
+== Configuration [[Configuration]]
+
+image::web-services/ws-connector-form.png[WS Connector form]
+
+=== General Fields
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name*
+| Yes
+| A descriptive name for the connector.
+
+| *Studio App*
+| No
+| Associates the connector with a Studio App for packaging.
+
+| *Default Authenticator*
+| No
+| The xref:general-documentation/web-services/ws-authenticators.adoc[WS Authenticator] used for all requests in this connector. Authentication headers/cookies are injected automatically.
+
+| *Base URL*
+| No
+| The base URL prepended to all request URLs. Supports Groovy template expressions.
+|===
+
+=== Request List
+
+The *Requests* section defines the ordered list of requests to execute:
+
+image::web-services/ws-connector-requests.png[WS Connector request list]
+
+* *Request*: Select an existing xref:general-documentation/web-services/ws-requests.adoc[WS Request]
+* *Sequence*: Defines the execution order. Requests are sorted by sequence number and executed sequentially.
+
+Requests can be reordered using drag-and-drop (the list supports `canMove`).
+
+=== Context
+
+The *Context* section defines key-value pairs that form the shared execution context:
+
+image::web-services/ws-connector-context.png[WS Connector context section]
+
+* *Key*: The variable name
+* *Value*: The variable value
+
+Context values are available to all requests via Groovy template expressions (`$\{key}`). Additionally, each request's response is automatically stored in the context:
+
+* First request response: `_1`
+* Second request response: `_2`
+* And so on...
+
+This allows later requests to reference earlier responses, enabling request chaining patterns like "authenticate, then fetch data, then process result".
+
+== Request Execution [[Execution]]
+
+When a connector is executed, the following process occurs:
+
+. Requests are sorted by *sequence* number
+. For each request (in order):
+.. The `callIf` condition is evaluated; if `false`, the request is skipped
+.. The request URL is rendered with Groovy template expressions
+.. Headers are built from the request configuration
+.. For GET/DELETE: payload entries are added as query string parameters
+.. For POST/PUT/PATCH: a body entity is created based on the payload type
+.. Authentication headers/cookies are injected if an authenticator is active
+.. The HTTP call is executed via JAX-RS client
+.. The response is parsed based on media type (JSON, XML, or plain text)
+.. The response is stored in the context as `_N` (where N is the execution index)
+.. The `repeatIf` condition is evaluated; if `true`, the request is re-executed
+
+=== Error Handling
+
+* If a request returns HTTP 401 (Unauthorized) and the authenticator is OAuth2, the system *automatically refreshes the token* and retries the request
+* Error responses are still stored in the context and can be checked by subsequent requests via `callIf` conditions
+
+== Testing [[Testing]]
+
+The connector provides a testing wizard accessible from the form view:
+
+// TODO: capture via /doc-screenshot -- WS Connector testing wizard popup with connector and authenticator selection fields, Call button, and result display (FAILED: testing wizard not accessible on empty connector, requires saved data and specific action trigger)
+
+The testing wizard requires:
+
+* *Connector*: Select the connector to test
+* *Authenticator*: Select the authenticator to use
+
+Click btn:[Call] to execute the connector. The result is displayed in the `$result` field, showing all context variables (keys starting with `_`, except internal keys like `_beans`).
+// APP-VERIFY: The visual appearance and user flow of the testing wizard
+
+NOTE: The Call button is disabled until both a connector and an authenticator are selected.
+
+== Call Tracking [[Tracking]]
+
+When *Enable track web services* is enabled in the Studio application configuration, each connector execution creates a log file attached to the connector record.
+
+The log file contains the execution details (request/response data) for debugging and auditing purposes.
+
+// APP-VERIFY: When tracking is enabled, previous attachments are deleted before adding a new log file
+NOTE: When tracking is enabled, previous log files are removed before a new one is attached.

@@ -1,0 +1,84 @@
+= Process Variables Visualization
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Description
+
+The process variables visualization feature allows users to view the variables associated with a running or completed process instance and their corresponding values. This is essential for debugging process execution, verifying data flow between tasks, and understanding the current state of a process.
+
+== Access
+
+To view process variables:
+
+. Navigate to *Application Builder > BPM components > Technical Monitoring > Process Instances*
+. Select a process instance from the list
+. Open the *Variables* tab
+
+== Variable Table
+
+The variables tab displays a table with the following columns:
+
+[cols="1,3", options="header"]
+|===
+| Column | Description
+
+| *Name* (1)
+| The technical name of the process variable. This corresponds to the variable names used in scripts, expressions, and action configurations throughout the process.
+
+| *Value* (2)
+| The current value of the variable, displayed as a string representation. For complex objects, this shows the serialized form.
+|===
+
+== Variable Types
+
+Process variables can hold different types of data depending on how they were set during process execution:
+
+- **String values**: Text data set by scripts or user input
+- **Numeric values**: Integer or decimal values from calculations or field mappings
+- **Boolean values**: True/false flags used in conditions and gateways
+- **Object references**: References to Axelor records (displayed as serialized representations)
+- **JSON data**: Structured data from custom model (MetaJsonModel) records
+- **Collections**: Lists of values used in multi-instance activities or loop iterations
+
+== Common Use Cases
+
+=== Debugging Process Execution
+
+When a process is stuck or behaving unexpectedly, check the variables tab to verify:
+
+- Whether expected variables have been set correctly
+- Whether condition variables have the expected true/false values
+- Whether data passed between tasks is complete and accurate
+
+=== Verifying Script Output
+
+After a script task or action executes, verify the output by checking the variables tab. The variables set by `$response.setValue()` or `execution.setVariable()` calls are visible here.
+
+=== Monitoring Data Flow
+
+Track how data flows through the process by comparing variable values at different stages. This helps identify where data transformation or loss occurs.
+
+[TIP]
+====
+Variable visualization is read-only. To modify process variables at runtime, use the xref:general-documentation/process-instance/process_instance_modification.adoc[Process Instance Modification] feature or execute a script through a service task.
+====
+
+== Technical Details
+
+Process variables are visualized using the transient `WkfInstanceVariable` entity:
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `name`
+| String
+| Variable name
+
+| `value`
+| Large String
+| Variable value (serialized)
+|===
+
+This entity is non-persistent (transient) -- it exists only for display purposes. The actual variable data is stored in the Camunda process engine's runtime and history tables.

@@ -1,0 +1,231 @@
+
+== Overview
+
+The Apps Management screen is the central hub for managing all applications in your Axelor instance -- both standard applications (delivered with the platform) and custom applications (created through xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps]). It provides install, uninstall, configure, and data import capabilities.
+
+Apps Management is accessed from *Administration > Apps management*.
+
+image::studio-docs:studio/apps-management-cards.png[Apps Management cards view]
+
+[NOTE]
+====
+Custom Studio Apps appear in this list only when their *Show in app view* (`isInAppView`) property is enabled. See xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps] for details.
+====
+
+== App Views
+
+=== Cards View
+
+The default view displays apps as cards with visual type badges:
+
+[cols="1,2", options="header"]
+|===
+| Badge Color | App Type
+
+| Blue
+| Standard
+
+| Orange
+| Addons
+
+| Brown
+| Enterprise
+
+| Red
+| Pro
+
+| Purple
+| Custom
+
+| Gray
+| Others
+|===
+
+Each card shows the app image, name, code, description, and current status (installed or not).
+
+Available buttons on each card:
+
+* btn:[Install] -- Installs the app (shown when not active)
+* btn:[Configure] -- Opens the app-specific configuration form (shown when active)
+* btn:[Export] -- Exports the app (shown when active, for Studio Apps only)
+* btn:[Uninstall] -- Uninstalls the app (shown when active)
+* btn:[Delete] -- Deletes the app (shown when not active, for Studio Apps only)
+
+The cards toolbar provides:
+
+* btn:[Bulk install] -- Install multiple apps at once
+* btn:[Import roles] -- Import roles for all installed apps
+
+=== Grid View
+
+The grid view displays apps in a tabular format with columns: name, active status, demo data loaded, type, and version.
+
+NOTE: The grid and form are read-only for app creation and deletion (`canDelete=false`, `canNew=false`). App records are managed through install/uninstall operations.
+
+=== Form View
+
+image::studio-docs:studio/apps-management-form.png[App Management form view]
+
+The form view provides:
+
+* App image, name, and language selector
+* Demo data loaded status
+* Type and version badges
+* Description (large text)
+* Dependencies panel (`dependsOnSet`) showing required apps
+
+== Install and Uninstall
+
+=== Installing an App
+
+Click btn:[Install] on the app card or in the form sidebar. A confirmation dialog appears before proceeding.
+
+The installation process:
+
+. Resolves dependencies (installs required apps first)
+. Loads initial data for the app
+. Registers menus, views, and actions
+. Marks the app as active
+
+=== Uninstalling an App
+
+Click btn:[Uninstall] on the app card or in the form sidebar. A confirmation dialog appears before proceeding.
+
+WARNING: Uninstalling an app deactivates its menus, views, and actions. Data created through the app remains in the database but becomes inaccessible through the UI.
+
+== Configure
+
+The btn:[Configure] button opens the app-specific configuration form. Each app type has its own configuration entity and form:
+
+* **Studio** -> `AppStudio` configuration (see xref:studio-docs:studio-features/configuration.adoc[Configuration])
+* **BPM** -> `AppBpm` configuration
+* Other apps may have their own configuration forms
+
+The Configure button is only available when the app is installed (active).
+
+== Bulk Install
+
+The btn:[Bulk install] button in the cards toolbar opens a dialog for installing multiple apps at once:
+
+image::studio-docs:studio/apps-management-bulk-install.png[Bulk install dialog]
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Apps*
+| Select multiple apps to install (M2M selector)
+
+| *Language*
+| Language for the installed apps (selection: `select.language`)
+
+| *Import demo data*
+| When checked, demo data is imported during installation
+|===
+
+Click btn:[Install] in the dialog to start the bulk installation process.
+
+== Demo Data Import
+
+The btn:[Import demo data] button imports sample/reference data for the app. This is useful for testing and evaluation purposes.
+
+WARNING: Demo data import is only available in non-production environments (`application.mode != 'prod'`). This button is hidden in production mode.
+
+== Roles Import
+
+Two options for importing application roles:
+
+* btn:[Import roles] (form sidebar) -- Imports roles for the current app
+* btn:[Import roles] (cards toolbar) -- Imports roles for all installed apps
+
+Role import loads predefined role and permission configurations associated with the app.
+
+== Technical Details
+
+Apps are stored in the `App` entity (`com.axelor.studio.db`):
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `name`
+| String (required)
+| Display name (translatable)
+
+| `code`
+| String (required, unique)
+| Technical identifier
+
+| `active`
+| Boolean
+| Whether the app is currently installed
+
+| `typeSelect`
+| String (selection)
+| App type: standard, addons, enterprise, pro, custom, others
+
+| `appVersion`
+| String
+| Application version
+
+| `isCustom`
+| Boolean
+| Whether created through Studio
+
+| `isExperimental`
+| Boolean
+| Marks experimental apps
+
+| `languageSelect`
+| String (selection)
+| Preferred language
+
+| `initDataLoaded`
+| Boolean
+| Whether initial data has been loaded
+
+| `demoDataLoaded`
+| Boolean
+| Whether demo data has been loaded
+
+| `isRolesImported`
+| Boolean
+| Whether roles have been imported
+
+| `dependsOnSet`
+| M2M: App (self-referencing)
+| Required dependencies
+
+| `installOrder`
+| Integer
+| Installation priority order
+
+| `isInAppView`
+| Boolean
+| Whether to show in Apps Management (for custom apps)
+|===
+
+The domain filter for the Apps Management view:
+
+[source]
+----
+self.isCustom = null OR self.isCustom = false OR (self.isCustom = true AND self.isInAppView = true)
+----
+
+This ensures only standard apps and custom apps with `isInAppView=true` are displayed.
+
+Key backend services:
+
+* `AppController.installApp()` -- Installs the app with dependency resolution
+* `AppController.uninstallApp()` -- Uninstalls the app
+* `AppController.configure()` -- Opens the app-specific configuration form
+* `AppController.importDataDemo()` -- Imports demo data (non-prod only)
+* `AppController.bulkInstall()` -- Installs multiple apps
+* `AppController.importRoles()` / `importAllRoles()` -- Imports role configurations
+
+== Related Pages
+
+* xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps] -- Create custom apps through Studio
+* xref:studio-docs:studio-features/configuration.adoc[Configuration] -- Studio-specific configuration
+* xref:studio-docs:studio-features/app-loaders.adoc[App Loaders] -- Import/export apps as files
+* xref:studio-docs:index.adoc[Studio Overview] -- Complete feature overview

@@ -1,0 +1,111 @@
+=  Escalation Event
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction to BPMN Escalation Events
+
+In the Business Process Model and Notation (BPMN) standard, an escalation event represents a business escalation as opposed to an error. Escalation events are used to signal that an escalation should occur within a process, typically to indicate that attention is needed from a higher level of authority or that a different part of the process should be activated. Unlike errors, escalations are expected situations that are part of the normal business process flow.
+
+== Types of Escalation Events
+
+Escalation events can be used in different contexts within a BPMN process:
+
+- *Escalation Start Event:* Initiates a process instance when a specific escalation is received. This is typically used in event subprocesses.
+- *Escalation Intermediate Throwing Event:* Sends an escalation and continues the process flow.
+- *Escalation Intermediate Catching Event:* Pauses the process flow until a specific escalation is received.
+- *Escalation Boundary Event:* Attached to an activity, it can interrupt or non-interrupt the activity when a specific escalation is received.
+- *Escalation End Event:* Ends the current process path and sends a specific escalation.
+
+== Symbolization in BPMN
+
+Escalation events are symbolized by the following pictograms:
+
+- image:bpmn/events/escalation-events/escalation-start-event.png[Escalation start event]
+- image:bpmn/events/escalation-events/escalation-intermediate-throwing-event.png[Escalation intermediate throwing event]
+- image:bpmn/events/escalation-events/escalation-intermediate-catching-event.png[Escalation intermediate catching event]
+- image:bpmn/events/escalation-events/escalation-boundary-event.png[Escalation boundary event]
+- image:bpmn/events/escalation-events/escalation-end-event.png[Escalation end event]
+
+== Configuration for Escalation Events
+
+To configure an escalation event, you need to specify the escalation in the general tab of the properties panel:
+
+image:bpmn/events/escalation-events/escalation-event-configuration.png[Escalation event configuration, align="center"]
+
+=== Creating an Escalation
+
+To create an escalation:
+
+1. Click on the *+* icon to automatically generate an escalation.
+2. An Escalation Name will be automatically generated, but it is recommended to change it to make it more understandable.
+3. You can search for existing escalations in the BPM model or from other BPM models.
+
+=== Escalation Code
+
+Each escalation has a code that is used to match throwing and catching escalation events. When an escalation is thrown, it is caught by all catching escalation events that have the same escalation code.
+
+=== Axelor Studio Configuration [[axelor-escalation-config]]
+
+In Axelor Studio, the escalation event properties panel provides the following fields:
+
+image::bpmn/events/escalation-events/escalation-event-axelor-config.png[Axelor escalation event configuration,align="center"]
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Escalation* (1)
+| Dropdown to select an existing escalation or create a new one (click *+*). Similar to signal events.
+
+| *Escalation name* (2)
+| The display name of the escalation.
+
+| *Escalation code* (3)
+| The technical code used to match throw and catch events.
+
+| *Escalation code variable* (4)
+| A process variable name that will receive the escalation code at runtime. This is useful for dynamic escalation handling.
+|===
+
+[NOTE]
+====
+The *Escalation code variable* field (4) is only available for **catching** escalation events: *Start Events* (in event subprocesses) and *Boundary Events*. It is not shown for throwing events (Intermediate Throwing Events and End Events).
+====
+
+[TIP]
+====
+Use the *Escalation code variable* to capture the actual escalation code in a process variable. This is useful when your catching event needs to handle different escalation codes dynamically -- for example, routing to different handlers based on the escalation severity level.
+====
+
+== Use Cases for Escalation Events
+
+Escalation events are commonly used for:
+
+1. *Business Escalations:* Signaling that a business situation requires attention from a higher level of authority.
+2. *Process Coordination:* Coordinating activities between different parts of a process or between different processes.
+3. *Exception Handling:* Handling exceptional situations that are part of the normal business process flow.
+4. *Parallel Processing:* Triggering parallel activities when a specific business situation occurs.
+
+== Differences Between Escalation and Error Events
+
+While both escalation and error events are used to handle exceptional situations, they serve different purposes:
+
+- *Escalation Events:* Used for business escalations that are part of the normal process flow. They are expected situations that require attention from a different part of the process or a higher level of authority.
+- *Error Events:* Used for technical or business errors that are not part of the normal process flow. They represent unexpected situations that require error handling.
+
+== Listeners
+
+It is possible in a BPM model, regardless of the configurable element, to define listeners via the appropriate tab.
+
+image:bpmn/events/escalation-events/escalation-event-listener.png[Listeners, align="center"]
+
+=== Execution Listener
+
+An execution listener is created by clicking the plus *+* button in the list of concerned listeners in the tab.
+
+It applies its Groovy script at the activation or the completion (depending on the user's choice) of the event. The script can be written with or without the script xref:general-documentation/builders/builders_introduction.adoc#mapper-builder-usage[builder].
+
+== Comments
+
+You can add comments to the escalation event to explain its purpose or to provide additional information.

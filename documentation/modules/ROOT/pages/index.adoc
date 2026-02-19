@@ -1,12 +1,15 @@
-= {page-component-title} {page-component-version} Documentation
+= {page-component-title} {page-component-version}
 :toc:
 :toc-title:
 
-Welcome to the {page-component-title} Documentation. Here you will find information
+Welcome to the {page-component-title}. Here you will find information
 and resources to help you learn about {page-component-title}.
 
-xref:web-service-docs:index.adoc[Web Service]::
+
+xref:studio:studio-docs:index.adoc[Axelor STUDIO]::
+These topics describe how to use the axelor Studio.
+xref:studio:bpm-docs:index.adoc[Axelor BPM]::
+These topics describe how to use the axelor BPM solution as BPM modeler.
+xref:studio:web-service-docs:index.adoc[Web Service]::
 This tutorial will quickly introduce you to the web service solution and guide you
 to create your first usage.
-xref:bpm-docs:index.adoc[Axelor  BPM]::
-These topics describe how to use the axelor BPM solution  as BPM modeler.

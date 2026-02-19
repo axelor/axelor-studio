@@ -1,0 +1,6 @@
+= Dashboards
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::partial$dashboards-content.adoc[]
