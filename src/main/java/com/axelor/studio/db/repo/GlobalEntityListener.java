@@ -4,13 +4,13 @@
  */
 package com.axelor.studio.db.repo;
 
+import com.axelor.concurrent.ContextAware;
 import com.axelor.db.Model;
 import com.axelor.db.Query;
-import com.axelor.db.tenants.TenantAware;
 import com.axelor.inject.Beans;
 import com.axelor.studio.bpm.listener.WkfRequestListener;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
-import com.axelor.studio.bpm.utils.BpmTools;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.helper.TransactionHelper;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.inject.servlet.RequestScoper;
@@ -38,6 +38,11 @@ public class GlobalEntityListener {
   @PostPersist
   @PostUpdate
   protected void onPostPersistOrUpdate(Model model) {
+    // Skip if BPM process engine is not initialized (BPM app not active)
+    if (!Beans.get(ProcessEngineService.class).isInitialized()) {
+      return;
+    }
+
     Long id = model.getId();
     String className = model.getClass().getName();
 
@@ -51,18 +56,16 @@ public class GlobalEntityListener {
 
     Future<?> future =
         executorService.submit(
-            () ->
-                new TenantAware(
-                        () -> {
-                          try {
-                            callableTask.call();
-                          } catch (Exception e) {
-                            throw new IllegalStateException(e);
-                          }
-                        })
-                    .withTransaction(false)
-                    .tenantId(BpmTools.getCurrentTenant())
-                    .run());
+            ContextAware.of()
+                .withTransaction(false)
+                .build(
+                    () -> {
+                      try {
+                        callableTask.call();
+                      } catch (Exception e) {
+                        throw new IllegalStateException(e);
+                      }
+                    }));
     try {
       future.get();
     } catch (InterruptedException e) {
