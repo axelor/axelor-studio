@@ -404,29 +404,58 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     WkfProcess targetProcess = migrationProcessMap.get(newDefinition.getId());
     int iterationNumber = 1;
     List<String> pendingSaves = new ArrayList<>();
-    List<Long> pendingTaskIds = new ArrayList<>();
+
+    Map<String, WkfTaskConfig> taskConfigCache = preloadTaskConfigs(oldDefinition.getId());
+
+    Map<String, Set<String>> activeTasksByInstance =
+        engine
+            .getTaskService()
+            .createTaskQuery()
+            .active()
+            .processInstanceIdIn(processInstanceIds.toArray(new String[0]))
+            .list()
+            .stream()
+            .collect(
+                Collectors.groupingBy(
+                    Task::getProcessInstanceId,
+                    Collectors.mapping(Task::getTaskDefinitionKey, Collectors.toSet())));
+
+    log.debug("Found active tasks for {} process instances", activeTasksByInstance.size());
+
+    Map<String, Set<String>> taskTitlesByInstance = new HashMap<>();
+    for (Map.Entry<String, Set<String>> entry : activeTasksByInstance.entrySet()) {
+      Set<String> titles =
+          entry.getValue().stream()
+              .map(taskDefKey -> taskConfigCache.get(taskDefKey + ":" + oldDefinition.getId()))
+              .filter(Objects::nonNull)
+              .map(WkfTaskConfig::getTaskEmailTitle)
+              .filter(Objects::nonNull)
+              .collect(Collectors.toSet());
+      if (!titles.isEmpty()) {
+        taskTitlesByInstance.put(entry.getKey(), titles);
+      }
+    }
+
+    List<String> processInstanceIdsForTaskCancel = new ArrayList<>();
+
     for (String processInstanceId : processInstanceIds) {
       try {
-        // get active tasks before migration
-        ArrayList<Task> activeTasks = (ArrayList<Task>) getActiveTasks(engine, processInstanceId);
         engine
             .getRuntimeService()
             .newMigration(plan)
             .processInstanceIds(processInstanceId)
             .execute();
-        updateTasksStatus(activeTasks, processInstanceId, pendingTaskIds);
 
         pendingSaves.add(processInstanceId);
+        if (taskTitlesByInstance.containsKey(processInstanceId)) {
+          processInstanceIdsForTaskCancel.add(processInstanceId);
+        }
         migratedInstances++;
 
         if (pendingSaves.size() >= INSTANCE_BATCH_SIZE) {
           wkfInstanceService.batchUpdateProcessInstances(
               targetProcess, pendingSaves, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
           pendingSaves.clear();
-        }
-        if (pendingTaskIds.size() >= TASK_BATCH_SIZE) {
-          wkfUserActionService.cancelTasks(pendingTaskIds);
-          pendingTaskIds.clear();
         }
 
       } catch (Exception e) {
@@ -435,9 +464,11 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
             null, processInstanceId, WkfInstanceRepository.STATUS_MIGRATION_ERROR);
         unmigratedInstances++;
       }
-      if (isWebSocketSupported && sessionId != null)
-        BpmDeploymentWebSocket.updateProgress(
-            sessionId, calculatePercentage(iterationNumber, processInstanceIds.size()));
+      if (isWebSocketSupported && sessionId != null) {
+        int progress =
+            (int) (calculatePercentage(iterationNumber, processInstanceIds.size()) * 0.9);
+        BpmDeploymentWebSocket.updateProgress(sessionId, progress);
+      }
       iterationNumber++;
     }
 
@@ -445,9 +476,27 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
       wkfInstanceService.batchUpdateProcessInstances(
           targetProcess, pendingSaves, WkfInstanceRepository.STATUS_MIGRATED_SUCCESSFULLY);
     }
-    if (!pendingTaskIds.isEmpty()) {
-      wkfUserActionService.cancelTasks(pendingTaskIds);
+
+    if (!processInstanceIdsForTaskCancel.isEmpty() && !taskTitlesByInstance.isEmpty()) {
+      if (isWebSocketSupported && sessionId != null) {
+        BpmDeploymentWebSocket.updateProgress(sessionId, 92);
+      }
+      List<Long> taskIdsToCancel =
+          wkfUserActionService.batchFindTasksToCancel(taskTitlesByInstance);
+      if (isWebSocketSupported && sessionId != null) {
+        BpmDeploymentWebSocket.updateProgress(sessionId, 96);
+      }
+      if (!taskIdsToCancel.isEmpty()) {
+        wkfUserActionService.cancelTasks(taskIdsToCancel);
+      }
+      if (isWebSocketSupported && sessionId != null) {
+        BpmDeploymentWebSocket.updateProgress(sessionId, 100);
+      }
+    } else if (isWebSocketSupported && sessionId != null) {
+      BpmDeploymentWebSocket.updateProgress(sessionId, 100);
     }
+
+    log.info("Migration completed: {} instances ", migratedInstances);
 
     migrationMap.put("successfulMigrations", migratedInstances);
     migrationMap.put("failedMigrations", unmigratedInstances);
@@ -476,6 +525,21 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
         pendingTaskIds.add(taskId);
       }
     }
+  }
+
+  protected Map<String, WkfTaskConfig> preloadTaskConfigs(String processDefinitionId) {
+    Map<String, WkfTaskConfig> cache = new HashMap<>();
+    List<WkfTaskConfig> configs =
+        taskConfigRepo
+            .all()
+            .autoFlush(false)
+            .filter("self.processId = ?", processDefinitionId)
+            .fetch();
+    for (WkfTaskConfig config : configs) {
+      String cacheKey = config.getName() + ":" + config.getProcessId();
+      cache.put(cacheKey, config);
+    }
+    return cache;
   }
 
   protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
