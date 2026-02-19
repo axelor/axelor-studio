@@ -22,6 +22,8 @@ import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.persist.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -41,6 +43,8 @@ public interface WkfUserActionService {
       String taskId);
 
   public Long migrateUserAction(WkfTaskConfig wkfTaskConfig, String oldProcessId);
+
+  List<Long> batchFindTasksToCancel(Map<String, Set<String>> taskTitlesByInstance);
 
   public FullContext getModelCtx(WkfTaskConfig wkfTaskConfig, DelegateExecution execution)
       throws ClassNotFoundException;

@@ -44,12 +44,16 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.persistence.FlushModeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -474,5 +478,53 @@ public class WkfUserActionServiceImpl implements WkfUserActionService {
     update.set(root.get("status"), "canceled");
     update.where(root.get("id").in(taskIds));
     JPA.em().createQuery(update).setFlushMode(FlushModeType.COMMIT).executeUpdate();
+  }
+
+  @Override
+  public List<Long> batchFindTasksToCancel(Map<String, Set<String>> taskTitlesByInstance) {
+    if (taskTitlesByInstance == null || taskTitlesByInstance.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    // Build JPQL with conditions for each process instance and its specific task titles
+    // The relatedProcessInstance.name format is "ProcessDef:version:id : instanceId"
+    StringBuilder jpql = new StringBuilder("self.status != ?1 AND (");
+    List<Object> params = new ArrayList<>();
+    params.add("canceled");
+
+    int paramIndex = 2;
+    boolean first = true;
+    for (Map.Entry<String, Set<String>> entry : taskTitlesByInstance.entrySet()) {
+      String processInstanceId = entry.getKey();
+      Set<String> taskTitles = entry.getValue();
+
+      if (taskTitles.isEmpty()) {
+        continue;
+      }
+
+      if (!first) {
+        jpql.append(" OR ");
+      }
+      first = false;
+
+      jpql.append("(self.relatedProcessInstance.name LIKE ?").append(paramIndex++);
+      jpql.append(" AND self.name IN (?").append(paramIndex++).append("))");
+      params.add("% : " + processInstanceId);
+      params.add(taskTitles);
+    }
+    jpql.append(")");
+
+    if (first) {
+      return Collections.emptyList();
+    }
+
+    return teamTaskRepository
+        .all()
+        .filter(jpql.toString(), params.toArray())
+        .select("id")
+        .fetch(0, 0)
+        .stream()
+        .map(m -> (Long) m.get("id"))
+        .collect(Collectors.toList());
   }
 }
