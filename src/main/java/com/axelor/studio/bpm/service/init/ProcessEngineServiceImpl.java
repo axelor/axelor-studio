@@ -16,6 +16,7 @@ import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Singleton;
 import jakarta.inject.Inject;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -43,17 +44,49 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
       AppSettingsStudioService appSettingsStudioService) {
     this.wkfLoggerInitService = wkfLoggerInitService;
     this.appSettingsStudioService = appSettingsStudioService;
-    addEngine(BpmTools.getCurrentTenant());
+    // Initialization moved to initialize() method - called by ServerStartListener if BPM app is
+    // active
+  }
+
+  @Override
+  public void initialize(String tenantId) {
+    if (engineMap.containsKey(tenantId)) {
+      return;
+    }
+    addEngine(tenantId);
     WkfCache.initWkfModelCache();
     WkfCache.initWkfButttonCache();
   }
 
   @Override
+  public boolean isInitialized() {
+    return engineMap.containsKey(BpmTools.getCurrentTenant());
+  }
+
+  @Override
+  public boolean isInitialized(String tenantId) {
+    return engineMap.containsKey(tenantId);
+  }
+
+  @Override
+  public boolean isAnyTenantInitialized() {
+    return !engineMap.isEmpty();
+  }
+
+  @Override
+  public void shutdown() {
+    log.info("Shutting down all BPM process engines...");
+    new ArrayList<>(engineMap.keySet()).forEach(this::removeEngine);
+    log.info("All BPM process engines shut down successfully");
+  }
+
+  @Override
   public void addEngine(String tenantId) {
+    if (isInitialized(tenantId)) {
+      return;
+    }
 
     TenantConfig tenantConfig = Beans.get(TenantConfigProvider.class).find(tenantId);
-    log.debug(
-        "Adding engine for the tenant: {}, tenantConfig exist: {}", tenantId, tenantConfig != null);
 
     if (tenantConfig == null) {
       return;
@@ -80,7 +113,7 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
             .setJdbcMaxIdleConnections(appSettingsStudioService.processEngineMaxIdleConnections())
             .setJdbcMaxActiveConnections(
                 appSettingsStudioService.processEngineMaxActiveConnections())
-            .setJobExecutorActivate(!multiTenant)
+            .setJobExecutorActivate(true)
             .setMetricsEnabled(false)
             .setJobExecutor(Beans.get(WkfJobExecutor.class))
             .setDefaultSerializationFormat(Variables.SerializationDataFormats.JAVA.name())
@@ -102,18 +135,18 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
               engine.getManagementService().registerDeploymentForJobExecutor(deployment.getId());
             });
     engineMap.put(tenantId, engine);
+    log.info("Engine added for tenant: {}", tenantId);
   }
 
   @Override
   public ProcessEngine getEngine() {
-
     String tenantId = BpmTools.getCurrentTenant();
-
-    if (!engineMap.containsKey(tenantId)) {
-      addEngine(tenantId);
+    ProcessEngine engine = engineMap.get(tenantId);
+    if (engine == null) {
+      throw new IllegalStateException(
+          "BPM Process Engine is not initialized. Ensure the BPM app is installed and active.");
     }
-
-    return engineMap.get(tenantId);
+    return engine;
   }
 
   @Override
@@ -126,6 +159,7 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
     engineMap.remove(tenantId);
     WkfCache.WKF_BUTTON_CACHE.remove(tenantId);
     WkfCache.WKF_MODEL_CACHE.remove(tenantId);
+    log.info("Engine removed for tenant: {}", tenantId);
   }
 
   @Override

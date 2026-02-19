@@ -185,8 +185,7 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
 
     String tenantId = null;
     if (TenantModule.isEnabled()) {
-      tenantId =
-          TenantResolver.currentTenantIdentifier() + ":" + TenantResolver.currentTenantHost();
+      tenantId = TenantResolver.currentTenantIdentifier();
       deploymentBuilder = deploymentBuilder.tenantId(tenantId);
     }
 

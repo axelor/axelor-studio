@@ -80,11 +80,13 @@ dependencies {
   implementation "org.yaml:snakeyaml:${snakeyamlVersion}"
   implementation "jakarta.websocket:jakarta.websocket-api:${websocketApiVersion}"
   implementation "jakarta.websocket:jakarta.websocket-client-api:${websocketApiVersion}"
+  compileOnly "org.redisson:redisson:${redissonVersion}"
   compileOnly "org.projectlombok:lombok:${lombokVersion}"
   annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
   testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
   testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+  testCompileOnly "org.redisson:redisson:${redissonVersion}"
   testImplementation "org.mockito:mockito-core:${mockitoVersion}"
 }
 
@@ -132,8 +134,8 @@ publishing {
 }
 
 /*
-* Jacoco
-*/
+ * Jacoco
+ */
 
 apply plugin: 'jacoco'
 
