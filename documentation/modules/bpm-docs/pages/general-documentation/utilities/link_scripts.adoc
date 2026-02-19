@@ -1,0 +1,192 @@
+= Link Scripts
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+Link Scripts are reusable Groovy script blocks that can be chained together through dependency and output arcs. They provide a way to build modular, composable business logic where each script receives input from its dependencies and passes results to its outputs.
+
+Link Scripts are accessed from *App > LinkScript*.
+
+== Link Script List
+
+image::utilities/link-script-grid.png[Link Scripts grid view,align="center"]
+
+The grid view displays all Link Scripts with a btn:[Test] button (play icon) for quick execution testing.
+
+== Creating a Link Script
+
+Click btn:[New] to create a Link Script.
+
+image::utilities/link-script-form.png[Link Script form,align="center"]
+
+=== Basic Information
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name* (1)
+| Yes
+| Unique name for the Link Script.
+
+| *Transactional* (2)
+| No
+| Boolean switch (default: false). When enabled, the script runs within a database transaction. If the script fails, all changes are rolled back.
+
+| *Description* (3)
+| No
+| Description of the script's purpose (HTML editor).
+|===
+
+=== Script Body
+
+The *Body* tab contains the Groovy script code.
+
+image::utilities/link-script-body.png[Link Script body editor,align="center"]
+
+The body is edited using a CodeEditor widget with Java syntax highlighting (height: 500px).
+
+[NOTE]
+====
+**Implicit return behavior**: If the script does not contain an explicit `return` statement, all variables defined in the script are implicitly returned and injected into the context for downstream output arcs.
+====
+
+Example script body:
+[source,groovy]
+----
+def orders = __repo__(SaleOrder).all()
+    .filter("self.statusSelect = ?1", 3)
+    .fetch()
+
+def totalAmount = orders.sum { it.exTaxTotal ?: 0 }
+def orderCount = orders.size()
+
+// These variables are implicitly returned
+// and available to output arcs
+----
+
+=== Dependency Arcs
+
+The *Dependency Arcs* tab defines inputs from other Link Scripts.
+
+image::utilities/link-script-dependency-arcs.png[Dependency arcs,align="center"]
+
+Each dependency arc specifies:
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name*
+| No
+| Variable name under which the dependency result is injected into this script's context. Must follow camelCase naming: `/^[a-z][a-zA-Z0-9]*$/`.
+
+| *Condition script*
+| No
+| A Groovy expression that determines whether this dependency is resolved. If the condition is false, the dependency is skipped.
+
+| *To LinkScript*
+| Yes
+| Reference to the source Link Script that provides the dependency data.
+|===
+
+=== Output Arcs
+
+The *Output Arcs* tab defines downstream Link Scripts that receive this script's results.
+
+Output arcs follow the same structure as dependency arcs, connecting this script's output to other scripts' inputs.
+
+== Testing Link Scripts
+
+The btn:[Test] button (play icon) in the toolbar opens a test dialog.
+
+image::utilities/link-script-test.png[Link Script test popup,align="center"]
+
+=== Test Bindings
+
+The test dialog allows you to define input bindings -- parameter/expression pairs that simulate dependency inputs:
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Parameter*
+| The variable name to inject into the script context.
+
+| *Expression*
+| The value for the parameter. Can be a static string value or a Groovy expression.
+|===
+
+[NOTE]
+====
+Expressions are evaluated as Groovy expressions **if** they start with `eval:`. Otherwise, the expression is treated as a plain string value.
+
+Examples:
+
+* `Hello World` -- Injected as the string "Hello World"
+* `eval: 42 + 8` -- Evaluated as Groovy, resulting in the integer 50
+* `eval: __repo__(Partner).find(1L)` -- Evaluated as Groovy, returning a Partner record
+====
+
+Click btn:[Test] to execute the Link Script with the defined bindings. The script runs and its output is displayed.
+
+== Arc Naming Convention
+
+Arc names must follow this pattern: `/^[a-z][a-zA-Z0-9]*$/`
+
+* Must start with a lowercase letter
+* Can contain only letters and digits
+* camelCase is recommended (e.g., `orderTotal`, `customerList`, `validatedItems`)
+
+WARNING: Arc names that do not follow this pattern are rejected by the validation.
+
+== Technical Details
+
+=== LinkScript Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `name` | String (required, unique) | Script name
+| `transactional` | Boolean (default: false) | Transaction mode
+| `description` | Large String | HTML description
+| `body` | Large String (required) | Groovy script code
+| `outputArcs` | O2M: LinkScriptArc | Output connections
+| `dependencyArcs` | O2M: LinkScriptArc | Input dependencies
+|===
+
+=== LinkScriptArc Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `sequence` | Integer (readonly) | Execution order
+| `name` | String | Variable name for result injection
+| `conditionScript` | Large String | Conditional execution expression
+| `toLinkScript` | M2O: LinkScript (required) | Target/source script
+|===
+
+=== LinkScriptBinding (Non-persistent)
+
+Used only in the test popup:
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `parameter` | String | Variable name
+| `expression` | Large String | Value or Groovy expression (with eval: prefix)
+|===
+
+Backend services:
+
+* `LinkScriptController.setBindings()` -- Pre-fills test bindings from dependency arcs
+* `LinkScriptController.run()` -- Executes the script in test mode
+
+== Related Pages
+
+* xref:general-documentation/builders/builders_introduction.adoc[Builders Introduction] -- Scripting context and available variables

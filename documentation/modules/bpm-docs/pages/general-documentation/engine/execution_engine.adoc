@@ -1,0 +1,186 @@
+= Execution Engine
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The BPM execution engine comprises a set of Camunda listeners and JavaDelegate implementations that handle the runtime lifecycle of BPMN processes. These components manage node activation and deactivation, message correlation between processes, user task management, Axelor action execution, and email notifications.
+
+== WkfExecutionListener
+
+The `WkfExecutionListener` implements the Camunda `ExecutionListener` interface and is attached to all BPMN flow elements. It is the central component that reacts to process execution events.
+
+=== Event Handling
+
+The listener responds to two event types:
+
+==== Start Event (`EVENTNAME_START`)
+
+When a node starts execution:
+
+. If the `activityInstanceId` is null (meaning the process itself just started), a new `WkfInstance` record is created in the database with:
+   * The Camunda process instance ID
+   * A reference to the `WkfProcess`
+   * The process key stored as a process variable
+
+. If the `activityInstanceId` is not null (a regular node activation), `processNodeStart()` is called to handle the node activation logic.
+
+==== End Event (`EVENTNAME_END`)
+
+When a node ends execution:
+
+. `processNodeEnd()` is called to handle node deactivation
+. If the event source is a `ProcessDefinitionEntity` (meaning the entire process is ending), the log is cleared
+
+=== Node Start Processing
+
+When a node starts (`processNodeStart()`):
+
+. The instance's current node is updated (`WkfInstance.node` field)
+. A log appender is attached for non-blocking nodes
+. For **intermediate throw events**: a message is sent to correlate with other processes (see <<message-correlation>>)
+. For **blocking nodes** (userTask, catchEvent, callActivity, endEvent):
+   * A log entry is written
+   * For end events: a message is also sent
+   * The `onNodeActivation()` callback is triggered, which:
+     ** Sends an email notification if configured with `emailEvent = "start"`
+     ** Creates a TeamTask (user action) if `createTask` is enabled on the task configuration
+
+=== Node End Processing
+
+When a node ends (`processNodeEnd()`):
+
+. For **business rule tasks**: checks if the DMN result is compulsory. If no result was produced and the task is marked as compulsory, an error is thrown.
+. For **blocking nodes**: the `onNodeDeactivation()` callback is triggered, which sends an email notification if configured with `emailEvent = "end"`.
+. For **end events**: all instance variables are removed from the Camunda runtime.
+
+=== Blocking Nodes
+
+The following BPMN element types are considered "blocking" -- they pause process execution and wait for an external trigger:
+
+* `userTask` -- Waits for user interaction
+* `catchEvent` -- Waits for a message, signal, or timer
+* `callActivity` -- Waits for a sub-process to complete
+* `endEvent` -- Terminal node of a process
+
+[[message-correlation]]
+=== Message Correlation
+
+When a throw event or end event occurs, the listener reads the `MessageEventDefinition` from the BPMN element and evaluates any EL expressions in the message name. A `MessageCorrelationBuilder` is then used to:
+
+. Set the process key as a variable
+. Handle multi-tenancy with the appropriate tenant ID
+. Correlate the message with all matching receivers
+. Store resulting process instance IDs as process variables
+
+This mechanism enables communication between different BPMN processes -- one process can send a message that triggers a catch event in another process.
+
+== WkfActionService
+
+The `WkfActionService` implements the `JavaDelegate` interface, allowing Axelor framework actions to be executed during BPMN task execution.
+
+=== Execution Flow
+
+When a service task with configured actions is reached:
+
+. The service finds the `WkfProcess` by the current process definition ID
+. It retrieves the start model from the process configuration (MetaModel or MetaJsonModel)
+. The model context (`FullContext`) is obtained from the execution variables
+. The "actions" attribute is read from the BPMN element (comma-separated action names)
+. Each action is executed:
+   * `ActionGroup` entries are flattened into individual actions
+   * Each action is applied via `ActionService.applyActions(actionName, fullContext)`
+
+NOTE: This is how the "Actions" property configured in the BPM modeler properties panel gets executed at runtime. The actions are stored as a BPMN extension attribute on the element.
+
+== SendTaskExecution
+
+The `SendTaskExecution` class implements `JavaDelegate` for BPMN send tasks. When a send task is executed:
+
+. The `messageName` attribute is read from the BPMN element (Camunda extension namespace)
+. EL expressions in the message name are evaluated using the `ExpressionManager`
+. The message is correlated to all matching receivers via `RuntimeService.createMessageCorrelation(msg).correlateAll()`
+
+This enables BPMN send tasks to trigger message catch events in other processes.
+
+== WkfTaskListener
+
+The `WkfTaskListener` implements the Camunda `TaskListener` interface and handles user task lifecycle events.
+
+=== Task Deletion Handling
+
+When a user task is deleted (cancelled):
+
+. The listener finds the `WkfTaskConfig` by the task definition key and process definition ID
+. It looks up the associated `TeamTask` by the related process instance name and task email title, filtering for tasks with "new" status
+. The TeamTask status is set to "canceled"
+. The task duration is calculated in seconds from the creation time to the current time
+
+== Email Notifications
+
+The `WkfEmailService` handles email notifications triggered during node lifecycle events:
+
+* `sendEmail(WkfTaskConfig, DelegateExecution)` -- Sends an email notification based on the task configuration's `templateName`, `notificationEmail`, and `emailEvent` settings
+* `createUrl(FullContext, String formName)` -- Creates a URL link to the model's form view, included in the email body
+
+Email notifications are triggered based on the `emailEvent` configuration:
+
+[cols="1,3", options="header"]
+|===
+| Email Event | When Triggered
+
+| `start`
+| When the node is activated (process reaches this activity)
+
+| `end`
+| When the node is deactivated (activity is completed)
+|===
+
+== User Actions (TeamTask)
+
+The `WkfUserActionService` manages TeamTask records that represent user actions in the BPM context:
+
+* `createUserAction()` -- Creates a TeamTask entry when a node activates and `createTask` is enabled on the task configuration
+* `processTitle()` -- Processes the task title template with context variables
+* `updateUserAction()` -- Updates the TeamTask when the associated Camunda task is completed
+* `migrateUserAction()` -- Migrates TeamTask records during process instance migration
+* `getUser()` -- Resolves the assigned user from a model field path
+
+== Technical Details
+
+=== Backend Services
+
+[cols="1,3", options="header"]
+|===
+| Service | Responsibility
+
+| `WkfExecutionListener`
+| Main execution listener on all BPMN flow elements -- handles node start/end events
+
+| `WkfTaskListener`
+| Task listener -- handles user task deletion and TeamTask cancellation
+
+| `WkfActionService`
+| JavaDelegate -- executes Axelor actions configured on BPMN elements
+
+| `SendTaskExecution`
+| JavaDelegate -- handles send task message correlation
+
+| `WkfEmailService`
+| Email notification service for node lifecycle events
+
+| `WkfUserActionService`
+| TeamTask (user action) creation, update, and migration
+
+| `WkfInstanceServiceImpl`
+| Central instance operations: evaluation, start, activation/deactivation, restart, cancel
+|===
+
+== Related Pages
+
+* xref:general-documentation/engine/deployment_pipeline.adoc[Deployment Pipeline] -- How BPM models are deployed to the Camunda engine
+* xref:general-documentation/engine/auto_evaluation.adoc[Auto-Evaluation] -- How workflows are automatically evaluated on model save
+* xref:general-documentation/engine/task_evaluation.adoc[Task Evaluation] -- How task conditions are evaluated and tasks completed
+* xref:general-documentation/app-management/app_bpm_configuration.adoc[App BPM Configuration] -- BPM engine settings
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

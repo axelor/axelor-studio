@@ -1,0 +1,26 @@
+= App Loader
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::studio-docs:partial$app-loaders-content.adoc[]
+
+== Exported Components [[Components]]
+
+The export process includes the following component types:
+
+=== Standard Components (14 types)
+
+studio-app, json-model, json-field, studio-menu, studio-action, studio-dashboard, studio-dashlet, studio-chart, studio-selection, ws-connector, ws-request, ws-authenticator, meta-view, ws-request-list
+
+=== BPM Components (3 additional types)
+
+When BPM components are present, the export also includes:
+
+* *wkf-model*: BPM process models (BPMN XML)
+* *wkf-dmn-model*: DMN decision models (DMN XML)
+* *baml-model*: BAML models (BAML XML + generated scripts)
+
+These are handled transparently by specialized BPM export/import service extensions.
+
+NOTE: After importing BPM or DMN models via the App Loader, you must deploy each model individually for the processes/decisions to become executable.

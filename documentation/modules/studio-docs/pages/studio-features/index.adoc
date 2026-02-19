@@ -1,0 +1,86 @@
+= Studio Features
+:toc:
+:toc-title:
+:page-pagination:
+:experimental:
+
+The Studio module provides a comprehensive set of low-code tools for customizing your Axelor application. This section documents each feature in detail.
+
+All Studio features are accessible from the *App* menu in the top navigation bar, once the Studio application is installed.
+
+== Configuration and Apps
+
+Package, manage, and configure your customizations. Accessible under *App > Configuration* and *Administration*.
+
+[cols="1,2", options="header"]
+|===
+| Feature | Description
+
+| xref:studio-features/configuration.adoc[Configuration]
+| Configure global Studio behavior: enable/disable Studio App grouping, enable web service call tracking.
+
+| xref:studio-features/studio-apps.adoc[Studio Apps]
+| Package related customizations (models, fields, menus, actions, charts) into installable applications. Requires `enableStudioApp`.
+
+| xref:studio-features/apps-management.adoc[Apps Management]
+| Central hub under *Administration > Apps management* for installing, uninstalling, and configuring all applications (standard and custom).
+
+| xref:studio-features/app-loaders.adoc[App Loaders]
+| Import and export Studio Apps as files for deployment across environments. Requires `enableStudioApp`.
+|===
+
+== Components
+
+Studio Components are the building blocks you use to define your customizations. They are managed under *App > Studio components*.
+
+[cols="1,2", options="header"]
+|===
+| Feature | Description
+
+| xref:studio-features/custom-models.adoc[Custom Models]
+| Create new data entities stored as JSON definitions (`MetaJsonModel`). No database migration is required.
+
+| xref:studio-features/custom-fields.adoc[Custom Fields]
+| Add fields to existing standard models via JSON-based storage (`MetaJsonField`), without modifying source code.
+
+| xref:studio-features/selections.adoc[Selections]
+| Manage dropdown selection lists with custom values, colors, and icons.
+
+| xref:studio-features/conditions.adoc[Conditional Expressions]
+| Use conditional expressions to control field visibility, read-only state, and required status.
+
+| xref:studio-features/actions.adoc[Actions]
+| Define business logic through five action types: Create, Update, Script, View, and Email. Also includes xref:studio-features/actions.adoc#custom-actions[Custom Actions] for raw XML action definitions.
+
+| xref:studio-features/menus.adoc[Menus]
+| Create menu entries with icons, permissions, conditions, and actions to navigate to your custom views.
+
+| xref:studio-features/view-builder.adoc[Visual View Builder]
+| Drag-and-drop form designer for creating and modifying views directly in the browser. Supports both custom models and view extensions on standard models.
+|===
+
+== Reporting
+
+Build visual reports and dashboards from your data. Accessible under *App > Reporting*.
+
+[cols="1,2", options="header"]
+|===
+| Feature | Description
+
+| xref:studio-features/charts.adoc[Charts]
+| Create charts with 11 types (bar, line, pie, donut, radar, gauge, and more). Configure aggregate, group-by, and display fields with filters.
+
+| xref:studio-features/dashboards.adoc[Dashboards]
+| Assemble charts, grids, and custom views into composite dashboard pages using dashlets.
+|===
+
+== Getting Started
+
+If you are new to Studio, the recommended reading order is:
+
+. xref:studio-features/configuration.adoc[Configuration] -- Understand the global settings before you start
+. xref:studio-features/custom-models.adoc[Custom Models] -- Learn how to create your first data model
+. xref:studio-features/custom-fields.adoc[Custom Fields] -- Add fields to existing models
+. xref:studio-features/view-builder.adoc[Visual View Builder] -- Use the drag-and-drop designer
+. xref:studio-features/menus.adoc[Menus] and xref:studio-features/actions.adoc[Actions] -- Wire up navigation and business logic
+. xref:studio-features/studio-apps.adoc[Studio Apps] -- Package your work into a deployable application

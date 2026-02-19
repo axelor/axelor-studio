@@ -1,0 +1,24 @@
+= Displaying Logs
+:toc-title:
+:page-pagination:
+
+== Webapp Configuration
+
+In the `axelor-config.properties` file, you need to set this configuration before deployment:
+----
+# Enable BPMN logging
+studio.bpm.logging = true
+----
+
+== Usage in the Application
+
+No configuration is necessary in the application, logs are displayed at the instance level:
+
+image::process-instances/log-annexes.png[log BPM,align="left"]
+
+[NOTE]
+====
+1. **Clear log** allows clearing the logs of the concerned instance.
+2. **Com.axelor.studio.bpm.service.job.ClearLogJob** is a batch job that allows clearing the logs.
+3. When an instance is `completed` (no more tokens circulating in the instance), the logs are cleared.
+====

@@ -14,7 +14,7 @@ Before you can use this feature, ensure that:
 
 * The Connect module is configured with the necessary token and company information.
 * You have already designed some scenario in the Connect application.
-** image:connect-scenario.png[connect scenario]
+** image:pro-features/connect/connect-scenario.png[connect scenario]
 * You have the Studio pro application available and installed.
 
 == Configuration
@@ -25,11 +25,11 @@ Before you can use this feature, ensure that:
 2. Enter the `Token` (1) provided by your Connect account.
 3. Specify the `Company` (2) identifier associated with your Connect scenarios.
 
-** image:connect-config.png[connect image]
+** image:pro-features/connect/connect-config.png[connect image]
 
 === Implementing a Service Task in a BPM Model
 
-** image:connect-service-task-config.png[connect service task]
+** image:pro-features/connect/connect-service-task-config.png[connect service task]
 
 1. Open your BPM model in the BPM designer.
 2. Add a new `Service Task` to your model where you want the Connect scenario to be triggered.

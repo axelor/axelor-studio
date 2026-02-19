@@ -1,0 +1,18 @@
+= App Management
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::studio-docs:partial$apps-management-content.adoc[]
+
+== App Initialization at Startup [[Startup]]
+
+When the Axelor server starts, the app system performs two initialization phases:
+
+. *App discovery*: Scans all application modules, reads YAML definition files from each module's `apps/` directory, and creates or updates `App` records. Dependencies between apps are established based on the YAML definitions.
+
+. *Auto-install*: If configured in the application settings, specific apps are automatically installed at startup. The configuration supports:
+** `"all"`: Install all available (inactive) apps
+** Comma-separated codes (e.g., `"studio,bpm"`): Install only the specified apps
+
+Both phases happen before the application becomes available to users.

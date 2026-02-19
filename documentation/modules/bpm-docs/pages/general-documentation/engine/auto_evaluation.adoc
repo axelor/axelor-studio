@@ -1,0 +1,121 @@
+= Auto-Evaluation
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The BPM auto-evaluation system intercepts all Axelor framework events (model saves, button clicks, record fetches) to automatically evaluate workflows and inject BPM status into records. This mechanism makes BPM "invisible" to the user -- saving a record automatically advances the workflow without requiring explicit user action.
+
+== How It Works
+
+The auto-evaluation is powered by the `WkfRequestListener`, which uses Guice `@Observes` annotations to intercept three types of framework events:
+
+. **BeforeTransactionComplete** -- Model save events
+. **PostAction** -- Button click events
+. **FETCH** -- Record fetch events
+
+Each event type triggers a different evaluation behavior.
+
+== Model Save Evaluation
+
+When any model is saved (transaction commit):
+
+. The `onBeforeTransactionComplete()` method is triggered
+. For each updated model, the system checks `WkfCache.WKF_MODEL_CACHE` to determine if the model is BPM-enabled
+. If the model is BPM-enabled, `wkfInstanceService.evalInstance(model, null)` is called with no button signal
+. This evaluates all active tasks for the associated process instance, checking if any expression conditions are now satisfied
+. If conditions are met, the corresponding Camunda tasks are completed, automatically advancing the workflow
+
+For deleted models, the system removes the associated `WkfInstance` record (only when the process config has a single model configuration).
+
+NOTE: This means that every time a user saves a record that is linked to a BPM process, the workflow is automatically re-evaluated. No explicit "advance workflow" action is needed.
+
+== Button Signal Evaluation
+
+When a user clicks a button on a form:
+
+. The `onRequest()` method is triggered (PostAction event)
+. The button name (`_signal`) is read from the action context
+. The system checks two caches:
+   * `WKF_MODEL_CACHE` -- Is this model BPM-enabled?
+   * `WKF_BUTTON_CACHE` -- Is this button configured as a BPM trigger?
+. If both checks pass, `wkfInstanceService.evalInstance(model, signal)` is called with the button name as the signal
+. The task evaluation engine matches the signal against `WkfTaskConfig.button` to find which tasks should be triggered
+. If a task's button matches but its expression evaluates to false, the task's `helpText` is returned as an alert message to the user
+. A `_wkfEvaluated = true` flag is set to prevent double evaluation within the same request
+
+This mechanism allows specific form buttons (e.g., "Confirm", "Validate", "Approve") to trigger specific BPM transitions, enabling user-driven workflow advancement alongside the automatic save-based evaluation.
+
+== Status Injection on Fetch
+
+When a record is fetched (loaded in the UI):
+
+. The `onFetch()` method is triggered (FETCH request event)
+. The system calls `wkfDisplayService.getWkfStatus()` to determine the current BPM status of the record
+. The `$wkfStatus` value is injected into the response data
+
+This allows the UI to display the BPM workflow status (e.g., current node name, status color) on any record that has an associated workflow, providing real-time visibility into the process state.
+
+== WkfCache
+
+The auto-evaluation system relies on two in-memory caches for performant event interception. Without these caches, every model save and button click would require database queries to determine BPM relevance.
+
+=== Model Cache
+
+`WKF_MODEL_CACHE` stores a mapping of process config IDs to model names for all BPM-enabled models. It is structured as `Map<String, Map<Long, String>>` where:
+
+* Outer key: tenant ID
+* Inner key: process config ID
+* Inner value: model class name
+
+When a model is saved, the cache provides O(1) lookup to determine if the model's class name matches any BPM-enabled process configuration.
+
+=== Button Cache
+
+`WKF_BUTTON_CACHE` stores a mapping of task config IDs to button names. It is structured as `Map<String, MultiMap>` where:
+
+* Key: tenant ID
+* Value: multimap of task config ID to button names
+
+When a button is clicked, the cache provides O(1) lookup to determine if the button name is registered as a BPM trigger.
+
+=== Cache Lifecycle
+
+Both caches are:
+
+* **Tenant-aware** -- Each tenant has its own cache entries
+* **Initialized on engine startup** -- Via `WkfCache.initWkfModelCache()` and `WkfCache.initWkfButttonCache()` during `ProcessEngineServiceImpl` construction
+* **Lazily re-initialized** -- If a cache entry is missing at lookup time, it is re-initialized from the database
+
+== Evaluation Flow Diagram
+
+The complete auto-evaluation flow when a record is saved:
+
+. User saves a record in the UI
+. Axelor framework fires `BeforeTransactionComplete` event
+. `WkfRequestListener.onBeforeTransactionComplete()` is invoked
+. Cache lookup: Is this model BPM-enabled?
+. If yes: `WkfInstanceService.evalInstance(model, null)` is called
+. The instance service checks for sub-process relationships
+. Active Camunda tasks are retrieved for the process instance
+. For each task, expression conditions are evaluated against the current model state
+. Tasks whose conditions are met are completed
+. Recursive evaluation occurs if the process is still active (see xref:general-documentation/engine/task_evaluation.adoc[Task Evaluation])
+
+== Technical Details
+
+=== Backend Services
+
+* `WkfRequestListener` -- Observes `BeforeTransactionComplete`, `PostAction`, and `FETCH` events
+* `WkfInstanceServiceImpl.evalInstance()` -- Core evaluation method that triggers task evaluation
+* `WkfDisplayService.getWkfStatus()` -- Computes the BPM status for a record
+* `WkfCache` -- Static in-memory caches for model and button lookups
+
+== Related Pages
+
+* xref:general-documentation/engine/task_evaluation.adoc[Task Evaluation] -- How task conditions are evaluated and matched
+* xref:general-documentation/engine/execution_engine.adoc[Execution Engine] -- Runtime lifecycle of BPMN processes
+* xref:general-documentation/engine/deployment_pipeline.adoc[Deployment Pipeline] -- How models are deployed and caches initialized
+* xref:general-documentation/app-management/app_bpm_configuration.adoc[App BPM Configuration] -- Configure infinite loop prevention limits
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

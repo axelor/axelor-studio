@@ -1,0 +1,18 @@
+= Studio Apps
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::studio-docs:partial$studio-apps-content.adoc[]
+
+== App Entity Auto-Generation [[Auto-Generation]]
+
+When a Studio App is saved, the system automatically generates a corresponding `App` entity (stored in the `generatedApp` field). This generation is triggered by the repository save hook.
+
+The generated App has the following characteristics:
+
+* `isCustom = true`
+* `typeSelect = "custom"`
+* Image, description, dependencies, sequence, modules, and `isInAppView` are copied from the Studio App
+
+This means every Studio App has a dual existence: the design-time `StudioApp` record and the runtime `App` record. The `App` record is what the xref:general-documentation/app-management/app_management_overview.adoc[Apps Management] interface uses.

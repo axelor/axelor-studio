@@ -1,0 +1,187 @@
+= BPM Dashboard
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The BPM Dashboard provides a centralized view for monitoring and managing BPM processes. It offers real-time charts and statistics about task assignments, process execution times, and completion metrics, giving managers and administrators visibility into the overall health of their business processes.
+
+== Access
+
+Navigate to: *Application Builder > BPM components > BPM Dashboard*
+
+image::dashboard/bpm-dashboard-overview.png[BPM Dashboard overview,align="center"]
+
+== Dashboard Charts
+
+The main dashboard displays seven charts organized in panels. These charts query the Camunda history tables (`act_hi_actinst`, `act_hi_procinst`) to provide real-time process execution data.
+
+Most charts include a *BPM Model* filter (wkfModel) that allows you to narrow down the data to a specific model. Additional filters vary by chart.
+
+=== Assigned to Me (1)
+
+image::dashboard/assigned-to-me.png[Assigned to me chart,align="center"]
+
+Displays the tasks currently assigned to the logged-in user, grouped by process and status. This chart provides a quick overview of your personal workload.
+
+- *Chart type*: Donut
+- *Data source*: `chart.wkf.bpm.manager.assigned.me.tasks`
+- *Filter*: BPM Model
+- *Visible to*: All users
+
+=== Assigned to Others (2)
+
+image::dashboard/assigned-to-others.png[Assigned to others chart,align="center"]
+
+Displays tasks assigned to other users, providing managers with an overview of team workload distribution.
+
+- *Chart type*: Donut
+- *Data source*: `chart.wkf.bpm.manager.assigned.other.tasks`
+- *Filter*: BPM Model
+- *Visible to*: **SuperAdmin**, **Admin**, and **Manager** roles only
+
+WARNING: This chart is only visible to users with elevated roles (SuperAdmin, Admin, or Manager). Standard users will not see this section on the dashboard.
+
+=== Tasks by Process (3)
+
+image::dashboard/tasks-by-process.png[Tasks by process chart,align="center"]
+
+A comprehensive chart displaying the distribution of tasks across all active processes. Helps identify which processes have the highest task volumes.
+
+- *Chart type*: Bar (grouped by model)
+- *Data source*: `chart.wkf.bpm.manager.task.by.process`
+- *Filters*: BPM Model, Type (Late tasks / Not late tasks)
+- *Visible to*: All users
+
+=== Average Time Spent per Node by User (4)
+
+image::dashboard/avg-time-per-node.png[Average time per node chart,align="center"]
+
+Shows the average time each user spends on each process node. This chart is essential for identifying bottlenecks and optimizing process efficiency.
+
+- *Chart type*: Horizontal bar (grouped by user)
+- *Data source*: `chart.wkf.bpm.manager.average.time.per.node.by.user`
+- *Filters*: BPM Model, Unit (Minutes / Hours / Days)
+- *Visible to*: All users
+
+[TIP]
+====
+Use this chart to identify nodes where users spend disproportionate time. This may indicate unclear instructions, missing data, or process design issues that can be improved.
+====
+
+=== Task Done Today per User (5)
+
+image::dashboard/task-done-today.png[Task done today chart,align="center"]
+
+Displays the number of tasks completed today by each user. Provides a real-time view of daily productivity.
+
+- *Chart type*: Donut
+- *Data source*: `chart.wkf.bpm.manager.task.done.today.per.user`
+- *Filter*: BPM Model
+- *Visible to*: All users
+
+=== Task To Do per User (6)
+
+image::dashboard/task-to-do.png[Task to do chart,align="center"]
+
+Displays the number of pending tasks for each user. Helps managers balance workload across the team.
+
+- *Chart type*: Donut
+- *Data source*: `chart.wkf.bpm.manager.task.to.do.per.user`
+- *Filter*: BPM Model
+- *Visible to*: All users
+
+=== Tasks Completion by Days (7)
+
+image::dashboard/task-completion-by-days.png[Task completion by days chart,align="center"]
+
+Shows the task completion trend over time, helping track productivity patterns and seasonal variations.
+
+- *Chart type*: Stacked bar
+- *Data source*: `chart.wkf.bpm.manager.task.completion.by.days`
+- *Filters*: From date, To date (date range)
+- *Visible to*: All users
+
+== Show Processes
+
+The btn:[Show Processes] button opens a detailed, paginated view of all deployed BPM processes.
+
+image::dashboard/show-processes.png[Show processes view,align="center"]
+
+=== Process List Content
+
+Each process entry displays:
+
+- *Model title* (1): The BPM model name with a version tag badge
+- *Processes* (2): The processes defined within the model
+- *Associated data models* (3): Data models linked to the process, with record counts. These counts are clickable links that open a filtered view of the records.
+- *Assigned to me* (4): Tasks assigned to the current user, grouped by status. Status labels are clickable to filter the task list.
+- *Assigned to others* (5): Tasks assigned to other users, grouped by status. Only visible to administrators and managers.
+
+NOTE: The "Assigned to others" column is only visible to users with **SuperAdmin**, **Admin**, or **Manager** roles.
+
+=== Pagination
+
+The process list uses pagination with a limit of 20 processes per page. Navigate between pages using:
+
+- btn:[Previous]: Load the previous page of processes
+- btn:[Next]: Load the next page of processes
+
+== Workflow Model Dashboard
+
+In addition to the main BPM Dashboard, each deployed BPM model has its own dashboard accessible from the model's properties. See xref:general-documentation/reporting/model_dashboard.adoc[Model Dashboard] for details.
+
+== Process Instance Dashboard
+
+Each individual process instance also has its own dashboard. See xref:general-documentation/reporting/instance_dashboard.adoc[Instance Dashboard] for details.
+
+== Technical Details
+
+=== Role-Based Access Control
+
+The dashboard implements role-based visibility using the following logic:
+
+[cols="1,1,3", options="header"]
+|===
+| Role | Access Level | Visible Content
+
+| SuperAdmin
+| Full
+| All 7 charts + "Assigned to others" in process list
+
+| Admin
+| Full
+| All 7 charts + "Assigned to others" in process list
+
+| Manager
+| Full
+| All 7 charts + "Assigned to others" in process list
+
+| Standard User
+| Limited
+| 6 charts (no "Assigned to others") + own tasks only in process list
+|===
+
+=== Backend Services
+
+* `BpmManagerDashboardController` -- Handles chart data requests, process display, and pagination
+* `BpmManagerDashboardServiceImpl` -- Implements role-based access logic and data aggregation (FETCH_LIMIT = 20)
+* `BpmManagerDashboardUserService` -- Provides user-specific dashboard data
+* `BpmManagerDashboardTaskService` -- Provides task-specific dashboard data
+
+=== Data Source
+
+Dashboard charts query the Camunda process engine's history tables:
+
+* `act_hi_actinst` -- Historical activity instances (completed and active tasks)
+* `act_hi_procinst` -- Historical process instances (started, completed, terminated)
+
+NOTE: Charts require the Camunda engine to be running and historical data to be present. If the BPM app has just been installed with no processes deployed, the charts will be empty.
+
+== Related Pages
+
+* xref:general-documentation/reporting/model_dashboard.adoc[Model Dashboard] -- Per-model workflow charts
+* xref:general-documentation/reporting/instance_dashboard.adoc[Instance Dashboard] -- Per-instance execution charts
+* xref:general-documentation/app-management/app_bpm_configuration.adoc[App BPM Configuration] -- BPM application settings
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

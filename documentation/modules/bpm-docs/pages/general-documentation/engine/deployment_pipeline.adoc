@@ -1,0 +1,182 @@
+= Deployment Pipeline
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The deployment pipeline is the core backend process that deploys a BPM model to the embedded Camunda process engine. It handles BPMN XML parsing, Camunda deployment, DMN co-deployment, process definition creation, node extraction, process configuration extraction, and auto-migration of running instances when a new version is deployed.
+
+== Triggering Deployment
+
+Deployment can be triggered from two places:
+
+* The *Deploy* button in the BPM modeler (React application)
+* The `action-wkf-model-method-deploy` action on the BPM model form
+
+In both cases, the `WkfModelController.deploy()` method is called, which delegates to `BpmDeploymentService.deploy()`.
+
+== Deployment Flow
+
+The full deployment pipeline executes the following steps in order:
+
+=== Step 1: BPMN XML Parsing
+
+The BPMN XML is read from `WkfModel.diagramXml` and parsed into a Camunda `BpmnModelInstance` using `Bpmn.readModelFromStream()`.
+
+=== Step 2: Camunda Deployment
+
+A Camunda `DeploymentBuilder` is created with the model instance key `\{modelId}.bpmn`.
+
+If multi-tenancy is enabled (`TenantModule.isEnabled()`), the deployment is scoped to the current tenant using a tenant identifier in the format `\{tenantIdentifier}:\{tenantHost}`.
+
+=== Step 3: DMN Co-Deployment
+
+If the BPM model has associated DMN files (`dmnFileSet`), they are included in the same Camunda deployment alongside the BPMN definition. This ensures that decision tables referenced by business rule tasks are available when the process starts.
+
+=== Step 4: Process Definition Creation
+
+After the Camunda deployment succeeds:
+
+. The system queries the deployed `ProcessDefinition` list from Camunda
+. For each process definition, a `WkfProcess` record is found or created in the database
+. The `processId` is set on the `WkfProcess` record
+. Process configuration and display properties are extracted from BPMN extension elements
+
+=== Step 5: Node Extraction
+
+The `wkfNodeService.extractNodes()` method parses all BPMN nodes and creates `MetaAttrs` records for each node. These `MetaAttrs` are used by the Axelor framework to apply BPM-related attributes (status display, field visibility) to application forms.
+
+=== Step 6: Model Status Update
+
+The BPM model status is set to `ON_GOING` (value: 2), indicating that the model is actively deployed and running.
+
+=== Step 7: Auto-Migration (Conditional)
+
+If the model had a previous deployment (`sourceModel.getDeploymentId() != null`) and a migration map is provided, running instances are automatically migrated to the new version. See <<auto-migration>> for details.
+
+=== Step 8: Menu Cleanup (Optional)
+
+If the migration map includes `removeOldVersionMenu = true`, the menus associated with the previous version are removed.
+
+[[auto-migration]]
+== Auto-Migration During Deployment
+
+When a new version of a BPM model is deployed with a migration map, the system can automatically migrate running instances from the old version to the new one.
+
+=== Migration Process
+
+The auto-migration follows these steps:
+
+. **Find old process definitions**: The system locates the old `ProcessDefinition` records from the previous Camunda deployment
+. **Match process keys**: Old and new process definitions are matched by their process key (ID)
+. **Build migration plan**: A Camunda `MigrationPlan` is built from the migration map, specifying how nodes in the old version map to nodes in the new version
+. **Migrate instances**: Each running instance is migrated individually
+
+=== Migration Plan Creation
+
+The `createMigrationPlan()` method builds a Camunda migration plan with the following logic:
+
+* For each node mapping entry, an instruction maps the source activity to the target activity
+* **Multi-instance handling**: If a source node has `MultiInstanceLoopCharacteristics`, the migration plan also includes an instruction for the multi-instance body element (`\{activityId}#multiInstanceBody`)
+* **Event trigger updates**: For intermediate catch events, the migration plan updates event triggers to match the new version's event definitions
+
+=== Per-Instance Migration
+
+For each running instance, the system:
+
+. Executes the Camunda migration with the built migration plan
+. Updates the `WkfInstance.migrationStatusSelect` to either `MIGRATED_SUCCESSFULLY` (2) or `MIGRATION_ERROR` (3)
+. Migrates active user tasks (TeamTask records) via `wkfUserActionService.migrateUserAction()`
+
+WARNING: If any individual instance migration fails, an error status is recorded for that instance but the deployment continues for other instances. At the end, if any error occurred, an `IllegalStateException` is thrown to signal the partial failure.
+
+== Process Configuration Extraction
+
+During deployment, the system reads BPMN extension elements (`processConfiguration` and `processConfigurationParameter`) from the Camunda namespace to create or update `WkfProcessConfig` entries.
+
+Each process configuration binds a data model (MetaModel or MetaJsonModel) to the process, defining:
+
+* The *model* to which the process is linked
+* The *process path* for navigating from the model to the process instance
+* *Conditions* for when the process should be started
+* Whether the model is a *start model* (triggers new process instances)
+
+== Process Engine Initialization
+
+The Camunda process engine is managed by `ProcessEngineServiceImpl`, which maintains a `ConcurrentHashMap` of engines keyed by tenant ID.
+
+=== Engine Configuration
+
+Each engine is configured with:
+
+[cols="1,2", options="header"]
+|===
+| Setting | Value
+
+| Schema update strategy
+| `DB_SCHEMA_UPDATE_TRUE` (auto-create/update Camunda tables)
+
+| History level
+| `HISTORY_AUDIT` (records activity instance history)
+
+| Job executor
+| `WkfJobExecutor` for async execution
+
+| Serialization format
+| Java serialization as default
+
+| Deployment awareness
+| `jobExecutorDeploymentAware = true`
+|===
+
+=== Cache Initialization
+
+On engine startup, two in-memory caches are initialized via `WkfCache`:
+
+* **WKF_MODEL_CACHE** -- Maps process config IDs to model names. Used by the xref:general-documentation/engine/auto_evaluation.adoc[auto-evaluation] system to identify which models are BPM-enabled.
+* **WKF_BUTTON_CACHE** -- Maps task config IDs to button names. Used to detect button clicks that should trigger workflow evaluation.
+
+Both caches are tenant-aware and loaded from the database on startup.
+
+== Technical Details
+
+=== Backend Services
+
+* `BpmDeploymentServiceImpl.deploy()` -- Entry point for the full deployment pipeline
+* `BpmDeploymentServiceImpl.deployProcess()` -- Handles Camunda deployment and process definition creation
+* `BpmDeploymentServiceImpl.migrateRunningInstances()` -- Finds old instances and triggers migration
+* `BpmDeploymentServiceImpl.createMigrationPlan()` -- Builds Camunda migration plan from mapping
+* `BpmDeploymentServiceImpl.computeMigrationInstances()` -- Executes per-instance migration
+* `BpmDeploymentServiceImpl.addProcessConfig()` -- Extracts process configs from BPMN extensions
+* `ProcessEngineServiceImpl` -- Manages Camunda engine lifecycle per tenant
+
+=== Key Entities
+
+[cols="1,3", options="header"]
+|===
+| Entity | Role in Deployment
+
+| `WkfModel`
+| Source of BPMN XML, holds deployment ID, status, version tag
+
+| `WkfProcess`
+| Created per process definition, holds process ID
+
+| `WkfProcessConfig`
+| Created per process-model binding from BPMN extensions
+
+| `WkfInstance`
+| Updated during auto-migration (migration status)
+
+| `MetaAttrs`
+| Created during node extraction for form integration
+|===
+
+== Related Pages
+
+* xref:general-documentation/migration.adoc[BPM Migration] -- Manual migration of process instances between versions
+* xref:general-documentation/engine/execution_engine.adoc[Execution Engine] -- Runtime lifecycle of BPMN processes
+* xref:general-documentation/engine/auto_evaluation.adoc[Auto-Evaluation] -- Automatic workflow advancement
+* xref:general-documentation/app-management/app_bpm_configuration.adoc[App BPM Configuration] -- BPM engine settings
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

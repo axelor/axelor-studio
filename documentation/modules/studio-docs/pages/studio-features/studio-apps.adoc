@@ -1,0 +1,6 @@
+= Studio Apps
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::partial$studio-apps-content.adoc[]
