@@ -66,7 +66,7 @@ dependencies {
   implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
   implementation "org.camunda.spin:camunda-spin-dataformat-json-jackson:${camundaSpinVersion}"
 
-  implementation "org.apache.groovy:groovy-all:${groovyVersion}"
+  implementation "org.apache.groovy:groovy:${groovyVersion}"
   implementation "org.eclipse.birt.runtime.3_7_1:Tidy:${birtTidyVersion}"
   implementation "org.apache.commons:commons-exec:${commonsExecVersion}"
   implementation "org.apache.commons:commons-text:${commonsTextVersion}"
