@@ -1,0 +1,12 @@
+title: Add multi-tenant BPM engine management with Redis pub/sub cross-instance sync
+type: feature
+description: |
+  Added support for running one Camunda ProcessEngine per tenant with cross-instance
+  synchronization via Redis pub/sub.
+
+  Changes:
+  - One ProcessEngine per tenant managed via ConcurrentHashMap in WkfProcessApplication
+  - Redis pub/sub (BpmEngineEventService) for cross-instance sync on BPM install/uninstall
+  - AppEntityListener JPA listener publishing state changes after transaction commit
+  - ServerStartListener initializing BPM engines for all tenants at startup
+  - BpmEngineInitializer with database verification gate before engine creation

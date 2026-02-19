@@ -4,14 +4,13 @@
  */
 package com.axelor.studio.bpm.listener;
 
+import com.axelor.concurrent.ContextAware;
 import com.axelor.db.JPA;
-import com.axelor.db.tenants.TenantAware;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
-import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfTaskConfig;
@@ -91,9 +90,8 @@ public class WkfExecutionListener implements ExecutionListener {
 
     if (execution.getTenantId() != null) {
       String tenantId = execution.getTenantId();
-      String host = tenantId.substring(tenantId.indexOf(":") + 1);
-      tenantId = tenantId.substring(0, tenantId.indexOf(":"));
-      TenantResolver.setCurrentTenant(tenantId, host);
+
+      TenantResolver.setCurrentTenant(tenantId);
     }
 
     if (eventName.equals(EVENTNAME_START)) {
@@ -260,18 +258,16 @@ public class WkfExecutionListener implements ExecutionListener {
     try {
       Future<?> future =
           executor.submit(
-              () ->
-                  new TenantAware(
-                          () -> {
-                            try {
-                              wkfInstanceService.evalInstance(instance);
-                            } catch (Exception e) {
-                              throw new IllegalStateException(e);
-                            }
-                          })
-                      .withTransaction(false)
-                      .tenantId(BpmTools.getCurrentTenant())
-                      .run());
+              ContextAware.of()
+                  .withTransaction(false)
+                  .build(
+                      () -> {
+                        try {
+                          wkfInstanceService.evalInstance(instance);
+                        } catch (Exception e) {
+                          throw new IllegalStateException(e);
+                        }
+                      }));
       future.get();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();

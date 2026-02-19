@@ -19,6 +19,8 @@ import com.axelor.studio.bpm.context.WkfCache;
 import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
@@ -41,20 +43,27 @@ public class WkfRequestListener {
   protected WkfInstanceRepository wkfInstanceRepo;
   protected WkfInstanceService wkfInstanceService;
   protected WkfDisplayService wkfDisplayService;
+  protected ProcessEngineService processEngineService;
 
   @Inject
   public WkfRequestListener(
       WkfInstanceRepository wkfInstanceRepo,
       WkfInstanceService wkfInstanceService,
-      WkfDisplayService wkfDisplayService) {
+      WkfDisplayService wkfDisplayService,
+      ProcessEngineService processEngineService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
     this.wkfDisplayService = wkfDisplayService;
+    this.processEngineService = processEngineService;
+
   }
 
   public void onBeforeTransactionComplete(@Observes BeforeTransactionComplete event)
       throws ClassNotFoundException {
+    if (!processEngineService.isInitialized()) {
+      return;
+    }
     applyProcessChange(
         event.getUpdated(), event.getDeleted(), WkfInstanceServiceImpl.EXECUTION_SOURCE_OBSERVER);
   }
@@ -90,6 +99,9 @@ public class WkfRequestListener {
 
   @SuppressWarnings("unchecked")
   public void onRequest(@Observes PostAction postAction) throws ClassNotFoundException {
+    if (!processEngineService.isInitialized()) {
+      return;
+    }
 
     Context context = postAction.getContext();
 
@@ -148,6 +160,9 @@ public class WkfRequestListener {
 
   @SuppressWarnings("all")
   public void onFetch(@Observes @Named(RequestEvent.FETCH) PostRequest event) {
+    if (!processEngineService.isInitialized()) {
+      return;
+    }
 
     Object obj = event.getResponse().getItem(0);
 
