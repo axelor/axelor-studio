@@ -1,0 +1,5 @@
+title: Remove host from Camunda tenant ID for multi-instance compatibility
+type: fix
+description: |
+  Simplified Camunda tenant ID to use plain tenantId instead of tenantId:host format
+  in WkfExecutionListener and BpmDeploymentServiceImpl.

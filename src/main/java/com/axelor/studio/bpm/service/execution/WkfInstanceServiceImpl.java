@@ -7,6 +7,7 @@ package com.axelor.studio.bpm.service.execution;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
 import com.axelor.common.ObjectUtils;
+import com.axelor.concurrent.ContextAware;
 import com.axelor.db.EntityHelper;
 import com.axelor.db.JPA;
 import com.axelor.db.Model;
@@ -14,7 +15,6 @@ import com.axelor.db.Query;
 import com.axelor.db.mapper.Mapper;
 import com.axelor.db.mapper.Property;
 import com.axelor.db.mapper.PropertyType;
-import com.axelor.db.tenants.TenantAware;
 import com.axelor.i18n.I18n;
 import com.axelor.meta.CallMethod;
 import com.axelor.meta.MetaFiles;
@@ -29,7 +29,6 @@ import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
-import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceMigrationHistory;
 import com.axelor.studio.db.WkfInstanceVariable;
@@ -204,19 +203,21 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
         final String finalProcessInstanceId = model.getProcessInstanceId();
         var executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(
-            () ->
-                new TenantAware(
-                        () ->
-                            bpmErrorMessageService.sendBpmErrorMessage(
-                                null,
-                                e.getMessage(),
-                                EntityHelper.getEntity(
-                                    wkfProcessConfig.getWkfProcess().getWkfModel()),
-                                finalProcessInstanceId))
-                    .withTransaction(false)
-                    .tenantId(BpmTools.getCurrentTenant())
-                    .run());
+        try {
+          executorService.submit(
+              ContextAware.of()
+                  .withTransaction(false)
+                  .build(
+                      () ->
+                          bpmErrorMessageService.sendBpmErrorMessage(
+                              null,
+                              e.getMessage(),
+                              EntityHelper.getEntity(
+                                  wkfProcessConfig.getWkfProcess().getWkfModel()),
+                              finalProcessInstanceId)));
+        } finally {
+          executorService.shutdown();
+        }
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
