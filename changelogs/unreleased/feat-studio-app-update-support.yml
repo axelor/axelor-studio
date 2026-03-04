@@ -1,0 +1,11 @@
+---
+title: Add support for updating StudioApps
+type: feature
+description: |
+  Added an Update button on the StudioApp form toolbar that allows
+  re-importing app data from a zip file. A "Detach absent elements"
+  checkbox enables strict update mode where elements present in the
+  database but absent from the imported ZIP are detached from the
+  application (studioApp set to null) instead of being deleted.
+  Introduced StudioAppUpdateCleanupService and StudioAppDetachHelper
+  to support the new workflow.

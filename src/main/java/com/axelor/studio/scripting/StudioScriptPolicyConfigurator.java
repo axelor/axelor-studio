@@ -19,6 +19,7 @@ import com.axelor.studio.service.ScriptAppSettingsStudioService;
 import com.axelor.studio.service.constructor.components.expressions.GroovyScriptBuilderService;
 import com.axelor.studio.service.constructor.components.expressions.dto.SimpleFieldValueDto;
 import com.axelor.studio.service.ws.WsConnectorService;
+import groovy.xml.XmlUtil;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.text.StringEscapeUtils;
@@ -53,6 +54,7 @@ public class StudioScriptPolicyConfigurator implements ScriptPolicyConfigurator 
             ExecutionEntity.class,
             GroovyScriptBuilderService.class,
             StringEscapeUtils.class,
-            SimpleFieldValueDto.class));
+            SimpleFieldValueDto.class,
+            XmlUtil.class));
   }
 }
