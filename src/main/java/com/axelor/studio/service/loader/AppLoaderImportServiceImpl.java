@@ -8,11 +8,14 @@ import com.axelor.common.FileUtils;
 import com.axelor.common.ResourceUtils;
 import com.axelor.data.xml.XMLImporter;
 import com.axelor.file.temp.TempFiles;
+import com.axelor.i18n.I18n;
 import com.axelor.meta.MetaFiles;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.studio.db.repo.AppLoaderRepository;
+import com.axelor.studio.exception.StudioExceptionMessage;
 import com.axelor.studio.utils.ConsumerListener;
 import com.google.inject.Inject;
+import com.axelor.studio.utils.XmlUtils;
 import com.google.inject.persist.Transactional;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class AppLoaderImportServiceImpl implements AppLoaderImportService {
 
@@ -97,20 +105,30 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
     appLoaderRepository.save(appLoader);
   }
 
-  protected void extractImportZip(AppLoader appLoader, File dataDir) throws IOException {
-
-    FileInputStream fin =
-        new FileInputStream(MetaFiles.getPath(appLoader.getImportMetaFile()).toFile());
-    try (ZipInputStream zipInputStream = new ZipInputStream(fin)) {
+  @Override
+  public void extractImportZip(File dataDir, File zipFile) throws IOException {
+    if (zipFile == null) {
+      return;
+    }
+    try (FileInputStream fin = new FileInputStream(zipFile);
+        ZipInputStream zipInputStream = new ZipInputStream(fin)) {
       ZipEntry zipEntry = zipInputStream.getNextEntry();
 
       while (zipEntry != null) {
-        try (FileOutputStream fout = new FileOutputStream(new File(dataDir, zipEntry.getName()))) {
+        File destFile = new File(dataDir, zipEntry.getName());
+        if (!destFile.getCanonicalPath().startsWith(dataDir.getCanonicalPath() + File.separator)) {
+          throw new IOException("Zip entry is outside of target dir: " + zipEntry.getName());
+        }
+        try (FileOutputStream fout = new FileOutputStream(destFile)) {
           IOUtils.copy(zipInputStream, fout);
         }
         zipEntry = zipInputStream.getNextEntry();
       }
     }
+  }
+
+  protected void extractImportZip(AppLoader appLoader, File dataDir) throws IOException {
+    extractImportZip(dataDir, MetaFiles.getPath(appLoader.getImportMetaFile()).toFile());
   }
 
   protected File importApp(AppLoader appLoader, File dataDir) throws IOException {
@@ -175,5 +193,36 @@ public class AppLoaderImportServiceImpl implements AppLoaderImportService {
 
   protected Map<String, Object> getImportContext(AppLoader appLoader) {
     return Map.of("appLoaderId", appLoader.getId());
+  }
+
+  @Override
+  public void validateZipForApp(File dataDir, String appCode) throws IOException {
+    File studioAppFile = new File(dataDir, "studio-app.xml");
+    if (!studioAppFile.exists()) {
+      return;
+    }
+
+    try {
+      Document doc =
+          XmlUtils.createSecureDocumentBuilderFactory().newDocumentBuilder().parse(studioAppFile);
+      NodeList appNodes = doc.getDocumentElement().getElementsByTagName("studio-app");
+
+      if (appNodes.getLength() != 1) {
+        throw new IllegalStateException(I18n.get(StudioExceptionMessage.IMPORT_ZIP_MULTIPLE_APPS));
+      }
+
+      Element appElement = (Element) appNodes.item(0);
+      NodeList codeNodes = appElement.getElementsByTagName("code");
+      if (codeNodes.getLength() > 0) {
+        String zipAppCode = codeNodes.item(0).getTextContent().trim();
+        if (!appCode.equals(zipAppCode)) {
+          throw new IllegalStateException(
+              I18n.get(StudioExceptionMessage.IMPORT_ZIP_APP_MISMATCH)
+                  .formatted(zipAppCode, appCode));
+        }
+      }
+    } catch (ParserConfigurationException | SAXException e) {
+      throw new IOException("Failed to parse studio-app.xml", e);
+    }
   }
 }
