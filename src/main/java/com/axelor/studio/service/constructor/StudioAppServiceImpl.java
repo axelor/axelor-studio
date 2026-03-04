@@ -4,47 +4,37 @@
  */
 package com.axelor.studio.service.constructor;
 
-import com.axelor.common.Inflector;
+import com.axelor.common.FileUtils;
 import com.axelor.common.ObjectUtils;
-import com.axelor.data.xml.XMLBind;
-import com.axelor.data.xml.XMLBindJson;
 import com.axelor.data.xml.XMLConfig;
 import com.axelor.data.xml.XMLImporter;
-import com.axelor.data.xml.XMLInput;
-import com.axelor.db.JpaSecurity;
 import com.axelor.file.temp.TempFiles;
 import com.axelor.i18n.I18n;
+import com.axelor.inject.Beans;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.MetaJsonModel;
-import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.studio.db.App;
 import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.repo.AppRepository;
 import com.axelor.studio.db.repo.StudioAppRepo;
 import com.axelor.studio.exception.StudioExceptionMessage;
+import com.axelor.studio.service.StudioMetaService;
 import com.axelor.studio.service.loader.AppLoaderExportService;
 import com.axelor.studio.service.loader.AppLoaderImportService;
 import com.axelor.studio.utils.ConsumerListener;
-import com.axelor.text.GroovyTemplates;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.axelor.utils.helpers.context.FullContext;
 import com.axelor.utils.helpers.context.FullContextHelper;
 import com.google.inject.persist.Transactional;
 import jakarta.inject.Inject;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,16 +42,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class StudioAppServiceImpl implements StudioAppService {
-
-  protected JpaSecurity jpaSecurity;
 
   protected AppLoaderExportService appLoaderExportService;
   protected AppLoaderImportService appLoaderImportService;
@@ -70,23 +54,24 @@ public class StudioAppServiceImpl implements StudioAppService {
   protected AppRepository appRepo;
   protected MetaJsonModelRepository metaJsonModelRepo;
   protected StudioAppRepo studioAppRepo;
+  protected StudioAppUpdateCleanupService cleanupService;
 
   @Inject
   public StudioAppServiceImpl(
-      JpaSecurity jpaSecurity,
       AppLoaderExportService appLoaderExportService,
       AppLoaderImportService appLoaderImportService,
       MetaFiles metaFiles,
       AppRepository appRepo,
       MetaJsonModelRepository metaJsonModelRepo,
-      StudioAppRepo studioAppRepo) {
-    this.jpaSecurity = jpaSecurity;
+      StudioAppRepo studioAppRepo,
+      StudioAppUpdateCleanupService cleanupService) {
     this.appLoaderExportService = appLoaderExportService;
     this.appLoaderImportService = appLoaderImportService;
     this.metaFiles = metaFiles;
     this.appRepo = appRepo;
     this.metaJsonModelRepo = metaJsonModelRepo;
     this.studioAppRepo = studioAppRepo;
+    this.cleanupService = cleanupService;
   }
 
   protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -151,34 +136,25 @@ public class StudioAppServiceImpl implements StudioAppService {
 
   @Override
   public MetaFile importApp(Map<String, Object> dataFileMap) {
+    return importApp(dataFileMap, (StudioApp) null);
+  }
+
+  @Override
+  public MetaFile importApp(Map<String, Object> dataFileMap, StudioApp studioApp) {
 
     File dataDir = null;
     File zipFile = null;
     try {
       dataDir = Files.createTempDirectory("").toFile();
       zipFile = MetaFiles.getPath((String) dataFileMap.get("filePath")).toFile();
-      extractImportZip(dataDir, zipFile);
-      StringBuilder logStringBuilder = new StringBuilder();
+      appLoaderImportService.extractImportZip(dataDir, zipFile);
 
-      for (File confiFile : appLoaderImportService.getAppImportConfigFiles(dataDir)) {
-        XMLImporter xmlImporter =
-            new XMLImporter(confiFile.getAbsolutePath(), dataDir.getAbsolutePath());
-        xmlImporter.addListener(
-            new ConsumerListener(
-                (num, app) -> {
-                  logStringBuilder.append("Import model: ");
-                  logStringBuilder.append(num);
-                  logStringBuilder.append("\n");
-                },
-                model -> {
-                  logStringBuilder.append("Import model: ");
-                  logStringBuilder.append(model);
-                  logStringBuilder.append("\n");
-                },
-                (model, e) ->
-                    logStringBuilder.append("Error importing: ").append(model).append("\n")));
-        xmlImporter.run();
+      if (studioApp != null) {
+        appLoaderImportService.validateZipForApp(dataDir, studioApp.getCode());
       }
+
+      StringBuilder logStringBuilder = new StringBuilder();
+      runImport(dataDir, logStringBuilder);
 
       if (!logStringBuilder.isEmpty()) {
         File logFile = TempFiles.createTempFile("import-", "log").toFile();
@@ -194,7 +170,7 @@ public class StudioAppServiceImpl implements StudioAppService {
           Files.deleteIfExists(zipFile.toPath());
         }
         if (dataDir != null) {
-          Files.deleteIfExists(dataDir.toPath());
+          FileUtils.deleteDirectory(dataDir);
         }
       } catch (Exception e) {
         ExceptionHelper.error(e);
@@ -204,24 +180,83 @@ public class StudioAppServiceImpl implements StudioAppService {
   }
 
   @Override
-  public void extractImportZip(File dataDir, File zipFile) {
+  public MetaFile updateApp(
+      Map<String, Object> dataFileMap, StudioApp studioApp, boolean detachAbsent) {
 
-    if (zipFile == null) {
-      return;
-    }
+    File dataDir = null;
+    File zipFile = null;
+    try {
+      dataDir = Files.createTempDirectory("").toFile();
+      zipFile = MetaFiles.getPath((String) dataFileMap.get("filePath")).toFile();
+      appLoaderImportService.extractImportZip(dataDir, zipFile);
+      appLoaderImportService.validateZipForApp(dataDir, studioApp.getCode());
 
-    try (FileInputStream fin = new FileInputStream(zipFile);
-        ZipInputStream zipInputStream = new ZipInputStream(fin)) {
-      ZipEntry zipEntry = zipInputStream.getNextEntry();
+      StringBuilder logStringBuilder = new StringBuilder();
+      runImport(dataDir, logStringBuilder);
 
-      while (zipEntry != null) {
-        try (FileOutputStream fout = new FileOutputStream(new File(dataDir, zipEntry.getName()))) {
-          IOUtils.copy(zipInputStream, fout);
-        }
-        zipEntry = zipInputStream.getNextEntry();
+      if (studioApp != null) {
+        Beans.get(StudioMetaService.class)
+            .trackingFields(studioApp, "App updated from a zip", "App updated");
       }
-    } catch (Exception e) {
+
+      // Phase 2: Detach absent elements if requested
+      if (detachAbsent) {
+        try {
+          List<String> detachLog = cleanupService.detachObsoleteElements(dataDir, studioApp);
+          if (!detachLog.isEmpty()) {
+            logStringBuilder.append("\n--- Detached elements ---\n");
+            for (String entry : detachLog) {
+              logStringBuilder.append(entry).append("\n");
+            }
+          }
+        } catch (Exception e) {
+          log.error("Error during detach of absent elements", e);
+          logStringBuilder.append("\nError during detach: ").append(e.getMessage()).append("\n");
+        }
+      }
+
+      if (!logStringBuilder.isEmpty()) {
+        File logFile = TempFiles.createTempFile("update-", "log").toFile();
+        org.apache.commons.io.FileUtils.writeStringToFile(
+            logFile, logStringBuilder.toString(), StandardCharsets.UTF_8);
+        return metaFiles.upload(logFile);
+      }
+    } catch (IOException e) {
       ExceptionHelper.error(e);
+    } finally {
+      try {
+        if (zipFile != null) {
+          Files.deleteIfExists(zipFile.toPath());
+        }
+        if (dataDir != null) {
+          FileUtils.deleteDirectory(dataDir);
+        }
+      } catch (Exception e) {
+        ExceptionHelper.error(e);
+      }
+    }
+    return null;
+  }
+
+  private void runImport(File dataDir, StringBuilder logStringBuilder) throws IOException {
+    for (File configFile : appLoaderImportService.getAppImportConfigFiles(dataDir)) {
+      XMLImporter xmlImporter =
+          new XMLImporter(configFile.getAbsolutePath(), dataDir.getAbsolutePath());
+      xmlImporter.addListener(
+          new ConsumerListener(
+              (num, app) -> {
+                logStringBuilder.append("Import model: ");
+                logStringBuilder.append(num);
+                logStringBuilder.append("\n");
+              },
+              model -> {
+                logStringBuilder.append("Import model: ");
+                logStringBuilder.append(model);
+                logStringBuilder.append("\n");
+              },
+              (model, e) ->
+                  logStringBuilder.append("Error importing: ").append(model).append("\n")));
+      xmlImporter.run();
     }
   }
 
@@ -241,7 +276,7 @@ public class StudioAppServiceImpl implements StudioAppService {
     } finally {
       try {
         if (exportDir != null) {
-          Files.deleteIfExists(exportDir.toPath());
+          FileUtils.deleteDirectory(exportDir);
         }
       } catch (Exception e) {
         ExceptionHelper.error(e);
@@ -266,7 +301,7 @@ public class StudioAppServiceImpl implements StudioAppService {
     } finally {
       try {
         if (exportDir != null) {
-          Files.deleteIfExists(exportDir.toPath());
+          FileUtils.deleteDirectory(exportDir);
         }
       } catch (Exception e) {
         ExceptionHelper.error(e);
@@ -280,7 +315,11 @@ public class StudioAppServiceImpl implements StudioAppService {
   public void generateExportFile(File exportDir, boolean isExportData, int... studioAppIds) {
 
     try {
-      generateMetaDataFile(exportDir, studioAppIds);
+      Map<String, Object> ctx = new HashMap<>();
+      List<Long> ids =
+          Arrays.stream(studioAppIds).boxed().map(Integer::longValue).collect(Collectors.toList());
+      ctx.put("__ids__", ids);
+      appLoaderExportService.generateMetaDataFiles(exportDir, ctx);
 
       for (int studioAppId : studioAppIds) {
         if (!isExportData) {
@@ -303,9 +342,22 @@ public class StudioAppServiceImpl implements StudioAppService {
 
                 Map<String, Object> jsonFieldMap = MetaStore.findJsonFields(jsonModel.getName());
                 appLoaderExportService.fixTargetName(jsonFieldMap);
-                xmlConfig.getInputs().add(createXMLInput(jsonModel, jsonFieldMap, false));
-                xmlConfig.getInputs().add(createXMLInput(jsonModel, jsonFieldMap, true));
-                generateModelDataFiles(jsonModel, exportDir, jsonFieldMap, records);
+                xmlConfig
+                    .getInputs()
+                    .add(
+                        appLoaderExportService.createJsonModelInputAllFields(
+                            jsonModel, jsonFieldMap, false));
+                xmlConfig
+                    .getInputs()
+                    .add(
+                        appLoaderExportService.createJsonModelInputAllFields(
+                            jsonModel, jsonFieldMap, true));
+                try {
+                  appLoaderExportService.generateAllJsonModelData(
+                      jsonModel, exportDir, jsonFieldMap, records);
+                } catch (IOException e) {
+                  ExceptionHelper.error(e);
+                }
               });
 
           if (ObjectUtils.notEmpty(xmlConfig.getInputs())) {
@@ -315,188 +367,6 @@ public class StudioAppServiceImpl implements StudioAppService {
         }
       }
     } catch (Exception e) {
-      ExceptionHelper.error(e);
-    }
-  }
-
-  @Override
-  public void generateMetaDataFile(File parentFile, int... studioAppIds) {
-
-    Map<String, InputStream> templateISmap = appLoaderExportService.getExportTemplateResources();
-    GroovyTemplates templates = new GroovyTemplates();
-    Map<String, Object> ctx = new HashMap<>();
-    List<Long> ids =
-        Arrays.stream(studioAppIds)
-            .boxed()
-            .map(id -> Long.parseLong(id + ""))
-            .collect(Collectors.toList());
-    ctx.put("__ids__", ids);
-
-    templateISmap.forEach(
-        (key, value) -> {
-          log.debug("Exporting file: {}", key);
-          File file = null;
-          try {
-            file = new File(parentFile, key);
-            try (FileWriter writer = new FileWriter(file);
-                InputStreamReader inputStreamReader = new InputStreamReader(value)) {
-              templates.from(inputStreamReader).make(ctx).render(writer);
-            }
-          } catch (Exception e) {
-            ExceptionHelper.error(e);
-          } finally {
-            deleteEmptyFile(file);
-          }
-        });
-  }
-
-  @Override
-  public void deleteEmptyFile(File file) {
-
-    try {
-      if (file == null) {
-        return;
-      }
-
-      if (file.length() == 0) {
-        Files.delete(file.toPath());
-      } else {
-        try (Stream<String> stream = Files.lines(file.toPath())) {
-          if (stream.count() == 1) {
-            Files.delete(file.toPath());
-          }
-        }
-      }
-    } catch (Exception e) {
-      ExceptionHelper.error(e);
-    }
-  }
-
-  @Override
-  public XMLInput createXMLInput(
-      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput) {
-
-    XMLInput xmlInput = new XMLInput();
-    String modelName = jsonModel.getName();
-    xmlInput.setFileName("%s.xml".formatted(modelName));
-    String dasherizeModel = Inflector.getInstance().dasherize(modelName);
-    xmlInput.setRoot("%ss".formatted(dasherizeModel));
-
-    XMLBindJson xmlBindJson = new XMLBindJson();
-    xmlBindJson.setNode(dasherizeModel);
-    xmlBindJson.setJsonModel(modelName);
-    xmlBindJson.setSearch("self.name = :name");
-    xmlBindJson.setUpdate(true);
-
-    if (relationalInput) {
-      xmlBindJson.setCreate(false);
-    }
-
-    xmlBindJson.setBindings(getFieldBinding(jsonModel, jsonFieldMap, relationalInput));
-    List<XMLBind> rootBindings = new ArrayList<>();
-    rootBindings.add(xmlBindJson);
-    xmlInput.setBindings(rootBindings);
-
-    return xmlInput;
-  }
-
-  @Override
-  public List<XMLBind> getFieldBinding(
-      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput) {
-
-    List<XMLBind> fieldBindings = new ArrayList<>();
-    jsonModel
-        .getFields()
-        .forEach(
-            jsonField -> {
-              String fieldName = jsonField.getName();
-              XMLBind dummyBind = new XMLBind();
-              dummyBind.setNode(fieldName);
-              dummyBind.setField("_" + fieldName);
-              fieldBindings.add(dummyBind);
-
-              if (relationalInput
-                  && jsonField.getTargetJsonModel() == null
-                  && jsonField.getTargetModel() == null) {
-                return;
-              }
-
-              XMLBind xmlBind = new XMLBind();
-              xmlBind.setNode(jsonField.getName());
-              xmlBind.setField("$attrs." + jsonField.getName());
-              if (jsonField.getTargetJsonModel() != null || jsonField.getTargetModel() != null) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> fieldAttrs = (Map<String, Object>) jsonFieldMap.get(fieldName);
-                if (ObjectUtils.notEmpty(fieldAttrs)) {
-                  log.debug("Json Field name: {}, Field attrs: {}", fieldName, fieldAttrs);
-                  appLoaderExportService.addRelationaJsonFieldBind(jsonField, fieldAttrs, xmlBind);
-                }
-              } else if (jsonField.getType().equals("boolean")) {
-                xmlBind.setAdapter("Boolean");
-              }
-
-              fieldBindings.add(xmlBind);
-            });
-
-    return fieldBindings;
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public void generateModelDataFiles(
-      MetaJsonModel jsonModel,
-      File parentDir,
-      Map<String, Object> jsonFieldMap,
-      List<FullContext> records) {
-
-    try {
-      if (!jpaSecurity.isPermitted(JpaSecurity.CAN_READ, MetaJsonRecord.class)) {
-        return;
-      }
-
-      if (ObjectUtils.notEmpty(records)) {
-        String modelName = jsonModel.getName();
-        String dasherizeModel = Inflector.getInstance().dasherize(modelName);
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(
-            """
-                <?xml version="1.0" encoding="utf-8"?>
-                <%ss xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-
-                """
-                .formatted(dasherizeModel));
-
-        records.forEach(
-            it -> {
-              if (!jpaSecurity.isPermitted(
-                  JpaSecurity.CAN_READ, MetaJsonRecord.class, (Long) it.get("id"))) {
-                return;
-              }
-              stringBuilder.append("<%s>%n".formatted(dasherizeModel));
-
-              jsonModel
-                  .getFields()
-                  .forEach(
-                      jsonField -> {
-                        String field = jsonField.getName();
-                        Map<String, Object> fieldAttrs =
-                            (Map<String, Object>) jsonFieldMap.get(field);
-                        stringBuilder.append(
-                            "\t<%s>%s</%s>%n"
-                                .formatted(
-                                    field,
-                                    appLoaderExportService.extractJsonFieldValue(it, fieldAttrs),
-                                    field));
-                      });
-              stringBuilder.append("</%s>%n%n".formatted(dasherizeModel));
-            });
-        stringBuilder.append("</%ss>%n".formatted(dasherizeModel));
-        File dataFile = new File(parentDir, modelName + ".xml");
-        org.apache.commons.io.FileUtils.writeStringToFile(
-            dataFile, stringBuilder.toString(), StandardCharsets.UTF_8);
-      }
-    } catch (IOException e) {
       ExceptionHelper.error(e);
     }
   }

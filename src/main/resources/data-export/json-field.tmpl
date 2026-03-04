@@ -17,6 +17,10 @@
 				if (field.valueExpr != null) {
                 	valueExpr += groovy.xml.XmlUtil.escapeXml(field.valueExpr)
                 }
+                trackCondition = ""
+				if (field.trackCondition != null) {
+                	trackCondition += groovy.xml.XmlUtil.escapeXml(field.trackCondition)
+                }
 				jsonFields += """\n\t\t<json-field>
 				\n\t\t\t<name>${field.name}</name>
 				\n\t\t\t<title>${field.title}</title>
@@ -58,11 +62,14 @@
 				\n\t\t\t<modelStudioApp>${field.jsonModel?.studioApp?.code}</modelStudioApp>
 				\n\t\t\t<isSelectionField>${field.isSelectionField}</isSelectionField>
 				\n\t\t\t<selectionText>${field.selectionText}</selectionText>
+				\n\t\t\t<tracked>${field.tracked}</tracked>
+				\n\t\t\t<trackEvent>${field.trackEvent}</trackEvent>
+				\n\t\t\t<trackCondition>""" + trackCondition + """</trackCondition>
 				\n\t\t</json-field>"""
 	})
 	
 	if (!jsonFields.isEmpty()) {
-		jsonFields = """<jason-fields>\n""" +  jsonFields + """\n</jason-fields>"""
+		jsonFields = """<json-fields>\n""" +  jsonFields + """\n</json-fields>"""
 	}
 	
 	out << """$jsonFields"""

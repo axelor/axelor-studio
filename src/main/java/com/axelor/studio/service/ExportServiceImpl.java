@@ -11,11 +11,10 @@ import com.axelor.studio.db.repo.StudioActionRepository;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.List;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 public class ExportServiceImpl implements ExportService {
@@ -27,7 +26,7 @@ public class ExportServiceImpl implements ExportService {
       File file = MetaFiles.getPath(metaFile).toFile();
       if (file != null) {
         try {
-          byte[] img = IOUtils.toByteArray(new FileInputStream(file));
+          byte[] img = Files.readAllBytes(file.toPath());
           return Base64.getEncoder().encodeToString(img);
         } catch (IOException e) {
           ExceptionHelper.error(e);
@@ -103,19 +102,18 @@ public class ExportServiceImpl implements ExportService {
           .append("</valueField>")
           .append(indentPlus)
           .append("<value>")
-          .append(line.getValue() != null ? line.getValue() : "")
+          .append(line.getValue() != null ? StringEscapeUtils.escapeXml11(line.getValue()) : "")
           .append("</value>")
           .append(indentPlus)
           .append("<conditionText>")
           .append(
               line.getConditionText() != null
-                  ? StringEscapeUtils.escapeXml11(
-                      StringEscapeUtils.escapeXml11(line.getConditionText()))
+                  ? StringEscapeUtils.escapeXml11(line.getConditionText())
                   : "")
           .append("</conditionText>")
           .append(indentPlus)
           .append("<filter>")
-          .append(line.getFilter() != null ? line.getFilter() : "")
+          .append(line.getFilter() != null ? StringEscapeUtils.escapeXml11(line.getFilter()) : "")
           .append("</filter>")
           .append(indentPlus)
           .append("<validationTypeSelect>")
@@ -123,7 +121,10 @@ public class ExportServiceImpl implements ExportService {
           .append("</validationTypeSelect>")
           .append(indentPlus)
           .append("<validationMsg>")
-          .append(line.getValidationMsg() != null ? line.getValidationMsg() : "")
+          .append(
+              line.getValidationMsg() != null
+                  ? StringEscapeUtils.escapeXml11(line.getValidationMsg())
+                  : "")
           .append("</validationMsg>")
           .append(indentPlus)
           .append("<name>")
@@ -142,7 +143,7 @@ public class ExportServiceImpl implements ExportService {
           .append("</line>");
     }
 
-    return StringEscapeUtils.unescapeXml(xml.toString());
+    return xml.toString();
   }
 
   @Override
@@ -159,11 +160,17 @@ public class ExportServiceImpl implements ExportService {
           .append(">")
           .append(indentPlus)
           .append("<key>")
-          .append(wsKeyValue.getWsKey() != null ? wsKeyValue.getWsKey() : "")
+          .append(
+              wsKeyValue.getWsKey() != null
+                  ? StringEscapeUtils.escapeXml11(wsKeyValue.getWsKey())
+                  : "")
           .append("</key>")
           .append(indentPlus)
           .append("<value>")
-          .append(wsKeyValue.getWsValue() != null ? wsKeyValue.getWsValue() : "")
+          .append(
+              wsKeyValue.getWsValue() != null
+                  ? StringEscapeUtils.escapeXml11(wsKeyValue.getWsValue())
+                  : "")
           .append("</value>")
           .append(indentPlus)
           .append("<isList>")
@@ -180,7 +187,7 @@ public class ExportServiceImpl implements ExportService {
           .append(">");
     }
 
-    return StringEscapeUtils.unescapeXml(xml.toString());
+    return xml.toString();
   }
 
   @Override
@@ -198,11 +205,17 @@ public class ExportServiceImpl implements ExportService {
           .append(">")
           .append(indentPlus)
           .append("<key>")
-          .append(wsKeyValue.getWsKey() != null ? wsKeyValue.getWsKey() : "")
+          .append(
+              wsKeyValue.getWsKey() != null
+                  ? StringEscapeUtils.escapeXml11(wsKeyValue.getWsKey())
+                  : "")
           .append("</key>")
           .append(indentPlus)
           .append("<value>")
-          .append(wsKeyValue.getWsValue() != null ? wsKeyValue.getWsValue() : "")
+          .append(
+              wsKeyValue.getWsValue() != null
+                  ? StringEscapeUtils.escapeXml11(wsKeyValue.getWsValue())
+                  : "")
           .append("</value>")
           .append(indentPlus)
           .append("<isList>")
@@ -219,7 +232,7 @@ public class ExportServiceImpl implements ExportService {
           .append(">");
     }
 
-    return StringEscapeUtils.unescapeXml(xml.toString());
+    return xml.toString();
   }
 
   @Override
@@ -236,7 +249,8 @@ public class ExportServiceImpl implements ExportService {
           .append(">")
           .append(indentPlus)
           .append("<name>")
-          .append(wsRequest.getName())
+          .append(
+              wsRequest.getName() != null ? StringEscapeUtils.escapeXml11(wsRequest.getName()) : "")
           .append("</name>")
           .append(indent)
           .append("</")
@@ -244,7 +258,7 @@ public class ExportServiceImpl implements ExportService {
           .append(">");
     }
 
-    return StringEscapeUtils.unescapeXml(xml.toString());
+    return xml.toString();
   }
 
   @Override
@@ -261,7 +275,10 @@ public class ExportServiceImpl implements ExportService {
           .append(">")
           .append(indentPlus)
           .append("<name>")
-          .append(wsConnector.getName())
+          .append(
+              wsConnector.getName() != null
+                  ? StringEscapeUtils.escapeXml11(wsConnector.getName())
+                  : "")
           .append("</name>")
           .append(indent)
           .append("</")
@@ -269,6 +286,6 @@ public class ExportServiceImpl implements ExportService {
           .append(">");
     }
 
-    return StringEscapeUtils.unescapeXml(xml.toString());
+    return xml.toString();
   }
 }

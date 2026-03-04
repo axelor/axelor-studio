@@ -17,6 +17,8 @@ import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
+import com.axelor.studio.db.App;
+import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.WkfModel;
 import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
@@ -434,5 +436,15 @@ public class WkfModelServiceImpl implements WkfModelService {
     processMap.put("processConfig", firstProcessConfig);
 
     return processMap;
+  }
+
+  @Override
+  public boolean isStudioAppNotInstalled(WkfModel wkfModel) {
+    StudioApp studioApp = wkfModel.getStudioApp();
+    if (studioApp == null) {
+      return false;
+    }
+    App generatedApp = studioApp.getGeneratedApp();
+    return generatedApp == null || !Boolean.TRUE.equals(generatedApp.getActive());
   }
 }
