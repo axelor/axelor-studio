@@ -632,6 +632,8 @@ public final class BpmExceptionMessage {
       "Process instance not found: %s" /*)*/;
   public static final String MIGRATION_IS_ALREADY_ONGOING = /*$$(*/
       "Migration is already ongoing."; /*)*/
+  public static final String BPM_STUDIO_APP_NOT_INSTALLED = /*$$(*/
+      "Cannot deploy this BPM model: the associated application '%s' is not installed." /*)*/;
   public static final String NO_WFK_INSTANCE_FOUND = /*$$(*/
       "No WkfInstance found for processInstanceId: %s" /*)*/;
   public static final String NO_PROCESS_CONFIGURATION_FOUND = /*$$(*/

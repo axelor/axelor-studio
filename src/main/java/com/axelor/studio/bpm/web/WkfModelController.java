@@ -78,6 +78,11 @@ public class WkfModelController {
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
       if (wkfModel.getIsMigrationOnGoing()) {
         response.setError(I18n.get(BpmExceptionMessage.MIGRATION_IS_ALREADY_ONGOING));
+      } else if (Beans.get(WkfModelService.class).isStudioAppNotInstalled(wkfModel)) {
+        response.setError(
+            String.format(
+                I18n.get(BpmExceptionMessage.BPM_STUDIO_APP_NOT_INSTALLED),
+                wkfModel.getStudioApp().getName()));
       } else {
         Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap, false);
         response.setReload(true);

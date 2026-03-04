@@ -13,5 +13,9 @@ public interface AppLoaderImportService {
 
   void importApps(AppLoader appLoader) throws IOException;
 
+  void extractImportZip(File dataDir, File zipFile) throws IOException;
+
   List<File> getAppImportConfigFiles(File dataDir) throws IOException;
+
+  void validateZipForApp(File dataDir, String appCode) throws IOException;
 }
