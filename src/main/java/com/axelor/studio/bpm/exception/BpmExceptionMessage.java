@@ -727,5 +727,6 @@ public final class BpmExceptionMessage {
       "Process instance not found : %s" /*)*/;
   public static final String MIGRATION_IS_ALREADY_ONGOING = /*$$(*/
       "Migration is already ongoing."; /*)*/
-  ;
+  public static final String BPM_STUDIO_APP_NOT_INSTALLED = /*$$(*/
+      "Cannot deploy this BPM model: the associated application '%s' is not installed." /*)*/;
 }

@@ -41,4 +41,6 @@ public interface WkfModelService {
   public List<Map<String, Object>> getProcessPerStatus(WkfModel wkfModel);
 
   public List<Map<String, Object>> getProcessPerUser(WkfModel wkfModel);
+
+  boolean isStudioAppNotInstalled(WkfModel wkfModel);
 }

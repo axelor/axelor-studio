@@ -31,6 +31,7 @@ import com.axelor.meta.MetaFiles;
 import com.axelor.meta.MetaStore;
 import com.axelor.meta.db.MetaField;
 import com.axelor.meta.db.MetaJsonField;
+import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.meta.db.MetaJsonRecord;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
 import com.axelor.meta.db.repo.MetaJsonRecordRepository;
@@ -386,16 +387,13 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   @Override
   public FileWriter createHeader(String dasherizeModel, File dataFile) throws IOException {
 
-    FileWriter fileWriter = null;
-    try (FileWriter fileWriterObject = new FileWriter(dataFile)) {
-      fileWriter = fileWriterObject;
-      fileWriter.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-      fileWriter.write(
-          "<"
-              + dasherizeModel
-              + "s xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-              + "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n");
-    }
+    FileWriter fileWriter = new FileWriter(dataFile);
+    fileWriter.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+    fileWriter.write(
+        "<"
+            + dasherizeModel
+            + "s xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+            + "  xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n");
 
     return fileWriter;
   }
@@ -555,28 +553,168 @@ public class AppLoaderExportServiceImpl implements AppLoaderExportService {
   }
 
   protected void addAppDataFile(AppLoader appLoader, File exportDir) throws IOException {
+    generateMetaDataFiles(exportDir, getExportContext(appLoader));
+  }
 
-    Map<String, InputStream> inputStreams = getExportTemplateResources();
+  @Override
+  public void generateMetaDataFiles(File exportDir, Map<String, Object> templateContext)
+      throws IOException {
+    Map<String, InputStream> templateMap = getExportTemplateResources();
     GroovyTemplates templates = new GroovyTemplates();
+    for (Map.Entry<String, InputStream> entry : templateMap.entrySet()) {
+      String key = entry.getKey();
+      InputStream value = entry.getValue();
+      log.debug("Exporting file: {}", key);
+      File file = new File(exportDir, key);
+      try (FileWriter writer = new FileWriter(file);
+          InputStreamReader reader = new InputStreamReader(value)) {
+        templates.from(reader).make(templateContext).render(writer);
+      } finally {
+        deleteEmptyFile(file);
+      }
+    }
+  }
 
-    for (String xmlFileName : inputStreams.keySet()) {
-      log.debug("Exporting file: {}", xmlFileName);
-      File file = new File(exportDir, xmlFileName);
-      FileWriter writer = new FileWriter(file);
-      Map<String, Object> ctx = getExportContext(appLoader);
-      templates.from(new InputStreamReader(inputStreams.get(xmlFileName))).make(ctx).render(writer);
-      writer.close();
+  @Override
+  public void deleteEmptyFile(File file) {
+    try {
+      if (file == null) {
+        return;
+      }
+
       if (file.length() == 0) {
-        file.delete();
+        java.nio.file.Files.delete(file.toPath());
       } else {
-        try (Stream<String> fileStream = java.nio.file.Files.lines(file.toPath())) {
-          long lines = fileStream.count();
-          if (lines == 1) {
-            file.delete();
+        try (Stream<String> stream = java.nio.file.Files.lines(file.toPath())) {
+          if (stream.filter(line -> !line.isBlank()).count() <= 1) {
+            java.nio.file.Files.delete(file.toPath());
           }
         }
       }
+    } catch (Exception e) {
+      ExceptionHelper.error(e);
     }
+  }
+
+  @Override
+  public XMLInput createJsonModelInputAllFields(
+      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput) {
+
+    XMLInput xmlInput = new XMLInput();
+    String modelName = jsonModel.getName();
+    xmlInput.setFileName(String.format("%s.xml", modelName));
+    String dasherizeModel = Inflector.getInstance().dasherize(modelName);
+    xmlInput.setRoot(String.format("%ss", dasherizeModel));
+
+    XMLBindJson xmlBindJson = new XMLBindJson();
+    xmlBindJson.setNode(dasherizeModel);
+    xmlBindJson.setJsonModel(modelName);
+    xmlBindJson.setSearch("self.name = :name");
+    xmlBindJson.setUpdate(true);
+
+    if (relationalInput) {
+      xmlBindJson.setCreate(false);
+    }
+
+    xmlBindJson.setBindings(getJsonFieldBindingAllFields(jsonModel, jsonFieldMap, relationalInput));
+    List<XMLBind> rootBindings = new ArrayList<>();
+    rootBindings.add(xmlBindJson);
+    xmlInput.setBindings(rootBindings);
+
+    return xmlInput;
+  }
+
+  @Override
+  public List<XMLBind> getJsonFieldBindingAllFields(
+      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput) {
+
+    List<XMLBind> fieldBindings = new ArrayList<>();
+    jsonModel
+        .getFields()
+        .forEach(
+            jsonField -> {
+              String fieldName = jsonField.getName();
+              XMLBind dummyBind = new XMLBind();
+              dummyBind.setNode(fieldName);
+              dummyBind.setField("_" + fieldName);
+              fieldBindings.add(dummyBind);
+
+              if (relationalInput
+                  && jsonField.getTargetJsonModel() == null
+                  && jsonField.getTargetModel() == null) {
+                return;
+              }
+
+              XMLBind xmlBind = new XMLBind();
+              xmlBind.setNode(jsonField.getName());
+              xmlBind.setField("$attrs." + jsonField.getName());
+              if (jsonField.getTargetJsonModel() != null || jsonField.getTargetModel() != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> fieldAttrs = (Map<String, Object>) jsonFieldMap.get(fieldName);
+                if (fieldAttrs != null && !fieldAttrs.isEmpty()) {
+                  log.debug("Json Field name: {}, Field attrs: {}", fieldName, fieldAttrs);
+                  addRelationaJsonFieldBind(jsonField, fieldAttrs, xmlBind);
+                }
+              } else if (jsonField.getType().equals("boolean")) {
+                xmlBind.setAdapter("Boolean");
+              }
+
+              fieldBindings.add(xmlBind);
+            });
+
+    return fieldBindings;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void generateAllJsonModelData(
+      MetaJsonModel jsonModel,
+      File parentDir,
+      Map<String, Object> jsonFieldMap,
+      List<FullContext> records)
+      throws IOException {
+
+    if (!allowRead(MetaJsonRecord.class)) {
+      return;
+    }
+
+    if (records == null || records.isEmpty()) {
+      return;
+    }
+
+    String modelName = jsonModel.getName();
+    String dasherizeModel = Inflector.getInstance().dasherize(modelName);
+
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(
+        String.format(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<%ss xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n\n",
+            dasherizeModel));
+
+    records.forEach(
+        it -> {
+          if (!allowRead(MetaJsonRecord.class, (Long) it.get("id"))) {
+            return;
+          }
+          stringBuilder.append(String.format("<%s>%n", dasherizeModel));
+
+          jsonModel
+              .getFields()
+              .forEach(
+                  jsonField -> {
+                    String field = jsonField.getName();
+                    Map<String, Object> fieldAttrs = (Map<String, Object>) jsonFieldMap.get(field);
+                    stringBuilder.append(
+                        String.format(
+                            "\t<%s>%s</%s>%n",
+                            field, extractJsonFieldValue(it, fieldAttrs), field));
+                  });
+          stringBuilder.append(String.format("</%s>%n%n", dasherizeModel));
+        });
+    stringBuilder.append(String.format("</%ss>%n", dasherizeModel));
+    File dataFile = new File(parentDir, modelName + ".xml");
+    org.apache.commons.io.FileUtils.writeStringToFile(
+        dataFile, stringBuilder.toString(), java.nio.charset.StandardCharsets.UTF_8);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
