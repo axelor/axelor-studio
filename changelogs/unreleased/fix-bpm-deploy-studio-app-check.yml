@@ -1,7 +1,0 @@
----
-title: Block BPM deployment when associated StudioApp is not installed
-type: fix
-description: |
-  Prevent deploying a BPM model when its associated StudioApp is not installed
-  (App.active == false). An error message is now displayed to guide
-  the user to install the application first.
