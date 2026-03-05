@@ -51,6 +51,9 @@
       <bind node="modelStudioApp" alias="modelStudioApp"/>
       <bind node="selectionText" to="selectionText"/>
       <bind node="isSelectionField" to="isSelectionField"/>
+      <bind node="tracked" to="tracked"/>
+      <bind node="trackEvent" to="trackEvent"/>
+      <bind node="trackCondition" to="trackCondition"/>
     </bind>
 
   </input>
@@ -102,6 +105,9 @@
       <bind node="modelStudioApp" alias="modelStudioApp" create="false"/>
       <bind node="selectionText" to="selectionText"/>
       <bind node="isSelectionField" to="isSelectionField"/>
+      <bind node="tracked" to="tracked"/>
+      <bind node="trackEvent" to="trackEvent"/>
+      <bind node="trackCondition" to="trackCondition"/>
     </bind>
 
   </input>

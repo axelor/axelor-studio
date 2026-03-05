@@ -19,7 +19,9 @@ package com.axelor.studio.service.loader;
 
 import com.axelor.data.xml.XMLBind;
 import com.axelor.data.xml.XMLConfig;
+import com.axelor.data.xml.XMLInput;
 import com.axelor.meta.db.MetaJsonField;
+import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.studio.db.AppLoader;
 import com.axelor.utils.helpers.context.FullContext;
 import java.io.File;
@@ -27,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 public interface AppLoaderExportService {
@@ -47,4 +50,22 @@ public interface AppLoaderExportService {
   public FileWriter createHeader(String dasherizeModel, File dataFile) throws IOException;
 
   public Object extractJsonFieldValue(FullContext record, Map<String, Object> fieldAttrs);
+
+  void generateMetaDataFiles(File exportDir, Map<String, Object> templateContext)
+      throws IOException;
+
+  void deleteEmptyFile(File file);
+
+  XMLInput createJsonModelInputAllFields(
+      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput);
+
+  List<XMLBind> getJsonFieldBindingAllFields(
+      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput);
+
+  void generateAllJsonModelData(
+      MetaJsonModel jsonModel,
+      File parentDir,
+      Map<String, Object> jsonFieldMap,
+      List<FullContext> records)
+      throws IOException;
 }

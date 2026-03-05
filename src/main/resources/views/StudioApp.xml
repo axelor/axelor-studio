@@ -3,69 +3,115 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://axelor.com/xml/ns/object-views https://axelor.com/xml/ns/object-views/object-views_7.3.xsd">
 
-  <grid name="studio-app-grid" title="Apps" model="com.axelor.studio.db.StudioApp">
+  <grid name="studio-app-grid" title="Apps" model="com.axelor.studio.db.StudioApp"
+    orderBy="sequence">
     <toolbar>
       <button name="importBtn" title="Import" onClick="action-studio-view-studio-app-import"/>
       <button name="exportBtn" title="Export" onClick="action-studio-view-studio-app-export"/>
     </toolbar>
+    <hilite color="success" if="$get('generatedApp.active')"/>
     <field name="name"/>
     <field name="code"/>
-    <field name="generatedApp.active"/>
+    <field name="generatedApp.active" title="Installed"/>
   </grid>
 
-  <form name="studio-app-form" title="App" model="com.axelor.studio.db.StudioApp" width="large">
+  <form name="studio-app-form" title="App" model="com.axelor.studio.db.StudioApp" width="large"
+    onLoad="action-studio-app-attrs-hide-empty-tabs">
     <toolbar>
       <button name="exportBtn" title="Export" onClick="action-studio-view-studio-app-export"/>
+      <button name="updateBtn" title="Update" showIf="id"
+        onClick="action-studio-view-studio-app-update"/>
     </toolbar>
     <panel name="mainPanel">
-      <field name="image" widget="Image" colSpan="2"/>
-      <panel name="detailPanel" colSpan="10">
-        <field name="code" colSpan="3"/>
-        <field name="name" colSpan="8"/>
-        <field name="dependsOnSet" colSpan="12" widget="TagSelect" canNew="false"
-          canEdit="false" domain="self.code != :code"/>
-        <field name="modules"/>
-        <field name="sequence"/>
+      <panel name="tagsPanel" showTitle="false" colSpan="12">
+        <field name="$statusTag" showTitle="false" readonly="true" colSpan="12">
+          <viewer
+            depends="generatedApp.active,generatedApp.appVersion,generatedApp.isExperimental,isInAppView"><![CDATA[
+            <>
+              <Box as="h5" d="flex" justifyContent="flex-end">
+                {generatedApp.isExperimental && <Box as="span" style={{backgroundColor: "#ffb000", marginLeft: "5px", lineHeight: "initial", borderRadius: "3px"}}><Icon icon="flask"/><Badge><span>{_t('Experimental')}</span></Badge></Box>}
+                {generatedApp.active && <Box as="span" style={{backgroundColor: "#2e7d32", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Installed')}</span></Badge></Box>}
+                {!generatedApp.active && <Box as="span" style={{backgroundColor: "#1565c0", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('Not installed')}</span></Badge></Box>}
+                {generatedApp.appVersion && <Box as="span" style={{backgroundColor: "slategrey", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{generatedApp.appVersion}</span></Badge></Box>}
+                {isInAppView && <Box as="span" style={{backgroundColor: "#00796b", marginLeft: "5px", display: "inline-table", lineHeight: "initial", borderRadius: "3px"}}><Badge><span>{_t('In App Management')}</span></Badge></Box>}
+              </Box>
+            </>
+          ]]></viewer>
+        </field>
         <field name="generatedApp.active" hidden="true"/>
+        <field name="generatedApp.appVersion" hidden="true"/>
+        <field name="generatedApp.isExperimental" hidden="true"/>
+        <field name="isInAppView" hidden="true"/>
       </panel>
-      <field name="isInAppView"/>
-      <field name="description" widget="html" colSpan="12"/>
+      <panel colSpan="2">
+        <field name="image" widget="Image" showTitle="false"/>
+      </panel>
+      <panel name="detailPanel" showTitle="false" colSpan="10">
+        <field name="code" colSpan="3"/>
+        <field name="name" colSpan="3"/>
+        <field name="sequence" colSpan="3"/>
+        <field name="description" widget="html" colSpan="12"/>
+      </panel>
     </panel>
+    <panel-related name="dependsOnSetPanel" field="dependsOnSet" canNew="false"
+      canEdit="false" domain="self.code != :code">
+      <field name="name"/>
+      <field name="active"/>
+      <field name="typeSelect"/>
+      <field name="appVersion"/>
+    </panel-related>
     <panel-tabs name="mainPanelTab">
-      <panel-dashlet action="action-studio-view-studio-app-custom-model"
-        title="Models"/>
-      <panel-dashlet action="action-studio-view-studio-app-custom-field"
-        title="Fields"/>
-      <panel-dashlet action="action-studio-view-studio-app-menu"
+      <panel-dashlet name="modelsDashlet"
+        action="action-studio-view-studio-app-custom-model" title="Models"/>
+      <panel-dashlet name="fieldsDashlet"
+        action="action-studio-view-studio-app-custom-field" title="Fields"/>
+      <panel-dashlet name="menusDashlet" action="action-studio-view-studio-app-menu"
         title="StudioMenu.menus"/>
-      <panel-dashlet action="action-studio-view-studio-app-action" title="Actions"/>
-      <panel-dashlet action="action-studio-view-studio-app-meta-action"
-        title="Meta Actions"/>
+      <panel-dashlet name="actionsDashlet"
+        action="action-studio-view-studio-app-action" title="Actions"/>
+      <panel-dashlet name="metaActionsDashlet"
+        action="action-studio-view-studio-app-meta-action" title="Meta Actions"/>
       <panel name="chartPanel" title="Charts">
         <panel-dashlet action="action-studio-view-studio-app-dashboard"
           title="Dashboards" colSpan="12"/>
         <panel-dashlet action="action-studio-view-studio-app-chart" title="Charts"
           colSpan="12"/>
       </panel>
-      <panel-dashlet action="bpm-action-view-studio-app-bpm" title="BPM"/>
-      <panel-dashlet action="bpm-action-view-studio-app-dmn" title="DMN"/>
-      <panel-dashlet action="bpm-action-view-studio-app-baml" title="BAML"/>
-      <panel-dashlet action="bpm-action-view-studio-app-ws-connector"
-        title="WS Connector"/>
-      <panel-dashlet action="bpm-action-view-studio-app-ws-request" title="WS Request"/>
-      <panel-dashlet action="bpm-action-view-studio-app-ws-authentication"
-        title="WS Authentication"/>
+      <panel-dashlet name="bpmDashlet" action="bpm-action-view-studio-app-bpm"
+        title="BPM"/>
+      <panel-dashlet name="dmnDashlet" action="bpm-action-view-studio-app-dmn"
+        title="DMN"/>
+      <panel-dashlet name="bamlDashlet" action="bpm-action-view-studio-app-baml"
+        title="BAML"/>
+      <panel-dashlet name="wsConnectorDashlet"
+        action="bpm-action-view-studio-app-ws-connector" title="WS Connector"/>
+      <panel-dashlet name="wsRequestDashlet"
+        action="bpm-action-view-studio-app-ws-request" title="WS Request"/>
+      <panel-dashlet name="wsAuthDashlet"
+        action="bpm-action-view-studio-app-ws-authentication" title="WS Authentication"/>
     </panel-tabs>
     <panel name="actionPanel" sidebar="true">
-      <button onClick="action-studio-method-studio-app-install-app" name="installBtn"
-        title="Install" showIf="id &amp;&amp; !generatedApp.active"/>
-      <button onClick="action-studio-method-studio-app-uninstall-app" name="uninstallBtn"
-        title="Uninstall" showIf="id &amp;&amp; generatedApp.active"/>
+      <button
+        onClick="action-studio-app-alert-install,action-studio-method-studio-app-install-app"
+        name="installBtn" title="Install" showIf="id &amp;&amp; !generatedApp.active"/>
+      <button
+        onClick="action-studio-app-alert-uninstall,action-studio-method-studio-app-uninstall-app"
+        name="uninstallBtn" title="Uninstall" showIf="id &amp;&amp; generatedApp.active"/>
+      <button name="addToAppViewBtn" title="Add to App Management"
+        onClick="action-studio-app-record-add-to-app-view,save,action-studio-app-attrs-hide-empty-tabs"
+        showIf="id &amp;&amp; !isInAppView"/>
+      <button name="removeFromAppViewBtn" title="Remove from App Management"
+        onClick="action-studio-app-record-remove-from-app-view,save,action-studio-app-attrs-hide-empty-tabs"
+        showIf="id &amp;&amp; isInAppView"/>
     </panel>
+    <panel-mail name="mailPanel">
+      <mail-messages limit="4"/>
+      <mail-followers/>
+    </panel-mail>
   </form>
 
   <cards name="studio-app-cards" model="com.axelor.studio.db.StudioApp" title="App"
-    css="rect-image" orderBy="sequence" width="25%:200">
+    css="rect-image" orderBy="sequence" width="33%:300">
     <toolbar>
       <button name="importBtn" title="Import" onClick="action-studio-view-studio-app-import"/>
     </toolbar>
@@ -74,25 +120,67 @@
     <field name="image"/>
     <field name="description"/>
     <field name="generatedApp.active"/>
+    <field name="generatedApp.appVersion"/>
+    <field name="generatedApp.isExperimental"/>
     <field name="sequence"/>
+    <field name="$hasModels" type="boolean"/>
+    <field name="$hasFields" type="boolean"/>
+    <field name="$hasViews" type="boolean"/>
+    <field name="$hasMenus" type="boolean"/>
+    <field name="$hasActions" type="boolean"/>
+    <field name="$hasMetaActions" type="boolean"/>
+    <field name="$hasBpm" type="boolean"/>
+    <field name="$hasDmn" type="boolean"/>
+    <field name="$hasBaml" type="boolean"/>
+    <field name="$hasWsConnector" type="boolean"/>
+    <field name="$hasWsRequest" type="boolean"/>
+    <field name="$hasWsAuth" type="boolean"/>
     <template><![CDATA[
-			<div class="app-cards__container">
-			  <div class="app-cards__image">
-			    <img ng-src="{{$image('image', 'content')}}" />
-			  </div>
-			  <div class="app-cards__name">
-				 <strong x-translate>{{$fmt('name')}}</strong>
-			  </div>
-			  <div class="app-cards__buttons">
-			  	<a class="btn btn-small btn-info pull-right" href="" ng-show="false"></a>
-				<a class="btn btn-small btn-info pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-install-app" x-translate>Install</a>
-				<a class="btn btn-small btn-success pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-view-studio-app-export" x-translate>Export</a>
-				<a class="btn btn-small btn-success pull-right" href="" ng-show="!generatedApp.active" ui-action-click="action-studio-method-studio-app-delete-app" x-translate>Delete</a>
-				<a class="btn btn-small btn-danger pull-right" href="" ng-show="generatedApp.active" ui-action-click="action-studio-method-studio-app-uninstall-app" x-translate>Uninstall</a>
-			  </div>
-			</div>
-		]]>
-    </template>
+<>
+    <Box style={{ height: 180, margin: "-1rem", position: "relative", borderRadius: "8px", boxShadow: "0 8px 24px rgba(0,0,0,0.45)" }}>
+        <Box d="flex" justifyContent="flex-end" gap="4" alignItems="center" style={{ padding: "4px 8px" }}>
+            {generatedApp.active && <Badge style={{ backgroundColor: "#1b5e20", borderRadius: "12px", fontSize: "13px", padding: "4px 14px", fontWeight: "700" }}>{_t('Installed')}</Badge>}
+            {!generatedApp.active && <Badge style={{ backgroundColor: "#0d47a1" }}>{_t('Not installed')}</Badge>}
+            {generatedApp.appVersion && <Badge style={{ backgroundColor: "#37474f" }}>{generatedApp.appVersion}</Badge>}
+            {generatedApp.isExperimental && <Box as="span" style={{color: "#e65100"}}><Icon fontSize="0.8rem" icon="flask-fill"/></Box>}
+        </Box>
+        <Box d="grid" gridTemplateColumns="30% 70%" style={{ height: 120 }}>
+            <Box d="flex" alignItems="center" justifyContent="center">
+                {image ? (
+                    <Image src={$image('image', 'content')} style={{ width: 140, height: 80 }}></Image>
+                ) : (
+                    <Box d="flex" flexDirection="column" alignItems="center" justifyContent="center" style={{ width: 64, height: 64, backgroundColor: "rgba(128,128,128,0.15)", borderRadius: "8px" }}>
+                        <Box as="span" style={{ fontSize: "20px", fontWeight: "700", color: "#0d47a1" }}>{name ? name.charAt(0).toUpperCase() : "A"}</Box>
+                    </Box>
+                )}
+            </Box>
+            <Box d="flex" flexDirection="column" justifyContent="center" style={{ height: "100%", paddingLeft: "8px" }}>
+                <Box as="strong" mb={1} style={{ fontSize: "14px" }}>{$fmt('name')}</Box>
+                <Box d="flex" flexWrap="wrap" style={{ gap: "4px" }}>
+                            {$hasModels && <Box as="span" style={{backgroundColor: "#1a237e", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.models')}</Box>}
+                            {$hasFields && <Box as="span" style={{backgroundColor: "#4a148c", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.fields')}</Box>}
+                            {$hasViews && <Box as="span" style={{backgroundColor: "#1b5e20", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.views')}</Box>}
+                            {$hasMenus && <Box as="span" style={{backgroundColor: "#004d40", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.menus')}</Box>}
+                            {$hasActions && <Box as="span" style={{backgroundColor: "#e65100", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.actions')}</Box>}
+                            {$hasMetaActions && <Box as="span" style={{backgroundColor: "#8d1e00", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.meta-actions')}</Box>}
+                            {$hasBpm && <Box as="span" style={{backgroundColor: "#bf360c", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('BPM')}</Box>}
+                            {$hasDmn && <Box as="span" style={{backgroundColor: "#311b92", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('DMN')}</Box>}
+                            {$hasBaml && <Box as="span" style={{backgroundColor: "#6a1b9a", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('BAML')}</Box>}
+                            {$hasWsConnector && <Box as="span" style={{backgroundColor: "#b71c1c", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.ws-connector')}</Box>}
+                            {$hasWsRequest && <Box as="span" style={{backgroundColor: "#880e4f", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.ws-request')}</Box>}
+                            {$hasWsAuth && <Box as="span" style={{backgroundColor: "#1a237e", color: "white", borderRadius: "12px", fontSize: "11px", padding: "2px 10px", fontWeight: "600"}}>{_t('app.ws-auth')}</Box>}
+                </Box>
+            </Box>
+        </Box>
+        <Box d="flex" justifyContent="flex-end" gap="4" alignItems="center" style={{ position: "absolute", bottom: "4px", right: "8px" }}>
+            {!generatedApp.active && <Button size="sm" style={{backgroundColor: "#0d47a1", color: "white", fontSize: "12px", padding: "4px 12px", border: "none", borderRadius: "4px"}} onClick={$action('action-studio-app-alert-install,action-studio-method-studio-app-install-app')}>{_t('Install')}</Button>}
+            {generatedApp.active && <Button size="sm" style={{backgroundColor: "#1b5e20", color: "white", fontSize: "12px", padding: "4px 12px", border: "none", borderRadius: "4px"}} onClick={$action('action-studio-view-studio-app-export')}>{_t('Export')}</Button>}
+            {!generatedApp.active && <Button size="sm" style={{backgroundColor: "#1b5e20", color: "white", fontSize: "12px", padding: "4px 12px", border: "none", borderRadius: "4px"}} onClick={$action('action-studio-app-alert-delete,action-studio-method-studio-app-delete-app')}>{_t('Delete')}</Button>}
+            {generatedApp.active && <Button size="sm" style={{backgroundColor: "#b71c1c", color: "white", fontSize: "12px", padding: "4px 12px", border: "none", borderRadius: "4px"}} onClick={$action('action-studio-app-alert-uninstall,action-studio-method-studio-app-uninstall-app')}>{_t('Uninstall')}</Button>}
+        </Box>
+    </Box>
+</>
+    ]]></template>
   </cards>
 
   <form name="studio-app-import-app-form" model="com.axelor.studio.db.StudioApp"
@@ -102,6 +190,18 @@
         widget="binary-link" title="Data file" required="true"/>
       <button name="importBtn" title="Import"
         onClick="action-studio-method-studio-app-import"/>
+    </panel>
+  </form>
+
+  <form name="studio-app-update-app-form" model="com.axelor.studio.db.StudioApp"
+    title="Update app">
+    <panel name="mainPanel">
+      <field name="$dataFile" type="many-to-one" target="com.axelor.meta.db.MetaFile"
+        widget="binary-link" title="Data file" required="true"/>
+      <field name="$detachAbsent" type="boolean" title="Detach absent elements"
+        help="If checked, elements present in the database but absent from the imported file will be detached from the application (not deleted)."/>
+      <button name="updateBtn" title="Update"
+        onClick="action-studio-method-studio-app-update"/>
     </panel>
   </form>
 
@@ -125,6 +225,17 @@
     <view-param name="show-toolbar" value="false"/>
     <view-param name="show-confirm" value="false"/>
     <view-param name="popup-save" value="false"/>
+  </action-view>
+
+  <action-view name="action-studio-view-studio-app-update" title="Update app"
+    model="com.axelor.utils.db.Wizard">
+    <view type="form" name="studio-app-update-app-form"/>
+    <view-param name="popup" value="reload"/>
+    <view-param name="forceEdit" value="true"/>
+    <view-param name="show-toolbar" value="false"/>
+    <view-param name="show-confirm" value="false"/>
+    <view-param name="popup-save" value="false"/>
+    <context name="_studioAppId" expr="eval: id"/>
   </action-view>
 
   <action-view name="action-studio-view-studio-app-export" title="Export app"
@@ -215,6 +326,10 @@
     <call class="com.axelor.studio.web.StudioAppController" method="importApp"/>
   </action-method>
 
+  <action-method name="action-studio-method-studio-app-update">
+    <call class="com.axelor.studio.web.StudioAppController" method="updateApp"/>
+  </action-method>
+
   <action-method name="action-studio-method-studio-app-export">
     <call class="com.axelor.studio.web.StudioAppController" method="exportApp"/>
   </action-method>
@@ -277,5 +392,54 @@
     <context name="studioAppId" expr="eval: id"/>
   </action-view>
 
+
+  <action-validate name="action-studio-app-alert-install">
+    <alert message="Are you sure you want to install '${name}'?"/>
+  </action-validate>
+
+  <action-validate name="action-studio-app-alert-uninstall">
+    <alert message="Are you sure you want to uninstall '${name}'?"/>
+  </action-validate>
+
+  <action-validate name="action-studio-app-alert-delete">
+    <alert message="Are you sure you want to delete '${name}'?"/>
+  </action-validate>
+
+  <action-record name="action-studio-app-record-add-to-app-view"
+    model="com.axelor.studio.db.StudioApp">
+    <field name="isInAppView" expr="true"/>
+  </action-record>
+
+  <action-record name="action-studio-app-record-remove-from-app-view"
+    model="com.axelor.studio.db.StudioApp">
+    <field name="isInAppView" expr="false"/>
+  </action-record>
+
+  <action-attrs name="action-studio-app-attrs-hide-empty-tabs">
+    <attribute name="hidden" for="modelsDashlet"
+      expr="eval: __repo__(MetaJsonModel).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="fieldsDashlet"
+      expr="eval: __repo__(MetaJsonField).all().filter('self.studioApp.id = ? AND self.jsonModel IS NULL', id).fetchOne() == null"/>
+    <attribute name="hidden" for="menusDashlet"
+      expr="eval: __repo__(StudioMenu).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="actionsDashlet"
+      expr="eval: __repo__(StudioAction).all().filter('self.studioApp.id = ? AND self.menuAction = false', id).fetchOne() == null"/>
+    <attribute name="hidden" for="metaActionsDashlet"
+      expr="eval: __repo__(MetaAction).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="chartPanel"
+      expr="eval: __repo__(StudioDashboard).all().filter('self.studioApp.id = ?', id).fetchOne() == null &amp;&amp; __repo__(StudioChart).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="bpmDashlet"
+      expr="eval: __repo__(WkfModel).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="dmnDashlet"
+      expr="eval: __repo__(WkfDmnModel).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="bamlDashlet"
+      expr="eval: __repo__(BamlModel).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="wsConnectorDashlet"
+      expr="eval: __repo__(WsConnector).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="wsRequestDashlet"
+      expr="eval: __repo__(WsRequest).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+    <attribute name="hidden" for="wsAuthDashlet"
+      expr="eval: __repo__(WsAuthenticator).all().filter('self.studioApp.id = ?', id).fetchOne() == null"/>
+  </action-attrs>
 
 </object-views>
