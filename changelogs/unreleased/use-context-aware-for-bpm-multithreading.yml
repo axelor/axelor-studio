@@ -1,5 +1,0 @@
-title: Replace deprecated TenantAware with ContextAware API in BPM services
-type: fix
-description: |
-  Replaced deprecated TenantAware with ContextAware API in WkfExecutionListener,
-  AxelorScriptEngine, WkfInstanceServiceImpl, and GlobalEntityListener.

@@ -1,3 +1,138 @@
+## 4.0.1 (2026-03-05)
+
+#### Feature
+
+* Revamp StudioApp grid, cards, and form views
+* Add support for updating StudioApps
+
+  <details>
+  
+  Added an Update button on the StudioApp form toolbar that allows
+  re-importing app data from a zip file. A "Detach absent elements"
+  checkbox enables strict update mode where elements present in the
+  database but absent from the imported ZIP are detached from the
+  application (studioApp set to null) instead of being deleted.
+  Introduced StudioAppUpdateCleanupService and StudioAppDetachHelper
+  to support the new workflow.
+  
+  </details>
+
+* Add multi-tenant BPM engine management with Redis pub/sub cross-instance sync
+
+  <details>
+  
+  Added support for running one Camunda ProcessEngine per tenant with cross-instance
+  synchronization via Redis pub/sub.
+  
+  Changes:
+  - One ProcessEngine per tenant managed via ConcurrentHashMap in WkfProcessApplication
+  - Redis pub/sub (BpmEngineEventService) for cross-instance sync on BPM install/uninstall
+  - AppEntityListener JPA listener publishing state changes after transaction commit
+  - ServerStartListener initializing BPM engines for all tenants at startup
+  - BpmEngineInitializer with database verification gate before engine creation
+  
+  </details>
+
+#### Change
+
+* Use of React templates instead of Angular
+* Delegate StudioApp export/import logic to AppLoader services
+
+  <details>
+  
+  Refactored StudioApp export and import by delegating logic from
+  StudioAppService to dedicated AppLoaderExportService and
+  AppLoaderImportService. Removed AppLoader UI components (views,
+  menus, controller) that are no longer needed. Prevented empty
+  ws-* files from being included in app export archives.
+  
+  </details>
+
+#### Fix
+
+* Remove host from Camunda tenant ID for multi-instance compatibility
+
+  <details>
+  
+  Simplified Camunda tenant ID to use plain tenantId instead of tenantId:host format
+  in WkfExecutionListener and BpmDeploymentServiceImpl.
+  
+  </details>
+
+* Fix multiple reliability and security issues in export/import
+
+  <details>
+  
+  Fixed XML escaping in ExportServiceImpl where conditionText was
+  double-escaped while other fields (value, filter, validationMsg)
+  were not escaped at all.
+  Fixed unclosed file stream in image export by properly closing the
+  FileWriter.
+  Fixed typo in json-field.tmpl root element (<jason-fields>
+  replaced with <json-fields>).
+  Added missing tracked, trackEvent,
+  and trackCondition fields to JSON field export template and import
+  configuration so tracking configuration is no longer lost on
+  reimport.
+  Replaced Files.deleteIfExists() with FileUtils.deleteDirectory()
+  for proper recursive cleanup of temporary directories.
+  Added zip entry path validation to prevent path traversal attacks during import.
+  
+  </details>
+
+* Block BPM deployment when associated StudioApp is not installed
+
+  <details>
+  
+  Prevent deploying a BPM model when its associated StudioApp is not installed
+  (App.active == false). An error message is now displayed to guide
+  the user to install the application first.
+  
+  </details>
+
+* Upgrade AOP from 8.0.0 to 8.0.5
+* Fix BPM process engine thread and memory leaks when BPM app is not active
+
+  <details>
+  
+  Fixed thread and memory leaks caused by the BPM Camunda process engine initializing
+  even when the BPM application was not installed or active.
+  
+  Changes:
+  - Process engine now only initializes when BPM app is active (checked via isApp("bpm"))
+  - Added proper shutdown of process engine on application stop via ShutdownEvent observer
+  - Fixed ExecutorService leak in WkfInstanceServiceImpl by adding shutdown() in finally block
+  - Added isInitialized() checks in GlobalEntityListener and WkfRequestListener to skip
+    BPM processing when engine is not active
+  - Added support for BPM app activation/deactivation at runtime without requiring restart
+  
+  This fix prevents:
+  - Thread count growing from 60 to 80+ over time
+  - Memory growing from 3.5GB to 4GB+
+  - Tomcat warning "failed to stop thread JobExecutor" on shutdown
+  
+  </details>
+
+* Fix meta actions not included in studio app export
+
+  <details>
+  
+  Fixed meta actions not being exported when exporting a studio app.
+  The export template used an incorrect repository class reference
+  (MetaActionRepository) instead of the entity class (MetaAction),
+  
+  </details>
+
+* Replace deprecated TenantAware with ContextAware API in BPM services
+
+  <details>
+  
+  Replaced deprecated TenantAware with ContextAware API in WkfExecutionListener,
+  AxelorScriptEngine, WkfInstanceServiceImpl, and GlobalEntityListener.
+  
+  </details>
+
+
 ## 4.0.0 (2025-11-12)
 
 #### Feature
