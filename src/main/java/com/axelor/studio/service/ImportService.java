@@ -342,7 +342,7 @@ public class ImportService {
 
       return zipFile;
     } catch (IOException e) {
-      e.printStackTrace();
+      ExceptionHelper.error(e);
     } finally {
       if (zipOutputStream != null) {
         zipOutputStream.close();

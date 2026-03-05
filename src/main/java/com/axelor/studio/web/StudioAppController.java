@@ -74,8 +74,67 @@ public class StudioAppController {
       }
 
       @SuppressWarnings("unchecked")
-      Map<String, Object> dataFileMap = (Map<String, Object>) request.getContext().get("dataFile");
-      MetaFile logFile = Beans.get(StudioAppService.class).importApp(dataFileMap);
+      Map<String, Object> dataFileMap = (Map<String, Object>) context.get("dataFile");
+
+      StudioApp studioApp = null;
+      if (context.containsKey("_studioAppId") && context.get("_studioAppId") != null) {
+        Long studioAppId = Long.parseLong(context.get("_studioAppId").toString());
+        studioApp = Beans.get(StudioAppRepository.class).find(studioAppId);
+      }
+
+      MetaFile logFile;
+      if (studioApp != null) {
+        logFile = Beans.get(StudioAppService.class).importApp(dataFileMap, studioApp);
+      } else {
+        logFile = Beans.get(StudioAppService.class).importApp(dataFileMap);
+      }
+
+      if (logFile == null) {
+        response.setCanClose(true);
+        response.setNotify(I18n.get(StudioExceptionMessage.SUCCESS_STUDIO_APP_IMPORT));
+        return;
+      }
+
+      response.setCanClose(true);
+      response.setView(
+          ActionView.define(I18n.get("Log file"))
+              .model(App.class.getName())
+              .add(
+                  "html",
+                  "ws/rest/com.axelor.meta.db.MetaFile/"
+                      + logFile.getId()
+                      + "/content/download?v="
+                      + logFile.getVersion())
+              .param("download", "true")
+              .map());
+    } catch (Exception e) {
+      ExceptionHelper.error(response, e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public void updateApp(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
+      if (!context.containsKey("dataFile")) {
+        return;
+      }
+
+      Map<String, Object> dataFileMap = (Map<String, Object>) context.get("dataFile");
+
+      if (!context.containsKey("_studioAppId") || context.get("_studioAppId") == null) {
+        return;
+      }
+
+      Long studioAppId = Long.parseLong(context.get("_studioAppId").toString());
+      StudioApp studioApp = Beans.get(StudioAppRepository.class).find(studioAppId);
+
+      boolean detachAbsent =
+          context.containsKey("detachAbsent") && Boolean.TRUE.equals(context.get("detachAbsent"));
+
+      MetaFile logFile =
+          Beans.get(StudioAppService.class).updateApp(dataFileMap, studioApp, detachAbsent);
+
       if (logFile == null) {
         response.setCanClose(true);
         response.setNotify(I18n.get(StudioExceptionMessage.SUCCESS_STUDIO_APP_IMPORT));

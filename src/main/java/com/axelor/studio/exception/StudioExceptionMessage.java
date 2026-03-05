@@ -252,6 +252,15 @@ public final class StudioExceptionMessage {
   public static final String STUDIO_ADD_NEW = /*$$(*/ "Add new" /*)*/;
   public static final String STUDIO_TOOLBAR = /*$$(*/ "Toolbar" /*)*/;
   public static final String STUDIO_MENUBAR = /*$$(*/ "Menubar" /*)*/;
+  public static final String IMPORT_ZIP_MULTIPLE_APPS = /*$$(*/
+      "The zip file must contain exactly one application" /*)*/;
+  public static final String IMPORT_ZIP_APP_MISMATCH = /*$$(*/
+      "The zip file contains application '%s' but expected '%s'" /*)*/;
+
+  public static final String ELEMENT_DETACHED = /*$$(*/ "Detached %s: '%s' from application" /*)*/;
+  public static final String ELEMENTS_DETACHED_SUMMARY = /*$$(*/
+      "Total: %d element(s) detached from application" /*)*/;
+
   public static final String STUDIO_BPM_SOURCE_IMPORT_NOT_ALLOWED = /*$$(*/
       "Bpm import from sources is not allowed" /*)*/;
   public static final String STUDIO_MULTIPLE_BPM_FILES = /*$$(*/
