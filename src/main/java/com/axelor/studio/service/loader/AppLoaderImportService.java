@@ -28,4 +28,8 @@ public interface AppLoaderImportService {
   public void importApps(AppLoader appLoader) throws FileNotFoundException, IOException;
 
   public List<File> getAppImportConfigFiles(File dataDir) throws FileNotFoundException, IOException;
+
+  void extractImportZip(File dataDir, File zipFile) throws IOException;
+
+  void validateZipForApp(File dataDir, String appCode) throws IOException;
 }

@@ -1,0 +1,18 @@
+---
+title: Fix multiple reliability and security issues in export/import
+type: fix
+description: |
+  Fixed XML escaping in ExportServiceImpl where conditionText was
+  double-escaped while other fields (value, filter, validationMsg)
+  were not escaped at all.
+  Fixed unclosed file stream in image export by properly closing the
+  FileWriter.
+  Fixed typo in json-field.tmpl root element (<jason-fields>
+  replaced with <json-fields>).
+  Added missing tracked, trackEvent,
+  and trackCondition fields to JSON field export template and import
+  configuration so tracking configuration is no longer lost on
+  reimport.
+  Replaced Files.deleteIfExists() with FileUtils.deleteDirectory()
+  for proper recursive cleanup of temporary directories.
+  Added zip entry path validation to prevent path traversal attacks during import.

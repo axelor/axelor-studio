@@ -190,16 +190,6 @@
     <view type="form" name="value-mapper-form"/>
   </action-view>
 
-  <menuitem name="studio-app-app-loaders" title="App Loaders" parent="studio-app-config"
-    order="54" action="action.app.loaders.view"
-    if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
-
-  <action-view name="action.app.loaders.view" title="App Loaders"
-    model="com.axelor.studio.db.AppLoader">
-    <view type="grid" name="app-loader-grid"/>
-    <view type="form" name="app-loader-form"/>
-    <view-param name="details-view" value="true"/>
-  </action-view>
 
   <!-- Apps management -->
 

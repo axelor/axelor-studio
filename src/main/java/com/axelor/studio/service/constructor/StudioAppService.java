@@ -1,11 +1,7 @@
 package com.axelor.studio.service.constructor;
 
-import com.axelor.data.xml.XMLBind;
-import com.axelor.data.xml.XMLInput;
 import com.axelor.meta.db.MetaFile;
-import com.axelor.meta.db.MetaJsonModel;
 import com.axelor.studio.db.StudioApp;
-import com.axelor.utils.helpers.context.FullContext;
 import com.google.inject.persist.Transactional;
 import java.io.File;
 import java.util.List;
@@ -25,28 +21,13 @@ public interface StudioAppService {
 
   MetaFile importApp(Map<String, Object> dataFileMap);
 
-  void extractImportZip(File dataDir, File zipFile);
+  MetaFile importApp(Map<String, Object> dataFileMap, StudioApp studioApp);
+
+  MetaFile updateApp(Map<String, Object> dataFileMap, StudioApp studioApp, boolean detachAbsent);
 
   MetaFile exportApps(List<Integer> studioAppIds, boolean isExportData);
 
   MetaFile exportApp(StudioApp studioApp, boolean isExportData);
 
   void generateExportFile(File exportDir, boolean isExportData, int... studioAppIds);
-
-  void generateMetaDataFile(File parentFile, int... studioAppIds);
-
-  void deleteEmptyFile(File file);
-
-  XMLInput createXMLInput(
-      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput);
-
-  List<XMLBind> getFieldBinding(
-      MetaJsonModel jsonModel, Map<String, Object> jsonFieldMap, boolean relationalInput);
-
-  @SuppressWarnings("unchecked")
-  void generateModelDataFiles(
-      MetaJsonModel jsonModel,
-      File parentDir,
-      Map<String, Object> jsonFieldMap,
-      List<FullContext> records);
 }
