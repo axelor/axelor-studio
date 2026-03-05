@@ -1,0 +1,6 @@
+title: Fix meta actions not included in studio app export
+type: fix
+description: |
+  Fixed meta actions not being exported when exporting a studio app.
+  The export template used an incorrect repository class reference
+  (MetaActionRepository) instead of the entity class (MetaAction),
