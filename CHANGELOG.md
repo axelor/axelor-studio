@@ -1,3 +1,71 @@
+## 3.4.8 (2026-03-05)
+
+#### Feature
+
+* Revamp StudioApp grid, cards, and form views
+* Add support for updating StudioApps
+
+  <details>
+  
+  Added an Update button on the StudioApp form toolbar that allows
+  re-importing app data from a zip file. A "Detach absent elements"
+  checkbox enables strict update mode where elements present in the
+  database but absent from the imported ZIP are detached from the
+  application (studioApp set to null) instead of being deleted.
+  Introduced StudioAppUpdateCleanupService and StudioAppDetachHelper
+  to support the new workflow.
+  
+  </details>
+
+#### Change
+
+* Delegate StudioApp export/import logic to AppLoader services
+
+  <details>
+  
+  Refactored StudioApp export and import by delegating logic from
+  StudioAppService to dedicated AppLoaderExportService and
+  AppLoaderImportService. Removed AppLoader UI components (views,
+  menus, controller) that are no longer needed. Prevented empty
+  ws-* files from being included in app export archives.
+  
+  </details>
+
+#### Fix
+
+* Optimize BPM migration by batching task queries                                                                                                                                                                  │
+* Fix multiple reliability and security issues in export/import
+
+  <details>
+  
+  Fixed XML escaping in ExportServiceImpl where conditionText was
+  double-escaped while other fields (value, filter, validationMsg)
+  were not escaped at all.
+  Fixed unclosed file stream in image export by properly closing the
+  FileWriter.
+  Fixed typo in json-field.tmpl root element (<jason-fields>
+  replaced with <json-fields>).
+  Added missing tracked, trackEvent,
+  and trackCondition fields to JSON field export template and import
+  configuration so tracking configuration is no longer lost on
+  reimport.
+  Replaced Files.deleteIfExists() with FileUtils.deleteDirectory()
+  for proper recursive cleanup of temporary directories.
+  Added zip entry path validation to prevent path traversal attacks during import.
+  
+  </details>
+
+* Block BPM deployment when associated StudioApp is not installed
+
+  <details>
+  
+  Prevent deploying a BPM model when its associated StudioApp is not installed
+  (App.active == false). An error message is now displayed to guide
+  the user to install the application first.
+  
+  </details>
+
+
 ## 3.4.7 (2026-01-14)
 
 #### Fix

@@ -1,9 +1,0 @@
----
-title: Delegate StudioApp export/import logic to AppLoader services
-type: change
-description: |
-  Refactored StudioApp export and import by delegating logic from
-  StudioAppService to dedicated AppLoaderExportService and
-  AppLoaderImportService. Removed AppLoader UI components (views,
-  menus, controller) that are no longer needed. Prevented empty
-  ws-* files from being included in app export archives.
