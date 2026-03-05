@@ -20,7 +20,6 @@ import com.axelor.studio.bpm.service.WkfDisplayService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
-import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
@@ -56,7 +55,6 @@ public class WkfRequestListener {
     this.wkfInstanceService = wkfInstanceService;
     this.wkfDisplayService = wkfDisplayService;
     this.processEngineService = processEngineService;
-
   }
 
   public void onBeforeTransactionComplete(@Observes BeforeTransactionComplete event)

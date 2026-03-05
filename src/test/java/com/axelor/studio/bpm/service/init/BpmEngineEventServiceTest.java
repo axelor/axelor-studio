@@ -85,7 +85,6 @@ class BpmEngineEventServiceTest {
     assertDoesNotThrow(() -> service.publishStateChange("tenant", true));
   }
 
-
   @Test
   void handleStateChange_shouldIgnore_whenTenantIdIsNull() throws Exception {
     BpmEngineEventService service = new BpmEngineEventService();
@@ -109,7 +108,6 @@ class BpmEngineEventServiceTest {
       dfMock.verifyNoInteractions();
     }
   }
-
 
   @Test
   void handleStateChange_shouldCallInitializer_whenActiveFromDifferentInstance() throws Exception {
@@ -150,7 +148,6 @@ class BpmEngineEventServiceTest {
     }
   }
 
-
   private void setField(Object target, String name, Object value) throws Exception {
     var field = target.getClass().getDeclaredField(name);
     field.setAccessible(true);
@@ -162,5 +159,4 @@ class BpmEngineEventServiceTest {
     field.setAccessible(true);
     return field.get(target);
   }
-
 }
