@@ -185,6 +185,9 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     Map<String, String> processMap =
         deployProcess(engine, deploymentBuilder, bpmInstance, tenantId, upgradeToLatest);
 
+    // Reload targetModel after potential JPA.clear() during migration
+    targetModel = wkfModelRepository.find(targetModel.getId());
+
     List<MetaAttrs> metaAttrsList =
         wkfNodeService.extractNodes(targetModel, bpmInstance, processMap);
 
@@ -282,10 +285,17 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
           migrationProcessMap.put(definition.getId(), process);
         });
 
+    // Save targetModel (with new processes) while still managed, before migration may call
+    // JPA.clear()
+    saveWkfModel(targetModel);
+
     if (sourceModel.getDeploymentId() != null && migrationMap != null) {
       migrateRunningInstances(
           sourceModel.getDeploymentId(), engine, definitions, migrationProcessMap, force);
+      // Reload targetModel after potential JPA.clear() during migration
+      targetModel = wkfModelRepository.find(targetModel.getId());
     }
+
     targetModel.setDeploymentId(deployment.getId());
 
     engine
