@@ -51,6 +51,7 @@ import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.WkfTaskConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
+import com.axelor.studio.db.repo.WkfProcessRepository;
 import com.axelor.studio.db.repo.WkfTaskConfigRepository;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.axelor.utils.helpers.ExceptionHelper;
@@ -110,6 +111,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected BpmErrorMessageService bpmErrorMessageService;
   protected WkfLogService wkfLogService;
   protected AppSettingsStudioService appSettingsStudioService;
+  protected WkfProcessRepository wkfProcessRepository;
 
   public static final int EXECUTION_SOURCE_LISTENER = 0;
   public static final int EXECUTION_SOURCE_OBSERVER = 1;
@@ -125,7 +127,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfUserActionService wkfUserActionService,
       BpmErrorMessageService bpmErrorMessageService,
       WkfLogService wkfLogService,
-      AppSettingsStudioService appSettingsStudioService) {
+      AppSettingsStudioService appSettingsStudioService,
+      WkfProcessRepository wkfProcessRepository) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -136,6 +139,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.bpmErrorMessageService = bpmErrorMessageService;
     this.wkfLogService = wkfLogService;
     this.appSettingsStudioService = appSettingsStudioService;
+    this.wkfProcessRepository = wkfProcessRepository;
   }
 
   @Override
@@ -864,6 +868,10 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       return;
     }
 
+    if (process != null && process.getId() != null) {
+      process = wkfProcessRepository.find(process.getId());
+    }
+
     if (process != null) {
       instance.addWkfInstanceMigrationHistory(
           createMigrationHistory(instance, process.getWkfModel()));
@@ -1394,6 +1402,10 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
 
     if (processInstanceIds == null || processInstanceIds.isEmpty()) {
       return;
+    }
+
+    if (targetProcess != null && targetProcess.getId() != null) {
+      targetProcess = wkfProcessRepository.find(targetProcess.getId());
     }
 
     List<WkfInstance> instances =

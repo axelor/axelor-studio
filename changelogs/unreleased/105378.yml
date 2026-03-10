@@ -1,0 +1,8 @@
+---
+title: Fix instances incorrectly flagged as migration errors during large BPM migration
+type: fix
+description: |
+  Fixed instances incorrectly flagged as migration errors when migrating
+  a large number of BPM process instances. When tracking is enabled on
+  WkfInstance, AuditTracker clears the JPA persistence context during
+  batch commits, causing detached entity exceptions on subsequent batches.
