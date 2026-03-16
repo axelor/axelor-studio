@@ -487,7 +487,10 @@ public class AppServiceImpl implements AppService {
 
       if (name.equals(APP_IMAGE) && value != null) {
         String image = value.toString();
-        importAppImage(app, mapper, property, image, dataFile);
+        MetaFile currentImage = app.getImage();
+        if (currentImage == null || !image.equals(currentImage.getFileName())) {
+          importAppImage(app, mapper, property, image, dataFile);
+        }
       } else if (name.equals(APP_MODULES) && value != null) {
         String modules = value.toString().replace(" ", ",");
         mapper.set(app, name, modules);
@@ -569,11 +572,7 @@ public class AppServiceImpl implements AppService {
 
   protected MetaFile find(String image) {
     return Optional.ofNullable(
-            metaFileRepo
-                .all()
-                .filter("self.fileName = :image AND self.filePath = :image")
-                .bind(APP_IMAGE, image)
-                .fetchOne())
+            metaFileRepo.all().filter("self.fileName = :image").bind(APP_IMAGE, image).fetchOne())
         .orElse(new MetaFile());
   }
 
