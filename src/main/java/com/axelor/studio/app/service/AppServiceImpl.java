@@ -511,12 +511,18 @@ public class AppServiceImpl implements AppService {
       if (property == null) {
         continue;
       }
-      if (property.getName().equals(APP_IMAGE) && entry.getValue() != null) {
-        String image = entry.getValue().toString();
-        importAppImage(app, mapper, property, image, dataFile);
-      } else if (property.getName().equals(APP_MODULES) && entry.getValue() != null) {
-        String modules = entry.getValue().toString().replace(" ", ",");
-        mapper.set(app, property.getName(), modules);
+      String name = property.getName();
+      Object value = entry.getValue();
+
+      if (name.equals(APP_IMAGE) && value != null) {
+        String image = value.toString();
+        MetaFile currentImage = app.getImage();
+        if (currentImage == null || !image.equals(currentImage.getFileName())) {
+          importAppImage(app, mapper, property, image, dataFile);
+        }
+      } else if (name.equals(APP_MODULES) && value != null) {
+        String modules = value.toString().replace(" ", ",");
+        mapper.set(app, name, modules);
       } else {
         mapper.set(app, property.getName(), entry.getValue() != null ? entry.getValue() : null);
       }
@@ -597,11 +603,7 @@ public class AppServiceImpl implements AppService {
 
   protected MetaFile find(String image) {
     return Optional.ofNullable(
-            metaFileRepo
-                .all()
-                .filter("self.fileName = :image AND self.filePath = :image")
-                .bind(APP_IMAGE, image)
-                .fetchOne())
+            metaFileRepo.all().filter("self.fileName = :image").bind(APP_IMAGE, image).fetchOne())
         .orElse(new MetaFile());
   }
 
