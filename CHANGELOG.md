@@ -1,3 +1,9 @@
+## 3.4.9 (2026-03-16)
+
+#### Fix
+
+* Fix application icons duplicated in upload directory at startup
+
 ## 3.4.8 (2026-03-05)
 
 #### Feature
