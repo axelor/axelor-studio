@@ -1,3 +1,22 @@
+## 3.4.10 (2026-03-18)
+
+#### Fix
+
+* Fix processInstanceId not cleared on model when WkfInstance is removed
+
+  <details>
+  
+  When a WkfInstance was deleted, the processInstanceId field on the associated
+  model kept pointing to the deleted instance. The field now
+  gets cleared via JPQL bulk update to avoid re-triggering BPM through
+  GlobalEntityListener.
+  
+  </details>
+
+#### Security
+
+* Fix JPQL/SQL injection vulnerabilities in WkfCommonService and FilterSqlService
+
 ## 3.4.9 (2026-03-16)
 
 #### Fix
