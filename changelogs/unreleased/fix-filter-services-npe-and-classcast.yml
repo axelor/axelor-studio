@@ -1,3 +1,0 @@
----
-title: Fix NPE and ClassCastException in filter JPQL and SQL services
-type: fix
