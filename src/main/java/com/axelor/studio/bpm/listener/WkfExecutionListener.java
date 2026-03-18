@@ -367,6 +367,8 @@ public class WkfExecutionListener implements ExecutionListener {
     wkfInstance.setName(wkfProcess.getProcessId() + " : " + instanceId);
     wkfInstance.setWkfProcess(wkfProcess);
     wkfInstance.setModelId((Long) execution.getVariable("modelId"));
+    Object modelNameVar = execution.getVariable("modelName");
+    wkfInstance.setModelName(modelNameVar != null ? (String) modelNameVar : null);
     return instanceRepo.save(wkfInstance);
   }
 
