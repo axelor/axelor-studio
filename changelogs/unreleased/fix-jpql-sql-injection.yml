@@ -1,0 +1,3 @@
+---
+title: Fix JPQL/SQL injection vulnerabilities in WkfCommonService and FilterSqlService
+type: security

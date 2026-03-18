@@ -187,6 +187,9 @@ public class FilterSqlServiceImpl implements FilterSqlService {
 
     log.debug("Selection for field :{} : {}", field, selection);
     if (joins != null && !Strings.isNullOrEmpty(selection)) {
+      if (!selection.matches("[a-zA-Z0-9._-]+")) {
+        throw new IllegalArgumentException("Invalid selection name: " + selection);
+      }
       int join = joins.size();
       joins.add(
           "left join meta_select obj" + join + " on (obj" + join + ".name = '" + selection + "')");
