@@ -35,7 +35,7 @@ public class FilterJpqlServiceImpl implements FilterJpqlService {
     StringBuilder filters = null;
 
     if (filterList == null) {
-      return filters.toString();
+      return null;
     }
 
     for (Filter filter : filterList) {
@@ -74,8 +74,8 @@ public class FilterJpqlServiceImpl implements FilterJpqlService {
       }
     }
 
-    log.debug("JPQL filter: {}", filters.toString());
-    return filters.toString();
+    log.debug("JPQL filter: {}", filters);
+    return filters != null ? filters.toString() : null;
   }
 
   @Override
