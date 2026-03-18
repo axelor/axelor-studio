@@ -308,16 +308,21 @@ public class WkfCommonServiceImpl implements WkfCommonService {
       }
       @SuppressWarnings("unchecked")
       final Class<? extends Model> klass = (Class<? extends Model>) Class.forName(klassName);
-      String query = "self.processInstanceId = ?";
+      String query = "self.processInstanceId = ?1";
+      Object[] params;
       if (processConfig.getMetaJsonModel() != null) {
-        query += " AND self.jsonModel = '" + processConfig.getMetaJsonModel().getName() + "'";
+        query += " AND self.jsonModel = ?2";
+        params =
+            new Object[] {instance.getInstanceId(), processConfig.getMetaJsonModel().getName()};
+      } else {
+        params = new Object[] {instance.getInstanceId()};
       }
 
       if (model == null) {
         model =
             JpaRepository.of(klass)
                 .all()
-                .filter(query, instance.getInstanceId())
+                .filter(query, params)
                 .order("-id")
                 .autoFlush(false)
                 .fetchOne();
