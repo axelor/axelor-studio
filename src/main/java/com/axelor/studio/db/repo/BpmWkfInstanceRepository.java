@@ -48,11 +48,14 @@ public class BpmWkfInstanceRepository extends WkfInstanceRepository {
               .executeUpdate();
 
       if (updated > 0) {
-        log.debug(
-            "Cleared processInstanceId on {} (id={})", simpleTableName, modelId);
+        log.debug("Cleared processInstanceId on {} (id={})", simpleTableName, modelId);
       }
     } catch (Exception e) {
-      log.warn("Could not clear processInstanceId on {} (id={}): {}", modelName, modelId, e.getMessage());
+      log.warn(
+          "Could not clear processInstanceId on {} (id={}): {}",
+          modelName,
+          modelId,
+          e.getMessage());
     }
   }
 }
