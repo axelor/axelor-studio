@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.SessionImpl;
-import org.hibernate.metamodel.MappingMetamodel;
+
 import org.hibernate.persister.entity.AbstractEntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +58,8 @@ public class FilterSqlServiceImpl implements FilterSqlService {
     SessionImpl sessionImpl = (SessionImpl) JPA.em().getDelegate();
 
     SessionFactoryImplementor sessionFactory = sessionImpl.getSession().getSessionFactory();
-    MappingMetamodel mappingMetamodel =
-        (MappingMetamodel) sessionFactory.getMappingMetamodel().getEntityDescriptor(model);
-    AbstractEntityPersister aep = (AbstractEntityPersister) mappingMetamodel;
+    AbstractEntityPersister aep =
+        (AbstractEntityPersister) sessionFactory.getMappingMetamodel().getEntityDescriptor(model);
 
     String[] columns = aep.getPropertyColumnNames(field);
     if (columns != null && columns.length > 0) {
@@ -93,7 +92,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
     StringBuilder filters = null;
 
     if (filterList == null) {
-      return filters.toString();
+      return null;
     }
 
     for (Filter filter : filterList) {
@@ -117,7 +116,7 @@ public class FilterSqlServiceImpl implements FilterSqlService {
       }
     }
 
-    return filters.toString();
+    return filters != null ? filters.toString() : null;
   }
 
   @Override
