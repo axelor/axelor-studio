@@ -193,7 +193,7 @@ public class WkfRequestListener {
 
   @Transactional(rollbackOn = Exception.class)
   public void processDeleted(Set<? extends Model> deleted, String tenantId, Integer source) {
-
+    deleted = new HashSet<>(deleted);
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();
       if (model instanceof MetaJsonRecord) {
