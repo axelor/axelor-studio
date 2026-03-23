@@ -8,6 +8,7 @@ import com.axelor.concurrent.ContextAware;
 import com.axelor.db.JPA;
 import com.axelor.db.tenants.TenantResolver;
 import com.axelor.i18n.I18n;
+import com.axelor.studio.bpm.service.BpmAsyncExecutorService;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
@@ -29,8 +30,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
@@ -62,6 +61,7 @@ public class WkfExecutionListener implements ExecutionListener {
   protected WkfLogService wkfLogService;
   protected AppSettingsStudioService appSettingsStudioService;
   protected WkfCommonService wkfCommonService;
+  protected BpmAsyncExecutorService bpmAsyncExecutorService;
 
   @Inject
   public WkfExecutionListener(
@@ -71,7 +71,8 @@ public class WkfExecutionListener implements ExecutionListener {
       WkfTaskConfigRepository wkfTaskConfigRepo,
       WkfLogService wkfLogService,
       AppSettingsStudioService appSettingsStudioService,
-      WkfCommonService wkfCommonService) {
+      WkfCommonService wkfCommonService,
+      BpmAsyncExecutorService bpmAsyncExecutorService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
@@ -80,6 +81,7 @@ public class WkfExecutionListener implements ExecutionListener {
     this.wkfLogService = wkfLogService;
     this.appSettingsStudioService = appSettingsStudioService;
     this.wkfCommonService = wkfCommonService;
+    this.bpmAsyncExecutorService = bpmAsyncExecutorService;
   }
 
   @Override
@@ -254,10 +256,9 @@ public class WkfExecutionListener implements ExecutionListener {
   }
 
   private void reevaluateAfterTimer(WkfInstance instance) {
-    ExecutorService executor = Executors.newSingleThreadExecutor();
     try {
       Future<?> future =
-          executor.submit(
+          bpmAsyncExecutorService.submit(
               ContextAware.of()
                   .withTransaction(false)
                   .build(
@@ -273,8 +274,6 @@ public class WkfExecutionListener implements ExecutionListener {
       Thread.currentThread().interrupt();
     } catch (ExecutionException e) {
       ExceptionHelper.error(e);
-    } finally {
-      executor.shutdown();
     }
   }
 
@@ -341,11 +340,16 @@ public class WkfExecutionListener implements ExecutionListener {
     WkfInstance wkfInstance;
     wkfInstance = new WkfInstance();
     wkfInstance.setInstanceId(instanceId);
+    String processDefinitionId = execution.getProcessDefinitionId();
     WkfProcess wkfProcess =
         wkfProcessRepo
             .all()
-            .filter("self.processId = ?1", execution.getProcessDefinitionId())
+            .filter("self.processId = ?1", processDefinitionId)
             .fetchOne();
+    if (wkfProcess == null) {
+      throw new IllegalStateException(
+          "No WkfProcess found for definition: " + processDefinitionId);
+    }
     wkfInstance.setName(wkfProcess.getProcessId() + " : " + instanceId);
     wkfInstance.setWkfProcess(wkfProcess);
     wkfInstance.setModelId((Long) execution.getVariable("modelId"));
