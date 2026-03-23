@@ -12,6 +12,7 @@ import com.axelor.event.Observes;
 import com.axelor.events.ShutdownEvent;
 import com.axelor.events.StartupEvent;
 import com.axelor.inject.Beans;
+import com.axelor.studio.bpm.service.BpmAsyncExecutorService;
 import com.axelor.studio.bpm.service.init.BpmEngineEventService;
 import com.axelor.studio.bpm.service.init.BpmEngineInitializer;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
@@ -71,6 +72,12 @@ public class ServerStartListener {
     ProcessEngineService processEngineService = Beans.get(ProcessEngineService.class);
     if (!processEngineService.isAnyTenantInitialized()) {
       return;
+    }
+
+    try {
+      Beans.get(BpmAsyncExecutorService.class).shutdown();
+    } catch (Exception e) {
+      log.error("Error shutting down BPM async executor", e);
     }
 
     try {

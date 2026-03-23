@@ -23,7 +23,6 @@ import com.axelor.studio.bpm.service.authorization.BpmAuthorizationService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceServiceImpl;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
-import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.utils.BpmTools;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
@@ -51,11 +50,11 @@ public class WkfRequestListener {
 
   @Inject
   public WkfRequestListener(
-          WkfInstanceRepository wkfInstanceRepo,
-          WkfInstanceService wkfInstanceService,
-          WkfDisplayService wkfDisplayService,
-          BpmAuthorizationService bpmAuthorizationService,
-          ProcessEngineService processEngineService) {
+      WkfInstanceRepository wkfInstanceRepo,
+      WkfInstanceService wkfInstanceService,
+      WkfDisplayService wkfDisplayService,
+      BpmAuthorizationService bpmAuthorizationService,
+      ProcessEngineService processEngineService) {
 
     this.wkfInstanceRepo = wkfInstanceRepo;
     this.wkfInstanceService = wkfInstanceService;
@@ -198,7 +197,7 @@ public class WkfRequestListener {
 
   @Transactional(rollbackOn = Exception.class)
   public void processDeleted(Set<? extends Model> deleted, String tenantId, Integer source) {
-
+    deleted = new HashSet<>(deleted);
     for (Model model : deleted) {
       String modelName = EntityHelper.getEntityClass(model).getName();
       if (model instanceof MetaJsonRecord metaJsonRecord) {

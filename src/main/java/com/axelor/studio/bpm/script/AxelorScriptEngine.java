@@ -8,9 +8,9 @@ import com.axelor.concurrent.ContextAware;
 import com.axelor.inject.Beans;
 import com.axelor.script.GroovyScriptHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
+import com.axelor.studio.bpm.service.BpmAsyncExecutorService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
-import java.util.concurrent.Executors;
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -38,15 +38,14 @@ public class AxelorScriptEngine extends GroovyScriptEngineImpl {
     } catch (Exception e) {
       PvmExecutionImpl execution = (PvmExecutionImpl) bindings.get("execution");
       Beans.get(WkfLogService.class).writeLog(execution.getProcessInstanceId());
-      var executorService = Executors.newSingleThreadExecutor();
-      executorService.submit(
-          ContextAware.of()
-              .withTransaction(false)
-              .build(
-                  () ->
-                      Beans.get(BpmErrorMessageService.class)
-                          .sendBpmErrorMessage(execution, e.getMessage(), null, null)));
-      executorService.shutdown();
+      Beans.get(BpmAsyncExecutorService.class)
+          .submit(
+              ContextAware.of()
+                  .withTransaction(false)
+                  .build(
+                      () ->
+                          Beans.get(BpmErrorMessageService.class)
+                              .sendBpmErrorMessage(execution, e.getMessage(), null, null)));
       throw new AxelorScriptEngineException(e);
     }
     return object;
