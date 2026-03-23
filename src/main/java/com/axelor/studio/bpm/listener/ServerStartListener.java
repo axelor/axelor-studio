@@ -22,6 +22,7 @@ import com.axelor.events.ShutdownEvent;
 import com.axelor.events.StartupEvent;
 import com.axelor.inject.Beans;
 import com.axelor.studio.app.service.AppService;
+import com.axelor.studio.bpm.service.BpmAsyncExecutorService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
@@ -47,10 +48,17 @@ public class ServerStartListener {
       return;
     }
     log.info("Application shutdown detected, stopping BPM process engine...");
+
     try {
       processEngineService.shutdown();
     } catch (Exception e) {
       log.error("Error shutting down BPM process engine", e);
+    }
+
+    try {
+      Beans.get(BpmAsyncExecutorService.class).shutdown();
+    } catch (Exception e) {
+      log.error("Error shutting down BPM async executor", e);
     }
   }
 }
