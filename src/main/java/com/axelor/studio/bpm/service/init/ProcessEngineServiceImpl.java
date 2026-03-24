@@ -26,6 +26,7 @@ import com.axelor.studio.bpm.service.log.WkfLoggerInitService;
 import com.axelor.studio.service.AppSettingsStudioService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -33,9 +34,13 @@ import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.variable.Variables;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class ProcessEngineServiceImpl implements ProcessEngineService {
+
+  protected static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected static final Map<String, ProcessEngine> engineMap = new ConcurrentHashMap<>();
 
@@ -49,10 +54,33 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
       WkfLoggerInitService wkfLoggerInitService) {
     this.appSettingsStudioService = appSettingsStudioService;
     this.wkfLoggerInitService = wkfLoggerInitService;
-    addEngine(BpmTools.getCurentTenant());
+    // Initialization moved to initialize() method - called by ServerStartListener if BPM app is
+    // active
+  }
 
+  @Override
+  public void initialize() {
+    String tenantId = BpmTools.getCurentTenant();
+    if (engineMap.containsKey(tenantId)) {
+      log.debug("Process engine already initialized for tenant: {}", tenantId);
+      return;
+    }
+    log.info("Initializing BPM process engine for tenant: {}", tenantId);
+    addEngine(tenantId);
     WkfCache.initWkfModelCache();
     WkfCache.initWkfButttonCache();
+  }
+
+  @Override
+  public boolean isInitialized() {
+    return engineMap.containsKey(BpmTools.getCurentTenant());
+  }
+
+  @Override
+  public void shutdown() {
+    log.info("Shutting down all BPM process engines...");
+    new java.util.ArrayList<>(engineMap.keySet()).forEach(this::removeEngine);
+    log.info("All BPM process engines shut down successfully");
   }
 
   @Override
@@ -106,14 +134,13 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
 
   @Override
   public ProcessEngine getEngine() {
-
     String tenantId = BpmTools.getCurentTenant();
-
-    if (!engineMap.containsKey(tenantId)) {
-      addEngine(tenantId);
+    ProcessEngine engine = engineMap.get(tenantId);
+    if (engine == null) {
+      throw new IllegalStateException(
+          "BPM Process Engine is not initialized. Ensure the BPM app is installed and active.");
     }
-
-    return engineMap.get(tenantId);
+    return engine;
   }
 
   @Override
