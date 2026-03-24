@@ -1,3 +1,70 @@
+## 3.2.14 (2026-03-24)
+
+#### Fix
+
+* Fix thread pool leak in BPM ExecutorService usage under active BPM workload
+
+  <details>
+  
+  Fixed critical thread leak when BPM is active: each entity persist/update created a new
+  Executors.newSingleThreadExecutor() that was never reused, causing thousands of thread pools
+  (pool-5153+) under concurrent load, leading to OutOfMemoryError: unable to create native thread.
+  
+  Introduced a shared singleton BpmAsyncExecutorService backed by a ForkJoinPool with
+  work-stealing scheduling. Replaced disposable executor creation in 4 locations:
+  - GlobalEntityListener.runOnSeparateThread() (called on every @PostPersist/@PostUpdate)
+  - WkfExecutionListener.reevaluateAfterTimer()
+  - AxelorScriptEngine.eval() error handling
+  - WkfInstanceServiceImpl error handling
+  
+  Uses ManagedBlocker + CountDownLatch instead of Future.get() to prevent ForkJoinPool
+  work-stealing from executing reentrant tasks inline on the same thread, which would
+  corrupt Hibernate's SynchronizationRegistry. ManagedBlocker also ensures compensating
+  threads are created when all workers are blocked (required for parallelism=1).
+  
+  Added configurable BPM reentrance depth limit to prevent infinite loops when BPM
+  evaluation triggers entity modifications that re-trigger BPM evaluation.
+  
+  Configurable via application.properties:
+  - studio.bpm.async.pool.parallelism (default: available CPUs)
+  - studio.bpm.max.reentrance.depth (default: 32)
+  
+  Graceful shutdown is wired into ServerStartListener before the process engine stops.
+  
+  </details>
+
+* Fix BPM process engine thread and memory leaks when BPM app is not active
+
+  <details>
+  
+  Fixed thread and memory leaks caused by the BPM Camunda process engine initializing
+  even when the BPM application was not installed or active.
+  
+  Changes:
+  - Process engine now only initializes when BPM app is active (checked via isApp("bpm"))
+  - Added proper shutdown of process engine on application stop via ShutdownEvent observer
+  - Fixed ExecutorService leak in WkfInstanceServiceImpl by adding shutdown() in finally block
+  - Added isInitialized() checks in GlobalEntityListener and WkfRequestListener to skip
+    BPM processing when engine is not active
+  - Added support for BPM app activation/deactivation at runtime without requiring restart
+  
+  This fix prevents:
+  - Thread count growing from 60 to 80+ over time
+  - Memory growing from 3.5GB to 4GB+
+  - Tomcat warning "failed to stop thread JobExecutor" on shutdown
+  
+  </details>
+
+* Fix issues related to BPM listener mode causing detached entity errors
+
+  <details>
+  
+  * Fixed `PersistentObjectException: detached entity passed to persist` when setting or updating relational fields in BPM scripts.
+  * Fixed issues when updating the current record using ctx.
+  
+  </details>
+
+
 ## 3.2.13 (2025-04-16)
 
 #### Fix
