@@ -119,4 +119,15 @@ public class AppSettingsStudioServiceImpl extends AppSettingsMessageServiceImpl
   public int getMaximumRecursion() {
     return appSettings.getInt("studio.link.script.maximum.recursion", 100);
   }
+
+  @Override
+  public int bpmAsyncPoolParallelism() {
+    int cpus = Runtime.getRuntime().availableProcessors();
+    return appSettings.getInt("studio.bpm.async.pool.parallelism", Math.max(1, cpus));
+  }
+
+  @Override
+  public int bpmMaxReentranceDepth() {
+    return appSettings.getInt("studio.bpm.max.reentrance.depth", 32);
+  }
 }
