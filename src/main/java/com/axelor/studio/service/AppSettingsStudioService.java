@@ -33,4 +33,8 @@ public interface AppSettingsStudioService extends AppSettingsMessageService {
   String getCamundaEngineScriptLogLevel();
 
   String getCamundaEngineContextLogLevel();
+
+  int bpmAsyncPoolParallelism();
+
+  int bpmMaxReentranceDepth();
 }

@@ -56,9 +56,33 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
       AppSettingsStudioService appSettingsStudioService) {
     this.wkfLoggerInitService = wkfLoggerInitService;
     this.appSettingsStudioService = appSettingsStudioService;
-    addEngine(BpmTools.getCurentTenant());
+    // Initialization moved to initialize() method - called by ServerStartListener if BPM app is
+    // active
+  }
+
+  @Override
+  public void initialize() {
+    String tenantId = BpmTools.getCurentTenant();
+    if (engineMap.containsKey(tenantId)) {
+      log.debug("Process engine already initialized for tenant: {}", tenantId);
+      return;
+    }
+    log.info("Initializing BPM process engine for tenant: {}", tenantId);
+    addEngine(tenantId);
     WkfCache.initWkfModelCache();
     WkfCache.initWkfButttonCache();
+  }
+
+  @Override
+  public boolean isInitialized() {
+    return engineMap.containsKey(BpmTools.getCurentTenant());
+  }
+
+  @Override
+  public void shutdown() {
+    log.info("Shutting down all BPM process engines...");
+    new java.util.ArrayList<>(engineMap.keySet()).forEach(this::removeEngine);
+    log.info("All BPM process engines shut down successfully");
   }
 
   @Override
@@ -119,14 +143,13 @@ public class ProcessEngineServiceImpl implements ProcessEngineService {
 
   @Override
   public ProcessEngine getEngine() {
-
     String tenantId = BpmTools.getCurentTenant();
-
-    if (!engineMap.containsKey(tenantId)) {
-      addEngine(tenantId);
+    ProcessEngine engine = engineMap.get(tenantId);
+    if (engine == null) {
+      throw new IllegalStateException(
+          "BPM Process Engine is not initialized. Ensure the BPM app is installed and active.");
     }
-
-    return engineMap.get(tenantId);
+    return engine;
   }
 
   @Override
