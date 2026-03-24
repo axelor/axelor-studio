@@ -39,6 +39,7 @@ import com.axelor.studio.baml.tools.BpmTools;
 import com.axelor.studio.bpm.context.WkfContextHelper;
 import com.axelor.studio.bpm.exception.AxelorScriptEngineException;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
+import com.axelor.studio.bpm.service.BpmAsyncExecutorService;
 import com.axelor.studio.bpm.service.WkfCommonService;
 import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
@@ -71,7 +72,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -110,6 +110,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
   protected BpmErrorMessageService bpmErrorMessageService;
   protected WkfLogService wkfLogService;
   protected AppSettingsStudioService appSettingsStudioService;
+  protected BpmAsyncExecutorService bpmAsyncExecutorService;
 
   public static final int EXECUTION_SOURCE_LISTENER = 0;
   public static final int EXECUTION_SOURCE_OBSERVER = 1;
@@ -125,7 +126,8 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       WkfUserActionService wkfUserActionService,
       BpmErrorMessageService bpmErrorMessageService,
       WkfLogService wkfLogService,
-      AppSettingsStudioService appSettingsStudioService) {
+      AppSettingsStudioService appSettingsStudioService,
+      BpmAsyncExecutorService bpmAsyncExecutorService) {
     this.engineService = engineService;
     this.wkfInstanceRepository = wkfInstanceRepository;
     this.wkfService = wkfService;
@@ -136,6 +138,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     this.bpmErrorMessageService = bpmErrorMessageService;
     this.wkfLogService = wkfLogService;
     this.appSettingsStudioService = appSettingsStudioService;
+    this.bpmAsyncExecutorService = bpmAsyncExecutorService;
   }
 
   @Override
@@ -216,25 +219,20 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
       if (!(e instanceof AxelorScriptEngineException)) {
         WkfProcessConfig wkfProcessConfig = wkfService.findCurrentProcessConfig(model);
         final String finalProcessInstanceId = model.getProcessInstanceId();
-        var executorService = Executors.newSingleThreadExecutor();
-        try {
-          executorService.submit(
-              () ->
-                  new TenantAware(
-                          () -> {
-                            bpmErrorMessageService.sendBpmErrorMessage(
-                                null,
-                                e.getMessage(),
-                                EntityHelper.getEntity(
-                                    wkfProcessConfig.getWkfProcess().getWkfModel()),
-                                finalProcessInstanceId);
-                          })
-                      .withTransaction(false)
-                      .tenantId(BpmTools.getCurentTenant())
-                      .run());
-        } finally {
-          executorService.shutdown();
-        }
+        bpmAsyncExecutorService.submit(
+            () ->
+                new TenantAware(
+                        () -> {
+                          bpmErrorMessageService.sendBpmErrorMessage(
+                              null,
+                              e.getMessage(),
+                              EntityHelper.getEntity(
+                                  wkfProcessConfig.getWkfProcess().getWkfModel()),
+                              finalProcessInstanceId);
+                        })
+                    .withTransaction(false)
+                    .tenantId(BpmTools.getCurentTenant())
+                    .run());
       }
       WkfProcess wkfProcess = wkfService.findCurrentProcessConfig(model).getWkfProcess();
       removeRelatedFailedInstance(model, wkfProcess);
@@ -339,7 +337,7 @@ public class WkfInstanceServiceImpl implements WkfInstanceService {
     RuntimeService runTimeService = engine.getRuntimeService();
 
     ProcessInstantiationBuilder builder =
-        runTimeService.createProcessInstanceById(wkfProcess.getProcessId());
+        runTimeService.createProcessInstanceByKey(wkfProcess.getName());
 
     Map<String, Object> modelMap = new HashMap<String, Object>();
     modelMap.put(wkfService.getVarName(model), new FullContext(model));
