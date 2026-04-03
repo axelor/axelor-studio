@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import Select from "../../../components/Select";
-import { translate, getBool } from "../../../utils";
+import { translate } from "../../../utils";
 import {
   Button,
   Switch,
@@ -26,7 +26,6 @@ export default function DeployDialog({
   onOk,
   wkf,
   element,
-  getNewVersionInfo,
 }) {
   const { oldElements, currentElements } = ids || {};
   const [wkfMigrationMap, setWkfMigrationMap] = useState({});
@@ -133,8 +132,7 @@ export default function DeployDialog({
         </h3>
       </DialogHeader>
       <DialogContent className={styles.dialogContent}>
-        {(wkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
-          oldElements && (
+        {oldElements && (
             <Box d="flex" justifyContent="space-around">
               <FormControl
                 checked={isMigrateOld}

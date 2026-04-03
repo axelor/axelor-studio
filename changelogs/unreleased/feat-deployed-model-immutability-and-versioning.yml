@@ -1,0 +1,15 @@
+---
+title: Enforce immutability of deployed BPM models with automatic versioning
+type: feature
+description: |
+  Deployed BPM models are now immutable with automatic versioning on changes:
+
+  - Deployed models (statusSelect=2) are now read-only in both the BPMN editor and
+    the form view
+  - Saving changes on a deployed model automatically creates a new draft version
+    with those changes applied (copy-on-write)
+  - Redeployment always creates a new version, removing the need for the optional
+    newVersionOnDeploy flag
+  - Removed newVersionOnDeploy field from WkfModel domain, views, and React components
+  - Form fields (code, name, studioApp, description, permissions) are now readonly
+    for deployed and terminated statuses

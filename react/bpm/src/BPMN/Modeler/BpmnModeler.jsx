@@ -295,7 +295,6 @@ function BpmnModelerComponent() {
               "studioApp",
               "description",
               "wkfStatusColor",
-              "newVersionOnDeploy",
             ].forEach((key) => {
               if (key === "name") {
                 setProperty("diagramName", oldWkf[key], true);
@@ -408,8 +407,7 @@ function BpmnModelerComponent() {
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" 
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" 
         xmlns:di="http://www.omg.org/spec/DD/20100524/DI" 
-        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" 
-        camunda:newVersionOnDeploy="false">
+        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">
         <bpmn2:process id="${processId}" isExecutable="true">
           <bpmn2:startEvent id="StartEvent_1" />
         </bpmn2:process>
@@ -785,6 +783,65 @@ function BpmnModelerComponent() {
       const { xml } = await bpmnModeler.saveXML({ format: true });
       diagramXmlRef.current = xml;
 
+      // Terminated models are read-only, block save entirely
+      if (wkf && wkf.statusSelect === 3) {
+        handleSnackbarClick(
+          "danger",
+          translate("This version is terminated. Please work on the active version.")
+        );
+        return;
+      }
+
+      // Copy-on-write: deployed models are immutable, save to a new draft version
+      if (wkf && wkf.statusSelect === 2) {
+        let actionRes = await Service.action({
+          model: "com.axelor.studio.db.WkfModel",
+          action: "action-wkf-model-method-save-as-draft",
+          data: {
+            context: {
+              _model: "com.axelor.studio.db.WkfModel",
+              ...wkf,
+              diagramXml: xml,
+              name: attrs["camunda:diagramName"],
+              code: attrs["camunda:code"],
+              description: attrs["camunda:description"],
+              wkfStatusColor: attrs["camunda:wkfStatusColor"] || "blue",
+            },
+          },
+        });
+        const values = actionRes?.data?.[0]?.values;
+        if (values?.existingDraftId) {
+          const draftId = values.existingDraftId;
+          const versionTag = values.existingDraftVersionTag || "";
+          setId(draftId);
+          await fetchDiagram(draftId);
+          setDirty(false);
+          handleSnackbarClick(
+            "danger",
+            translate(
+              `A draft version already exists. Redirecting to it. Please apply your changes there.`
+            )
+          );
+        } else if (values?.newVersionId) {
+          const newId = values.newVersionId;
+          setId(newId);
+          await fetchDiagram(newId);
+          setDirty(false);
+          handleSnackbarClick(
+            "success",
+            translate("Deployed model is immutable. Changes saved to new draft version.")
+          );
+        } else {
+          handleSnackbarClick(
+            "danger",
+            actionRes?.data?.[0]?.error?.message ||
+              actionRes?.data?.message ||
+              "Error creating draft version"
+          );
+        }
+        return;
+      }
+
       async function getStudioAppValue() {
         if (!attrs["camunda:studioApp"]) return;
         const res = await getStudioApp({
@@ -810,7 +867,6 @@ function BpmnModelerComponent() {
         wkfStatusColor: attrs["camunda:wkfStatusColor"] || "blue",
         versionTag: attrs["camunda:versionTag"],
         description: attrs["camunda:description"],
-        newVersionOnDeploy: attrs["camunda:newVersionOnDeploy"] || false,
         studioApp,
       });
       if (res && res.data && res.data[0]) {
@@ -984,7 +1040,7 @@ function BpmnModelerComponent() {
     return { status: 0 };
   };
 
-  const addNewVersion = async (wkf) => {
+  const addNewVersion = async (wkf, diagramXml) => {
     let actionRes = await Service.action({
       model: "com.axelor.studio.db.WkfModel",
       action: "action-wkf-model-method-create-new-version",
@@ -1007,6 +1063,17 @@ function BpmnModelerComponent() {
     if (actionRes?.data && actionRes.data[0]?.values?.newVersionId) {
       const id = actionRes.data[0].values.newVersionId;
       if (!id) return;
+
+      // Save the current diagram changes to the new version
+      if (diagramXml) {
+        const newVersionWkf = await fetchWkf(id);
+        await Service.add("com.axelor.studio.db.WkfModel", {
+          ...newVersionWkf,
+          ...(getDefinitionProperties() || {}),
+          diagramXml,
+        });
+      }
+
       setId(id);
       return await fetchDiagram(id);
     }
@@ -1079,19 +1146,12 @@ function BpmnModelerComponent() {
     }
   };
 
-  const getNewVersionInfo = React.useCallback(() => {
-    let attrs = bpmnModeler?._definitions?.$attrs;
-    if (!attrs) return false;
-    return attrs["camunda:newVersionOnDeploy"];
-  }, []);
-
   const getDefinitionProperties = () => {
     let attrs = bpmnModeler?._definitions?.$attrs;
     return {
       name: attrs["camunda:diagramName"],
       code: attrs["camunda:code"],
       description: attrs["camunda:description"],
-      newVersionOnDeploy: attrs["camunda:newVersionOnDeploy"],
       versionTag: attrs["camunda:versionTag"],
       wkfStatusColor: attrs["camunda:wkfStatusColor"],
     };
@@ -1114,6 +1174,23 @@ function BpmnModelerComponent() {
   const saveBeforeDeploy = async (wkfMigrationMap, isMigrateOld, newWkf) => {
     const { xml } = await bpmnModeler.saveXML({ format: true });
     diagramXmlRef.current = xml;
+
+    // Do not persist directly on a deployed model — the deploy flow
+    // will create a new version and save the diagram there
+    if (newWkf?.statusSelect === 2) {
+      let context = {
+        _model: "com.axelor.studio.db.WkfModel",
+        ...newWkf,
+        ...(getDefinitionProperties() || {}),
+        diagramXml: xml,
+        wkfMigrationMap,
+      };
+      if (newWkf?.oldNodes) {
+        context.isMigrateOld = isMigrateOld;
+      }
+      return { context, res: { data: [newWkf] } };
+    }
+
     let res = await Service.add("com.axelor.studio.db.WkfModel", {
       ...newWkf,
       ...(getDefinitionProperties() || {}),
@@ -1126,10 +1203,7 @@ function BpmnModelerComponent() {
         ...res.data[0],
         wkfMigrationMap,
       };
-      if (
-        (newWkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
-        newWkf?.oldNodes
-      ) {
+      if (newWkf?.oldNodes) {
         context.isMigrateOld = isMigrateOld;
       }
       return { context, res };
@@ -1153,7 +1227,7 @@ function BpmnModelerComponent() {
 
     // Only initialize WebSocket if NOT creating a new version
     // (will be initialized with new version ID after creation)
-    const willCreateNewVersion = newWkf?.newVersionOnDeploy && newWkf?.statusSelect === 2;
+    const willCreateNewVersion = newWkf?.statusSelect === 2;
     if (allowProgressBarDisplay && !willCreateNewVersion) {
       wsProgress.init(wkf.id);
       await waitForConnection();
@@ -1164,7 +1238,7 @@ function BpmnModelerComponent() {
       const { context, res } =
         (await saveBeforeDeploy(wkfMigrationMap, isMigrateOld, newWkf)) || {};
       if (willCreateNewVersion) {
-        let newVersionWkf = await addNewVersion(newWkf);
+        let newVersionWkf = await addNewVersion(newWkf, diagramXmlRef.current);
         if (newVersionWkf && newVersionWkf.statusSelect === 1) {
           // Initialize WebSocket with new model ID after creating new version
           if (allowProgressBarDisplay) {
@@ -1338,7 +1412,7 @@ function BpmnModelerComponent() {
           ? value
           : undefined;
       attrs[`camunda:${name}`] = newValue;
-      if (!newValue && name !== "newVersionOnDeploy") {
+      if (!newValue) {
         delete attrs[`camunda:${name}`];
         return;
       }
@@ -1464,7 +1538,7 @@ function BpmnModelerComponent() {
         icon: "rocket",
       },
       onClick: deployDiagram,
-      disable: id ? false : true,
+      disabled: !id || (wkf && wkf.statusSelect === 3),
     },
     {
       key: "properties",
@@ -2266,11 +2340,11 @@ function BpmnModelerComponent() {
                   updateCommentsCount={updateCommentsCount}
                   handleSnackbarClick={handleSnackbarClick}
                   enableStudioApp={enableStudioApp}
-                  addNewVersion={addNewVersion}
                   changeColor={changeColor}
                   bpmnModeler={bpmnModeler}
                   showError={showError}
                   setDummyProperty={setDummyProperty}
+                  addNewVersion={addNewVersion}
                 />
               </Box>
             </Box>
@@ -2314,7 +2388,6 @@ function BpmnModelerComponent() {
             open={openDelopyDialog}
             onClose={() => setDelopyDialog(false)}
             ids={ids}
-            getNewVersionInfo={getNewVersionInfo}
             onOk={(wkfMigrationMap, isMigrateOld) =>
               handleOk(wkfMigrationMap, isMigrateOld)
             }

@@ -146,8 +146,7 @@ export const WKF_FIELDS = [
   "statusSelect",
   "name",
   "wkfStatusColor",
-  "studioApp",
-  "newVersionOnDeploy"
+  "studioApp"
 ];
 
 export const RELATED_FIELDS = ["name", "processId", "wkfProcessConfigList"];

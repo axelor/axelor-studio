@@ -5,6 +5,7 @@
 package com.axelor.studio.bpm.service;
 
 import com.axelor.meta.db.MetaFile;
+import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.WkfModel;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,15 @@ import java.util.Map;
 public interface WkfModelService {
 
   WkfModel createNewVersion(WkfModel wkfModel);
+
+  WkfModel createNewVersionWithChanges(
+      WkfModel deployedModel,
+      String diagramXml,
+      String name,
+      String code,
+      String description,
+      String wkfStatusColor,
+      StudioApp studioApp);
 
   WkfModel start(WkfModel sourceModel, WkfModel targetModel);
 
