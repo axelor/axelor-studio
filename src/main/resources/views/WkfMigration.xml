@@ -21,7 +21,6 @@
         requiredIf="sourceVersion" onChange="action-wkf-migration-attrs-unset-mapping"
         target-name="code" colSpan="4"/>
       <field name="targetVersion.versionTag" title="Version" readonly="true" colSpan="2"/>
-      <field name="upgradeAllInstances"/>
       <field name="removeOldVersionMenu"/>
       <spacer colSpan="12"/>
       <button name="generateNodeMappingBtn" title="Generate Node Mapping"

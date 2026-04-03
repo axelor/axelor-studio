@@ -131,8 +131,7 @@ class GlobalEntityListenerTest {
       // But the task calls callWkfProcess which will fail — that's expected
       // We just verify submit was called
       try {
-        listener.runOnSeparateThread(
-            new GlobalEntityListener.EntityRef("com.example.Test", 1L));
+        listener.runOnSeparateThread(new GlobalEntityListener.EntityRef("com.example.Test", 1L));
       } catch (Exception e) {
         // Expected: callWkfProcess will fail without real DB/context
       }

@@ -21,6 +21,8 @@ import com.axelor.meta.schema.actions.ActionView.ActionViewBuilder;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.axelor.rpc.Context;
+import com.axelor.studio.bpm.dto.DeploymentResult;
+import com.axelor.studio.bpm.dto.MigrationResult;
 import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.pojo.MergeSplitContributor;
 import com.axelor.studio.bpm.pojo.MergeSplitResult;
@@ -34,12 +36,14 @@ import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.bpm.service.execution.WkfInstanceService;
 import com.axelor.studio.bpm.service.identity.WkfIdentityService;
 import com.axelor.studio.bpm.service.identity.WkfIdentitySyncReport;
+import com.axelor.studio.bpm.service.init.ProcessEngineService;
 import com.axelor.studio.bpm.service.log.WkfLogService;
 import com.axelor.studio.bpm.service.message.BpmErrorMessageService;
+import com.axelor.studio.bpm.service.migration.WkfMigrationService;
+import com.axelor.studio.db.StudioApp;
 import com.axelor.studio.db.WkfInstance;
 import com.axelor.studio.db.WkfInstanceVariable;
 import com.axelor.studio.db.WkfModel;
-import com.axelor.studio.db.WkfProcess;
 import com.axelor.studio.db.WkfProcessConfig;
 import com.axelor.studio.db.repo.WkfInstanceRepository;
 import com.axelor.studio.db.repo.WkfModelRepository;
@@ -54,6 +58,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.camunda.bpm.engine.ProcessEngine;
 
 public class WkfModelController {
 
@@ -67,14 +72,6 @@ public class WkfModelController {
 
       WkfModel wkfModel = context.asType(WkfModel.class);
 
-      Map<String, Object> migrationMap = (Map<String, Object>) context.get("wkfMigrationMap");
-
-      Boolean isMigrateOld = (Boolean) context.get("isMigrateOld");
-
-      if (isMigrateOld != null && !isMigrateOld) {
-        migrationMap = null;
-      }
-
       wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
       if (wkfModel.getIsMigrationOnGoing()) {
         response.setError(I18n.get(BpmExceptionMessage.MIGRATION_IS_ALREADY_ONGOING));
@@ -84,18 +81,73 @@ public class WkfModelController {
                 I18n.get(BpmExceptionMessage.BPM_STUDIO_APP_NOT_INSTALLED),
                 wkfModel.getStudioApp().getName()));
       } else {
-        Beans.get(BpmDeploymentService.class).deploy(null, wkfModel, migrationMap, false);
+        BpmDeploymentService deployService = Beans.get(BpmDeploymentService.class);
+        WkfMigrationService migrationService = Beans.get(WkfMigrationService.class);
+
+        Map<String, Object> migrationMap = (Map<String, Object>) context.get("wkfMigrationMap");
+
+        Boolean isMigrateOld = (Boolean) context.get("isMigrateOld");
+
+        if (isMigrateOld != null && !isMigrateOld) {
+          migrationMap = null;
+        }
+
+        DeploymentResult deployResult = deployService.deploy(wkfModel);
+
+        if (migrationMap != null
+            && deployResult != null
+            && deployResult.getOldDeploymentId() != null) {
+          ProcessEngine engine = Beans.get(ProcessEngineService.class).getEngine();
+
+          migrationService.setIsMigrationOnGoing(wkfModel, true);
+          try {
+            MigrationResult migrationResult =
+                migrationService.migrateRunningInstances(
+                    deployResult.getOldDeploymentId(),
+                    engine,
+                    deployResult.getDefinitions(),
+                    deployResult.getMigrationProcessMap(),
+                    wkfModel.getPreviousVersion(),
+                    migrationMap);
+
+            // Reload wkfModel after potential JPA.clear() during migration
+            wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+
+            migrationService.migrateInstanceTasks(engine, wkfModel);
+
+            // Handle removeOldVersionMenu
+            String isRemove =
+                java.util.Optional.ofNullable(migrationMap.get("removeOldVersionMenu"))
+                    .map(java.util.Objects::toString)
+                    .orElse("false");
+            if (isRemove.equals("true") && wkfModel.getPreviousVersion() != null) {
+              migrationService.removePreviousVersionMenus(wkfModel.getPreviousVersion());
+            }
+
+            // Preserve existing error behavior
+            if (migrationResult.isMigrationError()) {
+              throw new IllegalStateException(I18n.get(BpmExceptionMessage.MIGRATION_ERR));
+            }
+          } finally {
+            WkfModel freshModel =
+                Beans.get(WkfModelRepository.class)
+                    .find(request.getContext().asType(WkfModel.class).getId());
+            migrationService.setIsMigrationOnGoing(freshModel, false);
+          }
+        }
+
         response.setReload(true);
       }
 
     } catch (Exception e) {
       ExceptionHelper.error(response, e);
-      WkfModel model = request.getContext().asType(WkfModel.class);
-      model = Beans.get(WkfModelRepository.class).find(model.getId());
-      Beans.get(BpmDeploymentService.class).setIsMigrationOnGoing(model, false);
       Beans.get(BpmErrorMessageService.class)
           .sendBpmErrorMessage(
-              null, e.getMessage(), Beans.get(WkfModelRepository.class).find(model.getId()), null);
+              null,
+              e.getMessage(),
+              Beans.get(WkfModelRepository.class)
+                  .find(request.getContext().asType(WkfModel.class).getId()),
+              null);
     }
   }
 
@@ -163,6 +215,48 @@ public class WkfModelController {
       wkfModel = Beans.get(WkfModelService.class).createNewVersion(wkfModel);
 
       response.setValue("newVersionId", wkfModel.getId());
+    } catch (Exception e) {
+      ExceptionHelper.error(response, e);
+    }
+  }
+
+  public void saveAsDraft(ActionRequest request, ActionResponse response) {
+    try {
+      Context context = request.getContext();
+      WkfModel wkfModel = context.asType(WkfModel.class);
+      wkfModel = Beans.get(WkfModelRepository.class).find(wkfModel.getId());
+
+      if (wkfModel.getStatusSelect() != WkfModelRepository.STATUS_ON_GOING) {
+        response.setError(I18n.get(BpmExceptionMessage.BPM_MODEL_NOT_DEPLOYED));
+        return;
+      }
+
+      WkfModelRepository wkfModelRepository = Beans.get(WkfModelRepository.class);
+      WkfModel existingDraft =
+          wkfModelRepository
+              .all()
+              .filter("self.previousVersion.id = ?1", wkfModel.getId())
+              .fetchOne();
+
+      if (existingDraft != null) {
+        response.setValue("existingDraftId", existingDraft.getId());
+        response.setValue("existingDraftVersionTag", existingDraft.getVersionTag());
+        return;
+      }
+
+      String diagramXml = (String) context.get("diagramXml");
+      String name = (String) context.get("name");
+      String code = (String) context.get("code");
+      String description = (String) context.get("description");
+      String wkfStatusColor = (String) context.get("wkfStatusColor");
+      StudioApp studioApp = wkfModel.getStudioApp();
+
+      WkfModel newVersion =
+          Beans.get(WkfModelService.class)
+              .createNewVersionWithChanges(
+                  wkfModel, diagramXml, name, code, description, wkfStatusColor, studioApp);
+
+      response.setValue("newVersionId", newVersion.getId());
     } catch (Exception e) {
       ExceptionHelper.error(response, e);
     }
@@ -596,16 +690,6 @@ public class WkfModelController {
       } catch (IllegalArgumentException e) {
         response.setError(I18n.get(e.getMessage()));
       }
-    }
-  }
-
-  public void forceMigrate(ActionRequest request, ActionResponse response) {
-    try {
-      Context context = request.getContext();
-      WkfProcess wkfProcess = context.asType(WkfProcess.class);
-      Beans.get(BpmDeploymentService.class).forceMigrate(wkfProcess);
-    } catch (Exception e) {
-      ExceptionHelper.error(response, e);
     }
   }
 

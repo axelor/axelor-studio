@@ -15,6 +15,7 @@ import com.axelor.i18n.I18n;
 import com.axelor.meta.MetaFiles;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
+import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.bpm.service.dashboard.WkfDashboardCommonService;
 import com.axelor.studio.bpm.service.deployment.BpmDeploymentService;
 import com.axelor.studio.db.App;
@@ -107,6 +108,31 @@ public class WkfModelServiceImpl implements WkfModelService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
+  public WkfModel createNewVersionWithChanges(
+      WkfModel deployedModel,
+      String diagramXml,
+      String name,
+      String code,
+      String description,
+      String wkfStatusColor,
+      StudioApp studioApp) {
+
+    WkfModel newVersion = createNewVersion(deployedModel);
+
+    newVersion.setDiagramXml(diagramXml);
+    newVersion.setName(name);
+    newVersion.setCode(code);
+    newVersion.setDescription(description);
+    newVersion.setWkfStatusColor(wkfStatusColor);
+    if (studioApp != null) {
+      newVersion.setStudioApp(studioApp);
+    }
+
+    return wkfModelRepository.save(newVersion);
+  }
+
+  @Override
+  @Transactional(rollbackOn = Exception.class)
   public WkfModel start(WkfModel sourceModel, WkfModel targetModel) {
 
     if (!ObjectUtils.isEmpty(sourceModel)) {
@@ -137,6 +163,10 @@ public class WkfModelServiceImpl implements WkfModelService {
   @Override
   @Transactional(rollbackOn = Exception.class)
   public WkfModel backToDraft(WkfModel wkfModel) {
+
+    if (wkfModel.getDeploymentId() != null) {
+      throw new IllegalStateException(I18n.get(BpmExceptionMessage.BACK_TO_DRAFT_ALREADY_DEPLOYED));
+    }
 
     wkfModel.setStatusSelect(WkfModelRepository.STATUS_NEW);
 
@@ -173,7 +203,7 @@ public class WkfModelServiceImpl implements WkfModelService {
           @Override
           public void imported(Model arg0) {
             WkfModel wkfModel = (WkfModel) arg0;
-            bpmDeploymentService.deploy(null, wkfModel, null, false);
+            bpmDeploymentService.deploy(wkfModel);
           }
 
           @Override

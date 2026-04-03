@@ -640,4 +640,8 @@ public final class BpmExceptionMessage {
       "No process configuration found for process instance: %s" /*)*/;
   public static final String MODEL_NOT_FOUND = /*$$(*/
       "Model not found for processInstanceId: %s (class: %s)" /*)*/;
+  public static final String BPM_MODEL_NOT_DEPLOYED = /*$$(*/
+      "This action only applies to deployed models." /*)*/;
+  public static final String BACK_TO_DRAFT_ALREADY_DEPLOYED = /*$$(*/
+      "Cannot revert to draft: this version has already been deployed. Please work on the latest version."; /*)*/
 }

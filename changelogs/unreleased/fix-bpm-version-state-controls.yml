@@ -1,0 +1,14 @@
+---
+title: Fix BPM model version state controls for deployed and terminated versions
+type: fix
+description: |
+  Fixed several issues with BPM model version state management:
+
+  - Back-to-draft action is now blocked with an error if the model version has already
+    been deployed (has a deploymentId), preventing accidental state corruption
+  - Removed the Back to Draft button from the UI for deployed models
+  - Disabled the deployment button for terminated versions (statusSelect=3) to prevent
+    accidental redeployment
+  - Terminated models with no successor version can now create a new version manually
+  - Saving on terminated versions is blocked with an error message directing users to
+    work on the active version

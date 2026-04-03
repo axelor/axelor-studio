@@ -342,13 +342,9 @@ public class WkfExecutionListener implements ExecutionListener {
     wkfInstance.setInstanceId(instanceId);
     String processDefinitionId = execution.getProcessDefinitionId();
     WkfProcess wkfProcess =
-        wkfProcessRepo
-            .all()
-            .filter("self.processId = ?1", processDefinitionId)
-            .fetchOne();
+        wkfProcessRepo.all().filter("self.processId = ?1", processDefinitionId).fetchOne();
     if (wkfProcess == null) {
-      throw new IllegalStateException(
-          "No WkfProcess found for definition: " + processDefinitionId);
+      throw new IllegalStateException("No WkfProcess found for definition: " + processDefinitionId);
     }
     wkfInstance.setName(wkfProcess.getProcessId() + " : " + instanceId);
     wkfInstance.setWkfProcess(wkfProcess);

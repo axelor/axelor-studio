@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
     decoders = MessageDecoder.class,
     encoders = MessageEncoder.class,
     configurator = WebSocketConfigurator.class)
-public class BpmDeploymentWebSocket {
+public class BpmProgressWebSocket {
 
   static Map<String, Integer> eventMap = new ConcurrentHashMap<>();
-  static Map<String, Session> sessionMap = new ConcurrentHashMap<>();
-  private static final Logger log = LoggerFactory.getLogger(BpmDeploymentWebSocket.class);
+  public static Map<String, Session> sessionMap = new ConcurrentHashMap<>();
+  private static final Logger log = LoggerFactory.getLogger(BpmProgressWebSocket.class);
 
   @OnOpen
   public void onOpen(Session session, EndpointConfig config) {

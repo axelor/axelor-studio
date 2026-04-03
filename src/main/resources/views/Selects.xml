@@ -34,6 +34,7 @@
     <option value="1">Not migrated</option>
     <option value="2">Migrated successfully</option>
     <option value="3">Migration error</option>
+    <option value="4">Migration in progress</option>
   </selection>
 
   <selection name="wkf.instance.migration.related.to.select">

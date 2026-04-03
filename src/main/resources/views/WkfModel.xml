@@ -37,13 +37,15 @@
     <panel name="mainPanel" colSpan="12">
       <field name="statusSelect" widget="NavSelect" colSpan="12" readonly="true"/>
       <field name="code" x-bind="{{code|unaccent|uppercase}}"
-        readonlyIf="generatedFromCallActivity"/>
-      <field name="name" required="true"/>
+        readonlyIf="generatedFromCallActivity || statusSelect == 2 || statusSelect == 3"/>
+      <field name="name" required="true" readonlyIf="statusSelect == 2 || statusSelect == 3"/>
       <field name="studioApp" grid-view="studio-app-grid" form-view="studio-app-form"
-        if="__config__.app?.getApp('studio')?.getEnableStudioApp()"/>
+        if="__config__.app?.getApp('studio')?.getEnableStudioApp()"
+        readonlyIf="statusSelect == 2 || statusSelect == 3"/>
       <field name="versionTag" readonly="true"/>
-      <field name="wkfStatusColor" widget="SingleSelect"/>
-      <field name="newVersionOnDeploy"/>
+      <field name="wkfStatusColor" widget="SingleSelect"
+        readonlyIf="statusSelect == 2 || statusSelect == 3"/>
+      <field name="deploymentId" hidden="true"/>
     </panel>
     <panel-tabs>
       <panel name="allProcessPanel" title="All Processes">
@@ -56,14 +58,20 @@
       </panel>
       <panel name="permissionPanel" title="Permissions">
         <panel name="adminPanel" title="Admins" colSpan="12" itemSpan="6">
-          <field name="sendAdminsNotification" colSpan="12"/>
-          <field name="adminUserSet" widget="Tags" canNew="false"/>
-          <field name="adminRoleSet" widget="Tags" canNew="false"/>
+          <field name="sendAdminsNotification" colSpan="12"
+            readonlyIf="statusSelect == 2 || statusSelect == 3"/>
+          <field name="adminUserSet" widget="Tags" canNew="false"
+            readonlyIf="statusSelect == 2 || statusSelect == 3"/>
+          <field name="adminRoleSet" widget="Tags" canNew="false"
+            readonlyIf="statusSelect == 2 || statusSelect == 3"/>
         </panel>
         <panel name="userPanel" title="Users" colSpan="12" itemSpan="6">
-          <field name="sendUserNotification" colSpan="12"/>
-          <field name="userSet" widget="Tags" canNew="false"/>
-          <field name="roleSet" widget="Tags" canNew="false"/>
+          <field name="sendUserNotification" colSpan="12"
+            readonlyIf="statusSelect == 2 || statusSelect == 3"/>
+          <field name="userSet" widget="Tags" canNew="false"
+            readonlyIf="statusSelect == 2 || statusSelect == 3"/>
+          <field name="roleSet" widget="Tags" canNew="false"
+            readonlyIf="statusSelect == 2 || statusSelect == 3"/>
         </panel>
         <panel name="syncPanel" hidden="false" colSpan="12">
           <panel name="syncInfoPanel" title="Camunda Identity Sync" colSpan="12"
@@ -92,10 +100,12 @@
     </panel-tabs>
     <panel name="extraPanel">
       <field name="wkfProcessList" colSpan="12" canNew="false" canRemove="true"/>
-      <field name="description" colSpan="12"/>
+      <field name="description" colSpan="12"
+        readonlyIf="statusSelect == 2 || statusSelect == 3"/>
       <panel-dashlet hidden="true" action="action-wkf-model-method-show-versions"
         name="wkfModelVersionDashlet" title="Previous Versions" colSpan="12"/>
       <field name="isActive" hidden="true"/>
+      <field name="deploymentId" hidden="true"/>
       <field name="previousVersion" hidden="true"/>
       <field name="generatedFromCallActivity" hidden="true"/>
       <field name="previousVersion.statusSelect" hidden="true"/>
@@ -114,9 +124,6 @@
       <button name="terminateBtn" title="wkf.terminate.btn"
         onClick="save,action-wkf-model-method-terminate"
         showIf="statusSelect == 2 &amp;&amp; isActive"/>
-      <button name="backToDraftBtn" title="Back to Draft"
-        onClick="save,action-wkf-model-method-back-to-draft"
-        showIf="statusSelect == 3  &amp;&amp; isActive"/>
       <button name="openEditorBtn" title="wkf.open.editor"
         onClick="save,action-wkf-view-open-editor"/>
       <button name="openWkfStateBtn" title="BPM State"
@@ -387,6 +394,10 @@
 
   <action-method name="action-wkf-model-method-create-new-version">
     <call class="com.axelor.studio.bpm.web.WkfModelController" method="createNewVersion"/>
+  </action-method>
+
+  <action-method name="action-wkf-model-method-save-as-draft">
+    <call class="com.axelor.studio.bpm.web.WkfModelController" method="saveAsDraft"/>
   </action-method>
 
   <action-method name="action-wkf-model-method-show-versions">

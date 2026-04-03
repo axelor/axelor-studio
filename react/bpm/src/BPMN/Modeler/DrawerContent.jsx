@@ -27,11 +27,11 @@ export default function DrawerContent({
   updateCommentsCount,
   handleSnackbarClick,
   enableStudioApp,
-  addNewVersion,
   changeColor,
   bpmnModeler,
   showError,
   setDummyProperty,
+  addNewVersion,
 }) {
   const [svg, setSvg] = useState({
     type: "",
@@ -126,11 +126,11 @@ export default function DrawerContent({
                   updateCommentsCount={updateCommentsCount}
                   handleSnackbarClick={handleSnackbarClick}
                   enableStudioApp={enableStudioApp}
-                  addNewVersion={addNewVersion}
                   changeColor={changeColor}
                   bpmnModeler={bpmnModeler}
                   showError={showError}
                   setDummyProperty={setDummyProperty}
+                  addNewVersion={addNewVersion}
                 />
               )}
             </React.Fragment>

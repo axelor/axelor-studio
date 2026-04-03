@@ -1,0 +1,14 @@
+---
+title: Redesign BPM migration architecture to separate concerns
+type: change
+description: |
+
+  - Separate migration and deployment operations. 
+  - Controller now orchestrates the deploy-then-migrate flow instead of coupling both
+    in the deployment service
+  - Added STATUS_MIGRATION_IN_PROGRESS (4) to WkfInstance for crash-safe DB-driven
+    instance tracking during migration
+  - Task migration (cancel old tasks, create new tasks) is now tracked via persistent
+    DB state with configurable batch processing
+  - Removed obsolete forceMigrate button and action from WkfProcess form
+  - Removed upgradeAllInstances field from WkfMigration domain and view

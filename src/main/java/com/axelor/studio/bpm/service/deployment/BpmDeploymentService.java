@@ -4,21 +4,10 @@
  */
 package com.axelor.studio.bpm.service.deployment;
 
+import com.axelor.studio.bpm.dto.DeploymentResult;
 import com.axelor.studio.db.WkfModel;
-import com.axelor.studio.db.WkfProcess;
-import com.google.inject.persist.Transactional;
-import java.util.Map;
 
 public interface BpmDeploymentService {
 
-  @Transactional
-  void deploy(
-      WkfModel sourceModel,
-      WkfModel targetModel,
-      Map<String, Object> migrationMap,
-      boolean upgradeToLatest);
-
-  void forceMigrate(WkfProcess process);
-
-  void setIsMigrationOnGoing(WkfModel wkfModel, boolean isMigrationOnGoing);
+  DeploymentResult deploy(WkfModel targetModel);
 }

@@ -51,11 +51,11 @@ export default function TabPanel({
   updateCommentsCount,
   handleSnackbarClick,
   enableStudioApp,
-  addNewVersion,
   changeColor,
   bpmnModeler,
   showError,
   setDummyProperty,
+  addNewVersion,
 }) {
   const getReadOnly = React.useCallback(
     (entry) => {
@@ -94,9 +94,9 @@ export default function TabPanel({
           updateCommentsCount={updateCommentsCount}
           handleSnackbarClick={handleSnackbarClick}
           enableStudioApp={enableStudioApp}
-          addNewVersion={addNewVersion}
           showError={showError}
           setDummyProperty={setDummyProperty}
+          addNewVersion={addNewVersion}
         />
       ) : (
         group.entries.length > 0 && (

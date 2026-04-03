@@ -4,12 +4,11 @@ import IconButton from "../../../../../components/IconButton";
 import Select from "../../../../../components/Select";
 import StaticSelect from "../../../../../components/StaticSelect";
 import {
-  Checkbox,
   TextField,
   Textbox,
 } from "../../../../../components/properties/components";
 import Tooltip from "../../../../../components/Tooltip";
-import { getBool, translate } from "../../../../../utils";
+import { translate } from "../../../../../utils";
 import { getStudioApp, fetchWkf } from "../../../../../services/api";
 import Service from "../../../../../services/Service";
 import { WKF_COLORS, STATUS } from "../../../constants";
@@ -43,10 +42,10 @@ export default function Definition({
   reloadView,
   handleSnackbarClick,
   enableStudioApp = false,
-  addNewVersion = () => {},
   showError,
   bpmnModeler,
   setDummyProperty = () => {},
+  addNewVersion = () => {},
 }) {
   const [studioApp, setStudioApp] = useState(null);
   const [wkfStatusColor, setWkfStatusColor] = useState([]);
@@ -54,6 +53,7 @@ export default function Definition({
   const [open, setOpen] = useState(false);
   const [process, setProcess] = useState(null);
   const [expanded, setExpanded] = useState(true);
+  const [hasSuccessor, setHasSuccessor] = useState(false);
   const { statusSelect = 1, isActive } = wkf || {};
   const steps = getSteps();
 
@@ -91,28 +91,6 @@ export default function Definition({
       const view = actionRes.data[0].view;
       openTabView(view);
       handleClose();
-    }
-  };
-
-  const backToDraft = async () => {
-    let actionRes = await Service.action({
-      model: "com.axelor.studio.db.WkfModel",
-      action: "action-wkf-model-method-back-to-draft",
-      data: {
-        context: {
-          _model: "com.axelor.studio.db.WkfModel",
-          ...wkf,
-        },
-      },
-    });
-    if (
-      actionRes &&
-      actionRes.data &&
-      actionRes.data[0] &&
-      actionRes.data[0].reload
-    ) {
-      handleSnackbarClick("success", "Successfully drafted");
-      reloadView();
     }
   };
 
@@ -245,6 +223,26 @@ export default function Definition({
     getVersionList();
   }, [getVersionList]);
 
+  useEffect(() => {
+    async function checkSuccessor() {
+      if (!wkf?.id || statusSelect !== 3) {
+        setHasSuccessor(false);
+        return;
+      }
+      const res = await Service.search("com.axelor.studio.db.WkfModel", {
+        fields: ["id"],
+        data: {
+          criteria: [
+            { fieldName: "previousVersion.id", operator: "=", value: wkf.id },
+          ],
+        },
+        limit: 1,
+      });
+      setHasSuccessor(res?.data?.length > 0);
+    }
+    checkSuccessor();
+  }, [wkf?.id, statusSelect]);
+
   return (
     <React.Fragment>
       <Stepper active={statusSelect - 1} items={steps} />
@@ -328,23 +326,6 @@ export default function Definition({
           },
           set: function (e, value) {
             setProperty("versionTag", value?.versionTag);
-          },
-        }}
-      />
-      <Checkbox
-        element={element}
-        entry={{
-          id: "newVersionOnDeploy",
-          label: translate("New version on deploy"),
-          modelProperty: "newVersionOnDeploy",
-          widget: "checkbox",
-          get: function () {
-            return {
-              newVersionOnDeploy: getBool(getProperty("newVersionOnDeploy")),
-            };
-          },
-          set: function (e, value) {
-            setProperty("newVersionOnDeploy", !value?.newVersionOnDeploy);
           },
         }}
       />
@@ -483,13 +464,13 @@ export default function Definition({
             {translate("wkf.terminate.btn")}
           </Button>
         )}
-        {statusSelect === 3 && isActive && (
+        {statusSelect === 3 && isActive && !hasSuccessor && (
           <Button
             variant="primary"
             className={styles.save}
-            onClick={backToDraft}
+            onClick={() => addNewVersion(wkf)}
           >
-            {translate("Back to draft")}
+            {translate("New version")}
           </Button>
         )}
         <Button
@@ -499,15 +480,6 @@ export default function Definition({
         >
           {translate("BPM State")}
         </Button>
-        {statusSelect === 2 && (
-          <Button
-            variant="primary"
-            className={styles.save}
-            onClick={() => addNewVersion(wkf)}
-          >
-            {translate("New version")}
-          </Button>
-        )}
         <Button
           variant="primary"
           className={styles.save}
