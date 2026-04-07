@@ -1,0 +1,18 @@
+/* FilterChipsBar — horizontal active filter strip (D-10, UI-SPEC) */
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ck-space-sm);
+  padding: var(--ck-space-sm) var(--ck-space-md);
+  background: var(--bs-secondary-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+  min-height: 44px;
+}
+
+.empty {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ck-tab-inactive);
+}

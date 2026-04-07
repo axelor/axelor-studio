@@ -1,0 +1,97 @@
+/* SlideInPanel -- right-side detail panel (D-38, D-39) */
+
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--ck-panel-width, 300px);
+  height: 100%;
+  background: var(--bs-body-bg, #fff);
+  border-left: 1px solid var(--bs-border-color, #dee2e6);
+  box-shadow: var(--ck-shadow-popup, -4px 0 12px rgba(0, 0, 0, 0.1));
+  z-index: 20;
+  transform: translateX(100%);
+  transition: transform 200ms ease-out;
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.panel.open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ck-space-md, 16px);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.processName {
+  margin: 0;
+  font-size: var(--ck-font-heading, 16px);
+  font-weight: 600;
+  color: var(--bs-body-color, #212529);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ck-radius-sm, 4px);
+  background: transparent;
+  color: var(--bs-secondary-color, #6c757d);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 120ms ease;
+}
+
+.closeButton:hover {
+  background: var(--bs-tertiary-bg, #f8f9fa);
+  color: var(--bs-body-color, #212529);
+}
+
+.body {
+  padding: var(--ck-space-md, 16px);
+}
+
+.kpiName {
+  font-size: var(--ck-font-label, 12px);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bs-secondary-color, #6c757d);
+  margin-bottom: var(--ck-space-xs, 4px);
+}
+
+.kpiValue {
+  font-size: var(--ck-font-display, 32px);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--ck-space-sm, 8px);
+}
+
+.kpiTarget {
+  font-size: var(--ck-font-body, 14px);
+  color: var(--bs-secondary-color, #6c757d);
+  margin-bottom: var(--ck-space-md, 16px);
+}
+
+.sparklineContainer {
+  margin-top: var(--ck-space-md, 16px);
+  padding: var(--ck-space-sm, 8px) 0;
+}
+
+.sparkline {
+  width: 100%;
+  height: 60px;
+}

@@ -1,0 +1,54 @@
+:root {
+  /* Cockpit accent -- cooler slate-blue, distinct from --bs-primary */
+  --ck-accent: #3B6FD4;
+  --ck-accent: oklch(0.55 0.18 245);
+  --ck-accent-hover: oklch(0.50 0.18 245);
+  --ck-accent-subtle: oklch(0.55 0.18 245 / 0.08);
+  --ck-accent-ring: oklch(0.55 0.18 245 / 0.25);
+
+  /* Shadows — elevated enough to read as cards */
+  --ck-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --ck-shadow-md: 0 2px 6px -1px rgb(0 0 0 / 0.08), 0 1px 4px -1px rgb(0 0 0 / 0.05);
+  --ck-shadow-lg: 0 4px 12px -2px rgb(0 0 0 / 0.10), 0 2px 6px -2px rgb(0 0 0 / 0.06);
+  --ck-shadow-popup: 0 8px 24px -6px rgb(0 0 0 / 0.16), 0 2px 8px -2px rgb(0 0 0 / 0.08);
+
+  /* KPI and row */
+  --ck-kpi-gradient: radial-gradient(ellipse at 50% 0%, var(--ck-accent-subtle) 0%, transparent 70%);
+  --ck-row-hover-bg: oklch(0.55 0.18 245 / 0.05);
+  --ck-row-selected-bg: oklch(0.55 0.18 245 / 0.12);
+
+  /* Chart categorical palette */
+  --ck-chart-1: oklch(0.55 0.20 280);
+  --ck-chart-2: oklch(0.62 0.16 230);
+  --ck-chart-3: oklch(0.65 0.16 160);
+  --ck-chart-4: oklch(0.65 0.18 80);
+  --ck-chart-5: oklch(0.60 0.20 20);
+  --ck-chart-6: oklch(0.55 0.05 260);
+
+  /* Spacing */
+  --ck-space-xs: 4px;
+  --ck-space-sm: 8px;
+  --ck-space-md: 16px;
+  --ck-space-lg: 24px;
+  --ck-space-xl: 32px;
+
+  /* Sidebar */
+  --ck-sidebar-width: 48px;
+
+  /* Slide-in panel */
+  --ck-panel-width: 300px;
+}
+
+[data-bs-theme="dark"] {
+  --ck-accent: oklch(0.70 0.14 245);
+  --ck-accent-hover: oklch(0.75 0.14 245);
+  --ck-accent-subtle: oklch(0.70 0.14 245 / 0.12);
+  --ck-accent-ring: oklch(0.70 0.14 245 / 0.30);
+  --ck-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --ck-shadow-md: 0 2px 8px -2px rgb(0 0 0 / 0.3), 0 1px 3px 0 rgb(0 0 0 / 0.15);
+  --ck-shadow-lg: 0 4px 16px -4px rgb(0 0 0 / 0.4), 0 2px 6px -2px rgb(0 0 0 / 0.2);
+  --ck-shadow-popup: 0 8px 24px -6px rgb(0 0 0 / 0.5), 0 2px 8px -2px rgb(0 0 0 / 0.25);
+  --ck-kpi-gradient: radial-gradient(ellipse at 50% 0%, var(--ck-accent-subtle) 0%, transparent 70%);
+  --ck-row-hover-bg: oklch(0.70 0.14 245 / 0.08);
+  --ck-row-selected-bg: oklch(0.70 0.14 245 / 0.14);
+}

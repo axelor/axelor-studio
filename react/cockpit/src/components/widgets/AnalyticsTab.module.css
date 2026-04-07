@@ -1,0 +1,79 @@
+/* AnalyticsTab — CSS Grid layout shell (D-09, UI-SPEC) */
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ck-space-md);
+  padding: var(--ck-space-lg);
+}
+
+.filterRow {
+  grid-column: 1 / -1;
+}
+
+.diagramRow {
+  display: grid;
+  grid-template-columns: 65fr 35fr;
+  gap: var(--ck-space-md);
+  min-height: 300px;
+}
+
+.chartRow {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: var(--ck-space-md);
+  height: 280px;
+}
+
+.trendRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ck-space-md);
+  height: 280px;
+}
+
+.tableRow {
+  grid-column: 1 / -1;
+}
+
+.diagram {
+  min-height: 300px;
+}
+
+.nodePanel {
+  min-height: 300px;
+}
+
+/* Responsive: tablet */
+@media (max-width: 1023px) {
+  .diagramRow {
+    grid-template-columns: 1fr;
+  }
+
+  .chartRow {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .trendRow {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .chartRow > *,
+  .trendRow > * {
+    min-height: 240px;
+  }
+}
+
+/* Responsive: mobile */
+@media (max-width: 767px) {
+  .chartRow,
+  .trendRow {
+    display: none;
+  }
+
+  .diagramRow {
+    grid-template-columns: 1fr;
+  }
+}

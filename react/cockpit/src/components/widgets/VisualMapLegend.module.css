@@ -1,0 +1,45 @@
+/* VisualMapLegend -- gradient bar with min/max labels (D-13) */
+
+.legend {
+  height: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: opacity 200ms ease;
+}
+
+.gradient {
+  height: 12px;
+  border-radius: 2px;
+}
+
+.gradientDur {
+  background: linear-gradient(
+    to right,
+    var(--ck-heatmap-1),
+    var(--ck-heatmap-2),
+    var(--ck-heatmap-3),
+    var(--ck-heatmap-4),
+    var(--ck-heatmap-5)
+  );
+}
+
+.gradientFreq {
+  background: linear-gradient(
+    to right,
+    var(--ck-cal-empty),
+    var(--ck-cal-low),
+    var(--ck-cal-mid),
+    var(--ck-cal-high),
+    var(--ck-cal-max)
+  );
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  height: 16px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ck-tab-inactive);
+}

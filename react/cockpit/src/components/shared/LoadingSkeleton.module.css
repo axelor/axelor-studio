@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ck-space-sm);
+  padding: var(--ck-space-md);
+}
+
+.bar {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--bs-secondary-bg, #e9ecef);
+  animation: ck-skeleton-pulse 1.5s ease-in-out infinite;
+}

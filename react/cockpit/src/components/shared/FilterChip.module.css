@@ -1,0 +1,60 @@
+/* FilterChip — removable filter pill (D-10, UI-SPEC) */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ck-space-xs);
+  height: 28px;
+  padding: 0 var(--ck-space-sm);
+  background: var(--ck-chip-bg);
+  border: 1px solid var(--ck-chip-border);
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  animation: chipEnter 150ms ease-out;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+
+.chipNode {
+  background: var(--ck-chip-bg-active);
+}
+
+.chipLabel {
+  white-space: nowrap;
+}
+
+.chipClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  border-radius: 2px;
+}
+
+.chipClose:hover {
+  opacity: 1;
+  background: var(--ck-chip-border);
+}
+
+@keyframes chipEnter {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

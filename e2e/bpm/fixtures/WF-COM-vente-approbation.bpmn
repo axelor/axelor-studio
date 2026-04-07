@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+  xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
+  xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+  id="BlocA_VenteApprobation"
+  targetNamespace="http://bpmn.io/schema/bpmn"
+  xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+  camunda:newVersionOnDeploy="false"
+  camunda:code="WF-COM"
+  camunda:diagramName="Cycle de Vente et Approbation"
+  camunda:versionTag="1"
+  camunda:wkfStatusColor="blue">
+
+  <!-- ============================================================ -->
+  <!-- COLLABORATION : 2 pools (WF-COM-01 + WF-COM-02)             -->
+  <!-- ============================================================ -->
+  <bpmn2:collaboration id="Collab_BlocA">
+    <bpmn2:participant id="Pool_COM01" name="WF-COM-01 | Relance &amp; Alerte Devis" processRef="Process_COM01" />
+    <bpmn2:participant id="Pool_COM02" name="WF-COM-02 | Revue de Contrat &amp; Validation N+1" processRef="Process_COM02" />
+  </bpmn2:collaboration>
+
+  <!-- ============================================================ -->
+  <!-- PROCESS WF-COM-01 : Relance & Alerte Devis                  -->
+  <!-- Alerte auto par mail 7 jours avant endOfValidityDate         -->
+  <!-- sur les devis au statut Finalized (statusSelect = 2)         -->
+  <!-- ============================================================ -->
+  <bpmn2:process id="Process_COM01" name="Relance et Alerte Devis" isExecutable="true">
+    <bpmn2:extensionElements>
+      <camunda:processConfiguration>
+        <camunda:processConfigurationParameter
+          metaModel="SaleOrder"
+          isStartModel="true"
+          isDirectCreation="false"
+          isCustom="false"
+          model="com.axelor.apps.sale.db.SaleOrder"
+          metaModelFullName="com.axelor.apps.sale.db.SaleOrder"
+          title="SaleOrder" />
+      </camunda:processConfiguration>
+    </bpmn2:extensionElements>
+
+    <!-- Timer Start : declenchement quotidien (cron) -->
+    <bpmn2:startEvent id="Timer_COM01" name="Declenchement quotidien">
+      <bpmn2:outgoing>Flow_COM01_01</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="TimerDef_COM01">
+        <bpmn2:timeCycle>0 0 8 * * ?</bpmn2:timeCycle>
+      </bpmn2:timerEventDefinition>
+    </bpmn2:startEvent>
+
+    <!-- Script : Recherche des devis finalises expirant dans 7 jours -->
+    <bpmn2:scriptTask id="Script_SearchQuotes" name="Rechercher devis finalises&#10;expirant dans 7 jours" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_COM01_01</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM01_02</bpmn2:outgoing>
+      <bpmn2:script>
+// Recherche des SaleOrder au statut Finalized (2)
+// dont endOfValidityDate = aujourd'hui + 7 jours
+def targetDate = LocalDate.now().plusDays(7)
+def quotes = __ctx__.findAll('SaleOrder',
+  "self.statusSelect = 2 AND self.endOfValidityDate = :targetDate",
+  ['targetDate': targetDate])
+__ctx__.setVariable('quotesToAlert', quotes)
+__ctx__.setVariable('quotesFound', quotes != null &amp;&amp; !quotes.isEmpty())
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- Gateway : Devis trouves ? -->
+    <bpmn2:exclusiveGateway id="GW_QuotesFound" name="Devis a relancer ?" default="Flow_COM01_NoQuotes">
+      <bpmn2:incoming>Flow_COM01_02</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM01_Yes</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_COM01_NoQuotes</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Send Task : Envoi de mail de relance -->
+    <bpmn2:sendTask id="Send_AlertMail" name="Envoyer mail de relance&#10;au commercial" camunda:type="mail">
+      <bpmn2:extensionElements>
+        <camunda:field name="to">
+          <camunda:expression>${saleOrder.salespersonUser.email}</camunda:expression>
+        </camunda:field>
+        <camunda:field name="subject">
+          <camunda:string>Alerte : Devis ${saleOrder.saleOrderSeq} expire dans 7 jours</camunda:string>
+        </camunda:field>
+        <camunda:field name="html">
+          <camunda:expression>
+Bonjour ${saleOrder.salespersonUser.fullName},
+
+Le devis ${saleOrder.saleOrderSeq} pour le client ${saleOrder.clientPartner.fullName}
+arrive a echeance le ${saleOrder.endOfValidityDate}.
+
+Montant HT : ${saleOrder.exTaxTotal} ${saleOrder.currency.code}
+
+Merci de traiter ce devis avant son expiration.
+          </camunda:expression>
+        </camunda:field>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_COM01_Yes</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM01_End</bpmn2:outgoing>
+    </bpmn2:sendTask>
+
+    <!-- End Events -->
+    <bpmn2:endEvent id="End_COM01_Sent" name="Mail envoye">
+      <bpmn2:incoming>Flow_COM01_End</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <bpmn2:endEvent id="End_COM01_NoQuote" name="Aucun devis a relancer">
+      <bpmn2:incoming>Flow_COM01_NoQuotes</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn2:sequenceFlow id="Flow_COM01_01" sourceRef="Timer_COM01" targetRef="Script_SearchQuotes" />
+    <bpmn2:sequenceFlow id="Flow_COM01_02" sourceRef="Script_SearchQuotes" targetRef="GW_QuotesFound" />
+    <bpmn2:sequenceFlow id="Flow_COM01_Yes" name="Oui" sourceRef="GW_QuotesFound" targetRef="Send_AlertMail">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression" language="axelor">quotesFound == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_COM01_NoQuotes" name="Non" sourceRef="GW_QuotesFound" targetRef="End_COM01_NoQuote" />
+    <bpmn2:sequenceFlow id="Flow_COM01_End" sourceRef="Send_AlertMail" targetRef="End_COM01_Sent" />
+  </bpmn2:process>
+
+  <!-- ============================================================ -->
+  <!-- PROCESS WF-COM-02 : Revue de Contrat & Validation N+1       -->
+  <!-- Seuil d'approbation + Check estimatedShippingDate +          -->
+  <!-- Check-list conformite avant confirmation                     -->
+  <!-- ============================================================ -->
+  <bpmn2:process id="Process_COM02" name="Revue de Contrat et Validation N+1" isExecutable="true">
+    <bpmn2:extensionElements>
+      <camunda:processConfiguration>
+        <camunda:processConfigurationParameter
+          metaModel="SaleOrder"
+          isStartModel="true"
+          isDirectCreation="false"
+          isCustom="false"
+          model="com.axelor.apps.sale.db.SaleOrder"
+          metaModelFullName="com.axelor.apps.sale.db.SaleOrder"
+          title="SaleOrder" />
+      </camunda:processConfiguration>
+    </bpmn2:extensionElements>
+
+    <!-- Start : Tentative de confirmation de commande -->
+    <bpmn2:startEvent id="Start_COM02" name="Demande de confirmation&#10;de commande">
+      <bpmn2:outgoing>Flow_COM02_01</bpmn2:outgoing>
+    </bpmn2:startEvent>
+
+    <!-- ====== ETAPE 1 : Verification estimatedShippingDate ====== -->
+    <bpmn2:scriptTask id="Script_CheckShipping" name="Verifier&#10;estimatedShippingDate" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_COM02_01</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_02</bpmn2:outgoing>
+      <bpmn2:script>
+def order = __ctx__.find('SaleOrder', saleOrderId)
+__ctx__.setVariable('shippingDateSet', order?.estimatedShippingDate != null)
+__ctx__.setVariable('currentOrder', order)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- Gateway : estimatedShippingDate renseignee ? -->
+    <bpmn2:exclusiveGateway id="GW_ShippingDate" name="Date expedition&#10;renseignee ?" default="Flow_COM02_ShipKO">
+      <bpmn2:incoming>Flow_COM02_02</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_ShipOK</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_COM02_ShipKO</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Blocage si estimatedShippingDate vide -->
+    <bpmn2:scriptTask id="Script_BlockShipping" name="BLOCAGE :&#10;Date expedition manquante" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_COM02_ShipKO</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_ErrShip</bpmn2:outgoing>
+      <bpmn2:script>
+throw new com.axelor.exception.AxelorException(
+  com.axelor.exception.db.repo.TraceBackRepository.CATEGORY_INCONSISTENCY,
+  "Impossible de confirmer : la date d'expedition estimee (estimatedShippingDate) doit etre renseignee.")
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="End_COM02_ErrShip" name="Blocage : date expedition vide">
+      <bpmn2:incoming>Flow_COM02_ErrShip</bpmn2:incoming>
+      <bpmn2:errorEventDefinition id="ErrDef_Ship" errorRef="Error_ShipDate" />
+    </bpmn2:endEvent>
+
+    <!-- ====== ETAPE 2 : Seuil d'approbation N+1 ====== -->
+    <bpmn2:exclusiveGateway id="GW_Threshold" name="Montant HT > Seuil X ?" default="Flow_COM02_UnderThreshold">
+      <bpmn2:incoming>Flow_COM02_ShipOK</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_OverThreshold</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_COM02_UnderThreshold</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- User Task : Approbation N+1 requise -->
+    <bpmn2:userTask id="Task_ApprovalN1" name="Attente Approbation N+1&#10;(Validation hierarchique)" camunda:assignee="${currentOrder.salespersonUser.manager.code}">
+      <bpmn2:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="approvalDecision" label="Decision" type="enum">
+            <camunda:value id="approved" name="Approuve" />
+            <camunda:value id="rejected" name="Rejete" />
+          </camunda:formField>
+          <camunda:formField id="approvalComment" label="Commentaire" type="string" />
+        </camunda:formData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_COM02_OverThreshold</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_AfterApproval</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <!-- Gateway : Approuve par N+1 ? -->
+    <bpmn2:exclusiveGateway id="GW_ApprovalResult" name="Approuve ?" default="Flow_COM02_Rejected">
+      <bpmn2:incoming>Flow_COM02_AfterApproval</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_Approved</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_COM02_Rejected</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Rejet N+1 -->
+    <bpmn2:endEvent id="End_COM02_Rejected" name="Commande rejetee par N+1">
+      <bpmn2:incoming>Flow_COM02_Rejected</bpmn2:incoming>
+      <bpmn2:errorEventDefinition id="ErrDef_Rejected" errorRef="Error_Rejected" />
+    </bpmn2:endEvent>
+
+    <!-- Merge gateway avant check-list -->
+    <bpmn2:exclusiveGateway id="GW_MergeChecklist" name="Vers check-list">
+      <bpmn2:incoming>Flow_COM02_Approved</bpmn2:incoming>
+      <bpmn2:incoming>Flow_COM02_UnderThreshold</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_ToChecklist</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- ====== ETAPE 3 : Check-list de conformite ====== -->
+    <bpmn2:userTask id="Task_Checklist" name="Check-list de conformite&#10;(Prix, Qte mini, Paiement, CCPU)" camunda:assignee="${currentOrder.salespersonUser.code}">
+      <bpmn2:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="checkPrix" label="Prix conforme" type="boolean" defaultValue="false" />
+          <camunda:formField id="checkQteMin" label="Quantite minimale respectee" type="boolean" defaultValue="false" />
+          <camunda:formField id="checkPaiement" label="Conditions de paiement conformes" type="boolean" defaultValue="false" />
+          <camunda:formField id="checkCCPU" label="CCPU valide" type="boolean" defaultValue="false" />
+        </camunda:formData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_COM02_ToChecklist</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_AfterChecklist</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <!-- Gateway : Tous les checks OK ? -->
+    <bpmn2:exclusiveGateway id="GW_CheckResult" name="Tous les elements&#10;conformes ?" default="Flow_COM02_CheckKO">
+      <bpmn2:incoming>Flow_COM02_AfterChecklist</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_CheckOK</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_COM02_CheckKO</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Blocage : non conformite -->
+    <bpmn2:scriptTask id="Script_BlockNonConform" name="BLOCAGE :&#10;Non-conformite detectee" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_COM02_CheckKO</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_ErrCheck</bpmn2:outgoing>
+      <bpmn2:script>
+throw new com.axelor.exception.AxelorException(
+  com.axelor.exception.db.repo.TraceBackRepository.CATEGORY_INCONSISTENCY,
+  "Confirmation impossible : un ou plusieurs elements de la check-list de conformite ne sont pas valides (Prix, Qte mini, Paiement, CCPU).")
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="End_COM02_NonConform" name="Blocage : non conforme">
+      <bpmn2:incoming>Flow_COM02_ErrCheck</bpmn2:incoming>
+      <bpmn2:errorEventDefinition id="ErrDef_Check" errorRef="Error_NonConform" />
+    </bpmn2:endEvent>
+
+    <!-- ====== ETAPE 4 : Confirmation de la commande ====== -->
+    <bpmn2:scriptTask id="Script_ConfirmOrder" name="Confirmer la commande&#10;(statusSelect = 3)" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_COM02_CheckOK</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_COM02_Done</bpmn2:outgoing>
+      <bpmn2:script>
+def order = __ctx__.find('SaleOrder', saleOrderId)
+order.statusSelect = 3  // STATUS_ORDER_CONFIRMED
+return __ctx__.save(order)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="End_COM02_Confirmed" name="Commande confirmee">
+      <bpmn2:incoming>Flow_COM02_Done</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <!-- ====== SEQUENCE FLOWS ====== -->
+    <bpmn2:sequenceFlow id="Flow_COM02_01" sourceRef="Start_COM02" targetRef="Script_CheckShipping" />
+    <bpmn2:sequenceFlow id="Flow_COM02_02" sourceRef="Script_CheckShipping" targetRef="GW_ShippingDate" />
+
+    <bpmn2:sequenceFlow id="Flow_COM02_ShipOK" name="Oui" sourceRef="GW_ShippingDate" targetRef="GW_Threshold">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression" language="axelor">shippingDateSet == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_COM02_ShipKO" name="Non (vide)" sourceRef="GW_ShippingDate" targetRef="Script_BlockShipping" />
+    <bpmn2:sequenceFlow id="Flow_COM02_ErrShip" sourceRef="Script_BlockShipping" targetRef="End_COM02_ErrShip" />
+
+    <bpmn2:sequenceFlow id="Flow_COM02_OverThreshold" name="Oui (Montant > X)" sourceRef="GW_Threshold" targetRef="Task_ApprovalN1">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression" language="axelor">currentOrder?.exTaxTotal > approvaltThreshold</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_COM02_UnderThreshold" name="Non" sourceRef="GW_Threshold" targetRef="GW_MergeChecklist" />
+
+    <bpmn2:sequenceFlow id="Flow_COM02_AfterApproval" sourceRef="Task_ApprovalN1" targetRef="GW_ApprovalResult" />
+    <bpmn2:sequenceFlow id="Flow_COM02_Approved" name="Approuve" sourceRef="GW_ApprovalResult" targetRef="GW_MergeChecklist">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression">approvalDecision == 'approved'</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_COM02_Rejected" name="Rejete" sourceRef="GW_ApprovalResult" targetRef="End_COM02_Rejected" />
+
+    <bpmn2:sequenceFlow id="Flow_COM02_ToChecklist" sourceRef="GW_MergeChecklist" targetRef="Task_Checklist" />
+    <bpmn2:sequenceFlow id="Flow_COM02_AfterChecklist" sourceRef="Task_Checklist" targetRef="GW_CheckResult" />
+
+    <bpmn2:sequenceFlow id="Flow_COM02_CheckOK" name="Tous OK" sourceRef="GW_CheckResult" targetRef="Script_ConfirmOrder">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression">checkPrix == true &amp;&amp; checkQteMin == true &amp;&amp; checkPaiement == true &amp;&amp; checkCCPU == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_COM02_CheckKO" name="Non conforme" sourceRef="GW_CheckResult" targetRef="Script_BlockNonConform" />
+    <bpmn2:sequenceFlow id="Flow_COM02_ErrCheck" sourceRef="Script_BlockNonConform" targetRef="End_COM02_NonConform" />
+    <bpmn2:sequenceFlow id="Flow_COM02_Done" sourceRef="Script_ConfirmOrder" targetRef="End_COM02_Confirmed" />
+  </bpmn2:process>
+
+  <!-- ============================================================ -->
+  <!-- ERROR DEFINITIONS                                            -->
+  <!-- ============================================================ -->
+  <bpmn2:error id="Error_ShipDate" name="Date expedition manquante" errorCode="ERR_SHIP_DATE" />
+  <bpmn2:error id="Error_Rejected" name="Rejet N+1" errorCode="ERR_REJECTED" />
+  <bpmn2:error id="Error_NonConform" name="Non-conformite" errorCode="ERR_NON_CONFORM" />
+
+  <!-- ============================================================ -->
+  <!-- DIAGRAM (LAYOUT)                                             -->
+  <!-- ============================================================ -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_BlocA">
+    <bpmndi:BPMNPlane id="BPMNPlane_BlocA" bpmnElement="Collab_BlocA">
+
+      <!-- ====== POOL WF-COM-01 ====== -->
+      <bpmndi:BPMNShape id="Pool_COM01_di" bpmnElement="Pool_COM01" isHorizontal="true" bioc:stroke="#1e88e5" color:border-color="#1e88e5">
+        <dc:Bounds x="120" y="30" width="1100" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Timer_COM01_di" bpmnElement="Timer_COM01" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="192" y="137" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="166" y="180" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_SearchQuotes_di" bpmnElement="Script_SearchQuotes" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="290" y="115" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_QuotesFound_di" bpmnElement="GW_QuotesFound" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="455" y="130" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="437" y="106" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Send_AlertMail_di" bpmnElement="Send_AlertMail" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="580" y="115" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_COM01_Sent_di" bpmnElement="End_COM01_Sent" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
+        <dc:Bounds x="752" y="137" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="739" y="180" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_COM01_NoQuote_di" bpmnElement="End_COM01_NoQuote" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
+        <dc:Bounds x="612" y="47" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="585" y="90" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_COM01_01_di" bpmnElement="Flow_COM01_01" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="228" y="155" />
+        <di:waypoint x="290" y="155" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM01_02_di" bpmnElement="Flow_COM01_02" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="390" y="155" />
+        <di:waypoint x="455" y="155" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM01_Yes_di" bpmnElement="Flow_COM01_Yes" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="505" y="155" />
+        <di:waypoint x="580" y="155" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="534" y="137" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM01_NoQuotes_di" bpmnElement="Flow_COM01_NoQuotes" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="480" y="130" />
+        <di:waypoint x="480" y="65" />
+        <di:waypoint x="612" y="65" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="483" y="95" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM01_End_di" bpmnElement="Flow_COM01_End" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="680" y="155" />
+        <di:waypoint x="752" y="155" />
+      </bpmndi:BPMNEdge>
+
+      <!-- ====== POOL WF-COM-02 ====== -->
+      <bpmndi:BPMNShape id="Pool_COM02_di" bpmnElement="Pool_COM02" isHorizontal="true" bioc:stroke="#1e88e5" color:border-color="#1e88e5">
+        <dc:Bounds x="120" y="330" width="1600" height="520" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <!-- Start -->
+      <bpmndi:BPMNShape id="Start_COM02_di" bpmnElement="Start_COM02" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="192" y="562" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="166" y="605" width="90" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Check Shipping Date -->
+      <bpmndi:BPMNShape id="Script_CheckShipping_di" bpmnElement="Script_CheckShipping" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="280" y="540" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_ShippingDate_di" bpmnElement="GW_ShippingDate" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="435" y="555" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="417" y="518" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Block Shipping -->
+      <bpmndi:BPMNShape id="Script_BlockShipping_di" bpmnElement="Script_BlockShipping" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="410" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_COM02_ErrShip_di" bpmnElement="End_COM02_ErrShip" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="572" y="722" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="545" y="765" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Threshold Gateway -->
+      <bpmndi:BPMNShape id="GW_Threshold_di" bpmnElement="GW_Threshold" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="555" y="555" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="537" y="525" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Approval N+1 -->
+      <bpmndi:BPMNShape id="Task_ApprovalN1_di" bpmnElement="Task_ApprovalN1" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="660" y="400" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_ApprovalResult_di" bpmnElement="GW_ApprovalResult" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="815" y="415" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="815" y="391" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_COM02_Rejected_di" bpmnElement="End_COM02_Rejected" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="952" y="357" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="925" y="400" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Merge Gateway -->
+      <bpmndi:BPMNShape id="GW_MergeChecklist_di" bpmnElement="GW_MergeChecklist" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="925" y="555" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="917" y="612" width="66" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Checklist -->
+      <bpmndi:BPMNShape id="Task_Checklist_di" bpmnElement="Task_Checklist" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1030" y="540" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_CheckResult_di" bpmnElement="GW_CheckResult" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="1185" y="555" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1167" y="518" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Block Non Conform -->
+      <bpmndi:BPMNShape id="Script_BlockNonConform_di" bpmnElement="Script_BlockNonConform" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="1160" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_COM02_NonConform_di" bpmnElement="End_COM02_NonConform" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="1322" y="722" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1295" y="765" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Confirm Order -->
+      <bpmndi:BPMNShape id="Script_ConfirmOrder_di" bpmnElement="Script_ConfirmOrder" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="1310" y="540" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_COM02_Confirmed_di" bpmnElement="End_COM02_Confirmed" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="1482" y="562" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1455" y="605" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- EDGES WF-COM-02 -->
+      <bpmndi:BPMNEdge id="Flow_COM02_01_di" bpmnElement="Flow_COM02_01" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="228" y="580" />
+        <di:waypoint x="280" y="580" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_02_di" bpmnElement="Flow_COM02_02" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="380" y="580" />
+        <di:waypoint x="435" y="580" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_ShipOK_di" bpmnElement="Flow_COM02_ShipOK" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="485" y="580" />
+        <di:waypoint x="555" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="512" y="562" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_ShipKO_di" bpmnElement="Flow_COM02_ShipKO" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="460" y="605" />
+        <di:waypoint x="460" y="700" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="463" y="650" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_ErrShip_di" bpmnElement="Flow_COM02_ErrShip" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="510" y="740" />
+        <di:waypoint x="572" y="740" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_OverThreshold_di" bpmnElement="Flow_COM02_OverThreshold" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="580" y="555" />
+        <di:waypoint x="580" y="440" />
+        <di:waypoint x="660" y="440" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="583" y="493" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_UnderThreshold_di" bpmnElement="Flow_COM02_UnderThreshold" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="605" y="580" />
+        <di:waypoint x="925" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="758" y="562" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_AfterApproval_di" bpmnElement="Flow_COM02_AfterApproval" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="760" y="440" />
+        <di:waypoint x="815" y="440" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_Approved_di" bpmnElement="Flow_COM02_Approved" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="840" y="465" />
+        <di:waypoint x="840" y="580" />
+        <di:waypoint x="925" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="843" y="520" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_Rejected_di" bpmnElement="Flow_COM02_Rejected" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="865" y="440" />
+        <di:waypoint x="908" y="440" />
+        <di:waypoint x="908" y="375" />
+        <di:waypoint x="952" y="375" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="900" y="405" width="32" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_ToChecklist_di" bpmnElement="Flow_COM02_ToChecklist" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="975" y="580" />
+        <di:waypoint x="1030" y="580" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_AfterChecklist_di" bpmnElement="Flow_COM02_AfterChecklist" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1130" y="580" />
+        <di:waypoint x="1185" y="580" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_CheckOK_di" bpmnElement="Flow_COM02_CheckOK" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1235" y="580" />
+        <di:waypoint x="1310" y="580" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1256" y="562" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_CheckKO_di" bpmnElement="Flow_COM02_CheckKO" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="1210" y="605" />
+        <di:waypoint x="1210" y="700" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1213" y="650" width="72" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_ErrCheck_di" bpmnElement="Flow_COM02_ErrCheck" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="1260" y="740" />
+        <di:waypoint x="1322" y="740" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_COM02_Done_di" bpmnElement="Flow_COM02_Done" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1410" y="580" />
+        <di:waypoint x="1482" y="580" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

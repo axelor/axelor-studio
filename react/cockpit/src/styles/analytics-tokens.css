@@ -1,0 +1,69 @@
+:root {
+  /* Heatmap gradient — 5-stop continuous scale */
+  --ck-heatmap-1: oklch(0.80 0.14 145);  /* fast — green */
+  --ck-heatmap-2: oklch(0.82 0.14 120);  /* fast-medium — yellow-green */
+  --ck-heatmap-3: oklch(0.80 0.16 85);   /* medium — yellow */
+  --ck-heatmap-4: oklch(0.72 0.18 50);   /* medium-slow — orange */
+  --ck-heatmap-5: oklch(0.62 0.20 25);   /* slow — red */
+
+  /* Sankey flow colors — sequential, low-chroma for readability */
+  --ck-sankey-link: oklch(0.75 0.04 245 / 0.25);
+  --ck-sankey-link-hover: oklch(0.65 0.10 245 / 0.50);
+  --ck-sankey-node: var(--ck-accent);
+
+  /* Threshold semantic backgrounds (D-21 — full card background shift) */
+  --ck-threshold-green: oklch(0.92 0.06 145 / 0.40);
+  --ck-threshold-amber: oklch(0.92 0.08 85 / 0.40);
+  --ck-threshold-red: oklch(0.90 0.08 25 / 0.40);
+
+  /* Filter chip */
+  --ck-chip-bg: oklch(0.94 0.01 260);
+  --ck-chip-bg-active: var(--ck-accent-subtle);
+  --ck-chip-border: oklch(0.85 0.02 260);
+
+  /* Boxplot */
+  --ck-boxplot-fill: oklch(0.75 0.10 245 / 0.30);
+  --ck-boxplot-stroke: var(--ck-accent);
+  --ck-boxplot-median: var(--ck-accent);
+  --ck-boxplot-whisker: oklch(0.60 0.02 260);
+
+  /* Calendar heatmap */
+  --ck-cal-empty: oklch(0.94 0.01 260);
+  --ck-cal-low: oklch(0.85 0.06 245);
+  --ck-cal-mid: oklch(0.70 0.12 245);
+  --ck-cal-high: oklch(0.55 0.18 245);
+  --ck-cal-max: oklch(0.45 0.20 245);
+
+  /* Tab bar */
+  --ck-tab-indicator: var(--ck-accent);
+  --ck-tab-inactive: oklch(0.55 0.02 260);
+}
+
+[data-bs-theme="dark"] {
+  --ck-heatmap-1: oklch(0.65 0.12 145);
+  --ck-heatmap-2: oklch(0.68 0.12 120);
+  --ck-heatmap-3: oklch(0.70 0.14 85);
+  --ck-heatmap-4: oklch(0.60 0.16 50);
+  --ck-heatmap-5: oklch(0.50 0.18 25);
+
+  --ck-sankey-link: oklch(0.55 0.04 245 / 0.30);
+  --ck-sankey-link-hover: oklch(0.65 0.10 245 / 0.55);
+
+  --ck-threshold-green: oklch(0.35 0.06 145 / 0.40);
+  --ck-threshold-amber: oklch(0.35 0.08 85 / 0.40);
+  --ck-threshold-red: oklch(0.35 0.08 25 / 0.40);
+
+  --ck-chip-bg: oklch(0.28 0.01 260);
+  --ck-chip-border: oklch(0.38 0.02 260);
+
+  --ck-boxplot-fill: oklch(0.50 0.10 245 / 0.30);
+  --ck-boxplot-whisker: oklch(0.50 0.02 260);
+
+  --ck-cal-empty: oklch(0.28 0.01 260);
+  --ck-cal-low: oklch(0.40 0.06 245);
+  --ck-cal-mid: oklch(0.55 0.12 245);
+  --ck-cal-high: oklch(0.70 0.14 245);
+  --ck-cal-max: oklch(0.80 0.16 245);
+
+  --ck-tab-inactive: oklch(0.60 0.02 260);
+}

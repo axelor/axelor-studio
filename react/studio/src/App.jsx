@@ -251,7 +251,7 @@ function AppContent() {
 					)
 				}
 			} catch (error) {
-				console.error(error)
+				console.error("[StudioApp]", error)
 			}
 		}
 	}, [future.length, past.length])

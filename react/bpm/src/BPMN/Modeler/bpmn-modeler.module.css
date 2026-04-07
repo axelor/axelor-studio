@@ -34,9 +34,7 @@
   /* or any color that suits your loader */
 }
 
-
-
-.commandBar>div>button {
+.commandBar > div > button {
   font-size: 14px;
 }
 

@@ -3,7 +3,6 @@
   font-weight: bolder;
   display: flex;
   gap: 10px;
-
 }
 
 .navDisable {
@@ -46,7 +45,6 @@
 .panelIconTitle {
   font-size: 14px;
   text-transform: uppercase;
-
 }
 
 .panelElementName {

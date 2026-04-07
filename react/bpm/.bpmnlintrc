@@ -1,0 +1,10 @@
+{
+  "extends": "bpmnlint:recommended",
+  "rules": {
+    "label-required": "warn",
+    "no-gateway-join-fork": "warn",
+    "no-inclusive-gateway": "error",
+    "axelor/called-element-required": "error",
+    "axelor/script-task-required": "error"
+  }
+}

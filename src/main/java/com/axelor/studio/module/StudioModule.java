@@ -40,6 +40,16 @@ import com.axelor.studio.bpm.service.authorization.BpmAuthorizationService;
 import com.axelor.studio.bpm.service.authorization.BpmAuthorizationServiceImpl;
 import com.axelor.studio.bpm.service.authorization.BpmPermissionService;
 import com.axelor.studio.bpm.service.authorization.BpmPermissionServiceImpl;
+import com.axelor.studio.bpm.service.cockpit.CockpitAnalyticsService;
+import com.axelor.studio.bpm.service.cockpit.CockpitAnalyticsServiceImpl;
+import com.axelor.studio.bpm.service.cockpit.CockpitCamundaQueryService;
+import com.axelor.studio.bpm.service.cockpit.CockpitCamundaQueryServiceImpl;
+import com.axelor.studio.bpm.service.cockpit.CockpitInstanceService;
+import com.axelor.studio.bpm.service.cockpit.CockpitInstanceServiceImpl;
+import com.axelor.studio.bpm.service.cockpit.CockpitProcessService;
+import com.axelor.studio.bpm.service.cockpit.CockpitProcessServiceImpl;
+import com.axelor.studio.bpm.service.cockpit.CockpitTaskStatsService;
+import com.axelor.studio.bpm.service.cockpit.CockpitTaskStatsServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardService;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardServiceImpl;
 import com.axelor.studio.bpm.service.dashboard.BpmManagerDashboardTaskService;
@@ -250,6 +260,13 @@ public class StudioModule extends AxelorModule {
     bind(BpmManagerDashboardTaskService.class).to(BpmManagerDashboardTaskServiceImpl.class);
     bind(AppLoaderImportServiceImpl.class).to(AppLoaderImportBpmServiceImpl.class);
     bind(ServerStartListener.class);
+
+    // BPM Cockpit
+    bind(CockpitCamundaQueryService.class).to(CockpitCamundaQueryServiceImpl.class);
+    bind(CockpitInstanceService.class).to(CockpitInstanceServiceImpl.class);
+    bind(CockpitProcessService.class).to(CockpitProcessServiceImpl.class);
+    bind(CockpitTaskStatsService.class).to(CockpitTaskStatsServiceImpl.class);
+    bind(CockpitAnalyticsService.class).to(CockpitAnalyticsServiceImpl.class);
 
     bind(BpmAsyncExecutorService.class).to(BpmAsyncExecutorServiceImpl.class);
     bind(BpmErrorMessageService.class).to(BpmErrorMessageServiceImpl.class);

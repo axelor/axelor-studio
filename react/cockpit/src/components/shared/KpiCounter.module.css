@@ -1,0 +1,21 @@
+.counter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ck-space-xs);
+  padding: var(--ck-space-lg);
+  border-radius: 8px;
+  background-image: var(--ck-kpi-gradient);
+  box-shadow: var(--ck-shadow-sm);
+  background-color: var(--bs-body-bg, #fff);
+  min-width: 0;
+  flex: 1;
+}
+
+.value {
+  composes: ck-font-display from global;
+}
+
+.label {
+  composes: ck-font-label from global;
+  color: var(--bs-secondary-color, #6c757d);
+}

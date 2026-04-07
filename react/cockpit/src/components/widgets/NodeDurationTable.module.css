@@ -1,0 +1,40 @@
+/* NodeDurationTable -- compact duration breakdown (D-08) */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ck-font-body, 14px);
+  font-variant-numeric: tabular-nums;
+}
+
+.table th,
+.table td {
+  padding: var(--ck-space-xs, 4px) var(--ck-space-sm, 8px);
+  text-align: right;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.labelCol {
+  text-align: left;
+  width: 30%;
+}
+
+.valueCol {
+  font-size: var(--ck-font-label, 12px);
+  font-weight: 500;
+  color: var(--bs-secondary-color, #6c757d);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.label {
+  text-align: left;
+  font-weight: 500;
+  color: var(--bs-body-color, #212529);
+}
+
+.value {
+  font-family: var(--ck-font-mono, "SFMono-Regular", "Consolas", monospace);
+  font-size: var(--ck-font-body, 14px);
+  color: var(--bs-body-color, #212529);
+}

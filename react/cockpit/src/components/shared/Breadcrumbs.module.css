@@ -1,0 +1,39 @@
+.bar {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 var(--ck-space-md);
+  background: var(--bs-secondary-bg);
+  gap: var(--ck-space-xs);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.segment {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 150ms ease;
+}
+
+.segment:hover {
+  color: var(--ck-accent);
+}
+
+.current {
+  color: var(--ck-accent);
+  font-weight: 600;
+  cursor: default;
+}
+
+.separator {
+  font-size: 12px;
+  color: var(--bs-secondary-color);
+  line-height: 1.4;
+  user-select: none;
+  margin: 0 var(--ck-space-xs);
+}

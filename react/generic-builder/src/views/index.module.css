@@ -38,9 +38,7 @@
   gap: 20px;
   justify-content: flex-end;
   align-items: center;
-
 }
-
 
 .dialogPaper {
   margin: 20px;
@@ -58,14 +56,13 @@
 }
 
 .dialogPaper > div > div {
-  border-radius: 4px!important;
+  border-radius: 4px !important;
   resize: both;
-  padding: 0px!important;
+  padding: 0px !important;
   overflow: auto;
   width: 80%;
-  height: 80%!important;
+  height: 80% !important;
   border-width: 1px;
-
 }
 
 .cancelButton {
@@ -74,6 +71,6 @@
   text-transform: none;
 }
 
-.dialogPaper >div > div > div > div{
+.dialogPaper > div > div > div > div {
   box-shadow: none;
 }

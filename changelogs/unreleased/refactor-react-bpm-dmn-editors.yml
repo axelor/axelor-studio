@@ -1,0 +1,18 @@
+---
+title: Refactor BPM and DMN React editors for maintainability
+type: change
+description: |
+  Decomposed monolithic BPM and DMN editor components into focused,
+  single-responsibility modules with clear service boundaries.
+
+  Migrated all React source files from JavaScript to strict TypeScript
+  with comprehensive type annotations and eliminated unsafe type casts.
+
+  Improved unit test coverage with behavioral assertions and added a
+  coverage ratchet mechanism to prevent regression.
+
+  Added Knip dead-code detection as a CI quality gate alongside
+  existing lint, test, and type-check gates.
+
+  Unified build tooling, dependency versions, and configuration
+  across all editor packages.

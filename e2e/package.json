@@ -1,0 +1,20 @@
+{
+  "name": "axelor-studio-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Unified E2E tests for Axelor Studio BPMN/DMN editors",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:list": "playwright test --list"
+  },
+  "devDependencies": {
+    "@msw/playwright": "^0.6.5",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.5.0",
+    "msw": "^2.12.10",
+    "typescript": "5.8.3"
+  }
+}

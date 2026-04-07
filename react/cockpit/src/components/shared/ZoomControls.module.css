@@ -1,0 +1,39 @@
+/* ZoomControls -- floating toolbar for BPMN viewer zoom (D-07) */
+
+.container {
+  position: absolute;
+  bottom: var(--ck-space-md, 12px);
+  left: var(--ck-space-md, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 8px;
+  background-color: var(--bs-body-bg, #fff);
+  box-shadow: var(--ck-shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.12));
+  z-index: 10;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--bs-body-color, #212529);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.button:hover {
+  background-color: var(--ck-accent, #3b82f6);
+  color: #fff;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--ck-accent, #3b82f6);
+  outline-offset: 1px;
+}

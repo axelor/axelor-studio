@@ -110,7 +110,7 @@ ContextPadProvider.prototype.getContextPadEntries = function (element) {
     let Y_OFFSET = 5;
 
     let diagramContainer = canvas.getContainer(),
-      pad = contextPad.getPad(element).html;
+      pad = diagramContainer.querySelector(".djs-context-pad");
 
     let diagramRect = diagramContainer.getBoundingClientRect(),
       padRect = pad.getBoundingClientRect();

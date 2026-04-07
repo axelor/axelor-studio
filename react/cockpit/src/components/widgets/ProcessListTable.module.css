@@ -1,0 +1,110 @@
+/* ProcessListTable -- semantic HTML table with card-style rows (D-07) */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.searchWrapper {
+  max-width: 360px;
+  margin-bottom: var(--ck-space-sm);
+}
+
+.tableWrapper {
+  flex: 1;
+  overflow: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.headerCell {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--ck-space-sm, 8px) var(--ck-space-md, 16px);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bs-secondary-color, #6c757d);
+  text-align: left;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  background: var(--bs-body-bg, #fff);
+  white-space: nowrap;
+}
+
+.row {
+  height: 48px;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.row:hover {
+  background: var(--ck-row-hover-bg, var(--bs-tertiary-bg, #f8f9fa));
+}
+
+.rowSelected {
+  background: var(
+    --ck-row-selected-bg,
+    var(--bs-primary-bg-subtle, #e7f1ff)
+  );
+}
+
+.row td {
+  padding: var(--ck-space-sm, 8px) var(--ck-space-md, 16px);
+  border-bottom: 1px solid var(--bs-border-color-translucent, rgba(0, 0, 0, 0.06));
+  vertical-align: middle;
+}
+
+.nameCell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.processName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bs-body-color, #212529);
+}
+
+.processDescription {
+  font-size: 11px;
+  color: var(--bs-secondary-color, #6c757d);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+}
+
+.versionCell {
+  font-size: 13px;
+  color: var(--bs-secondary-color, #6c757d);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpiCell {
+  display: flex;
+  gap: var(--ck-space-xs, 4px);
+  align-items: center;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--ck-space-xl, 32px) var(--ck-space-md, 16px);
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 13px;
+}
+
+.emptyIcon {
+  display: block;
+  margin: 0 auto var(--ck-space-sm);
+  opacity: 0.3;
+}

@@ -1,0 +1,37 @@
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--ck-space-sm) var(--ck-space-md);
+  min-width: 0;
+  flex: 1;
+  border-radius: 8px;
+  background: var(--bs-tertiary-bg, #f8f9fa);
+  transition: background 150ms ease;
+}
+
+.counter:hover {
+  background: var(--ck-accent-subtle);
+}
+
+.count {
+  composes: ck-font-display from global;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.countAccent {
+  composes: count;
+  color: var(--ck-accent);
+}
+
+.countDanger {
+  composes: count;
+  color: var(--bs-danger);
+}
+
+.label {
+  composes: ck-font-label from global;
+  color: var(--bs-secondary-color, #6c757d);
+  margin-top: 2px;
+}

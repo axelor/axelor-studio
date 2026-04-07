@@ -1,0 +1,10 @@
+{
+  "name": "bpmnlint-plugin-axelor",
+  "version": "1.0.0",
+  "description": "Custom bpmnlint rules for Axelor BPM modeler",
+  "main": "index.js",
+  "private": true,
+  "peerDependencies": {
+    "bpmnlint-utils": ">=1.0.0"
+  }
+}
