@@ -1,0 +1,22 @@
+/* InstanceDetailPage -- full-height BPMN viewer with panel overlay (D-10) */
+
+.page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.viewer {
+  width: 100%;
+  height: 100%;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--bs-danger, #dc3545);
+  font-size: var(--ck-font-body, 14px);
+}

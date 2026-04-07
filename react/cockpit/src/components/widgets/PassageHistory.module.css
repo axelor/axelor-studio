@@ -1,0 +1,56 @@
+/* PassageHistory -- chronological node execution list (D-08) */
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.entry {
+  padding: var(--ck-space-sm, 8px) 0;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.entry:last-child {
+  border-bottom: none;
+}
+
+.times {
+  display: flex;
+  align-items: center;
+  gap: var(--ck-space-xs, 4px);
+  font-size: var(--ck-font-body, 14px);
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+}
+
+.arrow {
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: 12px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--ck-space-xs, 4px);
+  font-size: var(--ck-font-label, 12px);
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.duration {
+  font-family: var(--ck-font-mono, "SFMono-Regular", "Consolas", monospace);
+}
+
+.assignee {
+  font-style: italic;
+}
+
+.empty {
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: var(--ck-font-body, 14px);
+  text-align: center;
+  padding: var(--ck-space-md, 16px) 0;
+  margin: 0;
+}

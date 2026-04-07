@@ -1,0 +1,30 @@
+/* InstanceProgressBar -- 4px progress track with staggered animation (D-15) */
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--ck-space-xs, 4px);
+  min-width: 80px;
+}
+
+.track {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--ck-progress-track, var(--bs-secondary-bg, #e9ecef));
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 2px;
+  background-color: var(--ck-progress-fill, var(--ck-accent, #3b82f6));
+  transition: width 600ms ease-out;
+}
+
+.label {
+  font-size: var(--ck-font-label, 12px);
+  color: var(--bs-secondary-color, #6c757d);
+  min-width: 32px;
+  text-align: right;
+}

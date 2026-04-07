@@ -1,14 +1,14 @@
 html,
 body {
-  height: '100%';
+  height: 100%;
   font-size: var(--bs-body-font-size);
-  font-family: var(--bs-body-font-family, 15px);
+  font-family: var(--bs-body-font-family);
 }
 .App {
   text-align: center;
-  height: '100%';
+  height: 100%;
 }
 
 #root {
-  height: '100%';
+  height: 100%;
 }

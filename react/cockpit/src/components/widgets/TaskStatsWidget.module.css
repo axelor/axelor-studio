@@ -1,0 +1,13 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.counters {
+  display: flex;
+  gap: var(--ck-space-sm);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  margin-bottom: var(--ck-space-sm);
+}

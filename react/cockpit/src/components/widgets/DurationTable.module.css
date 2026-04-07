@@ -1,0 +1,62 @@
+/* DurationTable -- sortable duration table with percentile columns (D-17) */
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.th {
+  text-align: left;
+  padding: var(--ck-space-sm) var(--ck-space-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bs-body-color);
+  background: var(--bs-secondary-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.th:hover {
+  background: var(--bs-border-color);
+}
+
+.thSorted {
+  color: var(--ck-accent);
+}
+
+.sortIcon {
+  margin-left: 4px;
+  color: var(--ck-accent);
+}
+
+.row {
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.row:hover {
+  background: var(--bs-secondary-bg);
+}
+
+.rowSelected {
+  background: var(--ck-row-selected-bg, rgba(var(--ck-accent-rgb), 0.08));
+}
+
+.tdName {
+  padding: var(--ck-space-sm);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tdNum {
+  padding: var(--ck-space-sm);
+  font-size: 14px;
+  text-align: right;
+}

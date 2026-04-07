@@ -53,7 +53,7 @@ import Checkboxs from "./components/CheckBoxs";
 import CustomizedTables from "./components/Table";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { getChildLanes } from "./main/baml-js/lib/features/modeling/util/LaneUtil";
-import ReactDOM, { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { store } from "./store";
 import { Selection } from "./components";
 import { tabPropertyAuth } from "./tabPropertyAuth";
@@ -535,13 +535,16 @@ function WebServiceEditor() {
         modeling.updateProperties(child, {
           name: id === 0 ? "Parameters" : id === 1 ? "Headers" : "Payloads",
         });
-      ReactDOM.render(
+      const container = document.getElementById(child.id);
+      if (!container._root) {
+        container._root = createRoot(container);
+      }
+      container._root.render(
         <Provider store={store}>
           <CustomizedTables
             type={id === 0 ? "parameters" : id === 2 ? "payloads" : "headers"}
           />
-        </Provider>,
-        document.getElementById(child.id)
+        </Provider>
       );
     });
     participant.bpmnModeler = bpmnModeler;

@@ -27,6 +27,7 @@
     <boolean name="generatedFromCallActivity" title="Generated from call activity"/>
     <string name="wkfStatusColor" title="Wkf status color" selection="color.name.selection"/>
     <many-to-one name="studioApp" ref="com.axelor.studio.db.StudioApp" title="App"/>
+    <integer name="targetDuration" title="Target duration (minutes)"/>
 
     <boolean name="sendAdminsNotification" title="Send admins notification" default="false"/>
     <many-to-many name="adminUserSet" title="Users" ref="com.axelor.auth.db.User"/>

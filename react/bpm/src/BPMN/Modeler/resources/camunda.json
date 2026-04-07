@@ -712,10 +712,7 @@
       "name": "FailedJobRetryTimeCycle",
       "superClass": ["Element"],
       "meta": {
-        "allowedIn": [
-          "camunda:AsyncCapable",
-          "bpmn:MultiInstanceLoopCharacteristics"
-        ]
+        "allowedIn": ["camunda:AsyncCapable", "bpmn:MultiInstanceLoopCharacteristics"]
       },
       "properties": [
         {

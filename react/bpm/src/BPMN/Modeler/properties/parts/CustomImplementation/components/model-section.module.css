@@ -1,0 +1,23 @@
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  margin-top: 10px;
+}
+
+.label {
+  display: flex;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+}
+
+.select {
+  margin: 0 5px 0 0;
+}
+
+.allModels {
+  margin-top: 0;
+}

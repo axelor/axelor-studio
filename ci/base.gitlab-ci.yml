@@ -1,5 +1,5 @@
 .base-env:
-  image: axelor/app-builder:8.0
+  image: axelor/app-builder:8.1
   interruptible: true
   rules:
     - if: $CI_COMMIT_TAG
@@ -20,6 +20,7 @@ before_script:
   paths:
     - .gradle/wrapper
     - .gradle/caches
+    - .gradle/pnpm-v10.28.2/
   policy: pull-push
 
 .base_cache_pull: &base_cache_pull
@@ -65,12 +66,87 @@ unit test:
       - build/test-results/test/**/TEST-*.xml
     reports:
       junit: build/test-results/test/**/TEST-*.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: build/reports/jacoco/test/jacocoTestReport.xml
     expire_in: 1 week
   coverage: /Total.*?([0-9]{1,3})%/
 
+# Frontend quality gates
+front lint:
+  extends: .base-env
+  stage: test
+  needs:
+    - build
+  cache:
+    - *base_cache_pull
+  script:
+    - ./gradlew frontLint
+
+front test:
+  extends: .base-env
+  stage: test
+  needs:
+    - build
+  cache:
+    - *base_cache_pull
+  script:
+    - ./gradlew frontTest
+  artifacts:
+    when: always
+    paths:
+      - react/*/test-results/junit.xml
+    reports:
+      junit: react/*/test-results/junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: react/*/coverage/cobertura-coverage.xml
+    expire_in: 1 week
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+
+front type-check:
+  extends: .base-env
+  stage: test
+  needs:
+    - build
+  cache:
+    - *base_cache_pull
+  script:
+    - ./gradlew frontTypecheck
+
+front knip:
+  extends: .base-env
+  stage: test
+  needs:
+    - build
+  cache:
+    - *base_cache_pull
+  script:
+    - ./gradlew frontKnip
+
+front depcruise:
+  extends: .base-env
+  stage: test
+  needs:
+    - build
+  cache:
+    - *base_cache_pull
+  script:
+    - ./gradlew frontDepcruise
+
+front audit:
+  extends: .base-env
+  stage: test
+  needs:
+    - build
+  cache:
+    - *base_cache_pull
+  allow_failure: true
+  script:
+    - ./gradlew frontAudit
 
 .publish_template: &publish_configuration
-  image: axelor/app-builder:8.0
+  image: axelor/app-builder:8.1
   stage: plan
   cache:
     - *base_cache_pull

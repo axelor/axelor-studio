@@ -1,0 +1,34 @@
+/* HeatmapToggle -- 3-option segmented control (D-12) */
+
+.toggle {
+  display: inline-flex;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--bs-border-color);
+  overflow: hidden;
+  background: var(--bs-secondary-bg);
+}
+
+.option {
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 30px;
+  border: none;
+  background: none;
+  color: var(--ck-tab-inactive);
+  cursor: pointer;
+  transition:
+    background 200ms ease,
+    color 200ms ease;
+  white-space: nowrap;
+}
+
+.option:hover {
+  color: var(--bs-body-color);
+}
+
+.active {
+  background: var(--ck-accent);
+  color: #fff;
+}

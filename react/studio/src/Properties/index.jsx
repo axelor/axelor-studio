@@ -34,7 +34,7 @@ import StaticSelection from "./widgets/StaticSelection"
 import SelectionWidget from "./widgets/SelectionWidget"
 import DialogConfirmation from "../Toolbar/DeleteConfirmation"
 import OnlyIfComponent from "./widgets/OnlyIf"
-import ScriptEditor from "./Editor.js/SrciptEditor"
+import { CodeEditor } from "@studio/shared/components"
 import Tooltip from "../components/tooltip/tooltip"
 
 const PropertiesContext = React.createContext()
@@ -333,7 +333,7 @@ function StringInput(_props) {
 					</Box>
 				</DialogHeader>
 				<DialogContent>
-					<ScriptEditor
+					<CodeEditor
 						value={editorValue ?? value}
 						onChange={setEditorValue}
 						readOnly={disabled}

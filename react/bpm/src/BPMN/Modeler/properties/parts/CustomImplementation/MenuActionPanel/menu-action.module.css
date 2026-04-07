@@ -1,0 +1,69 @@
+.main {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  margin-top: 10px;
+}
+
+.label {
+  display: flex;
+  vertical-align: middle;
+  margin: 3px 0;
+  color: rgba(var(--bs-body-color-rgb), 0.65) !important;
+}
+
+.select {
+  margin: 0 5px 0 0;
+}
+
+.iconButton {
+  border-radius: 0;
+  color: inherit;
+  width: fit-content;
+}
+
+.newIcon {
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.save {
+  min-width: 64px;
+  margin: 8px;
+  text-transform: none;
+}
+
+.dialogContent {
+  display: flex;
+  align-items: flex-end;
+  overflow: auto;
+}
+
+.tableHead {
+  padding: 6px !important;
+  margin: 3px 0px;
+  text-align: center;
+}
+
+.textbox {
+  width: 100%;
+  text-overflow: ellipsis;
+  margin-top: -7px;
+  box-sizing: border-box;
+}
+
+.tableCell {
+  padding: 6px;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+.dialog {
+  min-width: 300px;
+}
+
+.leftAlign {
+  text-align: left;
+}

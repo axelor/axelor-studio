@@ -1,0 +1,130 @@
+/* ProcessDetailPage — tab-based layout (D-04, D-05, D-14, UI-SPEC) */
+
+.processDetail {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  grid-template-columns: 1fr;
+  height: 100%;
+  padding: var(--ck-space-md, 16px);
+  overflow: hidden;
+}
+
+.processHeader {
+  grid-column: 1 / -1;
+}
+
+/* Tab bar (D-04, UI-SPEC) */
+.tabBar {
+  display: flex;
+  align-items: stretch;
+  height: 44px;
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: 0;
+  gap: 0;
+}
+
+.tab {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ck-tab-inactive);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: color 200ms ease, border-color 200ms ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--bs-body-color);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+}
+
+.tabActive {
+  color: var(--bs-body-color);
+  border-bottom-color: var(--ck-tab-indicator);
+}
+
+/* Instances tab content */
+.instancePanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.statusFilters {
+  flex-shrink: 0;
+}
+
+.instanceContent {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: var(--ck-space-md, 16px);
+  flex: 1;
+  min-height: 0;
+}
+
+.instanceList {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.bpmnPreview {
+  min-height: 300px;
+  position: relative;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 8px;
+  background: var(--bs-body-bg, #fff);
+  overflow: hidden;
+}
+
+/* BPMN Preview placeholder — replaced by Plan 06 */
+.previewPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--ck-space-sm, 8px);
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.previewIcon {
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.previewText {
+  font-size: var(--ck-font-body, 14px);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Responsive: 768-1023px — stacked layout */
+@media (max-width: 1023px) {
+  .instanceContent {
+    grid-template-columns: 1fr;
+  }
+
+  .bpmnPreview {
+    min-height: 250px;
+  }
+}
+
+/* Responsive: < 768px — list only, no preview */
+@media (max-width: 767px) {
+  .instanceContent {
+    grid-template-columns: 1fr;
+  }
+
+  .bpmnPreview {
+    display: none;
+  }
+}

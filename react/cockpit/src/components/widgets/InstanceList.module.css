@@ -1,0 +1,168 @@
+/* InstanceList — paginated instance table (D-14, D-16, D-17) */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ck-space-md, 16px);
+  height: 100%;
+}
+
+/* Search */
+.searchWrapper {
+  max-width: 320px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--ck-space-sm, 8px) var(--ck-space-md, 16px);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+  font-size: var(--ck-font-body, 14px);
+  color: var(--bs-body-color, #212529);
+  background: var(--bs-body-bg, #fff);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--ck-accent);
+  box-shadow: 0 0 0 3px var(--ck-accent-ring);
+}
+
+/* Table */
+.tableWrapper {
+  overflow-x: auto;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ck-accent) transparent;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.tableWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 150ms ease;
+}
+
+.tableWrapper:hover::-webkit-scrollbar-thumb {
+  background: var(--ck-accent);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.headerCell {
+  padding: var(--ck-space-sm, 8px) var(--ck-space-md, 16px);
+  font-size: var(--ck-font-label, 12px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bs-secondary-color, #6c757d);
+  text-align: left;
+  border-bottom: 2px solid var(--bs-border-color, #dee2e6);
+  white-space: nowrap;
+}
+
+.row {
+  height: 52px;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.row:hover {
+  background: var(--ck-row-hover-bg, var(--bs-tertiary-bg, #f8f9fa));
+}
+
+.rowSelected {
+  background: var(--ck-row-selected-bg, var(--bs-primary-bg-subtle, #e7f1ff));
+}
+
+.row td {
+  padding: var(--ck-space-sm, 8px) var(--ck-space-md, 16px);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  vertical-align: middle;
+}
+
+/* Instance ID column */
+.instanceIdCell {
+  font-family: "DM Mono", "Fira Code", monospace;
+  font-size: 12px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Duration and time columns */
+.durationCell,
+.timeCell {
+  font-size: var(--ck-font-body, 14px);
+  color: var(--bs-secondary-color, #6c757d);
+  white-space: nowrap;
+}
+
+/* Status badge */
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.statusActive {
+  background: oklch(0.85 0.10 145 / 0.20);
+  color: var(--bs-success, #198754);
+}
+
+.statusCompleted {
+  background: oklch(0.90 0.02 260 / 0.15);
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.statusFailed {
+  background: oklch(0.85 0.12 25 / 0.20);
+  color: var(--bs-danger, #dc3545);
+}
+
+.statusSuspended {
+  background: oklch(0.85 0.15 85 / 0.20);
+  color: var(--bs-warning, #ffc107);
+}
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ck-space-xl, 32px);
+  gap: var(--ck-space-md, 16px);
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.emptySvg {
+  opacity: 0.2;
+  color: var(--ck-accent);
+}
+
+.emptyText {
+  font-size: var(--ck-font-body, 14px);
+  text-align: center;
+  margin: 0;
+}

@@ -1,0 +1,1142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+  xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
+  xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+  id="BlocB_ProductionQualite"
+  targetNamespace="http://bpmn.io/schema/bpmn"
+  xs:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+  camunda:newVersionOnDeploy="false"
+  camunda:code="WF-PROD"
+  camunda:diagramName="Maitrise Production et Qualite"
+  camunda:versionTag="1"
+  camunda:wkfStatusColor="orange">
+
+  <!-- ============================================================ -->
+  <!-- COLLABORATION : 2 pools (WF-PROD-01 + WF-PROD-02)           -->
+  <!-- ============================================================ -->
+  <bpmn2:collaboration id="Collab_BlocB">
+    <bpmn2:participant id="Pool_PROD01" name="WF-PROD-01 | Intelligence de Qualification (Matrice EI/Preserie/Serie)" processRef="Process_PROD01" />
+    <bpmn2:participant id="Pool_PROD02" name="WF-PROD-02 | Execution &amp; Verrous Operationnels" processRef="Process_PROD02" />
+  </bpmn2:collaboration>
+
+  <!-- ============================================================ -->
+  <!-- PROCESS WF-PROD-01 : Intelligence de Qualification           -->
+  <!-- Matrice EI / Preserie / Serie + Niveau Qualification Article -->
+  <!-- ============================================================ -->
+  <bpmn2:process id="Process_PROD01" name="Intelligence de Qualification" isExecutable="true">
+    <bpmn2:extensionElements>
+      <camunda:processConfiguration>
+        <camunda:processConfigurationParameter
+          metaModel="ManufOrder"
+          isStartModel="true"
+          isDirectCreation="true"
+          isCustom="false"
+          model="com.axelor.apps.production.db.ManufOrder"
+          metaModelFullName="com.axelor.apps.production.db.ManufOrder"
+          title="ManufOrder" />
+      </camunda:processConfiguration>
+    </bpmn2:extensionElements>
+
+    <!-- ====== LANE : Qualification automatique ====== -->
+    <bpmn2:laneSet id="LaneSet_PROD01">
+      <bpmn2:lane id="Lane_Qualification" name="Qualification automatique du type OF">
+        <bpmn2:flowNodeRef>Start_PROD01</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_CheckFinishedMO</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>GW_FinishedMOExists</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_ForceEchantillon</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_CheckPreserie</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>GW_PreserieValidated</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_ForcePreserie</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_DefaultSerie</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>GW_MergeType</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>GW_TypeDispatch</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Workflow_EI" name="Workflow Echantillon (EI)">
+        <bpmn2:flowNodeRef>Task_EI_Planifie</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Task_EI_Controle3D</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Task_EI_AttenteValidQualite</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>GW_EI_RapportAttache</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_EI_BlockRapport</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>End_EI_Block</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Workflow_Preserie" name="Workflow Preserie">
+        <bpmn2:flowNodeRef>Task_PS_Planifie</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Task_PS_Production</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Task_PS_AnalyseRepetabilite</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Workflow_Serie" name="Workflow Serie">
+        <bpmn2:flowNodeRef>Task_SE_Planifie</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Task_SE_Production</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+      <bpmn2:lane id="Lane_Finalisation" name="Finalisation et mise a jour qualification">
+        <bpmn2:flowNodeRef>GW_MergeEnd</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_UpdateQualification</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>Script_SetTermine</bpmn2:flowNodeRef>
+        <bpmn2:flowNodeRef>End_PROD01</bpmn2:flowNodeRef>
+      </bpmn2:lane>
+    </bpmn2:laneSet>
+
+    <!-- ====== START ====== -->
+    <bpmn2:startEvent id="Start_PROD01" name="Creation OF&#10;ou Generer OF">
+      <bpmn2:outgoing>Flow_P01_01</bpmn2:outgoing>
+    </bpmn2:startEvent>
+
+    <!-- ====== CONDITION 1 : OF termine pour cet Article ? ====== -->
+    <bpmn2:scriptTask id="Script_CheckFinishedMO" name="Condition 1 :&#10;Existe-t-il un OF termine&#10;pour cet Article ?" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P01_01</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_02</bpmn2:outgoing>
+      <bpmn2:script>
+def product = manufOrder?.product
+def finishedMO = __ctx__.findAll('ManufOrder',
+  "self.product = :product AND self.statusSelect = 6",
+  ['product': product])
+__ctx__.setVariable('hasFinishedMO', finishedMO != null &amp;&amp; !finishedMO.isEmpty())
+__ctx__.setVariable('currentProduct', product)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:exclusiveGateway id="GW_FinishedMOExists" name="OF termine existe ?" default="Flow_P01_NoFinished">
+      <bpmn2:incoming>Flow_P01_02</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_YesFinished</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_P01_NoFinished</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- NON : Forcer Echantillon -->
+    <bpmn2:scriptTask id="Script_ForceEchantillon" name="Forcer type OF :&#10;Echantillon (EI)&#10;+ Qualification = EI en cours" scriptFormat="axelor" bioc:stroke="#e53935">
+      <bpmn2:incoming>Flow_P01_NoFinished</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_ToMergeEI</bpmn2:outgoing>
+      <bpmn2:script>
+// Force typeSelect = Echantillon (valeur custom)
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+mo.typeSelect = 10  // CUSTOM: TYPE_ECHANTILLON
+__ctx__.save(mo)
+// Mise a jour niveau qualification produit
+def product = mo.product
+product.qualificationLevel = 'EI_EN_COURS'
+__ctx__.save(product)
+__ctx__.setVariable('moType', 'ECHANTILLON')
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- ====== CONDITION 2 : Preserie terminee et validee ? ====== -->
+    <bpmn2:scriptTask id="Script_CheckPreserie" name="Condition 2 :&#10;Existe-t-il un OF Preserie&#10;termine et valide ?" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P01_YesFinished</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_03</bpmn2:outgoing>
+      <bpmn2:script>
+def product = __ctx__.getVariable('currentProduct')
+def validatedPreserie = __ctx__.findAll('ManufOrder',
+  "self.product = :product AND self.typeSelect = 20 AND self.statusSelect = 6",
+  ['product': product])
+__ctx__.setVariable('hasValidatedPreserie', validatedPreserie != null &amp;&amp; !validatedPreserie.isEmpty())
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:exclusiveGateway id="GW_PreserieValidated" name="Preserie validee ?" default="Flow_P01_NoPreserie">
+      <bpmn2:incoming>Flow_P01_03</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_YesPreserie</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_P01_NoPreserie</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- NON : Forcer Preserie -->
+    <bpmn2:scriptTask id="Script_ForcePreserie" name="Forcer type OF :&#10;Preserie" scriptFormat="axelor" bioc:stroke="#ff9e0f">
+      <bpmn2:incoming>Flow_P01_NoPreserie</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_ToMergePS</bpmn2:outgoing>
+      <bpmn2:script>
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+mo.typeSelect = 20  // CUSTOM: TYPE_PRESERIE
+__ctx__.save(mo)
+def product = mo.product
+product.qualificationLevel = 'EI_VALIDES'
+__ctx__.save(product)
+__ctx__.setVariable('moType', 'PRESERIE')
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- OUI : Default Serie -->
+    <bpmn2:scriptTask id="Script_DefaultSerie" name="Type OF par defaut :&#10;Serie" scriptFormat="axelor" bioc:stroke="#55c041">
+      <bpmn2:incoming>Flow_P01_YesPreserie</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_ToMergeSE</bpmn2:outgoing>
+      <bpmn2:script>
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+mo.typeSelect = 30  // CUSTOM: TYPE_SERIE
+__ctx__.save(mo)
+def product = mo.product
+product.qualificationLevel = 'PRESERIE_VALIDEE'
+__ctx__.save(product)
+__ctx__.setVariable('moType', 'SERIE')
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- ====== MERGE : Type determine ====== -->
+    <bpmn2:exclusiveGateway id="GW_MergeType" name="Type OF determine">
+      <bpmn2:incoming>Flow_P01_ToMergeEI</bpmn2:incoming>
+      <bpmn2:incoming>Flow_P01_ToMergePS</bpmn2:incoming>
+      <bpmn2:incoming>Flow_P01_ToMergeSE</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_ToDispatch</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- ====== DISPATCH : Workflow par type ====== -->
+    <bpmn2:exclusiveGateway id="GW_TypeDispatch" name="Quel type OF ?" default="Flow_P01_GoSerie">
+      <bpmn2:incoming>Flow_P01_ToDispatch</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_GoEI</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_P01_GoPS</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_P01_GoSerie</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- ============================================ -->
+    <!-- WORKFLOW ECHANTILLON (EI)                    -->
+    <!-- Brouillon > Planifie > Controle 3D/Conv.     -->
+    <!-- > Attente Validation Qualite > Termine       -->
+    <!-- ============================================ -->
+    <bpmn2:userTask id="Task_EI_Planifie" name="Planifie&#10;(Lancement EI)" camunda:assignee="${manufOrder.createdBy.code}">
+      <bpmn2:incoming>Flow_P01_GoEI</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_EI_01</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <bpmn2:userTask id="Task_EI_Controle3D" name="Controle 3D / Conventionnel&#10;(Mesures dimensionnelles)">
+      <bpmn2:incoming>Flow_EI_01</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_EI_02</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <bpmn2:userTask id="Task_EI_AttenteValidQualite" name="Attente Validation Qualite&#10;(Rapport EI obligatoire)" camunda:candidateGroups="qualite">
+      <bpmn2:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="rapportEI" label="Rapport EI attache" type="boolean" defaultValue="false" />
+        </camunda:formData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_EI_02</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_EI_03</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <!-- Verrou : Rapport EI attache ? -->
+    <bpmn2:exclusiveGateway id="GW_EI_RapportAttache" name="Rapport EI&#10;attache ?" default="Flow_EI_Block">
+      <bpmn2:incoming>Flow_EI_03</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_EI_OK</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_EI_Block</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <bpmn2:scriptTask id="Script_EI_BlockRapport" name="BLOCAGE :&#10;Rapport EI manquant" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_EI_Block</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_EI_BlockEnd</bpmn2:outgoing>
+      <bpmn2:script>
+throw new com.axelor.exception.AxelorException(
+  com.axelor.exception.db.repo.TraceBackRepository.CATEGORY_INCONSISTENCY,
+  "Impossible de terminer l'OF Echantillon : le rapport EI doit etre rattache avant validation.")
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="End_EI_Block" name="Blocage : rapport EI manquant">
+      <bpmn2:incoming>Flow_EI_BlockEnd</bpmn2:incoming>
+      <bpmn2:errorEventDefinition id="ErrDef_EI" errorRef="Error_RapportEI" />
+    </bpmn2:endEvent>
+
+    <!-- ============================================ -->
+    <!-- WORKFLOW PRESERIE                            -->
+    <!-- Brouillon > Planifie > En Production         -->
+    <!-- > Analyse Repetabilite/Gamme > Termine       -->
+    <!-- ============================================ -->
+    <bpmn2:userTask id="Task_PS_Planifie" name="Planifie&#10;(Lancement Preserie)">
+      <bpmn2:incoming>Flow_P01_GoPS</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_PS_01</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <bpmn2:userTask id="Task_PS_Production" name="En Production">
+      <bpmn2:incoming>Flow_PS_01</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_PS_02</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <bpmn2:scriptTask id="Task_PS_AnalyseRepetabilite" name="Analyse Repetabilite / Gamme&#10;(Comparaison temps pointes&#10;vs chiffrage)" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_PS_02</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_PS_ToMergeEnd</bpmn2:outgoing>
+      <bpmn2:script>
+// Declenchement automatique de la comparaison
+// entre temps pointes et chiffrage initial
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+def operations = mo.operationOrderList
+def totalPointed = 0
+def totalEstimated = 0
+operations?.each { op ->
+  totalPointed += op.realDuration ?: 0
+  totalEstimated += op.plannedDuration ?: 0
+}
+def deviation = totalEstimated > 0 ? ((totalPointed - totalEstimated) / totalEstimated * 100) : 0
+__ctx__.setVariable('timeDeviation', deviation)
+__ctx__.setVariable('totalPointedMinutes', totalPointed)
+__ctx__.setVariable('totalEstimatedMinutes', totalEstimated)
+// Generer un rapport d'analyse
+def report = "Analyse Repetabilite - OF ${mo.manufOrderSeq}\n"
+report += "Temps pointe: ${totalPointed} min | Temps chiffre: ${totalEstimated} min\n"
+report += "Ecart: ${String.format('%.1f', deviation)}%"
+mo.note = (mo.note ?: '') + '\n' + report
+__ctx__.save(mo)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- ============================================ -->
+    <!-- WORKFLOW SERIE                               -->
+    <!-- Brouillon > Planifie > En Production         -->
+    <!-- > Termine (cycle simplifie)                  -->
+    <!-- ============================================ -->
+    <bpmn2:userTask id="Task_SE_Planifie" name="Planifie&#10;(Lancement Serie)">
+      <bpmn2:incoming>Flow_P01_GoSerie</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_SE_01</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <bpmn2:userTask id="Task_SE_Production" name="En Production&#10;(Cycle standard simplifie)">
+      <bpmn2:incoming>Flow_SE_01</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_SE_ToMergeEnd</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <!-- ====== MERGE FINAL ====== -->
+    <bpmn2:exclusiveGateway id="GW_MergeEnd" name="Vers finalisation">
+      <bpmn2:incoming>Flow_EI_OK</bpmn2:incoming>
+      <bpmn2:incoming>Flow_PS_ToMergeEnd</bpmn2:incoming>
+      <bpmn2:incoming>Flow_SE_ToMergeEnd</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_ToUpdateQualif</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Mise a jour du niveau de qualification Article -->
+    <bpmn2:scriptTask id="Script_UpdateQualification" name="Mettre a jour&#10;Niveau de Qualification&#10;de l'Article" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P01_ToUpdateQualif</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_ToTermine</bpmn2:outgoing>
+      <bpmn2:script>
+// Mise a jour du champ technique qualificationLevel sur Product
+// Enum : NOUVEAU, EI_EN_COURS, EI_VALIDES, PRESERIE_VALIDEE, SERIE
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+def product = mo.product
+def moType = __ctx__.getVariable('moType')
+
+switch(moType) {
+  case 'ECHANTILLON':
+    product.qualificationLevel = 'EI_VALIDES'
+    break
+  case 'PRESERIE':
+    product.qualificationLevel = 'PRESERIE_VALIDEE'
+    break
+  case 'SERIE':
+    product.qualificationLevel = 'SERIE'
+    break
+}
+__ctx__.save(product)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- OF Termine -->
+    <bpmn2:scriptTask id="Script_SetTermine" name="Passer OF&#10;au statut Termine" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P01_ToTermine</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P01_End</bpmn2:outgoing>
+      <bpmn2:script>
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+mo.statusSelect = 6  // STATUS_FINISHED
+return __ctx__.save(mo)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="End_PROD01" name="OF Termine&#10;Qualification mise a jour">
+      <bpmn2:incoming>Flow_P01_End</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <!-- ====== SEQUENCE FLOWS ====== -->
+    <bpmn2:sequenceFlow id="Flow_P01_01" sourceRef="Start_PROD01" targetRef="Script_CheckFinishedMO" />
+    <bpmn2:sequenceFlow id="Flow_P01_02" sourceRef="Script_CheckFinishedMO" targetRef="GW_FinishedMOExists" />
+
+    <bpmn2:sequenceFlow id="Flow_P01_YesFinished" name="OUI" sourceRef="GW_FinishedMOExists" targetRef="Script_CheckPreserie">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression" language="axelor">hasFinishedMO == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_P01_NoFinished" name="NON&#10;(Premier OF)" sourceRef="GW_FinishedMOExists" targetRef="Script_ForceEchantillon" />
+    <bpmn2:sequenceFlow id="Flow_P01_03" sourceRef="Script_CheckPreserie" targetRef="GW_PreserieValidated" />
+
+    <bpmn2:sequenceFlow id="Flow_P01_YesPreserie" name="OUI" sourceRef="GW_PreserieValidated" targetRef="Script_DefaultSerie">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression" language="axelor">hasValidatedPreserie == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_P01_NoPreserie" name="NON" sourceRef="GW_PreserieValidated" targetRef="Script_ForcePreserie" />
+
+    <bpmn2:sequenceFlow id="Flow_P01_ToMergeEI" sourceRef="Script_ForceEchantillon" targetRef="GW_MergeType" />
+    <bpmn2:sequenceFlow id="Flow_P01_ToMergePS" sourceRef="Script_ForcePreserie" targetRef="GW_MergeType" />
+    <bpmn2:sequenceFlow id="Flow_P01_ToMergeSE" sourceRef="Script_DefaultSerie" targetRef="GW_MergeType" />
+    <bpmn2:sequenceFlow id="Flow_P01_ToDispatch" sourceRef="GW_MergeType" targetRef="GW_TypeDispatch" />
+
+    <bpmn2:sequenceFlow id="Flow_P01_GoEI" name="Echantillon" sourceRef="GW_TypeDispatch" targetRef="Task_EI_Planifie">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression">moType == 'ECHANTILLON'</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_P01_GoPS" name="Preserie" sourceRef="GW_TypeDispatch" targetRef="Task_PS_Planifie">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression">moType == 'PRESERIE'</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_P01_GoSerie" name="Serie" sourceRef="GW_TypeDispatch" targetRef="Task_SE_Planifie" />
+
+    <!-- EI flows -->
+    <bpmn2:sequenceFlow id="Flow_EI_01" sourceRef="Task_EI_Planifie" targetRef="Task_EI_Controle3D" />
+    <bpmn2:sequenceFlow id="Flow_EI_02" sourceRef="Task_EI_Controle3D" targetRef="Task_EI_AttenteValidQualite" />
+    <bpmn2:sequenceFlow id="Flow_EI_03" sourceRef="Task_EI_AttenteValidQualite" targetRef="GW_EI_RapportAttache" />
+    <bpmn2:sequenceFlow id="Flow_EI_OK" name="Rapport attache" sourceRef="GW_EI_RapportAttache" targetRef="GW_MergeEnd">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression">rapportEI == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_EI_Block" name="Rapport manquant" sourceRef="GW_EI_RapportAttache" targetRef="Script_EI_BlockRapport" />
+    <bpmn2:sequenceFlow id="Flow_EI_BlockEnd" sourceRef="Script_EI_BlockRapport" targetRef="End_EI_Block" />
+
+    <!-- PS flows -->
+    <bpmn2:sequenceFlow id="Flow_PS_01" sourceRef="Task_PS_Planifie" targetRef="Task_PS_Production" />
+    <bpmn2:sequenceFlow id="Flow_PS_02" sourceRef="Task_PS_Production" targetRef="Task_PS_AnalyseRepetabilite" />
+    <bpmn2:sequenceFlow id="Flow_PS_ToMergeEnd" sourceRef="Task_PS_AnalyseRepetabilite" targetRef="GW_MergeEnd" />
+
+    <!-- SE flows -->
+    <bpmn2:sequenceFlow id="Flow_SE_01" sourceRef="Task_SE_Planifie" targetRef="Task_SE_Production" />
+    <bpmn2:sequenceFlow id="Flow_SE_ToMergeEnd" sourceRef="Task_SE_Production" targetRef="GW_MergeEnd" />
+
+    <!-- Final flows -->
+    <bpmn2:sequenceFlow id="Flow_P01_ToUpdateQualif" sourceRef="GW_MergeEnd" targetRef="Script_UpdateQualification" />
+    <bpmn2:sequenceFlow id="Flow_P01_ToTermine" sourceRef="Script_UpdateQualification" targetRef="Script_SetTermine" />
+    <bpmn2:sequenceFlow id="Flow_P01_End" sourceRef="Script_SetTermine" targetRef="End_PROD01" />
+  </bpmn2:process>
+
+  <!-- ============================================================ -->
+  <!-- PROCESS WF-PROD-02 : Execution & Verrous Operationnels       -->
+  <!-- Memoire Qualite + Controle Final Obligatoire                 -->
+  <!-- ============================================================ -->
+  <bpmn2:process id="Process_PROD02" name="Execution et Verrous Operationnels" isExecutable="true">
+    <bpmn2:extensionElements>
+      <camunda:processConfiguration>
+        <camunda:processConfigurationParameter
+          metaModel="ManufOrder"
+          isStartModel="true"
+          isDirectCreation="false"
+          isCustom="false"
+          model="com.axelor.apps.production.db.ManufOrder"
+          metaModelFullName="com.axelor.apps.production.db.ManufOrder"
+          title="ManufOrder" />
+      </camunda:processConfiguration>
+    </bpmn2:extensionElements>
+
+    <!-- ====== START : Ouverture OF ====== -->
+    <bpmn2:startEvent id="Start_PROD02" name="Ouverture de l'OF">
+      <bpmn2:outgoing>Flow_P02_01</bpmn2:outgoing>
+    </bpmn2:startEvent>
+
+    <!-- ====== MEMOIRE QUALITE : Alerte incidents precedents ====== -->
+    <bpmn2:scriptTask id="Script_CheckQualityHistory" name="Memoire Qualite :&#10;Rechercher incidents qualite&#10;sur OF precedents (meme article)" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P02_01</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_02</bpmn2:outgoing>
+      <bpmn2:script>
+// Recherche d'incidents qualite (AQ) sur les OF precedents du meme article
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+def product = mo.product
+def previousMOs = __ctx__.findAll('ManufOrder',
+  "self.product = :product AND self.id != :currentId AND self.statusSelect = 6",
+  ['product': product, 'currentId': mo.id])
+
+def hasQualityIncident = false
+def incidentDetails = []
+
+previousMOs?.each { prevMO ->
+  // Recherche des controles qualite en anomalie
+  def qualityControls = __ctx__.findAll('QualityControl',
+    "self.manufOrder = :mo AND self.statusSelect IN (3, 4)",
+    ['mo': prevMO])
+  if (qualityControls != null &amp;&amp; !qualityControls.isEmpty()) {
+    hasQualityIncident = true
+    qualityControls.each { qc ->
+      incidentDetails.add("OF ${prevMO.manufOrderSeq} - AQ: ${qc.name}")
+    }
+  }
+}
+
+__ctx__.setVariable('hasQualityIncident', hasQualityIncident)
+__ctx__.setVariable('incidentDetails', incidentDetails.join('\n'))
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:exclusiveGateway id="GW_QualityIncident" name="Incident qualite&#10;precedent ?" default="Flow_P02_NoIncident">
+      <bpmn2:incoming>Flow_P02_02</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_YesIncident</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_P02_NoIncident</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Alerte visuelle -->
+    <bpmn2:scriptTask id="Script_AlertQuality" name="ALERTE VISUELLE :&#10;Incident qualite detecte&#10;sur OF precedent" scriptFormat="axelor" bioc:stroke="#e53935">
+      <bpmn2:incoming>Flow_P02_YesIncident</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_AfterAlert</bpmn2:outgoing>
+      <bpmn2:script>
+// Afficher alerte visuelle dans la fiche OF
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+def alertMsg = "ATTENTION - MEMOIRE QUALITE\n"
+alertMsg += "Des incidents qualite ont ete detectes sur des OF precedents pour cet article :\n"
+alertMsg += __ctx__.getVariable('incidentDetails')
+mo.note = alertMsg + '\n\n' + (mo.note ?: '')
+__ctx__.save(mo)
+// L'alerte sera affichee visuellement via un panneau d'alerte dans la vue
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <!-- Merge apres alerte -->
+    <bpmn2:exclusiveGateway id="GW_MergeAfterAlert" name="Continuer execution">
+      <bpmn2:incoming>Flow_P02_AfterAlert</bpmn2:incoming>
+      <bpmn2:incoming>Flow_P02_NoIncident</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_ToExecution</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- ====== EXECUTION NORMALE ====== -->
+    <bpmn2:userTask id="Task_Execution" name="Execution de l'OF&#10;(Production en cours)">
+      <bpmn2:incoming>Flow_P02_ToExecution</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_ToFinalCheck</bpmn2:outgoing>
+    </bpmn2:userTask>
+
+    <!-- ====== VERROU : Controle Final Obligatoire ====== -->
+    <bpmn2:scriptTask id="Script_CheckQC" name="Verifier statut&#10;Controle Qualite lie" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P02_ToFinalCheck</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_04</bpmn2:outgoing>
+      <bpmn2:script>
+// Verifier que l'objet Controle Qualite lie est au statut Valide
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+def qualityControl = __ctx__.find('QualityControl',
+  "self.manufOrder = :mo",
+  ['mo': mo])
+def qcValidated = qualityControl != null &amp;&amp; qualityControl.statusSelect == 5  // STATUS_VALIDATED
+__ctx__.setVariable('qcValidated', qcValidated)
+__ctx__.setVariable('hasQualityControl', qualityControl != null)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:exclusiveGateway id="GW_QCValidated" name="Controle Qualite&#10;Valide ?" default="Flow_P02_QC_KO">
+      <bpmn2:incoming>Flow_P02_04</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_QC_OK</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_P02_QC_KO</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+
+    <!-- Blocage : QC non valide -->
+    <bpmn2:scriptTask id="Script_BlockQC" name="BLOCAGE :&#10;Controle Qualite non valide&#10;(Statut Termine inaccessible)" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P02_QC_KO</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_ErrQC</bpmn2:outgoing>
+      <bpmn2:script>
+def hasQC = __ctx__.getVariable('hasQualityControl')
+def msg = hasQC
+  ? "Impossible de terminer l'OF : le Controle Qualite lie n'est pas au statut Valide."
+  : "Impossible de terminer l'OF : aucun Controle Qualite n'est rattache a cet OF."
+throw new com.axelor.exception.AxelorException(
+  com.axelor.exception.db.repo.TraceBackRepository.CATEGORY_INCONSISTENCY, msg)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="End_P02_BlockQC" name="Blocage : QC non valide">
+      <bpmn2:incoming>Flow_P02_ErrQC</bpmn2:incoming>
+      <bpmn2:errorEventDefinition id="ErrDef_QC" errorRef="Error_QC" />
+    </bpmn2:endEvent>
+
+    <!-- ====== OF TERMINE ====== -->
+    <bpmn2:scriptTask id="Script_P02_Termine" name="OF Termine&#10;(statusSelect = 6)" scriptFormat="axelor">
+      <bpmn2:incoming>Flow_P02_QC_OK</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_P02_End</bpmn2:outgoing>
+      <bpmn2:script>
+def mo = __ctx__.find('ManufOrder', manufOrderId)
+mo.statusSelect = 6  // STATUS_FINISHED
+return __ctx__.save(mo)
+      </bpmn2:script>
+    </bpmn2:scriptTask>
+
+    <bpmn2:endEvent id="End_PROD02" name="OF Termine avec succes">
+      <bpmn2:incoming>Flow_P02_End</bpmn2:incoming>
+    </bpmn2:endEvent>
+
+    <!-- ====== BOUNDARY : Bouton Reinitialiser Qualification ====== -->
+    <!-- Ce sous-processus represente le bouton dans la fiche Article -->
+    <bpmn2:subProcess id="SubProcess_ResetQualif" name="Bouton : Reinitialiser la Qualification&#10;(Fiche Article)" triggeredByEvent="true">
+      <bpmn2:startEvent id="Start_ResetQualif" name="Clic Reinitialiser&#10;Qualification" isInterrupting="false">
+        <bpmn2:outgoing>Flow_Reset_01</bpmn2:outgoing>
+        <bpmn2:signalEventDefinition id="SignalDef_Reset" signalRef="Signal_ResetQualif" />
+      </bpmn2:startEvent>
+
+      <bpmn2:scriptTask id="Script_ResetQualif" name="Reinitialiser qualification&#10;Article en Nouveau&#10;(reprise cycle Echantillon)" scriptFormat="axelor">
+        <bpmn2:incoming>Flow_Reset_01</bpmn2:incoming>
+        <bpmn2:outgoing>Flow_Reset_02</bpmn2:outgoing>
+        <bpmn2:script>
+// Reinitialisation suite a modification technique majeure
+// Meme si l'article a deja ete produit en serie
+def product = __ctx__.find('Product', productId)
+product.qualificationLevel = 'NOUVEAU'
+__ctx__.save(product)
+// Log de la reinitialisation
+def msg = "Qualification reinitialisee le ${LocalDate.now()} - "
+msg += "Modification technique majeure - Reprise cycle Echantillon"
+product.internalDescription = msg + '\n' + (product.internalDescription ?: '')
+__ctx__.save(product)
+        </bpmn2:script>
+      </bpmn2:scriptTask>
+
+      <bpmn2:endEvent id="End_ResetQualif" name="Qualification reinitialisee">
+        <bpmn2:incoming>Flow_Reset_02</bpmn2:incoming>
+      </bpmn2:endEvent>
+
+      <bpmn2:sequenceFlow id="Flow_Reset_01" sourceRef="Start_ResetQualif" targetRef="Script_ResetQualif" />
+      <bpmn2:sequenceFlow id="Flow_Reset_02" sourceRef="Script_ResetQualif" targetRef="End_ResetQualif" />
+    </bpmn2:subProcess>
+
+    <!-- ====== SEQUENCE FLOWS ====== -->
+    <bpmn2:sequenceFlow id="Flow_P02_01" sourceRef="Start_PROD02" targetRef="Script_CheckQualityHistory" />
+    <bpmn2:sequenceFlow id="Flow_P02_02" sourceRef="Script_CheckQualityHistory" targetRef="GW_QualityIncident" />
+
+    <bpmn2:sequenceFlow id="Flow_P02_YesIncident" name="OUI (Incident)" sourceRef="GW_QualityIncident" targetRef="Script_AlertQuality">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression" language="axelor">hasQualityIncident == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_P02_NoIncident" name="NON" sourceRef="GW_QualityIncident" targetRef="GW_MergeAfterAlert" />
+    <bpmn2:sequenceFlow id="Flow_P02_AfterAlert" sourceRef="Script_AlertQuality" targetRef="GW_MergeAfterAlert" />
+
+    <bpmn2:sequenceFlow id="Flow_P02_ToExecution" sourceRef="GW_MergeAfterAlert" targetRef="Task_Execution" />
+    <bpmn2:sequenceFlow id="Flow_P02_ToFinalCheck" sourceRef="Task_Execution" targetRef="Script_CheckQC" />
+    <bpmn2:sequenceFlow id="Flow_P02_04" sourceRef="Script_CheckQC" targetRef="GW_QCValidated" />
+
+    <bpmn2:sequenceFlow id="Flow_P02_QC_OK" name="OUI (Valide)" sourceRef="GW_QCValidated" targetRef="Script_P02_Termine">
+      <bpmn2:conditionExpression xs:type="bpmn2:tFormalExpression" language="axelor">qcValidated == true</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_P02_QC_KO" name="NON" sourceRef="GW_QCValidated" targetRef="Script_BlockQC" />
+    <bpmn2:sequenceFlow id="Flow_P02_ErrQC" sourceRef="Script_BlockQC" targetRef="End_P02_BlockQC" />
+    <bpmn2:sequenceFlow id="Flow_P02_End" sourceRef="Script_P02_Termine" targetRef="End_PROD02" />
+  </bpmn2:process>
+
+  <!-- ============================================================ -->
+  <!-- SIGNAL & ERROR DEFINITIONS                                   -->
+  <!-- ============================================================ -->
+  <bpmn2:signal id="Signal_ResetQualif" name="Signal_ResetQualification" />
+  <bpmn2:error id="Error_RapportEI" name="Rapport EI manquant" errorCode="ERR_RAPPORT_EI" />
+  <bpmn2:error id="Error_QC" name="Controle Qualite non valide" errorCode="ERR_QC_NOT_VALID" />
+
+  <!-- ============================================================ -->
+  <!-- DIAGRAM (LAYOUT)                                             -->
+  <!-- ============================================================ -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_BlocB">
+    <bpmndi:BPMNPlane id="BPMNPlane_BlocB" bpmnElement="Collab_BlocB">
+
+      <!-- ====== POOL WF-PROD-01 ====== -->
+      <bpmndi:BPMNShape id="Pool_PROD01_di" bpmnElement="Pool_PROD01" isHorizontal="true" bioc:stroke="#ff9e0f" color:border-color="#ff9e0f">
+        <dc:Bounds x="120" y="30" width="2200" height="1100" />
+      </bpmndi:BPMNShape>
+
+      <!-- Lane Qualification -->
+      <bpmndi:BPMNShape id="Lane_Qualification_di" bpmnElement="Lane_Qualification" isHorizontal="true">
+        <dc:Bounds x="150" y="30" width="2170" height="330" />
+      </bpmndi:BPMNShape>
+
+      <!-- Lane EI -->
+      <bpmndi:BPMNShape id="Lane_Workflow_EI_di" bpmnElement="Lane_Workflow_EI" isHorizontal="true" bioc:stroke="#e53935" color:border-color="#e53935">
+        <dc:Bounds x="150" y="360" width="2170" height="200" />
+      </bpmndi:BPMNShape>
+
+      <!-- Lane Preserie -->
+      <bpmndi:BPMNShape id="Lane_Workflow_Preserie_di" bpmnElement="Lane_Workflow_Preserie" isHorizontal="true" bioc:stroke="#ff9e0f" color:border-color="#ff9e0f">
+        <dc:Bounds x="150" y="560" width="2170" height="200" />
+      </bpmndi:BPMNShape>
+
+      <!-- Lane Serie -->
+      <bpmndi:BPMNShape id="Lane_Workflow_Serie_di" bpmnElement="Lane_Workflow_Serie" isHorizontal="true" bioc:stroke="#55c041" color:border-color="#55c041">
+        <dc:Bounds x="150" y="760" width="2170" height="170" />
+      </bpmndi:BPMNShape>
+
+      <!-- Lane Finalisation -->
+      <bpmndi:BPMNShape id="Lane_Finalisation_di" bpmnElement="Lane_Finalisation" isHorizontal="true" bioc:stroke="#1e88e5" color:border-color="#1e88e5">
+        <dc:Bounds x="150" y="930" width="2170" height="200" />
+      </bpmndi:BPMNShape>
+
+      <!-- ====== SHAPES - Qualification Lane ====== -->
+      <bpmndi:BPMNShape id="Start_PROD01_di" bpmnElement="Start_PROD01" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="212" y="177" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="196" y="220" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_CheckFinishedMO_di" bpmnElement="Script_CheckFinishedMO" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="310" y="155" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_FinishedMOExists_di" bpmnElement="GW_FinishedMOExists" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="475" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="455" y="146" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_ForceEchantillon_di" bpmnElement="Script_ForceEchantillon" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="450" y="55" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_CheckPreserie_di" bpmnElement="Script_CheckPreserie" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="600" y="155" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_PreserieValidated_di" bpmnElement="GW_PreserieValidated" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="765" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="745" y="146" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_ForcePreserie_di" bpmnElement="Script_ForcePreserie" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="740" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_DefaultSerie_di" bpmnElement="Script_DefaultSerie" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="740" y="55" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_MergeType_di" bpmnElement="GW_MergeType" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="925" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="905" y="146" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_TypeDispatch_di" bpmnElement="GW_TypeDispatch" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="1045" y="170" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1029" y="146" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- ====== SHAPES - EI Lane ====== -->
+      <bpmndi:BPMNShape id="Task_EI_Planifie_di" bpmnElement="Task_EI_Planifie" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1170" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_EI_Controle3D_di" bpmnElement="Task_EI_Controle3D" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1330" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_EI_AttenteValidQualite_di" bpmnElement="Task_EI_AttenteValidQualite" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1490" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_EI_RapportAttache_di" bpmnElement="GW_EI_RapportAttache" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="1655" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1643" y="405" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_EI_BlockRapport_di" bpmnElement="Script_EI_BlockRapport" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="1770" y="370" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_EI_Block_di" bpmnElement="End_EI_Block" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="1932" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1905" y="435" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- ====== SHAPES - Preserie Lane ====== -->
+      <bpmndi:BPMNShape id="Task_PS_Planifie_di" bpmnElement="Task_PS_Planifie" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1170" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_PS_Production_di" bpmnElement="Task_PS_Production" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1330" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_PS_AnalyseRepetabilite_di" bpmnElement="Task_PS_AnalyseRepetabilite" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="1490" y="620" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- ====== SHAPES - Serie Lane ====== -->
+      <bpmndi:BPMNShape id="Task_SE_Planifie_di" bpmnElement="Task_SE_Planifie" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1170" y="810" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_SE_Production_di" bpmnElement="Task_SE_Production" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="1330" y="810" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- ====== SHAPES - Finalisation Lane ====== -->
+      <bpmndi:BPMNShape id="GW_MergeEnd_di" bpmnElement="GW_MergeEnd" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="1745" y="1005" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1725" y="1062" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_UpdateQualification_di" bpmnElement="Script_UpdateQualification" bioc:stroke="#1e88e5" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#1e88e5">
+        <dc:Bounds x="1870" y="990" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_SetTermine_di" bpmnElement="Script_SetTermine" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="2030" y="990" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_PROD01_di" bpmnElement="End_PROD01" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
+        <dc:Bounds x="2192" y="1012" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2165" y="1055" width="90" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- ====== EDGES - Qualification ====== -->
+      <bpmndi:BPMNEdge id="Flow_P01_01_di" bpmnElement="Flow_P01_01" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="248" y="195" />
+        <di:waypoint x="310" y="195" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_02_di" bpmnElement="Flow_P01_02" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="410" y="195" />
+        <di:waypoint x="475" y="195" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_YesFinished_di" bpmnElement="Flow_P01_YesFinished" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="525" y="195" />
+        <di:waypoint x="600" y="195" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="554" y="177" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_NoFinished_di" bpmnElement="Flow_P01_NoFinished" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="500" y="170" />
+        <di:waypoint x="500" y="135" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="505" y="140" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_03_di" bpmnElement="Flow_P01_03" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="700" y="195" />
+        <di:waypoint x="765" y="195" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_YesPreserie_di" bpmnElement="Flow_P01_YesPreserie" bioc:stroke="#55c041" color:border-color="#55c041">
+        <di:waypoint x="790" y="170" />
+        <di:waypoint x="790" y="135" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="795" y="140" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_NoPreserie_di" bpmnElement="Flow_P01_NoPreserie" bioc:stroke="#ff9e0f" color:border-color="#ff9e0f">
+        <di:waypoint x="790" y="220" />
+        <di:waypoint x="790" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="795" y="237" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_ToMergeEI_di" bpmnElement="Flow_P01_ToMergeEI" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="550" y="95" />
+        <di:waypoint x="950" y="95" />
+        <di:waypoint x="950" y="170" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_ToMergePS_di" bpmnElement="Flow_P01_ToMergePS" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="840" y="300" />
+        <di:waypoint x="950" y="300" />
+        <di:waypoint x="950" y="220" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_ToMergeSE_di" bpmnElement="Flow_P01_ToMergeSE" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="840" y="95" />
+        <di:waypoint x="950" y="95" />
+        <di:waypoint x="950" y="170" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_ToDispatch_di" bpmnElement="Flow_P01_ToDispatch" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="975" y="195" />
+        <di:waypoint x="1045" y="195" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_GoEI_di" bpmnElement="Flow_P01_GoEI" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="1070" y="220" />
+        <di:waypoint x="1070" y="460" />
+        <di:waypoint x="1170" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1073" y="340" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_GoPS_di" bpmnElement="Flow_P01_GoPS" bioc:stroke="#ff9e0f" color:border-color="#ff9e0f">
+        <di:waypoint x="1070" y="220" />
+        <di:waypoint x="1070" y="660" />
+        <di:waypoint x="1170" y="660" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1073" y="540" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_GoSerie_di" bpmnElement="Flow_P01_GoSerie" bioc:stroke="#55c041" color:border-color="#55c041">
+        <di:waypoint x="1070" y="220" />
+        <di:waypoint x="1070" y="850" />
+        <di:waypoint x="1170" y="850" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1073" y="730" width="28" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- ====== EDGES - EI ====== -->
+      <bpmndi:BPMNEdge id="Flow_EI_01_di" bpmnElement="Flow_EI_01" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1270" y="460" />
+        <di:waypoint x="1330" y="460" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_EI_02_di" bpmnElement="Flow_EI_02" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1430" y="460" />
+        <di:waypoint x="1490" y="460" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_EI_03_di" bpmnElement="Flow_EI_03" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1590" y="460" />
+        <di:waypoint x="1655" y="460" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_EI_OK_di" bpmnElement="Flow_EI_OK" bioc:stroke="#55c041" color:border-color="#55c041">
+        <di:waypoint x="1680" y="485" />
+        <di:waypoint x="1680" y="1030" />
+        <di:waypoint x="1745" y="1030" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1683" y="750" width="76" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_EI_Block_di" bpmnElement="Flow_EI_Block" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="1705" y="460" />
+        <di:waypoint x="1738" y="460" />
+        <di:waypoint x="1738" y="410" />
+        <di:waypoint x="1770" y="410" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1708" y="432" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_EI_BlockEnd_di" bpmnElement="Flow_EI_BlockEnd" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="1870" y="410" />
+        <di:waypoint x="1932" y="410" />
+      </bpmndi:BPMNEdge>
+
+      <!-- ====== EDGES - PS ====== -->
+      <bpmndi:BPMNEdge id="Flow_PS_01_di" bpmnElement="Flow_PS_01" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1270" y="660" />
+        <di:waypoint x="1330" y="660" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PS_02_di" bpmnElement="Flow_PS_02" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1430" y="660" />
+        <di:waypoint x="1490" y="660" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PS_ToMergeEnd_di" bpmnElement="Flow_PS_ToMergeEnd" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1590" y="660" />
+        <di:waypoint x="1770" y="660" />
+        <di:waypoint x="1770" y="1005" />
+      </bpmndi:BPMNEdge>
+
+      <!-- ====== EDGES - SE ====== -->
+      <bpmndi:BPMNEdge id="Flow_SE_01_di" bpmnElement="Flow_SE_01" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1270" y="850" />
+        <di:waypoint x="1330" y="850" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_SE_ToMergeEnd_di" bpmnElement="Flow_SE_ToMergeEnd" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1430" y="850" />
+        <di:waypoint x="1770" y="850" />
+        <di:waypoint x="1770" y="1005" />
+      </bpmndi:BPMNEdge>
+
+      <!-- ====== EDGES - Finalisation ====== -->
+      <bpmndi:BPMNEdge id="Flow_P01_ToUpdateQualif_di" bpmnElement="Flow_P01_ToUpdateQualif" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1795" y="1030" />
+        <di:waypoint x="1870" y="1030" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_ToTermine_di" bpmnElement="Flow_P01_ToTermine" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1970" y="1030" />
+        <di:waypoint x="2030" y="1030" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P01_End_di" bpmnElement="Flow_P01_End" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="2130" y="1030" />
+        <di:waypoint x="2192" y="1030" />
+      </bpmndi:BPMNEdge>
+
+      <!-- ====== POOL WF-PROD-02 ====== -->
+      <bpmndi:BPMNShape id="Pool_PROD02_di" bpmnElement="Pool_PROD02" isHorizontal="true" bioc:stroke="#1e88e5" color:border-color="#1e88e5">
+        <dc:Bounds x="120" y="1180" width="1800" height="550" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start PROD02 -->
+      <bpmndi:BPMNShape id="Start_PROD02_di" bpmnElement="Start_PROD02" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="192" y="1382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="172" y="1425" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Check Quality History -->
+      <bpmndi:BPMNShape id="Script_CheckQualityHistory_di" bpmnElement="Script_CheckQualityHistory" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="290" y="1360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_QualityIncident_di" bpmnElement="GW_QualityIncident" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="455" y="1375" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="435" y="1338" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Alert Quality -->
+      <bpmndi:BPMNShape id="Script_AlertQuality_di" bpmnElement="Script_AlertQuality" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="430" y="1230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Merge after alert -->
+      <bpmndi:BPMNShape id="GW_MergeAfterAlert_di" bpmnElement="GW_MergeAfterAlert" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="605" y="1375" width="50" height="50" />
+      </bpmndi:BPMNShape>
+
+      <!-- Execution -->
+      <bpmndi:BPMNShape id="Task_Execution_di" bpmnElement="Task_Execution" bioc:stroke="#3fbdd6" bioc:fill="#c5ebf3" color:background-color="#c5ebf3" color:border-color="#3fbdd6">
+        <dc:Bounds x="720" y="1360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <!-- Check QC -->
+      <bpmndi:BPMNShape id="Script_CheckQC_di" bpmnElement="Script_CheckQC" bioc:stroke="#ff9e0f" bioc:fill="#ffeed4" color:background-color="#ffeed4" color:border-color="#ff9e0f">
+        <dc:Bounds x="890" y="1360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="GW_QCValidated_di" bpmnElement="GW_QCValidated" isMarkerVisible="true" bioc:stroke="#f9c000" bioc:fill="#fdecb3" color:background-color="#fdecb3" color:border-color="#f9c000">
+        <dc:Bounds x="1055" y="1375" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1035" y="1338" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Block QC -->
+      <bpmndi:BPMNShape id="Script_BlockQC_di" bpmnElement="Script_BlockQC" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="1030" y="1510" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_P02_BlockQC_di" bpmnElement="End_P02_BlockQC" bioc:stroke="#e53935" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#e53935">
+        <dc:Bounds x="1192" y="1532" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1165" y="1575" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Termine -->
+      <bpmndi:BPMNShape id="Script_P02_Termine_di" bpmnElement="Script_P02_Termine" bioc:stroke="#55c041" bioc:fill="#ccecc6" color:background-color="#ccecc6" color:border-color="#55c041">
+        <dc:Bounds x="1190" y="1360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_PROD02_di" bpmnElement="End_PROD02" bioc:stroke="#ff7043" bioc:fill="#ffd4c7" color:background-color="#ffd4c7" color:border-color="#ff7043">
+        <dc:Bounds x="1362" y="1382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1335" y="1425" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- SubProcess Reset Qualification -->
+      <bpmndi:BPMNShape id="SubProcess_ResetQualif_di" bpmnElement="SubProcess_ResetQualif" isExpanded="true" bioc:stroke="#7b1fa2" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#7b1fa2">
+        <dc:Bounds x="1450" y="1200" width="420" height="200" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Start_ResetQualif_di" bpmnElement="Start_ResetQualif" bioc:stroke="#7b1fa2" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#7b1fa2">
+        <dc:Bounds x="1480" y="1282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1460" y="1325" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Script_ResetQualif_di" bpmnElement="Script_ResetQualif" bioc:stroke="#7b1fa2" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#7b1fa2">
+        <dc:Bounds x="1570" y="1260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="End_ResetQualif_di" bpmnElement="End_ResetQualif" bioc:stroke="#7b1fa2" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#7b1fa2">
+        <dc:Bounds x="1732" y="1282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1705" y="1325" width="90" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_Reset_01_di" bpmnElement="Flow_Reset_01" bioc:stroke="#7b1fa2" color:border-color="#7b1fa2">
+        <di:waypoint x="1516" y="1300" />
+        <di:waypoint x="1570" y="1300" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Reset_02_di" bpmnElement="Flow_Reset_02" bioc:stroke="#7b1fa2" color:border-color="#7b1fa2">
+        <di:waypoint x="1670" y="1300" />
+        <di:waypoint x="1732" y="1300" />
+      </bpmndi:BPMNEdge>
+
+      <!-- ====== EDGES - PROD02 ====== -->
+      <bpmndi:BPMNEdge id="Flow_P02_01_di" bpmnElement="Flow_P02_01" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="228" y="1400" />
+        <di:waypoint x="290" y="1400" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_02_di" bpmnElement="Flow_P02_02" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="390" y="1400" />
+        <di:waypoint x="455" y="1400" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_YesIncident_di" bpmnElement="Flow_P02_YesIncident" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="480" y="1375" />
+        <di:waypoint x="480" y="1310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="483" y="1340" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_NoIncident_di" bpmnElement="Flow_P02_NoIncident" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="505" y="1400" />
+        <di:waypoint x="605" y="1400" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="547" y="1382" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_AfterAlert_di" bpmnElement="Flow_P02_AfterAlert" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="530" y="1270" />
+        <di:waypoint x="630" y="1270" />
+        <di:waypoint x="630" y="1375" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_ToExecution_di" bpmnElement="Flow_P02_ToExecution" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="655" y="1400" />
+        <di:waypoint x="720" y="1400" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_ToFinalCheck_di" bpmnElement="Flow_P02_ToFinalCheck" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="820" y="1400" />
+        <di:waypoint x="890" y="1400" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_04_di" bpmnElement="Flow_P02_04" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="990" y="1400" />
+        <di:waypoint x="1055" y="1400" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_QC_OK_di" bpmnElement="Flow_P02_QC_OK" bioc:stroke="#55c041" color:border-color="#55c041">
+        <di:waypoint x="1105" y="1400" />
+        <di:waypoint x="1190" y="1400" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1117" y="1382" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_QC_KO_di" bpmnElement="Flow_P02_QC_KO" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="1080" y="1425" />
+        <di:waypoint x="1080" y="1510" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1083" y="1465" width="26" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_ErrQC_di" bpmnElement="Flow_P02_ErrQC" bioc:stroke="#e53935" color:border-color="#e53935">
+        <di:waypoint x="1130" y="1550" />
+        <di:waypoint x="1192" y="1550" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_P02_End_di" bpmnElement="Flow_P02_End" bioc:stroke="#8095b3" color:border-color="#8095b3">
+        <di:waypoint x="1290" y="1400" />
+        <di:waypoint x="1362" y="1400" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>

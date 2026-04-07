@@ -1,0 +1,31 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/index.tsx",
+    "src/**/__tests__/**/*.test.{ts,tsx}",
+    "src/**/__tests__/**/*.{ts,tsx}",
+    "vitest.setup.ts"
+  ],
+  "project": ["src/**/*.{ts,tsx}"],
+  "exclude": ["duplicates"],
+  "tags": ["-public"],
+  "ignoreDependencies": [
+    "@vitejs/plugin-react",
+    "vite-plugin-svgr",
+    "vite-plugin-checker",
+    "eslint-plugin-import-x",
+    "eslint-plugin-react-hooks",
+    "eslint-plugin-react-refresh",
+    "globals",
+    "typescript-eslint",
+    "@vitest/coverage-v8",
+    "@msw/playwright",
+    "@playwright/test",
+    "msw",
+    "bpmnlint-plugin-axelor",
+    "bpmnlint-utils"
+  ],
+  "ignoreBinaries": ["only-allow"],
+  "vite": false,
+  "vitest": false
+}

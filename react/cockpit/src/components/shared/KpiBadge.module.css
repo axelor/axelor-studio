@@ -1,0 +1,48 @@
+/* KpiBadge -- compact KPI indicator badges (D-08) */
+
+.container {
+  display: inline-flex;
+  gap: var(--ck-space-xs, 4px);
+  align-items: center;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  border: none;
+  border-radius: 4px;
+  font-size: var(--ck-font-label, 12px);
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 120ms ease-out;
+  white-space: nowrap;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+.badge:focus-visible {
+  outline: 2px solid var(--ck-accent, #3b82f6);
+  outline-offset: 1px;
+}
+
+/* Status variants */
+
+.ok {
+  background-color: var(--bs-success, #198754);
+  color: #fff;
+}
+
+.critical {
+  background-color: var(--bs-danger, #dc3545);
+  color: #fff;
+}
+
+.warning {
+  background-color: var(--bs-warning, #ffc107);
+  color: var(--bs-dark, #212529);
+}

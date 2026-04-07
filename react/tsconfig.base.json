@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "declaration": false,
+    "typeRoots": ["./types", "./node_modules/@types"]
+  },
+  "_excludeNote": "TypeScript 'extends' REPLACES 'exclude' arrays (does not merge). All packages inherit this exclude. Do NOT add 'exclude' in child tsconfigs or these base exclusions will be silently lost.",
+  "exclude": ["**/node_modules", "**/build", "**/dist"]
+}

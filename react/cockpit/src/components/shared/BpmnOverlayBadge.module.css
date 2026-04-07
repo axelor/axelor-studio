@@ -1,0 +1,16 @@
+/* BpmnOverlayBadge -- pass-count badge for bpmn-js overlays (D-06) */
+
+.badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ck-badge-bg, #3b82f6);
+  color: var(--ck-badge-text, #fff);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 300ms ease-out;
+}

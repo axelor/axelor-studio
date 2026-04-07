@@ -28,10 +28,30 @@ node {
   download = true
 }
 
+def reactLibraries = ['shared'] // library packages, not deployable webapps
 def reactDirs = []
-file('react').traverse(type: groovy.io.FileType.DIRECTORIES, maxDepth: 1) { it ->
-  if (new File(it, 'package.json').exists()) {
-    reactDirs.add(it)
+file('react').eachDir { dir ->
+  if (dir.name != 'node_modules' && !reactLibraries.contains(dir.name) && new File(dir, 'package.json').exists()) {
+    reactDirs.add(dir)
+  }
+}
+
+// Install library packages (not deployable, but linked by apps)
+def libraryInstallTasks = []
+reactLibraries.each { libName ->
+  def libDir = file("react/${libName}")
+  if (new File(libDir, 'package.json').exists()) {
+    libraryInstallTasks.add(tasks.register("${libName}Install", PnpmTask) {
+      group = 'axelor'
+      description = "Install ${libName} dependencies"
+      environment = [
+        CI: 'false'
+      ]
+
+      workingDir = libDir
+
+      args = ['install']
+    })
   }
 }
 
@@ -54,7 +74,10 @@ reactDirs.each { dir ->
     outputs.dir("$projectDir/react/${dirName}/build")
     inputs.files("$projectDir/react/${dirName}/package.json", "$projectDir/react/${dirName}/pnpm-lock.yaml")
     inputs.dir("$projectDir/react/${dirName}/src")
-    inputs.dir("$projectDir/react/${dirName}/public")
+    def publicDir = file("$projectDir/react/${dirName}/public")
+    if (publicDir.exists()) {
+      inputs.dir(publicDir)
+    }
 
     dependsOn "${dirName}Install"
     mustRunAfter "${dirName}Install"
@@ -69,6 +92,9 @@ reactDirs.each { dir ->
     ]
 
     workingDir = file(dir)
+
+    dependsOn libraryInstallTasks
+    mustRunAfter libraryInstallTasks
 
     args = ['install']
   }
@@ -94,6 +120,128 @@ tasks.register('frontClean') {
   description = 'Clean all React projects'
   dependsOn cleanTasks
 }
+
+// --- Quality tasks (lint, test, typecheck) ---
+// Install react/ root package.json (ESLint plugin host for shared flat config)
+def reactRootInstall = tasks.register('reactRootInstall', PnpmTask) {
+  group = 'axelor'
+  description = 'Install react/ root dependencies (ESLint plugins)'
+  workingDir = file('react')
+  args = ['install']
+}
+
+// Quality tasks cover only packages with modern quality scripts (lint, test:ci, typecheck).
+// Legacy packages (studio, webservices-builder) are excluded — they lack these scripts.
+// cockpit is excluded here — its quality gates run on the dedicated feature/cockpit branch.
+def qualityExclude = ['studio', 'webservices-builder', 'cockpit']
+def qualityDirs = reactDirs.findAll { !qualityExclude.contains(it.name) }
+
+// Include shared library in quality checks (excluded from reactDirs but has quality scripts)
+def sharedDir = file('react/shared')
+if (new File(sharedDir, 'package.json').exists()) {
+  qualityDirs.add(sharedDir)
+}
+
+def lintTasks = []
+def testTasks = []
+def typecheckTasks = []
+def knipTasks = []
+
+qualityDirs.each { dir ->
+  def dirName = dir.name
+
+  lintTasks.add(tasks.register("${dirName}Lint", PnpmTask) {
+    group = 'axelor'
+    description = "Lint ${dirName}"
+    workingDir = file(dir)
+    dependsOn "${dirName}Install", reactRootInstall
+    mustRunAfter "${dirName}Install", reactRootInstall
+    args = ['lint']
+  })
+
+  testTasks.add(tasks.register("${dirName}FrontTest", PnpmTask) {
+    group = 'axelor'
+    description = "Test ${dirName}"
+    workingDir = file(dir)
+    dependsOn "${dirName}Install"
+    mustRunAfter "${dirName}Install"
+    args = ['test:ci']
+  })
+
+  typecheckTasks.add(tasks.register("${dirName}Typecheck", PnpmTask) {
+    group = 'axelor'
+    description = "Type-check ${dirName}"
+    workingDir = file(dir)
+    dependsOn "${dirName}Install"
+    mustRunAfter "${dirName}Install"
+    args = ['typecheck']
+  })
+
+  knipTasks.add(tasks.register("${dirName}Knip", PnpmTask) {
+    group = 'axelor'
+    description = "Knip dead-code check ${dirName}"
+    workingDir = file(dir)
+    dependsOn "${dirName}Install", reactRootInstall
+    mustRunAfter "${dirName}Install", reactRootInstall
+    args = ['knip']
+  })
+}
+
+tasks.register('frontLint') {
+  group = 'axelor'
+  description = 'Lint all React projects'
+  dependsOn lintTasks
+}
+
+tasks.register('frontTest') {
+  group = 'axelor'
+  description = 'Test all React projects'
+  dependsOn testTasks
+}
+
+tasks.register('frontTypecheck') {
+  group = 'axelor'
+  description = 'Type-check all React projects'
+  dependsOn typecheckTasks
+}
+
+tasks.register('frontKnip') {
+  group = 'axelor'
+  description = 'Knip dead-code check all React projects'
+  dependsOn knipTasks
+}
+
+def depcruiseTasks = []
+
+qualityDirs.each { dir ->
+  def dirName = dir.name
+
+  depcruiseTasks.add(tasks.register("${dirName}Depcruise", PnpmTask) {
+    group = 'axelor'
+    description = "Dependency-cruiser check ${dirName}"
+    workingDir = file(dir)
+    dependsOn "${dirName}Install", reactRootInstall
+    mustRunAfter "${dirName}Install", reactRootInstall
+    args = ['depcruise']
+  })
+}
+
+tasks.register('frontDepcruise') {
+  group = 'axelor'
+  description = 'Dependency-cruiser check all React projects'
+  dependsOn depcruiseTasks
+}
+
+// Security audit -- workspace-level, not per-package (D-05: pnpm audit is workspace-scoped)
+tasks.register('frontAudit', PnpmTask) {
+  group = 'axelor'
+  description = 'Security audit all React packages'
+  workingDir = file('react')
+  dependsOn reactRootInstall
+  mustRunAfter reactRootInstall
+  args = ['audit', '--audit-level=critical']
+}
+
 
 def frontCopy = tasks.register('frontCopy', Copy) {
   description = 'Copy all React projects into webapp'

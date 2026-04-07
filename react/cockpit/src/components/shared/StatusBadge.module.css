@@ -1,0 +1,26 @@
+/* StatusBadge -- process status pill indicator */
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: var(--ck-font-label, 12px);
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.draft {
+  background-color: var(--bs-secondary, #6c757d);
+  color: #fff;
+}
+
+.active {
+  background-color: var(--bs-success, #198754);
+  color: #fff;
+}
+
+.terminated {
+  background-color: var(--bs-danger, #dc3545);
+  color: #fff;
+}

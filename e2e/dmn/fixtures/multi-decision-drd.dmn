@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd"
+  xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0"
+  id="Definitions_multi" name="Multi Decision DRD" namespace="http://camunda.org/schema/1.0/dmn">
+
+  <decision id="Decision_Score" name="Score Calculation">
+    <extensionElements>
+      <biodi:bounds x="157" y="81" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="decisionTable_score">
+      <input id="input_score_1" label="Income">
+        <inputExpression id="inputExpr_score_1" typeRef="integer" expressionLanguage="feel">
+          <text>income</text>
+        </inputExpression>
+      </input>
+      <output id="output_score_1" label="Score" typeRef="integer" />
+      <rule id="rule_score_1">
+        <inputEntry id="inputEntry_score_1">
+          <text>&gt;= 50000</text>
+        </inputEntry>
+        <outputEntry id="outputEntry_score_1">
+          <text>100</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+
+  <decision id="Decision_Eligibility" name="Eligibility Check">
+    <extensionElements>
+      <biodi:bounds x="157" y="241" width="180" height="80" />
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#Decision_Score" />
+    </informationRequirement>
+    <decisionTable id="decisionTable_eligibility">
+      <input id="input_elig_1" label="Score">
+        <inputExpression id="inputExpr_elig_1" typeRef="integer" expressionLanguage="feel">
+          <text>score</text>
+        </inputExpression>
+      </input>
+      <output id="output_elig_1" label="Eligible" typeRef="boolean" />
+      <rule id="rule_elig_1">
+        <inputEntry id="inputEntry_elig_1">
+          <text>&gt;= 80</text>
+        </inputEntry>
+        <outputEntry id="outputEntry_elig_1">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+
+</definitions>

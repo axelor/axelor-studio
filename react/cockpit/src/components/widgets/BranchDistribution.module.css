@@ -1,0 +1,61 @@
+/* BranchDistribution -- horizontal bar chart for gateway branches (D-08, D-25) */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ck-space-sm, 8px);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--ck-font-body, 14px);
+}
+
+.name {
+  font-weight: 500;
+  color: var(--bs-body-color, #212529);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.stats {
+  flex-shrink: 0;
+  margin-left: var(--ck-space-sm, 8px);
+  font-size: var(--ck-font-label, 12px);
+  color: var(--bs-secondary-color, #6c757d);
+  font-variant-numeric: tabular-nums;
+}
+
+.barTrack {
+  height: 6px;
+  background: var(--bs-tertiary-bg, #f8f9fa);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: var(--ck-accent, #3b82f6);
+  border-radius: 3px;
+  transition: width 300ms ease-out;
+  min-width: 2px;
+}
+
+.empty {
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: var(--ck-font-body, 14px);
+  text-align: center;
+  padding: var(--ck-space-md, 16px) 0;
+  margin: 0;
+}

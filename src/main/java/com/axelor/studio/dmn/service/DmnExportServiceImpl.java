@@ -4,7 +4,6 @@
  */
 package com.axelor.studio.dmn.service;
 
-import com.axelor.studio.bpm.exception.BpmExceptionMessage;
 import com.axelor.studio.db.WkfDmnModel;
 import com.axelor.utils.helpers.ExceptionHelper;
 import com.google.common.base.Strings;
@@ -73,7 +72,8 @@ public class DmnExportServiceImpl implements DmnExportService {
   }
 
   protected void createHeaderRow(Sheet sheet, DecisionTable table) {
-    Row titleRow = sheet.createRow(sheet.getLastRowNum());
+    int lastRow = sheet.getLastRowNum();
+    Row titleRow = sheet.createRow(lastRow < 0 ? 0 : lastRow);
     Cell titleCell = titleRow.createCell(0);
     titleCell.setCellValue(table.getParentElement().getAttributeValue("name"));
     sheet.autoSizeColumn(0);
@@ -81,22 +81,20 @@ public class DmnExportServiceImpl implements DmnExportService {
     Row row = sheet.createRow(sheet.getLastRowNum() + 1);
     int inputIndex = 0;
     for (Input input : table.getInputs()) {
-      if (Strings.isNullOrEmpty(input.getLabel())) {
-        throw new IllegalStateException(BpmExceptionMessage.MISSING_INPUT_LABEL);
-      }
+      String inputLabel =
+          Strings.isNullOrEmpty(input.getLabel()) ? input.getId() : input.getLabel();
       Cell cell = row.createCell(inputIndex);
-      cell.setCellValue(input.getLabel() + "(" + input.getId() + ")");
+      cell.setCellValue(inputLabel + "(" + input.getId() + ")");
       sheet.autoSizeColumn(inputIndex);
       inputIndex++;
     }
 
-    int outputIndex = row.getLastCellNum();
+    int outputIndex = row.getLastCellNum() < 0 ? inputIndex : row.getLastCellNum();
     for (Output output : table.getOutputs()) {
-      if (Strings.isNullOrEmpty(output.getLabel())) {
-        throw new IllegalStateException(BpmExceptionMessage.MISSING_OUTPUT_LABEL);
-      }
+      String outputLabel =
+          Strings.isNullOrEmpty(output.getLabel()) ? output.getId() : output.getLabel();
       Cell cell = row.createCell(outputIndex);
-      cell.setCellValue(output.getLabel() + "(" + output.getId() + ")");
+      cell.setCellValue(outputLabel + "(" + output.getId() + ")");
       sheet.autoSizeColumn(outputIndex);
       outputIndex++;
     }
@@ -118,7 +116,7 @@ public class DmnExportServiceImpl implements DmnExportService {
         ipCellIndex++;
       }
 
-      int opCellIndex = row.getLastCellNum();
+      int opCellIndex = row.getLastCellNum() < 0 ? ipCellIndex : row.getLastCellNum();
       for (OutputEntry oe : rule.getOutputEntries()) {
         Cell cell = row.createCell(opCellIndex);
         cell.setCellValue(oe.getTextContent());

@@ -210,6 +210,12 @@
   <menuitem title="BPM Studio" name="menu-wkf-bpm-studio" parent="studio-app-root"
     action="action-wkf-view-open-editor" order="19" if="__config__.app?.isApp('bpm')"/>
 
+  <menuitem title="BPM Cockpit" name="menu-wkf-bpm-cockpit" parent="studio-app-root"
+    action="action.wkf.bpm.cockpit" order="20" if="__config__.app?.isApp('bpm')"/>
+  <action-view name="action.wkf.bpm.cockpit" title="BPM Cockpit">
+    <view type="html" name="cockpit/"/>
+  </action-view>
+
   <menuitem name="bpm-app-bpm-components" title="BPM components" order="22"
     parent="studio-app-root"/>
 

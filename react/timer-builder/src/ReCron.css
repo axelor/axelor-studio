@@ -35,10 +35,6 @@
   min-width: 9ch;
 }
 
-.vertical-cron
-  .c-host
-  .c-tab-content[tab-name="MONTH"]
-  .c-and-item
-  .c-and-item-label {
+.vertical-cron .c-host .c-tab-content[tab-name="MONTH"] .c-and-item .c-and-item-label {
   min-width: 9ch;
 }

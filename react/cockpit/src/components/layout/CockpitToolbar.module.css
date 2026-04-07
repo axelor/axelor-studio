@@ -1,0 +1,36 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 var(--ck-space-md);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  box-shadow: var(--ck-shadow-sm);
+  background: var(--bs-body-bg, #fff);
+  flex-shrink: 0;
+}
+
+.heading {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--ck-space-sm);
+}
+
+.periodSelect {
+  width: 140px;
+}
+
+.refreshBtn svg {
+  transition: transform 300ms ease;
+}
+
+.refreshBtn.isRefreshing svg {
+  animation: ck-spin 0.8s linear infinite;
+}

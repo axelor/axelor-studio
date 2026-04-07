@@ -1,0 +1,52 @@
+/* StatusFilterPills -- horizontal pill row for status filtering (D-16) */
+
+.container {
+  display: flex;
+  gap: var(--ck-space-xs, 4px);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 16px;
+  font-size: var(--ck-font-body, 14px);
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 120ms ease;
+  white-space: nowrap;
+}
+
+.pill:active {
+  transform: scale(0.95);
+}
+
+.pill:focus-visible {
+  outline: 2px solid var(--ck-accent, #3b82f6);
+  outline-offset: 1px;
+}
+
+.active {
+  background-color: var(--ck-accent, #3b82f6);
+  color: #fff;
+  font-weight: 600;
+}
+
+.inactive {
+  background-color: var(--bs-secondary-bg, #e9ecef);
+  color: var(--bs-body-color, #212529);
+}
+
+.inactive:hover {
+  background-color: var(--bs-secondary-bg-subtle, #dfe3e7);
+}
+
+.count {
+  font-size: var(--ck-font-label, 12px);
+  opacity: 0.85;
+}

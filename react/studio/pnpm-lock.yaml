@@ -10,25 +10,28 @@ importers:
     dependencies:
       '@axelor/ui':
         specifier: ^0.0.32
-        version: 0.0.32(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.20.2)
+        version: 0.0.32(@types/hoist-non-react-statics@3.3.5)(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.0)
       '@monaco-editor/react':
         specifier: ^4.6.0
-        version: 4.6.0(monaco-editor@0.45.0)(react-dom@18.2.0)(react@18.2.0)
+        version: 4.7.0(monaco-editor@0.52.2)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/icons-material':
         specifier: ^5.11.16
-        version: 5.14.9(@mui/material@5.14.9)(@types/react@18.2.48)(react@18.2.0)
+        version: 5.14.9(@mui/material@5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.48)(react@18.2.0)
+      '@studio/shared':
+        specifier: link:../shared
+        version: link:../shared
       '@testing-library/jest-dom':
         specifier: ^4.2.4
         version: 4.2.4
       '@testing-library/react':
         specifier: ^9.3.2
-        version: 9.5.0(react-dom@18.2.0)(react@18.2.0)
+        version: 9.5.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@testing-library/user-event':
         specifier: ^7.1.2
         version: 7.2.1(@testing-library/dom@9.3.4)
       '@vitejs/plugin-react':
         specifier: ^4.0.4
-        version: 4.0.4(vite@4.4.9)
+        version: 4.0.4(vite@4.4.9(sass@1.67.0))
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -47,15 +50,18 @@ importers:
       lodash:
         specifier: ^4.17.15
         version: 4.17.21
+      monaco-editor:
+        specifier: 0.52.2
+        version: 0.52.2
       re-resizable:
         specifier: ^6.9.9
-        version: 6.9.11(react-dom@18.2.0)(react@18.2.0)
+        version: 6.9.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
       react-dnd:
         specifier: ^16.0.1
-        version: 16.0.1(@types/react@18.2.48)(react@18.2.0)
+        version: 16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/react@18.2.48)(react@18.2.0)
       react-dnd-html5-backend:
         specifier: ^16.0.1
         version: 16.0.1
@@ -76,7 +82,7 @@ importers:
         version: 4.4.9(sass@1.67.0)
       vite-plugin-svgr:
         specifier: ^3.2.0
-        version: 3.2.0(vite@4.4.9)
+        version: 3.2.0(rollup@3.29.1)(vite@4.4.9(sass@1.67.0))
       xml-beautifier:
         specifier: ^0.4.3
         version: 0.4.3
@@ -466,21 +472,20 @@ packages:
   '@material-symbols/metadata@0.14.6':
     resolution: {integrity: sha512-+heseFxvuPlyoJx3pqJbrj1UYGvPaTNOFZDGQOPOu2IXNliDgSfAOYDr0fro4MTg6+7MZhvkcbkGQ1ry43E56Q==}
 
-  '@monaco-editor/loader@1.4.0':
-    resolution: {integrity: sha512-00ioBig0x642hytVspPl7DbQyaSWRaolYie/UFNjoTdvoKPzo6xrXLhTk9ixgIKcLH5b5vDOjVNiGyY+uDCUlg==}
-    peerDependencies:
-      monaco-editor: '>= 0.21.0 < 1'
+  '@monaco-editor/loader@1.7.0':
+    resolution: {integrity: sha512-gIwR1HrJrrx+vfyOhYmCZ0/JcWqG5kbfG7+d3f/C1LXk2EvzAbHSg3MQ5lO2sMlo9izoAZ04shohfKLVT6crVA==}
 
-  '@monaco-editor/react@4.6.0':
-    resolution: {integrity: sha512-RFkU9/i7cN2bsq/iTkurMWOEErmYcY6JiQI3Jn+WeR/FGISH8JbHERjpS9oRuSOPvDMJI0Z8nJeKkbOs9sBYQw==}
+  '@monaco-editor/react@4.7.0':
+    resolution: {integrity: sha512-cyzXQCtO47ydzxpQtCGSQGOC8Gk3ZUeBXFAxD+CWXYFo5OqZyZUonFl0DwUlTyAfRHntBfw2p3w4s9R6oe1eCA==}
     peerDependencies:
       monaco-editor: '>= 0.25.0 < 1'
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@mui/base@5.0.0-beta.15':
     resolution: {integrity: sha512-Xtom3YSdi0iwYPtyVRFUEGoRwi6IHWixPwifDKaK+4PkEPtUWMU5YOIJfTsmC59ri+dFvA3oBNSiTPUGGrklZw==}
     engines: {node: '>=12.0.0'}
+    deprecated: This package has been replaced by @base-ui-components/react
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0
       react: ^17.0.0 || ^18.0.0
@@ -1239,8 +1244,8 @@ packages:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
     engines: {node: '>=4'}
 
-  monaco-editor@0.45.0:
-    resolution: {integrity: sha512-mjv1G1ZzfEE3k9HZN0dQ2olMdwIfaeAAjFiwNprLfYNRSz7ctv9XuCT7gPtBGrMUeV1/iZzYKj17Khu1hxoHOA==}
+  monaco-editor@0.52.2:
+    resolution: {integrity: sha512-GEQWEZmfkOGLdd3XK8ryrfWz3AIP8YymVXiPHEdewrUq7mh0qrKrfHLNCXcbB6sTnMLnOZ3ztSiKcciFUkIJwQ==}
 
   ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
@@ -1441,9 +1446,6 @@ packages:
   sax@1.2.4:
     resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
 
-  scheduler@0.20.2:
-    resolution: {integrity: sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==}
-
   scheduler@0.23.0:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
 
@@ -1610,12 +1612,12 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.19
 
-  '@axelor/ui@0.0.32(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.20.2)':
+  '@axelor/ui@0.0.32(@types/hoist-non-react-statics@3.3.5)(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.0)':
     dependencies:
       '@emotion/is-prop-valid': 1.2.1
-      '@floating-ui/react': 0.26.5(react-dom@18.2.0)(react@18.2.0)
+      '@floating-ui/react': 0.26.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@fluentui/priority-overflow': 9.1.11
-      '@fluentui/react-context-selector': 9.1.46(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.20.2)
+      '@fluentui/react-context-selector': 9.1.46(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.0)
       '@material-symbols/font-400': 0.14.6
       '@material-symbols/metadata': 0.14.6
       '@popperjs/core': 2.11.8
@@ -1627,11 +1629,11 @@ snapshots:
       focus-trap: 7.5.4
       immer: 10.0.3
       react: 18.2.0
-      react-beautiful-dnd: 13.1.1(react-dom@18.2.0)(react@18.2.0)
-      react-dnd: 16.0.1(@types/react@18.2.48)(react@18.2.0)
+      react-beautiful-dnd: 13.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-dnd: 16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/react@18.2.48)(react@18.2.0)
       react-dnd-html5-backend: 16.0.1
       react-dom: 18.2.0(react@18.2.0)
-      react-transition-group: 4.4.5(react-dom@18.2.0)(react@18.2.0)
+      react-transition-group: 4.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - '@types/hoist-non-react-statics'
       - '@types/node'
@@ -1898,15 +1900,15 @@ snapshots:
       '@floating-ui/core': 1.5.3
       '@floating-ui/utils': 0.2.1
 
-  '@floating-ui/react-dom@2.0.5(react-dom@18.2.0)(react@18.2.0)':
+  '@floating-ui/react-dom@2.0.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@floating-ui/dom': 1.5.4
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@floating-ui/react@0.26.5(react-dom@18.2.0)(react@18.2.0)':
+  '@floating-ui/react@0.26.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@floating-ui/react-dom': 2.0.5(react-dom@18.2.0)(react@18.2.0)
+      '@floating-ui/react-dom': 2.0.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@floating-ui/utils': 0.2.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -1922,7 +1924,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.3
 
-  '@fluentui/react-context-selector@9.1.46(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(scheduler@0.20.2)':
+  '@fluentui/react-context-selector@9.1.46(@types/react-dom@18.2.18)(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(scheduler@0.23.0)':
     dependencies:
       '@fluentui/react-utilities': 9.15.6(@types/react@18.2.48)(react@18.2.0)
       '@swc/helpers': 0.5.3
@@ -1930,7 +1932,7 @@ snapshots:
       '@types/react-dom': 18.2.18
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      scheduler: 0.20.2
+      scheduler: 0.23.0
 
   '@fluentui/react-shared-contexts@9.13.2(@types/react@18.2.48)(react@18.2.0)':
     dependencies:
@@ -1990,49 +1992,49 @@ snapshots:
 
   '@material-symbols/metadata@0.14.6': {}
 
-  '@monaco-editor/loader@1.4.0(monaco-editor@0.45.0)':
+  '@monaco-editor/loader@1.7.0':
     dependencies:
-      monaco-editor: 0.45.0
       state-local: 1.0.7
 
-  '@monaco-editor/react@4.6.0(monaco-editor@0.45.0)(react-dom@18.2.0)(react@18.2.0)':
+  '@monaco-editor/react@4.7.0(monaco-editor@0.52.2)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@monaco-editor/loader': 1.4.0(monaco-editor@0.45.0)
-      monaco-editor: 0.45.0
+      '@monaco-editor/loader': 1.7.0
+      monaco-editor: 0.52.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  '@mui/base@5.0.0-beta.15(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)':
+  '@mui/base@5.0.0-beta.15(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.23.8
-      '@floating-ui/react-dom': 2.0.5(react-dom@18.2.0)(react@18.2.0)
+      '@floating-ui/react-dom': 2.0.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/types': 7.2.4(@types/react@18.2.48)
-      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@popperjs/core': 2.11.8
-      '@types/react': 18.2.48
       clsx: 2.0.0
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+    optionalDependencies:
+      '@types/react': 18.2.48
 
   '@mui/core-downloads-tracker@5.14.9': {}
 
-  '@mui/icons-material@5.14.9(@mui/material@5.14.9)(@types/react@18.2.48)(react@18.2.0)':
+  '@mui/icons-material@5.14.9(@mui/material@5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.2.48)(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.22.15
-      '@mui/material': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
-      '@types/react': 18.2.48
+      '@mui/material': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react: 18.2.0
+    optionalDependencies:
+      '@types/react': 18.2.48
 
-  '@mui/material@5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)':
+  '@mui/material@5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.23.8
-      '@mui/base': 5.0.0-beta.15(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      '@mui/base': 5.0.0-beta.15(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/core-downloads-tracker': 5.14.9
-      '@mui/system': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      '@mui/system': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/types': 7.2.4(@types/react@18.2.48)
-      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
-      '@types/react': 18.2.48
+      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@types/react-transition-group': 4.4.6
       clsx: 2.0.0
       csstype: 3.1.3
@@ -2040,15 +2042,18 @@ snapshots:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-is: 18.2.0
-      react-transition-group: 4.4.5(react-dom@18.2.0)(react@18.2.0)
+      react-transition-group: 4.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+    optionalDependencies:
+      '@types/react': 18.2.48
 
-  '@mui/private-theming@5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)':
+  '@mui/private-theming@5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.23.8
-      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
-      '@types/react': 18.2.48
+      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       prop-types: 15.8.1
       react: 18.2.0
+    optionalDependencies:
+      '@types/react': 18.2.48
     transitivePeerDependencies:
       - react-dom
 
@@ -2060,33 +2065,35 @@ snapshots:
       prop-types: 15.8.1
       react: 18.2.0
 
-  '@mui/system@5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)':
+  '@mui/system@5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.23.8
-      '@mui/private-theming': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
+      '@mui/private-theming': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mui/styled-engine': 5.14.9(react@18.2.0)
       '@mui/types': 7.2.4(@types/react@18.2.48)
-      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
-      '@types/react': 18.2.48
+      '@mui/utils': 5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       clsx: 2.0.0
       csstype: 3.1.3
       prop-types: 15.8.1
       react: 18.2.0
+    optionalDependencies:
+      '@types/react': 18.2.48
     transitivePeerDependencies:
       - react-dom
 
   '@mui/types@7.2.4(@types/react@18.2.48)':
-    dependencies:
+    optionalDependencies:
       '@types/react': 18.2.48
 
-  '@mui/utils@5.14.9(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)':
+  '@mui/utils@5.14.9(@types/react@18.2.48)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.23.8
-      '@types/react': 18.2.48
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-is: 18.2.0
+    optionalDependencies:
+      '@types/react': 18.2.48
 
   '@popperjs/core@2.11.8': {}
 
@@ -2096,11 +2103,13 @@ snapshots:
 
   '@react-dnd/shallowequal@4.0.2': {}
 
-  '@rollup/pluginutils@5.0.4':
+  '@rollup/pluginutils@5.0.4(rollup@3.29.1)':
     dependencies:
       '@types/estree': 1.0.1
       estree-walker: 2.0.2
       picomatch: 2.3.1
+    optionalDependencies:
+      rollup: 3.29.1
 
   '@sheerun/mutationobserver-shim@0.3.3': {}
 
@@ -2209,7 +2218,7 @@ snapshots:
       pretty-format: 24.9.0
       redent: 3.0.0
 
-  '@testing-library/react@9.5.0(react-dom@18.2.0)(react@18.2.0)':
+  '@testing-library/react@9.5.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@babel/runtime': 7.22.15
       '@testing-library/dom': 6.16.0
@@ -2294,7 +2303,7 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.0
 
-  '@vitejs/plugin-react@4.0.4(vite@4.4.9)':
+  '@vitejs/plugin-react@4.0.4(vite@4.4.9(sass@1.67.0))':
     dependencies:
       '@babel/core': 7.22.19
       '@babel/plugin-transform-react-jsx-self': 7.22.5(@babel/core@7.22.19)
@@ -2791,7 +2800,7 @@ snapshots:
 
   min-indent@1.0.1: {}
 
-  monaco-editor@0.45.0: {}
+  monaco-editor@0.52.2: {}
 
   ms@2.1.2: {}
 
@@ -2872,12 +2881,12 @@ snapshots:
 
   raf-schd@4.0.3: {}
 
-  re-resizable@6.9.11(react-dom@18.2.0)(react@18.2.0):
+  re-resizable@6.9.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  react-beautiful-dnd@13.1.1(react-dom@18.2.0)(react@18.2.0):
+  react-beautiful-dnd@13.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@babel/runtime': 7.23.8
       css-box-model: 1.2.1
@@ -2885,7 +2894,7 @@ snapshots:
       raf-schd: 4.0.3
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-redux: 7.2.9(react-dom@18.2.0)(react@18.2.0)
+      react-redux: 7.2.9(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       redux: 4.2.1
       use-memo-one: 1.1.3(react@18.2.0)
     transitivePeerDependencies:
@@ -2895,15 +2904,17 @@ snapshots:
     dependencies:
       dnd-core: 16.0.1
 
-  react-dnd@16.0.1(@types/react@18.2.48)(react@18.2.0):
+  react-dnd@16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/react@18.2.48)(react@18.2.0):
     dependencies:
       '@react-dnd/invariant': 4.0.2
       '@react-dnd/shallowequal': 4.0.2
-      '@types/react': 18.2.48
       dnd-core: 16.0.1
       fast-deep-equal: 3.1.3
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
+    optionalDependencies:
+      '@types/hoist-non-react-statics': 3.3.5
+      '@types/react': 18.2.48
 
   react-dom@18.2.0(react@18.2.0):
     dependencies:
@@ -2919,7 +2930,7 @@ snapshots:
 
   react-is@18.2.0: {}
 
-  react-redux@7.2.9(react-dom@18.2.0)(react@18.2.0):
+  react-redux@7.2.9(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@babel/runtime': 7.23.8
       '@types/react-redux': 7.1.33
@@ -2927,12 +2938,13 @@ snapshots:
       loose-envify: 1.4.0
       prop-types: 15.8.1
       react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
       react-is: 17.0.2
+    optionalDependencies:
+      react-dom: 18.2.0(react@18.2.0)
 
   react-refresh@0.14.0: {}
 
-  react-transition-group@4.4.5(react-dom@18.2.0)(react@18.2.0):
+  react-transition-group@4.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
       '@babel/runtime': 7.23.8
       dom-helpers: 5.2.1
@@ -2985,11 +2997,6 @@ snapshots:
       source-map-js: 1.0.2
 
   sax@1.2.4: {}
-
-  scheduler@0.20.2:
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
 
   scheduler@0.23.0:
     dependencies:
@@ -3089,9 +3096,9 @@ snapshots:
     dependencies:
       react: 18.2.0
 
-  vite-plugin-svgr@3.2.0(vite@4.4.9):
+  vite-plugin-svgr@3.2.0(rollup@3.29.1)(vite@4.4.9(sass@1.67.0)):
     dependencies:
-      '@rollup/pluginutils': 5.0.4
+      '@rollup/pluginutils': 5.0.4(rollup@3.29.1)
       '@svgr/core': 7.0.0
       '@svgr/plugin-jsx': 7.0.0
       vite: 4.4.9(sass@1.67.0)
@@ -3105,9 +3112,9 @@ snapshots:
       esbuild: 0.18.20
       postcss: 8.4.29
       rollup: 3.29.1
-      sass: 1.67.0
     optionalDependencies:
       fsevents: 2.3.3
+      sass: 1.67.0
 
   wait-for-expect@3.0.2: {}
 

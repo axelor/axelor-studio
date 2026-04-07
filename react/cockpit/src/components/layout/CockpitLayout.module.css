@@ -1,0 +1,25 @@
+.container {
+  flex: 1;
+  min-height: 0;
+  padding: var(--ck-space-md);
+  overflow-y: auto;
+}
+
+.grid {
+  /* react-grid-layout applies its own positioning */
+}
+
+.widgetSlot {
+  height: 100%;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border-radius: 8px;
+  background: var(--ck-accent-subtle);
+  border: 1px dashed var(--bs-border-color, #dee2e6);
+  color: var(--bs-secondary-color, #6c757d);
+}

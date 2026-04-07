@@ -1,0 +1,7 @@
+build/
+node_modules/
+bundled-config.js
+pnpm-lock.yaml
+webservices-builder/
+studio/
+*.svg

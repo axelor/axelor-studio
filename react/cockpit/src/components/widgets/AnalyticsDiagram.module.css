@@ -1,0 +1,45 @@
+/* AnalyticsDiagram -- BPMN heatmap viewer (D-11, D-12, D-13) */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ck-space-sm) var(--ck-space-md);
+}
+
+.viewer {
+  flex: 1;
+  position: relative;
+  min-height: 250px;
+}
+
+.zoomControls {
+  position: absolute;
+  bottom: var(--ck-space-md, 16px);
+  left: var(--ck-space-md, 16px);
+  z-index: 5;
+}
+
+.legendContainer {
+  padding: 0 var(--ck-space-md) var(--ck-space-sm);
+}
+
+/* ------------------------------------------------------------------ */
+/* Heatmap markers (applied via canvas.addMarker)                      */
+/* ------------------------------------------------------------------ */
+
+:global(.ck-heatmap-marker .djs-visual > :first-child) {
+  fill: var(--ck-heatmap-3, rgba(234, 179, 8, 0.15)) !important;
+}
+
+:global(.ck-selected-analytics-node) .djs-outline {
+  stroke: var(--ck-accent) !important;
+  stroke-width: 3px !important;
+  opacity: 1 !important;
+}

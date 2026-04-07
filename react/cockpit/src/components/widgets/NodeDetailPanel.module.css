@@ -1,0 +1,199 @@
+/* NodeDetailPanel -- right-side slide-in for node analytics (D-07, D-08) */
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background: var(--bs-body-bg, #fff);
+  border-left: 1px solid var(--bs-border-color, #dee2e6);
+  box-shadow: var(--ck-shadow-popup, -4px 0 12px rgba(0, 0, 0, 0.1));
+  z-index: 20;
+  transform: translateX(100%);
+  transition: transform 200ms ease-out;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel.open {
+  transform: translateX(0);
+}
+
+/* Accent top border on header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--ck-space-md, 16px);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  border-top: 2px solid var(--ck-accent, #3b82f6);
+  gap: var(--ck-space-sm, 8px);
+}
+
+.headerContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--bs-body-color, #212529);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.typeBadge {
+  display: inline-block;
+  font-size: var(--ck-font-label, 12px);
+  font-weight: 500;
+  color: var(--ck-accent, #3b82f6);
+  background: var(--ck-accent-bg, rgba(59, 130, 246, 0.08));
+  padding: 1px 6px;
+  border-radius: var(--ck-radius-sm, 4px);
+  width: fit-content;
+}
+
+.technicalId {
+  font-family: var(--ck-font-mono, "SFMono-Regular", "Consolas", monospace);
+  font-size: 12px;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ck-radius-sm, 4px);
+  background: transparent;
+  color: var(--bs-secondary-color, #6c757d);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 120ms ease;
+}
+
+.closeButton:hover {
+  background: var(--bs-tertiary-bg, #f8f9fa);
+  color: var(--bs-body-color, #212529);
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--ck-space-md, 16px);
+}
+
+/* Content crossfade */
+.content {
+  animation: fadeIn 150ms ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.section {
+  margin-bottom: var(--ck-space-lg, 24px);
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  margin: 0 0 var(--ck-space-sm, 8px);
+  font-size: var(--ck-font-body, 14px);
+  font-weight: 600;
+  color: var(--bs-body-color, #212529);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Assignee info rows */
+.assigneeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ck-space-xs, 4px);
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--ck-font-body, 14px);
+}
+
+.infoLabel {
+  color: var(--bs-secondary-color, #6c757d);
+  font-size: var(--ck-font-label, 12px);
+}
+
+.infoValue {
+  font-weight: 500;
+  color: var(--bs-body-color, #212529);
+  text-align: right;
+}
+
+/* Aggregate percentile stats (D-17) */
+.percentileSection {
+  padding: var(--ck-space-md);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+.percentileHeading {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 var(--ck-space-sm);
+  color: var(--bs-body-color);
+}
+
+.percentileGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--ck-space-sm);
+}
+
+.percentileStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.percentileValue {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--bs-body-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.percentileLabel {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ck-tab-inactive);
+}
+
+.passCount {
+  margin-top: var(--ck-space-sm);
+  font-size: 12px;
+  color: var(--ck-tab-inactive);
+  text-align: center;
+}

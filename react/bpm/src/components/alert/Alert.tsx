@@ -1,0 +1,64 @@
+import React, { useEffect, useState } from "react";
+import { Box, Alert } from "@axelor/ui";
+
+type AlertVariant = "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark";
+import { MaterialIcon } from "@axelor/ui/icons/material-icon";
+import { translate } from "@studio/shared/i18n";
+
+import { useAlert } from "../../context/alert-context";
+
+import styles from "./alert.module.css";
+
+const AlertComponent = () => {
+  const { state, dispatch } = useAlert();
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (state.open) {
+      if (!isHovered) {
+        timeout = setTimeout(() => {
+          dispatch({ type: "CLOSE_ALERT" });
+        }, 2000);
+      }
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [state.open, isHovered, dispatch]);
+
+  if (!state.open) {
+    return null;
+  }
+
+  return (
+    <Alert
+      variant={(state.messageType ?? undefined) as AlertVariant | undefined}
+      d="flex"
+      alignItems="center"
+      className={styles.alertContainer}
+      gap={5}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Box
+        d="flex"
+        alignItems="center"
+        justifyContent="center"
+        gap={5}
+        style={{ cursor: "pointer" }}
+      >
+        <Box fontSize={5} flex={1}>
+          {state.message ? translate(state.message) : ""}
+        </Box>
+        <MaterialIcon
+          fontSize={20}
+          icon="close"
+          onClick={() => dispatch({ type: "CLOSE_ALERT" })}
+        />
+      </Box>
+    </Alert>
+  );
+};
+
+export default AlertComponent;
