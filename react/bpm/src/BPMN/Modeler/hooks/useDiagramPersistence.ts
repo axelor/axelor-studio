@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { translate } from "@studio/shared/i18n";
 import type { TypedBpmnModeler, ModdleElement } from "@studio/shared/types";
+import Service from "@studio/shared/services/Service";
 
 import { getElements } from "../extra";
 import { saveCurrentWkf, resyncWkf } from "../../../services/wkf-repository";
@@ -8,7 +9,7 @@ import {
   fetchWkf,
   getBPMNModels,
 } from "../../../shared/services";
-import { getBool, convertSVGtoBase64 } from "../../../utils";
+import { convertSVGtoBase64 } from "../../../utils";
 import {
   validateNameAndCode,
   validateTimerEvents,
@@ -51,8 +52,7 @@ export interface DiagramPersistenceReturn {
   deploy: (wkfMigrationMap?: unknown, isMigrateOld?: boolean, newWkf?: WkfModel) => Promise<void>;
   handleOk: (wkfMigrationMap?: unknown, isMigrateOld?: boolean) => Promise<void>;
   deployDiagram: () => Promise<void>;
-  addNewVersion: (wkfToVersion?: WkfModel) => Promise<WkfModel | undefined>;
-  getNewVersionInfo: () => unknown;
+  addNewVersion: (wkfToVersion?: WkfModel, diagramXml?: string) => Promise<WkfModel | undefined>;
   checkIfUpdated: () => Promise<boolean>;
   getBase64SVG: () => Promise<string | null>;
 }
@@ -158,18 +158,9 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
       name: attrs["camunda:diagramName"],
       code: attrs["camunda:code"],
       description: attrs["camunda:description"],
-      newVersionOnDeploy: attrs["camunda:newVersionOnDeploy"],
       versionTag: attrs["camunda:versionTag"],
       wkfStatusColor: attrs["camunda:wkfStatusColor"],
     };
-  }, [bpmnModelerRef]);
-
-  const getNewVersionInfo = useCallback((): unknown => {
-    const modeler = bpmnModelerRef.current;
-    if (!modeler) return false;
-    const attrs = getDefinitionAttrs(modeler);
-    if (!attrs) return false;
-    return attrs["camunda:newVersionOnDeploy"];
   }, [bpmnModelerRef]);
 
   // ---------------------------------------------------------------------------
@@ -181,6 +172,68 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
     if (!modeler) return;
 
     const { wkf, showError, setShowError, setWkf, setId } = useWkfStore.getState();
+
+    const { xml } = await modeler.saveXML({ format: true });
+    diagramXmlRef.current = xml;
+
+    // Terminated models are read-only, block save entirely
+    if (wkf && wkf.statusSelect === 3) {
+      showSnackbar(
+        "danger",
+        translate("This version is terminated. Please work on the active version."),
+      );
+      return;
+    }
+
+    // Copy-on-write: deployed models are immutable, save to a new draft version
+    if (wkf && wkf.statusSelect === 2) {
+      const attrs = modeler ? getDefinitionAttrs(modeler) : ({} as Record<string, unknown>);
+      const actionRes = await Service.action({
+        model: "com.axelor.studio.db.WkfModel",
+        action: "action-wkf-model-method-save-as-draft",
+        data: {
+          context: {
+            _model: "com.axelor.studio.db.WkfModel",
+            ...wkf,
+            diagramXml: xml,
+            name: attrs["camunda:diagramName"],
+            code: attrs["camunda:code"],
+            description: attrs["camunda:description"],
+            wkfStatusColor: attrs["camunda:wkfStatusColor"] || "blue",
+          },
+        },
+      });
+      const values = actionRes?.data?.[0]?.values;
+      if (values?.existingDraftId) {
+        const draftId = values.existingDraftId as number | string;
+        setId(draftId);
+        await fetchDiagram(draftId);
+        useWkfStore.getState().setDirty(false);
+        showSnackbar(
+          "danger",
+          translate(
+            "A draft version already exists. Redirecting to it. Please apply your changes there.",
+          ),
+        );
+      } else if (values?.newVersionId) {
+        const newId = values.newVersionId as number | string;
+        setId(newId);
+        await fetchDiagram(newId);
+        useWkfStore.getState().setDirty(false);
+        showSnackbar(
+          "success",
+          translate("Deployed model is immutable. Changes saved to new draft version."),
+        );
+      } else {
+        showSnackbar(
+          "danger",
+          (actionRes?.data?.[0]?.error as unknown as Record<string, string>)?.message ||
+            (actionRes?.data as unknown as Record<string, string>)?.message ||
+            "Error creating draft version",
+        );
+      }
+      return;
+    }
 
     // Step 1: Validate name and code
     const nameCodeResult = validateNameAndCode(modeler);
@@ -254,6 +307,7 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
     update,
     showSnackbar,
     addDiagramProperties,
+    fetchDiagram,
   ]);
 
   // ---------------------------------------------------------------------------
@@ -335,17 +389,28 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
   // ---------------------------------------------------------------------------
 
   const addNewVersion = useCallback(
-    async (wkfToVersion?: WkfModel): Promise<WkfModel | undefined> => {
+    async (wkfToVersion?: WkfModel, diagramXml?: string): Promise<WkfModel | undefined> => {
       const wkf = wkfToVersion || useWkfStore.getState().wkf;
       const result = await createNewVersion(wkf as Record<string, unknown>);
       if (result.success) {
         const versionId = (result.data as { newVersionId?: number | string }).newVersionId;
         if (!versionId) return;
+
+        // Save the current diagram changes to the new version
+        if (diagramXml) {
+          const newVersionWkf = await fetchWkf(versionId);
+          await Service.add("com.axelor.studio.db.WkfModel", {
+            ...(newVersionWkf as Record<string, unknown>),
+            ...(getDefinitionProperties() || {}),
+            diagramXml,
+          });
+        }
+
         useWkfStore.getState().setId(versionId);
         return await fetchDiagram(versionId);
       }
     },
-    [fetchDiagram],
+    [fetchDiagram, getDefinitionProperties],
   );
 
   // ---------------------------------------------------------------------------
@@ -368,7 +433,7 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
         return;
       }
 
-      const willCreateNewVersion = wkf?.newVersionOnDeploy && wkf?.statusSelect === 2;
+      const willCreateNewVersion = wkf?.statusSelect === 2;
 
       // Init WebSocket progress if applicable
       if (allowProgressBarDisplay && !willCreateNewVersion) {
@@ -383,15 +448,12 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
           ...wkf,
           wkfMigrationMap,
         };
-        if (
-          (wkf?.statusSelect === 1 || getBool(getNewVersionInfo())) &&
-          wkf?.oldNodes
-        ) {
+        if (wkf?.oldNodes) {
           context.isMigrateOld = isMigrateOld;
         }
 
         if (willCreateNewVersion) {
-          const newVersionWkf = await addNewVersion(wkf);
+          const newVersionWkf = await addNewVersion(wkf, diagramXmlRef.current ?? undefined);
           if (newVersionWkf && newVersionWkf.statusSelect === 1) {
             if (allowProgressBarDisplay) {
               wsProgress.init(newVersionWkf.id as string | null);
@@ -419,7 +481,7 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
       deployAction,
       allowProgressBarDisplay,
       showSnackbar,
-      getNewVersionInfo,
+      diagramXmlRef,
     ],
   );
 
@@ -456,11 +518,29 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
         }
       }
 
-      // Step 3: Single save via repository (always before deploy)
+      // Step 3: Save and deploy
       try {
         const { xml } = await modeler.saveXML({ format: true });
         diagramXmlRef.current = xml;
         const defProps = getDefinitionProperties();
+
+        // Do not persist directly on a deployed model — the deploy flow
+        // will create a new version and save the diagram there
+        if (wkf?.statusSelect === 2) {
+          const context: Record<string, unknown> = {
+            _model: "com.axelor.studio.db.WkfModel",
+            ...wkf,
+            ...(defProps || {}),
+            diagramXml: xml,
+            wkfMigrationMap,
+          };
+          if (wkf?.oldNodes) {
+            context.isMigrateOld = isMigrateOld;
+          }
+          deploy(wkfMigrationMap, isMigrateOld, wkf);
+          return;
+        }
+
         const saveResult = await saveCurrentWkf({
           ...wkf,
           ...(defProps || {}),
@@ -508,7 +588,6 @@ export function useDiagramPersistence(deps: UseDiagramPersistenceDeps): DiagramP
     handleOk,
     deployDiagram,
     addNewVersion,
-    getNewVersionInfo,
     checkIfUpdated,
     getBase64SVG,
   };

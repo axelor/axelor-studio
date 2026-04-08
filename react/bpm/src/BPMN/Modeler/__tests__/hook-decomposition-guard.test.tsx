@@ -61,7 +61,7 @@ describe("Guard #3 — API Surface completeness", () => {
     "updateTabs", "addNewDiagram",
     // Persistence
     "onSave", "deploy", "deployDiagram", "handleOk",
-    "addNewVersion", "getNewVersionInfo", "checkIfUpdated", "getBase64SVG",
+    "addNewVersion", "checkIfUpdated", "getBase64SVG",
     // WKF management
     "updateWkfModel", "onNew", "onRefresh", "onDelete",
     "reloadView", "getModels",

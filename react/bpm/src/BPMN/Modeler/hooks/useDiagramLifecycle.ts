@@ -53,7 +53,6 @@ const WKF_PROPERTY_MAP: Record<string, (wkf: WkfModel) => [string, unknown]> = {
   studioApp: (wkf) => ["studioApp", wkf.studioApp && (wkf.studioApp as Record<string, unknown>)?.code],
   description: (wkf) => ["description", wkf.description],
   wkfStatusColor: (wkf) => ["wkfStatusColor", wkf.wkfStatusColor],
-  newVersionOnDeploy: (wkf) => ["newVersionOnDeploy", wkf.newVersionOnDeploy],
 };
 
 function applyWkfProperties(
@@ -167,7 +166,7 @@ export function useDiagramLifecycle({
               ? value
               : undefined;
       attrs[`camunda:${name}`] = newValue;
-      if (!newValue && name !== "newVersionOnDeploy") {
+      if (!newValue) {
         delete attrs[`camunda:${name}`];
         return;
       }
@@ -313,8 +312,7 @@ export function useDiagramLifecycle({
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
         xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn"
-        camunda:newVersionOnDeploy="false">
+        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">
         <bpmn2:process id="${processId}" isExecutable="true">
           <bpmn2:startEvent id="StartEvent_1" />
         </bpmn2:process>

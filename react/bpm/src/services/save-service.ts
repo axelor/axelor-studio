@@ -63,7 +63,6 @@ export async function prepareSavePayload(
     wkfStatusColor: attrs["camunda:wkfStatusColor"] || "blue",
     versionTag: attrs["camunda:versionTag"],
     description: attrs["camunda:description"],
-    newVersionOnDeploy: attrs["camunda:newVersionOnDeploy"] || false,
     studioApp,
   };
 }
