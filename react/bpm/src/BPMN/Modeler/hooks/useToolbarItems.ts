@@ -105,7 +105,7 @@ export function useToolbarItems({
           icon: "rocket",
         },
         onClick: deployDiagram,
-        disable: id ? false : true,
+        disabled: !id || (wkf != null && wkf.statusSelect === 3),
       },
       {
         key: "properties",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -36,6 +36,7 @@ export default function DefinitionActionsSection({
 }: DefinitionActionsSectionProps) {
   const [open, setOpen] = useState(false);
   const [process, setProcess] = useState<any>(null);
+  const [hasSuccessor, setHasSuccessor] = useState(false);
   const { statusSelect = 1, isActive } = wkf || {};
 
   const handleClose = () => {
@@ -70,22 +71,25 @@ export default function DefinitionActionsSection({
     }
   };
 
-  const backToDraft = async () => {
-    const actionRes = await Service.action({
-      model: "com.axelor.studio.db.WkfModel",
-      action: "action-wkf-model-method-back-to-draft",
-      data: {
-        context: {
-          _model: "com.axelor.studio.db.WkfModel",
-          ...wkf,
+  useEffect(() => {
+    async function checkSuccessor() {
+      if (!wkf?.id || statusSelect !== 3) {
+        setHasSuccessor(false);
+        return;
+      }
+      const res = await Service.search("com.axelor.studio.db.WkfModel", {
+        fields: ["id"],
+        data: {
+          criteria: [
+            { fieldName: "previousVersion.id", operator: "=", value: wkf.id },
+          ],
         },
-      },
-    });
-    if (actionRes?.data?.[0]?.reload) {
-      handleSnackbarClick("success", "Successfully drafted");
-      reloadView();
+        limit: 1,
+      });
+      setHasSuccessor(res?.data?.length > 0);
     }
-  };
+    checkSuccessor();
+  }, [wkf?.id, statusSelect]);
 
   const terminate = async () => {
     const actionRes = await Service.action({
@@ -132,19 +136,14 @@ export default function DefinitionActionsSection({
             {translate("wkf.terminate.btn")}
           </Button>
         )}
-        {statusSelect === 3 && isActive && (
-          <Button variant="primary" className={styles.save} onClick={backToDraft}>
-            {translate("Back to draft")}
+        {statusSelect === 3 && isActive && !hasSuccessor && (
+          <Button variant="primary" className={styles.save} onClick={() => addNewVersion(wkf)}>
+            {translate("New version")}
           </Button>
         )}
         <Button variant="primary" className={styles.save} onClick={openBPMState}>
           {translate("BPM State")}
         </Button>
-        {statusSelect === 2 && (
-          <Button variant="primary" className={styles.save} onClick={() => addNewVersion(wkf)}>
-            {translate("New version")}
-          </Button>
-        )}
         <Button
           variant="primary"
           className={styles.save}

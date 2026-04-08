@@ -34,7 +34,6 @@ export const mockWkfModel = {
   diagramXml: loadSampleBpmn(),
   isActive: true,
   statusSelect: 1,
-  newVersionOnDeploy: false,
   oldNodes: "[]",
   wkfProcessList: [
     {

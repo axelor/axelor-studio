@@ -105,7 +105,6 @@ describe("Characterization: Save Flow", () => {
       wkfStatusColor: "blue",
       versionTag: undefined,
       description: undefined,
-      newVersionOnDeploy: false,
     };
 
     await mockServiceAdd("com.axelor.studio.db.WkfModel", {
@@ -147,7 +146,6 @@ describe("Characterization: Save Flow", () => {
       "camunda:diagramName": "Test Process",
       "camunda:code": "test-process",
       "camunda:wkfStatusColor": "blue",
-      "camunda:newVersionOnDeploy": false,
     };
 
     const name = definitionsAttrs["camunda:diagramName"];

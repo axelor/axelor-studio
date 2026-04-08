@@ -12,7 +12,6 @@ export interface WkfModel {
   wkfProcessList?: Array<{ name: string; processId?: string; [key: string]: unknown }>;
   previousVersion?: Record<string, unknown> | null;
   isMigrationOnGoing?: boolean;
-  newVersionOnDeploy?: boolean | string;
   versionTag?: string;
   description?: string;
   wkfStatusColor?: string;

@@ -55,7 +55,6 @@ describe("save-service", () => {
         "camunda:wkfStatusColor": "red",
         "camunda:versionTag": "v1",
         "camunda:description": "A desc",
-        "camunda:newVersionOnDeploy": true,
         "camunda:studioApp": "myApp",
       });
 
@@ -70,7 +69,6 @@ describe("save-service", () => {
       expect(payload.wkfStatusColor).toBe("red");
       expect(payload.versionTag).toBe("v1");
       expect(payload.description).toBe("A desc");
-      expect(payload.newVersionOnDeploy).toBe(true);
       expect(payload.studioApp).toEqual({ id: 10, code: "myApp" });
       // original wkf fields preserved
       expect(payload.id).toBe(1);
@@ -90,7 +88,6 @@ describe("save-service", () => {
       const payload = await prepareSavePayload(modeler, wkf);
 
       expect(payload.wkfStatusColor).toBe("blue");
-      expect(payload.newVersionOnDeploy).toBe(false);
       expect(payload.studioApp).toBeUndefined();
     });
   });

@@ -140,8 +140,7 @@ describe("Characterization: Open Diagram Flow", () => {
         xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
         xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
         xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn"
-        camunda:newVersionOnDeploy="false">
+        id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">
         <bpmn2:process id="Process_generated" isExecutable="true">
           <bpmn2:startEvent id="StartEvent_1" />
         </bpmn2:process>
@@ -151,7 +150,6 @@ describe("Characterization: Open Diagram Flow", () => {
     expect(defaultTemplate).toContain("bpmn2:definitions");
     expect(defaultTemplate).toContain("StartEvent_1");
     expect(defaultTemplate).toContain('isExecutable="true"');
-    expect(defaultTemplate).toContain('camunda:newVersionOnDeploy="false"');
   });
 
   it("sets diagram properties from WkfModel onto definitions attrs on deploy reload", () => {
@@ -164,14 +162,13 @@ describe("Characterization: Open Diagram Flow", () => {
       "studioApp",
       "description",
       "wkfStatusColor",
-      "newVersionOnDeploy",
     ];
 
     // Verify all expected property keys are tracked
     expect(propertyKeys).toContain("code");
     expect(propertyKeys).toContain("name");
     expect(propertyKeys).toContain("studioApp");
-    expect(propertyKeys).toHaveLength(7);
+    expect(propertyKeys).toHaveLength(6);
 
     // The "name" key maps to "diagramName" in attrs (special case)
     const wkf = mockWkfModel;

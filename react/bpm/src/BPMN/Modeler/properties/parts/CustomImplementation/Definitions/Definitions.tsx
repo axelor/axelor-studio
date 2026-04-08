@@ -4,8 +4,7 @@ import { InputLabel } from "@axelor/ui";
 
 import Select from "../../../../../../components/Select";
 import StaticSelect from "../../../../../../components/StaticSelect";
-import { Checkbox, TextField, Textbox } from "../../../../../../components/properties/components";
-import { getBool } from "../../../../../../utils";
+import { TextField, Textbox } from "../../../../../../components/properties/components";
 import { getStudioApp, fetchWkf } from "../../../../../../shared/services";
 import Stepper from "../Stepper";
 import { WKF_COLORS, STATUS } from "../../../../constants";
@@ -207,23 +206,6 @@ export default function Definition({
           },
           set: function (e: any, value: any) {
             setProperty("versionTag", value?.versionTag);
-          },
-        }}
-      />
-      <Checkbox
-        element={element}
-        entry={{
-          id: "newVersionOnDeploy",
-          label: translate("New version on deploy"),
-          modelProperty: "newVersionOnDeploy",
-          widget: "checkbox",
-          get: function () {
-            return {
-              newVersionOnDeploy: getBool(getProperty("newVersionOnDeploy")),
-            };
-          },
-          set: function (e: any, value: any) {
-            setProperty("newVersionOnDeploy", !value?.newVersionOnDeploy);
           },
         }}
       />

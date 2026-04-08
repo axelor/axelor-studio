@@ -93,9 +93,11 @@ describe("Characterization: Deploy Flow", () => {
     expect(src).not.toContain("saveBeforeDeploy");
   });
 
-  it("no Service.add('WkfModel') calls remain in persistence hook", () => {
+  it("Service.add('WkfModel') only used in addNewVersion for saving diagram to new version", () => {
     const src = readFileSync(PERSISTENCE_PATH, "utf-8");
-    expect(src).not.toContain('Service.add("com.axelor.studio.db.WkfModel"');
+    // Service.add is used only inside addNewVersion to save diagram XML to the newly created version
+    const matches = src.match(/Service\.add\("com\.axelor\.studio\.db\.WkfModel"/g) || [];
+    expect(matches).toHaveLength(1);
   });
 
   it("handleOk uses saveCurrentWkf from repository", () => {

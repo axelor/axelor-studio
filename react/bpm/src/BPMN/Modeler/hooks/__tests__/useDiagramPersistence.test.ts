@@ -94,6 +94,15 @@ vi.mock("@studio/shared/i18n", () => ({
   translate: (s: string) => s,
 }));
 
+const mockServiceAction = vi.fn();
+const mockServiceAdd = vi.fn();
+vi.mock("@studio/shared/services/Service", () => ({
+  default: {
+    action: (...args: unknown[]) => mockServiceAction(...args),
+    add: (...args: unknown[]) => mockServiceAdd(...args),
+  },
+}));
+
 // Mock stores using zustand-like getState pattern
 const mockSnackbarShow = vi.fn();
 vi.mock("../../stores/useSnackbarStore", () => ({
@@ -223,6 +232,89 @@ describe("useDiagramPersistence", () => {
     expect(mockSnackbarShow).toHaveBeenCalledWith("danger", "Server error");
   });
 
+  it("onSave: blocks save for terminated models (statusSelect=3)", async () => {
+    mockWkfStoreState.wkf = { id: 1, statusSelect: 3 };
+
+    const deps = makeDeps();
+    const { result } = renderHook(() => useDiagramPersistence(deps as never));
+
+    await act(async () => {
+      await result.current.onSave();
+    });
+
+    expect(mockSnackbarShow).toHaveBeenCalledWith(
+      "danger",
+      "This version is terminated. Please work on the active version.",
+    );
+    expect(mockExecuteSave).not.toHaveBeenCalled();
+  });
+
+  it("onSave: copy-on-write redirects to existing draft for deployed models", async () => {
+    mockWkfStoreState.wkf = { id: 1, statusSelect: 2 };
+    mockGetDefinitionAttrs.mockReturnValue({
+      "camunda:diagramName": "Test",
+      "camunda:code": "TST",
+    });
+    mockServiceAction.mockResolvedValue({
+      data: [{ values: { existingDraftId: 42 } }],
+    });
+
+    const deps = makeDeps();
+    const { result } = renderHook(() => useDiagramPersistence(deps as never));
+
+    await act(async () => {
+      await result.current.onSave();
+    });
+
+    expect(mockServiceAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "action-wkf-model-method-save-as-draft",
+      }),
+    );
+    expect(mockWkfStoreState.setId).toHaveBeenCalledWith(42);
+    expect(deps.fetchDiagram).toHaveBeenCalledWith(42);
+    expect(mockExecuteSave).not.toHaveBeenCalled();
+  });
+
+  it("onSave: copy-on-write creates new draft for deployed models", async () => {
+    mockWkfStoreState.wkf = { id: 1, statusSelect: 2 };
+    mockGetDefinitionAttrs.mockReturnValue({});
+    mockServiceAction.mockResolvedValue({
+      data: [{ values: { newVersionId: 99 } }],
+    });
+
+    const deps = makeDeps();
+    const { result } = renderHook(() => useDiagramPersistence(deps as never));
+
+    await act(async () => {
+      await result.current.onSave();
+    });
+
+    expect(mockWkfStoreState.setId).toHaveBeenCalledWith(99);
+    expect(deps.fetchDiagram).toHaveBeenCalledWith(99);
+    expect(mockSnackbarShow).toHaveBeenCalledWith(
+      "success",
+      "Deployed model is immutable. Changes saved to new draft version.",
+    );
+  });
+
+  it("onSave: copy-on-write shows error on failure", async () => {
+    mockWkfStoreState.wkf = { id: 1, statusSelect: 2 };
+    mockGetDefinitionAttrs.mockReturnValue({});
+    mockServiceAction.mockResolvedValue({
+      data: [{}],
+    });
+
+    const deps = makeDeps();
+    const { result } = renderHook(() => useDiagramPersistence(deps as never));
+
+    await act(async () => {
+      await result.current.onSave();
+    });
+
+    expect(mockSnackbarShow).toHaveBeenCalledWith("danger", "Error creating draft version");
+  });
+
   it("onSave: does nothing when modeler ref is null", async () => {
     const deps = makeDeps({ bpmnModelerRef: { current: null } });
     const { result } = renderHook(() => useDiagramPersistence(deps as never));
@@ -255,16 +347,18 @@ describe("useDiagramPersistence", () => {
 
   // --- handleOk ---
 
-  it("handleOk: saves XML, calls saveCurrentWkf, then deploys", async () => {
-    const wkf = { id: 1, name: "Test", statusSelect: 2 };
+  it("handleOk: saves XML, calls saveCurrentWkf, then deploys for draft models", async () => {
+    const wkf = { id: 1, name: "Test", statusSelect: 1 };
     mockWkfStoreState.wkf = wkf;
     mockCallOutputMapping.mockResolvedValue({ status: -1, scripts: [] });
+    mockGetProcesses.mockReturnValue([]);
+    mockGetBPMNModels.mockResolvedValue([]);
     mockSaveCurrentWkf.mockResolvedValue({
       ok: true,
       data: { ...wkf, diagramXml: "<bpmn />" },
     });
     mockFetchWkf.mockResolvedValue({ ...wkf, isMigrationOnGoing: false });
-    mockExecuteDeploy.mockResolvedValue({ success: true });
+    mockStartWkfModel.mockResolvedValue({ success: true });
 
     const deps = makeDeps();
     const { result } = renderHook(() => useDiagramPersistence(deps as never));
@@ -280,9 +374,31 @@ describe("useDiagramPersistence", () => {
     );
   });
 
-  it("handleOk: shows error when saveCurrentWkf fails", async () => {
-    mockWkfStoreState.wkf = { id: 1, statusSelect: 2 };
+  it("handleOk: skips saveCurrentWkf for deployed models (statusSelect=2)", async () => {
+    const wkf = { id: 1, name: "Test", statusSelect: 2 };
+    mockWkfStoreState.wkf = wkf;
     mockCallOutputMapping.mockResolvedValue({ status: -1, scripts: [] });
+    mockFetchWkf.mockResolvedValue({ ...wkf, isMigrationOnGoing: false });
+    mockCreateNewVersion.mockResolvedValue({ success: true, data: { newVersionId: 2 } });
+    mockStartWkfModel.mockResolvedValue({ success: true });
+
+    const deps = makeDeps();
+    const { result } = renderHook(() => useDiagramPersistence(deps as never));
+
+    await act(async () => {
+      await result.current.handleOk();
+    });
+
+    expect(mockWkfStoreState.setOpenDeployDialog).toHaveBeenCalledWith(false);
+    // Should NOT call saveCurrentWkf for deployed models
+    expect(mockSaveCurrentWkf).not.toHaveBeenCalled();
+  });
+
+  it("handleOk: shows error when saveCurrentWkf fails for draft models", async () => {
+    mockWkfStoreState.wkf = { id: 1, statusSelect: 1, wkfProcessList: [] };
+    mockCallOutputMapping.mockResolvedValue({ status: -1, scripts: [] });
+    mockGetProcesses.mockReturnValue([]);
+    mockGetBPMNModels.mockResolvedValue([]);
     mockSaveCurrentWkf.mockResolvedValue({
       ok: false,
       error: { message: "Concurrent modification" },
