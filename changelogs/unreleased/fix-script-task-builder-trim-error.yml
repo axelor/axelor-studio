@@ -1,0 +1,6 @@
+---
+title: Fix crash when typing in script task builder fields
+type: fix
+description: |
+  Fixed a TypeError (f.trim is not a function) that occurred when typing in
+  value fields of the script task builder.

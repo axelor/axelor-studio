@@ -26,14 +26,14 @@ function InputField({
   title,
   autoTitle,
   value = "",
-  _onChange,
+  onChange: _onChange,
   onBlur,
   readOnly = false,
   inline,
-  _InputProps,
+  InputProps: _InputProps,
   style,
   error,
-  _minRows = 3,
+  minRows: _minRows = 3,
   ...other
 }: InputFieldProps) {
   const [text, setText] = React.useState<string | undefined>();

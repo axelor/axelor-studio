@@ -79,7 +79,7 @@ export default function ExpressionField({
         }}
         readOnly={!!parameters}
         disabled={!!parameters}
-        invalid={!!error && (!selected || selected?.trim() === "")}
+        invalid={!!error && (!selected || (typeof selected === "string" && selected.trim() === ""))}
       />
       {selected && parameters && (
         <IconButton size="small" onClick={handleRemove}>
