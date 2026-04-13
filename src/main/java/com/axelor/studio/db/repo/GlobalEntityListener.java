@@ -5,6 +5,7 @@
 package com.axelor.studio.db.repo;
 
 import com.axelor.concurrent.ContextAware;
+import com.axelor.db.JPA;
 import com.axelor.db.Model;
 import com.axelor.db.Query;
 import com.axelor.inject.Beans;
@@ -111,6 +112,24 @@ public class GlobalEntityListener {
   }
 
   protected void callWkfProcess(EntityRef updatedRef) throws ClassNotFoundException {
+    // Try to open a new RequestScope; if one is already active on this thread
+    // (ForkJoinPool work-stealing reentrance), proceed without opening a new one
+    try {
+      RequestScoper scope = ServletScopes.scopeRequest(Collections.emptyMap());
+      try (RequestScoper.CloseableScope ignored = scope.open()) {
+        fetchAndApplyProcessChange(updatedRef);
+      }
+    } catch (ScopingException e) {
+      // Already in a request scope (work-stealing executed on same thread)
+      fetchAndApplyProcessChange(updatedRef);
+    }
+  }
+
+  private void fetchAndApplyProcessChange(EntityRef updatedRef) throws ClassNotFoundException {
+    // Clear Hibernate L1 cache to prevent stale entity resolution on reused
+    // ForkJoinPool threads. Without this, JPQL queries resolve entities from
+    // the cached first-level cache instead of returning fresh data from the DB.
+    JPA.clear();
 
     Set<Model> updated = new HashSet<>();
     Class<? extends Model> klass = Class.forName(updatedRef.className).asSubclass(Model.class);
@@ -123,18 +142,7 @@ public class GlobalEntityListener {
           updatedRef.className,
           updatedRef.id);
     }
-
-    // Try to open a new RequestScope; if one is already active on this thread
-    // (ForkJoinPool work-stealing reentrance), proceed without opening a new one
-    try {
-      RequestScoper scope = ServletScopes.scopeRequest(Collections.emptyMap());
-      try (RequestScoper.CloseableScope ignored = scope.open()) {
-        applyProcessChange(updated);
-      }
-    } catch (ScopingException e) {
-      // Already in a request scope (work-stealing executed on same thread)
-      applyProcessChange(updated);
-    }
+    applyProcessChange(updated);
   }
 
   private void applyProcessChange(Set<Model> updated) throws ClassNotFoundException {
