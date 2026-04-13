@@ -547,9 +547,9 @@ export function getBPMCriteria(
   if (children.length > 0) {
     const isChild = childConditions && childConditions.length > 0;
     return {
-      condition: `${isChild ? "(" : ""}${c ? c.join(" " + map_type[combinator] + " ") : ""} ${
+      condition: `${isChild ? "(" : ""}${c ? c.join(" " + map_type[combinator] + " ") : ""}${
         isChild
-          ? `${map_type[combinator]} ${childConditions.join(" " + map_type[combinator] + " ")}`
+          ? ` ${map_type[combinator]} ${childConditions.join(" " + map_type[combinator] + " ")}`
           : ""
       }${isChild ? ")" : ""}`,
       values: [

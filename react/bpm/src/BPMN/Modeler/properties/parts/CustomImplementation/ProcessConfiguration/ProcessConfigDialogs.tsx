@@ -177,7 +177,7 @@ export default function ProcessConfigDialogs({
           alertClose={() => setOpenScriptDialog(false)}
           handleAlertOk={() => {
             updateValue(
-              script === "" ? undefined : script,
+              !script?.trim() ? undefined : script,
               "pathCondition",
               undefined,
               selectedProcessConfig?.key || 0,

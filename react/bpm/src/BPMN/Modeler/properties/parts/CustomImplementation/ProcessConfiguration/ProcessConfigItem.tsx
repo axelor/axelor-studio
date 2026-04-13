@@ -306,7 +306,7 @@ export default function ProcessConfigItem({
                   set: function (e: any, values: any) {
                     if (values.pathCondition !== processConfig.pathCondition) {
                       updateValue(
-                        values.pathCondition === "" ? undefined : values.pathCondition,
+                        !values.pathCondition?.trim() ? undefined : values.pathCondition,
                         "pathCondition",
                         undefined,
                         configKey,

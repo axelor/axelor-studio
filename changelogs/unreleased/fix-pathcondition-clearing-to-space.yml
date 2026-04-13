@@ -1,0 +1,6 @@
+---
+title: Fix process configuration pathCondition set to whitespace instead of null when cleared
+type: fix
+description: |
+  Clearing a pathCondition in the BPM process configuration now properly sets
+  the value to null instead of a whitespace string " ".

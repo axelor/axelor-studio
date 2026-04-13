@@ -73,7 +73,7 @@ export default function ProcessConfiguration({
   const setter = (val: any) => {
     const { expression, value, checked } = val;
     updateValue(
-      expression,
+      !expression?.trim() ? undefined : expression,
       "pathCondition",
       undefined,
       selectedProcessConfig && selectedProcessConfig.key,
