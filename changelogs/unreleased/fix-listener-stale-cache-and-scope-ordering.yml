@@ -1,6 +1,0 @@
----
-title: Fix stale entity cache and request scope ordering in GlobalEntityListener
-type: fix
-description: |
-  Fixed two issues in GlobalEntityListener when processing BPM workflows on
-  reused ForkJoinPool threads

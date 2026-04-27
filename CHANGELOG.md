@@ -1,3 +1,17 @@
+## 4.0.6 (2026-04-27)
+
+#### Fix
+
+* Fix stale entity cache and request scope ordering in GlobalEntityListener
+
+  <details>
+  
+  Fixed two issues in GlobalEntityListener when processing BPM workflows on
+  reused ForkJoinPool threads
+  
+  </details>
+
+
 ## 4.0.5 (2026-03-24)
 
 #### Fix
