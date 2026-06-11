@@ -1,0 +1,8 @@
+---
+title: Fix app initialization when modules are built from source by Gradle
+type: fix
+description: |
+  AppServiceImpl.extract() only recognised Eclipse's "bin/main" output, so for modules
+  built by Gradle or IntelliJ the URL prefix was never stripped and the resource was
+  copied to a path the caller never reads — silently dropping every apps/*.yml from
+  locally-built modules. The strip pattern now mirrors MetaScanner.BUILD_PATHS.

@@ -277,11 +277,7 @@ public class AppServiceImpl implements AppService {
     files.forEach(
         url -> {
           String name = url.getFile();
-          name =
-              Path.of(
-                      name.replaceAll(
-                          name.matches("file:.+!/.*") ? "file:.+!/" : ".*/bin/main/", ""))
-                  .toString();
+          name = Path.of(name.replaceAll(stripPrefixPattern(name), "")).toString();
           if (!StringUtils.isEmpty(lang)) {
             name = name.replace(Path.of(dirName, lang).toString(), dirName);
           }
@@ -293,6 +289,21 @@ public class AppServiceImpl implements AppService {
         });
 
     return tmp;
+  }
+
+  /**
+   * Regex to strip a classpath URL down to the module-relative resource path. Handles jar entries
+   * (file:.../foo.jar!/path) plus the build output directories produced by Eclipse, Gradle, and
+   * IntelliJ — mirrors {@code com.axelor.meta.MetaScanner.BUILD_PATHS}.
+   */
+  private static String stripPrefixPattern(String urlFile) {
+    if (urlFile.matches("file:.+!/.*")) {
+      return "file:.+!/";
+    }
+    return ".*/(?:bin/main"
+        + "|out/production/(?:resources|classes)"
+        + "|build/resources/main"
+        + "|build/classes(?:/[^/]+)?/main)/";
   }
 
   protected List<URL> fetchUrls(String module, String fileName) {
