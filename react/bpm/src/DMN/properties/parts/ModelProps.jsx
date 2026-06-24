@@ -75,10 +75,10 @@ export default function ModelProps({ element, label }) {
       for (let i = 0; i < names.length; i++) {
         let model = {
           name: names[i],
-          title: labels[i],
+          title: labels?.[i],
         };
         if (name === "metaModel") {
-          model.fullName = fullNames[i];
+          model.fullName = fullNames?.[i];
         }
         models.push(model);
       }
