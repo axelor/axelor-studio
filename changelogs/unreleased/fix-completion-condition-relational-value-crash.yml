@@ -1,0 +1,3 @@
+---
+title: Fix BPM completion condition crash when comparing a relational field to a selected record
+type: fix

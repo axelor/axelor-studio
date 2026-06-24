@@ -17,7 +17,19 @@ import com.axelor.studio.ls.LinkScriptService;
 import com.axelor.studio.service.ExportService;
 import com.axelor.studio.service.ScriptAppSettingsStudioService;
 import com.axelor.studio.service.constructor.components.expressions.GroovyScriptBuilderService;
+import com.axelor.studio.service.constructor.components.expressions.dto.ConditionDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.ElementDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.ExpressionDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.FieldDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.FieldValueDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.ModelSourceDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.ParameterDTO;
+import com.axelor.studio.service.constructor.components.expressions.dto.RelationalFieldValueDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.RuleDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.ScriptDto;
 import com.axelor.studio.service.constructor.components.expressions.dto.SimpleFieldValueDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.TransformationDto;
+import com.axelor.studio.service.constructor.components.expressions.dto.ValueDto;
 import com.axelor.studio.service.ws.WsConnectorService;
 import groovy.xml.XmlUtil;
 import java.util.Arrays;
@@ -54,7 +66,19 @@ public class StudioScriptPolicyConfigurator implements ScriptPolicyConfigurator 
             ExecutionEntity.class,
             GroovyScriptBuilderService.class,
             StringEscapeUtils.class,
+            ConditionDto.class,
+            ElementDto.class,
+            ExpressionDto.class,
+            FieldDto.class,
+            FieldValueDto.class,
+            ModelSourceDto.class,
+            ParameterDTO.class,
+            RelationalFieldValueDto.class,
+            RuleDto.class,
+            ScriptDto.class,
             SimpleFieldValueDto.class,
+            TransformationDto.class,
+            ValueDto.class,
             XmlUtil.class));
   }
 }
