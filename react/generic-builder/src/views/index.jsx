@@ -800,6 +800,9 @@ function ExpressionBuilder({
         isBPMN,
         generateWithId,
       });
+      if (expr?.[0]?.error) {
+        return window?.top?.axelor?.alerts?.error(translate(expr?.[0]?.error));
+      }
     } else {
       const map_type = MAP_BPM_COMBINATOR;
       const str = (expressions.filter(e => e !== '') || [])
