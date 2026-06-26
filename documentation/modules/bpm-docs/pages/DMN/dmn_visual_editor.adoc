@@ -1,0 +1,195 @@
+= DMN Visual Editor
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+The DMN visual editor is a React-based graphical environment that allows you to design Decision Requirements Diagrams (DRDs) and configure decision tables. It is built on the `dmn-js` library and provides a complete editing experience including a palette, properties panel, and toolbar.
+
+The editor opens in a dedicated view at the URL `bpm/?type=dmn&id=\{model_id\}`.
+
+== Opening the Editor [[Opening]]
+
+The DMN editor can be opened from two locations:
+
+* From the *DMN model grid view*: click the pencil icon (btn:[Open editor]) on a row
+* From the *DMN model form view*: click the btn:[Open editor] button in the form header
+
+WARNING: You must save the DMN model before opening the editor. Any unsaved changes on the form will not be reflected in the editor.
+
+== Editor Layout [[Layout]]
+
+The editor is divided into three main areas:
+
+image::dmn/dmn-editor-layout.png[DMN editor layout]
+
+* *Top bar* (1): Contains the toolbar actions and the model selector
+* *Canvas* (2): The central drawing area where DRD elements are placed and connected
+* *Properties panel* (3): The right-side panel showing the configuration of the selected element
+
+=== Model Selector
+
+The top bar includes a *model selector* dropdown that allows you to switch between different DMN models without leaving the editor. The selector displays the model name and description.
+
+image::dmn/dmn-model-selector.png[Model selector dropdown]
+
+== Toolbar [[Toolbar]]
+
+The toolbar provides the following actions:
+
+image::dmn/dmn-editor-toolbar.png[DMN editor toolbar]
+
+=== Left-Side Actions
+
+[cols="1,1,3", options="header"]
+|===
+| Action | Icon | Description
+
+| *Save*
+| Save icon
+| Saves the current DMN XML to the server. The diagram is serialized and stored in the `WkfDmnModel.diagramXml` field.
+
+| *Refresh*
+| Refresh icon
+| Reloads the diagram from the server. If there are unsaved changes, a confirmation dialog is displayed to warn before discarding them.
+
+| *Deploy*
+| Rocket icon
+| Saves the current diagram and then deploys it to the Camunda DMN engine. This is equivalent to clicking Save followed by Deploy on the form view.
+
+| *View DRD*
+| Text button
+| Switches from the decision table view back to the DRD (diagram) view. This button is only displayed when you are editing a decision table.
+|===
+
+=== Right-Side Actions
+
+[cols="1,1,3", options="header"]
+|===
+| Action | Icon/Text | Description
+
+| *Upload*
+| Upload icon
+| Uploads a `.dmn` XML file to replace the current diagram. Useful for importing diagrams created in other tools.
+
+| *Download*
+| Download icon
+| Downloads the current diagram as a `.dmn` XML file. Useful for backup or transfer between environments.
+
+| *Export*
+| "Export" text
+| Exports all decision tables as an Excel file (.xlsx). See xref:DMN/creation_modele_dmn.adoc#Import-Export[Import and Export] for format details.
+
+| *Import*
+| "Import" text
+| Opens a dialog to import decision table data from an Excel file (.xlsx). See xref:DMN/creation_modele_dmn.adoc#Import-Export[Import and Export] for format details.
+|===
+
+NOTE: The Refresh action warns you before discarding unsaved changes. Always save your work before refreshing if you want to keep your modifications.
+
+== DRD View [[DRD-View]]
+
+The DRD (Decision Requirements Diagram) view is the default view when opening the editor. It shows the visual diagram of all decisions and their relationships.
+
+=== Palette
+
+The palette is located on the left side of the canvas. It provides the following elements:
+
+image::dmn/dmn-drd-palette.png[DRD palette]
+
+|===
+| Icon | Element | Description
+
+| image:dmn-btn-1.png[Lasso tool]
+| *Lasso tool*
+| Activates the lasso selection tool, allowing you to select and move multiple elements at once.
+
+| image:dmn-btn-2.png[Decision]
+| *Decision*
+| Creates a new Decision element. When placed, it automatically includes a decision table with one input column (type: string) and one output column (type: string).
+
+| image:dmn-btn-3.png[Input Data]
+| *Input Data*
+| Represents the data required to execute a decision. This is a visual-only element for diagram readability -- it has no effect on execution.
+
+| image:dmn-btn-4.png[Knowledge Source]
+| *Knowledge Source*
+| Indicates the source of knowledge used to define the decision logic. Visual-only, no effect on execution.
+
+| image:dmn-btn-5.png[Business Knowledge Model]
+| *Business Knowledge Model*
+| Represents reusable business logic. Visual-only, no effect on execution.
+|===
+
+TIP: You can connect elements using information requirement arrows (solid lines) or authority requirement arrows (dashed lines) by dragging from a source element to a target element.
+
+=== DRD Properties Panel
+
+When no element is selected, the properties panel displays the DRD-level properties:
+
+image::dmn/dmn-drd-properties-panel.png[DRD properties panel]
+
+[cols="1,3", options="header"]
+|===
+| Property | Description
+
+| *Id*
+| The unique identifier of the DRD (definitions element). Auto-generated, can be modified.
+
+| *Name*
+| The display name of the DRD.
+
+| *Version Tag*
+| An optional version tag for the DRD.
+
+| *History Time To Live*
+| Defines the duration for which history data is retained after the decision is evaluated.
+|===
+
+==== Model Selection at DRD Level
+
+The properties panel at the DRD level also includes model selection fields:
+
+image::dmn/dmn-drd-model-selection.png[DRD model selection]
+
+* *MetaModel*: Multi-select for standard data models. These are stored as custom attributes on the DMN definitions element.
+* *MetaJsonModel*: Multi-select for custom JSON models.
+
+These model associations define which data models are available as context when executing DMN decisions independently (outside of a BPM process). They are synchronized to the `WkfDmnModel` entity during deployment.
+
+=== Decision Element Properties
+
+When a Decision element is selected in the DRD, the properties panel shows:
+
+* *Id*: The decision identifier (used as `Decision Ref` in Business Rule Tasks)
+* *Name*: The display name of the decision
+
+== Navigating Between DRD and Decision Tables [[Navigation]]
+
+To edit a decision table:
+
+. In the DRD view, click on a Decision element
+. Click the element again (or double-click) to drill down into the decision table editor
+
+To return to the DRD:
+
+. Click the btn:[View DRD] button in the toolbar (visible only when in decision table view)
+
+image::dmn/dmn-view-drd-button.png[View DRD button]
+
+== Decision Table Editor [[Decision-Table-Editor]]
+
+When you drill down into a Decision element, the decision table editor is displayed. This view allows you to configure input/output columns and define rules.
+
+For detailed information on configuring decision tables, see xref:DMN/dmn_decision_table.adoc[Decision Table Configuration].
+
+image::dmn/dmn-decision-table-view.png[Decision table view inside editor]
+
+== Diagram Migration [[Migration]]
+
+The DMN editor includes automatic diagram migration support via the `@bpmn-io/dmn-migrate` library. When opening a DMN diagram created with an older DMN version, the editor automatically migrates it to the current version.
+
+NOTE: This migration is transparent and does not require any user action.
+
+// APP-VERIFY: Verify the DRD diagram rendering, element creation from palette, and drag-and-drop behavior between elements
