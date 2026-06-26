@@ -247,4 +247,3 @@ venteUnit.details.each{ detail ->
 ----
 
 In this example, we use the `\\__Beans__` function to call the services of the `InvoiceLineService` class and perform calculations on the invoice lines.
-

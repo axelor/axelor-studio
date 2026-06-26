@@ -124,4 +124,3 @@ It applies its Groovy script at the activation or the completion (depending on t
 == Comments [[Comments]]
 
 You can add comments to the script task to explain its purpose or to provide additional information.
-

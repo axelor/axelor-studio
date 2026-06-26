@@ -50,4 +50,3 @@ image::bpmn/events/message-events/message-generation-step-1.png[message creation
     image:bpmn/events/message-events/message-from-other-models.png[Message from other models]
 
 (3) - Display the newly created message or search for existing messages in the BPM model.
-
