@@ -1,16 +1,48 @@
-=  Utiliser des valeurs configurables pour détecter une boucle infinie potentielle
+= Using Configurable Values to Detect Potential Infinite Loops
 :toc-title:
 :page-pagination:
 :experimental:
 
-Il existe un énorme potentiel d'avoir une boucle infinie lors de l'exécution de tâches bpm.
-Lorsque le moteur BPM évalue une tâche, certains mécanismes garantissent que nous n'entrons pas dans une boucle infinie. Ce mécanisme est basé sur un temps d'exécution maximal et une profondeur maximale (pour éviter une récursion infinie).
-Ces valeurs sont désormais configurables dans `App BPM`, mais les valeurs par défaut sont conservées pour des raisons de compatibilité ascendante.
-Cette fonctionnalité permettra à la configuration personnalisée de détecter une boucle infinie potentielle dans l'évaluation des tâches.
+== Introduction
 
-Veuillez accéder à ** Administration -> Gestion des applications -> Application BPM -> config **
+When the BPM engine evaluates tasks, there is a potential risk of entering an infinite loop. To mitigate this, the engine provides safeguards based on two configurable limits:
 
-image::bpm-config.png[BPM config]
+- A *maximum execution duration* (time-based)
+- A *maximum recursion depth* (depth-based)
 
-* **Durée maximale (en secondes) pour l'exécution des tâches :**  Une valeur négative permet de ne pas mettre de limite de temps dans l'évaluation récursive des tâches. Veuillez n'utiliser une telle valeur seulement si vous connaissez les impacts.
-* **Profondeur maximale de récursion lors de l'exécution des tâches :**  Une valeur négative permet de ne pas mettre de limite de profondeur dans l'évaluation récursive des tâches. Veuillez n'utiliser une telle valeur seulement si vous connaissez les impacts.
+These values are configurable in the *App BPM* settings. Default values are maintained for backward compatibility.
+
+NOTE: A suspicion of infinite loop occurs when *both* of these limits are exceeded simultaneously.
+
+== Access
+
+Navigate to: *Administration > Application management > App BPM > Config*
+
+== Configuration
+
+=== Max Duration (in seconds) for Task Execution
+
+This setting defines the maximum time allowed for recursive task evaluation.
+
+- *Default value*: `10` seconds
+- *Behavior*: If the task evaluation exceeds this duration, combined with exceeding the depth limit, an infinite loop is suspected and the execution is interrupted.
+
+WARNING: Setting a negative value disables the time limit entirely. Only use this if you fully understand the implications, as it may cause the application to hang indefinitely.
+
+=== Max Depth of Recursive Task Execution
+
+This setting defines the maximum depth for recursive task evaluation.
+
+- *Default value*: `100`
+- *Behavior*: If the task evaluation exceeds this depth, combined with exceeding the duration limit, an infinite loop is suspected and the execution is interrupted.
+
+WARNING: Setting a negative value disables the depth limit entirely. Only use this if you fully understand the implications, as it may lead to stack overflow errors.
+
+== Technical Details
+
+The configuration is stored in the `AppBpm` entity with the following fields:
+
+- `taskExecutionRecursivityDurationLimit` (Integer, default: 10)
+- `taskExecutionRecursivityDepthLimit` (Integer, default: 100)
+
+These values are evaluated during the BPM engine's task processing cycle.

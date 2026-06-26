@@ -1,0 +1,6 @@
+= Studio Charts
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::studio-docs:partial$charts-content.adoc[]

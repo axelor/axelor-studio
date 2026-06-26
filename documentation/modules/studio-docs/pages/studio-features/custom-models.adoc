@@ -1,0 +1,163 @@
+= Custom Models
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Overview
+
+Custom Models (also called JSON models) allow you to create entirely new data entities through the Studio interface, without writing any Java or XML code. Each custom model gets its own form view, and optionally a menu entry for navigation.
+
+Custom models are managed from *App > Studio components > Models*.
+
+image::studio-features/custom-model-grid.png[Custom Models grid view,align="center"]
+
+== Creating a Custom Model
+
+=== Using the Models List
+
+Navigate to *App > Studio components > Models* and click btn:[New] to create a model directly from the list view.
+
+=== Using the View Builder
+
+Alternatively, open the xref:studio-features/view-builder.adoc[Visual View Builder] (*App > Studio*), ensure you are in Custom Model mode, and click btn:[New] in the toolbar.
+
+== Model Form
+
+image::studio-features/custom-model-form.png[Custom Model form,align="center"]
+
+The custom model form contains the following fields:
+
+=== Basic Information
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name* (1)
+| Yes
+| Technical name of the model. Must start with an alphabetic character. Validated by `JsonFieldService.checkName()`.
+
+| *Title* (2)
+| No
+| Display name shown to users in the interface. Supports translation.
+
+| *Form width* (3)
+| No
+| Width of the generated form view (e.g., `large`).
+
+| *Order by* (4)
+| No
+| Default sort order for records in the grid view.
+
+| *On new* (5)
+| No
+| Action executed when creating a new record of this model.
+
+| *On save* (6)
+| No
+| Action executed when saving a record of this model.
+|===
+
+WARNING: The model name must start with a letter (a-z or A-Z). Names starting with numbers or special characters are rejected by the validation.
+
+=== Studio App Grouping
+
+- *Studio App* (7): Associates the model with a xref:studio-features/studio-apps.adoc[Studio App] for packaging purposes.
+
+[NOTE]
+====
+The Studio App field is only visible when the `enableStudioApp` option is enabled in the xref:studio-features/configuration.adoc[Studio configuration].
+====
+
+=== Menu Generation
+
+image::studio-features/custom-model-menu-generation.png[Menu generation section,align="center"]
+
+- *Generate menu* (8): When checked, a menu entry is automatically created for this model, allowing users to access it from the navigation.
+- *Menu title* (9): Title displayed in the menu (visible when Generate menu is checked).
+- *Parent menu* (10): Parent menu under which the generated menu entry is placed.
+
+When you uncheck *Generate menu*, the associated `StudioMenu` record is automatically removed.
+
+=== Fields
+
+The *Fields* panel displays the list of xref:studio-features/custom-fields.adoc[custom fields] belonging to this model.
+
+- Fields are ordered by their *sequence* number
+- You can reorder fields by dragging them (canMove is enabled)
+- Click btn:[New] to add a field directly from the model form, or use the xref:studio-features/view-builder.adoc[View Builder] for a visual approach
+
+=== Access Control
+
+- *Roles* (11): Restrict access to this custom model to specific application roles. If no roles are selected, the model is accessible to all users.
+
+== Naming Rules
+
+Custom model names follow strict validation rules:
+
+* Must start with an alphabetic character (a-z or A-Z)
+* The name is processed through `JsonFieldService.checkName()` for sanitization
+* Must be unique across all custom models
+
+[TIP]
+====
+Use descriptive, PascalCase names for your custom models (e.g., `ProjectRequest`, `VehicleInspection`). This follows the Axelor convention for entity naming.
+====
+
+== Technical Details
+
+Custom models are stored in the `MetaJsonModel` table, which is an extension of the standard Axelor meta framework.
+
+[cols="1,1,3", options="header"]
+|===
+| Entity Field | Type | Description
+
+| `name`
+| String
+| Technical name of the model
+
+| `title`
+| String
+| Display title (translatable)
+
+| `isGenerateMenu`
+| Boolean
+| Whether a menu entry is auto-generated
+
+| `studioMenu`
+| M2O: StudioMenu
+| The associated menu entry (when menu generation is enabled)
+
+| `studioApp`
+| M2O: StudioApp
+| The Studio App this model belongs to
+
+| `formWidth`
+| String
+| Form view width setting
+
+| `orderBy`
+| String
+| Default grid sort order
+
+| `onNew`
+| String
+| Action triggered on record creation
+
+| `onSave`
+| String
+| Action triggered on record save
+
+| `showProcessTracking`
+| Boolean
+| Whether to display BPM process tracking on this model
+|===
+
+Custom model data is stored as JSON in the `attrs` field of standard Axelor records, with the field definitions in `MetaJsonField`.
+
+== Related Pages
+
+* xref:studio-features/view-builder.adoc[Visual View Builder] -- Design forms visually
+* xref:studio-features/custom-fields.adoc[Custom Fields] -- Field types, widgets, and validation
+* xref:studio-features/menus.adoc[Menus] -- Menu management for custom and standard models
+* xref:studio-features/studio-apps.adoc[Studio Apps] -- Packaging models into applications

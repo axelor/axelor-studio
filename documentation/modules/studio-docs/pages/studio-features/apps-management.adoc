@@ -1,0 +1,6 @@
+= Apps Management
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::partial$apps-management-content.adoc[]
