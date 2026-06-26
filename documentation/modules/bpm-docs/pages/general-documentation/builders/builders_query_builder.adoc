@@ -166,4 +166,3 @@ The Query Builder is activated by setting `type=query` in the generic-builder UR
 | `resultMetaField`
 | Field storing the JSON metadata
 |===
-
