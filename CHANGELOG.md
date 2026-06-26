@@ -1,3 +1,9 @@
+## 3.4.13 (2026-06-26)
+
+#### Fix
+
+* Fix DMN editor becoming inaccessible after saving a model
+
 ## 3.4.12 (2026-04-27)
 
 #### Fix
