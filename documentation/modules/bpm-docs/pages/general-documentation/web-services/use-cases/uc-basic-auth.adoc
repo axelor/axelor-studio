@@ -1,0 +1,22 @@
+= Basic Authentication
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+This example uses the Postman API. You can consult the Postman API documentation at https://www.postman.com/postman/workspace/postman-public-workspace/documentation/.
+
+== Authentication [[Authentication]]
+
+Select the *basic* authentication type, then fill in the username and password fields. This xref:general-documentation/web-services/ws-authenticators.adoc[authenticator] is then used in a xref:general-documentation/web-services/ws-connectors.adoc[connector] that encodes the username and password in Base64.
+
+image::web-services/postmanAuth.png[Postman basic authentication,align="left"]
+
+You can test the authentication with any request to the Postman API, for example:
+
+----
+GET : https://postman-echo.com/basic-auth
+----
+
+NOTE: The result is a JSON response with a `true` value when the authentication is correct.

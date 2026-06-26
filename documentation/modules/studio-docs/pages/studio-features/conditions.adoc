@@ -1,0 +1,214 @@
+= Conditional Expressions
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Overview
+
+Conditional expressions in Studio control the visibility and behavior of form elements dynamically based on the current record's data. They are used extensively on xref:studio-features/custom-fields.adoc[custom fields] and in the xref:studio-features/view-builder.adoc[Visual View Builder] to create responsive forms that adapt to user input.
+
+== Condition Types
+
+Studio supports five types of conditional expressions:
+
+[cols="1,1,3", options="header"]
+|===
+| Condition | Generated Attribute | Description
+
+| *Show if*
+| `showIf`
+| The element is visible only when the expression evaluates to true. When false, the element is hidden but its data is still present.
+
+| *Hide if*
+| `hideIf` -> `hidden`
+| The element is hidden when the expression evaluates to true. Inverse of Show if.
+
+| *Required if*
+| `requiredIf` -> `required`
+| The element becomes mandatory when the expression evaluates to true. The form cannot be saved without a value.
+
+| *Read-only if*
+| `readonlyIf` -> `readonly`
+| The element becomes non-editable when the expression evaluates to true. The value is displayed but cannot be changed.
+
+| *Collapse if*
+| `collapseIf` -> `canCollapse`
+| For panels only. The panel is collapsed when the expression evaluates to true.
+|===
+
+[WARNING]
+====
+**Show if / Hide if are UI-only**: These conditions control visibility in the user interface, but the field data remains accessible through the REST API. Do not use `showIf` or `hideIf` as security mechanisms. Use role-based permissions for data access control.
+====
+
+== Expression Syntax
+
+=== The `$record` Prefix
+
+In XML view conditions (used in View Extension mode), field references use the `$record.` prefix to access the current record's values:
+
+[source]
+----
+$record.fieldName == 'value'
+----
+
+This prefix is specific to the Axelor view engine and ensures the expression references the current form record's data.
+
+=== Basic Comparisons
+
+[cols="2,3", options="header"]
+|===
+| Expression | Meaning
+
+| `$record.status == 'draft'`
+| True when the status field equals "draft"
+
+| `$record.amount > 1000`
+| True when the amount is greater than 1000
+
+| `$record.amount >= 0 && $record.amount \<= 100`
+| True when amount is between 0 and 100
+
+| `$record.type != 'internal'`
+| True when the type is not "internal"
+|===
+
+=== Null and Empty Checks
+
+[cols="2,3", options="header"]
+|===
+| Expression | Meaning
+
+| `$record.partner != null`
+| True when the partner field has a value
+
+| `$record.partner == null`
+| True when the partner field is empty
+
+| `$record.name != null && $record.name != ''`
+| True when the name is not null and not empty
+|===
+
+=== Boolean Fields
+
+[cols="2,3", options="header"]
+|===
+| Expression | Meaning
+
+| `$record.isActive`
+| True when the isActive checkbox is checked
+
+| `!$record.isActive`
+| True when the isActive checkbox is unchecked
+
+| `$record.isActive == true`
+| Explicit check (equivalent to `$record.isActive`)
+|===
+
+=== Combining Conditions
+
+[cols="1,3", options="header"]
+|===
+| Operator | Example
+
+| `&&` (AND)
+| `$record.status == 'confirmed' && $record.amount > 0`
+
+| `\|\|` (OR)
+| `$record.type == 'sale' \|\| $record.type == 'purchase'`
+
+| `!` (NOT)
+| `!($record.status == 'cancelled')`
+|===
+
+=== Relational Field Access
+
+Access fields of related records using dot notation:
+
+[source]
+----
+$record.customer.country.code == 'FR'
+$record.orderLine.product != null
+----
+
+== Practical Examples
+
+=== Example 1: Show Payment Fields for Confirmed Orders
+
+Show payment-related fields only when an order is confirmed and the total amount is positive:
+
+* **Show if**: `$record.status == 'confirmed' && $record.totalAmount > 0`
+
+Apply this condition to a panel containing payment method, payment date, and payment reference fields.
+
+=== Example 2: Make Email Required for Customers
+
+Require an email address when the contact type is "Customer":
+
+* **Required if**: `$record.contactType == 'customer'`
+
+Apply this condition to the email field.
+
+=== Example 3: Read-only After Validation
+
+Make all fields read-only once a record has been validated:
+
+* **Read-only if**: `$record.statusSelect >= 3`
+
+Apply this condition to the main form panel to make all contained fields read-only.
+
+=== Example 4: Conditional Panel Collapse
+
+Collapse an advanced settings panel by default, showing it only when "Advanced mode" is checked:
+
+* **Collapse if**: `!$record.advancedMode`
+
+Apply this condition to the advanced settings panel.
+
+== Conditions on Custom Fields vs. View Elements
+
+There are two contexts where conditions are used:
+
+=== On Custom Fields (MetaJsonField)
+
+When you set conditions on a custom field (via the xref:studio-features/custom-fields.adoc[Custom Fields] form or the xref:studio-features/view-builder.adoc[View Builder] properties panel), the condition is stored as a field attribute and applies wherever the field is rendered.
+
+The condition properties are mapped as follows:
+
+[cols="1,1", options="header"]
+|===
+| Field Property | Generated XML Attribute
+
+| `readonlyIf`
+| `readonly`
+
+| `requiredIf`
+| `required`
+
+| `hideIf`
+| `hidden`
+
+| `collapseIf`
+| `canCollapse`
+|===
+
+=== On View Elements (XML Extensions)
+
+When you set conditions on view elements in View Extension mode, they are generated as XPath-based view extensions that modify the existing view's XML.
+
+== Condition Limitations
+
+* Conditions are evaluated client-side in the browser. They cannot call server-side methods or execute database queries.
+* Complex Groovy expressions are not supported in condition fields. Use simple JavaScript-like expressions.
+* For server-side validation, use xref:studio-features/actions.adoc[Script actions] triggered by `onChange` or `onSave` events.
+
+[TIP]
+====
+Keep conditions simple and readable. If a condition becomes too complex, consider splitting it into multiple fields with individual conditions, or use a computed boolean field with a Script action to set its value.
+====
+
+== Related Pages
+
+* xref:studio-features/custom-fields.adoc[Custom Fields] -- Setting conditions on fields
+* xref:studio-features/view-builder.adoc[Visual View Builder] -- Setting conditions in the properties panel
+* xref:studio-features/actions.adoc[Actions] -- Server-side logic for complex validations

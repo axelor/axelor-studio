@@ -1,0 +1,8 @@
+= App Loader
+:toc-title:
+:page-pagination:
+:experimental:
+
+App Loaders are the import/export mechanism behind Studio Apps, including their BPM and DMN components. In this version they no longer have a standalone screen: import, export, and update are driven from the xref:studio-docs:studio-features/studio-apps.adoc[Studio App] form. The shared reference below describes the underlying entities, the exported component types, and the data-export configuration.
+
+include::studio-docs:partial$app-loaders-content.adoc[]
