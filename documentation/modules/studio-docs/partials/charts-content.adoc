@@ -1,0 +1,255 @@
+
+== Overview
+
+Studio Charts allow you to create visual data representations from your application models. Charts are configurable through a form-based interface -- no coding required. Studio supports 11 chart types, from standard bar and line charts to specialized gauges and funnels.
+
+Charts are managed from *App > Reporting > Charts*.
+
+image::studio-docs:studio/chart-grid.png[Studio Charts grid view]
+
+== Creating a Chart
+
+Navigate to *App > Reporting > Charts* and click btn:[New].
+
+image::studio-docs:studio/chart-form.png[Studio Chart form]
+
+=== Basic Information
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name* (1)
+| Yes
+| Unique technical name of the chart. Must not contain spaces. The name is validated and normalized automatically.
+
+| *Title* (2)
+| Yes
+| Display title shown above the chart.
+
+| *Chart type* (3)
+| Yes
+| The visualization type. Default: `bar`. See <<chart-types>> below.
+
+| *Is JSON* (4)
+| No
+| Toggle between custom (JSON) models and standard models.
+
+| *Model* (5)
+| No
+| The data model to query for chart data. When using JSON models, select from `MetaJsonModel`; otherwise from `MetaModel`.
+
+| *Studio App* (6)
+| No
+| Associates the chart with a xref:studio-docs:studio-features/studio-apps.adoc[Studio App] for packaging. Only visible when `enableStudioApp` is active (see xref:studio-docs:studio-features/configuration.adoc[Configuration]).
+|===
+
+NOTE: The aggregate, group, display, and filter panels are only visible after a model has been selected.
+
+[[chart-types]]
+== Chart Types
+
+Studio supports 11 chart types, each suited for different data visualization needs:
+
+[cols="1,3", options="header"]
+|===
+| Type | Description
+
+| **Bar**
+| Vertical bar chart. Best for comparing quantities across categories.
+
+| **Horizontal Bar** (hbar)
+| Horizontal bar chart. Useful when category labels are long.
+
+| **Line**
+| Line chart. Ideal for showing trends over time.
+
+| **Area**
+| Area chart (filled line). Emphasizes volume under the trend line.
+
+| **Pie**
+| Pie chart. Shows proportional distribution of a whole.
+
+| **Donut**
+| Donut chart (ring). Similar to pie but with a hollow center.
+
+| **Radar**
+| Radar/spider chart. Compares multiple variables on radial axes.
+
+| **Scatter**
+| Scatter plot. Shows correlation between two numeric variables.
+
+| **Gauge**
+| Gauge chart. Displays a single value within a range.
+
+| **Funnel**
+| Funnel chart. Shows progressive reduction through stages.
+
+| **Text**
+| Text display. Shows a computed value as formatted text.
+|===
+
+== Data Configuration
+
+Each chart requires three configuration dimensions: what to measure (aggregate), how to categorize (group), and what to display (display field).
+
+=== Aggregate (Measure)
+
+The aggregate defines the value computed and displayed on the chart axis.
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Is JSON*
+| Toggle to select a MetaJsonField instead of a MetaField.
+
+| *Aggregate on*
+| The field to aggregate. Select a `MetaField` (standard models) or `MetaJsonField` (JSON models).
+
+| *Target*
+| When the aggregate field is a relational field, specify the target field to aggregate on. Auto-detected based on the selected field.
+
+| *Date type*
+| When aggregating a date field, select the granularity: *day*, *month*, or *year*. Only shown for date-type fields.
+|===
+
+=== Group By (Dimension)
+
+The group dimension defines how data is categorized along the chart axis.
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Is JSON*
+| Toggle to select a MetaJsonField instead of a MetaField.
+
+| *Group on*
+| The field to group by. Select a `MetaField` or `MetaJsonField`.
+
+| *Target*
+| Target field for relational group fields. Auto-detected.
+
+| *Date type*
+| Grouping granularity for date fields: *day*, *month*, or *year*. Only shown for date-type fields.
+|===
+
+=== Display Field
+
+The display field provides an alternative label for chart data points.
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Is JSON*
+| Toggle to select a MetaJsonField instead of a MetaField.
+
+| *Display field*
+| An optional field used for display labels instead of the group field's raw value.
+
+| *Display type*
+| How the value is formatted: *Value* (0) shows the raw number, *Percentage* (1) shows the value as a percentage of the total.
+|===
+
+== Filters
+
+The *Filters* panel allows you to restrict the data included in the chart. Filters are stored as `Filter` entities linked to the chart.
+
+image::studio-docs:studio/chart-filters.png[Chart filters panel]
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Is JSON*
+| Toggle between standard and JSON model fields.
+
+| *Target field*
+| The field to filter on (MetaField or MetaJsonField).
+
+| *Target type*
+| The data type of the target field (auto-detected).
+
+| *Operator*
+| Comparison operator. See <<filter-operators>> below.
+
+| *Value*
+| The comparison value.
+
+| *Is parameter*
+| When checked, the filter appears as a user-configurable parameter on the chart view, allowing end users to adjust the filter at runtime.
+
+| *Logic operator*
+| Combine multiple filters with *AND* (0, default) or *OR* (1).
+|===
+
+[[filter-operators]]
+=== Available Filter Operators
+
+Studio provides 16 filter operators:
+
+[cols="1,2", options="header"]
+|===
+| Operator | Description
+
+| `=` | Equals
+| `!=` | Not equals
+| `>` | Greater than
+| `>=` | Greater than or equal
+| `<` | Less than
+| `\<=` | Less than or equal
+| `in` | Value is in a list
+| `notIn` | Value is not in a list
+| `like` | Pattern matching (SQL LIKE)
+| `notLike` | Negative pattern matching
+| `isNull` | Field is null
+| `notNull` | Field is not null
+| `isTrue` | Boolean is true
+| `isFalse` | Boolean is false
+| `include` | Collection includes value
+| `notInclude` | Collection does not include value
+|===
+
+=== Filter Value Variables
+
+Use these built-in variables in filter values:
+
+* `$date` -- Today's date
+* `$time` -- Current time
+
+[TIP]
+====
+Use the *Is parameter* option to create interactive charts where users can adjust filter criteria at runtime. For example, add a date range parameter so users can view data for different periods.
+====
+
+== Example: Monthly Sales Chart
+
+To create a bar chart showing confirmed order totals by month:
+
+. Create a chart with name `custom.monthly.sales` and title "Monthly Sales"
+. Set chart type to *Bar*
+. Set model to `SaleOrder`
+. Set *Aggregate on* to `exTaxTotal`
+. Set *Group on* to `orderDate`
+. Set *Group date type* to `month`
+. Add a filter: `statusSelect` equals `3` (confirmed orders)
+
+This produces a bar chart displaying the sum of `exTaxTotal` for each month, filtering only confirmed orders.
+
+== Technical Details
+
+Charts are stored in the `StudioChart` entity (`com.axelor.studio.db`, cacheable). When a chart is saved, a `MetaView` of type `chart` is automatically generated and registered in the application.
+
+Key backend services:
+
+* `StudioChartServiceImpl` -- Resolves default target fields and target types for relational and date fields
+* `StudioChartController.viewRelatedRecord()` -- Handles click events on chart data points to navigate to the related records
+
+== Related Pages
+
+* xref:studio-docs:studio-features/dashboards.adoc[Dashboards] -- Combine charts into dashboard pages
+* xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps] -- Package charts in apps
+* xref:studio-docs:studio-features/custom-models.adoc[Custom Models] -- Data sources for charts
+* xref:studio-docs:index.adoc[Studio Overview] -- Complete feature overview

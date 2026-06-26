@@ -1,0 +1,24 @@
+= XML Request Exchange
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+APIs exchange data in many formats. This example shows how to communicate using XML data, using the *OpenWeather* API as the use case.
+
+== Request [[Request]]
+
+image::web-services/openWeather.png[OpenWeather XML request,align="left"]
+
+== Authentication [[Authentication]]
+
+TIP: No authentication is required in this case -- OpenWeather is an open API.
+
+== Connector [[Connector]]
+
+Specify the base URL on the connector.
+
+image::web-services/connectorXML.png[XML connector example,align="left"]
+
+IMPORTANT: You can build an XML payload with the payload builder. See the xref:general-documentation/web-services/ws-builder.adoc[WS Builder] for details on the payload builder.
