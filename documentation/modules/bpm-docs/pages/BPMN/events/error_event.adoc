@@ -1,0 +1,87 @@
+=  Error Event
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction to BPMN Error Events
+
+In the Business Process Model and Notation (BPMN) standard, an error event represents a specific error condition that occurs during the execution of a process. Error events are used to handle exceptional situations and provide a mechanism for error handling and recovery within a business process.
+
+== Types of Error Events
+
+Error events can be used in different contexts within a BPMN process:
+
+- *Error Start Event:* Initiates a process instance when a specific error is received. This can only be used to start an event subprocess, not a top-level process.
+- *Error Boundary Event:* Attached to an activity, it interrupts the activity when a specific error occurs and redirects the flow to an error handling path.
+- *Error End Event:* Ends the current process path and throws a specific error that can be caught by an error boundary event or an error start event in an event subprocess.
+
+== Symbolization in BPMN
+
+Error events are symbolized by the following pictograms:
+
+- image:bpmn/events/error-events/error-start-event.png[Error start event]
+- image:bpmn/events/error-events/error-boundary-event.png[Error boundary event]
+- image:bpmn/events/error-events/error-end-event.png[Error end event]
+
+== Configuration for Error Events
+
+To configure an error event, you need to specify the error in the general tab of the properties panel:
+
+image:bpmn/events/error-events/error-event-configuration.png[Error event configuration, align="center"]
+
+=== Error Start Event Configuration
+
+For an error start event (which can only be used in an event subprocess):
+
+- *If no error is specified:* The event subprocess will be triggered for any error thrown in the parent process.
+- *Error Code:* Contains the error code that will be used to match with thrown errors.
+- *Error Message:* Contains the error message that will be displayed with the error.
+
+=== Error Boundary Event Configuration
+
+For an error boundary event:
+
+- *If no error is specified:* The event will be triggered for any error thrown by the activity it is attached to, without considering a specific error or error code.
+- *If an error is specified:* The event will only be triggered for errors that match the specified error code.
+- *Error Code Variable:* If specified, the error code of the caught error will be stored in this variable.
+- *Error Message Variable:* If specified, the error message of the caught error will be stored in this variable.
+
+=== Error End Event Configuration
+
+For an error end event:
+
+- *Error Code:* Required. Contains the error code that will be thrown.
+- *Error Message:* Contains the error message that will be thrown with the error.
+
+=== Creating an Error
+
+To create an error:
+
+1. Click on the *+* icon to automatically generate an error.
+2. An Error Name will be automatically generated, but it is recommended to change it to make it more understandable.
+3. You can search for existing errors in the BPM model or from other BPM models.
+
+== Use Cases for Error Events
+
+Error events are commonly used for:
+
+1. *Exception Handling:* Handling exceptional situations that occur during process execution.
+2. *Error Recovery:* Providing a mechanism for recovering from errors and continuing the process.
+3. *Process Termination:* Terminating a process or subprocess when an unrecoverable error occurs.
+4. *Error Notification:* Notifying relevant stakeholders about errors that occur during process execution.
+
+== Listeners
+
+It is possible in a BPM model, regardless of the configurable element, to define listeners via the appropriate tab.
+
+image:bpmn/events/error-events/error-event-listener.png[Listeners, align="center"]
+
+=== Execution Listener
+
+An execution listener is created by clicking the plus *+* button in the list of concerned listeners in the tab.
+
+It applies its Groovy script at the activation or the completion (depending on the user's choice) of the event. The script can be written with or without the script xref:general-documentation/builders/builders_introduction.adoc#mapper-builder-usage[builder].
+
+== Comments
+
+You can add comments to the error event to explain its purpose or to provide additional information.

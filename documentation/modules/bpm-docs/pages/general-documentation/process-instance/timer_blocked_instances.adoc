@@ -1,0 +1,56 @@
+= Timer-Blocked Instances
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+A process instance can become *blocked on a timer* when a timer job has exhausted all of its retries (no retries left) while remaining active in the engine. Such instances stay stuck because their scheduled timer is no longer executed. The *Process Instance* grid provides a dedicated menubar to detect and resume these instances.
+
+== Accessing the Menu
+
+The menu is available from the *Process Instance* grid (`wkf-instance-grid`), under the *Timer-Blocked instances* menubar entry.
+
+// TODO-RECAPTURE 3.4 @bpm: Process Instance grid showing the "Timer-Blocked instances" menubar -> process-instances/timer-blocked-menu.png
+
+The menu exposes two actions:
+
+[cols="1,3", options="header"]
+|===
+| Action | Description
+
+| Show timer-blocked instances
+| Opens the *Process Instance* grid filtered to the instances currently blocked on a timer.
+
+| Resume timer-blocked instances
+| Resumes the selected blocked instances. At least one instance must be selected, otherwise the message _"Please select at least one instance blocked on a timer to resume processing."_ is displayed.
+|===
+
+== Showing Blocked Instances
+
+Selecting *Show timer-blocked instances* queries the Camunda engine for active timer jobs that have no retries left, collects the corresponding process instance ids, and reopens the *Process Instance* grid restricted to those instances (`self.instanceId IN (:strings)`).
+
+This gives a focused view of every instance whose progress is currently held up by a stuck timer.
+
+== Resuming Blocked Instances
+
+To resume processing:
+
+. Select one or more instances in the grid.
+. Choose *Resume timer-blocked instances*.
+
+For each selected instance, the engine looks up its active, retry-exhausted timer jobs and unblocks them so the timer can fire again and the instance can continue. When the operation finishes, the message _"Operation completed"_ is shown.
+
+[NOTE]
+====
+Only instances that actually have a timer job with no retries left are affected. If no stuck timer is found for an instance, no action is performed on it.
+====
+
+== Technical Details
+
+The feature is backed by `WkfInstanceController` and `WkfInstanceServiceImpl` in the BPM module:
+
+* `showTimerBlockedInstances` -- builds the filtered action view from `getBlockedInstancesOnTimer()`.
+* `resumeTimerBlockedInstances` -- iterates over the selected ids and calls `unblockTimers(id)` for each.
+* `getBlockedInstancesOnTimer()` -- queries active timer jobs with no retries left and returns their process instance ids.
+* `unblockTimers(id)` -- resumes the stuck timer jobs for a given instance.
