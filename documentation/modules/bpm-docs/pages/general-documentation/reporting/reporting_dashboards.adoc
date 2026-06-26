@@ -1,0 +1,6 @@
+= Studio Dashboards
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::studio-docs:partial$dashboards-content.adoc[]

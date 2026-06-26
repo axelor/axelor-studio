@@ -1,0 +1,146 @@
+= BPM Migration
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The BPM Migration feature allows you to migrate running process instances from one version of a BPM model to another. When a BPM model is updated and redeployed, existing instances may still be running on the previous version. The migration tool provides a controlled way to move these instances to the new version by mapping nodes between versions.
+
+== Access
+
+Navigate to: *Application Builder > BPM components > Technical monitoring > BPM Migration*
+
+image::migration/migration-grid.png[BPM Migration grid, align="center"]
+
+== Configuration
+
+=== Creating a Migration
+
+image::migration/migration-form.png[BPM Migration form, align="center"]
+
+To create a new migration:
+
+. Select the *Source version* (1): The BPM model version from which instances will be migrated.
+. Select the *Target version* (2): The BPM model version to which instances will be migrated. The available target versions are filtered based on the selected source version (only other versions of the same model are shown).
+. Click *Generate Node Mapping* (3): This automatically generates a mapping between the nodes of the source and target versions.
+. Optionally check *Remove old version menu* (4): If enabled, the menu associated with the old version will be removed after migration.
+
+NOTE: Both source and target versions must be selected before generating the node mapping.
+
+=== Node Mapping
+
+After generating the node mapping, a dashlet displays the mapping between source and target nodes for each process in the model:
+
+For each process:
+
+- The *Source node* column displays the nodes from the source version.
+- The *Target node* column provides a dropdown selector allowing you to choose the corresponding node in the target version.
+
+The system automatically suggests matching nodes based on their identifiers.
+
+=== Executing the Migration
+
+Once the node mapping is configured:
+
+. Review the mapping for each process to ensure correctness.
+. Click the *Migrate* button at the bottom of the mapping dashlet.
+. The system will migrate all running instances from the source version to the target version, updating the activity positions according to the node mapping.
+
+WARNING: Migration is an irreversible operation. Ensure that the node mapping is correct before executing the migration.
+
+=== Instance-Level Migration
+
+Migration can also be triggered from a specific process instance form. In this case:
+
+* The *Source version* is pre-set to the instance's current version and is read-only
+* You only need to select the *Target version* and generate the node mapping
+* Only the selected instance is migrated (not all instances of the source version)
+
+This is accessible from the *Process instance* view under *BPM components > Technical monitoring > Process Instances*.
+
+== Auto-Migration During Deployment
+
+When a new version of a BPM model is deployed, the system can automatically migrate running instances. This auto-migration:
+
+. Finds all running process instances from the previous deployment
+. Matches process definitions between old and new versions by their process key
+. Builds a Camunda `MigrationPlan` based on the migration mapping
+. Migrates each instance individually, updating:
+   - The process definition version
+   - Active activity positions
+   - Event triggers for intermediate catch events
+   - Active user tasks (via `wkfUserActionService.migrateUserAction()`)
+
+If any individual instance migration fails, an error status is recorded for that instance, but the deployment continues for other instances.
+
+NOTE: Auto-migration during deployment uses the migration map provided in the deployment dialog. If no migration map is provided, running instances remain on the previous version.
+
+== Migration History
+
+Each process instance maintains a migration history that records version transitions. This history is accessible from the process instance view and includes:
+
+- *Version code*: The version identifier
+- *Created on*: When the history entry was created
+- *Updated on*: When the migration was applied
+- *Open editor*: A button to open the BPM editor for the corresponding version
+
+== Technical Details
+
+=== WkfMigration Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `sourceVersion`
+| M2O: WkfModel
+| Source BPM model version
+
+| `targetVersion`
+| M2O: WkfModel
+| Target BPM model version
+
+| `mapping`
+| Large String
+| JSON data containing the node-to-node mapping
+
+| `removeOldVersionMenu`
+| Boolean (default: false)
+| Whether to remove menus from the old version after migration
+|===
+
+=== WkfInstanceMigrationHistory Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `wkfInstance`
+| M2O: WkfInstance
+| The migrated process instance
+
+| `versionCode`
+| String
+| Version identifier of the model
+
+| `versionId`
+| Long
+| Database ID of the WkfModel version
+
+| `migrationHistoryUpdatedOn`
+| DateTime
+| When the migration was applied
+|===
+
+=== Backend Services
+
+* `WkfMigrationController` -- Handles form actions: generate node map, set target version domain, execute migration
+* `WkfMigrationServiceImpl` -- Core migration logic: node mapping generation, Camunda migration plan creation, instance migration
+* `BpmDeploymentServiceImpl.migrateRunningInstances()` -- Auto-migration during deployment
+
+== Related Pages
+
+* xref:general-documentation/engine/deployment_pipeline.adoc[Deployment Pipeline] -- Auto-migration during deployment
+* xref:general-documentation/process-instance/process_variables_visualization.adoc[Process Instances] -- View and manage process instances
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

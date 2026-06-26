@@ -1,0 +1,192 @@
+= Value Mapper
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The Value Mapper is a visual tool for creating field-to-field data mappings between models. It uses a React-based drag-and-drop builder to define how data flows from a source model to a target model, and generates a Groovy script that performs the mapping.
+
+Value Mappers are accessed from *Application Builder > BPM components > Mappers*.
+
+== Value Mapper List
+
+image::utilities/value-mapper-grid.png[Value Mapper grid view,align="center"]
+
+The grid view displays all value mappers with an btn:[Open mapper] button (pencil icon) for quick access to the visual builder.
+
+== Creating a Value Mapper
+
+Click btn:[New] to create a Value Mapper, then save the record to enable the visual builder.
+
+image::utilities/value-mapper-form.png[Value Mapper form,align="center"]
+
+=== Form Fields
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name* (1)
+| No
+| Unique name for the value mapper.
+
+| btn:[Open mapper] (2)
+| --
+| Opens the React visual builder in a panel. Only available after the record is saved (has an ID).
+
+| *Target* (3)
+| --
+| The target model name (read-only, set by the builder).
+
+| *Source* (4)
+| --
+| The source model name (read-only, set by the builder).
+
+| *Script* (5)
+| --
+| The generated Groovy script (CodeEditor, read-only). This is the executable output of the visual mapper.
+
+| *Script meta* (6)
+| --
+| JSON metadata used by the React builder to reconstruct the visual mapping (hidden field).
+|===
+
+== Visual Builder
+
+The visual builder opens in an embedded panel and provides a drag-and-drop interface for defining field mappings.
+
+=== Builder Workflow
+
+. **Select target model**: Choose the model that will receive the mapped data
+. **Select source model**: Choose the model from which data will be read
+. **Map fields**: Drag fields from the source model to the corresponding fields in the target model
+. **Configure values**: For each mapped field, define the source value (field reference, expression, or static value)
+. **Add conditions**: Optionally add conditions to individual field mappings
+. **Save**: The builder generates a Groovy script and stores it in the `script` field
+
+The builder supports multiple value source types:
+
+- **Field reference**: Map directly from a source model field
+- **Expression**: Use a Groovy expression to compute the value
+- **Static value**: Set a fixed value
+
+[TIP]
+====
+Use the Value Mapper for repeatable data transformation patterns. For example, create a mapper that converts a sales quotation into a confirmed order, mapping all relevant fields.
+====
+
+== Executing a Value Mapper
+
+=== Wizard Execution
+
+Value Mappers can be executed against a specific record through a wizard popup.
+
+The wizard provides:
+
+[cols="1,3", options="header"]
+|===
+| Field | Description
+
+| *Value mapper*
+| Select the Value Mapper to execute (M2O: ValueMapper).
+
+| btn:[Execute]
+| Runs the mapper's generated Groovy script against the specified record.
+|===
+
+The execution context includes hidden fields for `modelName` and `recordId`, which identify the record to apply the mapping to.
+
+WARNING: Executing a value mapper directly modifies database records. Test in a development environment before running against production data.
+
+== Groovy Execution Bindings
+
+When a Value Mapper script is executed, the following variables are available in the Groovy script context:
+
+[cols="1,2", options="header"]
+|===
+| Binding | Description
+
+| `__ctx__`
+| `FullContextHelper` class providing `create()`, `find()`, `filter()`, `save()` methods for record operations.
+
+| `\{modelVariable}`
+| The target record wrapped in `FullContext`. The variable name is derived from the model class name (first letter lowercased, e.g., `saleOrder` for `SaleOrder`).
+
+| `\{modelVariable}Id`
+| The ID of the target record.
+
+| `__time__`
+| Current local time (`LocalDateTime.now()`).
+
+| `__datetime__`
+| Current date and time with timezone (`ZonedDateTime.now()`).
+
+| `__studiouser__`
+| The current user executing the mapper (or admin if no user context).
+
+| `__this__`
+| The target record wrapped in `FullContext` (alias for the model variable).
+
+| `__self__`
+| The raw target record (not wrapped in FullContext).
+
+| `__parent__`
+| The parent context record wrapped in `FullContext`.
+
+| `__id__`
+| The target record's ID.
+
+| `__log__`
+| Logger instance (`BpmLoggingHelper`) for debugging output.
+|===
+
+NOTE: For JSON models (`MetaJsonRecord`), the variable name is derived from the JSON model name instead of the Java class name.
+
+== Result Handling
+
+After the Groovy script executes, the result is processed as follows:
+
+* If the script creates a new record (detected when the script starts with `def rec = __ctx__.create(`), the created record is automatically opened in a form view for the user to review.
+* Otherwise, the execution completes silently and the current view is refreshed.
+
+=== BPM Integration
+
+Value Mappers can be referenced from BPM processes through the xref:general-documentation/builders/builders_introduction.adoc[mapper builder] dialog. When used in a BPM context, the mapper provides:
+
+- Source model selection (from process context)
+- Target model selection
+- Field mapping with drag-and-drop
+- Integration with process variables
+
+== Technical Details
+
+=== ValueMapper Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `name` | String (unique) | Mapper name
+| `script` | Large String | Generated Groovy script
+| `scriptMeta` | Large String | JSON metadata for the React builder
+| `targetField` | String | Target model name
+| `sourceField` | String | Source model name
+|===
+
+The React builder communicates with the server through URL parameters:
+
+[source]
+----
+mapper/?id={{_id}}&model=com.axelor.studio.db.ValueMapper&resultField=script&resultMetaField=scriptMeta&targetField=targetField&sourceField=sourceField
+----
+
+Backend services:
+
+* `ValueMapperController.execute()` -- Executes the generated script on a specified record
+* `ValueMapperService` -- Core mapper execution logic
+
+== Related Pages
+
+* xref:general-documentation/builders/builders_mapper_builder.adoc[Mapper Builder] -- The visual builder component used within BPM
+* xref:general-documentation/builders/builders_introduction.adoc[Builders Introduction] -- Overview of all builder tools

@@ -1,0 +1,16 @@
+= Web Services Use Cases
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+The Web Services feature lets you create, define, and execute HTTP requests against internal or external APIs. There are many ways to build a request depending on the request type and payload type.
+
+This section provides a set of examples to inspire your own integrations:
+
+* xref:general-documentation/web-services/use-cases/uc-axelor-instance.adoc[Connecting to an Axelor instance]
+* xref:general-documentation/web-services/use-cases/uc-oauth2-google.adoc[OAuth2 and Google services]
+* xref:general-documentation/web-services/use-cases/uc-xml-exchange.adoc[XML request exchange]
+* xref:general-documentation/web-services/use-cases/uc-basic-auth.adoc[Basic authentication]
+* xref:general-documentation/web-services/use-cases/uc-recursion.adoc[Recursive execution of multiple requests]
