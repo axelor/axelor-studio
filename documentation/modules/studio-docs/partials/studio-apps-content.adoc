@@ -1,0 +1,248 @@
+
+== Overview
+
+Studio Apps allow you to package related Studio customizations (models, fields, menus, actions, selections, charts, dashboards) into a single application unit. This provides lifecycle management with install/uninstall capabilities, and export/import for deploying customizations across environments.
+
+Studio Apps are managed from *App > Configuration > Apps*.
+
+[NOTE]
+====
+The Apps menu entry is only visible when `enableStudioApp` is enabled in the xref:studio-docs:studio-features/configuration.adoc[Studio configuration]. This is enabled by default.
+====
+
+== App Views
+
+Studio Apps can be displayed in two views:
+
+=== Cards View
+
+image::studio-docs:studio-features/studio-app-cards.png[Studio Apps cards view,align="center"]
+
+The cards view provides a visual overview of all Studio Apps with:
+
+- App image/logo
+- Name and code
+- Description excerpt
+- Active/inactive status badge
+- btn:[Delete] button (only visible when the app is not installed)
+
+The cards view also provides an btn:[Import] button in the toolbar for importing apps from ZIP files.
+
+=== Grid View
+
+The grid view displays apps in a tabular format with columns for name, code, and active status. It also provides btn:[Import] and btn:[Export] toolbar buttons.
+
+== Creating a Studio App
+
+image::studio-docs:studio-features/studio-app-form.png[Studio App form,align="center"]
+
+=== Basic Information
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Image* (1)
+| No
+| App logo/icon displayed in the cards view and app list (Image widget, M2O:MetaFile).
+
+| *Code* (2)
+| Yes
+| Unique technical identifier for the app. Used in import/export operations.
+
+| *Name* (3)
+| Yes
+| Display name of the app. Supports translation.
+
+| *Dependencies* (4)
+| No
+| Other Apps that must be installed before this one (TagSelect, M2M:App).
+
+| *Modules* (5)
+| No
+| Associated application modules.
+
+| *Sequence* (6)
+| No
+| Display order in the apps list.
+
+| *Show in app view* (7)
+| No
+| When checked, the app appears in the main application management view (default: false).
+
+| *Description* (8)
+| No
+| Detailed description of the app (HTML editor).
+|===
+
+=== Component Tabs
+
+The form includes tabbed panels (dashlets) showing all Studio components grouped under this app:
+
+image::studio-docs:studio-features/studio-app-tabs.png[Studio App component tabs,align="center"]
+
+[cols="1,3", options="header"]
+|===
+| Tab | Contents
+
+| *Models*
+| Custom models (`MetaJsonModel`) associated with this app
+
+| *Fields*
+| Custom fields (`MetaJsonField`) associated with this app
+
+| *Menus*
+| Studio menus (`StudioMenu`) associated with this app
+
+| *Actions*
+| Studio actions (`StudioAction`) associated with this app
+
+| *Charts*
+| Studio charts (`StudioChart`) associated with this app
+
+| *Dashboards*
+| Studio dashboards (`StudioDashboard`) associated with this app
+
+| *BPM*
+| BPM processes associated with this app
+
+| *DMN*
+| DMN decision tables associated with this app
+
+| *BAML*
+| BAML models associated with this app
+
+| *WS Connector*
+| Web service connectors associated with this app
+
+| *WS Request*
+| Web service requests associated with this app
+
+| *WS Authentication*
+| Web service authenticators associated with this app
+|===
+
+These tabs provide a comprehensive view of everything packaged within the app.
+
+== Install and Uninstall
+
+=== Install
+
+The btn:[Install] button appears in the form sidebar when:
+
+- The app record has been saved (has an ID)
+- The app is not currently installed (`generatedApp.active` is false)
+
+Installing an app:
+
+. Generates the required `App` record
+. Activates all associated menus, views, and actions
+. Makes the app's customizations available to users
+
+=== Uninstall
+
+The btn:[Uninstall] button appears when:
+
+- The app record has been saved (has an ID)
+- The app is currently installed (`generatedApp.active` is true)
+
+WARNING: Uninstalling an app deactivates all its associated components. Users will no longer have access to the custom models, menus, and actions defined by the app.
+
+== Export and Import
+
+=== Export
+
+The btn:[Export] button is available in the form toolbar. Clicking it opens an export dialog:
+
+image::studio-docs:studio-features/studio-app-export.png[Export dialog,align="center"]
+
+- *Export data* (1): When checked, the export includes not only the app definition (models, fields, menus, etc.) but also the actual data records created through the custom models.
+
+The export generates a ZIP file containing all the app's components.
+
+[TIP]
+====
+Use the *Export data* option when transferring a fully configured app with sample or reference data to another environment. Leave it unchecked to export only the structure (models, views, actions) without data.
+====
+
+=== Import
+
+The btn:[Import] button is available in the grid/cards toolbar. Clicking it opens an import dialog:
+
+- *Data file* (1): Upload the ZIP file to import (MetaFile binary-link widget).
+
+The import process:
+
+. Reads the ZIP file contents
+. Creates or updates the Studio App and all its components
+. Registers the generated views, menus, and actions
+
+[WARNING]
+====
+Importing an app with the same code as an existing app will update the existing app's components. Review the import contents carefully before proceeding.
+====
+
+== Technical Details
+
+Studio Apps are stored in the `StudioApp` entity:
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `name`
+| String (required)
+| Display name (translatable)
+
+| `code`
+| String (required, unique)
+| Technical identifier
+
+| `description`
+| Large String
+| HTML description
+
+| `modules`
+| String
+| Associated module names
+
+| `sequence`
+| Integer
+| Display order
+
+| `isInAppView`
+| Boolean (default: false)
+| Show in main app view
+
+| `dependsOnSet`
+| M2M: App
+| Required dependencies
+
+| `image`
+| M2O: MetaFile
+| App logo
+
+| `generatedApp`
+| M2O: App
+| The generated base App record (contains active status)
+|===
+
+Key backend services:
+
+* `StudioAppController.installApp()` -- Installs the app and activates components
+* `StudioAppController.uninstallApp()` -- Uninstalls the app and deactivates components
+* `StudioAppController.deleteApp()` -- Deletes the app (only when not installed)
+* `StudioAppController.exportApp()` -- Exports the app to ZIP
+* `StudioAppController.importApp()` -- Imports an app from ZIP
+
+== Related Pages
+
+* xref:studio-docs:studio-features/configuration.adoc[Configuration] -- Enable/disable the Studio App feature
+* xref:studio-docs:studio-features/custom-models.adoc[Custom Models] -- Models packaged in apps
+* xref:studio-docs:studio-features/menus.adoc[Menus] -- Menus packaged in apps
+* xref:studio-docs:studio-features/actions.adoc[Actions] -- Actions packaged in apps
+* xref:studio-docs:studio-features/charts.adoc[Charts] -- Chart components packaged in apps
+* xref:studio-docs:studio-features/dashboards.adoc[Dashboards] -- Dashboard components packaged in apps
+* xref:studio-docs:studio-features/app-loaders.adoc[App Loaders] -- Import/export apps across environments
+* xref:studio-docs:studio-features/apps-management.adoc[Apps Management] -- Central app lifecycle management
+* xref:studio-docs:index.adoc[Studio Overview] -- Complete feature overview

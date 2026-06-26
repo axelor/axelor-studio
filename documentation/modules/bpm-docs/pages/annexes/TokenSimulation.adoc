@@ -1,0 +1,48 @@
+= Token simulation
+:toc-title:
+:page-pagination:
+:experimental:
+
+
+
+== Token simulation
+
+In the **Design** mode of the Modeler, token simulation provides a way to explore BPMN execution semantics by allowing you to play, pause, and step through processes, mimicking the behavior of a BPMN 2.0 compliant engine.
+
+
+TIP: Token simulation serves as an educational tool for BPMN, rather than a complete BPMN engine.
+
+=== Turn on/off
+
+First, open your BPMN diagram in Modeler and switch to **Design** mode.
+
+To turn the feature on/off, use the **Token Simulation** toggle (or the keyboard shortcut `T` inside the canvas). The modeling features will not work while you are in token simulation mode.
+
+image::token-simulation/token_simulation_base.png[Token simulation base,align="left"]
+
+=== Start simulation
+
+The simulation can be started by triggering an event using the corresponding button:
+
+image::token-simulation/token_simulation_start.png[Token simulation start,align="left"]
+
+=== Token simulation palette
+
+The palette on the left side provides the following controls:
+
+
+image::token-simulation/token_simulation_palette.png[Token simulation palette,align="left"]
+
+1. ** Play/pause simulation**
+2. ** Reset simulation**
+3. ** Show simulation log**
+image:token-simulation/token_simulation_logs.png[Token simulation logs,align="left"]
+
+
+=== Animation speed palette
+
+
+
+The speed of the simulation can be changed using the controls in the bottom palette:
+
+image:token-simulation/token_simulation_speed.png[Token simulation speed,align="left"]

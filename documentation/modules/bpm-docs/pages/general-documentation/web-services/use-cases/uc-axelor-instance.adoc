@@ -1,0 +1,56 @@
+= Connecting to an Axelor Instance
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+This use case shows how to use the Axelor REST API to retrieve data from an Axelor instance. For details on the REST API, refer to the official Axelor documentation.
+
+== Goal: Fetch a Specific Product [[Goal]]
+
+In this example we retrieve a product by sending a request to an Axelor instance. It is a xref:general-documentation/web-services/ws-connectors.adoc[connector] with a single xref:general-documentation/web-services/ws-requests.adoc[request] of type `GET` that fetches a product by its ID.
+
+The web service is accessible with the following URL pattern:
+
+----
+GET /ws/rest/:model/:id
+----
+
+.Request
+----
+GET /ws/rest/com.axelor.apps.base.db.Product/1 HTTP/1.1
+Accept: application/json
+----
+
+== Authentication [[Authentication]]
+
+To connect to an Axelor instance, create an xref:general-documentation/web-services/ws-authenticators.adoc[authenticator]. This is a custom authentication that requires a `username` and a `password`.
+
+The authentication request:
+
+image::web-services/axelorAuth.png[Axelor authentication request,align="left"]
+
+This is a Basic authentication where the token is stored in cookies, so the *cookie* response type is selected. Click btn:[Authenticate] to test whether the authentication succeeds.
+
+image::web-services/auth-axelor.png[Axelor authentication result,align="left"]
+
+== Get Product Request [[Get-Product]]
+
+To get a product by ID, send a request to:
+
+----
+GET : baseUrl/com.axelor.apps.db.Product/${productID}
+----
+
+image::web-services/getProduct.png[Get product request,align="left"]
+
+TIP: You can provide the product ID through the connector context by passing it from the BPM connector script. Every dynamic value is written as `${...}` and is processed as a Groovy template.
+
+== Get Product Connector [[Get-Product-Connector]]
+
+Here you specify the requests to execute -- in this case only one (Get product) -- and the base URL to use.
+
+image::web-services/connectorGetProduct.png[Get product connector,align="left"]
+
+NOTE: You can pass the product context through the connector script in Axelor BPM.
