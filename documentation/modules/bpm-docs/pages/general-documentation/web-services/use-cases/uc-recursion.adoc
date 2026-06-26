@@ -1,0 +1,32 @@
+= Recursive Execution of Multiple Requests
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction [[Introduction]]
+
+This use case demonstrates the *Repeat If* feature of a xref:general-documentation/web-services/ws-requests.adoc[request]. The request uses a `list` variable -- a list of product IDs -- and is repeated until the *Repeat If* condition becomes false.
+
+The difference from the xref:general-documentation/web-services/use-cases/uc-axelor-instance.adoc[Axelor instance use case] is that this request is executed repeatedly until the *Repeat If* condition evaluates to false.
+
+== Request [[Request]]
+
+image::web-services/request-case.png[Recursive request,align="left"]
+
+* *Repeat If*: The expression returns a boolean. It returns `true` while `repeatIndex` is smaller than the size of the `list` variable, and `false` otherwise.
+
+In the end, all products whose IDs are defined in the `list` variable are retrieved.
+
+== Authentication [[Authentication]]
+
+TIP: See the authentication described in the xref:general-documentation/web-services/use-cases/uc-axelor-instance.adoc[Axelor instance use case].
+
+== Connector [[Connector]]
+
+The xref:general-documentation/web-services/ws-connectors.adoc[connector] defines a context with the `list` variable. The variable is a list of objects, each containing an `id` attribute.
+
+image::web-services/context.png[Connector context,align="left"]
+
+The connector has a single request and a single context entry.
+
+image::web-services/connector.png[Connector,align="left"]

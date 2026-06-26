@@ -1,0 +1,105 @@
+= Workflow Model Dashboard
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+Each deployed BPM model has its own dedicated dashboard that displays process execution statistics through three charts. These charts query the Camunda process engine's history tables to provide real-time metrics on task statuses and time spent in each activity.
+
+== Access
+
+The model dashboard is accessed from the BPM model form:
+
+. Open a deployed BPM model from *Application Builder > BPM components > BPM models*
+. Click the btn:[Dashboard] button in the model form
+
+If the model contains **multiple processes**, a selection wizard appears allowing you to choose which process to display. If the model has a single process, the dashboard opens directly.
+
+== Dashboard Charts
+
+The model dashboard (`dasbhoard-wkf-model`) displays three charts:
+
+=== Status per Month
+
+Displays the distribution of activity statuses aggregated by month.
+
+- *Chart type*: Bar
+- *Data source*: `chart.wkf.model.status.per.month`
+- *Default date range*: Last 6 months
+- *Search fields*: From date, To date
+
+This chart shows how many activities were started, completed, or are still pending for each month, helping identify trends and seasonal patterns in process execution.
+
+=== Status per Day
+
+Displays the distribution of activity statuses aggregated by day, providing a more granular view than the monthly chart.
+
+- *Chart type*: Bar
+- *Data source*: `chart.wkf.model.status.per.day`
+- *Default date range*: Last month
+- *Search fields*: From date, To date
+
+=== Time Spent per Status (Hours)
+
+Displays the total time spent in each activity status, measured in hours. This chart is essential for identifying which activities are bottlenecks.
+
+- *Chart type*: Bar
+- *Data source*: `chart.wkf.model.time.spent.per.status`
+- *Default date range*: Last year
+- *Search fields*: From date, To date
+
+[TIP]
+====
+Use the "Time spent per status" chart to identify activities where users spend disproportionate time. High time values may indicate unclear instructions, complex approval processes, or design issues that can be optimized.
+====
+
+== Chart Click-Through
+
+All three charts support click-through interaction. Clicking on a chart element opens a model selector wizard (`action-chart-wkf-view-open-wizard`) that allows you to navigate to the underlying process data.
+
+== Running Instances Dashlet
+
+In addition to the historical charts, the BPM model form embeds a *Dashboard* tab that lists the process instances that are currently running for the model. This dashlet provides a quick, up-to-date view of the live workload, complementing the history-based charts described above.
+
+The dashlet is rendered by the `wkfInstancesPanel` panel-dashlet, located under the *Dashboard* tab of the BPM model form. It is searchable, so you can filter the displayed instances directly from the panel header.
+
+Each row corresponds to a `WkfInstance` record and shows the following columns:
+
+* *Name* -- The name of the process instance
+* *Instance Id* -- The Camunda process instance identifier
+* *Workflow model* -- The BPM model the instance belongs to (`wkfProcess.wkfModel`)
+* *Migration status* -- The migration status of the instance (`migrationStatusSelect`)
+
+Only instances that are still active are listed. The dashlet collects the process instance ids that exist in the Camunda runtime execution table `act_ru_execution`, then restricts the result to the `WkfInstance` records that belong to the current model. Instances that have already completed (and are therefore no longer present in `act_ru_execution`) are not shown.
+
+NOTE: Because the list is built from the Camunda runtime table, it reflects the state of the engine at the moment the form is opened or the dashlet is refreshed. A model that has no running instance displays an empty dashlet.
+
+// TODO-RECAPTURE 3.3 @8-2-preview: BPM model form, "Dashboard" tab showing the "Wkf instances" running-instances dashlet (Application Builder > BPM components > BPM models > open a deployed model) -> documentation/modules/bpm-docs/assets/images/reporting/wkf-model-running-instances-dashlet.png
+
+== Technical Details
+
+=== Data Source
+
+All charts query the Camunda process engine's history table `act_hi_actinst` (historical activity instances), joined with the `studio_wkf_instance` table. The queries filter activities by the following types:
+
+* `userTask` -- User-assigned tasks
+* Catch events -- Intermediate catch events
+* Timer events -- Timer-based events
+
+NOTE: The charts require the Camunda engine to be running and historical data to be present. If the model has just been deployed with no instances, the charts will be empty.
+
+=== Dashboard Definition
+
+The dashboard is defined as `dasbhoard-wkf-model` with three dashlet panels, each with a fixed height of 350 pixels.
+
+=== Backend Services
+
+* `WkfDashboardController` -- Handles chart data requests and click-through navigation to underlying records
+* `WkfModelController.showRunningInstances` -- Builds the *Running Instances* dashlet by querying the Camunda runtime table `act_ru_execution` and resolving the matching `WkfInstance` records for the current model
+
+== Related Pages
+
+* xref:general-documentation/reporting/instance_dashboard.adoc[Instance Dashboard] -- Per-instance execution charts
+* xref:general-documentation/dashboard.adoc[BPM Dashboard] -- The main BPM monitoring dashboard
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

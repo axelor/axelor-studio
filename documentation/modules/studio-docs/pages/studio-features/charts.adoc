@@ -1,0 +1,6 @@
+= Charts
+:toc-title:
+:page-pagination:
+:experimental:
+
+include::partial$charts-content.adoc[]
