@@ -51,16 +51,3 @@ image::bpmn/events/message-events/message-generation-step-1.png[message creation
 
 (3) - Display the newly created message or search for existing messages in the BPM model.
 
-////
-For an intermediate event (image:message-icon-3.png[message icon], image:message-icon-4.png[message icon]), it is necessary to specify the name of the process in which it is **received** by adding the suffix **$+{Process_X}+** to the message name.
-
-image::message_event_doc.png[event process,align="left"]
-
-Here the message signal is received in the Pizza_main process.
-
-Symbolized by image:message-icon-3.png[message icon], image:message-icon-5.png[message icon] It triggers a message send.
-
-It is necessary to set up the delivered or pending message in the general tab of the properties panel.
-
-image::message_id.png[event process,align="left"]
-////

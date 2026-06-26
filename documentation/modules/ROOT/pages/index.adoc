@@ -10,6 +10,6 @@ xref:studio:studio-docs:index.adoc[Axelor STUDIO]::
 These topics describe how to use the axelor Studio.
 xref:studio:bpm-docs:index.adoc[Axelor BPM]::
 These topics describe how to use the axelor BPM solution as BPM modeler.
-xref:studio:web-service-docs:index.adoc[Web Service]::
-This tutorial will quickly introduce you to the web service solution and guide you
-to create your first usage.
+xref:studio:bpm-docs:general-documentation/web-services/index.adoc[Web Services]::
+These topics describe how to use the Web Services solution to create and execute
+HTTP requests against internal or external APIs.

@@ -10,7 +10,7 @@ The Query builder is a tool that allows generating queries (Groovy-based express
 
 === General presentation
 
-Voici les grandes lignes de ce que fait le query builder :
+Here are the main features of the query builder:
 
 image:builders/query-builder-general.png[Query builder,align="center"]
 

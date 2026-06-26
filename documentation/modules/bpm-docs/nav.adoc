@@ -1,7 +1,7 @@
 * xref:index.adoc[Axelor BPM]
 ** xref:/introduction/index.adoc[BPM Studio Introduction]
-** xref:/BPMN/[BPMN elements]
-*** xref:/BPMN/events/[Events]
+** BPMN elements
+*** Events
 **** xref:/BPMN/events/message_event.adoc[Message Event]
 **** xref:/BPMN/events/signal_event.adoc[Signal Event]
 **** xref:/BPMN/events/timer_event_new.adoc[Timer Event]
@@ -11,7 +11,7 @@
 **** xref:/BPMN/events/link_event.adoc[Link Event]
 **** xref:/BPMN/events/CompensationEvent.adoc[Compensation Event]
 **** xref:/BPMN/events/cancel_event.adoc[Cancel Event]
-*** xref:/BPMN/tasks/[Tasks]
+*** Tasks
 **** xref:/BPMN/tasks/user_task.adoc[User Task]
 **** xref:/BPMN/tasks/script_task.adoc[Script Task]
 **** xref:/BPMN/tasks/service_task.adoc[Service Task]
@@ -19,67 +19,72 @@
 **** xref:/BPMN/tasks/business_rule_task.adoc[Business Rule Task]
 **** xref:/BPMN/tasks/send_task.adoc[Send Task]
 **** xref:/BPMN/tasks/receive_task.adoc[Receive Task]
-*** xref:/BPMN/gateways/[Gateways]
+*** Gateways
 **** xref:/BPMN/gateways/gateway.adoc[Gateways]
-*** xref:/BPMN/subprocesses/[Subprocesses]
+*** Subprocesses
 **** xref:/BPMN/subprocesses/subprocess.adoc[Subprocesses]
 
-** xref:/DMN/[DMN]
+** DMN
 *** xref:/DMN/creation_modele_dmn.adoc[DMN Editor]
 *** xref:/DMN/dmn_visual_editor.adoc[Visual Editor]
 *** xref:/DMN/dmn_decision_table.adoc[Decision Table Configuration]
 *** xref:/DMN/dmn_deployment_execution.adoc[Deployment and Execution]
 *** xref:/DMN/dmn_import_export.adoc[Import and Export]
 
-** xref:/BAML/[BAML]
+** BAML
 *** xref:/BAML/create_model_baml.adoc[Creating BAML Models]
 
 ** General Documentation
 *** xref:/general-documentation/dashboard.adoc[BPM Dashboard]
 *** xref:/general-documentation/migration.adoc[BPM Migration]
-*** xref:/general-documentation/builders/[Builders]
+*** Builders
 **** xref:/general-documentation/builders/builders_introduction.adoc[Builders Introduction]
 **** xref:/general-documentation/builders/builders_expression_builder.adoc[Expression Builder]
 **** xref:/general-documentation/builders/builders_query_builder.adoc[Query Builder]
 **** xref:/general-documentation/builders/builders_mapper_builder.adoc[Mapper Builder]
 **** xref:/general-documentation/builders/builders_webservices_builder.adoc[Web Service Builder]
-*** xref:/general-documentation/reporting/[Reporting]
+*** Reporting
 **** xref:/general-documentation/reporting/reporting_charts.adoc[Charts]
 **** xref:/general-documentation/reporting/reporting_dashboards.adoc[Dashboards]
 **** xref:/general-documentation/reporting/model_dashboard.adoc[Model Dashboard]
 **** xref:/general-documentation/reporting/instance_dashboard.adoc[Instance Dashboard]
-*** xref:/general-documentation/app-management/[App Management]
+*** App Management
 **** xref:/general-documentation/app-management/app_management_overview.adoc[Overview]
 **** xref:/general-documentation/app-management/app_bpm_configuration.adoc[App BPM Configuration]
 **** xref:/general-documentation/app-management/studio_apps.adoc[Studio Apps]
 **** xref:/general-documentation/app-management/app_loader.adoc[App Loader]
-*** xref:/general-documentation/engine/[Engine]
+*** Engine
 **** xref:/general-documentation/engine/deployment_pipeline.adoc[Deployment Pipeline]
 **** xref:/general-documentation/engine/execution_engine.adoc[Execution Engine]
 **** xref:/general-documentation/engine/auto_evaluation.adoc[Auto-Evaluation]
 **** xref:/general-documentation/engine/task_evaluation.adoc[Task Evaluation]
-*** xref:/general-documentation/utilities/[Utilities]
+*** Utilities
 **** xref:/general-documentation/utilities/cron_builder.adoc[CRON Builder]
-**** xref:/general-documentation/utilities/link_scripts.adoc[Link Scripts]
 **** xref:/general-documentation/utilities/value_mapper.adoc[Value Mapper]
 **** xref:/general-documentation/utilities/merge_split.adoc[Merge and Split]
-*** xref:/general-documentation/web-services/[Web Services]
+*** xref:/general-documentation/web-services/index.adoc[Web Services]
 **** xref:/general-documentation/web-services/index.adoc[Overview]
 **** xref:/general-documentation/web-services/ws-requests.adoc[WS Requests]
 **** xref:/general-documentation/web-services/ws-connectors.adoc[WS Connectors]
 **** xref:/general-documentation/web-services/ws-authenticators.adoc[WS Authenticators]
 **** xref:/general-documentation/web-services/ws-builder.adoc[WS Builder]
 **** xref:/general-documentation/web-services/transformations.adoc[Transformations]
-*** xref:/general-documentation/process-instance/[Process Instances]
+**** xref:/general-documentation/web-services/use-cases/use-cases.adoc[Use Cases]
+***** xref:/general-documentation/web-services/use-cases/uc-axelor-instance.adoc[Connecting to an Axelor Instance]
+***** xref:/general-documentation/web-services/use-cases/uc-oauth2-google.adoc[OAuth2 and Google Services]
+***** xref:/general-documentation/web-services/use-cases/uc-xml-exchange.adoc[XML Request Exchange]
+***** xref:/general-documentation/web-services/use-cases/uc-basic-auth.adoc[Basic Authentication]
+***** xref:/general-documentation/web-services/use-cases/uc-recursion.adoc[Recursive Execution of Multiple Requests]
+*** Process Instances
 **** xref:/general-documentation/process-instance/display-logs.adoc[Displaying Logs]
 **** xref:/general-documentation/process-instance/colorize_diagram_errors.adoc[Highlighting Errors on Diagram Nodes]
 **** xref:/general-documentation/process-instance/process_instance_modification.adoc[Process Instance Modification]
 **** xref:/general-documentation/process-instance/process_variables_visualization.adoc[Visualizing Process Variables]
 
-** xref:/annexes/[Appendices]
+** Appendices
 *** xref:/annexes/TipsForWorkspace.adoc[Tips for Workspace]
 *** xref:/annexes/configurable_values_prevent_infinite_loop.adoc[Infinite Loop Detection Configuration]
 *** xref:/annexes/TokenSimulation.adoc[Token Simulation]
 
-** xref:/pro-features/[Pro Features]
+** Pro Features
 *** xref:/pro-features/call_connect_with_bpm.adoc[Call Connect Scenario with the BPM]

@@ -6,4 +6,3 @@ nav:
   - modules/ROOT/nav.adoc
   - modules/studio-docs/nav.adoc
   - modules/bpm-docs/nav.adoc
-  - modules/web-service-docs/nav.adoc

@@ -55,7 +55,7 @@ WARNING: The menu name must start with a letter (a-z or A-Z). This is validated 
 === Icon and Appearance
 
 - *Icon* (7): Choose from over 500 icons available in the `studio.menu.icon.select` selection. Icons use the Bootstrap Icons library.
-- *Icon background* (8): Select a background color for the icon from 11 available colors (TagSelect widget): `red`, `pink`, `purple`, `deep-purple`, `indigo`, `blue`, `light-blue`, `cyan`, `teal`, `green`, `orange`.
+- *Icon background* (8): Select a background color for the icon from 11 available colors (TagSelect widget): `blue`, `black`, `brown`, `green`, `orange`, `pink`, `purple`, `red`, `violet`, `white`, `yellow`.
 
 [TIP]
 ====
