@@ -140,7 +140,3 @@ By clicking on the wrench icon, you can configure the node properties, it will o
 .. Apply multi-instance or loop properties.
 .. Search within the list.
 .. Available properties for the node, the properties are filtered by the type of the node(pool, activity, gateways, etc).
-
-
-
-
