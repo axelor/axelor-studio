@@ -1,0 +1,144 @@
+= BPM Cockpit
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+The *BPM Cockpit* is a dedicated monitoring and analytics workspace for deployed BPM processes. It provides a consolidated, real-time view of process adoption, running and historic instances, node-level execution metrics, and task statistics across every deployed process model.
+
+Unlike the per-model and per-instance xref:general-documentation/reporting/reporting_dashboards.adoc[reporting dashboards], the Cockpit is a single-page application rendered as an HTML view. It aggregates data from the embedded Camunda engine through dedicated backend controllers and presents it through interactive charts and diagrams.
+
+== Access
+
+Navigate to: *App > BPM Cockpit*.
+
+The menu entry (`menu-wkf-bpm-cockpit`) is available under the Studio application root and is only visible when the BPM app is installed (`__config__.app?.isApp('bpm')`).
+
+// TODO-RECAPTURE main @<instance>: BPM Cockpit dashboard landing -> bpm-docs:reporting/bpm-cockpit-dashboard.png
+
+== Layout
+
+The Cockpit is organised around a persistent sidebar and a main content area. Navigation is iframe-safe (hash-based), so the workspace can be embedded inside the Axelor HTML view without interfering with the host application's routing.
+
+The workspace exposes the following views:
+
+[cols="1,3", options="header"]
+|===
+| View | Purpose
+
+| *Dashboard*
+| Landing view with global KPIs (number of instances, cycle time, SLA) and a process adoption overview across all deployed models.
+
+| *Processes*
+| A searchable, full-width table listing all deployed process definitions. Selecting a row opens the corresponding process detail view.
+
+| *Process detail*
+| Per-process view split into two tabs: *Instances* and *Analytics*.
+
+| *Instance detail*
+| Drill-down view for a single process instance, including its BPMN diagram with node-level state and a passage history.
+|===
+
+== Dashboard
+
+The dashboard provides a high-level overview of BPM activity:
+
+* *KPI cards* -- instance counts, average cycle time, and SLA indicators.
+* *Adoption overview* -- a chart summarising how each deployed process is being used, sourced from `CockpitProcessController.getAdoptionOverview()`.
+* *Task statistics* -- aggregated user-task figures, sourced from `CockpitTaskController.getTaskStats()`.
+
+== Process Detail
+
+Opening a process from the *Processes* list shows the process detail view, driven by a tab bar (the active tab is reflected in the URL):
+
+=== Instances Tab
+
+The Instances tab combines a filterable instance list with a live BPMN preview:
+
+* *Instance list* -- running and historic instances for the selected process, with status filter pills. Data comes from `CockpitInstanceController.getInstances()` and `getInstanceCounts()`.
+* *BPMN preview* -- the process diagram rendered alongside the list.
+
+Selecting an instance opens the *Instance detail* view.
+
+=== Analytics Tab
+
+The Analytics tab is a grid of analytical widgets computed over the process's instance history. Each widget is backed by a method on `CockpitAnalyticsController`:
+
+[cols="1,2,2", options="header"]
+|===
+| Widget | Description | Data source
+
+| *Analytics diagram*
+| The process BPMN diagram annotated with node-level metrics (a heatmap overlay).
+| `CockpitInstanceController.getInstanceActivities()` / `getNodeDetail()`
+
+| *Duration boxplot* / *Duration table*
+| Distribution of time spent on each node.
+| `CockpitAnalyticsController.getNodeDurationStats()`
+
+| *Sankey flow*
+| Flow of instances between nodes, visualised as a Sankey diagram.
+| `CockpitAnalyticsController.getSankeyData()`
+
+| *Status trend*
+| Evolution of instance statuses over time.
+| `CockpitAnalyticsController.getStatusTrend()`
+
+| *Assignee throughput*
+| Throughput of completed tasks per assignee.
+| `CockpitAnalyticsController.getAssigneeThroughput()`
+
+| *Calendar heatmap*
+| Activity volume per day, shown as a calendar heatmap.
+| `CockpitAnalyticsController.getCalendarHeatmap()`
+|===
+
+// TODO-RECAPTURE main @<instance>: BPM Cockpit process detail - Analytics tab -> bpm-docs:reporting/bpm-cockpit-analytics.png
+
+== Instance Detail
+
+The instance detail view drills into a single process instance. It shows the instance's BPMN diagram with the current node state and a passage history of the activities the instance has traversed. The diagram XML is fetched from `CockpitInstanceController.getInstanceXml()`, and branch/gateway distribution from `getBranchDistribution()`.
+
+// TODO-RECAPTURE main @<instance>: BPM Cockpit instance detail diagram -> bpm-docs:reporting/bpm-cockpit-instance.png
+
+== Technical Details
+
+The Cockpit is delivered as a standalone React application (`react/cockpit`) mounted through an HTML action view:
+
+[source,xml]
+----
+<menuitem title="BPM Cockpit" name="menu-wkf-bpm-cockpit" parent="studio-app-root"
+  action="action.wkf.bpm.cockpit" order="20" if="__config__.app?.isApp('bpm')"/>
+<action-view name="action.wkf.bpm.cockpit" title="BPM Cockpit">
+  <view type="html" name="cockpit/"/>
+</action-view>
+----
+
+All data is loaded over RPC calls to the following backend controllers:
+
+[cols="1,3", options="header"]
+|===
+| Controller | Responsibility
+
+| `CockpitProcessController`
+| Process list and adoption overview (`getProcessList`, `getAdoptionOverview`).
+
+| `CockpitInstanceController`
+| Instance lists and counts, activities, node detail, branch distribution, and instance BPMN XML.
+
+| `CockpitTaskController`
+| User-task statistics (`getTaskStats`).
+
+| `CockpitAnalyticsController`
+| Analytical aggregations: node duration, status trend, assignee throughput, Sankey flow, and calendar heatmap.
+|===
+
+The corresponding service layer lives under `com.axelor.studio.bpm.service.cockpit` (process, instance, task-stats, analytics, and a shared `CockpitCamundaQueryService` that queries the Camunda history tables).
+
+== Related Pages
+
+* xref:general-documentation/reporting/reporting_dashboards.adoc[Reporting Dashboards] -- Model- and instance-level dashboards
+* xref:general-documentation/reporting/instance_dashboard.adoc[Process Instance Dashboard] -- Per-instance node metrics
+* xref:general-documentation/process-instance/process_variables_visualization.adoc[Process Instances] -- Monitor individual instances
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview

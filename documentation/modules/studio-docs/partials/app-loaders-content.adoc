@@ -1,0 +1,191 @@
+
+== Overview
+
+App Loaders provide the import and export machinery behind xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps]. They allow you to transfer complete app packages -- including their component definitions and optionally their data -- between different Axelor environments (e.g., from development to production).
+
+[NOTE]
+====
+In this version the App Loader no longer has its own standalone screen. The import and export capabilities are driven directly from the xref:studio-docs:studio-features/studio-apps.adoc[Studio App] form and its grid/cards toolbars (the btn:[Import], btn:[Export], and btn:[Update] buttons). The `AppLoader` and `AppDataLoader` entities described below remain as the internal data structure that backs these operations; they are populated and consumed by the Studio App import/export services rather than edited through a dedicated menu.
+====
+
+== Import and Export from the Studio App
+
+The import/export workflow is documented on the xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps] page:
+
+* *Export* -- packages the selected Studio App(s) into a ZIP file, optionally including their data records.
+* *Import* -- loads a previously exported ZIP into the current environment.
+* *Update* -- re-imports a Studio App from a file, with the option to *Detach absent elements* (remove from the app the elements present in the database but absent from the file).
+
+== Exported Components
+
+When a Studio App is exported, the export writes a `studio-app.xml` package plus the following component types (`AppLoaderExportService.EXPORT_TEMPLATES`):
+
+`studio-app`, `json-model`, `json-field`, `studio-menu`, `studio-action`, `studio-dashboard`, `studio-dashlet`, `studio-chart`, `studio-selection`, `ws-connector`, `ws-request`, `ws-authenticator`, `meta-view`, `meta-action`, `ws-request-list`.
+
+When BPM components are present, the export is extended with BPM-specific types (`AppLoaderExportBpmService`):
+
+* *wkf-model*: BPM process models (BPMN XML)
+* *wkf-dmn-model*: DMN decision models (DMN XML)
+
+NOTE: After importing BPM or DMN models, you must deploy each model individually for the processes/decisions to become executable.
+
+== Data Export Configuration (AppDataLoader)
+
+The data export rules let you define which model data should be included in the export. Each `AppDataLoader` entry specifies a model together with the fields and search criteria for its data.
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Type | Description
+
+| *Is JSON*
+| Boolean
+| Toggle between custom (JSON) models and standard models.
+
+| *Model* (standard)
+| M2O: MetaModel
+| The standard model whose data should be exported. Used when *Is JSON* is unchecked.
+
+| *Model* (JSON)
+| M2O: MetaJsonModel
+| The JSON model whose data should be exported. Used when *Is JSON* is checked.
+
+| *Fields* (standard)
+| M2M: MetaField
+| The fields to include in the export for standard models.
+
+| *Fields* (JSON)
+| M2M: MetaJsonField
+| The fields to include in the export for JSON models.
+
+| *Search fields* (standard)
+| M2M: MetaField
+| Fields used to identify existing records during import (match criteria).
+
+| *Search fields* (JSON)
+| M2M: MetaJsonField
+| Fields used to identify existing records during import (match criteria) for JSON models.
+
+| *Filter query*
+| Large String
+| A JPQL-like filter expression to restrict which records are exported.
+
+| *Sequence*
+| Integer
+| Order in which data loaders are processed during export.
+|===
+
+[TIP]
+====
+Use *Search fields* to define how the import process identifies whether a record already exists. For example, if you set `code` as a search field, the import will match records by their `code` value and update them instead of creating duplicates.
+====
+
+== Technical Details
+
+=== AppLoader Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `name`
+| String
+| Loader name
+
+| `exportMetaFile`
+| M2O: MetaFile
+| Exported ZIP file
+
+| `importMetaFile`
+| M2O: MetaFile
+| Uploaded import file
+
+| `importLog`
+| M2O: MetaFile
+| Import log file
+
+| `exportedStudioAppSet`
+| M2M: StudioApp
+| Apps selected for export
+
+| `importedStudioAppSet`
+| M2M: StudioApp
+| Apps that were imported
+
+| `exportedOn`
+| DateTime
+| Export timestamp
+
+| `importedOn`
+| DateTime
+| Import timestamp
+
+| `appDataLoaderList`
+| O2M: AppDataLoader (orderBy: sequence)
+| Data export configuration entries
+|===
+
+=== AppDataLoader Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `appLoader`
+| M2O: AppLoader
+| Parent App Loader
+
+| `isJson`
+| Boolean
+| JSON model toggle
+
+| `metaModel`
+| M2O: MetaModel
+| Standard model reference
+
+| `jsonModel`
+| M2O: MetaJsonModel
+| JSON model reference
+
+| `metaFieldSet`
+| M2M: MetaField
+| Fields to export (standard)
+
+| `jsonFieldSet`
+| M2M: MetaJsonField
+| Fields to export (JSON)
+
+| `searchMetaFieldSet`
+| M2M: MetaField
+| Search/match fields (standard)
+
+| `searchJsonFieldSet`
+| M2M: MetaJsonField
+| Search/match fields (JSON)
+
+| `filterQuery`
+| Large String
+| JPQL filter expression
+
+| `sequence`
+| Integer
+| Processing order
+
+| `modelName`
+| String
+| Computed model name
+|===
+
+Key backend services:
+
+* `AppLoaderExportService` -- Builds the export ZIP from the selected Studio Apps and their data loaders.
+* `AppLoaderImportService` -- Extracts and validates an import ZIP and loads the apps.
+* `AppLoaderExportBpmService` / `AppLoaderImportBpmService` -- Handle the BPM/DMN component types.
+
+These services are invoked from `StudioAppController` (`importApp`, `updateApp`, `exportApp`) rather than from a dedicated App Loader screen.
+
+== Related Pages
+
+* xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps] -- Create and manage the apps being exported/imported (import/export buttons live here)
+* xref:studio-docs:studio-features/apps-management.adoc[Apps Management] -- Central app lifecycle management
+* xref:studio-docs:studio-features/configuration.adoc[Configuration] -- Enable the Studio App feature
+* xref:studio-docs:index.adoc[Studio Overview] -- Complete feature overview
