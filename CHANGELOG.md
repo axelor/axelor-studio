@@ -1,3 +1,21 @@
+## 4.0.7 (2026-06-26)
+
+#### Fix
+
+* Fix app initialization when modules are built from source by Gradle
+
+  <details>
+  
+  AppServiceImpl.extract() only recognised Eclipse's "bin/main" output, so for modules
+  built by Gradle or IntelliJ the URL prefix was never stripped and the resource was
+  copied to a path the caller never reads — silently dropping every apps/*.yml from
+  locally-built modules. The strip pattern now mirrors MetaScanner.BUILD_PATHS.
+  
+  </details>
+
+* Fix DMN editor becoming inaccessible after saving a model
+* Fix BPM completion condition crash when comparing a relational field to a selected record
+
 ## 4.0.6 (2026-04-27)
 
 #### Fix
