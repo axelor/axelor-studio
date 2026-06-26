@@ -1,0 +1,21 @@
+= Tips for the Workspace
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Keyboard Shortcuts
+
+The studio has a number of shortcuts that simplify the work.
+
+**[.underline]#Here is the list of them# :**
+
+1. **Undo** : kbd:[ctrl] + kbd:[Z]
+2. **Redo** : kbd:[ctrl] + kbd:[shift] + kbd:[Z]
+3. **Select All** : kbd:[ctrl] + kbd:[A]
+4. **Search for an object by name** : kbd:[ctrl] + kbd:[F] image:annexes/anexes_clavier.png[event process,align="left"]
+5. **Zoom/Dezoom** : kbd:[ctrl] + kbd:[Scrolling]
+6. **Horizontal Scrolling** : kbd:[ctrl] + kbd:[shift] + kbd:[Scrolling]
+7. **Rename the object under the cursor** : kbd:[E]
+8. **Activate the hand tool** : kbd:[H]
+9. **Activate the lasso tool** : kbd:[L]
+10. **Activate the pan tool** : kbd:[S]

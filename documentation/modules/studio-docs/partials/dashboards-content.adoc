@@ -1,0 +1,179 @@
+
+== Overview
+
+Studio Dashboards allow you to combine multiple charts, data grids, and custom views into a single overview page. Each dashboard is composed of configurable dashlets that can be arranged in a multi-column layout.
+
+Dashboards are managed from *App > Reporting > Dashboards*.
+
+image::studio-docs:studio/dashboard-grid.png[Studio Dashboards grid view]
+
+== Creating a Dashboard
+
+Navigate to *App > Reporting > Dashboards* and click btn:[New].
+
+image::studio-docs:studio/dashboard-form.png[Studio Dashboard form]
+
+=== Dashboard Fields
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name* (1)
+| Yes
+| Unique technical name of the dashboard. Must not contain spaces. The name is validated and normalized automatically.
+
+| *Title* (2)
+| Yes
+| Display title shown as the dashboard page header.
+
+| *Studio App* (3)
+| No
+| Associates the dashboard with a xref:studio-docs:studio-features/studio-apps.adoc[Studio App] for packaging. Only visible when `enableStudioApp` is active (see xref:studio-docs:studio-features/configuration.adoc[Configuration]).
+|===
+
+== Dashlets
+
+The *Dashlets* panel defines the content blocks displayed on the dashboard. Dashlets are listed in an editable grid with drag-and-drop reordering (canMove).
+
+image::studio-docs:studio/dashboard-dashlet-form.png[Dashlet configuration form]
+
+=== Dashlet Configuration
+
+[cols="1,1,3", options="header"]
+|===
+| Field | Required | Description
+
+| *Name*
+| Yes
+| Technical name of the dashlet. Must be unique within the dashboard.
+
+| *View type*
+| No
+| Type of content displayed. Restricted to three options: *chart*, *grid*, or *custom*.
+
+| *Meta view*
+| Conditional
+| Reference to an existing view (`MetaView`). Required if no action is set. The view selector is filtered to show only views matching the selected view type.
+
+| *Action*
+| Conditional
+| Reference to an action (`MetaAction`) that provides the dashlet data. Required if no meta view is set. Filtered to show only `action-view` type actions.
+
+| *Colspan*
+| No
+| Width of the dashlet in grid columns (out of 12). Default: 6. Maximum: 12.
+
+| *Height*
+| No
+| Fixed height of the dashlet in pixels. Default: 350 when set to 0.
+
+| *Can search*
+| No
+| Whether the dashlet includes a search bar. Only shown for *grid*-type dashlets.
+
+| *Pagination limit*
+| No
+| Number of records shown per page. Only shown for *grid*-type dashlets.
+
+| *Sequence*
+| No
+| Display order of the dashlet on the dashboard. Dashlets are ordered by ascending sequence.
+|===
+
+WARNING: A dashlet must have either a *Meta view* or an *Action* -- not both. The form enforces mutual exclusion: when one field has a value, the other is hidden.
+
+=== Layout Guidelines
+
+Use the *Colspan* property to create multi-column layouts:
+
+[cols="1,2", options="header"]
+|===
+| Colspan | Layout
+
+| `12`
+| Full-width dashlet (one per row)
+
+| `6`
+| Half-width dashlet (two per row)
+
+| `4`
+| Third-width dashlet (three per row)
+
+| `3`
+| Quarter-width dashlet (four per row)
+|===
+
+[TIP]
+====
+Combine charts and data grids on a single dashboard to create comprehensive overview pages. For example, place a sales trend chart (colspan=8) next to a top customers list (colspan=4).
+====
+
+=== Dashlet Types
+
+==== Chart Dashlet
+
+Displays a xref:studio-docs:studio-features/charts.adoc[Studio Chart] or any chart-type MetaView. Use this to embed visual data representations.
+
+==== Grid Dashlet
+
+Displays a list of records using a grid view. When using this type:
+
+* Enable *Can search* to allow users to filter data within the dashlet
+* Set *Pagination limit* to control the number of visible rows
+
+==== Custom Dashlet
+
+Displays a custom view (e.g., a form or HTML view). Use this for specialized displays that do not fit the chart or grid pattern.
+
+== View Generation
+
+When a dashboard is saved, Studio automatically generates the following runtime metadata:
+
+* A `MetaView` of type `dashboard` containing the `<dashlet>` XML definitions
+* One `MetaAction` of type `action-view` for each dashlet that references a MetaView (dashlets using existing actions reuse them directly)
+
+The generated view and actions are stored in the `metaViewGenerated` and `generatedActions` fields of the dashboard entity.
+
+NOTE: If all dashlets are removed from a dashboard, the generated MetaView is automatically deleted on save.
+
+== Import and Export
+
+Dashboards support import/export as part of Studio App packaging:
+
+* **Export**: Produces XML data with dashboard name, title, model, studioApp reference, and dashlet definitions
+* **Import**: A two-step process -- first imports the dashboard data, then triggers a rebuild to regenerate the MetaView and MetaActions
+
+The rebuild is triggered by a secondary import configuration that calls `ImportService.importAppStudioDashboard()`, which saves each imported dashboard to invoke the generation logic.
+
+== Technical Details
+
+Dashboards are stored in the `StudioDashboard` entity (`com.axelor.studio.db`, cacheable).
+
+Key entities:
+
+[cols="1,2", options="header"]
+|===
+| Entity | Description
+
+| `StudioDashboard`
+| Dashboard definition with title, name, dashlet list
+
+| `StudioDashlet`
+| Individual dashlet definition with view type, layout, and data source
+|===
+
+Key services:
+
+* `StudioDashboardServiceImpl.build()` -- Iterates dashlets, generates action-views using the `dashboardActionView.tmpl` template, creates the dashboard MetaView
+* `StudioDashboardRepo.save()` -- Triggers `build()` on every save to regenerate the view
+* `StudioDashboardRepo.remove()` -- Cleans up the generated MetaView before removal
+
+The `StudioDashlet` entity has a unique constraint on `(name, studioDashboard)`, ensuring no duplicate dashlet names within a dashboard.
+
+== Related Pages
+
+* xref:studio-docs:studio-features/charts.adoc[Charts] -- Create charts to embed in dashboards
+* xref:studio-docs:studio-features/studio-apps.adoc[Studio Apps] -- Package dashboards in apps
+* xref:studio-docs:studio-features/app-loaders.adoc[App Loaders] -- Import/export dashboards across environments
+* xref:studio-docs:index.adoc[Studio Overview] -- Complete feature overview

@@ -1,0 +1,141 @@
+= Process Instance Modification
+:toc-title:
+:page-pagination:
+:experimental:
+
+== Introduction
+
+This feature allows administrators to manually modify the state of a running process instance using a YAML-based script. It is useful for handling exceptional situations where instances need to be moved to different activities, restarted, or cancelled.
+
+See also the https://docs.camunda.org/manual/latest/user-guide/process-engine/process-instance-modification/[Camunda documentation] for more details on the underlying engine capabilities.
+
+== Access
+
+Navigate to: *Application Builder > BPM components > Technical monitoring > Process instance modification*
+
+image::process-instances/process-update-form.png[Process instance modification form, align="center"]
+
+== Workflow
+
+=== Creating a Modification Script
+
+. Enter a *Name* (1) for the modification.
+. The *Status* (2) is displayed as a navigation bar with three states: Draft, Applied, Error.
+. Write the YAML script in the *Script* field (3), which uses a code editor with YAML syntax highlighting.
+
+=== Available Operations
+
+The following modifications can be applied to process instances:
+
+[cols="1,2"]
+|===
+| Operation | Description
+
+| `startBefore("activity-id")`
+| Start execution before the specified activity
+
+| `startBefore("activity-id", "name", "value")`
+| Start before an activity and submit a process variable
+
+| `startAfter("activity-id")`
+| Start execution after the specified activity
+
+| `startAfter("activity-id", "name", "value")`
+| Start after an activity and submit a process variable
+
+| `startTransition("transition-id")`
+| Start a specific transition
+
+| `startTransition("transition-id", "name", "value")`
+| Start a transition and submit a process variable
+
+| `cancelAll("activity-id")`
+| Cancel all activity instances for the specified activity
+
+| `cancelActivityInstance("activity-instance-id")`
+| Cancel a specific activity instance
+
+| `cancelTransition("transition-instance-id")`
+| Cancel a specific transition instance
+|===
+
+=== Script Syntax
+
+The script follows a YAML structure:
+
+[source,yaml]
+----
+migration:
+  - instance:
+      name:
+        - "process-instance-1-id"
+        - "process-instance-2-id"
+      operations:
+        - cancelAll("activity-1-id")
+        - startBefore("activity-2-id")
+  - instance:
+      name:
+        - "process-instance-3-id"
+      operations:
+        - cancelAll("activity-3-id")
+        - startAfter("activity-4-id","var-name","var-value")
+----
+
+IMPORTANT: You need the process instance ID and the activity IDs to use this feature. These can be found in the Process Instances technical monitoring view.
+
+=== Applying the Script
+
+Click the *Apply* button (4) to execute the modification script. The status will change to:
+
+- *Applied*: if all operations completed successfully
+- *Error*: if any operation failed
+
+=== Import/Export
+
+- Use the *Upload* button in the toolbar to upload a YAML script file
+- Use the *Download* button in the toolbar to export the current script as a file
+
+TIP: Exporting scripts is useful for documenting modifications or reusing them across environments.
+
+== Technical Details
+
+=== WkfProcessUpdate Entity
+
+[cols="1,1,2", options="header"]
+|===
+| Field | Type | Description
+
+| `name`
+| String (required)
+| Name identifying the modification script
+
+| `statusSelect`
+| Integer (default: 1)
+| Current status of the modification. Values: `1` = Draft, `2` = Applied, `3` = Error
+
+| `script`
+| Large String
+| YAML script containing the modification operations
+|===
+
+=== Status Lifecycle
+
+The status follows a simple lifecycle:
+
+* *Draft* (1) -- Initial state when the script is created or uploaded
+* *Applied* (2) -- Set when the script has been executed successfully against all targeted process instances
+* *Error* (3) -- Set when any operation in the script fails during execution
+
+NOTE: Once a script is applied or errors, you can modify and re-apply it. The status will update accordingly.
+
+=== Backend Services
+
+* `ProcessInstanceModificationController.executeScript()` -- Parses the YAML script and executes the defined operations against the Camunda process engine
+* `ProcessInstanceModificationController.generateScript()` -- Generates a YAML script from an uploaded operations file
+* `ProcessInstanceModificationController.export()` -- Exports the current script as a downloadable YAML file
+
+== Related Pages
+
+* xref:general-documentation/process-instance/process_variables_visualization.adoc[Process Instances] -- View and manage process instances (find instance IDs and activity IDs)
+* xref:general-documentation/migration.adoc[BPM Migration] -- Migrate process instances between model versions
+* xref:index.adoc[BPM Overview] -- Complete BPM feature overview
